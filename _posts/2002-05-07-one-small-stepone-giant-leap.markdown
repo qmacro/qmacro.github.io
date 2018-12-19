@@ -1,0 +1,16 @@
+---
+layout: post
+title: One small step...one giant leap...
+date: '2002-05-07 19:33:34'
+---
+
+
+Yeow!
+
+[["im://jabber/bull@mancuso.org"].examples.getStateName (12)](http://frontier.userland.com/stories/storyReader$10108#howToCallAProcedureOverIm)
+
+By ‘eck, it [takes me back…](/jabber/XMLRPC/)
+
+A hearty congrats to [Dave](http://www.scripting.com/) (and [Jeremy](http://www.pipetree.com.wstub.archive.org/qmacro/blog/archives/2002/05/www.jerf.org) and [Eric](http://www.wiredfool.com/ftoc) of course). “This *Bing!*‘s for you.”
+
+
