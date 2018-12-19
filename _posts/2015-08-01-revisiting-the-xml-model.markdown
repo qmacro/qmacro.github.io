@@ -9,7 +9,7 @@ tags:
 
 **[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 29 by [DJ Adams](http://pipetree.com/qmacro/)**
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-08-01-at-11.56.50.png)
+![](/content/images/2018/02/Screen-Shot-2015-08-01-at-11.56.50.png)
 
 It’s been more than a couple of years since I first had a look at XML data in the context of UI5. In my “[Re-presenting my site with SAPUI5](https://www.youtube.com/watch?v=wZUXz5f1CHI)” video [I used an XML Model to load the XML feed](https://github.com/qmacro/sapui5bin/blob/master/blogui/resources/blogarchive.controller.js#L9-L10) of my weblog into a UI5 app (gosh, [JavaScript views](https://github.com/qmacro/sapui5bin/tree/master/blogui/resources)!).
 

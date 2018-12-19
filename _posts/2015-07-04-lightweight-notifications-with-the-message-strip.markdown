@@ -11,7 +11,7 @@ tags:
 
 **[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 11 by [DJ Adams](http://pipetree.com/qmacro/)**
 
-![Message Strip control](/qmacro/blog/content/images/2018/02/Screenshot-2015-06-23-at-22.26.53.png)
+![Message Strip control](/content/images/2018/02/Screenshot-2015-06-23-at-22.26.53.png)
 
 The [Message Strip](https://openui5beta.hana.ondemand.com/explored.html#/entity/sap.m.MessageStrip/samples) is a nice new control with 1.30. It’s in the main (sap.m) library of controls, and for me, appeals because it bridges the gap between no message at all, and a modal dialog box which is sometimes too heavyweight.
 

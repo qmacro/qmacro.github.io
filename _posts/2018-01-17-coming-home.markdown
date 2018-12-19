@@ -19,7 +19,7 @@ It turned out that the project was Esso's first implementation of SAP, in the fo
 
 Fast forward just over three decades. In that time, I've stayed with SAP technologies in roles as diverse as Basis Technician, Application Developer, Integration Expert, Trainer, Backend Programmer, Frontend Programmer, Consultant, Mentor, Troublecauser and Tea Maker, at end customers large and small, partners large and small, sometimes as a contractor and sometimes as a permanent employee. I've also spent a couple of periods at SAP as an external colleague, first in the 1990's on the IS-Oil project, and more recently on the UI5 team. 
 
-![](/qmacro/blog/content/images/2018/01/3278.png)
+![](/content/images/2018/01/3278.png)
 
 My interest and passion for SAP technologies has only grown since those early days where my workstation was an IBM 3278 terminal. 
 

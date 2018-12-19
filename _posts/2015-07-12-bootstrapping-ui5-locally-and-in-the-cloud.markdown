@@ -13,7 +13,7 @@ tags:
 
 **[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 9 by [DJ Adams](http://pipetree.com/qmacro/)**
 
-![Screenshot of files in a UI5 app directory](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-11-at-16.05.52.png)
+![Screenshot of files in a UI5 app directory](/content/images/2018/02/Screen-Shot-2015-07-11-at-16.05.52.png)
 
 Like many developers who find themselves building a lot with UI5, I find my working environment is mostly a local one, supplemented by activities in the cloud.
 
@@ -29,21 +29,21 @@ When I’m working in the cloud, specifically with the SAP Web IDE, the toolset 
 
 Locally, I maintain a variety of different UI5 versions, that I’ve picked up over the months and years. You never know when you’ll need to go back to a previous version, or even look through the complete history, to see how something has changed. This is what the contents my local ~/ui5/ folder look like:
 
-![Screenshot of my ui5 directory](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-11-at-16.37.15-624x545.png)
+![Screenshot of my ui5 directory](/content/images/2018/02/Screen-Shot-2015-07-11-at-16.37.15-624x545.png)
 
 I use the NodeJS-based static_server.js  script to serve files from this folder, as well as another folder which contains my UI5 projects. From here, I can access different UI5 versions by changing the location that the UI5 bootstrap looks. (Note that while I can and do often access older versions, I pretty much always develop against the latest version, unless there’s a good reason not to … access to older versions is almost always for reference purposes.)
 
 Usually I specify “latest” in the URL, which refers to the symbolic link in the folder above, which (via the use of the small “setlatest” script) in turn points to whatever folder represents the latest unpacked zip:
 
-![Screenshot showing relation of local URL and UI5 version](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-11-at-16.10.56-624x75.png)
+![Screenshot showing relation of local URL and UI5 version](/content/images/2018/02/Screen-Shot-2015-07-11-at-16.10.56-624x75.png)
 
 If I want to refer to an older version, I do so like this:
 
-![Screenshot of another relation between local URL and UI5 version](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-11-at-16.11.11-624x75.png)
+![Screenshot of another relation between local URL and UI5 version](/content/images/2018/02/Screen-Shot-2015-07-11-at-16.11.11-624x75.png)
 
 The same approach with the URL path applies to the contents of the “src” attribute in the UI5 bootstrap:
 
-![UI5 bootstrap with latest UI5 version](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-12-at-08.50.35.png)
+![UI5 bootstrap with latest UI5 version](/content/images/2018/02/Screen-Shot-2015-07-12-at-08.50.35.png)
 
 **Harmonising Local and Cloud Bootrapping**
 
@@ -51,11 +51,11 @@ However, this doesn’t play well with the SAP Web IDE, at least not directly. S
 
 Let’s look at an almost empty UI5 project folder that I’ve created locally:
 
-![app directory structure showing symbolic link for resources](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-11-at-16.22.18-624x191.png)
+![app directory structure showing symbolic link for resources](/content/images/2018/02/Screen-Shot-2015-07-11-at-16.22.18-624x191.png)
 
 In it, we have the index.html which contains a UI5 bootstrap that looks like this:
 
-![UI5 bootstrap with relative reference to resources](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-12-at-08.50.49.png)
+![UI5 bootstrap with relative reference to resources](/content/images/2018/02/Screen-Shot-2015-07-12-at-08.50.49.png)
 
 The “src” attribute refers to a resources folder in the same location as the containing index.html. The value of this attribute (“resources/sap-ui-core.js”) is pretty much the de facto standard for “the location of the UI5 runtime”, so it’s sensible to change this only if you have a very good reason, if not only because you’re starting a battle that you might not want to see through.
 
@@ -63,11 +63,11 @@ If you look at the folder listing above, you’ll see that this resources folder
 
 We’re not interested in having this in our UI5 application repo (it would be of no use in most other contexts) so in our .gitignore file, we exclude it:
 
-![contents of .gitignore](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-11-at-16.23.26.png)
+![contents of .gitignore](/content/images/2018/02/Screen-Shot-2015-07-11-at-16.23.26.png)
 
 When we want to run the application in the HCP context, via SAP Web IDE, we use a mapping file that translates our bootstrap “src” attribute URL into a resource that is available globally on HCP. This mapping file is neo-app.json, and here, it contains this:
 
-![contents of neo-app.json](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-11-at-16.25.20.png)
+![contents of neo-app.json](/content/images/2018/02/Screen-Shot-2015-07-11-at-16.25.20.png)
 
 The path “resources” is mapped to the target “sapui5″ service at “/resources”. This means that the script element in our index.html can successfully resolve and bootstrap UI5 from the right place, with zero changes between my local environment and HCP.
 

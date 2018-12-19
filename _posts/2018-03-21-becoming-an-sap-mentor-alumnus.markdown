@@ -8,7 +8,7 @@ It was in 2009 that I was honoured to be recognised as an SAP Mentor for my cont
 
 In the years since becoming an [SAP Mentor](https://www.sap.com/uk/community/about/mentors-program.html) lots of things have happened, and I'm grateful for the opportunities that have presented themselves to me ... as well as the Mentor shirts that take up a decent space in my wardrobe and that I proudly wear at events inside and outside the SAP developer ecosphere.
 
-[![Explaining some facet of our Underwater Scratch project at Manchester CoderDojo](/qmacro/blog/content/images/2018/03/scratch.jpg)](http://mcrcoderdojo.org.uk/underwater-scratch/)
+[![Explaining some facet of our Underwater Scratch project at Manchester CoderDojo](/content/images/2018/03/scratch.jpg)](http://mcrcoderdojo.org.uk/underwater-scratch/)
 
 There's an end to pretty much everything though, and I've been planning to retire to SAP Mentor Alumnus status for a while. There are many reasons for this, but the main one is to make way for new blood. I can and will continue to be active in the community - becoming an SAP Mentor Alumnus doesn't mean that changes. 
 

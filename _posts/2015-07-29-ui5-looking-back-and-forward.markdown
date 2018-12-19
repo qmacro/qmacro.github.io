@@ -13,7 +13,7 @@ tags:
 
 **[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 26 by [DJ Adams](http://pipetree.com/qmacro/)**
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-29-at-07.33.30-624x255.png)
+![](/content/images/2018/02/Screen-Shot-2015-07-29-at-07.33.30-624x255.png)
 
 It was in the spring of 2012 when I wrote this piece about the new kid on the block, SAPUI5:
 
@@ -29,7 +29,7 @@ So it was met by some with trepidation, wonder, cynicism even. But the rise and 
 
 The UI5 teams of designers and developers themselves, in Walldorf and around the world, have open software and standards in their DNA. UI5 itself has been open sourced. The development standards and processes are, out of necessity, different. And we can see that first hand. Just look at the home of UI5 on the web – at [https://github.com/SAP/openui5](https://github.com/SAP/openui5). Github!
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-29-at-07.18.18.png)
+![](/content/images/2018/02/Screen-Shot-2015-07-29-at-07.18.18.png)
 
 The development process is there for us to see, warts and all. The smallest changes are being done, in public. Look at the one authored 11 hours ago in this screenshot. It’s a [simple improvement for variable declaration](https://github.com/SAP/openui5/commit/78d6ed4df73ef497241a36e30a67145596df2b35) in the code for the Message Popover control in the sap.m library. It doesn’t matter what it is, what matters is that it’s open. For us all to see, scrutinise, and most importantly, learn from.
 

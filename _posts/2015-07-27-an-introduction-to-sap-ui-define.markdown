@@ -12,7 +12,7 @@ tags:
 
 **[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 24 by [DJ Adams](http://pipetree.com/qmacro/)**
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-27-at-11.04.02.png)
+![](/content/images/2018/02/Screen-Shot-2015-07-27-at-11.04.02.png)
 
 
 If you’ve followed [this series](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/) you’ll have come across the [OpenUI5 Walkthrough](http://pipetree.com/qmacro/blog/2015/07/07/openui5-walkthrough/), a “a great multi-step walkthrough of many of the features and practices of UI5 development”.
@@ -21,7 +21,7 @@ In Step 5 of the walkthrough, on “Controllers”, we’re introduced to someth
 
 This is what the Controller source code looks like:
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-27-at-10.13.53-624x433.png)
+![](/content/images/2018/02/Screen-Shot-2015-07-27-at-10.13.53-624x433.png)
 
 So what’s happening here?
 
@@ -41,7 +41,7 @@ sap.ui.core.mvc.Controller.extend("your.name.here", {  
 
 … we can use the new more generic sap.ui.define to first of all declare dependencies and then define the factory function that becomes the controller, in this case. Let’s take a look at the code and examine it line by line:
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-27-at-10.42.52-624x278.png)
+![](/content/images/2018/02/Screen-Shot-2015-07-27-at-10.42.52-624x278.png)
 
 **1-14**: The call to sap.ui.define extends across all the lines here; and we can see that out of the four total possible parameters described in the API reference, only two are used: the optional list of dependencies (represented here by the array) and the factory function that has a single statement returning an extended controller.
 

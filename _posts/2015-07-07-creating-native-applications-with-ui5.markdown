@@ -13,7 +13,7 @@ tags:
 
 **[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/) – Day 4 by [John Murray](http://jmurray.me/)**
 
-![PhoneGap:Build logo](/qmacro/blog/content/images/2018/01/download.jpeg)
+![PhoneGap:Build logo](/content/images/2018/01/download.jpeg)
 
 Whilst web apps are great, and suit the vast majority of situations perfectly, sometimes they just don’t quite cut the mustard. It is in these situations that we are presented with a difficult choice, do we take option A – Sacrifice the features which are specific to native applications for the sake of sticking with UI5 and the benefits that web apps bring? Or do we go with option B – Sacrifice UI5 and the web app benefits, instead going with native code, but then have access to all the features? Well, even in the not-so-distant past we would have to weigh up the pros and cons of each option and make our decision accordingly.
 

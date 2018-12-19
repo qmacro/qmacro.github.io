@@ -18,7 +18,7 @@ Learning your way around UI5 can be hard sometimes. With the new tutorials and i
 
 But if you really want understand the UI5 magic in all its depth you might want to dig a little deeper. For my part I can truly recommend going back to the roots to have a look into the UI5 base classes. They are properly lined up like a string of pearls building upon each other and forming the high level architectural blueprint of the toolkit as a whole.
 
-![baseclasses](/qmacro/blog/content/images/2018/01/baseclasses.png)
+![baseclasses](/content/images/2018/01/baseclasses.png)
 
 All UI5 base classes come with a set of metadata, basically simple json that may hold additional information describing the instance. In addition this metadata has an underlying metadata implementation that provides helper functions, validation logic and some more convenience.
 

@@ -10,7 +10,7 @@ tags:
 - veg
 ---
 
-![bread](/qmacro/blog/content/images/2018/02/Screen-Shot-2018-02-28-at-14.28.22.png)
+![bread](/content/images/2018/02/Screen-Shot-2018-02-28-at-14.28.22.png)
 
 I’ve been baking bread now for quite a while now. The bread baking bug first got ahold of me when visiting friends. They had a bread making machine – something that you put all the basic ingredients into, hit a button, and presto. Naturally we bought one soon after, and I was, well, "hooked".
 
@@ -18,7 +18,7 @@ But sometime last year I decided there was too much plastic and electronics betw
 
 So this Christmas I progressed backwards even more. I received a fantastic present – a [grain mill](/~dj/2004/01/GrainMill.jpg) – Hawo’s [Queen 1](http://www.hawos.de/pages/engl/muhl8a.htm) model. Beautifully simple and rock solid. The millstones are corundum, 10cm in diameter.
 
-![Hawo Queen 1 grain mill](/qmacro/blog/content/images/2018/02/hawo.jpg)
+![Hawo Queen 1 grain mill](/content/images/2018/02/hawo.jpg)
 
 As well as giving you the [total health benefit](http://www.hawos.de/engl/alles2.htm) that only freshly milled wheat (and other grain) can, milling your own on a loaf-by-loaf basis is fun, and gives me my daily fix for the simpler things in life. I guess the next step is to grow my own. I’m just not sure I have the [space](/~dj/2003/09/vegplot.jpg)!
 

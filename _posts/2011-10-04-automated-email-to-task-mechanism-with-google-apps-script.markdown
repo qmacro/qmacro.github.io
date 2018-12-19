@@ -17,7 +17,7 @@ tags:
 At the end of the meetup, I suggested an example of something that would be really easy to put together using Google Apps Script, and very useful: a mechanism to convert incoming emails automatically into tasks.
 
 You can of course convert an email into a task *manually* using the Gmail UI like this:
-![Manually adding a task from an email](/qmacro/blog/content/images/2017/05/AddToTasks1.jpg)
+![Manually adding a task from an email](/content/images/2017/05/AddToTasks1.jpg)
 
 But rather than have to open Gmail, find the task email, select it and then choose More Actions -> Add to Tasks, I wanted a hands-off facility where I could, say from my work email, fire off a quick one-liner task that would be added to my list of tasks automatically, silently and without fuss.
 
@@ -42,7 +42,7 @@ Then I could fire off an email to qmacro+task@gmail.com from work, with the tas
 
 Once you have the labels, create the filter. This is what the action part of my filter looks like:
 
-![Specifying the filter actions](/qmacro/blog/content/images/2017/05/CreateAFilter.jpg)
+![Specifying the filter actions](/content/images/2017/05/CreateAFilter.jpg)
 
 I’m specifying that the email be assigned to the label ‘newtask’, that it should marked as read immediately, and not appear in the inbox. That way, I don’t get distracted by the noise of task emails in my inbox. If you’re wondering about the ‘newtaskdone’ label, we’ll get to that in a minute.
 
@@ -54,11 +54,11 @@ Now we’re all set up – we can write the script to process the relevant email
 
 Start by creating a new Spreadsheet  – the script can live attached to that. Add the text ‘Processed tasks’ to cell A1. We’ll use this to show how many tasks the script has processed. Use the menu option Tools -> Script editor to get to the Google Apps Script editor.
 
-![Mail Management sheet](/qmacro/blog/content/images/2017/05/MailManagementSheet.jpg)
+![Mail Management sheet](/content/images/2017/05/MailManagementSheet.jpg)
 
 You can call your project ‘Mail Management’, or whatever you want:
 
-![Mail Management script](/qmacro/blog/content/images/2017/05/MailManagementScript-1.jpg)
+![Mail Management script](/content/images/2017/05/MailManagementScript-1.jpg)
 
 
 **The Script Code**
@@ -165,7 +165,7 @@ And that’s all there is to it!
 
 We want this mechanism to run regularly in the background, so that it converts all incoming task emails to tasks without our intervention. So we’ll use a trigger – we can set up a [time-driven event trigger](http://code.google.com/googleapps/appsscript/guide_events.html) so that the script – via the main_taskconverter function, runs every hour.
 
-![Current Project's Triggers](/qmacro/blog/content/images/2017/05/CurrentProjectsTriggers.jpg)
+![Current Project's Triggers](/content/images/2017/05/CurrentProjectsTriggers.jpg)
 
 With a coffee (and biscuit) down, I now have a very slick way of remembering things I have to do. Nice!
 

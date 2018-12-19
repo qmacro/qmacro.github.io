@@ -21,7 +21,7 @@ Introduced in 1.28 in a basic version, with upcoming 1.30 it is even smarter. Be
 
 Mostly app specific attributes can be found here. You can also get set for your data model and resource bundle here. One property called ‘dataSources’ expects an object that holds the URL to your service, the service type and some additional settings if needed. A full blown service configuration would look like this:
 
-![Screenshot of an sap.app stanza](/qmacro/blog/content/images/2018/01/Screen-Shot-2015-07-07-at-19.51.14.png)
+![Screenshot of an sap.app stanza](/content/images/2018/01/Screen-Shot-2015-07-07-at-19.51.14.png)
 
 If you have more than one service you can simply add another object to this attribute. These can later be referenced by the given name. In addition we added the relative path to the i18n file here and will make use of this later as well.
 
@@ -31,7 +31,7 @@ This namespace is used for any configuration that can be used by the UI5 runtime
 
 For i18n it is pretty straightforward and a named i18n resource model (named “i18n”) will be created by the UI5 runtime. For the actual data model(s) you can also specify a name or keep it blank for an unnamed data model like this. Just set the datasource specified earlier and UI5 will handle the rest. The created models will be at your command as early as in the init function of your component.
 
-![Screenshot of an sap.ui5 stanza](/qmacro/blog/content/images/2018/01/Screen-Shot-2015-07-07-at-19.54.22.png)
+![Screenshot of an sap.ui5 stanza](/content/images/2018/01/Screen-Shot-2015-07-07-at-19.54.22.png)
 
 To conclude this is only a snapshot of one little feature that is built into the new UI5 manifest, but showcases pretty well how this new file will ease your development routines, help to clean up your components and limit repetitive lines of code.
 

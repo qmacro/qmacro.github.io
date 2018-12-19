@@ -15,23 +15,23 @@ In an earlier post in this series, [MVC – Model View Controller, Minimum Viabl
 
 If we take the code from the previous post and run it, we end up with a UI that looks like this:
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-21-at-17.33.38-624x420.png)
+![](/content/images/2018/02/Screen-Shot-2015-07-21-at-17.33.38-624x420.png)
 
 Let’s add some behaviour to the Button so that it instantiates and opens a Dialog control. We’ll define this Dialog control in an XML Fragment.
 
 In the same way that we defined the XML View, we’ll define the XML Fragment inside a script element, this time with a “ui5/xmlfragment” type, like this:
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-21-at-17.43.19-624x277.png)
+![](/content/images/2018/02/Screen-Shot-2015-07-21-at-17.43.19-624x277.png)
 
 It’s a standard XML Fragment definition, and even though it only contains a single root control –the Dialog — I’m using the Fragment Definition wrapper explicitly anyway (as I think it’s good practice).
 
 When we press the Button, we want this Dialog to appear, like this:
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-21-at-17.39.49-624x422.png)
+![](/content/images/2018/02/Screen-Shot-2015-07-21-at-17.39.49-624x422.png)
 
 So let’s rewrite the handler “onPress” which is attached to the Button’s press event, so it now looks like this:
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-21-at-17.42.59-624x488.png)
+![](/content/images/2018/02/Screen-Shot-2015-07-21-at-17.42.59-624x488.png)
 
 This is a common pattern for fragments, so let’s examine the code line by line:
 

@@ -13,7 +13,7 @@ tags:
 
 **[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 16 by [DJ Adams](http://pipetree.com/qmacro/)**
 
-![Y-U-NO meme](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-19-at-07.09.23.png)
+![Y-U-NO meme](/content/images/2018/02/Screen-Shot-2015-07-19-at-07.09.23.png)
 
 At one end of the spectrum, coding standards can be regarded as [essential](https://jaxenter.com/power-ten-nasas-coding-commandments-114124.html). At the other, they’re the subject of many a passionate debate, second perhaps only to the Vim vs Emacs [editor wars](https://en.wikipedia.org/wiki/Editor_war).
 
@@ -31,7 +31,7 @@ The OpenUI5 project has some coding [contribution guidelines](https://github.co
 
 The ESLint rules, and ESLint in general would cause this post to be a lot longer than I want, so instead I’ll look at some non-JavaScript conventions that I like to try and impose, at least upon myself. In particular I’ll look at the style for XML View definitions. Here’s part a sample XML View, which I’ll use to illustrate the style for which I strive. Note that the “»” character represents a tab (I have the list mode turned on in my editor to [show invisibles](http://vimcasts.org/episodes/show-invisibles/)).
 
-![sample code](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-19-at-09.40.55.png)
+![sample code](/content/images/2018/02/Screen-Shot-2015-07-19-at-09.40.55.png)
 
 In the following, each prefix represents the line number(s) to which I’m referring.
 

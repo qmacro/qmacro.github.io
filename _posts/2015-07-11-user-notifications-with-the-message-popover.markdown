@@ -10,7 +10,7 @@ tags:
 
 **[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 8 by by [Sean Campbell](http://twitter.com/saoirse_22)**
 
-![A selection of brightly coloured messages](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-09-at-21.12.19-300x298.png)
+![A selection of brightly coloured messages](/content/images/2018/02/Screen-Shot-2015-07-09-at-21.12.19-300x298.png)
 
 Giving an end user good feedback regarding their interaction with the application or the application’s interactions with the back end has always been a bit of a challenge in UI5. Until recently pretty much every developer had a different style of capturing and exposing messages, with many of us building our own message log solutions. This lost a level of the “Enterprise” uniformity that is often required for our applications.
 

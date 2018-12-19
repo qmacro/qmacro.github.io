@@ -26,7 +26,7 @@ I start reading the pricing document PDF and see that instead of €59 / user / 
 
 So what about the specifics? The high level info is OK, but I need detail. I jump to the "Table 1" which gives me some more info. The "Enterprise Package" (sic) pricing looks much more than I'd like to consider shelling out for my department (starting at €1,500/month, through to €15,000/month), so I stay with the "Medium Business Packages" and see that there's a minimum number of users (10). That's OK, I have 25. 
 
-![](/qmacro/blog/content/images/2017/08/Screen-Shot-2017-08-08-at-07.50.14.png)
+![](/content/images/2017/08/Screen-Shot-2017-08-08-at-07.50.14.png)
 
 In examining the first part of Table 1, I notice that it's only the "multiple application edition" that will allow me to partake of the Integration services. So I'm already forced to go down that route (even for a single application). Hmm. Even if I jump back into the Enterprise Package options, I can't take the €1,500/month route, I have to start with €4,000/month "professional edition" to get Integration.
 

@@ -18,7 +18,7 @@ tags:
 
 **[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 21 by [DJ Adams](http://pipetree.com/qmacro/)**
 
-![Michael Graf at OSCON](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-24-at-14.17.50-300x273.png)
+![Michael Graf at OSCON](/content/images/2018/02/Screen-Shot-2015-07-24-at-14.17.50-300x273.png)
 
 Photo by Janina Blaesius
 

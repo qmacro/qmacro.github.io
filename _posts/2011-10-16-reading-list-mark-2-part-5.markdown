@@ -28,7 +28,7 @@ This is Part 5, the last part in a series about an example app that I put togeth
 
 So at this stage we’ve done pretty much everything required for this example app. The final task is to extend the standard Spreadsheet menu to give the user access to the custom features of selecting a tasklist, and kicking off an update (URL pull and synchronisation). It’s very easy to extend the menu; in a few lines of code we’re going to end up with something like this:
 
-![](/qmacro/blog/content/images/2017/12/menu.png)
+![](/content/images/2017/12/menu.png)
 
 It’s as simple as this:
 

@@ -11,7 +11,7 @@ tags:
 
 **[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/) - Day 3 by [DJ Adams](http://pipetree.com/qmacro/)**
 
-[![Book cover 'A Primer of Greek Grammar'](/qmacro/blog/content/images/2018/01/download1-1.jpeg)](http://www.bloomsbury.com/au/primer-of-greek-grammar-9780715612583/)
+[![Book cover 'A Primer of Greek Grammar'](/content/images/2018/01/download1-1.jpeg)](http://www.bloomsbury.com/au/primer-of-greek-grammar-9780715612583/)
 
 (This book was a close companion in an earlier life.)
 
@@ -23,13 +23,13 @@ Floorplans such as the [Split Screen Layout](http://experience.sap.com/fiori-des
 
 When SAP created Fiori application developer teams across the world to build out [the Fiori apps that we see available today](fioriappslibrary.hana.ondemand.com/sap/fix/externalViewer/), it was almost inevitable that the different styles and approaches across teams and members would have resulted in a variety of structures, making it difficult to get the UX right, the UI consistent, and causing maintenance headaches. So SAP created scaffolding (sap.ca.scfld), a set of mechanisms that abstracted away a lot of the common boilerplate stuff allowing the developers to focus on the application logic (and preventing them from reinventing the boilerplate, slightly differently, every time). But this scaffolding was a little bit too monolithic, and I think the plan has been to phase it out.
 
-![Semantic Page Master-Detail](/qmacro/blog/content/images/2018/01/Screen-Shot-2015-07-05-at-20.49.53-300x231.png)
+![Semantic Page Master-Detail](/content/images/2018/01/Screen-Shot-2015-07-05-at-20.49.53-300x231.png)
 
 I’m also thinking that the alternative could involve this set of semantic controls. Take a look at the way the [Semantic Page Master-Detail sample](https://openui5beta.hana.ondemand.com/explored.html#/sample/sap.m.sample.SemanticPage/preview) puts things in the appropriate place – at a semantically meaningful level of abstraction above the individual mechanics of a Page control’s aggregations, for example.
 
 It’s similar in the [Semantic Page Full Screen sample](https://openui5beta.hana.ondemand.com/explored.html#/sample/sap.m.sample.SemanticPageFullScreen/preview) too. To get a feel for this level of abstraction, [take a look](https://openui5beta.hana.ondemand.com/explored.html#/sample/sap.m.sample.SemanticPageFullScreen/code) at how the aggregations are filled – nowhere in this XML view definition does it say *where* the semantic controls should go:
 
-![](/qmacro/blog/content/images/2018/01/Screen-Shot-2015-07-05-at-20.57.35.png)
+![](/content/images/2018/01/Screen-Shot-2015-07-05-at-20.57.35.png)
 
 What we seem to have so far is a small hierarchy of Page based controls, that looks like this:
 

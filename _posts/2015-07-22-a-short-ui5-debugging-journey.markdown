@@ -12,7 +12,7 @@ tags:
 
 In an earlier post in this [series](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/), entitled “[The UI5 Support Tool – Help Yourself!](http://pipetree.com/qmacro/blog/2015/07/18/the-ui5-support-tool-help-yourself/)“, we looked at the Support Tool, examining the information available in the Control Tree. In particular we looked at the Properties and Binding Infos tabs. While exploring the new UI5 1.30 features with the Explored app, I re-noticed a small addition to the Explored UI – a Button that allowed me to switch to full screen mode to view control samples.
 
-![Fullscreen toggle example](/qmacro/blog/content/images/2018/02/fullscreentoggle-624x349.gif)
+![Fullscreen toggle example](/content/images/2018/02/fullscreentoggle-624x349.gif)
 
 I thought it would be fun to use the Support Tool and other debugging techniques to see what was exactly happening in the Explored app when we toggled that control.
 
@@ -20,7 +20,7 @@ I thought it would be fun to use the Support Tool and other debugging techniques
 
 First, we need to identify the Button control – by its ID. We can use a context menu feature of Chrome which will open up the Developer Tools: Right-click on the Button and select Inspect Element. This will show us the ID in the highlighted sections in the screenshot:
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-20-at-09.13.22-624x329.png)
+![](/content/images/2018/02/Screen-Shot-2015-07-20-at-09.13.22-624x329.png)
 
 Here, the full ID highlighted is “__xmlview2–toggleFullScreenBtn-img”, as we right clicked on the image part of the Button. Go up a couple of levels in the HTML element hierarchy and you’ll see the button tag with an ID without the “-img” suffix. That’s what we want.
 
@@ -30,11 +30,11 @@ We could at this stage [play an instant](http://mtg.wikia.com/wiki/Instant) and 
 
 Opening the Support Tool, and the Control Tree section within, we can search for the ID “__xmlview2–toggleFullScreenBtn”. When we find it, we can switch to the Breakpoints tab and set a breakpoint for the firePress function (as that is what will be happening when we press the Button – a “press” event will be fired):
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-20-at-09.18.35-624x220.png)
+![](/content/images/2018/02/Screen-Shot-2015-07-20-at-09.18.35-624x220.png)
 
 Now when we press the Button, we land inside Breakpoint.js:
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-20-at-09.22.29-624x329.png)
+![](/content/images/2018/02/Screen-Shot-2015-07-20-at-09.22.29-624x329.png)
 
 **Finding the Event Handler**
 
@@ -56,7 +56,7 @@ this.mEventRegistry["press"][0].fFunction
 
 Unless you’re using an older version of Chrome, you should be able to click on the function name to bring you to the “onToggleFullScreen” function definition:
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-20-at-09.29.55-624x222.png)
+![](/content/images/2018/02/Screen-Shot-2015-07-20-at-09.29.55-624x222.png)
 
 Nice!
 
@@ -64,7 +64,7 @@ Nice!
 
 We can now put a breakpoint on line 163 (which I had done already before taking the screenshot above) and hit continue, to be able to then step into what this function calls (the updateMode function) when the stack gets here. This is what the updateMode function looks like:
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-20-at-09.34.58-624x237.png)
+![](/content/images/2018/02/Screen-Shot-2015-07-20-at-09.34.58-624x237.png)
 
 It sets the Split App’s [mode](https://openui5.hana.ondemand.com/#docs/api/symbols/sap.m.SplitAppMode.html) to the appropriate value (the default of “ShowHideMode”, or “HideMode” for the full screen effect). It also modifies the containing [Shell](https://openui5.hana.ondemand.com/#docs/api/symbols/sap.m.Shell.html#getAppWidthLimited) control’s appWidthLimited property so that a real full screen effect can be properly achieved.
 

@@ -20,7 +20,7 @@ I'm a big fan of the Google Apps platform, [in particular Apps Script](/qmacro/b
 
 So it wasn't unusual for me to think of Apps and Apps Script as a natural set of tools in building out some Actions on Google functionality. I had watched the recording of the excellent session [Extending the Google Assistant with Actions on Google (Google Cloud Next '17)](https://www.youtube.com/watch?v=7e0RGIul8Kk) with Guillaume Laforge and Brad Abrams and thought that their example action - a conference helper to assist with discovering topics and sessions - was not only useful, but also ideal for taking my learning to the next level. I studied the content carefully and came up with my own version. Theirs was using an API endpoint that looked like this: `http://cloudnext.withgoogle.com/api/v1/...`, and is represented by the "Next" box in this slide (from the session):
 
-![](/qmacro/blog/content/images/2017/04/Screen-Shot-2017-04-30-at-09.09.26.png)
+![](/content/images/2017/04/Screen-Shot-2017-04-30-at-09.09.26.png)
 
 If I was to build my own version, I'd have to come up with a service of my own. This is where the Apps platform and Apps Script came in. First, conference session data lends itself to being marshalled into rows and columns, and at least for me, seeing data in front of me in a structured form really helps. So grabbing the data for a conference and putting it into a spreadsheet was the logical first step. But it only got better from there. 
 
@@ -34,7 +34,7 @@ Here's a demo of my helper in action, including a look at the spreadsheet and ho
 
 If you're curious to see what the Apps Script based API produces, here's an example from the call to retrieve the topics (ie the one called to be able to fulfil the 'list-topics' intent):
 
-![](/qmacro/blog/content/images/2017/04/Screen-Shot-2017-04-30-at-16.49.44.png)
+![](/content/images/2017/04/Screen-Shot-2017-04-30-at-16.49.44.png)
 
 Note that the topics (Data Science, Security, Chrome OS and so on) are returned in a map, where the properties are the topics and the values are the lists of sessions for each of those topics. The data thus retrieved is stored in the relevant context, so that once the user has heard about the topics available and wants to explore the related sessions, the data is available immediately without a further call needed to the service API.
 

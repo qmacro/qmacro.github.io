@@ -27,7 +27,7 @@ One of the sections of the evaluation was to compare costs, as well as time — 
 
 And have a guess on what the cost comparison was based? Yes. CPU time, I/O (disk and tape [EXCP](http://www.reference.com/browse/wiki/EXCP)s) and actual tapes.
 
-![mainframe job billing comparison](/qmacro/blog/content/images/2018/08/IMG_20180806_100115.jpg)
+![mainframe job billing comparison](/content/images/2018/08/IMG_20180806_100115.jpg)
 
 Everything old is new again.
 

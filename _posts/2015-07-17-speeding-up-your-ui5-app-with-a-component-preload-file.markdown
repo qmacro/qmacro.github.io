@@ -13,7 +13,7 @@ tags:
 
 In this post we’ll be looking at how you can speed up the load times of your UI5 applications by using a Component preload file. Those of you who are familiar with SAP Fiori applications will probably already know what a Component preload file is, however those of you who aren’t will almost definitely have all seen a reference to this file before. This file is referenced in an error message that appears in the console whenever you load a UI5 app, which is lacking a Component preload file.
 
-![Chrome preload error](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-14-at-20.54.47-624x31.png)
+![Chrome preload error](/content/images/2018/02/Screen-Shot-2015-07-14-at-20.54.47-624x31.png)
 
 **So just what is this preload file and why should I care?**
 
@@ -95,7 +95,7 @@ Finally, we load the ‘grunt-openui5′ toolkit from the plugin as previously 
 
 That’s all the configuration set up, now it’s time to generate our preload file! Fire up a terminal session in the same directory as your ‘Gruntfile.js’ and run the following command ‘grunt openui5_preload’ and you should see the following output along with a ‘Component-preload.js’ file alongside your ‘Component.js’ file.
 
-![preload generation output](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-15-at-00.48.10-624x88.png)
+![preload generation output](/content/images/2018/02/Screen-Shot-2015-07-15-at-00.48.10-624x88.png)
 
 **Final thoughts**
 

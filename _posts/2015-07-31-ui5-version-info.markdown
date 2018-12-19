@@ -10,7 +10,7 @@ tags:
 
 **[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 28 by [DJ Adams](http://pipetree.com/qmacro/)**
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-31-at-13.04.22-624x312.png)
+![](/content/images/2018/02/Screen-Shot-2015-07-31-at-13.04.22-624x312.png)
 
 Yesterday Peter Müßig from the UI5 team at SAP in Walldorf [announced](https://twitter.com/pmuessig/status/626649315235229696) the multi-version capability for SAPUI5.
 
@@ -20,13 +20,13 @@ This is great news, and something that we’ve been waiting for now for a while.
 
 Along with the announcement came a link to a simple [SAPUI5 Version Overview](https://sapui5.hana.ondemand.com/versionoverview.html) page, built in UI5. It looks like this:
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-31-at-13.11.42-624x330.png)
+![](/content/images/2018/02/Screen-Shot-2015-07-31-at-13.11.42-624x330.png)
 
 And if you look under the covers, you’ll see a single-file app, with a lot of custom CSS, some JavaScript view stuff going on, and the retrieval of a couple of JSON resources containing the [version overview info](https://sapui5.hana.ondemand.com/versionoverview.json) and the data from the [neo-app.json](https://sapui5.hana.ondemand.com/neo-app.json) file that is present in the HCP platform and which describes routes to destinations, which include the SAPUI5 runtime services, now available at different paths for different versions.
 
 You’ll also see some [complex manipulation and merging of those two datasets](https://github.com/qmacro/ui5versioninfo/blob/master/versionoverview.html#L207-L263), and [the mix of UI5 controls with raw HTML header elements](https://github.com/qmacro/ui5versioninfo/blob/master/versionoverview.html#L298-L308).
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-31-at-13.22.44-169x300.png)
+![](/content/images/2018/02/Screen-Shot-2015-07-31-at-13.22.44-169x300.png)
 
 The result is an app that looks OK on the desktop but doesn’t look that well on a smartphone, as you can see above.
 
@@ -45,7 +45,7 @@ I’ve created a small Github repo [ui5versioninfo](https://github.com/qmacro/ui
 
 Here’s what the result looks like:
 
-![versioninfo](/qmacro/blog/content/images/2018/02/versioninfo.gif)
+![versioninfo](/content/images/2018/02/versioninfo.gif)
 
 I’ve tried to use some UI5 design and control best practices, while [defining the UI in XML](https://github.com/qmacro/ui5versioninfo/blob/master/new.html?ts=2#L15-L92). I’ve added some [functional programming style data merging](https://github.com/qmacro/ui5versioninfo/blob/master/new.html?ts=2#L191-L209) to take place after the original manipulation, and a [small controller](https://github.com/qmacro/ui5versioninfo/blob/master/new.html?ts=2#L211-L259) with the requisite functions for event handling and formatting.
 

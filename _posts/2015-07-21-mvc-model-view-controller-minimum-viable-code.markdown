@@ -17,7 +17,7 @@ tags:
 
 **[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 18 by [DJ Adams](http://pipetree.com/qmacro/)**
 
-![View and controller screenshot](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-19-at-18.58.14-1.png)
+![View and controller screenshot](/content/images/2018/02/Screen-Shot-2015-07-19-at-18.58.14-1.png)
 
 The solid Model View Controller implementation in UI5 forces the separation of concerns. The logical place for models, views and controllers are files, in (usually) separate folders. Views, with specific file extensions, in a folder that’s usually called “views”, and controllers, with specific file extensions, in a folder called “controllers”. And models elsewhere too.
 
@@ -38,7 +38,7 @@ Here’s how it works:
 
 And here’s an example:
 
-![MVC code](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-19-at-18.09.27-725x1024.png)
+![MVC code](/content/images/2018/02/Screen-Shot-2015-07-19-at-18.09.27-725x1024.png)
 
 Here’s a brief rundown of what you see:
 

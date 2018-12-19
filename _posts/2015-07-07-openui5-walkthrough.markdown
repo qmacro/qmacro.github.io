@@ -11,7 +11,7 @@ tags:
 
 **[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/) - Day 5 by [DJ Adams](http://pipetree.com/qmacro/)**
 
-![A tile with a link to sap.m.Explored](/qmacro/blog/content/images/2018/01/Screen-Shot-2015-07-04-at-11.03.14.png)
+![A tile with a link to sap.m.Explored](/content/images/2018/01/Screen-Shot-2015-07-04-at-11.03.14.png)
 Explored, before its promotion.
 
 OpenUI5, like its twin sibling SAPUI5, has a great [SDK](https://openui5.hana.ondemand.com/).
@@ -22,7 +22,7 @@ The latest addition to Explored is a set of [code examples](https://openui5beta.
 
 One thing that immediately caught my eye was when I selected the appropriate Explored sample that corresponded to Step 30 of the walkthrough, describing the [Debugging Tools](https://openui5beta.hana.ondemand.com/#docs/guide/1ff250c2038849f5991209f7e6c36f1f.html) : the excellent UI5 Diagnostics Tool popped up out of nowhere!
 
-![UI5 Diagnostics Tool screenshot](/qmacro/blog/content/images/2018/01/Screen-Shot-2015-07-04-at-11.11.43-300x112.png)
+![UI5 Diagnostics Tool screenshot](/content/images/2018/01/Screen-Shot-2015-07-04-at-11.11.43-300x112.png)
 
 (I’m a big fan of this tool; there’s so much information it offers, as a UI5 developer you can’t afford to ignore its help.)
 

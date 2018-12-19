@@ -12,7 +12,7 @@ tags:
 
 **[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 25 by [DJ Adams](http://pipetree.com/qmacro/)**
 
-![](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-28-at-12.53.45-300x191.png)
+![](/content/images/2018/02/Screen-Shot-2015-07-28-at-12.53.45-300x191.png)
 
 A few months ago a preview release of 1.28 was made available. In [the blog post that accompanied it](http://openui5.tumblr.com/post/113243652527/new-openui5-preview-release-1-28), a number of the new features were introduced. Without much fanfare, certainly without any cool looking screenshots, the experimental “Client” operation mode was announced for the OData Model mechanism.
 
@@ -41,7 +41,7 @@ oTable.bindRows({
 
 This experimental feature was crying out for … well, experimentation. So I threw together an MVC ([model view controller, minimum viable code](http://pipetree.com/qmacro/blog/2015/07/mvc-model-view-controller-minimum-viable-code/)) based app to test it out. Here’s the result:
 
-![client operation mode](/qmacro/blog/content/images/2018/02/clientoperationmode.gif)
+![client operation mode](/content/images/2018/02/clientoperationmode.gif)
 
 Here we have a test app with a List, where the items aggregation is bound to the Categories entity set in the public Northwind OData service at [http://services.odata.org/V2/Northwind/Northwind.svc/](http://services.odata.org/V2/Northwind/Northwind.svc/).
 

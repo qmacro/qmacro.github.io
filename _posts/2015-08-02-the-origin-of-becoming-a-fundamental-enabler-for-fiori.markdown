@@ -18,7 +18,7 @@ Luckily, SAP had been developing HTML5 controls at that time.  As with other H
 
 I may have understated the part about our customers being unhappy about the user experience.  It was escalated to the highest levels and we were under tremendous pressure to demonstrate to customers that this new concept would fly – quickly.  We had 6 days, 144 hours to be exact, to demonstrate to internal stakeholders the both the desirability and feasibility of our approach.  I’ll never forget Stefan Beck and the UI5 team walking down the halls of Walldorf to our war room saying that, “the UI5 team will support you.”
 
-![](/qmacro/blog/content/images/2018/02/section1-1-300x197.png)
+![](/content/images/2018/02/section1-1-300x197.png)
 
 That was the beginning.  Since then UI5 and the team behind the technology have expanded much beyond a mere set of controls.  The team has helped to develop a programming model that is open and designed to scale for the enterprise.  It is part of growing set of tools to make UI development both efficient and scalable both for SAP and the industry.
 

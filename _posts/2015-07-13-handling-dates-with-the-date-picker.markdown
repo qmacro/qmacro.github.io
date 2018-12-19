@@ -9,7 +9,7 @@ tags:
 
 **[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 10 by [James Hale](https://twitter.com/jameshale14)**
 
-![Date Picker control](/qmacro/blog/content/images/2018/02/30ui5-10-date-picker.jpg)
+![Date Picker control](/content/images/2018/02/30ui5-10-date-picker.jpg)
 
 When creating applications, the experiences of the user should be one of the key considerations that drives build and development.  One aspect of this is the way that data is entered, saved and displayed to the user, which can drastically affect the usability of an application.
 

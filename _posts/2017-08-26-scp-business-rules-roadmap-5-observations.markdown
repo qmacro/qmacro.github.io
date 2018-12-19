@@ -18,7 +18,7 @@ It's been updated to reflect the next few quarters. I read through it this morni
 
 1) While it may be early days (Business Rules only [went GA](https://twitter.com/qmacro/status/895623419403939840) recently), this diagram shows how important the service is in the grand scheme of things:
 
-![](/qmacro/blog/content/images/2017/08/Screen-Shot-2017-08-26-at-07.38.55.png)
+![](/content/images/2017/08/Screen-Shot-2017-08-26-at-07.38.55.png)
 
 SAP intends to establish a common Enterprise Rule Model, an abstraction for design time and runtime across the different platforms today (their SaaS offerings as well as classic ABAP stack based systems and S/4HANA). And the focus for this model is clearly on SCP.
 

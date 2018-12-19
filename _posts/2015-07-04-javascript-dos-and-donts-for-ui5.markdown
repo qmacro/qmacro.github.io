@@ -9,7 +9,7 @@ tags:
 
 **[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/) - Day 7 by [DJ Adams](http://pipetree.com/qmacro/)**
 
-![Screenshot of coding issues menu item](/qmacro/blog/content/images/2018/02/Screen-Shot-2015-07-04-at-10.00.14.png)
+![Screenshot of coding issues menu item](/content/images/2018/02/Screen-Shot-2015-07-04-at-10.00.14.png)
 
 In recent versions of the SDK you’ll find a new section called “[Coding Issues to Avoid](https://openui5.hana.ondemand.com/#docs/guide/030fcd14963048218488048f407f8f34.html)“. It’s great to see this take shape and start to become formalised. Some of them are obvious, at least to some folk, but it’s always helpful to have a reference.
 

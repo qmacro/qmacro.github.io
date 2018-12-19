@@ -12,7 +12,7 @@ It's still early days but the situation looks much better. As well as the cost, 
 
 The very fact that the consumption-based model allows you to pick what services you want, without having to perform mental gymnastics while looking at a complex PDF document (which still exists for the subscription-based model), is a big plus. There's also a guided section which shows which services are additionally required, if any, and lets you add those to the estimate. For example, the use of the Workflow service requires the Portal and Web IDE services. The fact that you can turn the dial up and down on units (number of users, site visits, etc) and see the estimate change accordingly, is great. 
 
-![estimate](/qmacro/blog/content/images/2018/01/Screenshot-2018-01-10-at-06.33.12.png)
+![estimate](/content/images/2018/01/Screenshot-2018-01-10-at-06.33.12.png)
 
 Moreover, as you can see from the estimate I quickly put together just now, to reflect Workflow and Business Rules services, the monthly cost is not scary. Of course, it could always be lower, but in the context of a real project and subsequent productive use, the fee is minor.
 

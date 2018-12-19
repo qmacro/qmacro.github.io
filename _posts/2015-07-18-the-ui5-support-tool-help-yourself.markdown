@@ -12,7 +12,7 @@ tags:
 
 **[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 15 by [DJ Adams](http://pipetree.com/qmacro/)**
 
-![part of the Support Tool Menu](/qmacro/blog/content/images/2018/02/Screenshot-2015-07-18-at-12.12.33.png)
+![part of the Support Tool Menu](/content/images/2018/02/Screenshot-2015-07-18-at-12.12.33.png)
 
 Building anything but the most trivial native apps (that’s web native, of course) is not an easy ride. There are so many factors to get right. Debugging one of these apps can be just as tough.
 
@@ -26,17 +26,17 @@ There’s also the Support Tool’s little brother, invoked with Ctrl-Alt-Shift-
 
 You can see a shot of this here. (You can also turn on debugging via a URL query parameter [sap-ui-debug=true](https://openui5.hana.ondemand.com/#docs/guide/c9b0f8cca852443f9b8d3bf8ba5626ab.html).)
 
-![the Support Tool's little brother](/qmacro/blog/content/images/2018/02/Screenshot-2015-07-18-at-12.15.31.png)
+![the Support Tool's little brother](/content/images/2018/02/Screenshot-2015-07-18-at-12.15.31.png)
 
 Sometimes this is all you need, especially if you want to see the UI5 version in operation, or turn on debug sources.
 
 But the Support Tool is a super, multi-faceted mechanism which has proved invaluable over the years. It sports a large number of features, too many to cover here, so we’ll just have a brief look at one of them (arguably the most important) – the Control Tree:
 
-![the control tree](/qmacro/blog/content/images/2018/02/Screenshot-2015-07-18-at-12.23.12.png)
+![the control tree](/content/images/2018/02/Screenshot-2015-07-18-at-12.23.12.png)
 
 On the left hand side there’s a super useful display of the app’s control hierarchy. This alone is worth the cost ([ahem](http://openui5.org/)) of the Support Tool.
 
-![The Matrix](/qmacro/blog/content/images/2018/02/Screenshot-2015-07-18-at-12.39.15.png)
+![The Matrix](/content/images/2018/02/Screenshot-2015-07-18-at-12.39.15.png)
 
 Imagine being able to peer into the internal structure of a building, or having [X-Ray Specs](https://en.wikipedia.org/wiki/X-Ray_Spex) and being able to see your skeleton, or sitting in front of a monitor in The Matrix and seeing the world behind the curtain. This is what you get with the Control Tree.
 
@@ -46,7 +46,7 @@ But that’s not all. On the right hand side, for a selected control (for exampl
 
 Select the Binding Infos tab and see what bindings exist. You can see information on what model a binding is from, what type of binding it is, and of course the binding path. Here we can see some of the binding info for the List control in an app:
 
-![binding info for List control](/qmacro/blog/content/images/2018/02/Screenshot-2015-07-18-at-12.50.26.png)
+![binding info for List control](/content/images/2018/02/Screenshot-2015-07-18-at-12.50.26.png)
 
 For you eagle-eyed readers, the model name here — “entity” — is the name of the domain model in this app example. Often the domain model is the unnamed model, but here it has a name. Can anyone guess what this (publically available) app is?
 
