@@ -16,11 +16,11 @@ He is married to his theoretical childhood sweetheart Michelle, and has a son, [
 
 ## Writing and Talks ##
 
-He's written two books for O'Reilly ([Programming Jabber](http://shop.oreilly.com/product/9780596002022.do) and [Google Pocket Guide](http://shop.oreilly.com/product/9780596005504.do), conceived, edited and co-written a book on UI5 ([30 Days of UI5](https://www.amazon.co.uk/30-Days-UI5-Celebrating-milestone-ebook/dp/B017MOJEWG) and is co-author of the SAP Press book [Practical Workflow for SAP (3rd Ed.)](https://www.amazon.co.uk/Practical-Workflow-Revised-Rickayzen-Hardcover/dp/B011DCBNZO).
+He's written two books for O'Reilly ([Programming Jabber](http://shop.oreilly.com/product/9780596002022.do) and [Google Pocket Guide](http://shop.oreilly.com/product/9780596005504.do)), conceived, edited and co-written a book on UI5 ([30 Days of UI5](https://www.amazon.co.uk/30-Days-UI5-Celebrating-milestone-ebook/dp/B017MOJEWG)) and is co-author of the SAP Press book [Practical Workflow for SAP (3rd Ed.)](https://www.amazon.co.uk/Practical-Workflow-Revised-Rickayzen-Hardcover/dp/B011DCBNZO).
 
 His latest book, also for SAP Press, is [SAP Fiori and SAPUI5: Debugging the User Interface](https://www.sap-press.com/sap-fiori-and-sapui5-debugging-the-user-interface_4305/).
 
-He's contributed articles to sites as diverse as O'Reilly's [OpenP2P](http://www.openp2p.com), the [SAP Community Network](http://scn.sap.com/people/dj.adams.sap/content), [Bluefin Solutions](http://bluefinsolutions.com) as well as writing posts on his own blogs [Language Ramblings](http://langram.org) and [DJ's Weblog](http://qmacro.org) where he's been writing since 2002.
+He's contributed articles to sites as diverse as O'Reilly's [OpenP2P](http://www.openp2p.com), the [SAP Community Network](http://scn.sap.com/people/dj.adams.sap/content), [Bluefin Solutions](https://www.bluefinsolutions.com/insights/dj-adams) as well as writing posts on his own blogs [Language Ramblings](http://langram.org) and [DJ's Weblog](http://qmacro.org) where he's been writing since 2002.
 
 He's spoken at conferences such as [OSCON](http://www.oscon.com), JabberConf, [FOSDEM](http://www.fosdem.org), [SAP Inside Track](http://scn.sap.com/community/events/inside-track), [SAP TechEd](http://www.sapteched.com), SAP d-kom, the [SAP UK & Ireland User Group Conference](http://www.sapusers.org/), the [SAP Architect & Developer Summit](http://www.bluefinsolutions.com/insights/dj-adams/november-2014/the-inaugural-sap-architect-developer-summit), [Manchester Digital Laboratory (MadLab)](http://madlab.org.uk), [Manchester Lambda Lounge](http://lambdalounge.org.uk) and [TEDx](http://www.youtube.com/watch?v=-gvOCaExeK0).
 
