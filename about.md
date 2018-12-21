@@ -10,7 +10,7 @@ He's contributed to the [SAP](http://community.sap.com), [Perl](http://search.cp
 
 He's been a member of SAP's [Mentors Advisory Board](https://blogs.sap.com/2016/03/08/introducing-the-new-sap-mentors-advisory-board-2016-2018/), and also a member of SAP's Developer Advisory Board.
 
-He teaches kids and teachers to code. He ran a [CodeClub](http://pipetree.com/qmacro/blog/2013/04/18/codeclub-thoughts/) in his local village school, is a voluteer at [Manchester CoderDojo](http://mcrcoderdojo.org.uk), a STEMnet Ambassador and in 2013 ran a centre in Manchester for [Young Rewired State](http://getcodingkids.com/young-rewired-state/).
+He teaches kids and teachers to code. He ran a [CodeClub](/2013/04/18/codeclub-thoughts/) in his local village school, is a voluteer at [Manchester CoderDojo](http://mcrcoderdojo.org.uk), a STEMnet Ambassador and in 2013 ran a centre in Manchester for [Young Rewired State](http://getcodingkids.com/young-rewired-state/).
 
 He is married to his theoretical childhood sweetheart Michelle, and has a son, [Joseph](http://jcla1.com), of whom he is **very** proud.
 
