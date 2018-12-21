@@ -10,7 +10,9 @@ tags:
 ---
 
 
-[![sjabber running on a Wyse terminal](http://farm4.static.flickr.com/3310/3487763403_c59fc601e4_t.jpg "sjabber running on a Wyse terminal")](http://www.flickr.com/photos/qmacro/3487763403/ "sjabber running on a Wyse terminal by qmacro, on Flickr")I had a nice conversation with [Ralph Meijer](http://ralphm.net/) this afternoon; he had grabbed a very old program that I’d written — [sjabber](/jabber/sjabber), a console-based Jabber groupchat client — because he’d been having some issues with his current client.
+![sjabber running on a Wyse terminal](http://farm4.static.flickr.com/3310/3487763403_c59fc601e4_t.jpg)
+
+I had a nice conversation with [Ralph Meijer](http://ralphm.net/) this afternoon; he had grabbed a very old program that I’d written — [sjabber](/jabber/sjabber), a console-based Jabber groupchat client — because he’d been having some issues with his current client.
 
 As Ralph [explained in his blog](http://ralphm.net/blog/2005/02/24/sjabber) just now, it only took a single-line modification to get it up and running with the newer [mu-conference](http://mu-conference.jabberstudio.org/) protocol. And if you look at the line:
 

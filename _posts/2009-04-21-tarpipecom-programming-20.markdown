@@ -26,9 +26,9 @@ The workflow uses the existing Tarpipe connectors to:
 
 All in the space of a few clicks and drags! Here’s a shot of that workflow (with a couple of connectors partially obscured — it’s a [known bug in Tarpipe](http://getsatisfaction.com/tarpipe/topics/connector_moved_to_high_and_now_unable_to_delete_edit_it)):
 
-<div class="wp-caption alignnone" id="attachment_331" style="width: 310px">[![tarpipebeerrater](http://www.pipetree.com/qmacro/blog/wp-content/uploads/2009/04/tarpipebeerrater-300x164.png "tarpipebeerrater")](http://www.flickr.com/photos/qmacro/3462249388/)Tarpipe workflow for beer rating
+![tarpipebeerrater](/content/images/2009/04/tarpipebeerrater-300x164.png)
 
-</div>But what’s more fabulous: Tarpipe has been ideal for my son [Joseph](http://www.pipetree.com/josephadams) to start up with programming, with me. And he finds it really interesting. Visual, direct feedback, using and connecting things and services he understands. Gone are the days of
+But what’s more fabulous: Tarpipe has been ideal for my son [Joseph](http://jcla1.com) to start up with programming, with me. And he finds it really interesting. Visual, direct feedback, using and connecting things and services he understands. Gone are the days of
 
 10 PRINT "HELLO WORLD" 20 GOTO 10
 

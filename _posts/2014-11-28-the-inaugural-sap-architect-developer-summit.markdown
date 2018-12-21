@@ -72,7 +72,7 @@ You could perhaps think of artifacts as the tangible results of our mental machi
 
 On Day 2 I held a 2 hour hands-on workshop entitled “[Learn to Drive Fiori Applications from Underneath and Level Up!](http://lanyrd.com/2014/sap-architect-and-developer-summit/sdfyrf/)“.
 
-[![Workshop booklet screenshot](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/11/Screen-Shot-2014-11-27-at-13.40.21-207x300.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/11/Screen-Shot-2014-11-27-at-13.40.21.png)
+![Workshop booklet screenshot](/content/images/2014/11/Screen-Shot-2014-11-27-at-13.40.21-207x300.png)
 
 In this workshop I took the attendees (the workshop was fully booked!) through a Fiori application, from underneath, discovering it, controlling it, driving it and modifying it via the Chrome Developer Tools. There was a lot of content to get through but we managed it, not least due to the fact that everyone got on board with the approach and really did a great job in collaborating and keeping up with me. Thanks folks!
 
