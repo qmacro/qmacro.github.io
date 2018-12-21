@@ -13,11 +13,11 @@ tags:
 
 [Gmail contextual gadgets](http://code.google.com/apis/gmail/gadgets/contextual/) were announced by Google a few months back and were [made available to developers in May this year](http://googleenterprise.blogspot.com/2010/05/putting-email-in-context-with-gmail.html), just before making a [strong appearance at Google IO](http://code.google.com/events/io/2010/sessions/deep-dive-gmail-contextual-gadgets.html).
 
-Expanding upon the concept of an earlier contextual project called [Dashboard](http://www.pipetree.com/qmacro/blog/2003/07/dashboard-a-compelling-articulation-for-realtime-contextual-information-2/), Gmail contextual gadgets give a clear message that email, as a universal information carrier and workflow pipeline, is not only here to stay, but is being given a new lease of life as it plays a foundational role in Google’s enterprise scale application platform strategy. A Gmail contextual gadget enhances email messages by providing information or functionality that is relevant to the context of that email … right inside the email itself. Context is exposed by content extractors in the form of ‘clues’ in Gmail (akin to Dashboard’s ‘[cluepackets](http://www.ibm.com/developerworks/xml/library/x-desktop/index.html#h2)‘) and matched content is provided to the gadget at runtime.
+Expanding upon the concept of an earlier contextual project called [Dashboard](/2003/07/dashboard-a-compelling-articulation-for-realtime-contextual-information-2/), Gmail contextual gadgets give a clear message that email, as a universal information carrier and workflow pipeline, is not only here to stay, but is being given a new lease of life as it plays a foundational role in Google’s enterprise scale application platform strategy. A Gmail contextual gadget enhances email messages by providing information or functionality that is relevant to the context of that email … right inside the email itself. Context is exposed by content extractors in the form of ‘clues’ in Gmail (akin to Dashboard’s ‘[cluepackets](http://www.ibm.com/developerworks/xml/library/x-desktop/index.html#h2)‘) and matched content is provided to the gadget at runtime.
 
 Extractors, optional filters, and scope declarations (used by the installer of a gadget to decide whether to install or not based upon privacy and security requirements) are defined in a manifest, along with references to the gadgets themselves, via gadget spec files, that are to be triggered.
 
-![additnow](http://www.pipetree.com/qmacro/blog/wp-content/uploads/2010/06/additnow.png "Add it now")
+![additnow](/wp-content/uploads/2010/06/additnow.png "Add it now")
 
 What makes these Gmail contextual gadgets even more attractive is the Google Apps Marketplace, where developers can make gadgets available, and consumers can use the “[Add it now](https://www.google.com/support/a/bin/answer.py?hl=en&answer=172482)” button to start using them in their own domains.
 
@@ -29,7 +29,7 @@ Despite the advent of Wave and Buzz, it’s obvious that Google sees, rightly in
 
 ‘Twitter User Info’ is a Gmail contextual gadget that provides basic info about Twitter users whose Twitter handles appear in the email Subject line. In this example, the profile image and basic Twitter user info is shown for Joseph, whose Twitter handle [@jcla1](http://twitter.com/@jcla1) appears in the Subject of the email from Michelle:
 
-![Twitter User Info for @jcla1](http://www.pipetree.com/qmacro/blog/wp-content/uploads/2010/06/twitteruserinfoannotated.png "Twitter User Info for @jcla1")
+![Twitter User Info for @jcla1](/wp-content/uploads/2010/06/twitteruserinfoannotated.png "Twitter User Info for @jcla1")
 
 The contextual gadget appears directly below the email body, and starts with the title and description “Twitter – User Info” (defined in the gadget spec) and contains HTML showing the Twitter info.
 
@@ -77,9 +77,9 @@ The id of the gadget, “TwitterUserInfoGadget” is what is referred to in the 
 
 and this is what will be requested by the Gmail contextual gadget container to pull in the gadget spec. Here’s part of an App Engine log record showing the gadget spec being fetched:
 
-![Google Feedfetcher pulls gadget spec](http://www.pipetree.com/qmacro/blog/wp-content/uploads/2010/06/feedfetcherpullsgadget1.png "Google Feedfetcher pulls gadget spec")
+![Google Feedfetcher pulls gadget spec](/wp-content/uploads/2010/06/feedfetcherpullsgadget1.png "Google Feedfetcher pulls gadget spec")
 
-The name declared in this Gadget declaration (“Twitter User Info contextual gadget”), along with the name in the Extractor declaration (“Twitter IDs in Subject”) and the general name and description from elsewhere in the manifest, are text items that appear to the Google Apps domain administrator when selecting the gadget for installation, like this:![App Overview](http://www.pipetree.com/qmacro/blog/wp-content/uploads/2010/06/appoverview.png "App Overview")
+The name declared in this Gadget declaration (“Twitter User Info contextual gadget”), along with the name in the Extractor declaration (“Twitter IDs in Subject”) and the general name and description from elsewhere in the manifest, are text items that appear to the Google Apps domain administrator when selecting the gadget for installation, like this:![App Overview](/wp-content/uploads/2010/06/appoverview.png "App Overview")
 
 Finally, we have the Scope declaration, which was indicated in the Extractor declaration earlier. This is “emailSubject”, and contains the scope URI defined for the extractor being used. There may be more than one scope for a given extractor; if this is the case, they must be each defined separately and explicitly.
 
@@ -87,11 +87,11 @@ Finally, we have the Scope declaration, which was indicated in the Extractor dec
 
 This information appears during gadget installation, where the administrator can review what the gadget will access, and decide whether or not to proceed:
 
-![Grant Data Access](http://www.pipetree.com/qmacro/blog/wp-content/uploads/2010/06/grantdataaccess.png "Grant Data Access")
+![Grant Data Access](/wp-content/uploads/2010/06/grantdataaccess.png "Grant Data Access")
 
 Once you’ve defined your manifest, you must upload it as part of the overall Listing Information required to offer a gadget or an app on Google Apps Marketplace. You have to sign up to become a vendor with Google in order to do this. It’s free, as is the listing of unpublished test gadgets and apps, so you can experiment all you need to.
 
-![Manifest](http://www.pipetree.com/qmacro/blog/wp-content/uploads/2010/06/manifest.png "Manifest")
+![Manifest](/wp-content/uploads/2010/06/manifest.png "Manifest")
 
 **The Gadget Spec – Declarations**
 
@@ -115,7 +115,7 @@ First, we pull in the jQuery library with a <script/> tag, and then we’re off 
 
 We use the google.contentmatch.getContentMatches() method to pull in the matches supplied to us by the Extractor. One of my favourite phrases is “[let the dog see the rabbit](http://en.wikiquote.org/wiki/Only_Fools_and_Horses#Chain_Gang_.5B6.3.5D)” – let’s have a look at the data, in this case. What does the getContentMatches() actually return? What does it look like? This is where the rather useful PostBin comes in to play. When we get the response from the call to getContentMatches(), encode it into a JSON string form with JSON.stringify() and bung the whole lot to a Postbin too see. Easy! Of course, this is only appropriate for development and debugging – I’d remove it for a production gadget. By the way, I’m running my own instance of Postbin – you can [run you own instance](http://github.com/progrium/postbin) too.
 
-![Matches in Postbin](http://www.pipetree.com/qmacro/blog/wp-content/uploads/2010/06/matchesinpostbin1.png "Matches in Postbin")So from looking at what we get, we can see that what we’re after is the value of the ’subject’ key in the first element of the matches array.
+![Matches in Postbin](/wp-content/uploads/2010/06/matchesinpostbin1.png "Matches in Postbin")So from looking at what we get, we can see that what we’re after is the value of the ’subject’ key in the first element of the matches array.
 
 By definition, we’re only instantiated because there was a Twitter handle in the Subject. There could be more than one, of course. After collecting them into a handles array, we’re ready to process each one. First, though – we pull in the CSS resource to the current document. The resource is served as a static file from the App Engine app:
 

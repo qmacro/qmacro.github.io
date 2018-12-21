@@ -15,7 +15,7 @@ tags:
 ---
 
 
-Cloud computing, virtual machines. It’s big business. Amazon has its [Elastic Compute Cloud](http://aws.amazon.com/ec2/) (EC2) which provides “*resizable compute capacity in the cloud*“, Microsoft has [Azure](http://www.microsoft.com/azure/default.mspx), providing “*on-demand compute and storage to host, scale, and manage Web applications on the Internet*” and Google’s offering is [App Engine](http://code.google.com/appengine/) which offers “*the ability to build and host web applications on *Google’s* infrastructure*“. As you might know, I’m personally very [taken with](http://www.pipetree.com/qmacro/blog/tag/appengine/) App Engine.
+Cloud computing, virtual machines. It’s big business. Amazon has its [Elastic Compute Cloud](http://aws.amazon.com/ec2/) (EC2) which provides “*resizable compute capacity in the cloud*“, Microsoft has [Azure](http://www.microsoft.com/azure/default.mspx), providing “*on-demand compute and storage to host, scale, and manage Web applications on the Internet*” and Google’s offering is [App Engine](http://code.google.com/appengine/) which offers “*the ability to build and host web applications on *Google’s* infrastructure*“. As you might know, I’m personally very [taken with](/tag/appengine/) App Engine.
 
 The offerings are slightly different – for example, while EC2 is bare virtual hardware, App Engine is a web application platform in the cloud. But they all have similar pricing arrangements, based generally on uptime or CPU time, I/O  and storage.
 

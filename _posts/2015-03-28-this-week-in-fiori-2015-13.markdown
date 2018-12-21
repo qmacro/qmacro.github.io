@@ -18,7 +18,7 @@ Well, another week has gone by, which means it must be time for This Week in Fio
 **[Build Your Own SAP Fiori App in the Cloud](https://open.sap.com/courses/fiux1) by openSAP  
 **This week saw the start of the new free course at openSAP, which, according to the description, is all about “building your own SAP Fiori app that’s just as delightful and user-friendly as any of the hundreds SAP has built directly”.
 
-This is great news, especially for those of us who had signed up to the earlier course “Introduction to SAP Fiori UX” but had been rather disappointed that it had had nothing much to do with Fiori UX, and more to do with deployment and setup. I wrote about this in [TWIF episode 2014-40](http://pipetree.com/qmacro/blog/2014/10/this-week-in-fiori-2014-40/). A number of us did have a dialogue with the openSAP folks at the time, and I’m delighted to see our comments were taken on board – this new course looks to be what we have been waiting for.
+This is great news, especially for those of us who had signed up to the earlier course “Introduction to SAP Fiori UX” but had been rather disappointed that it had had nothing much to do with Fiori UX, and more to do with deployment and setup. I wrote about this in [TWIF episode 2014-40](/2014/10/this-week-in-fiori-2014-40/). A number of us did have a dialogue with the openSAP folks at the time, and I’m delighted to see our comments were taken on board – this new course looks to be what we have been waiting for.
 
 So we’re into Week 1 of this new nine week course, and already in the last unit of Week 1 — Unit 5, Introduction to SAPUI5 and OData — we’re seeing JSON and XML on the slides, HTTP headers, and even a small glimpse at the superb UI5 toolkit, including a tiny controller and an XML View definition. This is more like it! Technical details on the slides.
 
@@ -36,14 +36,14 @@ Don’t get too excited, however. I spotted some errors in this unit that aren�
 *MVC – View <-> Model data binding  
 *In slide 13, there’s a classic MVC style diagram, but the data binding relationship between the view and the model seems to be shown as one way only:
 
-[![Screenshot 2015-03-28 at 14.12.27](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/03/Screenshot-2015-03-28-at-14.12.27-300x47.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/03/Screenshot-2015-03-28-at-14.12.27.png)
+[![Screenshot 2015-03-28 at 14.12.27](/wp-content/uploads/2015/03/Screenshot-2015-03-28-at-14.12.27-300x47.png)](/wp-content/uploads/2015/03/Screenshot-2015-03-28-at-14.12.27.png)
 
 One of the many features of the powerful model mechanism and the data binding therein is that you can have two way binding. So I’d have drawn that arrow pointing both ways.
 
 *XML View definition*  
  Being a stickler for accuracy (perhaps to the point of pedantry, of which I’m proud, not apologetic :-), this XML View definition on slide 14 is not quite accurate:
 
-[![Screenshot 2015-03-28 at 14.15.27](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/03/Screenshot-2015-03-28-at-14.15.27.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/03/Screenshot-2015-03-28-at-14.15.27.png)
+[![Screenshot 2015-03-28 at 14.15.27](/wp-content/uploads/2015/03/Screenshot-2015-03-28-at-14.15.27.png)](/wp-content/uploads/2015/03/Screenshot-2015-03-28-at-14.15.27.png)
 
 The View is within the sap.ui.core.mvc namespace, not the sap.ui.core namespace, so the root element here should reflect that, like this:
 
@@ -52,7 +52,7 @@ The View is within the sap.ui.core.mvc namespace, not the sap.ui.core namespace,
 *Router? Bueller?  
 *So if I’m going all out, I might as well mention that one thing that I think slide 16 could have benefitted from is mention of the Router in the architecture overview diagram. I do appreciate that these slides may have come from a time before the Router concept was properly established, but the Router is an incredibly important part of any Fiori app, so it would have really helped to see it here.
 
-[![Screenshot 2015-03-28 at 14.21.38](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/03/Screenshot-2015-03-28-at-14.21.38.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/03/Screenshot-2015-03-28-at-14.21.38.png)
+[![Screenshot 2015-03-28 at 14.21.38](/wp-content/uploads/2015/03/Screenshot-2015-03-28-at-14.21.38.png)](/wp-content/uploads/2015/03/Screenshot-2015-03-28-at-14.21.38.png)
 
 That said, now you know, you can go and find out more about it! :-)
 

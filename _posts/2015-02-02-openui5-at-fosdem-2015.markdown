@@ -15,7 +15,7 @@ I just returned from [FOSDEM](http://fosdem.org), the conference for free and op
 
 I have attended FOSDEM a number of times over the years; in the early days in my capacity as a Jabber / XMPP programmer, and these days more generally, but this time it was specifically about [OpenUI5](http://openui5.org).
 
-[![IMG_20150202_080814](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/02/IMG_20150202_080814-300x222.jpg)](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/02/IMG_20150202_080814.jpg)SAP’s open sourced UI development toolkit for HTML5 is SAPUI5’s twin with an Apache 2.0 licence. SAPUI5 is the basis for SAP’s UI innovation and with what SAP Fiori apps are built. Although still relatively young, it’s a very accomplished toolkit, and one I was eager to share with the open source developer community at large.
+[![IMG_20150202_080814](/wp-content/uploads/2015/02/IMG_20150202_080814-300x222.jpg)](/wp-content/uploads/2015/02/IMG_20150202_080814.jpg)SAP’s open sourced UI development toolkit for HTML5 is SAPUI5’s twin with an Apache 2.0 licence. SAPUI5 is the basis for SAP’s UI innovation and with what SAP Fiori apps are built. Although still relatively young, it’s a very accomplished toolkit, and one I was eager to share with the open source developer community at large.
 
 I spoke on the subject of OpenUI5 in this talk:
 
@@ -23,9 +23,9 @@ I spoke on the subject of OpenUI5 in this talk:
 
 and it was very well received; the room was packed and there was some great feedback. It wasn’t difficult talking about a product from such a great team, although to add extra spice, I’d decided not to use any slides, and instead, do some live coding on stage.
 
-[![IMG_20150202_080838](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/02/IMG_20150202_080838-300x225.jpg)](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/02/IMG_20150202_080838.jpg)I had deliberately set myself up for a fall, showing how difficult it can be to built hierarchies of controls in JavaScript, which then set the scene for my favoured approach of defining views declaratively, with XML being my favourite flavour in that vein. Luckily the audience seemed to appreciate the in-joke, and not everyone thought I was an idiot :-)
+[![IMG_20150202_080838](/wp-content/uploads/2015/02/IMG_20150202_080838-300x225.jpg)](/wp-content/uploads/2015/02/IMG_20150202_080838.jpg)I had deliberately set myself up for a fall, showing how difficult it can be to built hierarchies of controls in JavaScript, which then set the scene for my favoured approach of defining views declaratively, with XML being my favourite flavour in that vein. Luckily the audience seemed to appreciate the in-joke, and not everyone thought I was an idiot :-)
 
-[![IMG_20150202_080932](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/02/IMG_20150202_080932-300x88.jpg)](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/02/IMG_20150202_080932.jpg)
+[![IMG_20150202_080932](/wp-content/uploads/2015/02/IMG_20150202_080932-300x88.jpg)](/wp-content/uploads/2015/02/IMG_20150202_080932.jpg)
 
 I’ve made the source code of the app I built on stage available on Github, in the [fosdem-2015-openui5](https://github.com/qmacro/fosdem-2015-openui5) repository.
 

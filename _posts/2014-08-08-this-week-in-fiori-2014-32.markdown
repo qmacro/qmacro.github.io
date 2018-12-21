@@ -12,7 +12,7 @@ tags:
 ---
 
 
-[![Screen Shot 2014-08-08 at 18.53.49](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/08/Screen-Shot-2014-08-08-at-18.53.49-300x168.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/08/Screen-Shot-2014-08-08-at-18.53.49.png)Here we are, another week into the new Fiori flavoured world, and as always, there are things to talk about and posts to mention. While it’s been a relatively quiet week there have still been various “announcements” that company X or company Y is now supporting SAP Fiori, or have a Fiori related offering which involves design, prototyping or deployment.
+[![Screen Shot 2014-08-08 at 18.53.49](/wp-content/uploads/2014/08/Screen-Shot-2014-08-08-at-18.53.49-300x168.png)](/wp-content/uploads/2014/08/Screen-Shot-2014-08-08-at-18.53.49.png)Here we are, another week into the new Fiori flavoured world, and as always, there are things to talk about and posts to mention. While it’s been a relatively quiet week there have still been various “announcements” that company X or company Y is now supporting SAP Fiori, or have a Fiori related offering which involves design, prototyping or deployment.
 
 While the glass-half-empty folks might point out that this is a lot of marketing and bandwaggoning, I like to think of it as a good sign that as well as already being everything from a design philosophy (“Fiori”) to a product (“SAP Fiori”), it’s also gaining traction and mindshare in the wider ecosystem and becoming a definite context for engagement.
 
@@ -26,7 +26,7 @@ Even though it was posted back in January this year, it’s still an important p
 If you haven’t already, take a look at this content to get a feel for what it’s like to build Fiori apps. It’s a pretty decent set of materials, and I’m very proud to be a co-author.
 
 **[Why Pie Charts are not in SAP Fiori Chart Library](http://experience.sap.com/topic/why-pie-charts-are-not-in-sap-fiori-charting-library/) by Vincent Monnier**  
- Like the reference to [The Fiori Design Principles](http://scn.sap.com/people/kai.richter/blog/2014/06/30/the-fiori-design-principles) in the first post in this series back in week 27 ([TWIF 2014-27](http://pipetree.com/qmacro/blog/2014/07/this-week-in-fiori-2014-27/)), this post by a designer at SAP highlights that as well as development and the thought processes behind building software, there’s also *design* and the thought processes behind building a great experience … both of these things go into Fiori.
+ Like the reference to [The Fiori Design Principles](http://scn.sap.com/people/kai.richter/blog/2014/06/30/the-fiori-design-principles) in the first post in this series back in week 27 ([TWIF 2014-27](/2014/07/this-week-in-fiori-2014-27/)), this post by a designer at SAP highlights that as well as development and the thought processes behind building software, there’s also *design* and the thought processes behind building a great experience … both of these things go into Fiori.
 
 This is a relatively short post that highlights out some of the general downsides to pie charts and points to some further reading. But it’s the fact that the design process has been gone through and also shared with the wider community that is interesting. In fact, if nothing else, use this as a pointer to the whole [SAP User Experience Community](https://experience.sap.com/) site. And if you want to know more about charts in SAP Fiori, see [the chart section in the SAP Fiori Guidelines](http://experience.sap.com/fiori-guidelines/FioriPatterns/21_Fiori_Patterns-Charts.html).
 
@@ -37,13 +37,13 @@ This is a relatively short post that highlights out some of the general downside
 
 With the [Explored App](https://sapui5.hana.ondemand.com/sdk/explored.html) you can, well, explore many features and functions within UI5, a good number of which are used to build Fiori applications, and you’ll start to recognise component parts, building blocks that are used and reused to provide features such as search, lists, buttons, dialogs, and so on. Let’s pick one – the [IconTabBar](http://localhost:8888/sapui5/latest/explored.html#/entity/sap.m.IconTabBar/samples). In context, it typically looks like the lower half of this screenshot:
 
-[![Screen Shot 2014-08-08 at 18.40.32](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/08/Screen-Shot-2014-08-08-at-18.40.32-300x194.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/08/Screen-Shot-2014-08-08-at-18.40.32.png)
+[![Screen Shot 2014-08-08 at 18.40.32](/wp-content/uploads/2014/08/Screen-Shot-2014-08-08-at-18.40.32-300x194.png)](/wp-content/uploads/2014/08/Screen-Shot-2014-08-08-at-18.40.32.png)
 
 <span style="line-height: 1.714285714; font-size: 1rem;">The IconTabBar is used to contain a number of tabbed sections, with the selection for each of the sections typically being round icons. The design changed slightly between SAP Fiori Wave 4 and 5, now there’s more info shown in place of the icons.</span>
 
 Have a look around and see what Fiori building blocks you can recognise!
 
-Well, the train is almost at Manchester Piccadilly now so this brings this week’s roundup to a close. As always, thanks for reading, and remember you can access the whole series with this TWIF category link: [http://pipetree.com/qmacro/blog/category/twif/](http://pipetree.com/qmacro/blog/category/twif/)
+Well, the train is almost at Manchester Piccadilly now so this brings this week’s roundup to a close. As always, thanks for reading, and remember you can access the whole series with this TWIF category link: [/category/twif/](/category/twif/)
 
 Share and enjoy!
 

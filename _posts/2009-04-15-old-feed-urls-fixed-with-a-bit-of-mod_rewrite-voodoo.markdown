@@ -18,6 +18,6 @@ RewriteRule ^index.(xml|rdf)$ /qmacro/blog/feed/atom/ [R=301,L]
 
 RewriteRule ^xml$ /qmacro/blog/feed/atom/ [R=301,L]
 
-Now the bots are redirected to this weblog’s [shiny new feed](http://www.pipetree.com/qmacro/blog/feed/atom/). And I’ll [try not to change the URL again](http://www.w3.org/Provider/Style/URI) :-)
+Now the bots are redirected to this weblog’s [shiny new feed](/feed/atom/). And I’ll [try not to change the URL again](http://www.w3.org/Provider/Style/URI) :-)
 
 

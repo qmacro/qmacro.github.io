@@ -4,7 +4,7 @@ title: Consumption-based SCP Pricing - Initial Thoughts
 date: '2018-01-10 06:50:28'
 ---
 
-Back in August 2017 I [made some observations on SAP Cloud Platform Pricing](http://pipetree.com/qmacro/blog/2017/08/08/sap-cloud-platform-pricing/). I had been somewhat underwhelmed by the clarity and flexibility, particularly for smaller projects and businesses.
+Back in August 2017 I [made some observations on SAP Cloud Platform Pricing](/2017/08/08/sap-cloud-platform-pricing/). I had been somewhat underwhelmed by the clarity and flexibility, particularly for smaller projects and businesses.
 
 This week saw the [announcement](https://twitter.com/steinermatt/status/950297124461101056) of a brand new pricing approach and website for the SAP Cloud Platform (SCP), which, judging by the reaction, was a very welcome piece of news. To many, the key change is the introduction of a consumption-based pricing model, as an alternative to the existing subscription-based model. Not only that, but the website offers a pricing estimation calculator which, if I've done things right, shows that consumption-based costs for the small project I described in my earlier post are not unreasonable. 
 

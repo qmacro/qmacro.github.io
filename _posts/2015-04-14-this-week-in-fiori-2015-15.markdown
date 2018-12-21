@@ -13,7 +13,7 @@ tags:
 ---
 
 
-[![Screen Shot 2015-04-14 at 09.13.55](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/04/Screen-Shot-2015-04-14-at-09.13.55-150x150.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/04/Screen-Shot-2015-04-14-at-09.13.55.png)Well hello there folks. This week sees the start (for me) of a week off on holiday, but not before I put out this latest episode of TWIF for a quick roundup of things that caught my eye in the world of Fiori. If you have any stories to share, let me know!
+[![Screen Shot 2015-04-14 at 09.13.55](/wp-content/uploads/2015/04/Screen-Shot-2015-04-14-at-09.13.55-150x150.png)](/wp-content/uploads/2015/04/Screen-Shot-2015-04-14-at-09.13.55.png)Well hello there folks. This week sees the start (for me) of a week off on holiday, but not before I put out this latest episode of TWIF for a quick roundup of things that caught my eye in the world of Fiori. If you have any stories to share, let me know!
 
 **[SAP Fiori Application Development in the Cloud](http://sapinsider.wispubs.com/Assets/Articles/2015/April/SPI-SAP-Fiori-application-development-in-the-cloud) by Monika Kaiser & Karl Kessler**  
  The subtitle of this article in SAPinsider magazine is “Building, Deploying and Mobilizing Applications for Today’s Enterprises”. And as a great introduction, it certainly delivers on that. Not surprising given Karl’s pedigree in knowing about and writing about SAP technologies :-)

@@ -15,7 +15,7 @@ I’m not 100%, so earlier this morning I needed a bit more time than usual to g
 
 Here’s a quick screencast as an animated GIF (why not?)
 
-[![fixappfix](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/02/fixappfix-300x247.gif)](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/02/fixappfix.gif)
+[![fixappfix](/wp-content/uploads/2015/02/fixappfix-300x247.gif)](/wp-content/uploads/2015/02/fixappfix.gif)
 
 Right, on with the morning.
 

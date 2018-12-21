@@ -16,7 +16,7 @@ tags:
 
 This morning on the train down from Manchester to Bristol I fired up the Atom editor and noticed that when trying to load a snippets file from my [ui5-snippets](https://github.com/qmacro/ui5-snippets) package, I got an error:
 
-[![Screen Shot 2015-01-19 at 08.18.19](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/01/Screen-Shot-2015-01-19-at-08.18.19-300x77.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/01/Screen-Shot-2015-01-19-at-08.18.19.png)
+[![Screen Shot 2015-01-19 at 08.18.19](/wp-content/uploads/2015/01/Screen-Shot-2015-01-19-at-08.18.19-300x77.png)](/wp-content/uploads/2015/01/Screen-Shot-2015-01-19-at-08.18.19.png)
 
 Between Stafford and Wolverhampton I hacked around with the source, particularly the html.cson file that contained a number of UI5 snippets for HTML files. From where was this error message emanating, and why now?
 

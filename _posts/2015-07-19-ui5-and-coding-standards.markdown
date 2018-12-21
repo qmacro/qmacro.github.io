@@ -11,7 +11,7 @@ tags:
 - xmlviews
 ---
 
-**[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 16 by [DJ Adams](http://pipetree.com/qmacro/)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 16 by [DJ Adams](http://pipetree.com/qmacro/)**
 
 ![Y-U-NO meme](/content/images/2018/02/Screen-Shot-2015-07-19-at-07.09.23.png)
 

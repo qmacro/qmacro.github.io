@@ -12,7 +12,7 @@ tags:
 ---
 
 
-[![Screen Shot 2014-08-17 at 11.03.23](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/08/Screen-Shot-2014-08-17-at-11.03.23.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/08/Screen-Shot-2014-08-17-at-11.03.23.png)Hello again. Another week has passed, and the writing of this week’s TWIF should have found me in the Lake District, but alas due to circumstances too tedious to go into now, finds me about 90 miles south, back at home. Anyway, it’s the end of the week and therefore time for some Fiori links and commentary. Let’s get to them!
+[![Screen Shot 2014-08-17 at 11.03.23](/wp-content/uploads/2014/08/Screen-Shot-2014-08-17-at-11.03.23.png)](/wp-content/uploads/2014/08/Screen-Shot-2014-08-17-at-11.03.23.png)Hello again. Another week has passed, and the writing of this week’s TWIF should have found me in the Lake District, but alas due to circumstances too tedious to go into now, finds me about 90 miles south, back at home. Anyway, it’s the end of the week and therefore time for some Fiori links and commentary. Let’s get to them!
 
 **[SAP Fiori Launchpad for Developers](http://scn.sap.com/docs/DOC-57363) by Steffen Huester and Olivier Keimel**  
  In previous TWIF episodes I’ve mentioned the SAP Fiori Launchpad and its importance to the Fiori app ecosphere. It’s slowly becoming the new lightweight portal and rightly so. The SAP Fiori Launchpad has been designed to be cross platform (ABAP, HANA and Cloud stacks) and in true SAP style this design shows through in the form of abstraction layers — service adapters, the shell renderer and the application container. In fact, it’s the application container that might pique your interest, as we see that it can not only host UI5 apps (via the Component concept) but also Web Dynpro ABAP and SAP GUI for HTML apps.
@@ -29,9 +29,9 @@ Even now I come across folks who are still looking for a good explanation of Fio
 <span style="line-height: 1.714285714; font-size: 1rem;">(Warning, you need to complete a free signup to get to the content. Come on [Inside SAP](http://www.insidesap.com.au/), you can do better than that!)</span>
 
 **SAP Fiori Course Offerings by SAP  
-**In [TWIF 2014-31](http://pipetree.com/qmacro/blog/2014/08/this-week-in-fiori-2014-31/) I mentioned that the OpenSAP MOOC is offering a free course “Introduction to SAP Fiori UX” starting in September this year. I thought I’d take a look at what SAP offers in the way of more traditional courses, relating to Fiori. This is what I found on the [SAP Fiori curriculum page](https://training.sap.com/gb/en/curriculum/fiori_uk-sap-fiori-uk/):
+**In [TWIF 2014-31](/2014/08/this-week-in-fiori-2014-31/) I mentioned that the OpenSAP MOOC is offering a free course “Introduction to SAP Fiori UX” starting in September this year. I thought I’d take a look at what SAP offers in the way of more traditional courses, relating to Fiori. This is what I found on the [SAP Fiori curriculum page](https://training.sap.com/gb/en/curriculum/fiori_uk-sap-fiori-uk/):
 
-[![Screen Shot 2014-08-17 at 10.52.03](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/08/Screen-Shot-2014-08-17-at-10.52.03-300x55.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/08/Screen-Shot-2014-08-17-at-10.52.03.png)
+[![Screen Shot 2014-08-17 at 10.52.03](/wp-content/uploads/2014/08/Screen-Shot-2014-08-17-at-10.52.03-300x55.png)](/wp-content/uploads/2014/08/Screen-Shot-2014-08-17-at-10.52.03.png)
 
 <span style="line-height: 1.714285714; font-size: 1rem;">It’s still early days, I think, but it’s a fair representation of the skills required for Fiori:</span>
 

@@ -13,7 +13,7 @@ tags:
 ---
 
 
-[![My Spend](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/07/Screen-Shot-2014-07-19-at-08.59.33-300x213.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/07/Screen-Shot-2014-07-19-at-08.59.33.png)I’m currently writing this episode of This Week in Fiori (TWIF) on a flight from Manchester via Philadelphia to Portland for O’Reilly’s Open Source Convention [OSCON](http://www.oscon.com/oscon2014). It’s a super conference on all things Open Source and I can heartily recommend it.
+[![My Spend](/wp-content/uploads/2014/07/Screen-Shot-2014-07-19-at-08.59.33-300x213.png)](/wp-content/uploads/2014/07/Screen-Shot-2014-07-19-at-08.59.33.png)I’m currently writing this episode of This Week in Fiori (TWIF) on a flight from Manchester via Philadelphia to Portland for O’Reilly’s Open Source Convention [OSCON](http://www.oscon.com/oscon2014). It’s a super conference on all things Open Source and I can heartily recommend it.
 
 Back in 2001, 2002 and 2003 I attended OSCON and spoke on the subject of SAP and Open Source. 2014 has come round and I’m back, this time on the subject of [OpenUI5](http://openui5.org/), the Open Sourced version of SAP’s UI5 toolkit. Along with a couple of friends & SAP colleagues Andreas Kunz and Frederic Berg, we’re giving a tutorial on the subject: [Discover OpenUI5 – The New Web UI Library from SAP](http://www.oscon.com/oscon2014/public/schedule/detail/35988), as well as a presentation.
 

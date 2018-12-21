@@ -12,7 +12,7 @@ tags:
 - 30ui5
 ---
 
-**[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/) - Day 2 by [DJ Adams](http://pipetree.com/qmacro/)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) - Day 2 by [DJ Adams](http://pipetree.com/qmacro/)**
 
 ![Expression Binding samples](/content/images/2018/01/Screen-Shot-2015-07-05-at-13.34.07.png)
 

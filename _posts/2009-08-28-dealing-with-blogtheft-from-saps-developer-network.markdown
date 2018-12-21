@@ -27,11 +27,11 @@ I can send a ‘StolenContent.png’ image, if the referrer is from the rogue si
 
 The result of the rewrite is that when viewed on SDN, the blog entry looks fine, and the screenshot images look as they’re supposed to:
 
-<div class="wp-caption alignnone" id="attachment_760" style="width: 472px">![Images appear as they're supposed to](http://www.pipetree.com/qmacro/blog/wp-content/uploads/2009/08/screenshot-sdn3.jpg "screenshot-sdn3")Images appear as they're supposed to
+<div class="wp-caption alignnone" id="attachment_760" style="width: 472px">![Images appear as they're supposed to](/wp-content/uploads/2009/08/screenshot-sdn3.jpg "screenshot-sdn3")Images appear as they're supposed to
 
 </div>But when the images are used on www.sap-abap4.com, they will appears differently:
 
-<div class="wp-caption alignnone" id="attachment_761" style="width: 472px">![Image appears differently](http://www.pipetree.com/qmacro/blog/wp-content/uploads/2009/08/screenshot-sap-abap41.jpg "screenshot-sap-abap41")Image appears differently
+<div class="wp-caption alignnone" id="attachment_761" style="width: 472px">![Image appears differently](/wp-content/uploads/2009/08/screenshot-sap-abap41.jpg "screenshot-sap-abap41")Image appears differently
 
 </div>So there you have it. It’s not a complete solution to the problem by any means, but it at least will alert unsuspecting readers of that website to what’s happening (if you’re testing yourself, you might have to refresh the pages in your browser, as it will probably have cached the first version of each image). Perhaps the SAP community network team can apply this technique for the images hosted on SDN.
 

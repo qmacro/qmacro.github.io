@@ -9,9 +9,9 @@ tags:
 - resourcemodel
 ---
 
-**[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 23 by [Nathan Adams](http://twitter.com/lxinspc)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 23 by [Nathan Adams](http://twitter.com/lxinspc)**
 
-UI5’s support for multiple-languages, out of the box (see the post “[Multi-language support out of the box – UI5’s pedigree](http://pipetree.com/qmacro/blog/2015/07/16/multi-language-support-out-of-the-box-ui5s-pedigree/)” in this series) is impressive and easy to use. Creating a message resource bundle in your Component.js file is straightforward, especially if picking up the user’s language preferences in the browser.
+UI5’s support for multiple-languages, out of the box (see the post “[Multi-language support out of the box – UI5’s pedigree](/2015/07/16/multi-language-support-out-of-the-box-ui5s-pedigree/)” in this series) is impressive and easy to use. Creating a message resource bundle in your Component.js file is straightforward, especially if picking up the user’s language preferences in the browser.
 
 What can be less straightforward though is organising these files into something manageable, for plenty of projects, your i18n file might be on the small side, but it’s pretty easy to build up a large file. An application I’m currently working on, which perhaps has only 50% of its views defined, already has just 100 definitions in the i18n file. (A quick look at the Fiori My Travel Expenses App v2 shows there are around 1000 lines, and about 500 definitions in the resource file and whilst reasonably well documented with comments – you may well be hunting for usage of a text).
 

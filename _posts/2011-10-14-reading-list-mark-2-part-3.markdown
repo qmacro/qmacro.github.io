@@ -14,15 +14,15 @@ tags:
 ---
 
 
-This is Part 3 in a series about an example app that I put together to demonstrate and describe the use of various Google Apps Script features. See [Part 1](http://www.pipetree.com/qmacro/blog/2011/10/reading-list-mark-2-part-1/) for an introduction. This part is “**Using the UrlFetch Services to interact with the Google+ API (after all, it’s REST-based!) and grab info on articles pointed to by users in their activity stream**“.
+This is Part 3 in a series about an example app that I put together to demonstrate and describe the use of various Google Apps Script features. See [Part 1](/2011/10/reading-list-mark-2-part-1/) for an introduction. This part is “**Using the UrlFetch Services to interact with the Google+ API (after all, it’s REST-based!) and grab info on articles pointed to by users in their activity stream**“.
 
 **Parts Overview**
 
-1. [Introduction to the app, and a short screencast showing the features](http://www.pipetree.com/qmacro/blog/2011/10/reading-list-mark-2-part-1/)
-2. [Using the Tasks API to retrieve and insert tasklists, and the Ui Services to build the tasklist chooser component](http://www.pipetree.com/qmacro/blog/2011/10/reading-list-mark-2-part-2/)
-3. [Using the UrlFetch Services to interact with the Google+ API and grab info on articles pointed to by users in their activity stream](http://www.pipetree.com/qmacro/blog/2011/10/reading-list-mark-2-part-3/) **<– You Are Here**
-4. [Synchronising the URL list in the spreadsheet with corresponding tasks in the chosen tasklist](http://www.pipetree.com/qmacro/blog/2011/10/reading-list-mark-2-part-4/)
-5. [Putting it all together and using the OnOpen event to insert a new 2-item menu entry on the spreadsheet’s page](http://www.pipetree.com/qmacro/blog/2011/10/reading-list-mark-2-part-5/)
+1. [Introduction to the app, and a short screencast showing the features](/2011/10/reading-list-mark-2-part-1/)
+2. [Using the Tasks API to retrieve and insert tasklists, and the Ui Services to build the tasklist chooser component](/2011/10/reading-list-mark-2-part-2/)
+3. [Using the UrlFetch Services to interact with the Google+ API and grab info on articles pointed to by users in their activity stream](/2011/10/reading-list-mark-2-part-3/) **<– You Are Here**
+4. [Synchronising the URL list in the spreadsheet with corresponding tasks in the chosen tasklist](/2011/10/reading-list-mark-2-part-4/)
+5. [Putting it all together and using the OnOpen event to insert a new 2-item menu entry on the spreadsheet’s page](/2011/10/reading-list-mark-2-part-5/)
 
 **UrlFetch Services**
 
@@ -43,7 +43,7 @@ The [Google+ API](https://developers.google.com/+/api/) is relatively new, and a
 - The REST-based nature means that we see the Google+ objects such as People, Activities and Comments as resources that we retrieve with HTTP
 - To use the API we need either an OAuth 2.0 token or an API key
 
-The UrlFetch Services provides us with a facility in the form of the OAuthConfig class for configuring and managing OAuth in a client context. But we’ll go for the simpler approach and use an API key, which we can obtain by using the Google API Console – see the previous instalment of this series for more details about this: [Using the Tasks API to retrieve and insert tasklists, and the Ui Services to build the tasklist chooser component](http://www.pipetree.com/qmacro/blog/2011/10/reading-list-mark-2-part-2/).
+The UrlFetch Services provides us with a facility in the form of the OAuthConfig class for configuring and managing OAuth in a client context. But we’ll go for the simpler approach and use an API key, which we can obtain by using the Google API Console – see the previous instalment of this series for more details about this: [Using the Tasks API to retrieve and insert tasklists, and the Ui Services to build the tasklist chooser component](/2011/10/reading-list-mark-2-part-2/).
 
 The idea for this example app is to capture a list of URLs that a person on Google+ has posted, and perhaps commented on. We can get this info from the [Activities](https://developers.google.com/+/api/latest/activities) part of the API.
 
@@ -95,7 +95,7 @@ We create an object to hold the existing (‘old’) URLs, and the eventual ‘n
 
 function retrieveActivityUrls_() { // Grab existing list of URLs var sh = SpreadsheetApp.getActiveSheet(); var lastRow = sh.getLastRow(); var urlList = sh.getRange(2, 1, lastRow - 1 || 1) .getValues(); var list = {'old': {}, 'new': []}; for (var i in urlList){ list['old'][urlList[i]] = 1; }
 
-We’re going to retrieve the activity for a Google+ person, and the person is identified by an ID either in a cell in the sheet identified by the range in constant USERIDCELL, (see the screencast in [Part 1](http://www.pipetree.com/qmacro/blog/2011/10/reading-list-mark-2-part-1/)) or a default specified in constant USERID.
+We’re going to retrieve the activity for a Google+ person, and the person is identified by an ID either in a cell in the sheet identified by the range in constant USERIDCELL, (see the screencast in [Part 1](/2011/10/reading-list-mark-2-part-1/)) or a default specified in constant USERID.
 
  // Use the userid in the sheet, fallback to a favourite var userid = sh.getRange(USERIDCELL).getValue() || USERID;
 

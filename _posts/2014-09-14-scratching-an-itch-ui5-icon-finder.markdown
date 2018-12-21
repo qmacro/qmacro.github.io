@@ -11,7 +11,7 @@ tags:
 
 There are a huge number of icons as standard in the UI5 library, both in the SAPUI5 and OpenUI5 flavours. Here’s the [Icon Explorer](https://openui5.hana.ondemand.com/test-resources/sap/m/demokit/icon-explorer/index.html) from the SDK.
 
-[![Screenshot 2014-09-14 at 20.35.07](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/09/Screenshot-2014-09-14-at-20.35.07.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/09/Screenshot-2014-09-14-at-20.35.07.png)One of the problems I have is that when I’m looking for an icon, the search term I have in my head is not necessarily going to match up with the name of the icon in the library.
+[![Screenshot 2014-09-14 at 20.35.07](/wp-content/uploads/2014/09/Screenshot-2014-09-14-at-20.35.07.png)](/wp-content/uploads/2014/09/Screenshot-2014-09-14-at-20.35.07.png)One of the problems I have is that when I’m looking for an icon, the search term I have in my head is not necessarily going to match up with the name of the icon in the library.
 
 For example, I might be looking for a “cog”, with the icon on the left in mind, but I’m not going to be able find it unless i use the term “action-settings”.
 
@@ -21,7 +21,7 @@ It’s a very simple affair, and in this first version, is designed to use the [
 
 Anyway, it’s available currently at [http://pipetree.com/ui5/projects/iconfinder/](http://pipetree.com/ui5/projects/iconfinder/) and you can grab the sources from the [Github repo](https://github.com/qmacro/iconfinder) (remembering that the whole point of this is it’s a single-file app!).
 
-[![Screenshot 2014-09-14 at 20.50.16](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/09/Screenshot-2014-09-14-at-20.50.16-169x300.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/09/Screenshot-2014-09-14-at-20.50.16.png) [![Screenshot 2014-09-14 at 20.48.52](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/09/Screenshot-2014-09-14-at-20.48.52-168x300.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/09/Screenshot-2014-09-14-at-20.48.52.png)
+[![Screenshot 2014-09-14 at 20.50.16](/wp-content/uploads/2014/09/Screenshot-2014-09-14-at-20.50.16-169x300.png)](/wp-content/uploads/2014/09/Screenshot-2014-09-14-at-20.50.16.png) [![Screenshot 2014-09-14 at 20.48.52](/wp-content/uploads/2014/09/Screenshot-2014-09-14-at-20.48.52-168x300.png)](/wp-content/uploads/2014/09/Screenshot-2014-09-14-at-20.48.52.png)
 
 Here’s a short screencast of a version of it in action:
 

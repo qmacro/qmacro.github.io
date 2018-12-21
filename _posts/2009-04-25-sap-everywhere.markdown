@@ -17,6 +17,6 @@ In those days there were no books on SAP, and I was still in shock from receivin
 
 How things have changed. Beyond the [SAP Developer Network](http://www.sdn.sap.com), which I can proudly say I had a hand in forming and nurturing, I’ve just seen a [video](http://www.youtube.com/watch?v=cJ-NbF4Nw8A) on YouTube by [Jon Reed](http://jonerp.com) on how to find and follow SAP people on Twitter! I’ve also just added myself to the [SAP Affinity Group](http://wiki.zsapping.com/pub:twitter:groups:sap:index). A long way from [SAP-R3-L](https://www.sdn.sap.com/irj/scn/weblogs?blog=/pub/wlg/1973)!
 
-Perhaps it’s time to rebuild [Planet SAP](http://www.pipetree.com/qmacro/blog/2005/07/sdn-blogging-and-planet-sapsdn-blogging-and-planet-sap/)?
+Perhaps it’s time to rebuild [Planet SAP](/2005/07/sdn-blogging-and-planet-sapsdn-blogging-and-planet-sap/)?
 
 

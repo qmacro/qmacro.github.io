@@ -10,12 +10,12 @@ tags:
 - sap-ui-define
 ---
 
-**[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 24 by [DJ Adams](http://pipetree.com/qmacro/)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 24 by [DJ Adams](http://pipetree.com/qmacro/)**
 
 ![](/content/images/2018/02/Screen-Shot-2015-07-27-at-11.04.02.png)
 
 
-If you’ve followed [this series](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/) you’ll have come across the [OpenUI5 Walkthrough](http://pipetree.com/qmacro/blog/2015/07/07/openui5-walkthrough/), a “a great multi-step walkthrough of many of the features and practices of UI5 development”.
+If you’ve followed [this series](/2015/07/04/30-days-of-ui5/) you’ll have come across the [OpenUI5 Walkthrough](/2015/07/07/openui5-walkthrough/), a “a great multi-step walkthrough of many of the features and practices of UI5 development”.
 
 In Step 5 of the walkthrough, on “Controllers”, we’re introduced to something that looks unfamiliar. Especially to those who have written large numbers of controllers thus far, for example. The way the XML View’s Controller is defined is … different. Step 5 doesn’t say much specifically about how this works, but Step 6, on “Modules”, does.
 
@@ -49,7 +49,7 @@ sap.ui.core.mvc.Controller.extend("your.name.here", {  
 
 **4**: The second parameter passed in the call to sap.ui.define is the factory, and we can see the function definition start here. Note that each dependency reference is given to this factory function, in the same order that they’re declared in the dependency list. By convention, the most significant part of the resource path name is used for the parameter name (for example “Controller” for sap.ui.more.mvc.Controller).
 
-**5**: The call to “use strict” is not specifically a feature of the new module definition syntax, but it is significant in that there is growing focus on JavaScript syntax correctness and linting. For more on this, see another post in this series: “[UI5 and Coding Standards](http://pipetree.com/qmacro/blog/2015/07/ui5-and-coding-standards/)“.
+**5**: The call to “use strict” is not specifically a feature of the new module definition syntax, but it is significant in that there is growing focus on JavaScript syntax correctness and linting. For more on this, see another post in this series: “[UI5 and Coding Standards](/2015/07/ui5-and-coding-standards/)“.
 
 **7-12**: The rest of the source code looks fairly familiar. There’s one exception though, and it’s a result of the dependency mechanism described earlier. The function has “Controller” and “MessageToast” available to it, and so we can and should use these to refer to the sap.ui.core.mvc.Controller and sap.m.MessageToast resources throughout. This is nice, and makes for slightly neater code too.
 

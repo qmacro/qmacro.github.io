@@ -23,27 +23,27 @@ Anyway, there’s something else that’s been niggling me a bit while using the
 
 Here’s an example:
 
-[![Screen Shot 2016-03-28 at 11.42.06](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.42.06.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.42.06.png)
+[![Screen Shot 2016-03-28 at 11.42.06](/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.42.06.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.42.06.png)
 
 It’s only when hovering over the first tab that I see that it’s showing the HTML5 Applications part of the cockpit. If I’m looking to switch to that tab, the search for the correct one is painful.
 
 So I wanted to take a quick look to see where this title was being set, and when. I used the Chrome Developer Tools’ DOM breakpoints feature to halt when the `title` element was changed:
 
-[![Screen Shot 2016-03-28 at 11.46.08](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.46.08.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.46.08.png)
+[![Screen Shot 2016-03-28 at 11.46.08](/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.46.08.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.46.08.png)
 
 This led me to a section of the HCP cockpit code that inside the Navigation Manager (cockpit.core.navigation.NavigationManager), in a function called “navigate”. This is what the code that sets the title looks like (I took the liberty of formatting it a little bit better for readability):
 
-[![Screen Shot 2016-03-28 at 11.49.41](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.49.41.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.49.41.png)
+[![Screen Shot 2016-03-28 at 11.49.41](/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.49.41.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.49.41.png)
 
 You can see how the title string is constructed – with the most significant part (`current.navigationEntry.getTitle()`) buried deep within it.
 
 A small change to this code, so it looks like this:
 
-[![Screen Shot 2016-03-28 at 11.49.54](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.49.54.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.49.54.png)
+[![Screen Shot 2016-03-28 at 11.49.54](/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.49.54.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.49.54.png)
 
 brings the most significant part to the front, meaning that now I can see what tab contains what HCP cockpit feature – at a glance:
 
-[![Screen Shot 2016-03-28 at 11.30.28](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.30.28.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.30.28.png)
+[![Screen Shot 2016-03-28 at 11.30.28](/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.30.28.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-28-at-11.30.28.png)
 
 I think that’s a nice improvement. Personally, I’d love to see this make it into a future release. What do you think?
 

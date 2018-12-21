@@ -16,7 +16,7 @@ In moving to Chrome and installing the [Delicious Tools](https://chrome.google.c
 
 The Chrome extensions can be administered by entering [chrome://extensions](chrome://extensions) into the address bar. This is what you can see for the Delicious Tools extension, when you have the Developer Mode expanded:
 
-![Chrome extension details](http://www.pipetree.com/qmacro/blog/wp-content/uploads/2010/11/screenshot-extensions-google-chrome.png "Chrome extension details")
+![Chrome extension details](/wp-content/uploads/2010/11/screenshot-extensions-google-chrome.png "Chrome extension details")
 
 There are a couple of interesting things that we can see:
 
@@ -38,7 +38,7 @@ fullUrl = fullUrl + "&share=no";
 
 before the call to window.open() will add the query parameter “share=no” to the Delicious URL that is requested, resulting in the HTML form being rendered with the “Mark as private” checkbox already ticked.
 
-![Saving a bookmark, with private as default](http://www.pipetree.com/qmacro/blog/wp-content/uploads/2010/11/screenshot-save-a-bookmark-on-delicious-google-chrome.png "Saving a bookmark, with private as default")
+![Saving a bookmark, with private as default](/wp-content/uploads/2010/11/screenshot-save-a-bookmark-on-delicious-google-chrome.png "Saving a bookmark, with private as default")
 
 Result!
 

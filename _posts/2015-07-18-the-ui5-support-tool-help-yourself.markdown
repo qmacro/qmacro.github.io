@@ -10,7 +10,7 @@ tags:
 - xml
 ---
 
-**[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 15 by [DJ Adams](http://pipetree.com/qmacro/)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 15 by [DJ Adams](http://pipetree.com/qmacro/)**
 
 ![part of the Support Tool Menu](/content/images/2018/02/Screenshot-2015-07-18-at-12.12.33.png)
 

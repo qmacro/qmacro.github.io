@@ -14,11 +14,11 @@ Tarpipe implemented a REST connector a short while ago. This is something that I
 
 As Bruno showed in the announcement, this is what the REST connector looks like:
 
-![Tarpipe REST connector](http://www.pipetree.com/qmacro/blog/wp-content/uploads/2009/05/tarpiperestconnector.png "Tarpipe REST connector")
+![Tarpipe REST connector](/wp-content/uploads/2009/05/tarpiperestconnector.png "Tarpipe REST connector")
 
 It will take whatever values it receives in the **title**, **description** and **link** input fields on the left hand side of the connector, and construct a piece of [JSON](http://www.json.org/) which it then sends in an [application/x-www-form-urlencoded](http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.1) format as a data=<JSON> name/value pair in the message body of an HTTP POST request to the resource specified in the **serviceUrl** field.
 
-So if we pass the values “*DJ’s Weblog*” into the title, “*Reserving the right to be wrong*” into the description, “*http://www.pipetree.com/qmacro/blog/*” into the link fields, and pass “*http://example.org/bucket/*” into the serviceUrl field, the following HTTP request is made on the http://example.org/bucket/ resource like this:
+So if we pass the values “*DJ’s Weblog*” into the title, “*Reserving the right to be wrong*” into the description, “*/*” into the link fields, and pass “*http://example.org/bucket/*” into the serviceUrl field, the following HTTP request is made on the http://example.org/bucket/ resource like this:
 
 POST /bucket/ HTTP/1.1 Content-Length: 218 Content-Type: application/x-www-form-urlencoded Host: example.org Accept: */* data=%7B%22items%22%3A%5B%7B%22title%22%3A%22DJ%27s+Weblog%22%2C%22description %22%3A%22Reserving+the+right+to+be+wrong%5Cn%22%2C%22link%22%3A%22http%3A %5C%2F%5C%2Fwww.pipetree.com%5C%2Fqmacro%5C%2Fblog%5C%2F%22%7D%5D%7D
 
@@ -32,7 +32,7 @@ data=```
        {
            "title":"DJ's+Weblog",
            "description":"Reserving+the+right+to+be+wrong",
-           "link":"http://www.pipetree.com/qmacro/blog/"
+           "link":"/"
        }
     ]
 }```

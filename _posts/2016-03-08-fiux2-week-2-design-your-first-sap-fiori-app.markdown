@@ -10,7 +10,7 @@ Well, the weeks certainly come around fast in these [openSAP](http://open.sap.co
 
 **Unit 1** **“SAP Fiori 2.0 Overview”.** This first unit gave a nice overview and introduction to the SAP Fiori 2.0 concepts. Yes, Fiori 2.0 is still conceptual in parts, but we’re already seeing practical output, in the form of the very real [Overview Page](https://sapui5.netweaver.ondemand.com/#docs/guide/c64ef8c6c65d4effbfd512e9c9aa5044.html) mechanism, for example. There are plenty of new concepts for Fiori in the 2.0 design, such as the Viewport, the Control Space and the Copilot.
 
-Some of these concepts are not new, but they don’t have to be; in fact one of the key tenets of Design Thinking, introduced in Unit 2, is “Build on the ideas of others”. I rather think that some of the ideas have been taken from the Dashboard concept that Nat Friedman built a good while ago – I [wrote a few posts on Dashboard](http://pipetree.com/qmacro/blog/?s=dashboard) back in 2003 and then later that decade.
+Some of these concepts are not new, but they don’t have to be; in fact one of the key tenets of Design Thinking, introduced in Unit 2, is “Build on the ideas of others”. I rather think that some of the ideas have been taken from the Dashboard concept that Nat Friedman built a good while ago – I [wrote a few posts on Dashboard](/?s=dashboard) back in 2003 and then later that decade.
 
 **Unit 2** **“Introduction to Design Thinking”**. This content isn’t new, in fact the openSAP folks stated that it’s the same content as last year’s course. Nevertheless it was worth a brief re-introduction to set the scene for the design principles that are to come in Unit 3. The thing with Design Thinking, at least for me, is that it’s all pretty obvious in theory, but putting it into practice requires effort.
 
@@ -26,7 +26,7 @@ But it’s more than that, I think, when seen as a complete process. The functio
 
 **Unit 5 “The Importance of Prototyping”.** Like Design Thinking but perhaps less so, prototyping phases are sometimes difficult to bring about and get the most out of, especially when deadlines and budgets are tight. Organisations need to work out the value for themselves for the Discover and Design phases, rather than just focus on the Develop and Deploy phases … especially those that involve the business.
 
-[![](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-07-at-07.48.08.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-07-at-07.48.08.png)
+[![](/wp-content/uploads/2016/03/Screen-Shot-2016-03-07-at-07.48.08.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-07-at-07.48.08.png)
 
 There’s a leap of faith that’s required, and we’re all responsible for helping make that happen.
 

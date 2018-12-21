@@ -14,15 +14,15 @@ tags:
 ---
 
 
-This is Part 5, the last part in a series about an example app that I put together to demonstrate and describe the use of various Google Apps Script features. See [Part 1](http://www.pipetree.com/qmacro/blog/2011/10/reading-list-mark-2-part-1/) for an introduction. This part is "Putting it all together and using the OnOpen event to insert a new 2-item menu entry on the spreadsheet’s page".
+This is Part 5, the last part in a series about an example app that I put together to demonstrate and describe the use of various Google Apps Script features. See [Part 1](/2011/10/reading-list-mark-2-part-1/) for an introduction. This part is "Putting it all together and using the OnOpen event to insert a new 2-item menu entry on the spreadsheet’s page".
 
 **Parts Overview**
 
-1. [Introduction to the app, and a short screencast showing the features](http://www.pipetree.com/qmacro/blog/2011/10/reading-list-mark-2-part-1/)
-2. [Using the Tasks API to retrieve and insert tasklists, and the Ui Services to build the tasklist chooser component](http://www.pipetree.com/qmacro/blog/2011/10/reading-list-mark-2-part-2/)
-3. [Using the UrlFetch Services to interact with the Google+ API and grab info on articles pointed to by users in their activity stream](http://www.pipetree.com/qmacro/blog/2011/10/reading-list-mark-2-part-3/)
-4. [Synchronising the URL list in the spreadsheet with corresponding tasks in the chosen tasklist](http://www.pipetree.com/qmacro/blog/2011/10/reading-list-mark-2-part-4/)
-5. [Putting it all together and using the OnOpen event to insert a new 2-item menu entry on the spreadsheet’s page](http://www.pipetree.com/qmacro/blog/2011/10/reading-list-mark-2-part-5/) <– you are here
+1. [Introduction to the app, and a short screencast showing the features](/2011/10/reading-list-mark-2-part-1/)
+2. [Using the Tasks API to retrieve and insert tasklists, and the Ui Services to build the tasklist chooser component](/2011/10/reading-list-mark-2-part-2/)
+3. [Using the UrlFetch Services to interact with the Google+ API and grab info on articles pointed to by users in their activity stream](/2011/10/reading-list-mark-2-part-3/)
+4. [Synchronising the URL list in the spreadsheet with corresponding tasks in the chosen tasklist](/2011/10/reading-list-mark-2-part-4/)
+5. [Putting it all together and using the OnOpen event to insert a new 2-item menu entry on the spreadsheet’s page](/2011/10/reading-list-mark-2-part-5/) <– you are here
 
 **Putting it all together**
 

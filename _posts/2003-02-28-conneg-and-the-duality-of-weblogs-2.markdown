@@ -15,14 +15,14 @@ Q: *When is a blog not a blog?*
 
 A: *When it’s an <acronym title="Rich Site Summary">RSS</acronym> feed.*
 
-I’ve [pondered the relationship between weblog and RSS before](http://pipetree.com/qmacro/blog/2002/10/05/notes-to-self-what-should-the-rdfabout-point-to/), and in an [Old Speckled Hen](http://www.oldspeckledhen.co.uk/introduction.htm)-induced philosophical state of mind, have decided for experimental purposes that for all URI intents and purposes they are one and the same.
+I’ve [pondered the relationship between weblog and RSS before](/2002/10/05/notes-to-self-what-should-the-rdfabout-point-to/), and in an [Old Speckled Hen](http://www.oldspeckledhen.co.uk/introduction.htm)-induced philosophical state of mind, have decided for experimental purposes that for all URI intents and purposes they are one and the same.
 
-With that in mind, my thoughts turned (naturally) to connection negotiation, or ‘conneg’. My weblog, whether HTML or RSS, is my weblog. Same thing, different representation. So perhaps both representations should actually have the same URI, [http://www.pipetree.com/qmacro/blog/](http://www.pipetree.com/qmacro/blog/). Clients could use conneg to specify which representation they wanted, for example:
+With that in mind, my thoughts turned (naturally) to connection negotiation, or ‘conneg’. My weblog, whether HTML or RSS, is my weblog. Same thing, different representation. So perhaps both representations should actually have the same URI, [/](/). Clients could use conneg to specify which representation they wanted, for example:
 
 <acronym title="Rich Site Summary">RSS</acronym> 0.91:
 
 ```
-[dj@cicero dj]$ GET -H"Accept: application/rss+xml" -Use http://www.pipetree.com/qmacro/blog/
+[dj@cicero dj]$ GET -H"Accept: application/rss+xml" -Use /
 GET http://www.pipetree.com/qmacro 
 Accept: application/rss+xml 
 200 OK 
@@ -36,7 +36,7 @@ Content-Type: application/rss+xml
 Or <acronym title="Rich Site Summary">RSS</acronym> 1.0:
 
 ```
-[dj@cicero dj]$ curl -H"Accept:application/rdf+xml" http://www.pipetree.com/qmacro/blog/
+[dj@cicero dj]$ curl -H"Accept:application/rdf+xml" /
 <?xml version="1.0"?> 
 <rdf:RDF xmlns="http://purl.org/rss/1.0/" ... > 
 <channel rdf:about="http://www.pipetree.com/qmacro"> 
@@ -47,7 +47,7 @@ Or <acronym title="Rich Site Summary">RSS</acronym> 1.0:
 Or even simply HTML:
 
 ```
-[dj@cicero dj]$ GET -Use http://www.pipetree.com/qmacro/blog/ 
+[dj@cicero dj]$ GET -Use / 
 200 OK 
 Content-Type: text/html; charset=ISO-8859-1   
 <title>DJ's Weblog</title> ...

@@ -10,10 +10,10 @@ date: '2016-03-04 16:47:39'
 [“fiux2″ Week 2 – Design Your First SAP Fiori App  
 ](/qmacro/blog/2016/03/08/fiux2-week-2-design-your-first-sap-fiori-app/)
 [“fiux2″ Week 3 – Get Ready to Create Your First App  
-](http://pipetree.com/qmacro/blog/2016/03/fiux2-week-3-get-ready-to-create-your-first-app/) [“fiux2″ Week 4 – Create Your First SAP Fiori App  
-](http://pipetree.com/qmacro/blog/2016/03/fiux2%E2%80%B3-week-4-create-your-first-sap-fiori-app/) [“fiux2″ Week 5 – Enhance an SAP Fiori App  
-](http://pipetree.com/qmacro/blog/2016/03/fiux2-week-5-enhance-an-sap-fiori-master-detail-app/) [“fiux2″ Week 6 – Extend SAP Fiori Apps](http://pipetree.com/qmacro/blog/2016/04/fiux2-week-6-extend-sap-fiori-apps/)  
-[“fiux2″ Week 7 – Build Your Own SAP Fiori App](http://pipetree.com/qmacro/blog/2016/04/fiux2-week-7-build-your-own-sap-fiori-app/)
+](/2016/03/fiux2-week-3-get-ready-to-create-your-first-app/) [“fiux2″ Week 4 – Create Your First SAP Fiori App  
+](/2016/03/fiux2%E2%80%B3-week-4-create-your-first-sap-fiori-app/) [“fiux2″ Week 5 – Enhance an SAP Fiori App  
+](/2016/03/fiux2-week-5-enhance-an-sap-fiori-master-detail-app/) [“fiux2″ Week 6 – Extend SAP Fiori Apps](/2016/04/fiux2-week-6-extend-sap-fiori-apps/)  
+[“fiux2″ Week 7 – Build Your Own SAP Fiori App](/2016/04/fiux2-week-7-build-your-own-sap-fiori-app/)
 
 I’ve written about the [openSAP](http://open.sap.com) Massive Open Online Courses (MOOC) system in the past. I’m a big fan, particularly for the way the folks run the ship. They are “open” in the best possible ways.
 
@@ -21,7 +21,7 @@ Anyway, last week saw the start of the much anticipated 2016 Edition of the cour
 
 I’m a great believer in learning and re-learning subjects, especially from different sources. Even if you feel you know a good chunk of a given topic, learning with new material, and from different angles, will give you not only knowledge reinforcement but also new nuggets which are therefore also more easily digestible. If only for this reason, I’d recommend this course to you. The time commitment isn’t unreasonable, there’s hands-on, and even a competition!
 
-[![](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-04-at-16.42.23-1024x440.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-04-at-16.42.23.png)
+[![](/wp-content/uploads/2016/03/Screen-Shot-2016-03-04-at-16.42.23-1024x440.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-04-at-16.42.23.png)
 
 And in case you need a little bit more convincing, I thought it might be fun and perhaps useful to write a short post each week, describing what we learned. So here goes with Week 1.
 
@@ -45,7 +45,7 @@ Overall, it was worth the hour or three invested in watching the videos**. And t
 
 I’ll leave you with one thought, which we may well pick up in week 2. Here’s a screenshot, from one of the slides of an S/4HANA Fiori app:
 
-[![](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-04-at-16.29.35.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-04-at-16.29.35.png)
+[![](/wp-content/uploads/2016/03/Screen-Shot-2016-03-04-at-16.29.35.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-04-at-16.29.35.png)
 
 In relation to the Fiori 2.0 designs, which are being introduced in week 2, there were some [comments on Twitter](https://twitter.com/fredverheul/status/705489908769619968) today about the perceived complexity of the newer apps. I think we’re already seeing complexity here, but I don’t think it’s necessarily the end of the world. Some things **do** require you to see more information. Not everything is as simple as approving a purchase requisition or booking leave.
 

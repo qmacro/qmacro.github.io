@@ -24,7 +24,7 @@ and an HTTP POST will be made to the URL specified. You’ll even get an email r
 
 Here’s an example workflow that receives an email containing something to bookmark in Delicious. It uses the Delicious connector, and also makes an HTTP POST to a little test application (running on a local devserver version of the excellent [Google AppEngine](http://code.google.com/appengine/), fwiw) via tarbridge.
 
-[![Workflow using tarbridge](http://www.pipetree.com/qmacro/blog/wp-content/uploads/2009/04/tarpipebridgetest1-300x134.jpg "Workflow using tarbridge")](http://www.flickr.com/photos/qmacro/3470773120/)
+[![Workflow using tarbridge](/wp-content/uploads/2009/04/tarpipebridgetest1-300x134.jpg "Workflow using tarbridge")](http://www.flickr.com/photos/qmacro/3470773120/)
 
 The Subject of the email contains the URL to make the HTTP POST to. By default the Content-Type will be set to application/x-www-form-urlencoded, but you can override this by specifying a different content type (here I’ve specified text/plain) as a second parameter in the Subject.
 
@@ -38,7 +38,7 @@ From: DJ Adams <dj@pipetree.com> To: bury69xxxx@tarpipe.net Subject: http://blog
 
 results in this Delicious entry:
 
-[![Tarpipe Blog URL on Delicious](http://www.pipetree.com/qmacro/blog/wp-content/uploads/2009/04/tarpipeblogurlondelicious-300x196.png "Tarpipe Blog URL on Delicious")](http://delicious.com/url/95948a42d8777b46278d4da333345473)
+[![Tarpipe Blog URL on Delicious](/wp-content/uploads/2009/04/tarpipeblogurlondelicious-300x196.png "Tarpipe Blog URL on Delicious")](http://delicious.com/url/95948a42d8777b46278d4da333345473)
 
 and this email sent, via the Mailer connector, to the tarbridge mechanism:
 

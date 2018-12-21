@@ -17,7 +17,7 @@ I thought it would be worth collecting together a lightly annotated list of Fior
 **2015**
 
 [Fiori Apps Reference Data into a Spreadsheet](https://www.youtube.com/watch?v=B9FGqJFZbzQ) 09 Jan 2015  
- Pulling the Apps info from the OData service used by the SAP Fiori Apps Library app into a Google spreadsheet. More info here: [Fiori App Data into a Spreadsheet? Challenge Accepted!](http://pipetree.com/qmacro/blog/2015/01/fiori-app-data-into-a-spreadsheet-challenge-accepted/)
+ Pulling the Apps info from the OData service used by the SAP Fiori Apps Library app into a Google spreadsheet. More info here: [Fiori App Data into a Spreadsheet? Challenge Accepted!](/2015/01/fiori-app-data-into-a-spreadsheet-challenge-accepted/)
 
 **2014**
 
@@ -25,7 +25,7 @@ I thought it would be worth collecting together a lightly annotated list of Fior
  I scratched an itch and built a simple YAML Model implementation for UI5. More info here: [https://github.com/qmacro/YAMLModel](https://github.com/qmacro/YAMLModel)
 
 [Creation & Reload of UI5 UIs in the Chrome Developer Console](https://www.youtube.com/watch?v=JPy7TxLpILg) 24 Nov 2014  
- Following [my workshop session](http://lanyrd.com/2014/sap-architect-and-developer-summit/sdfyrf/) at the [SAP Architect & Developer Summit](http://pipetree.com/qmacro/blog/2014/11/the-inaugural-sap-architect-developer-summit/), this screencast shows the creation of a quick UI, using the manual Chrome Developer Console techniques we learned, and the subsequent export and reload as XML. (I recorded this at Sydney airport on the way back from the summit).
+ Following [my workshop session](http://lanyrd.com/2014/sap-architect-and-developer-summit/sdfyrf/) at the [SAP Architect & Developer Summit](/2014/11/the-inaugural-sap-architect-developer-summit/), this screencast shows the creation of a quick UI, using the manual Chrome Developer Console techniques we learned, and the subsequent export and reload as XML. (I recorded this at Sydney airport on the way back from the summit).
 
 [SAP Fiori Rapid Prototyping: SAP Web IDE and Google Docs](https://www.youtube.com/watch?v=jAp_nGqOT_c) 05 Nov 2014  
  With the power of the SAP Web IDE and its plugin / template architecture, we can create custom templates that allow you to create Fiori apps based on all sorts of data sources, in this case, a Google Spreadsheet.
@@ -37,10 +37,10 @@ I thought it would be worth collecting together a lightly annotated list of Fior
  Brenton O’Callaghan and I have a 30 min chat about SAP Fiori and the new, unofficial SAP Fiori App that gives information about the available SAP Fiori Apps.
 
 [UI5 Icon Finder](https://www.youtube.com/watch?v=laNprcrApKc) 14 Sep 2014  
- A very quick screencast of an “Icon Finder” app that remembers your own word associations you make, so you can more easily find the icons next time. See [Scratching an itch – UI5 Icon Finder](http://pipetree.com/qmacro/blog/2014/09/scratching-an-itch-ui5-icon-finder/) for more info.
+ A very quick screencast of an “Icon Finder” app that remembers your own word associations you make, so you can more easily find the icons next time. See [Scratching an itch – UI5 Icon Finder](/2014/09/scratching-an-itch-ui5-icon-finder/) for more info.
 
 [OpenUI5 MultiComboBox First Look](https://www.youtube.com/watch?v=0UIyKoiZ-gE) 25 Jul 2014  
- A first look at the sap.m.MultiComboBox in OpenUI5 version 1.22. Note that the addition of a key for the root element is not entirely necessary (but probably what you might want). I wrote more about this here [Keyed vs Non-Keyed Root JSON Elements & UI5 Binding](http://pipetree.com/qmacro/blog/2014/07/keyed-vs-non-keyed-root-json-elements-ui5-binding/).
+ A first look at the sap.m.MultiComboBox in OpenUI5 version 1.22. Note that the addition of a key for the root element is not entirely necessary (but probably what you might want). I wrote more about this here [Keyed vs Non-Keyed Root JSON Elements & UI5 Binding](/2014/07/keyed-vs-non-keyed-root-json-elements-ui5-binding/).
 
 [The SAP Fiori App Analysis application](https://www.youtube.com/watch?v=aVeQ4adHgaY) 30 Jun 2014  
  A short overview of the SAP Fiori App Analysis app, written itself as a Fiori style app. In this overview I show the source for the information (the SAP help documentation), mention how I convert the gathered spreadsheet data into a more easily consumable form, and explore the app a little bit too.

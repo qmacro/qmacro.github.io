@@ -10,7 +10,7 @@ tags:
 - openui5
 ---
 
-**[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 17 by [John Appleby](https://twitter.com/applebyj)** 
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 17 by [John Appleby](https://twitter.com/applebyj)** 
 
 DJ kindly asked me to write a blog for his 30 days of UI5 series to celebrate version 1.30 of UI5. My immediate reaction was what, me, what do I have to add to this subject?
 

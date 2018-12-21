@@ -7,7 +7,7 @@ tags:
 - openui5
 ---
 
-**[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/) - Day 7 by [DJ Adams](http://pipetree.com/qmacro/)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) - Day 7 by [DJ Adams](http://pipetree.com/qmacro/)**
 
 ![Screenshot of coding issues menu item](/content/images/2018/02/Screen-Shot-2015-07-04-at-10.00.14.png)
 

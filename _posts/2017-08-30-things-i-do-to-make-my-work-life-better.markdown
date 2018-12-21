@@ -24,11 +24,11 @@ First, though - let's talk about attitude. Resist the temptation to be influence
 
 So, here are the things I do that I recommend you do too. First, turn off all email notifications and alerts on all your devices. They only serve to distract you from what you're trying to do. 
 
-Second, discipline yourself to process email a few times a day. Don't have the email client running at any other time. This may be hard to do at first, especially if you're relying on your email client to remind you of meetings and events. But if you turn off notifications and minimise the client, that may be good enough. A side effect of applying this discipline is that it will eventually teach your colleagues that discipline too, at least in terms of expectations. And you can always send them (a link to) a polite note like this one: [Email Discipline](http://pipetree.com/qmacro/blog/email-discipline/).
+Second, discipline yourself to process email a few times a day. Don't have the email client running at any other time. This may be hard to do at first, especially if you're relying on your email client to remind you of meetings and events. But if you turn off notifications and minimise the client, that may be good enough. A side effect of applying this discipline is that it will eventually teach your colleagues that discipline too, at least in terms of expectations. And you can always send them (a link to) a polite note like this one: [Email Discipline](/email-discipline/).
 
 Finally, build a rule to handle your incoming email, splitting it on whether you've been directly addressed (in the "To:" list) or not (in the "Cc:" list). Divert to a "CC-Inbox" folder those emails where you've only been CC'd,  and only check this folder once every two days or so. 
 
-If folks ask you do to something and they've not directly addressed you, that's bordering on rude. Resist the temptation to do it, and if they chase you on something, you can send them (a link to) a polite explanation like this one: [Addressing Emails](http://pipetree.com/qmacro/blog/addressing-emails/).
+If folks ask you do to something and they've not directly addressed you, that's bordering on rude. Resist the temptation to do it, and if they chase you on something, you can send them (a link to) a polite explanation like this one: [Addressing Emails](/addressing-emails/).
 
 Managing email is not only about managing yourself, but about managing others.
 
@@ -38,7 +38,7 @@ There are as many articles on meetings as there are on emails, so I can be brief
 
 If a meeting is longer than half an hour, ask if it can be shorter. Resist accepting meeting requests that are over an hour, or reply tentatively saying you can make the first hour. Meetings that have the "luxury" of more than 60 minutes tend to squander those minutes and be almost naturally more inefficient. 
 
-Don't accept meeting requests that lack information (such as dial in details, or an agenda). You can send the requester (a link to) a polite note like this one: [Meeting Request Details](http://pipetree.com/qmacro/blog/meeting-request-details/).
+Don't accept meeting requests that lack information (such as dial in details, or an agenda). You can send the requester (a link to) a polite note like this one: [Meeting Request Details](/meeting-request-details/).
  
 If I'm working at a client, I allow myself up to a maximum of two 30 minute calls. I can absorb this time into an earlier start, a later finish, or some of my lunch, depending on how generous or hungry I'm feeling. If I'm working at a client and they're being billed for it, it's not appropriate to use that time for other work. You shouldn't do it, and your colleagues shouldn't expect you to either.
 
@@ -48,7 +48,7 @@ Finally, don't waste your time if a meeting doesn't start on time. I usually wai
 
 I try to step away from the keyboard at lunch. It doesn't work all the time, and sometimes it's because I am putting some of my learning into practice. But your brain needs time to process what it's been working on during the morning, and it's not going to be able to to if you're still in front of the screen.
 
-Stepping away is a discipline I learned from practising the Pomodoro technique (see the post [The Maker's Schedule, Restraint and Flow](http://pipetree.com/qmacro/blog/2015/03/15/the-makers-schedule-restraint-and-flow/)), and I do find it helps to re-find focus, even if you're not thinking about it explicitly.
+Stepping away is a discipline I learned from practising the Pomodoro technique (see the post [The Maker's Schedule, Restraint and Flow](/2015/03/15/the-makers-schedule-restraint-and-flow/)), and I do find it helps to re-find focus, even if you're not thinking about it explicitly.
 
 Also, lunch time isn't fixed. My day starts early, which means lunch for me is around 1130. That's great, because when I get back from my lunch, others are just going, which means a little more peace than the rest of the day :-)
 

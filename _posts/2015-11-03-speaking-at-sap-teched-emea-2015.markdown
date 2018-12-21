@@ -12,7 +12,7 @@ tags:
 ---
 
 
-[![Screen Shot 2015-11-03 at 09.36.37](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/11/Screen-Shot-2015-11-03-at-09.36.37-300x44.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2015/11/Screen-Shot-2015-11-03-at-09.36.37.png)
+[![Screen Shot 2015-11-03 at 09.36.37](/wp-content/uploads/2015/11/Screen-Shot-2015-11-03-at-09.36.37-300x44.png)](/wp-content/uploads/2015/11/Screen-Shot-2015-11-03-at-09.36.37.png)
 
 I’m looking forward to a packed set of days next week in Barcelona, where [SAP TechEd EMEA 2015](events.sap.com/teched-2015-emea/en/home) is taking place. It’s packed in many ways: so much to share, so much to learn, so many people to meet and re-meet, so many kilometres to walk in the convention centre, and so much coffee.
 

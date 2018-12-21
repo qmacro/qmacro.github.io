@@ -17,7 +17,7 @@ tags:
 
 ***Update: This has also been [published on the Bluefin Solutions website](http://www.bluefinsolutions.com/Blogs/DJ-Adams/November-2014/The-Inaugural-SAP-Architect-Developer-Summit/). ***
 
-I was honoured to [have been invited](http://pipetree.com/qmacro/blog/2014/10/speaking-at-the-sap-architect-developer-summit/) to speak at the inaugural [SAP Architect & Developer Summit](http://bit.ly/anzsummit) which happened last week (20-21 Nov 2014) in Sydney. It was a fantastic event, mainly due to the people and the content, but also because it hit a sweet spot between different types of SAP developer events.
+I was honoured to [have been invited](/2014/10/speaking-at-the-sap-architect-developer-summit/) to speak at the inaugural [SAP Architect & Developer Summit](http://bit.ly/anzsummit) which happened last week (20-21 Nov 2014) in Sydney. It was a fantastic event, mainly due to the people and the content, but also because it hit a sweet spot between different types of SAP developer events.
 
 The summit was the first of its kind to be organised by SAP, and judging from the feedback from the attendees there and then, combined with my own experience, it was a huge success. It was held over a two day period in the centre of a hotbed of SAP architect and developer talent, with folks converging on the wonderful Australian Technology Park in Sydney from all over the region, plus various additions from the UK, USA and elsewhere.
 

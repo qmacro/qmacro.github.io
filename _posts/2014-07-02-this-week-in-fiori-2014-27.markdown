@@ -14,7 +14,7 @@ tags:
 ---
 
 
-[![SAP Fiori](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/07/fiori.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2014/07/fiori.png)
+[![SAP Fiori](/wp-content/uploads/2014/07/fiori.png)](/wp-content/uploads/2014/07/fiori.png)
 
 The interest in SAP Fiori and the User Experience (UX) renewal at SAP is growing week on week. Ever since the launch of SAP Fiori Wave 1 back in summer 2013, with 25 Employee Self Service / Manager Self Service (ESS/MSS) apps, the momentum has been growing. Not surprising, given these things:
 

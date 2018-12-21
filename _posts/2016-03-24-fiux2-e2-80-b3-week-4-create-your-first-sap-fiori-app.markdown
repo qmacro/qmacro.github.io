@@ -5,9 +5,9 @@ date: '2016-03-24 08:01:03'
 ---
 
 
-(See first post in this series — [“fiux2″ – The openSAP Fiori Course – 2016 Edition](http://pipetree.com/qmacro/blog/2016/03/fiux2-the-opensap-fiori-course-2016-edition/) — for links to the other posts).
+(See first post in this series — [“fiux2″ – The openSAP Fiori Course – 2016 Edition](/2016/03/fiux2-the-opensap-fiori-course-2016-edition/) — for links to the other posts).
 
-Well we’re pretty much at the half-way point in this course, and it’s going well. This week sees the end of the deadline extension for the Design Challenge that I [wrote about in Week 3](http://pipetree.com/qmacro/blog/2016/03/fiux2-week-3-get-ready-to-create-your-first-app/), but mainly is about introducing the course attendee to some basic hands on with the SAP Web IDE. Let’s have a look at how this unit went.
+Well we’re pretty much at the half-way point in this course, and it’s going well. This week sees the end of the deadline extension for the Design Challenge that I [wrote about in Week 3](/2016/03/fiux2-week-3-get-ready-to-create-your-first-app/), but mainly is about introducing the course attendee to some basic hands on with the SAP Web IDE. Let’s have a look at how this unit went.
 
 **Unit 1 “Introduction to SAP Web IDE”.** I’m guessing that the majority of this course’s attendees may well have some familiarity with SAP’s now-flagship interactive development environment (IDE). It had an interesting genesis, growing from an initial offering called App Designer, which, remained a young product but seemed like it might be aiming to become, for UI5, what the Microsoft tools were for Visual Basic. There was also App Builder, which one might say was a competing product, from the Sybase stable. And how can we forget the tools and accelerators for various workstation versions of Eclipse.
 
@@ -35,7 +35,7 @@ An equally good reason to look at what the Web IDE has to offer are the referenc
 
 **Unit 4 “Enhancing Your SAP Fiori App with SAP Web IDE”.** This was a fairly straightforward unit, where the instructor takes us through a couple of examples of enhancing existing SAP Fiori apps. Rather than use the visual editor, we are shown the regular editor where the view is modified by adding XML elements as shown in the screenshot from the video below. This is fine, and my preferred modus operandi.
 
-[![Screen Shot 2016-03-24 at 07.30.11](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-24-at-07.30.11.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-24-at-07.30.11.png)
+[![Screen Shot 2016-03-24 at 07.30.11](/wp-content/uploads/2016/03/Screen-Shot-2016-03-24-at-07.30.11.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-24-at-07.30.11.png)
 
 But I do wonder if attendees are thinking: “how would I *know* that I could or should place an <attributes> element there, and within that element, an <ObjectAttribute>. And what about the capitalisation? Well, for those who can’t wait for the coming weeks, where I suspect, or hope, that this is covered in a little bit more detail, here are a couple of pointers:
 
@@ -45,7 +45,7 @@ But I do wonder if attendees are thinking: “how would I *know* that I could or
 
 3. So yes, you guessed it – whereas controls are represented as XML elements with capitalised names, aggregations are represented by XML elements starting with lowercase letters. So <attributes> here in line 9 is the start of the list of Object Attributes within the “attributes” aggregation belonging to the Object Header control.
 
-[![Screen Shot 2016-03-24 at 07.39.34](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-24-at-07.39.34.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-24-at-07.39.34.png)
+[![Screen Shot 2016-03-24 at 07.39.34](/wp-content/uploads/2016/03/Screen-Shot-2016-03-24-at-07.39.34.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-24-at-07.39.34.png)
 
 I’m sure that this sort of information will be covered in much more detail in the upcoming openSAP course on SAPUI5 – watch this space! :-)
 
@@ -53,7 +53,7 @@ I’m sure that this sort of information will be covered in much more detail in 
 
 It’s definitely worth studying the Web IDE features explained in this unit. While the OData Model Editor is still something I’d like to see improved (adding some visual aspects to the *editing* process, rather than still having to edit at the rather verbose EDMX level), it’s still a great first step, especially with the visual display of the entities and their relationships:
 
-[![Screen Shot 2016-03-24 at 07.50.59](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-24-at-07.50.59-1024x854.png)](http://pipetree.com/qmacro/blog/wp-content/uploads/2016/03/Screen-Shot-2016-03-24-at-07.50.59.png)
+[![Screen Shot 2016-03-24 at 07.50.59](/wp-content/uploads/2016/03/Screen-Shot-2016-03-24-at-07.50.59-1024x854.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-24-at-07.50.59.png)
 
 It’s a shame that this wasn’t shown in this unit.
 

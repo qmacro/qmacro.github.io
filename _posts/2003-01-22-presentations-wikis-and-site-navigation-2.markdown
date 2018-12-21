@@ -5,7 +5,7 @@ date: '2003-01-22 15:10:18'
 ---
 
 
-A while ago, inspired by others, I was looking at [adding metadata](http://www.pipetree.com/qmacro/blog/2002/06/html-link-tag-for-blogroll/) to this weblog in the form of *link rel=’…’* tags that link to related resources. The classic use of such tags in weblogging is for a weblog to [point to its <acronym title="Rich Site Summary">RSS</acronym> feed](http://www.pipetree.com/qmacro/blog/2002/06/changed-link-tags/).
+A while ago, inspired by others, I was looking at [adding metadata](/2002/06/html-link-tag-for-blogroll/) to this weblog in the form of *link rel=’…’* tags that link to related resources. The classic use of such tags in weblogging is for a weblog to [point to its <acronym title="Rich Site Summary">RSS</acronym> feed](/2002/06/changed-link-tags/).
 
 Cut to the present, and [Piers](http://www.piersharding.com/) and I are thinking about a joint conference presentation. While the presentation format is not in question (HTML), I’ve been wondering how I might investigate these *link rel=’…’* tags further, learn some more about wikis, and have a bit of fun in the process.
 

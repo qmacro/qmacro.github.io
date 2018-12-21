@@ -14,7 +14,7 @@ With the advent of the new [SAP Community Network](http://www.sdn.sap.com/irj/sc
 
 I thought it would be a nice exercise to take one of the [SAPUI5](http://www.sdn.sap.com/irj/sdn/index?rid=/webcontent/uuid/20a34ae7-762d-2f10-c994-db2e898d5f70) controls for a spin, namely the [SearchField](http://www.pipetree.com/~dj/sapui5/demokit/#docs/api/symbols/sap.ui.commons.SearchField.html). It has a great many options, and wraps some jQuery functions to provide a comfortable way to expose ‘intellisense’ style results as you type. It’s over there on the right, in the sidebar.
 
-<div class="wp-caption alignnone" id="attachment_1378" style="width: 374px">[![](http://www.pipetree.com/qmacro/blog/wp-content/uploads/2012/03/forumsearch1.png "forumsearch")](http://www.pipetree.com/qmacro/blog/wp-content/uploads/2012/03/forumsearch1.png)SDN Forum Search
+<div class="wp-caption alignnone" id="attachment_1378" style="width: 374px">[![](/wp-content/uploads/2012/03/forumsearch1.png "forumsearch")](/wp-content/uploads/2012/03/forumsearch1.png)SDN Forum Search
 
 </div>From the Javascript, here’s the instantiation:
 

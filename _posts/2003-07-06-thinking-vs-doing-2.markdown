@@ -9,7 +9,7 @@ tags:
 ---
 
 
-In the past, I’ve mentioned to friends some of the thinking I’ve had about the Semantic Web, RDF, and related stuff (FOAF, RSS, and so on). [Yesterday’s stuff](http://www.pipetree.com/qmacro/blog/2003/07/some-ramblings-on-uris-and-identity/ "Some ramblings on URIs and identity"), for example. On more than one occasion the response has been along the lines of “where are the apps — why are you thinking instead of doing?”. They don’t get it. First of all, there *are* apps, toolkits, libraries, and so on. I don’t think I have to point them out.
+In the past, I’ve mentioned to friends some of the thinking I’ve had about the Semantic Web, RDF, and related stuff (FOAF, RSS, and so on). [Yesterday’s stuff](/2003/07/some-ramblings-on-uris-and-identity/ "Some ramblings on URIs and identity"), for example. On more than one occasion the response has been along the lines of “where are the apps — why are you thinking instead of doing?”. They don’t get it. First of all, there *are* apps, toolkits, libraries, and so on. I don’t think I have to point them out.
 
 But secondly, and more importantly, whatever happened to knowledge and discourse for its own sake? From studying RDF, for example, even at the fairly superficial level that I have, I’ve exercised my mind thinking about hard questions of language, expression, relationships, identity and semantics. While the concept of a Semantic Web platform is simple (a vast homogenous database spanning the world of information), its nuts and bolts, the substructure of concrete, steel and ontological rivets are submerged under a sea of meaning, nuance and interpretation.
 

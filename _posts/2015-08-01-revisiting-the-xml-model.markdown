@@ -7,7 +7,7 @@ tags:
 - xmlmodel
 ---
 
-**[30 Days of UI5](http://pipetree.com/qmacro/blog/2015/07/04/30-days-of-ui5/)- Day 29 by [DJ Adams](http://pipetree.com/qmacro/)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 29 by [DJ Adams](http://pipetree.com/qmacro/)**
 
 ![](/content/images/2018/02/Screen-Shot-2015-08-01-at-11.56.50.png)
 

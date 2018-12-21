@@ -26,7 +26,7 @@ Dates in March and May are available; follow the links to find out more and to b
 
 [One of the topics covered in Day 2](https://docs.google.com/document/pub?id=1lX_X95LIaNBxlOsXxO_DFxYZfz4AxGyennxMNKIaaJE&pli=1#h.bz5oteq9itkk) on this course is the Alternative Dispatcher Layer (ADL), a lightweight alternative approach to building web applications, an approach informed and influenced by other libraries and frameworks such as the Python [webapp framework](http://code.google.com/appengine/docs/python/tools/webapp/) in Google App Engine. Read more about the origins of ADL in this SAP Developer Network post: [A new REST handler / dispatcher for the ICF](http://www.sdn.sap.com/irj/scn/weblogs?blog=/pub/wlg/15899).
 
-If you’re after more background, see this post from earlier this year: [Stand Steady on the Shoulders of Giants](http://www.pipetree.com/qmacro/blog/2011/07/stand-steady-on-the-shoulders-of-giants/)
+If you’re after more background, see this post from earlier this year: [Stand Steady on the Shoulders of Giants](/2011/07/stand-steady-on-the-shoulders-of-giants/)
 
 Looking forward to seeing you on the course!
 

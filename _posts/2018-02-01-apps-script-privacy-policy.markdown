@@ -4,7 +4,7 @@ title: Apps Script - Privacy Policy
 date: '2018-02-01 15:25:00'
 ---
 
-This is the Privacy Policy for the Apps Scripts made available for use. For example, one such script is SheetAsJSON, described in this blog post: [SheetAsJSON - Google Spreadsheet Data as JSON](http://pipetree.com/qmacro/blog/2013/10/04/sheetasjson-google-spreadsheet-data-as-json/).
+This is the Privacy Policy for the Apps Scripts made available for use. For example, one such script is SheetAsJSON, described in this blog post: [SheetAsJSON - Google Spreadsheet Data as JSON](/2013/10/04/sheetasjson-google-spreadsheet-data-as-json/).
 
 This privacy policy sets out how the scripts use and protects any information that you supply when using them.
 
