@@ -6,25 +6,31 @@ tags:
 - rdf
 - rss-tag
 ---
-
-
 Ironically, it’s only been the recent and ongoing hubbub about the direction of RSS that’s got me wondering what the real truth is about the RDF in RSS. In a still handwavy sort of way, I understand that RDF is important for the (semantic|data) web that is to form as a layer above the current writhing disconnected mass of URIs. But I realised I hadn’t really thought much about what the RDF bits of RSS (1.0) were, and much less what they were for. I get the feeling that for most mortals, including me, including RDF in their RSS feeds seemed like building a racing car to do the shopping, and never even taking it out on a track after the shopping was finished. Actually, perhaps some people didn’t even see the racing car as a whole. So I did a little reading and thinking.
 
 The point of RDF is to be able to describe resources. Resource Description Framework. So far so good. But what are resources? They’re things that we can point to on the web – things with URIs (REST axioms, anyone?). With RDF, we can make assertions, state facts, about things. These assertions are always in the form of
 
-> *this thing* has *this property* with *this value*.
+> 'this thing' has 'this property' with 'this value'.
 
 These assertions are often expressed as having the form ‘subject-predicate-object’ and are referred to as ‘triples’. RDF exists independently of XML, but what I (and lots of other people) recognise RDF as is its XML incarnation. Here’s a simple example:
 
-> <rdf:Description rdf:about='http://www.pipetree.com/qmacro'> <dc:title>DJ's Weblog</dc:title> </rdf:Description>
+```xml
+<rdf:Description rdf:about='http://www.pipetree.com/qmacro'>
+	<dc:title>DJ's Weblog</dc:title>
+</rdf:Description>
+```
 
 This makes the assertion that
 
-> *the resource at [http://www.pipetree.com/qmacro](../../../qmacro "DJ's Weblog")* has *a title (as defined in the [Dublin Core](http://purl.org/dc/elements/1.0/ "Dublin Core elements"))* with the value “*DJ’s Weblog*“.
+> the resource at [http://www.pipetree.com/qmacro](../../../qmacro "DJ's Weblog") has a title (as defined in the [Dublin Core](http://purl.org/dc/elements/1.0/ "Dublin Core elements")) with the value “DJ’s Weblog“.
 
 What’s obvious is that *subjects* are URIs. It’s also easy to realise that *objects* can be URIs too – instead of having a Literal (“DJ’s Weblog”) as in the example above, you can have another resource (a URI), for example:
 
-> <foaf:Person rdf:ID="qmacro"> <foaf:depiction rdf:resource="http://www.pipetree.com/~dj/dj.png"/> </foaf:Person>
+```xml
+<foaf:Person rdf:ID="qmacro">
+	<foaf:depiction rdf:resource="http://www.pipetree.com/~dj/dj.png"/>
+</foaf:Person>
+```
 
 Here, the object, the value of the foaf:depiction property, is a URI ([http://www.pipetree.com/~dj/dj.png](/~dj/dj.png "DJ's ugly mug")) pointed to directly with the rdf:resource attribute.
 
@@ -36,7 +42,29 @@ Anyway, the point of RDF here is to be able to make connections between things o
 
 So, what about these triples that exist in RSS 1.0? They’re just to add a layer of richness, a seam to be mined by RDF-aware tools. Let’s have a look at a simple RSS 1.0 file. I’ve highlighted the RDF bits (slightly cut to fit):
 
-<**rdf:RDF****xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"** xmlns="http://purl.org/rss/1.0/"> <channel **rdf:about="http://www.pipetree.com/qmacro/xml">** <title>DJ's Weblog</title> <link>http://www.pipetree.com/qmacro</link> <description> Why make things simple when you can make them complicated? </description> ** <items> <rdf:Seq> <rdf:li rdf:resource="http://www...#tech/moz-tab-bookmark"/> <rdf:li rdf:resource="http://www...#tech/google-idempotent" /> </rdf:Seq> </items> ** </channel> <item **rdf:about="http://www...#tech/moz-tab-bookmark"**> <title>Mozilla "Bookmark This Group of Tabs"</title> <link>http://www...#tech/moz-tab-bookmark</link> <description> I was just reading some background stuff ... </description> </item> ... <**/rdf:RDF**>
+```xml
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/">
+	<channel rdf:about="http://www.pipetree.com/qmacro/xml">
+		<title>DJ's Weblog</title>
+		<link>http://www.pipetree.com/qmacro</link>
+		<description> Why make things simple when you can make them complicated?</description>
+		<items>
+			<rdf:Seq>
+				<rdf:li rdf:resource="http://www...#tech/moz-tab-bookmark"/>
+				<rdf:li rdf:resource="http://www...#tech/google-idempotent" />
+			</rdf:Seq>
+		</items>
+	</channel>
+
+		<item rdf:about="http://www...#tech/moz-tab-bookmark">
+		<title>Mozilla "Bookmark This Group of Tabs"</title>
+		<link>http://www...#tech/moz-tab-bookmark</link>
+		<description> I was just reading some background stuff ...
+		</description>
+		</item>
+		...
+</rdf:RDF>
+```
 
 Here’s what we have, RDF-wise:
 
@@ -50,7 +78,9 @@ And what do these RDF things do? First, each resource – the RSS channel, or th
 
 If the RSS file were to have an image, it would occur as in other RSS versions (i.e. as an element peer of the <channel/> element), and the <image/> element itself would have an **rdf:about** attribute pointing to that image resource’s URI. Then, *inside the channel element*, there’d be a simple:
 
-> <image rdf:resource="..." />
+```xml
+<image rdf:resource="..." />
+```
 
 element pointing to the same URI as the <image/> element’s **rdf:about** attribute pointed to. This would say:
 

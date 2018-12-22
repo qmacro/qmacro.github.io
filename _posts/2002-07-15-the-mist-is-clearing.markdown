@@ -11,18 +11,44 @@ I’m trying to understand more about [REST](http://internet.conveyor.com/RESTwi
 
 Creating a ticket:
 
-POST /ticket (queue, subject, email, and initial ticket query supplied in body) ... 201 Created Location: /ticket/42
+```
+POST /ticket
+(queue, subject, email, and initial ticket query supplied in body)
+
+...
+
+201 Created
+Location: /ticket/42
+```
 
 Corresponding on a ticket:
 
-PUT /ticket/42 (correspondence supplied in body, will be appended to the ticket history) ... 200 OK
+```
+PUT /ticket/42
+(correspondence supplied in body, will be appended to the ticket history)
 
-(Hmm, perhaps that should that be PUT to /ticket/42/history, returning a 201 with a unique URI for that particular piece of correspondence, e.g. /ticket/42/history/20020715115442).
+...
+
+200 OK
+```
+
+(Hmm, perhaps that should that be PUT to `/ticket/42/history`, returning a 201 with a unique URI for that particular piece of correspondence, e.g. `/ticket/42/history/20020715115442`).
 
 Getting info on a ticket:
 
-GET /ticket/42 or GET /ticket/42/basics or GET /ticket/42/history ... 200 OK (ticket info)
+```
+GET /ticket/42
+or
+GET /ticket/42/basics
+or
+GET /ticket/42/history
 
-I’m glad I had my copy of the excellent [Writing Apache Modules with Perl and C](http://www.oreilly.com/catalog/wrapmod/ "Book's home on O'Reilly") close to hand, to remind me of things like **$r->custom_response()** and **Apache::Constants->export(qw(HTTP_CREATED))**.
+...
+
+200 OK
+(ticket info)
+```
+
+I’m glad I had my copy of the excellent [Writing Apache Modules with Perl and C](http://www.oreilly.com/catalog/wrapmod/ "Book's home on O'Reilly") close to hand, to remind me of things like `$r->custom_response()` and `Apache::Constants->export(qw(HTTP_CREATED))`.
 
 

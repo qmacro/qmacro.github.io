@@ -20,13 +20,32 @@ Ok, well it was a very quick hack. The data coming out of the server port is a s
 
 The Panopticon data is XML. Jabber is XML. So I decided the nice thing to do would be to avoid just blurting XML into the conference room – that would be like shouting gobbledygook in a room full of people. Instead, I wrote something sensible to the room each time some data fell out of the end of the Panopticon socket (the name of the blogger’s avatar), and *attached* the actual Panopticon XML as an extension to the groupchat message. Here’s an example:
 
-<dl><dt>Panopticon produces this:</dt><dd><icon id='4ee9da17f5839275ad0ca5d58c2bacaa'> <x>456</x> <y>255</y> </icon>
+Panopticon produces this:
 
-</dd><dt>panpush.pl sends this to the room:</dt><dd><message to='panopticon@conf.gnu.mine.nu' type='groupchat'> DJ Adams <x xmlns='panopticon:icon'> <icon id='4ee9da17f5839275ad0ca5d58c2bacaa'> <x>456</x> <y>255</y> </icon> </x> </message>
+```xml
+<icon id='4ee9da17f5839275ad0ca5d58c2bacaa'>
+	<x>456</x>
+i	<y>255</y>
+</icon>
+```
 
-</dd></dl>The scary thing is that it seems to work! Grab your nearest Jabber client and enter room
+`panpush.pl` sends this to the room:
 
-> **panopticon@conf.gnu.mine.nu**
+```xml
+<message to='panopticon@conf.gnu.mine.nu' type='groupchat'>
+	DJ Adams
+	<x xmlns='panopticon:icon'>
+		<icon id='4ee9da17f5839275ad0ca5d58c2bacaa'>
+			<x>456</x>
+			<y>255</y>
+		</icon>
+	</x>
+</message>
+```
+
+The scary thing is that it seems to work! Grab your nearest Jabber client and enter room
+
+**panopticon@conf.gnu.mine.nu**
 
 (remember, you don’t have to have a Jabber user account on gnu.mine.nu to join a conference room there – just use your normal Jabber account, say, at jabber.org). If it’s still working, you should see ‘panopticon’ in that room – that’s the panpush.pl script. When some avatar metadata changes and pops out of the Panopticon server’s port, it will appear in the room – currently represented as the avatar’s name.
 
