@@ -14,7 +14,7 @@ Tarpipe implemented a REST connector a short while ago. This is something that I
 
 As Bruno showed in the announcement, this is what the REST connector looks like:
 
-![Tarpipe REST connector](/wp-content/uploads/2009/05/tarpiperestconnector.png "Tarpipe REST connector")
+![Tarpipe REST connector](/content/images/2009/05/tarpiperestconnector.png "Tarpipe REST connector")
 
 It will take whatever values it receives in the **title**, **description** and **link** input fields on the left hand side of the connector, and construct a piece of [JSON](http://www.json.org/) which it then sends in an [application/x-www-form-urlencoded](http://www.w3.org/TR/html401/interact/forms.html#h-17.13.4.1) format as a data=<JSON> name/value pair in the message body of an HTTP POST request to the resource specified in the **serviceUrl** field.
 

@@ -24,11 +24,11 @@ After some digging, I found out. Introduced on 10 Dec 2014, within the 1.28.0 re
 
 I set about confirming what I’d found with a small test on Plunkr, “[Aggregation Binding Test](http://plnkr.co/edit/QQU4bPNb5Kg65vZ8vnad?p=preview)“:
 
-[![Screen Shot 2015-05-20 at 19.11.18](/wp-content/uploads/2015/05/Screen-Shot-2015-05-20-at-19.11.18-300x261.png)](/wp-content/uploads/2015/05/Screen-Shot-2015-05-20-at-19.11.18.png)
+[![Screen Shot 2015-05-20 at 19.11.18](/content/images/2015/05/Screen-Shot-2015-05-20-at-19.11.18-300x261.png)](/content/images/2015/05/Screen-Shot-2015-05-20-at-19.11.18.png)
 
 But don’t take my word for it – the author has also added a test to the [JSON List Binding QUnit tests](https://openui5.hana.ondemand.com/test-resources/sap/ui/core/qunit/JSONListBinding.qunit.html):
 
-[![Screen Shot 2015-05-20 at 19.14.05](/wp-content/uploads/2015/05/Screen-Shot-2015-05-20-at-19.14.05-300x248.png)](/wp-content/uploads/2015/05/Screen-Shot-2015-05-20-at-19.14.05.png)
+[![Screen Shot 2015-05-20 at 19.14.05](/content/images/2015/05/Screen-Shot-2015-05-20-at-19.14.05-300x248.png)](/content/images/2015/05/Screen-Shot-2015-05-20-at-19.14.05.png)
 
 It makes sense to blur the distinction between maps and arrays when it comes to aggregation bindings; already I have a use for it, and I didn’t even know the feature had been implemented!
 

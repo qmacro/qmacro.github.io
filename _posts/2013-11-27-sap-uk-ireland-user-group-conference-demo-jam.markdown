@@ -27,7 +27,7 @@ An updated version of an old TV / stage adage goes something like this:
 
 *“Never work with children or animals, or do live coding, unless you’re a fool”.*
 
-<div class="wp-caption alignright" id="attachment_1561" style="width: 310px">[![](/wp-content/uploads/2013/11/ukisug13-demojam-1-300x223.jpg "Coding SAPUI5 / Fiori XML Views live on stage")](/wp-content/uploads/2013/11/ukisug13-demojam-1.jpg)Photo by @timoelliott
+<div class="wp-caption alignright" id="attachment_1561" style="width: 310px">[![](/content/images/2013/11/ukisug13-demojam-1-300x223.jpg "Coding SAPUI5 / Fiori XML Views live on stage")](/content/images/2013/11/ukisug13-demojam-1.jpg)Photo by @timoelliott
 
 </div>Being a fool, and with no children or animals around, I went for the third option and wrote XML in front of hundreds of people, instantiating SAPUI5 controls and building an SAP Fiori-like app before their eyes (classic design – master/detail showing sales orders and details). It was made slightly more “interesting” than it might otherwise have been by the fact that my hands were really cold, and fingers inflexible (I’d recently arrived and it had been very cold outside) – not ideal for typing under pressure.
 
@@ -35,11 +35,11 @@ The key thing I wanted to get across was that there was no mystery around SAP Fi
 
 The majority of the audience had heard of Fiori, which was great, and hopefully after my Demo Jam entry they understand a little bit more of what makes Fiori apps tick, and are better armed to ask the right questions and make the right decisions.
 
-<div class="wp-caption alignleft" id="attachment_1562" style="width: 235px">[![](/wp-content/uploads/2013/11/ukisug13-demojam-3-225x300.jpg "Win!")](/wp-content/uploads/2013/11/ukisug13-demojam-3.jpg)With the trophy
+<div class="wp-caption alignleft" id="attachment_1562" style="width: 235px">[![](/content/images/2013/11/ukisug13-demojam-3-225x300.jpg "Win!")](/content/images/2013/11/ukisug13-demojam-3.jpg)With the trophy
 
 </div>I was totally honoured to be part of Demo Jam this year, the other entries were great (everything from immersive virtual reality with big data, through automated training solutions to compliance systems) but perhaps largely due to [eddies in the space time continuum](http://en.wikiquote.org/wiki/The_Hitchhiker's_Guide_to_the_Galaxy#Chapter_2_3), I won!
 
-[](/wp-content/uploads/2013/11/ukisug13-demojam-3.jpg)
+[](/content/images/2013/11/ukisug13-demojam-3.jpg)
 
 In a way, the fact that I only had a few hours to come up with something and prepare my entry made it quite a fun experience … and I’m already looking forward to seeing the entries next year!
 

@@ -43,11 +43,11 @@ READINGLISTCELL = 'D1'; function update() { // First, check that we have a taskl
 
 This function grabs a reference to the active sheet, and pulls the comment from the cell that we’ve designated as where the reading list tasklist info is stored: READINGLISTCELL. The name is stored in the cell, and the ID is stored in the cell’s comment. If there isn’t an ID, then we’ll ask the user to choose a tasklist using the Ui we built in [Part 2](/2011/10/reading-list-mark-2-part-2/). The [Browser](http://code.google.com/googleapps/appsscript/class_browser.html) class in Google Apps Script’s [Base Services](http://code.google.com/googleapps/appsscript/service_base.html) gives us a nice dialog box that looks like this:
 
-<div class="wp-caption alignnone" id="attachment_1198" style="width: 316px">[![](/wp-content/uploads/2011/10/notamessage1.png "Message Box")](/wp-content/uploads/2011/10/notamessage1.png)Message Box
+<div class="wp-caption alignnone" id="attachment_1198" style="width: 316px">[![](/content/images/2011/10/notamessage1.png "Message Box")](/content/images/2011/10/notamessage1.png)Message Box
 
 </div>But there’s also a nice visual message feature that’s available in the [Spreadsheet Services](http://code.google.com/googleapps/appsscript/service_spreadsheet.html), specific to a spreadsheet: [toast()](http://code.google.com/googleapps/appsscript/class_spreadsheet.html#toast). Calling this causes a popup to appear in the lower right of the screen, which stays visible for a short while. This is what it looks like:
 
-<div class="wp-caption alignnone" id="attachment_1177" style="width: 269px">[![](/wp-content/uploads/2011/10/notasklist.png "Toast message")](/wp-content/uploads/2011/10/notasklist.png)Toast message
+<div class="wp-caption alignnone" id="attachment_1177" style="width: 269px">[![](/content/images/2011/10/notasklist.png "Toast message")](/content/images/2011/10/notasklist.png)Toast message
 
 </div>Because the ‘toast’ name is so evocative, we’ll use it in our function to prompt the user to choose a tasklist.
 

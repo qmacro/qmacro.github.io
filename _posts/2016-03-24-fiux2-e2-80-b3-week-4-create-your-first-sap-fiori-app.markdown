@@ -35,7 +35,7 @@ An equally good reason to look at what the Web IDE has to offer are the referenc
 
 **Unit 4 “Enhancing Your SAP Fiori App with SAP Web IDE”.** This was a fairly straightforward unit, where the instructor takes us through a couple of examples of enhancing existing SAP Fiori apps. Rather than use the visual editor, we are shown the regular editor where the view is modified by adding XML elements as shown in the screenshot from the video below. This is fine, and my preferred modus operandi.
 
-[![Screen Shot 2016-03-24 at 07.30.11](/wp-content/uploads/2016/03/Screen-Shot-2016-03-24-at-07.30.11.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-24-at-07.30.11.png)
+[![Screen Shot 2016-03-24 at 07.30.11](/content/images/2016/03/Screen-Shot-2016-03-24-at-07.30.11.png)](/content/images/2016/03/Screen-Shot-2016-03-24-at-07.30.11.png)
 
 But I do wonder if attendees are thinking: “how would I *know* that I could or should place an <attributes> element there, and within that element, an <ObjectAttribute>. And what about the capitalisation? Well, for those who can’t wait for the coming weeks, where I suspect, or hope, that this is covered in a little bit more detail, here are a couple of pointers:
 
@@ -45,7 +45,7 @@ But I do wonder if attendees are thinking: “how would I *know* that I could or
 
 3. So yes, you guessed it – whereas controls are represented as XML elements with capitalised names, aggregations are represented by XML elements starting with lowercase letters. So <attributes> here in line 9 is the start of the list of Object Attributes within the “attributes” aggregation belonging to the Object Header control.
 
-[![Screen Shot 2016-03-24 at 07.39.34](/wp-content/uploads/2016/03/Screen-Shot-2016-03-24-at-07.39.34.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-24-at-07.39.34.png)
+[![Screen Shot 2016-03-24 at 07.39.34](/content/images/2016/03/Screen-Shot-2016-03-24-at-07.39.34.png)](/content/images/2016/03/Screen-Shot-2016-03-24-at-07.39.34.png)
 
 I’m sure that this sort of information will be covered in much more detail in the upcoming openSAP course on SAPUI5 – watch this space! :-)
 
@@ -53,7 +53,7 @@ I’m sure that this sort of information will be covered in much more detail in 
 
 It’s definitely worth studying the Web IDE features explained in this unit. While the OData Model Editor is still something I’d like to see improved (adding some visual aspects to the *editing* process, rather than still having to edit at the rather verbose EDMX level), it’s still a great first step, especially with the visual display of the entities and their relationships:
 
-[![Screen Shot 2016-03-24 at 07.50.59](/wp-content/uploads/2016/03/Screen-Shot-2016-03-24-at-07.50.59-1024x854.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-24-at-07.50.59.png)
+[![Screen Shot 2016-03-24 at 07.50.59](/content/images/2016/03/Screen-Shot-2016-03-24-at-07.50.59-1024x854.png)](/content/images/2016/03/Screen-Shot-2016-03-24-at-07.50.59.png)
 
 It’s a shame that this wasn’t shown in this unit.
 

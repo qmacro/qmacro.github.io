@@ -26,7 +26,7 @@ But it’s more than that, I think, when seen as a complete process. The functio
 
 **Unit 5 “The Importance of Prototyping”.** Like Design Thinking but perhaps less so, prototyping phases are sometimes difficult to bring about and get the most out of, especially when deadlines and budgets are tight. Organisations need to work out the value for themselves for the Discover and Design phases, rather than just focus on the Develop and Deploy phases … especially those that involve the business.
 
-[![](/wp-content/uploads/2016/03/Screen-Shot-2016-03-07-at-07.48.08.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-07-at-07.48.08.png)
+[![](/content/images/2016/03/Screen-Shot-2016-03-07-at-07.48.08.png)](/content/images/2016/03/Screen-Shot-2016-03-07-at-07.48.08.png)
 
 There’s a leap of faith that’s required, and we’re all responsible for helping make that happen.
 

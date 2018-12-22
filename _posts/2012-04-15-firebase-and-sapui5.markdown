@@ -26,7 +26,7 @@ This is a key tenet that underpins the values of REST and related directions in 
 
 With Firebase, each piece of JSON data you store in the backend gets its own URL. Each object, array, element and attribute is automatically given an address, as you create them. You can manipulate the data via the [Javascript library](http://www.firebase.com/docs/), through a [REST API](http://www.firebase.com/docs/rest-api.html) and also through a lovely graphical debugger that looks like this:
 
-<div class="wp-caption alignnone" id="attachment_1401" style="width: 310px">[![](/wp-content/uploads/2012/04/FirebaseGraphicalDebugger-300x163.png "Firebase Graphical Debugger")](/wp-content/uploads/2012/04/FirebaseGraphicalDebugger.png)Firebase Graphical Debugger
+<div class="wp-caption alignnone" id="attachment_1401" style="width: 310px">[![](/content/images/2012/04/FirebaseGraphicalDebugger-300x163.png "Firebase Graphical Debugger")](/content/images/2012/04/FirebaseGraphicalDebugger.png)Firebase Graphical Debugger
 
 </div>**Firebase Graphical Debugger**
 

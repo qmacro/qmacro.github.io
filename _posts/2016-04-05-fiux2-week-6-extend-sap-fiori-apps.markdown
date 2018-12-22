@@ -28,7 +28,7 @@ But it’s the “what” and “where” that will most likely cause the new SA
 
 And what, I hear you say, is the meaning of the S2, S3 and S4 view names? These are artifacts of the original SAP Fiori development approach within SAP, with S2 being the master view of a Master-Detail application, S3 being the detail, and so on. Getting inside the mind and the development context of the developer(s) that wrote the code you’re trying to modify (whether that’s SAP Fiori or something completely different) is something you should try to do as it will make a big difference.
 
-[![Screen Shot 2016-04-04 at 07.57.57](/wp-content/uploads/2016/04/Screen-Shot-2016-04-04-at-07.57.57.png)](/wp-content/uploads/2016/04/Screen-Shot-2016-04-04-at-07.57.57.png)Oh yes, one more thing – the instructor added an event for the camera button he added to the S4 view. The event he chose from the list was “tap”, which was right next to “press” in the list. Unfortunately [the Button control’s “tap” event has been deprecated](https://sapui5.hana.ondemand.com/#docs/api/symbols/sap.m.Button.html#event:tap) since 1.20 (in favour of the “press” event), but as (a) the SAP Web IDE didn’t highlight this (yet!) and (b) the clock on the instructor’s screen showed just after 5 o’clock in the morning, we can overlook this ;-)
+[![Screen Shot 2016-04-04 at 07.57.57](/content/images/2016/04/Screen-Shot-2016-04-04-at-07.57.57.png)](/content/images/2016/04/Screen-Shot-2016-04-04-at-07.57.57.png)Oh yes, one more thing – the instructor added an event for the camera button he added to the S4 view. The event he chose from the list was “tap”, which was right next to “press” in the list. Unfortunately [the Button control’s “tap” event has been deprecated](https://sapui5.hana.ondemand.com/#docs/api/symbols/sap.m.Button.html#event:tap) since 1.20 (in favour of the “press” event), but as (a) the SAP Web IDE didn’t highlight this (yet!) and (b) the clock on the instructor’s screen showed just after 5 o’clock in the morning, we can overlook this ;-)
 
 **Unit 3 “Introduction to Enabling SAP Fiori for Mobile”.** There’s a ton of stuff that SAP (and Sybase) have developed in the area of mobile app creation, deployment and management. I’m sure I’m not the only one somewhat dazzled by the oncoming headlights of so much traffic in this area. So if for no other reason than to summarise where SAP stands today with respect to their direction and strategy in this area, this unit serves us well.
 
@@ -42,7 +42,7 @@ One concept that was mentioned but never really expanded upon was the offline O
 
 It would have been nice to dig a little deeper into the background behind the Hybrid Application Toolkit (HAT) settings, especially the connection between the workstation-local resources and the configuration in these settings (see screenshot).
 
-[![Screen Shot 2016-04-05 at 07.09.29](/wp-content/uploads/2016/04/Screen-Shot-2016-04-05-at-07.09.29.png)](/wp-content/uploads/2016/04/Screen-Shot-2016-04-05-at-07.09.29.png)
+[![Screen Shot 2016-04-05 at 07.09.29](/content/images/2016/04/Screen-Shot-2016-04-05-at-07.09.29.png)](/content/images/2016/04/Screen-Shot-2016-04-05-at-07.09.29.png)
 
 I’m thinking, however, that this is covered in the companion course “Developing Mobile Apps with SAP HANA Cloud Platform”.
 
@@ -52,7 +52,7 @@ Looking past the clear signs of multiple SAP teams working on different parts of
 
 I’m really glad that the example the instructor chose was consuming an OData service, via the Destinations facility of HCP. The backend exposing this OData service was marked as “odata_gen” – just like you’d mark any non-SAP (AS ABAP stack) OData service like Northwind.
 
-[![Screen Shot 2016-04-05 at 17.36.12](/wp-content/uploads/2016/04/Screen-Shot-2016-04-05-at-17.36.12.png)](/wp-content/uploads/2016/04/Screen-Shot-2016-04-05-at-17.36.12.png)
+[![Screen Shot 2016-04-05 at 17.36.12](/content/images/2016/04/Screen-Shot-2016-04-05-at-17.36.12.png)](/content/images/2016/04/Screen-Shot-2016-04-05-at-17.36.12.png)
 
 I did wonder somewhat about the use of the URL in the Widget specification – it was supposed to be the URL of the app on HCP, but instead was another one with “demo2″ in the first part. Ah well, let’s put that down to slightly disjointed end-to-end demos.
 
@@ -62,7 +62,7 @@ Finally, did you notice the use of [OpenSocial](https://en.wikipedia.org/wiki/Op
 
 Well, that’s the last main unit of this week. There was, as usual, the video blog update for this week, which I enjoyed. What struck me was the necessity to lead the course participants through architectural structures such as the one described in this diagram:
 
-[![Screen Shot 2016-04-05 at 17.58.27](/wp-content/uploads/2016/04/Screen-Shot-2016-04-05-at-17.58.27.png)](/wp-content/uploads/2016/04/Screen-Shot-2016-04-05-at-17.58.27.png)
+[![Screen Shot 2016-04-05 at 17.58.27](/content/images/2016/04/Screen-Shot-2016-04-05-at-17.58.27.png)](/content/images/2016/04/Screen-Shot-2016-04-05-at-17.58.27.png)
 
 The cloud, with SaaS, PaaS and more, does mean that the on-premise landscape is simplified, but doesn’t mean that the architectures in general are simplified. Far from it. With tenants, accounts, trial and production platforms in the cloud, and connections to on-premise systems and even other cloud systems, it’s only going to get more complex.
 

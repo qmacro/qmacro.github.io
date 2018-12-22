@@ -30,7 +30,7 @@ The availability of the Tasks API within the Google Apps Script context was [ann
 
 Unlike the other services already available — such as those pertaining directly to the Google Apps platform like Spreadsheet, Gmail, DocsList and Calendar — you need to use the [Google API Console](https://code.google.com/apis/console/?pli=1) to turn on these new APIs within the context of a project, agree to the terms & conditions, and note the courtesy call limits available to you.
 
-<div class="wp-caption alignnone" id="attachment_1092" style="width: 606px">[![](/wp-content/uploads/2011/10/TasksOn.png "The Tasks API selected for use in the API Console")](/wp-content/uploads/2011/10/TasksOn.png)Tasks API selected for use in the API Console
+<div class="wp-caption alignnone" id="attachment_1092" style="width: 606px">[![](/content/images/2011/10/TasksOn.png "The Tasks API selected for use in the API Console")](/content/images/2011/10/TasksOn.png)Tasks API selected for use in the API Console
 
 </div>You can see here a shot of the Tasks API selected for use within a project I created in the Google API Console, and a courtesy limit of 5000 calls per day. Check out a previous blog post “[Automated Email-to-Task Mechanism with Google Apps Script](/2011/10/automated-email-to-task-mechanism-with-google-apps-script/)” for more background on this Tasks API and the Google article “[Integrating with Google APIs – Creating a simple reading list](http://code.google.com/googleapps/appsscript/articles/google_apis_reading_list.html)“ for a step-by-step account of enabling the API itself  (called Tasks Services in Google Apps Script).
 
@@ -54,7 +54,7 @@ We’ll build our Ui in code. If you need an intro to this, have a look at the G
 
 We want to be able to display to the user a list of their existing tasklists so they can choose one, and also give them a chance to enter the name of a new tasklist instead. So we need a dropdown list (otherwise known as a listbox), a textbox, some text labels, and a button. This is what the end result should look like:
 
-<div class="wp-caption alignnone" id="attachment_1101" style="width: 269px">[![](/wp-content/uploads/2011/10/tasklists.png "Task Lists Ui")](/wp-content/uploads/2011/10/tasklists.png)Task Lists Ui
+<div class="wp-caption alignnone" id="attachment_1101" style="width: 269px">[![](/content/images/2011/10/tasklists.png "Task Lists Ui")](/content/images/2011/10/tasklists.png)Task Lists Ui
 
 </div>It’s showing the Ui title (“Task Lists”), some labels, a dropdown list with the two existing tasklists that the authenticated user has already, an empty textbox (behind the dropdown) where a new tasklist name can be entered and a button to which we can attach an event handler.
 
@@ -62,7 +62,7 @@ Layout is achieved using Panels and Grids, both containers for elements. Here, w
 
 Schematically, this is what we’re going to do:
 
-<div class="wp-caption alignnone" id="attachment_1104" style="width: 310px">[![](/wp-content/uploads/2011/10/TaskListsUiLayoutSchematic1-300x209.png "Task Lists Ui Layout Schematic")](/wp-content/uploads/2011/10/TaskListsUiLayoutSchematic1.png)Task Lists Ui Layout Schematic
+<div class="wp-caption alignnone" id="attachment_1104" style="width: 310px">[![](/content/images/2011/10/TaskListsUiLayoutSchematic1-300x209.png "Task Lists Ui Layout Schematic")](/content/images/2011/10/TaskListsUiLayoutSchematic1.png)Task Lists Ui Layout Schematic
 
 </div>So, let’s look at the code that builds this Ui. We start by getting a handle on the active spreadsheet (doc), and creating a new Ui application (app), giving it a title. At the end of this function we’ll be passing the Ui application to the active spreadsheet to show.
 

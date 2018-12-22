@@ -21,7 +21,7 @@ I realised that people might benefit from these too, so I thought I’d offer th
 
 They’re available here: [http://www.pipetree.com/~dj/2012/04/nplhost/](http://www.pipetree.com/~dj/2012/04/nplhost/)
 
-[![](/wp-content/uploads/2012/04/nplhost-300x190.png "nplhost")](/wp-content/uploads/2012/04/nplhost.png)
+[![](/content/images/2012/04/nplhost-300x190.png "nplhost")](/content/images/2012/04/nplhost.png)
 
 Download them to npladm’s home directory to run them from there. Don’t forget to (a) chmod +x each of the binaries, and (b) rename the _ to .  for each of the dotfiles.
 

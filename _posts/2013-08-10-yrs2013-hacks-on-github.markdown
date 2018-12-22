@@ -18,7 +18,7 @@ Well we’re in the midst of the [Young Rewired State Festival Of Code](https://
 
 Anyway, I was curious and so put together a spreadsheet tracking [all of the 2013 hacks](http://hacks.youngrewiredstate.org/events/YRS2013) that had declared a Github repo in their information pages. [You can see](http://www.pipetree.com/~dj/2013/08/yrs2013/commits.html) that there are a massive number of kids not only hacking code but sharing it with the world:
 
-<div class="wp-caption alignnone" id="attachment_1533" style="width: 510px">[![](/wp-content/uploads/2013/08/hacks-300x141.png "#YRS2013 Hacks on Github")](/wp-content/uploads/2013/08/hacks.png)#YRS2013 Hacks on Github
+<div class="wp-caption alignnone" id="attachment_1533" style="width: 510px">[![](/content/images/2013/08/hacks-300x141.png "#YRS2013 Hacks on Github")](/content/images/2013/08/hacks.png)#YRS2013 Hacks on Github
 
 </div>(see the interactive graph here: [http://www.pipetree.com/~dj/2013/08/yrs2013/commits.html](http://www.pipetree.com/~dj/2013/08/yrs2013/commits.html))
 

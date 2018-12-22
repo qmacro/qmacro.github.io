@@ -19,7 +19,7 @@ Understanding the anatomy of a Fiori app – from small controls such as Button
 
 That said, if it hadn’t have been skipped, I could imagine the unit being four times as long or more. There is more on OData coming later in this course, so let’s hope that they dig in a little more. OData is a fascinating topic, not least because it’s REST-informed, based on an architectural style that I [worked](http://www.sdn.sap.com/irj/scn/go/portal/prtroot/docs/library/uuid/ea8db790-0201-0010-af98-de15b6c1ee1a?overridelayout=true) [hard](https://scn.sap.com/people/dj.adams/blog/2004/06/24/forget-soap--build-real-web-services-with-the-icf) in the past trying to convince SAP of its merits :-)
 
-[![](/wp-content/uploads/2016/03/Screen-Shot-2016-03-16-at-23.00.42.png)](http://www.sdn.sap.com/irj/scn/go/portal/prtroot/docs/library/uuid/ea8db790-0201-0010-af98-de15b6c1ee1a?overridelayout=true)
+[![](/content/images/2016/03/Screen-Shot-2016-03-16-at-23.00.42.png)](http://www.sdn.sap.com/irj/scn/go/portal/prtroot/docs/library/uuid/ea8db790-0201-0010-af98-de15b6c1ee1a?overridelayout=true)
 
 *An old post on SCN from 2004 – “[Real Web Services with REST and ICF](http://www.sdn.sap.com/irj/scn/go/portal/prtroot/docs/library/uuid/ea8db790-0201-0010-af98-de15b6c1ee1a?overridelayout=true)” – where I expounded on the virtues of the REpresentational State Transfer (REST) based approach to data services … and was slightly disowned by SAP ;-)*
 

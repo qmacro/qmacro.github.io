@@ -25,7 +25,7 @@ So while this unit helps, I’m still a bit confused – particularly about whe
 
 Update – I did some digging around, and you can now get to the peer review section within the Design Challenge section, as shown here:
 
-[![Screen Shot 2016-03-31 at 08.43.06](/wp-content/uploads/2016/03/Screen-Shot-2016-03-31-at-08.43.06.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-31-at-08.43.06.png)
+[![Screen Shot 2016-03-31 at 08.43.06](/content/images/2016/03/Screen-Shot-2016-03-31-at-08.43.06.png)](/content/images/2016/03/Screen-Shot-2016-03-31-at-08.43.06.png)
 
 So don’t wait for any prompts or emails – just go there and start!
 
@@ -51,7 +51,7 @@ It’s definitely an extremely interesting area, and one to watch and learn more
 
 **Unit 5 “Introduction to SAP Fiori Overview Page”.** Pretty much a continuation of the previous unit, here we move on to another concrete artifact from the “smart” stable – the Overview Page, or OVP.
 
-[![Screen Shot 2016-03-30 at 18.02.54](/wp-content/uploads/2016/03/Screen-Shot-2016-03-30-at-18.02.54.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-30-at-18.02.54.png)
+[![Screen Shot 2016-03-30 at 18.02.54](/content/images/2016/03/Screen-Shot-2016-03-30-at-18.02.54.png)](/content/images/2016/03/Screen-Shot-2016-03-30-at-18.02.54.png)
 
 You can’t help but be impressed by and attracted to this lovely combination of practical and visually appealing functionality. It’s a cross between the Fiori Launchpad and functions and features of Fiori apps, all on a single page.
 

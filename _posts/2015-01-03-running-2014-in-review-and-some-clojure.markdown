@@ -20,7 +20,7 @@ I enjoyed running in 2014 and logged each one via [Endomondo](https://www.endomo
 
 # Watches
 
-<div class="wp-caption alignright" id="attachment_1825" style="width: 160px">[![Garmin Forerunner 110](/wp-content/uploads/2015/01/garmin110-150x150.jpeg)](/wp-content/uploads/2015/01/garmin110.jpeg)Garmin Forerunner 110
+<div class="wp-caption alignright" id="attachment_1825" style="width: 160px">[![Garmin Forerunner 110](/content/images/2015/01/garmin110-150x150.jpeg)](/content/images/2015/01/garmin110.jpeg)Garmin Forerunner 110
 
 </div>I’ve been using a [Garmin Forerunner 110](https://buy.garmin.com/en-GB/GB/watches-wearable-technology/wearables/forerunner-110/prod63511.html) watch which has been very good, on the whole, although the USB cable and connectivity left something to be desired.
 
@@ -31,19 +31,19 @@ I bought my wife Michelle a [TomTom Runner Cardio](http://www.tomtom.com/en_gb/s
 
 But back to 2014. I completed 101 runs (1,281.22km) and they’re all logged in Endomondo. I don’t have the premium subscription, just the basic, but the features are pretty good. There’s an option to upload from the Garmin watch, via a browser plugin which (on this OSX machine) has become pretty flakey recently and now only works in Safari, but once uploaded, the stats for each run are shown rather nicely:
 
-<div class="wp-caption alignnone" id="attachment_1826" style="width: 551px">[![A run on Endomondo](/wp-content/uploads/2015/01/Screen-Shot-2015-01-03-at-10.16.43-1024x811.png)](/wp-content/uploads/2015/01/Screen-Shot-2015-01-03-at-10.16.43.png)A run on Endomondo
+<div class="wp-caption alignnone" id="attachment_1826" style="width: 551px">[![A run on Endomondo](/content/images/2015/01/Screen-Shot-2015-01-03-at-10.16.43-1024x811.png)](/content/images/2015/01/Screen-Shot-2015-01-03-at-10.16.43.png)A run on Endomondo
 
 </div>Endomondo also offers simple statistics and charts, and a tabular overview of the runs, that looks like this:
 
-<div class="wp-caption alignnone" id="attachment_1827" style="width: 541px">[![Tabular view of runs in Endomondo](/wp-content/uploads/2015/01/Screen-Shot-2015-01-03-at-10.19.25-1024x368.png)](/wp-content/uploads/2015/01/Screen-Shot-2015-01-03-at-10.19.25.png)Tabular view of runs in Endomondo
+<div class="wp-caption alignnone" id="attachment_1827" style="width: 541px">[![Tabular view of runs in Endomondo](/content/images/2015/01/Screen-Shot-2015-01-03-at-10.19.25-1024x368.png)](/content/images/2015/01/Screen-Shot-2015-01-03-at-10.19.25.png)Tabular view of runs in Endomondo
 
 </div>One thing that bothered me, at least with the free service, is that there was no option to download this data. So I paged through the tabular data, and copy/pasted the information into a Google Sheet, my favourite gathering-and-stepping-off point for a lot of my data munging.
 
-<div class="wp-caption alignnone" id="attachment_1829" style="width: 534px">[![Running history in a Google Sheet](/wp-content/uploads/2015/01/Screen-Shot-2015-01-03-at-11.31.28.png)](/wp-content/uploads/2015/01/Screen-Shot-2015-01-03-at-11.31.28.png)Running history in a Google Sheet
+<div class="wp-caption alignnone" id="attachment_1829" style="width: 534px">[![Running history in a Google Sheet](/content/images/2015/01/Screen-Shot-2015-01-03-at-11.31.28.png)](/content/images/2015/01/Screen-Shot-2015-01-03-at-11.31.28.png)Running history in a Google Sheet
 
 </div>If nothing else, as long as the data is largely two dimensional, I’ve found it’s a good way to visually inspect the data at 10000 feet. It also affords the opportunity for some charting action, so I had a look at my pace over the year, to see how it had improved. This is the result:
 
-<div class="wp-caption alignnone" id="attachment_1830" style="width: 540px">[![Pace improvement in 2014](/wp-content/uploads/2015/01/Screen-Shot-2015-01-03-at-11.33.37-1024x519.png)](/wp-content/uploads/2015/01/Screen-Shot-2015-01-03-at-11.33.37.png)Pace improvement in 2014
+<div class="wp-caption alignnone" id="attachment_1830" style="width: 540px">[![Pace improvement in 2014](/content/images/2015/01/Screen-Shot-2015-01-03-at-11.33.37-1024x519.png)](/content/images/2015/01/Screen-Shot-2015-01-03-at-11.33.37.png)Pace improvement in 2014
 
 </div>The three peaks in Feb, Jun and Sep are a couple of initial runs I did with Michelle plus her first 8km in London (now she’s in double km figures and has a decent pace, I’m very proud of her).
 
@@ -55,7 +55,7 @@ I could have gone further with the analysis in the spreadsheet itself, but I’m
 
 ## Exposing the data
 
-<div class="wp-caption alignright" id="attachment_1831" style="width: 310px">[![Start of the JSON representation of the run data](/wp-content/uploads/2015/01/Screen-Shot-2015-01-03-at-11.41.19-300x219.png)](/wp-content/uploads/2015/01/Screen-Shot-2015-01-03-at-11.41.19.png)Start of the JSON representation of the run data
+<div class="wp-caption alignright" id="attachment_1831" style="width: 310px">[![Start of the JSON representation of the run data](/content/images/2015/01/Screen-Shot-2015-01-03-at-11.41.19-300x219.png)](/content/images/2015/01/Screen-Shot-2015-01-03-at-11.41.19.png)Start of the JSON representation of the run data
 
 </div>Of course, the first thing to do was to make the data in the Google Sheet available, which I did with my trusty [SheetAsJSON](/2013/10/sheetasjson-google-spreadsheet-data-as-json/) mechanism. It [returned](http://bit.ly/qmacro-running-2014) a nice JSON structure that contained all the data that I needed.
 
@@ -74,7 +74,7 @@ and used my joint-favourite editor (Vim, obviously, along with Atom), with some 
 
 Here’s a short exerpt from what I wrote:
 
-[![Screen Shot 2015-01-03 at 12.51.47](/wp-content/uploads/2015/01/Screen-Shot-2015-01-03-at-12.51.47.png)](/wp-content/uploads/2015/01/Screen-Shot-2015-01-03-at-12.51.47.png)
+[![Screen Shot 2015-01-03 at 12.51.47](/content/images/2015/01/Screen-Shot-2015-01-03-at-12.51.47.png)](/content/images/2015/01/Screen-Shot-2015-01-03-at-12.51.47.png)
 
 Let’s look at this code step by step.
 

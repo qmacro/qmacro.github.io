@@ -15,7 +15,7 @@ Working in different organisations sometimes means having different email addres
 
 Keeping them in sync is a struggle that I avoid, but there’s recently been a specific case where I do want to make the effort, and that’s time / location scheduling – where I’ll be, on what days. This information needs to be in all calendars, to share with work colleagues, and for my own sanity (I see my Google calendar as my master instance in this case).
 
-[![calendars](/wp-content/uploads/2014/01/calendars.jpg)](/wp-content/uploads/2014/01/calendars.jpg)So I wrote a quick Google Apps Script hack to allow me to quickly specify the where/when events in a particular Google calendar that I maintain (called “Work”), and then have those events distributed, via invitations, to my other Outlook identities. It’s not very sophisticated – all it does is look through the Work calendar for all-day events matching a certain title pattern, then look at the guest list; if the emails I want to share the event with are not already on the list, they’re added, and invites are sent.
+[![calendars](/content/images/2014/01/calendars.jpg)](/content/images/2014/01/calendars.jpg)So I wrote a quick Google Apps Script hack to allow me to quickly specify the where/when events in a particular Google calendar that I maintain (called “Work”), and then have those events distributed, via invitations, to my other Outlook identities. It’s not very sophisticated – all it does is look through the Work calendar for all-day events matching a certain title pattern, then look at the guest list; if the emails I want to share the event with are not already on the list, they’re added, and invites are sent.
 
 Because of [an issue with the CalendarService component of Google Apps Script](https://code.google.com/p/google-apps-script-issues/issues/detail?id=574) (that’s been open since May 2011!) you can’t directly cause invites to be sent to new guests that you add to an existing event. So one workaround is to create the calendar invitation (ICS file) yourself and email it. It’s pretty simple (and Romain Vialard [has an example](https://code.google.com/p/google-apps-script-issues/issues/detail?id=574#c2) in the commentary on the issue).
 
@@ -31,7 +31,7 @@ DTSTART:20140305T000000Z
 
 So that’s it. [I’ve made the script available as a Gist](https://gist.github.com/qmacro/8219400) on Github and here’s a screenshot of some typical results.
 
-[![log](/wp-content/uploads/2014/01/log-300x120.jpg)](/wp-content/uploads/2014/01/log.jpg)
+[![log](/content/images/2014/01/log-300x120.jpg)](/content/images/2014/01/log.jpg)
 
 Share & enjoy!
 

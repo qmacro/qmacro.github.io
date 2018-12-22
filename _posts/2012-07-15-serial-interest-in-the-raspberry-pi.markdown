@@ -23,7 +23,7 @@ One of my interests is retrocomputing, in particular, serial terminals. I had a 
 
 ****
 
-<div class="wp-caption alignnone" id="attachment_1458" style="width: 310px">[![](/wp-content/uploads/2012/07/20120715_1050171-300x225.jpg "Raspberry Pi")](/wp-content/uploads/2012/07/20120715_1050171.jpg)Raspberry Pi
+<div class="wp-caption alignnone" id="attachment_1458" style="width: 310px">[![](/content/images/2012/07/20120715_1050171-300x225.jpg "Raspberry Pi")](/content/images/2012/07/20120715_1050171.jpg)Raspberry Pi
 
 </div>First things first. The Pi has 2 rows of general purpose input / output (GPIO) pins at 3.3V (top left in the picture), but that means that we can’t use an RS232 serial connection directly as the voltage levels are too high. Rather than build or buy a converter, we used a simpler method. Most modern Linux distributions, including Debian Squeeze, provide support for USB serial ports, so getting hold of a USB serial cable was the first job. This connects to one of the USB ports on the Pi, and has a 9 pin D serial connector on the other end.
 
@@ -51,7 +51,7 @@ This says: listen on ttyUSB0 for a connection, at baud rate 19200, don’t bothe
 
 If you’ve got the serial cable connection right, and you’ve configured the terminal settings to be 19200 (at 8N1, i.e. 8 bits, no parity, 1 stop bit), you should see this on the terminal:
 
-<div class="wp-caption alignnone" id="attachment_1452" style="width: 235px">[![](/wp-content/uploads/2012/07/IMG_20120708_131014-225x300.jpg "Login prompt on the WY-30")](/wp-content/uploads/2012/07/IMG_20120708_131014.jpg)Login prompt on the WY-30
+<div class="wp-caption alignnone" id="attachment_1452" style="width: 235px">[![](/content/images/2012/07/IMG_20120708_131014-225x300.jpg "Login prompt on the WY-30")](/content/images/2012/07/IMG_20120708_131014.jpg)Login prompt on the WY-30
 
 </div>Wonderful!
 
@@ -77,7 +77,7 @@ With the file containing the appropriate escape codes to control a Wyse WY-30 te
 
 Rebooting to check that the init spawning of getty is working correctly, and we can log in at our Wyse terminal and use tools such as top, vi, tmux and others that manipulate the screen, without problem.
 
-<div class="wp-caption alignnone" id="attachment_1455" style="width: 235px">[![](/wp-content/uploads/2012/07/20120715_105411-225x300.jpg "Vi running in a tmux session")](/wp-content/uploads/2012/07/20120715_105411.jpg)Vi running in a tmux session
+<div class="wp-caption alignnone" id="attachment_1455" style="width: 235px">[![](/content/images/2012/07/20120715_105411-225x300.jpg "Vi running in a tmux session")](/content/images/2012/07/20120715_105411.jpg)Vi running in a tmux session
 
 </div>Success!
 

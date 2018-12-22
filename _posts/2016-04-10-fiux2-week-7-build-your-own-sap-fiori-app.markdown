@@ -17,7 +17,7 @@ There was one part which touched on some of the features of the git functionalit
 
 It’s a shame that the content of this unit is out of date, at least visually.
 
-[![Screen Shot 2016-04-10 at 13.28.42](/wp-content/uploads/2016/04/Screen-Shot-2016-04-10-at-13.28.42-1024x589.png)](/wp-content/uploads/2016/04/Screen-Shot-2016-04-10-at-13.28.42.png)
+[![Screen Shot 2016-04-10 at 13.28.42](/content/images/2016/04/Screen-Shot-2016-04-10-at-13.28.42-1024x589.png)](/content/images/2016/04/Screen-Shot-2016-04-10-at-13.28.42.png)
 
 The SAP Fiori configuration cockpit changed a while ago, and looks nothing like what’s shown in this unit. There was a brief disclaimer message during the video, but that doesn’t really help that much. That said, the actual functionality has not changed much, and with the availability of the cloud-based Launchpad in the HCP trial accounts, it’s quite easy for you to explore it yourself.
 
@@ -31,7 +31,7 @@ where we explore the possibilities that are presented to us by the SAP Fiori Lau
 
 Finally, there was a nice touch after the instructor added the details for the dynamic tile – specifically the Number Unit value “Notebooks”:
 
-[![Screen Shot 2016-04-10 at 14.23.34](/wp-content/uploads/2016/04/Screen-Shot-2016-04-10-at-14.23.34.png)](/wp-content/uploads/2016/04/Screen-Shot-2016-04-10-at-14.23.34.png)
+[![Screen Shot 2016-04-10 at 14.23.34](/content/images/2016/04/Screen-Shot-2016-04-10-at-14.23.34.png)](/content/images/2016/04/Screen-Shot-2016-04-10-at-14.23.34.png)
 
 “Wait!” I hear you say. “That’s static text – what about consuming this in different languages?”.
 
@@ -39,7 +39,7 @@ And the openSAP course folks must have pre-empted that thought. Directly follow
 
 Here’s a screenshot of what this looks like, slightly beyond where this unit’s video ended:
 
-[![Screen Shot 2016-04-10 at 14.25.15](/wp-content/uploads/2016/04/Screen-Shot-2016-04-10-at-14.25.15.png)](/wp-content/uploads/2016/04/Screen-Shot-2016-04-10-at-14.25.15.png)
+[![Screen Shot 2016-04-10 at 14.25.15](/content/images/2016/04/Screen-Shot-2016-04-10-at-14.25.15.png)](/content/images/2016/04/Screen-Shot-2016-04-10-at-14.25.15.png)
 
 Here, I’ve added and activated a German locale for my Launchpad, which means I’d see the translated texts when consuming the Launchpad site in German, say, by adding the sap-language=de parameter in the URL.
 

@@ -21,7 +21,7 @@ Anyway, last week saw the start of the much anticipated 2016 Edition of the cour
 
 I’m a great believer in learning and re-learning subjects, especially from different sources. Even if you feel you know a good chunk of a given topic, learning with new material, and from different angles, will give you not only knowledge reinforcement but also new nuggets which are therefore also more easily digestible. If only for this reason, I’d recommend this course to you. The time commitment isn’t unreasonable, there’s hands-on, and even a competition!
 
-[![](/wp-content/uploads/2016/03/Screen-Shot-2016-03-04-at-16.42.23-1024x440.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-04-at-16.42.23.png)
+[![](/content/images/2016/03/Screen-Shot-2016-03-04-at-16.42.23-1024x440.png)](/content/images/2016/03/Screen-Shot-2016-03-04-at-16.42.23.png)
 
 And in case you need a little bit more convincing, I thought it might be fun and perhaps useful to write a short post each week, describing what we learned. So here goes with Week 1.
 
@@ -45,7 +45,7 @@ Overall, it was worth the hour or three invested in watching the videos**. And t
 
 I’ll leave you with one thought, which we may well pick up in week 2. Here’s a screenshot, from one of the slides of an S/4HANA Fiori app:
 
-[![](/wp-content/uploads/2016/03/Screen-Shot-2016-03-04-at-16.29.35.png)](/wp-content/uploads/2016/03/Screen-Shot-2016-03-04-at-16.29.35.png)
+[![](/content/images/2016/03/Screen-Shot-2016-03-04-at-16.29.35.png)](/content/images/2016/03/Screen-Shot-2016-03-04-at-16.29.35.png)
 
 In relation to the Fiori 2.0 designs, which are being introduced in week 2, there were some [comments on Twitter](https://twitter.com/fredverheul/status/705489908769619968) today about the perceived complexity of the newer apps. I think we’re already seeing complexity here, but I don’t think it’s necessarily the end of the world. Some things **do** require you to see more information. Not everything is as simple as approving a purchase requisition or booking leave.
 

@@ -39,7 +39,7 @@ The official download materials for this week contain, as usual, a complete tran
 
 The slide related to this section looks like this:
 
-[![Screenshot 2015-04-22 at 08.35.41](/wp-content/uploads/2015/04/Screenshot-2015-04-22-at-08.35.41-300x166.png)](/wp-content/uploads/2015/04/Screenshot-2015-04-22-at-08.35.41.png)
+[![Screenshot 2015-04-22 at 08.35.41](/content/images/2015/04/Screenshot-2015-04-22-at-08.35.41-300x166.png)](/content/images/2015/04/Screenshot-2015-04-22-at-08.35.41.png)
 
 See that tiny couple of words in a footnote in the bottom left? They say “*future innovation”. The instructor didn’t mention this, so if you didn’t see the slide or were watching on your smartphone (which I was) where it was too small to see, but were nevertheless intensely listening to her, and then reading the transcript to double check the facts, you would not have noticed this.
 
