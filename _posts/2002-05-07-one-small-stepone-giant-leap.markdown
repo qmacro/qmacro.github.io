@@ -11,6 +11,6 @@ Yeow!
 
 By ‘eck, it [takes me back…](/jabber/XMLRPC/)
 
-A hearty congrats to [Dave](http://www.scripting.com/) (and [Jeremy](http://www.pipetree.com.wstub.archive.org/qmacro/blog/archives/2002/05/www.jerf.org) and [Eric](http://www.wiredfool.com/ftoc) of course). “This *Bing!*‘s for you.”
+A hearty congrats to [Dave](http://www.scripting.com/) (and [Jeremy](http://www.pipetree.com.wstub.archive.org/archives/2002/05/www.jerf.org) and [Eric](http://www.wiredfool.com/ftoc) of course). “This *Bing!*‘s for you.”
 
 

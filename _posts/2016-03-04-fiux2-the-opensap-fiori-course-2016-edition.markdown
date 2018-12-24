@@ -8,7 +8,7 @@ date: '2016-03-04 16:47:39'
 *Links to the rest of the series:*
 
 [“fiux2″ Week 2 – Design Your First SAP Fiori App  
-](/qmacro/blog/2016/03/08/fiux2-week-2-design-your-first-sap-fiori-app/)
+](/2016/03/08/fiux2-week-2-design-your-first-sap-fiori-app/)
 [“fiux2″ Week 3 – Get Ready to Create Your First App  
 ](/2016/03/17/fiux2-week-3-get-ready-to-create-your-first-app/) [“fiux2″ Week 4 – Create Your First SAP Fiori App  
 ](/undefined/) [“fiux2″ Week 5 – Enhance an SAP Fiori App  

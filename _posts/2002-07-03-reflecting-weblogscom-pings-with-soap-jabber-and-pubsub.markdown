@@ -17,7 +17,7 @@ So rather than reproduce a blogToaster-like mechanism, I thought I’d have a go
 
 The mechanism is running at JID ‘**weblogs.gnu.mine.nu**‘, and the packets are based on the [Jabber PubSub JEP](http://www.jabber.org/jeps/jep-0024.html). It’s still alpha, and likely to fall over if you look at it the wrong way.
 
-Here’s an example of how it works. You send a ‘subscribe’ packet, saying you want to be notified when [DJ’s Weblog](/qmacro/blog) is updated:
+Here’s an example of how it works. You send a ‘subscribe’ packet, saying you want to be notified when [DJ’s Weblog]() is updated:
 
 SEND:
 
