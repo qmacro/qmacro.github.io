@@ -27,18 +27,23 @@ He's spoken at conferences such as [OSCON](http://www.oscon.com), JabberConf, [F
 Follow DJ on [Twitter](//twitter.com/qmacro), subscribe to his [YouTube channel](https://www.youtube.com/channel/UCDUgrP3koL_o2iz6m55H1uA/), read posts on his [personal blog](//qmacro.org) and his [current](//people.sap.com/dj.adams.sap) and [previous](//people.sap.com/dj.adams) blogs on the SAP Community.
 
 ![Programming Jabber](/content/images/books/programmingjabber.png)
-Programming Jabber, O'Reilly, 2001
+
+[Programming Jabber](http://shop.oreilly.com/product/9780596002022.do), O'Reilly, 2001
 
 ![Google Pocket Guide](/content/images/books/googlepocketguide.png)
-Google Pocket Guide, O'Reilly, 2003
+
+[Google Pocket Guide](http://shop.oreilly.com/product/9780596005504.do), O'Reilly, 2003
 
 ![Practical Workflow for SAP](/content/images/books/practicalworkflow.png)
-Practical Workflow for SAP, SAP Press, 2014
+
+[Practical Workflow for SAP](https://www.amazon.co.uk/Practical-Workflow-Revised-Rickayzen-Hardcover/dp/B011DCBNZO), SAP Press, 2014
 
 ![30 Days of UI5](/content/images/books/30daysofui5.png)
-30 Days of UI5, SAP Press, 2014
+
+[30 Days of UI5](https://www.amazon.co.uk/30-Days-UI5-Celebrating-milestone-ebook/dp/B017MOJEWG), self published, 2014
 
 ![SAP Fiori and SAPUI5: Debugging the User Interface](/content/images/books/debugging.png)
-SAP Fiori and SAPUI5: Debugging the User Interface
+
+[SAP Fiori and SAPUI5: Debugging the User Interface](https://www.sap-press.com/sap-fiori-and-sapui5-debugging-the-user-interface_4305/), SAP Press, 2016
 
 
