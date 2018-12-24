@@ -32,7 +32,7 @@ date: '2018-12-24 12:53:49'
 ---
 ```
 
-I can then start writing immediately.
+It will then open up the file in Vim so that I can start writing immediately.
 
 I can imagine further refinements to this script, but I realised I wouldn't be able to get to any refinements until I created a first version and started using it. So I did. I've shared the [script](https://github.com/qmacro/scripts/blob/master/newpost.js) in a new [scripts repository](//github.com/qmacro/scripts).
 
