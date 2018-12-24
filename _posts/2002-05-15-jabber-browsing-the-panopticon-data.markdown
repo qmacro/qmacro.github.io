@@ -5,7 +5,7 @@ date: '2002-05-15 21:34:50'
 ---
 
 
-Ok, further to my initial [Panopticon/Jabber](/2002/05/the-panopticon/) experiments, I’ve extended the [panpush.pl](http://www.pipetree.com.wstub.archive.org/%7Edj/panpush.pl) script to respond to jabber:iq:browse requests. As the script starts, and receives the initial gush of data from the Panopticon port, and as it receives further pushes, it stores the data on the avatar icons, and makes this data available as results to the jabber:iq:browse requests.
+Ok, further to my initial [Panopticon/Jabber](/2002/05/15/the-panopticon/) experiments, I’ve extended the [panpush.pl](http://www.pipetree.com.wstub.archive.org/%7Edj/panpush.pl) script to respond to jabber:iq:browse requests. As the script starts, and receives the initial gush of data from the Panopticon port, and as it receives further pushes, it stores the data on the avatar icons, and makes this data available as results to the jabber:iq:browse requests.
 
 To get a list of avatars in the Panopticon, you can send a query like this:
 

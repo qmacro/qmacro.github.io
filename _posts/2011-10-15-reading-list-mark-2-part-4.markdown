@@ -14,15 +14,15 @@ tags:
 ---
 
 
-This is Part 4 in a series about an example app that I put together to demonstrate and describe the use of various Google Apps Script features. See [Part 1](/2011/10/reading-list-mark-2-part-1/) for an introduction. This part is “**Synchronising the URL list in the spreadsheet with corresponding tasks in the chosen tasklist**“.
+This is Part 4 in a series about an example app that I put together to demonstrate and describe the use of various Google Apps Script features. See [Part 1](/2011/10/08/reading-list-mark-2-part-1/) for an introduction. This part is “**Synchronising the URL list in the spreadsheet with corresponding tasks in the chosen tasklist**“.
 
 **Parts Overview**
 
-1. [Introduction to the app, and a short screencast showing the features](/2011/10/reading-list-mark-2-part-1/)
-2. [Using the Tasks API to retrieve and insert tasklists, and the Ui Services to build the tasklist chooser component](/2011/10/reading-list-mark-2-part-2/)
-3. [Using the UrlFetch Services to interact with the Google+ API and grab info on articles pointed to by users in their activity stream](/2011/10/reading-list-mark-2-part-3/)
-4. [Synchronising the URL list in the spreadsheet with corresponding tasks in the chosen tasklist](/2011/10/reading-list-mark-2-part-4/)**<– You Are Here**
-5. [Putting it all together and using the OnOpen event to insert a new 2-item menu entry on the spreadsheet’s page](/2011/10/reading-list-mark-2-part-5/)
+1. [Introduction to the app, and a short screencast showing the features](/2011/10/08/reading-list-mark-2-part-1/)
+2. [Using the Tasks API to retrieve and insert tasklists, and the Ui Services to build the tasklist chooser component](/2011/10/10/reading-list-mark-2-part-2/)
+3. [Using the UrlFetch Services to interact with the Google+ API and grab info on articles pointed to by users in their activity stream](/2011/10/14/reading-list-mark-2-part-3/)
+4. [Synchronising the URL list in the spreadsheet with corresponding tasks in the chosen tasklist](/2011/10/15/reading-list-mark-2-part-4/)**<– You Are Here**
+5. [Putting it all together and using the OnOpen event to insert a new 2-item menu entry on the spreadsheet’s page](/2011/10/16/reading-list-mark-2-part-5/)
 
 **Putting this into context: the Update request**
 
@@ -35,13 +35,13 @@ We’ve covered a lot of ground in the previous three parts in this series. Now 
 
 So the one main piece of work outstanding is synchronising the retrieved URLs as tasks on the chosen tasklist.
 
-If you watch the [screencast](http://www.youtube.com/watch?v=F08qS8ZmlZ0) shown in [Part 1](/2011/10/reading-list-mark-2-part-1/) you’ll see that the synchronisation is part of a more general ‘update’ request, that includes the fetching of new URLs from Google+ and synchronising them with the tasklist. So let’s have a look at the function that binds those two things together.
+If you watch the [screencast](http://www.youtube.com/watch?v=F08qS8ZmlZ0) shown in [Part 1](/2011/10/08/reading-list-mark-2-part-1/) you’ll see that the synchronisation is part of a more general ‘update’ request, that includes the fetching of new URLs from Google+ and synchronising them with the tasklist. So let’s have a look at the function that binds those two things together.
 
 Here’s the update() function, which we’ll allow the user to call from a menu item (we’ll cover this in the next instalment).
 
 READINGLISTCELL = 'D1'; function update() { // First, check that we have a tasklist id already; it's stored in // the comment section of the 'readinglistcell' var sh = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet(); var taskListId = sh.getRange(READINGLISTCELL).getComment(); // If we don't have an id, tell the user to choose a tasklist if(taskListId === '') { SpreadsheetApp.getActiveSpreadsheet().toast( "Use Articles -> Select Task List to choose a task list", "No Task List", 5 ); // Otherwise, we know which task list to synchronise with, so // go and update the reading list with URLs from the Google+ activity // list, and then sync that with the task list items } else { retrieveActivityUrls_(); synchronise_(taskListId); } }
 
-This function grabs a reference to the active sheet, and pulls the comment from the cell that we’ve designated as where the reading list tasklist info is stored: READINGLISTCELL. The name is stored in the cell, and the ID is stored in the cell’s comment. If there isn’t an ID, then we’ll ask the user to choose a tasklist using the Ui we built in [Part 2](/2011/10/reading-list-mark-2-part-2/). The [Browser](http://code.google.com/googleapps/appsscript/class_browser.html) class in Google Apps Script’s [Base Services](http://code.google.com/googleapps/appsscript/service_base.html) gives us a nice dialog box that looks like this:
+This function grabs a reference to the active sheet, and pulls the comment from the cell that we’ve designated as where the reading list tasklist info is stored: READINGLISTCELL. The name is stored in the cell, and the ID is stored in the cell’s comment. If there isn’t an ID, then we’ll ask the user to choose a tasklist using the Ui we built in [Part 2](/2011/10/10/reading-list-mark-2-part-2/). The [Browser](http://code.google.com/googleapps/appsscript/class_browser.html) class in Google Apps Script’s [Base Services](http://code.google.com/googleapps/appsscript/service_base.html) gives us a nice dialog box that looks like this:
 
 <div class="wp-caption alignnone" id="attachment_1198" style="width: 316px">[![](/content/images/2011/10/notamessage1.png "Message Box")](/content/images/2011/10/notamessage1.png)Message Box
 
@@ -51,7 +51,7 @@ This function grabs a reference to the active sheet, and pulls the comment from 
 
 </div>Because the ‘toast’ name is so evocative, we’ll use it in our function to prompt the user to choose a tasklist.
 
-If there’s already a tasklist chosen, then we go straight into retrieving the URLs (see [Part 3](/2011/10/reading-list-mark-2-part-3/)) and then call the synchronise_() function, passing the ID of the tasklist.
+If there’s already a tasklist chosen, then we go straight into retrieving the URLs (see [Part 3](/2011/10/14/reading-list-mark-2-part-3/)) and then call the synchronise_() function, passing the ID of the tasklist.
 
 **Synchronising URLs and Tasks**
 

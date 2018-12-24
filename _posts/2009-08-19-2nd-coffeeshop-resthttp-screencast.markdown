@@ -13,7 +13,7 @@ tags:
 ---
 
 
-To follow on from the [first coffeeshop demo screencast](/2009/07/first-coffeeshop-demo-screencast/), I thought I’d make another. This time it’s to highlight the fact that [coffeeshop](http://wiki.github.com/qmacro/coffeeshop) is fundamentally a REST-orientated, HTTP-based pubsub application at the core, and not just a web-based application. Hopefully this comes across through the use of command-line HTTP tools to manipulate Channel, Subscriber and Message resources.
+To follow on from the [first coffeeshop demo screencast](/2009/07/28/first-coffeeshop-demo-screencast/), I thought I’d make another. This time it’s to highlight the fact that [coffeeshop](http://wiki.github.com/qmacro/coffeeshop) is fundamentally a REST-orientated, HTTP-based pubsub application at the core, and not just a web-based application. Hopefully this comes across through the use of command-line HTTP tools to manipulate Channel, Subscriber and Message resources.
 
 This time, the [coffeeshop](http://wiki.github.com/qmacro/coffeeshop) instance I’m using is one running on Google’s [App Engine](http://code.google.com/appengine/) cloud infrastructure — on [appspot.com](http://appgallery.appspot.com/).
 

@@ -8,7 +8,7 @@ tags:
 ---
 
 
-If you subscribed to my weblog via RSS and read it solely in RSS readers, you might have wondered what had happened recently when the RSS feeds disappeared. Well, it’s moved. I’m having [a fresh start](/2005/02/a-fresh-start/), with different blog software, with slightly different URLs. You can find this weblog now at [](/qmacro/blog), and the (single, version 1.0) RSS feed at [/index.rdf](/qmacro/blog/index.rdf).
+If you subscribed to my weblog via RSS and read it solely in RSS readers, you might have wondered what had happened recently when the RSS feeds disappeared. Well, it’s moved. I’m having [a fresh start](/2005/02/18/a-fresh-start/), with different blog software, with slightly different URLs. You can find this weblog now at [](/qmacro/blog), and the (single, version 1.0) RSS feed at [/index.rdf](/qmacro/blog/index.rdf).
 
 So if you’re subscribing via the old RSS feed URLs (http://www.pipetree.com/qmacro/xml or http://www.pipetree.com/~dj/qmacro.rss10) please change to [/index.rdf](/qmacro/blog/index.rdf).
 

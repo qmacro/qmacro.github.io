@@ -5,7 +5,7 @@ date: '2003-01-27 20:18:34'
 ---
 
 
-While [experimenting](/2003/01/transferring-my-amazon-wishlist-to-allconsumingnet-2/) with wishlist data, it occurred to me that it might be desirable to have one’s wishlist exposable directly from a URL, and in a consumable format. This would lend itself quite nicely to [URL](http://udell.roninhouse.com/bytecols/2002-03-27.html) [pipelining](/2002/08/sidebars-mozilla-rss-old-and-new/).
+While [experimenting](/2003/01/25/transferring-my-amazon-wishlist-to-allconsumingnet-2/) with wishlist data, it occurred to me that it might be desirable to have one’s wishlist exposable directly from a URL, and in a consumable format. This would lend itself quite nicely to [URL](http://udell.roninhouse.com/bytecols/2002-03-27.html) [pipelining](/2002/08/29/sidebars-mozilla-rss-old-and-new/).
 
 I hacked up a very simple module, [WWW::Amazon::Wishlist::XML](/~dj/2003/01/WWW_Amazon_Wishlist_XML.pm) (keeping to the original namespace in CPAN) which acts as an Apache [handler](/~dj/2003/01/wishlist.conf) so you can plug your wishlist ID (mine’s [3G7VX6N7NMGWM](http://www.amazon.co.uk/exec/obidos/wishlist/3G7VX6N7NMGWM/026-9291044-8526042)) in and get some basic XML out, in a simple HTTP GET request.
 

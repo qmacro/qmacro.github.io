@@ -39,7 +39,7 @@ oTable.bindRows({
 
 **Experiment!**
 
-This experimental feature was crying out for … well, experimentation. So I threw together an MVC ([model view controller, minimum viable code](/2015/07/mvc-model-view-controller-minimum-viable-code/)) based app to test it out. Here’s the result:
+This experimental feature was crying out for … well, experimentation. So I threw together an MVC ([model view controller, minimum viable code](/2015/07/21/mvc-model-view-controller-minimum-viable-code/)) based app to test it out. Here’s the result:
 
 ![client operation mode](/content/images/2018/02/clientoperationmode.gif)
 

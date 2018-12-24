@@ -13,7 +13,7 @@ tags:
 ---
 
 
-At SAP TechEd Madrid (November last year) I wrote about the [Developer Renaissance](/2011/11/the-developer-renaissance/), covering my interview with Aiaz Kazi from the Technology & Innovation Platform, and SAP’s re-focus on developers.
+At SAP TechEd Madrid (November last year) I wrote about the [Developer Renaissance](/2011/11/10/the-developer-renaissance/), covering my interview with Aiaz Kazi from the Technology & Innovation Platform, and SAP’s re-focus on developers.
 
 This week I had the great honour of being invited to, and [speaking at](http://www.flickr.com/photos/finnern/6880455744/) SAP [DKOM](http://www.youtube.com/watch?v=6Opmj8M_tBw) (Development Kick-Off Meeting) in Karlsruhe. It was a truly great event – thousands of SAP developers attending many tracks and sessions on everything from Analytics, through Database & Technology, to Cloud, and more besides. As I sit here in Frankfurt airport on my way home, I’ve been reflecting on perhaps the best single takeaway from this event. Yes the content of the talks was great (and I enjoyed giving my session on SAP NetWeaver Gateway too). Yes the venue and organisation was second to none. Yes it was great to see the SAP Mentor wolfpack and our illustrious leader Mark Finnern.
 

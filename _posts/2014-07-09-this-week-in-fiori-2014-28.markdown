@@ -15,7 +15,7 @@ tags:
 
 ![SAP Fiori App Analysis tool](/content/images/2014/07/Screen-Shot-2014-07-09-at-07.26.411-300x255.png)
 
-Already a week has passed since my [first post in this series](/2014/07/this-week-in-fiori-2014-27/) and the Fiori related content is increasing. A lot of that is technical, as folks get to grips with the configuration and development mechanisms that underpin Fiori. Perhaps I’ll have a technical “This Week in Fiori” (TWIF) post next time, but for now, here are some more articles, along with some observations.
+Already a week has passed since my [first post in this series](/2014/07/02/this-week-in-fiori-2014-27/) and the Fiori related content is increasing. A lot of that is technical, as folks get to grips with the configuration and development mechanisms that underpin Fiori. Perhaps I’ll have a technical “This Week in Fiori” (TWIF) post next time, but for now, here are some more articles, along with some observations.
 
 **[SAP Fiori Brings Out Four Tools To Improve User Experience](http://www.mobilemarketportal.com/mobile-platform/articles/383045-sap-fiori-brings-out-four-tools-improve-user.htm) by Steve Anderson
 **The thing that struck me about this article is that the [tools](http://www.news-sap.com/sap-fiori-apps-rapid-deployment/) that Steve writes about – rapid deployment solutions, proof of concept services, and design thinking – implicitly underline the fact that User Experience (UX) has really arrived in the SAP world of enterprise software. UX has stopped just being a natural by-product of application design, as it might be when dynpro-oriented applications are built with a transactional focus; it’s now an explicit and important part of the overall process.

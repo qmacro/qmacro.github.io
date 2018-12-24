@@ -15,7 +15,7 @@ tags:
 
 ![](/content/images/2018/02/branches.png)
 
-I’m mid-flight in my first UI5/Gateway project, working with a great team of developers who have all contributed to this [30 Days of UI5 series](/2015/07/30-days-of-ui5/). As a non-techie Project Manager embarking on mobile development for the first time, I thought I’d share some of my experiences and tips.
+I’m mid-flight in my first UI5/Gateway project, working with a great team of developers who have all contributed to this [30 Days of UI5 series](/2015/07/04/30-days-of-ui5/). As a non-techie Project Manager embarking on mobile development for the first time, I thought I’d share some of my experiences and tips.
 
 **This isn’t regular SAP configuration – this is mobile development.**
 

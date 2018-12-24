@@ -38,7 +38,7 @@ Now when we press the Button, we land inside Breakpoint.js:
 
 **Finding the Event Handler**
 
-Now that we’re here, there’s plenty to explore, but let’s cut to the chase and look at the Button instance. In particular, we’ll look at an internal property “mEventRegistry” which is a map that holds the functions to be called when specific events are fired. Remember that this is an internal property, which we can’t use, or rely upon, when *building* apps (for more details on this, see the post “[JavaScript Do’s and Don’ts in UI5](/2015/07/javascript-dos-and-donts-for-ui5/)” in this series). But we’re not building, we’re debugging, so all bets are off.
+Now that we’re here, there’s plenty to explore, but let’s cut to the chase and look at the Button instance. In particular, we’ll look at an internal property “mEventRegistry” which is a map that holds the functions to be called when specific events are fired. Remember that this is an internal property, which we can’t use, or rely upon, when *building* apps (for more details on this, see the post “[JavaScript Do’s and Don’ts in UI5](/2015/07/04/javascript-dos-and-donts-for-ui5/)” in this series). But we’re not building, we’re debugging, so all bets are off.
 
 The ‘this’ here is the Button control instance, and so we can see that the “this.mEventRegistry” map has an entry for “press”:
 

@@ -7,7 +7,7 @@ tags:
 ---
 
 
-Well goodness me it’s already February. January went by very fast indeed, and it turns out I managed my [January challenge (no Twitter)](/2013/01/30-days-challenges/) very well.
+Well goodness me it’s already February. January went by very fast indeed, and it turns out I managed my [January challenge (no Twitter)](/2013/01/02/30-days-challenges/) very well.
 
 I uninstalled my Twitter clients (Tweetdeck for Chrome and Tweakdeck on my Android phone). I didn’t log into them at all. I was still authenticated with Twitter on the website* and visited[ twitter.com](http://twitter.com) a couple of times to check something. No interaction, discussion or link saving, though.
 

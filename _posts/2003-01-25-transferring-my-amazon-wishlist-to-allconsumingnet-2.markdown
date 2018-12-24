@@ -5,7 +5,7 @@ date: '2003-01-25 00:33:46'
 ---
 
 
-Now that I can [monitor comments about books I have in my AllConsuming collection](/2003/01/the-disruptive-engineering-spectrum-and-booktalk-an-allconsuming-app/), I thought it would be nice to add those books in my [Amazon wishlist](http://www.amazon.co.uk/exec/obidos/wishlist/3G7VX6N7NMGWM/) to that AllConsuming collection so that I could see what people were saying about the books I wanted to buy.
+Now that I can [monitor comments about books I have in my AllConsuming collection](/undefined/), I thought it would be nice to add those books in my [Amazon wishlist](http://www.amazon.co.uk/exec/obidos/wishlist/3G7VX6N7NMGWM/) to that AllConsuming collection so that I could see what people were saying about the books I wanted to buy.
 
 So I hacked up a few scripts, and here are the results.
 

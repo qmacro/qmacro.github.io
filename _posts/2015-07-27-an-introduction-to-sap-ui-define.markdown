@@ -49,7 +49,7 @@ sap.ui.core.mvc.Controller.extend("your.name.here", {  
 
 **4**: The second parameter passed in the call to sap.ui.define is the factory, and we can see the function definition start here. Note that each dependency reference is given to this factory function, in the same order that they’re declared in the dependency list. By convention, the most significant part of the resource path name is used for the parameter name (for example “Controller” for sap.ui.more.mvc.Controller).
 
-**5**: The call to “use strict” is not specifically a feature of the new module definition syntax, but it is significant in that there is growing focus on JavaScript syntax correctness and linting. For more on this, see another post in this series: “[UI5 and Coding Standards](/2015/07/ui5-and-coding-standards/)“.
+**5**: The call to “use strict” is not specifically a feature of the new module definition syntax, but it is significant in that there is growing focus on JavaScript syntax correctness and linting. For more on this, see another post in this series: “[UI5 and Coding Standards](/2015/07/19/ui5-and-coding-standards/)“.
 
 **7-12**: The rest of the source code looks fairly familiar. There’s one exception though, and it’s a result of the dependency mechanism described earlier. The function has “Controller” and “MessageToast” available to it, and so we can and should use these to refer to the sap.ui.core.mvc.Controller and sap.m.MessageToast resources throughout. This is nice, and makes for slightly neater code too.
 

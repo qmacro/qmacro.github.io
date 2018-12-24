@@ -5,9 +5,9 @@ date: '2016-03-24 08:01:03'
 ---
 
 
-(See first post in this series — [“fiux2″ – The openSAP Fiori Course – 2016 Edition](/2016/03/fiux2-the-opensap-fiori-course-2016-edition/) — for links to the other posts).
+(See first post in this series — [“fiux2″ – The openSAP Fiori Course – 2016 Edition](/2016/03/04/fiux2-the-opensap-fiori-course-2016-edition/) — for links to the other posts).
 
-Well we’re pretty much at the half-way point in this course, and it’s going well. This week sees the end of the deadline extension for the Design Challenge that I [wrote about in Week 3](/2016/03/fiux2-week-3-get-ready-to-create-your-first-app/), but mainly is about introducing the course attendee to some basic hands on with the SAP Web IDE. Let’s have a look at how this unit went.
+Well we’re pretty much at the half-way point in this course, and it’s going well. This week sees the end of the deadline extension for the Design Challenge that I [wrote about in Week 3](/2016/03/17/fiux2-week-3-get-ready-to-create-your-first-app/), but mainly is about introducing the course attendee to some basic hands on with the SAP Web IDE. Let’s have a look at how this unit went.
 
 **Unit 1 “Introduction to SAP Web IDE”.** I’m guessing that the majority of this course’s attendees may well have some familiarity with SAP’s now-flagship interactive development environment (IDE). It had an interesting genesis, growing from an initial offering called App Designer, which, remained a young product but seemed like it might be aiming to become, for UI5, what the Microsoft tools were for Visual Basic. There was also App Builder, which one might say was a competing product, from the Sybase stable. And how can we forget the tools and accelerators for various workstation versions of Eclipse.
 

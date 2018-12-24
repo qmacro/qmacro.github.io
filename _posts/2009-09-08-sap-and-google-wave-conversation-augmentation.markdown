@@ -25,7 +25,7 @@ trkorr_match = re.search(' (SAPKw{6}|[A-Z0-9]{3}Kd{6}) ', text)
 
 In other words, it’s looking for something starting SAPK followed by six further characters, or something starting with 3 characters, followed by a K and six digits (the more traditional customer-orientated request format). In either case, there must be a space before and a space following, to be more sure of it being a ‘word’.
 
-How does it retrieve the description for a recognised transport request? Via a simple REST-orientated interface, of course :-) I use the excellent Internet Communication Framework (ICF) to build and host HTTP handlers so I can [expose SAP functionality and data as resources in a uniform and controlled way](https://www.sdn.sap.com/irj/scn/weblogs?blog=/pub/wlg/584). Each piece of data worth talking about is a [first class citizen on the web](/2009/06/information-vs-behaviour/); that is, each piece of data is a resource, and has a URL.
+How does it retrieve the description for a recognised transport request? Via a simple REST-orientated interface, of course :-) I use the excellent Internet Communication Framework (ICF) to build and host HTTP handlers so I can [expose SAP functionality and data as resources in a uniform and controlled way](https://www.sdn.sap.com/irj/scn/weblogs?blog=/pub/wlg/584). Each piece of data worth talking about is a [first class citizen on the web](/2009/06/29/information-vs-behaviour/); that is, each piece of data is a resource, and has a URL.
 
 So the robot simply fetches the default representation of the recognised request’s ‘description’ resource. If the request was NSPK900115, the description resource’s URL would be something like:
 

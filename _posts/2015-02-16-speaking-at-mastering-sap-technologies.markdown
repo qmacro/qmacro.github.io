@@ -12,7 +12,7 @@ tags:
 
 Next week I’m travelling to Johannesburg, to attend and speak at the [Mastering SAP Technologies conference](http://www.masteringsap.co.za/tech). It’s a great honour to have been invited, and I’m excited at the prospect of the topics covered in the [agenda](http://www.masteringsap.co.za/tech/agenda).
 
-I’m continuing my journey spreading the word about Fiori and UI5. Last November I was in Sydney giving a locknote, a workshop and speaking at an executive lunch, at the [SAP Architect & Developer Summit](/2014/11/the-inaugural-sap-architect-developer-summit/). A couple of weeks ago it was a short trip to Brussels to speak about [OpenUI5 at FOSDEM](/2015/02/openui5-at-fosdem-2015/), and now at Mastering SAP I have three slots. Here’s the description of each of them.
+I’m continuing my journey spreading the word about Fiori and UI5. Last November I was in Sydney giving a locknote, a workshop and speaking at an executive lunch, at the [SAP Architect & Developer Summit](/2014/11/28/the-inaugural-sap-architect-developer-summit/). A couple of weeks ago it was a short trip to Brussels to speak about [OpenUI5 at FOSDEM](/2015/02/02/openui5-at-fosdem-2015/), and now at Mastering SAP I have three slots. Here’s the description of each of them.
 
 **[Keynote: Can I Build a Fiori App? Yes You Can!](http://lanyrd.com/2015/masteringsap/sdfyqz/)**
 

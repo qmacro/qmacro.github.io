@@ -39,7 +39,7 @@ But the killer feature is that Twitter espouses the guiding design principle:
 
 [**Everything has a URL**](http://www.google.co.uk/search?q="everything+has+a+url")
 
-and everything is available via the lingua franca of today’s interconnected systems — HTTP. Timelines (message groupings) have URLs. Message producers and consumers have URLs. Crucially, *individual messages have URLs* (this is why I could refer to a particular tweet at the start of this post). All the moving parts of this microblogging mechanism are [first class citizens on the web](/2002/09/rest-google-and-idempotency/). Twitter exposes message data as feeds, too.
+and everything is available via the lingua franca of today’s interconnected systems — HTTP. Timelines (message groupings) have URLs. Message producers and consumers have URLs. Crucially, *individual messages have URLs* (this is why I could refer to a particular tweet at the start of this post). All the moving parts of this microblogging mechanism are [first class citizens on the web](/2002/09/02/rest-google-and-idempotency/). Twitter exposes message data as feeds, too.
 
 Even Twitter’s API, while not *entirely* RESTful, is certainly facing in the right direction, exposing information and functionality via simple URLs and readily consumable formats (XML, JSON). The [simplest thing that could possibly work](http://c2.com/xp/DoTheSimplestThingThatCouldPossiblyWork.html) usually does, enabling the “[small pieces, loosely joined](http://www.smallpieces.com/)” approach that lets you [pipeline the web](http://radio.weblogs.com/0100887/2002/03/27.html), like this:
 

@@ -5,7 +5,7 @@ date: '2016-03-31 07:05:45'
 ---
 
 
-(See first post in this series — [“fiux2″ – The openSAP Fiori Course – 2016 Edition](/2016/03/fiux2-the-opensap-fiori-course-2016-edition/) — for links to the other posts).
+(See first post in this series — [“fiux2″ – The openSAP Fiori Course – 2016 Edition](/2016/03/04/fiux2-the-opensap-fiori-course-2016-edition/) — for links to the other posts).
 
 So week 5 came and went rather quickly – perhaps it was the Bank Holiday weekend! This week sees the introduction of the Develop Challenge, as well as the main content of this week – looking at more advanced features of the SAP Web IDE. Let’s review the units.
 
@@ -21,7 +21,7 @@ Anyway, take a look at this unit to find out more about the Layout Editor. Moreo
 
 There’s a lot packed into this course, including two major hands-on activities – the Design Challenge and the Develop Challenge, with their respective peer review activities to boot. I’m struggling a little to keep up with what’s required, especially as I’m dipping in and out of the course material when I have time.
 
-So while this unit helps, I’m still a bit confused – particularly about when the peer review for the Design Challenge is to start. That confusion was increased by the deadline extension given for this challenge ([that I mentioned last week](/2016/03/fiux2%E2%80%B3-week-4-create-your-first-sap-fiori-app/)). But perhaps I’m just getting old. I checked my Study submitted via Build / Splash, but have had no peer feedback yet. Nor have I had any prompting to start the peer review (we all get 5 submissions to review).
+So while this unit helps, I’m still a bit confused – particularly about when the peer review for the Design Challenge is to start. That confusion was increased by the deadline extension given for this challenge ([that I mentioned last week](/undefined/)). But perhaps I’m just getting old. I checked my Study submitted via Build / Splash, but have had no peer feedback yet. Nor have I had any prompting to start the peer review (we all get 5 submissions to review).
 
 Update – I did some digging around, and you can now get to the peer review section within the Design Challenge section, as shown here:
 
@@ -43,7 +43,7 @@ Finally, it would have been nice to hear a more compelling explanation of the re
 
 All in all this unit was a useful, if slightly inconguent, poke in the ribs for the attendees to let them know it’s not just point-and-click in the Web IDE Layout Editor. I guess my comment about occasional users earlier in this post is relevant here too :-)
 
-**Unit 4 “Creating an SAP Fiori App with a Smart Template”.** The combination of OData, annotations, and Smart Templates is a powerful one. We had a brief introduction to Smart Templates in [week 3](/2016/03/fiux2-week-3-get-ready-to-create-your-first-app/) so I need not dwell on them too much again here.
+**Unit 4 “Creating an SAP Fiori App with a Smart Template”.** The combination of OData, annotations, and Smart Templates is a powerful one. We had a brief introduction to Smart Templates in [week 3](/2016/03/17/fiux2-week-3-get-ready-to-create-your-first-app/) so I need not dwell on them too much again here.
 
 Suffice it to say that this unit showed a pretty impressive demo – a happy path demo, but a good one nevertheless. One of the things that stood out from the slide notes, and brought up by the presenter, was that with Smart Templates, there are “NO modifications”. I’ve yet to find out what that really implies; read-only code sometimes goes hand-in hand with auto-generation, but I’m pretty certain that what we’re going to end up with is something workable. The UI5 toolkit itself does a lot of the heavy lifting here, so it’s not as if there’s a ton of code that’s being emitted.
 

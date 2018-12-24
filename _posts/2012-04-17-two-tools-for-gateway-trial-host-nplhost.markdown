@@ -13,7 +13,7 @@ tags:
 
 The [SAP NetWeaver Gateway](http://scn.sap.com/community/netweaver-gateway) trial system is a great way to get your hands on all that OData and HTTP goodness. There are a couple of tools that I find myself re-installing when I build a new copy of the VM + trial – multitail and screen.
 
-[Multitail](http://www.vanheusden.com/multitail/) is something I mentioned on my [Enterprise Geeks slot with Craig Cmehil](/2012/04/on-enterprise-geeks-postcast/) and allows you to tail more than one file at once. Very useful for keeping an eye on all those log files in the instance work directory!
+[Multitail](http://www.vanheusden.com/multitail/) is something I mentioned on my [Enterprise Geeks slot with Craig Cmehil](/undefined/) and allows you to tail more than one file at once. Very useful for keeping an eye on all those log files in the instance work directory!
 
 And [screen](http://en.wikipedia.org/wiki/GNU_Screen) is one of those great utilities that I put in the same class as putty and vim: absolutely essential. It allows you to maintain multiple persistent sessions on a remote *nix host. Great for disconnecting and reconnecting (especially on dodgy ‘net connections) and being able to continue exactly where you left off.
 
