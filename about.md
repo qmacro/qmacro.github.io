@@ -4,7 +4,7 @@ title: About
 permalink: /about/
 ---
 
-DJ works on developer outreach and advocacy in SAP's Developer Relations team. He's been hacking on SAP enterprise software for more than three decades, and has a strong connection to the Open Source community too.
+DJ works on developer outreach and advocacy in SAP's [Developer](//developers.sap.com) Relations team. He's been hacking on SAP enterprise software for more than three decades, and has a strong connection to the Open Source community too.
 
 He's contributed to the [SAP](http://community.sap.com), [Perl](http://search.cpan.org/~qmacro/), [XMPP (Jabber)](http://xmpp.org) and [Google](http://gtugs.org) developer communities and most recently has been sharing knowledge on SAP Fiori and SAP's UI5 toolkit. He was made an [SAP Mentor](http://www.sap.com/uk/community/resources/influencer-programs.html) in recognition of his contributions to the [SAP Developer Network and community](http://community.sap.com) which he co-created in 2003.
 
