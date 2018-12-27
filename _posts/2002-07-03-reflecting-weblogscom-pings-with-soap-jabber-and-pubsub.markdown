@@ -24,7 +24,7 @@ SEND:
 ```
 <iq type='set' to='weblogs.gnu.mine.nu'>
 	<query xmlns='pipetree:iq:pubsub'>
-		<subscribe to='http://www.pipetree.com/qmacro'/>
+		<subscribe to='//qmacro.org/about'/>
 	</query>
 </iq>
 ```
@@ -36,8 +36,8 @@ RECV:
 ```
 <iq type='set' from='weblogs.gnu.mine.nu' to='user@host/resource'>
 	<query xmlns='pipetree:iq:pubsub'>
-		<publish from='http://www.pipetree.com/qmacro'>
-			<url>http://www.pipetree.com/qmacro</url>
+		<publish from='//qmacro.org/about'>
+			<url>//qmacro.org/about</url>
 			<name>DJ's Weblog</name>
 			<timestamp>2002-07-03T21:35:51Z</timestamp>
 		</publish>

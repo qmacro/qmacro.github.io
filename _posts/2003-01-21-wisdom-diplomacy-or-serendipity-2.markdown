@@ -13,7 +13,7 @@ But for those (including me) who (also) have a [REST](http://internet.conveyor.c
 
 or
 
-[http://allconsuming.net/soap-client.cgi?friends=1&url=http://www.pipetree.com/qmacro](http://allconsuming.net/soap-client.cgi?friends=1&url=http://www.pipetree.com/qmacro)
+[http://allconsuming.net/soap-client.cgi?friends=1&url=//qmacro.org/about](http://allconsuming.net/soap-client.cgi?friends=1&url=//qmacro.org/about)
 
 where the methods are “GetHourlyList()” (hourly=1) and “GetFriends()” (friends=1) respectively.
 

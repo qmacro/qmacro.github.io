@@ -13,7 +13,7 @@ The main drive for this change was to be able to more easily incorporate the lat
 
 As you can see, this blog’s location –
 
-> [http://www.pipetree.com/qmacro](../../../qmacro)
+> [//qmacro.org/about](../../../qmacro)
 
 is new, and easy to remember. The content and CGI scripts are actually served from my **~dj** directory on www.pipetree.com; the ‘qmacro’ name is masking this by means of some **AliasMatch** directives in our Apache web server.
 

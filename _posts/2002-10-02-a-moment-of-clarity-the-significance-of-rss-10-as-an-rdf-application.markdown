@@ -41,7 +41,7 @@ There are many RDF tools, including parsers, listed on [Dave Beckett’s](http:/
 Simple literal value example gives:
 
 ```
-{[http://www.pipetree.com/qmacro], [http://purl.org/dc/1.1/elements/creator], "DJ Adams"}
+{[//qmacro.org/about], [http://purl.org/dc/1.1/elements/creator], "DJ Adams"}
 ```
 
 In other words:
@@ -53,7 +53,7 @@ In other words:
 Complex FOAF element structure example gives:
 
 ```
-{[http://www.pipetree.com/qmacro], [http://dublincore.com/creator], (genid1)} {(genid1), [http://www.w3.org/1999/02/22-rdf-syntax-ns#type], [http://foaf.com/Person]} {(genid1), [http://foaf.com/name], "DJ Adams"} {(genid1), [http://www.w3.org/2000/01/rdf-schema#seeAlso], [http://www.pipetree.com/~dj/foaf.rdf]}
+{[//qmacro.org/about], [http://dublincore.com/creator], (genid1)} {(genid1), [http://www.w3.org/1999/02/22-rdf-syntax-ns#type], [http://foaf.com/Person]} {(genid1), [http://foaf.com/name], "DJ Adams"} {(genid1), [http://www.w3.org/2000/01/rdf-schema#seeAlso], [http://www.pipetree.com/~dj/foaf.rdf]}
 ```
 
 In other words:

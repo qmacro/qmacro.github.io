@@ -12,7 +12,7 @@ tags:
 ---
 
 
-I put my [CV online](http://www.pipetree.com/qmacro/CV.html) recently, and having the machine that serves this website (an iMac running Ubuntu Linux) sitting in the study, I can almost ‘feel’ the HTTP requests entering the house, going down the wire, and being served, like lumps travelling down a pipe in a Tom & Jerry cartoon.
+I put my [CV online](//qmacro.org/about/CV.html) recently, and having the machine that serves this website (an iMac running Ubuntu Linux) sitting in the study, I can almost ‘feel’ the HTTP requests entering the house, going down the wire, and being served, like lumps travelling down a pipe in a Tom & Jerry cartoon.
 
 So I was thinking about doing something useful with Apache’s access log, more than what I already have with the excellent [Webalizer](http://www.mrunix.net/webalizer/). Inspired (as ever) by [Jon Udell](http://blog.jonudell.net/about/)‘s “[ongoing fascination with Delicious as a user-programmable database](http://blog.jonudell.net/2009/02/26/collaborative-curation-as-a-service/)“, I decided to pipe the access log into a Perl script and pull all the Google search referrer URLs that led to /qmacro/CV.html. For every referrer URL found, I grabbed the query string that was used and split it into words, removing noise. I also made a note of the top level domain for the Google hostname – a very rough indication of where queries were coming from.
 

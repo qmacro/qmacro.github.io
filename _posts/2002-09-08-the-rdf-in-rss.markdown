@@ -15,14 +15,14 @@ The point of RDF is to be able to describe resources. Resource Description Frame
 These assertions are often expressed as having the form ‘subject-predicate-object’ and are referred to as ‘triples’. RDF exists independently of XML, but what I (and lots of other people) recognise RDF as is its XML incarnation. Here’s a simple example:
 
 ```xml
-<rdf:Description rdf:about='http://www.pipetree.com/qmacro'>
+<rdf:Description rdf:about='//qmacro.org/about'>
 	<dc:title>DJ's Weblog</dc:title>
 </rdf:Description>
 ```
 
 This makes the assertion that
 
-> the resource at [http://www.pipetree.com/qmacro](../../../qmacro "DJ's Weblog") has a title (as defined in the [Dublin Core](http://purl.org/dc/elements/1.0/ "Dublin Core elements")) with the value “DJ’s Weblog“.
+> the resource at [//qmacro.org/about](../../../qmacro "DJ's Weblog") has a title (as defined in the [Dublin Core](http://purl.org/dc/elements/1.0/ "Dublin Core elements")) with the value “DJ’s Weblog“.
 
 What’s obvious is that *subjects* are URIs. It’s also easy to realise that *objects* can be URIs too – instead of having a Literal (“DJ’s Weblog”) as in the example above, you can have another resource (a URI), for example:
 
@@ -44,9 +44,9 @@ So, what about these triples that exist in RSS 1.0? They’re just to add a laye
 
 ```xml
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/">
-	<channel rdf:about="http://www.pipetree.com/qmacro/xml">
+	<channel rdf:about="//qmacro.org/about/xml">
 		<title>DJ's Weblog</title>
-		<link>http://www.pipetree.com/qmacro</link>
+		<link>//qmacro.org/about</link>
 		<description> Why make things simple when you can make them complicated?</description>
 		<items>
 			<rdf:Seq>
@@ -74,7 +74,7 @@ Here’s what we have, RDF-wise:
 
 And what do these RDF things do? First, each resource – the RSS channel, or the Weblog it represents, and the actual items – are identified as *subjects* of assertions, using the **rdf:about** attributes. You could say that they’re the “subjects of *Descriptions* of them”. Each has a unique URI. Then, an assertion of the following nature is made about the channel:
 
-> The channel *http://www.pipetree.com/qmacro/xml* contains an *ordered sequence* of things, namely *http://www…#tech/moz-tab-bookmark and http://www…#tech/google-idempotent*.
+> The channel *//qmacro.org/about/xml* contains an *ordered sequence* of things, namely *http://www…#tech/moz-tab-bookmark and http://www…#tech/google-idempotent*.
 
 If the RSS file were to have an image, it would occur as in other RSS versions (i.e. as an element peer of the <channel/> element), and the <image/> element itself would have an **rdf:about** attribute pointing to that image resource’s URI. Then, *inside the channel element*, there’d be a simple:
 
@@ -84,7 +84,7 @@ If the RSS file were to have an image, it would occur as in other RSS versions (
 
 element pointing to the same URI as the <image/> element’s **rdf:about** attribute pointed to. This would say:
 
-> The channel *http://www.pipetree.com/qmacro/xml* has an *image *, namely *(the image’s URI)*.
+> The channel *//qmacro.org/about/xml* has an *image *, namely *(the image’s URI)*.
 
 And so on.
 

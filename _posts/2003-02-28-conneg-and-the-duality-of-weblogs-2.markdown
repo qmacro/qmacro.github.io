@@ -23,7 +23,7 @@ With that in mind, my thoughts turned (naturally) to connection negotiation, or 
 
 ```
 [dj@cicero dj]$ GET -H"Accept: application/rss+xml" -Use /
-GET http://www.pipetree.com/qmacro 
+GET //qmacro.org/about 
 Accept: application/rss+xml 
 200 OK 
 Content-Type: application/rss+xml 
@@ -39,7 +39,7 @@ Or <acronym title="Rich Site Summary">RSS</acronym> 1.0:
 [dj@cicero dj]$ curl -H"Accept:application/rdf+xml" /
 <?xml version="1.0"?> 
 <rdf:RDF xmlns="http://purl.org/rss/1.0/" ... > 
-<channel rdf:about="http://www.pipetree.com/qmacro"> 
+<channel rdf:about="//qmacro.org/about"> 
 <title>DJ's Weblog</title> ...
 [dj@cicero dj]$ 
 ```
