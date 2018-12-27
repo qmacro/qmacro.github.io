@@ -9,7 +9,7 @@ tags:
 - openui5
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 11 by [DJ Adams](http://pipetree.com/qmacro/)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 11 by [DJ Adams](//qmacro.org/about/)**
 
 ![Message Strip control](/content/images/2018/02/Screenshot-2015-06-23-at-22.26.53.png)
 

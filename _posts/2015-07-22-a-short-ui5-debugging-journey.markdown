@@ -8,7 +8,7 @@ tags:
 - supporttool
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 19 by [DJ Adams](http://pipetree.com/qmacro/)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 19 by [DJ Adams](//qmacro.org/about/)**
 
 In an earlier post in this [series](/2015/07/04/30-days-of-ui5/), entitled “[The UI5 Support Tool – Help Yourself!](/2015/07/18/the-ui5-support-tool-help-yourself/)“, we looked at the Support Tool, examining the information available in the Control Tree. In particular we looked at the Properties and Binding Infos tabs. While exploring the new UI5 1.30 features with the Explored app, I re-noticed a small addition to the Explored UI – a Button that allowed me to switch to full screen mode to view control samples.
 
