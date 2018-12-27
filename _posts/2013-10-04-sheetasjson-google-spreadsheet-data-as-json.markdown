@@ -25,17 +25,17 @@ and the value for `sheet` would be
 
 Sheet1
 
-![](http://www.pipetree.com/qmacro/oldblog/content/images/2013/10/sheet1.png)
+![](//qmacro.org/content/images/2013/10/sheet1.png)
 
 The exposure is via a Google Apps Script, which uses a couple of Apps Script APIs from the [Spreadsheet](https://developers.google.com/apps-script/reference/spreadsheet/) and [Content](https://developers.google.com/apps-script/reference/content/) services. The script, [SheetAsJSON](https://script.google.com/d/143u0RLuppsmYJ0B3wzo6i0jZYSfIFV2NLJMHPM-Sqczpr9bLwdffc-Wx/edit?usp=sharing), runs as a [web app](https://developers.google.com/apps-script/execution_web_apps), which puts a few requirements on the script itself.
 
 It must implement a doGet method (for HTTP GET). It must be versioned (only versions of scripts can be deployed):
 
-![](http://www.pipetree.com/qmacro/oldblog/content/images/2013/10/version.png)
+![](//qmacro.org/content/images/2013/10/version.png)
 
 It must also be deployed as a web app and made available for others (or just yourself) to execute:
 
-![](http://www.pipetree.com/qmacro/oldblog/content/images/2013/10/deploy-268x300.png)
+![](//qmacro.org/content/images/2013/10/deploy-268x300.png)
 
 As you can see in the above screenshot, you also need to make sure the script is authorised to run. See the [Google Apps Script documentation](https://developers.google.com/apps-script/) for more details.
 
@@ -56,7 +56,7 @@ So with that in mind, let’s say we use the "Typical Spreadsheet" shown in the 
 <span style="color: #ff6600;">https://script.google.com/macros/s/AKfycbxOLElujQcy1-ZUer1KgEvK16gkTLUqYftApjNCM_IRTL3HSuDk/exec</span>?<span style="color: #339966;">id=0AuAssa05Fog5dGc5WVNRbFZDcWJCLVY2V2NidWFKeXc</span>&<span style="color: #0000ff;">sheet=Sheet1</span>
 
 which will return this:
-[![](http://www.pipetree.com/qmacro/oldblog/content/images/2013/10/json.png)
+![](//qmacro.org/content/images/2013/10/json.png)
 
 Note that there’s a redirect which means the final URL you see in the URL bar is not the one above. Note also that the formatting in my browser is down to the great Chrome extension "[JSONView](https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc?hl=en)".
 
