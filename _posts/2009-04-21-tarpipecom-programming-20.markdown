@@ -30,7 +30,10 @@ All in the space of a few clicks and drags! Here’s a shot of that workflow (wi
 
 But what’s more fabulous: Tarpipe has been ideal for my son [Joseph](http://jcla1.com) to start up with programming, with me. And he finds it really interesting. Visual, direct feedback, using and connecting things and services he understands. Gone are the days of
 
-10 PRINT "HELLO WORLD" 20 GOTO 10
+```
+10 PRINT "HELLO WORLD"
+20 GOTO 10
+```
 
 on black and white low-res displays.
 
