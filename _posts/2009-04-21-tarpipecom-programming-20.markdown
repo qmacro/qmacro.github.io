@@ -26,7 +26,7 @@ The workflow uses the existing Tarpipe connectors to:
 
 All in the space of a few clicks and drags! Here’s a shot of that workflow (with a couple of connectors partially obscured — it’s a [known bug in Tarpipe](http://getsatisfaction.com/tarpipe/topics/connector_moved_to_high_and_now_unable_to_delete_edit_it)):
 
-![tarpipebeerrater](/content/images/2009/04/tarpipebeerrater-300x164.png)
+![tarpipebeerrater](/content/images/2009/04/tarpipebeerrater.png)
 
 But what’s more fabulous: Tarpipe has been ideal for my son [Joseph](http://jcla1.com) to start up with programming, with me. And he finds it really interesting. Visual, direct feedback, using and connecting things and services he understands. Gone are the days of
 
