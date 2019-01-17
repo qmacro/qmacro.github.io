@@ -24,7 +24,7 @@ He's contributed articles to sites as diverse as O'Reilly's [OpenP2P](http://www
 
 He's spoken at conferences such as [OSCON](http://www.oscon.com), JabberConf, [FOSDEM](http://www.fosdem.org), [SAP Inside Track](http://scn.sap.com/community/events/inside-track), [SAP TechEd](http://www.sapteched.com), SAP d-kom, the [SAP UK & Ireland User Group Conference](http://www.sapusers.org/), the [SAP Architect & Developer Summit](http://www.bluefinsolutions.com/insights/dj-adams/november-2014/the-inaugural-sap-architect-developer-summit), [Manchester Digital Laboratory (MadLab)](http://madlab.org.uk), [Manchester Lambda Lounge](http://lambdalounge.org.uk), [UI5con](https://www.youtube.com/watch?v=CTgtS6Cd98Y) and [TEDx](http://www.youtube.com/watch?v=-gvOCaExeK0).
 
-Follow DJ on [Twitter](//twitter.com/qmacro), subscribe to his [YouTube channel](https://www.youtube.com/channel/UCDUgrP3koL_o2iz6m55H1uA/), read posts on his [personal blog](//qmacro.org) and his [current](//people.sap.com/dj.adams.sap) and [previous](//people.sap.com/dj.adams) blogs on the SAP Community.
+Follow DJ on [Twitter](//twitter.com/qmacro) and on [Twitch](https://twitch.tv/qmacro99), subscribe to his [YouTube channel](https://www.youtube.com/c/djadams-qmacro), read posts on his [personal blog](//qmacro.org), [Language Ramblings](http://langram.org), and his [current](//people.sap.com/dj.adams.sap) & [previous](//people.sap.com/dj.adams) blogs on the SAP Community.
 
 ![Programming Jabber](/content/images/books/programmingjabber.png)
 
