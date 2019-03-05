@@ -11,11 +11,9 @@ tags:
 ---
 
 
-<div style="float: right; margin-left: 10px; margin-bottom: 10px;">[![TurnkeyScreenshot](http://farm1.staticflickr.com/14/16264534_127c972adf_n.jpg)](http://www.flickr.com/photos/qmacro/16264534/ "TurnkeyScreenshot by qmacro, on Flickr")
+![Screenshot of Turnkey](/content/images/2005/05/16264534_127c972adf_n.jpg)
 
-Originally uploaded by [qmacro](http://www.flickr.com/people/qmacro/).
-
-</div>As an ex MVS chap (I managed VSAM (DL/1) based SAP R/2 systems on IMS DB/DC at the start of my career) I was amazed some months back to find [Hercules](http://www.hercules-390.org/), the open source S/370 emulator.
+As an ex MVS chap (I managed VSAM (DL/1) based SAP R/2 systems on IMS DB/DC at the start of my career) I was amazed some months back to find [Hercules](http://www.hercules-390.org/), the open source S/370 emulator.
 
 So imagine my delight when I revisited Hercules the other day, to find a chap called Volker Bandke had put together an [MVS 3.8J Turnkey system](http://www.bsp-gmbh.com/turnkey) that you can install and run on your emulated mainframe.
 
@@ -23,11 +21,11 @@ Using the ISPF-alike [RPF](http://www.bsp-gmbh.com/hercules/herc_rpf.html), and 
 
 And of course, the first thing I tried (after a bit of jiggery pokery setting things up) had to be the inevitable:
 ```
-//HWORLD JOB CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),REGION=256K 
-//STEP1 EXEC PGM=IEBGENER 
-//SYSUT1 DD * HELLO WORLD! 
-//SYSUT2 DD SYSOUT=A 
-//SYSPRINT DD SYSOUT=A 
+//HWORLD JOB CLASS=A,MSGCLASS=A,MSGLEVEL=(1,1),REGION=256K
+//STEP1 EXEC PGM=IEBGENER
+//SYSUT1 DD * HELLO WORLD!
+//SYSUT2 DD SYSOUT=A
+//SYSPRINT DD SYSOUT=A
 //SYSIN DD DUMMY
 ```
 
