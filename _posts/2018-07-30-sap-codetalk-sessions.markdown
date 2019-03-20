@@ -37,3 +37,15 @@ Aug 2018
 [Functional Programming](https://www.youtube.com/watch?v=mm7spFuE5eM)
 
 [Application Programming Model](https://www.youtube.com/watch?v=GhEpcB7x4UA)
+
+Oct 2018
+
+[SAP CodeTalk on Tour](https://www.youtube.com/watch?v=IY-amlZuPrs)
+
+Jan 2019
+
+[Hands-on SAP dev with qmacro](https://www.youtube.com/watch?v=SvmNaTRrTvI)
+
+Mar 2019
+
+[Update on 'Hands-on SAP dev with qmacro'](https://www.youtube.com/watch?v=5RrfPz-Ep8o)
