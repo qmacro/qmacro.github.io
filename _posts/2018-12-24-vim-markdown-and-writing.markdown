@@ -4,7 +4,7 @@ title: Vim, Markdown and writing
 date: '2018-12-24 12:53:49'
 ---
 
-Having got my personal space on the Web in order with some [housekeeping](/2018-12-24-housekeeping) this weekend, I can now turn my attention to my workflow and tools, where I intend to rebuild some skills in core technologies. To that end, I'm writing more in Markdown, and have re-embraced Vim as my editor of choice for many things.
+Having got my personal space on the Web in order with some [housekeeping](/2018/12/24/housekeeping) this weekend, I can now turn my attention to my workflow and tools, where I intend to rebuild some skills in core technologies. To that end, I'm writing more in Markdown, and have re-embraced Vim as my editor of choice for many things.
 
 The availability of Linux on my OS of choice (Chrome OS), in the form of [Crostini](https://www.reddit.com/r/Crostini/), and the immediacy of the Linux terminal, where I feel most at home, has given me the chance I've been looking for to properly learn stuff I've only scraped by with in the past, and to mix old & new techniques. I'm blogging using [GitHub Pages](//pages.github.com) which means Markdown and Jekyll, synchronising content between my local machine(s) and the cloud using git repositories. I'm using Vim to write, and am especially enjoying some of the plugins I'm trying out, in particular this zen-like writing mode that the lovely combination of [Goyo](https://github.com/junegunn/goyo.vim) and [Limelight](https://github.com/junegunn/limelight.vim) offers.
 
