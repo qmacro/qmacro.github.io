@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: post
 title: David Edward Adams
 date: '2019-07-11 18:50:00'
 ---
