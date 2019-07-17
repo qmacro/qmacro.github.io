@@ -16,6 +16,9 @@ We could write so much here, but whatever we put would not be a match for the me
 
 _Dad, we love you and miss you terribly. Life won't be the same without your sharp wit, your eye for a bargain, and your swearing. And your love._
 
+**Funeral**
+
+There will be a service at [Hollinwood Crematorium](https://goo.gl/maps/SASxHLnd3dy3u4Tk7) on Monday 22 July 2019 at 11:00, followed by a reception at [Woodhouses Cricket Club](https://goo.gl/maps/nxmqaKpdUWJQ1khKA).
 
 **Donations**
 
