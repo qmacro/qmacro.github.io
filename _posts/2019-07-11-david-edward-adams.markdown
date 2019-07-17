@@ -10,7 +10,7 @@ date: '2019-07-11 18:50:00'
 
 On the evening of Thursday 11 July 2019, after a long and latterly very painful struggle, dad passed away in his sleep. We were in the room at Park Hills Nursing Home with him, sitting by the window, and didn't even notice, it was that peaceful.
 
-He was loved by many people, from many walks of life, and he has close friends from so many of his ventures, from farming, haulage, skip hire, chauffeuring, dealings in antiques ("clutter"), running the door at Cruz 101, and most recently from his volunteer work where he enjoyed his time pointing to things with his stick, trying his best to tolerate cheeky customers, and messing up till transactions.
+He was loved by many people, from many walks of life, and he has close friends from so many of his ventures, from farming, haulage, skip hire, chauffeuring, dealings in antiques ("clutter"), running the door at Cruz 101, and most recently from his volunteer work at the charity shop where he enjoyed his time pointing to things with his stick, trying his best to tolerate cheeky customers, and messing up till transactions.
 
 We could write so much here, but whatever we put would not be a match for the memories you undoubtedly have of him. So we'll keep it brief.
 
