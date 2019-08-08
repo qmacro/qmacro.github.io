@@ -68,8 +68,8 @@ Ok, let’s run through the script step by step.
 We start with a few constants: the name of the tasklist into which we want our new tasks inserted, and the two labels.
 
 ```language-javascript
-TASKLIST = "DJ's list"; 
-LABEL_PENDING = "newtask"; 
+TASKLIST = "DJ's list";
+LABEL_PENDING = "newtask";
 LABEL_DONE = "newtaskdone";
 ```
 
@@ -171,87 +171,4 @@ With a coffee (and biscuit) down, I now have a very slick way of remembering thi
 
 Here’s the script in its entirety, with comments.
 
-```language-javascript
-// -----------------------------------------------------
-// Globals, contants
-// -----------------------------------------------------
-TASKLIST = "DJ's list";
-LABEL_PENDING = "newtask";
-LABEL_DONE = "newtaskdone";
-
-// -----------------------------------------------------
-// getTasklistId_(tasklistName)
-// Returns the id of the tasklist specified
-// Oddly, we should be able to use:
-// Tasks.Tasklists.get(tasklistName)
-// but it always gives an error "Invalid Value". 
-// -----------------------------------------------------
-function getTasklistId_(tasklistName) {
-  var tasklistsList = Tasks.Tasklists.list();
-  var taskLists = tasklistsList.getItems();
-  for (tl in taskLists) {
-    var title = taskLists[tl].getTitle();
-    if (title == tasklistName) {
-      return taskLists[tl].getId();
-    }
-  }
-}
-
-// -----------------------------------------------------
-// processPending(sheet)
-// Process any pending emails and then move them to done
-// -----------------------------------------------------
-function processPending_(sheet) {
-
-  var label_pending = GmailApp.getUserLabelByName(LABEL_PENDING);
-  var label_done = GmailApp.getUserLabelByName(LABEL_DONE);
-
-  // The threads currently assigned to the 'pending' label
-  var threads = label_pending.getThreads();
-
-  // Process each one in turn, assuming there's only a single
-  // message in each thread
-  for (var t in threads) {
-    var thread = threads[t];
-
-    // Grab the task data
-    var taskTitle = thread.getFirstMessageSubject();
-    
-    // Insert the task
-    addTask_(taskTitle, TASKLIST);
-
-    // Set to 'done' by exchanging labels
-    thread.removeLabel(label_pending);
-    thread.addLabel(label_done);
-  }
- 
-  // Increment the processed tasks count
-  var processedRange = sheet.getRange("B1");
-  processedRange.setValue(processedRange.getValue() + threads.length)
-}
-
-// -----------------------------------------------------
-// addTask_(title, taskListId)
-// Create new task and insert into given tasklist
-// -----------------------------------------------------
-function addTask_(title, tasklistId) {
-  var newTask = Tasks.newTask().setTitle(title);
-  Tasks.Tasks.insert(newTask, getTasklistId_(tasklistId));
-}
-
-// -----------------------------------------------------
-// main()
-// Starter function; to be scheduled regularly
-// -----------------------------------------------------
-function main_taskconverter() {
-  
-  // Get the active spreadsheet and make sure the first
-  // sheet is the active one
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sh = ss.setActiveSheet(ss.getSheets()[0]);
-
-  // Process the pending task emails
-  processPending_(sh);
-  
-}
-``` 
+<script src="https://gist.github.com/qmacro/821cdbd498fe772447165ad95a4cc470.js"></script>
