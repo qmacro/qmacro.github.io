@@ -4,7 +4,7 @@ title: Hitch Hiker's style in Sea of Sorrows
 date: '2019-08-28 17:57:00'
 ---
 
-_Is there a link between a scene in "Alien: Sea of Sorrows" and a scene in part 2 of Hitch Hiker's Guide To The Galaxy? I think so, or perhaps I hope so._
+_Is there a link between a scene in "Alien: Sea of Sorrows" and a scene in part 2 of The Hitch Hiker's Guide To The Galaxy? I think so, or perhaps I hope so._
 
 I'm listening to and rather enjoying the Audible Original "[Alien: Sea Of Sorrows](https://www.amazon.co.uk/Alien-Sorrows-Audible-Original-Drama/dp/B07B3MZHTQ)". Beyond being a good story (along with its related titles such as "Out Of The Shadows" and "River Of Pain"), the audio genre is new to me - rather than just being a narration, it's a full-on audio action experience. Definitely recommended.
 
