@@ -28,7 +28,7 @@ I couldn't find such a podcast, so I decided to start one myself. It's called "[
 
 If you want to add it to your own podcast listening workflow, the RSS feed URL is: <https://anchor.fm/s/e5dc36c/podcast/rss>.
 
-You can learn more about this new podcast by listening to the first episode "[Welcome to Tech Aloud](https://anchor.fm/tech-aloud/episodes/Welcome-to-Tech-Aloud-e5ddsh)".
+You can learn more about this new podcast by listening to the first episode "[Welcome to Tech Aloud](https://anchor.fm/tech-aloud/episodes/Welcome-to-Tech-Aloud-e5ddsh)". I've also written a post on the SAP Community about this podcast, which provides a bit more context: "[Tech Aloud podcast - an introduction](https://blogs.sap.com/2019/09/18/tech-aloud-podcast-an-introduction/)". Moreover, I'm encouraging folks to submit content suggestions during the SAP TechEd Barcelona week in this post: "[Submit suggestions for Tech Aloud during SAP TechEd Barcelona](https://blogs.sap.com/2019/10/04/submit-suggestions-for-tech-aloud-during-sap-teched-barcelona/)".
 
 I have a system for bookmarking articles and posts that I want to read, and this podcast is me basically dipping into that list, picking entries out that seem suitable for audio, and recording them as episodes in this new podcast. How do I pick which articles or posts to read aloud? Well, there are a few rules of thumb:
 
