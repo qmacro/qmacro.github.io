@@ -10,7 +10,23 @@ _I've created a new podcast called "Tech Aloud", where I read out loud tech arti
 
 There's such a rich seam of material out there to read and learn from that it's more or less impossible to keep up. Technical articles and blog posts are published day in day out, and I can only find time to read so many. I'd been thinking that if I could find a podcast where articles and blog posts are simply read out, aloud, I could digest a little more via audio while on the move, when travelling or even just going for a walk.
 
-I couldn't find such a podcast, so I decided to start one myself. It's called "[Tech Aloud](https://anchor.fm/tech-aloud)" and is hosted on Anchor FM. It's already available in many of the podcast systems (including my favourite, [Player FM](https://player.fm/series/tech-aloud)), and if you want to add it to your own podcast listening workflow, the RSS feed URL is: <https://anchor.fm/s/e5dc36c/podcast/rss>.
+I couldn't find such a podcast, so I decided to start one myself. It's called "[Tech Aloud](https://anchor.fm/tech-aloud)" and is hosted on Anchor FM. It's already available in many of the podcast systems:
+
+- [Player FM](https://player.fm/series/tech-aloud)
+
+- [Google Podcasts](https://podcasts.google.com/?feed=aHR0cHM6Ly9hbmNob3IuZm0vcy9lNWRjMzZjL3BvZGNhc3QvcnNz)
+
+- [Spotify](https://open.spotify.com/show/5l4AR3Q3HKZEpE7x9j0tdJ)
+
+- [Breaker](https://www.breaker.audio/tech-aloud)
+
+- [Overcast](https://overcast.fm/itunes1480329467/tech-aloud)
+
+- [Pocket Casts](https://pca.st/kyepz7uy)
+
+- [Radio Public](https://radiopublic.com/tech-aloud-6N3Nrw)
+
+If you want to add it to your own podcast listening workflow, the RSS feed URL is: <https://anchor.fm/s/e5dc36c/podcast/rss>.
 
 You can learn more about this new podcast by listening to the first episode "[Welcome to Tech Aloud](https://anchor.fm/tech-aloud/episodes/Welcome-to-Tech-Aloud-e5ddsh)".
 
