@@ -6,7 +6,7 @@ date: '2017-08-30 08:39:30'
 
 IT and consulting. Two words that can conjur up thoughts of magic, awe and wonder. But like any other business, it has its challenges and you need to have your wits about you to survive and grow. Here are five things that I strive to do in this context.
 
-**Make time to learn**
+<a name="learn"></a>**Make time to learn**
 
 If there's one thing that's constant in IT and consulting, it's change. Yes, that's a cliché, but it's definitely true here. And unless you're happy becoming eventually obsolete, you need to keep learning. It doesn't come easy - days are busy, coffee breaks are a welcome relief where you can let your brain coast and process thoughts in the background, and in the evenings you're tired.
 
