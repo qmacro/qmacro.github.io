@@ -9,7 +9,7 @@ I visited [Matt’s blog](http://interconnected.org/home/) today after finding h
 
 > * Do you use your IM client so much that you feel like you live in it? Would you like to use it for tasks other than one-to-one communication — say, for looking up Web pages? *
 
-are in line with what I wrote about in an article about Jabber and bots called [“Is Jabber’s Chatbot the Command Line of the Future?”](http://www.oreillynet.com/pub/a/p2p/2002/01/11/jabber_bots.html).
+are in line with what I wrote about in an article about Jabber and bots called [“Is Jabber’s Chatbot the Command Line of the Future?”](http://web.archive.org/web/20040203121753/http://www.openp2p.com/pub/a/p2p/2002/01/11/jabber_bots.html).
 
 I do like the idea of permanent windows opened and connected to bots providing services.
 
