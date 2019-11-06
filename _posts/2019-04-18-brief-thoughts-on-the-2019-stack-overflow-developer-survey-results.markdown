@@ -42,7 +42,7 @@ The accompanying text here suggests that in the non-developer world, Reddit does
 
 As a developer, [I use Reddit](https://www.reddit.com/user/qmacro) to follow nerdy discussions for some of my areas of interest including Mechanical Keyboards, Twitch, Vim, i3wm, ChromeOS and Crostini.
 
-**[Programming, Scripting, and Markup Languages](https://insights.stackoverflow.com/survey/2019#technology-_-programming-scripting-and-markup-languages)**
+<a name="languages"></a>**[Programming, Scripting, and Markup Languages](https://insights.stackoverflow.com/survey/2019#technology-_-programming-scripting-and-markup-languages)**
 
 (That ugly second comma in the section title is from the original results page, not me!)
 
