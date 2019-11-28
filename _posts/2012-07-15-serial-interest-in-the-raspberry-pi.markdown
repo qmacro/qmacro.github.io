@@ -21,15 +21,18 @@ One of my interests is retrocomputing, in particular, serial terminals. I had a 
 
 **Making the serial connection**
 
-****
+![Raspberry Pi](/content/images/2012/07/20120715_1050171-1024x768.jpg)
 
-<div class="wp-caption alignnone" id="attachment_1458" style="width: 310px">[![](/content/images/2012/07/20120715_1050171-300x225.jpg "Raspberry Pi")](/content/images/2012/07/20120715_1050171.jpg)Raspberry Pi
-
-</div>First things first. The Pi has 2 rows of general purpose input / output (GPIO) pins at 3.3V (top left in the picture), but that means that we can’t use an RS232 serial connection directly as the voltage levels are too high. Rather than build or buy a converter, we used a simpler method. Most modern Linux distributions, including Debian Squeeze, provide support for USB serial ports, so getting hold of a USB serial cable was the first job. This connects to one of the USB ports on the Pi, and has a 9 pin D serial connector on the other end.
+First things first. The Pi has 2 rows of general purpose input / output (GPIO) pins at 3.3V (top left in the picture), but that means that we can’t use an RS232 serial connection directly as the voltage levels are too high. Rather than build or buy a converter, we used a simpler method. Most modern Linux distributions, including Debian Squeeze, provide support for USB serial ports, so getting hold of a USB serial cable was the first job. This connects to one of the USB ports on the Pi, and has a 9 pin D serial connector on the other end.
 
 Booting up the Pi with the USB serial cable connection shows this:
 
-raspberrypi kernel: usbserial: USB Serial Driver core raspberrypi kernel: USB Serial support registered for pl2303 raspberrypi kernel: pl2303 1-1.3:1.0: pl2303 converter detected raspberrypi kernel: usb 1-1.3: pl2303 converter now attached to ttyUSB0
+```
+raspberrypi kernel: usbserial: USB Serial Driver core
+raspberrypi kernel: USB Serial support registered for pl2303
+raspberrypi kernel: pl2303 1-1.3:1.0: pl2303 converter detected
+raspberrypi kernel: usb 1-1.3: pl2303 converter now attached to ttyUSB0
+```
 
 Aha! ttyUSB0. This means we have a device handle that we can use.
 
@@ -43,7 +46,9 @@ Getty needs to know a few things: what serial port to listen for a connection on
 
 The invocation of getty we will use (as root) is this:
 
+```
 /sbin/agetty -L ttyUSB0 19200 wy30
+```
 
 (I’m actually using agetty here, an alternative getty program with some useful extra features).
 
@@ -51,13 +56,15 @@ This says: listen on ttyUSB0 for a connection, at baud rate 19200, don’t bothe
 
 If you’ve got the serial cable connection right, and you’ve configured the terminal settings to be 19200 (at 8N1, i.e. 8 bits, no parity, 1 stop bit), you should see this on the terminal:
 
-<div class="wp-caption alignnone" id="attachment_1452" style="width: 235px">[![](/content/images/2012/07/IMG_20120708_131014-225x300.jpg "Login prompt on the WY-30")](/content/images/2012/07/IMG_20120708_131014.jpg)Login prompt on the WY-30
+![Login prompt on the WY-30](/content/images/2012/07/IMG_20120708_131014.jpg)
 
-</div>Wonderful!
+Wonderful!
 
 One thing you probably want is to have getty listen out for a serial terminal connection all the time, from boot. To do this, add a line to /etc/inittab like this:
 
+```
 T0:23:respawn:/sbin/agetty -L ttyUSB0 19200 wy30
+```
 
 This means you can disconnect and reconnect on your terminal at will.
 
@@ -69,17 +76,19 @@ But that specification won’t work unless the Pi knows how to speak WY30, and f
 
 The Debian Squeeze distribution that was put together for the Pi doesn’t include the terminfo database, but a quick apt-get invocation later, and we have it:
 
+```
 sudo apt-get install ncurses-term
+```
 
 Now we have the wy30 entry in the database, as a file ‘wy30′ in /usr/share/terminfo/w/.
 
 With the file containing the appropriate escape codes to control a Wyse WY-30 terminal available in terminfo, and the specification of ‘wy30′ in the getty call, we have all we need to start a productive session on the serially attached terminal.
 
-Rebooting to check that the init spawning of getty is working correctly, and we can log in at our Wyse terminal and use tools such as top, vi, tmux and others that manipulate the screen, without problem.
+Rebooting to check that the init spawning of getty is working correctly, and we can log in at our Wyse terminal and use tools such as top, vim, tmux and others that manipulate the screen, without problem.
 
-<div class="wp-caption alignnone" id="attachment_1455" style="width: 235px">[![](/content/images/2012/07/20120715_105411-225x300.jpg "Vi running in a tmux session")](/content/images/2012/07/20120715_105411.jpg)Vi running in a tmux session
+![Vim running in a tmux session](/content/images/2012/07/20120715_105411.jpg)
 
-</div>Success!
+Success!
 
  
 
