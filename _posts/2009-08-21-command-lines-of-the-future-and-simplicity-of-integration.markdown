@@ -19,12 +19,12 @@ tags:
 ---
 
 
-This is a bit of a hand-wavy post, but I wanted to get my thoughts down. Recently there’s been a spate of interest around interaction with devices, applications and systems … via a chat-style interface. This is nothing new, of course. Bots have existed on the IRC networks for a long time. The venerable [Purl](http://www.foo.be/docs/tpj/issues/vol3_2/tpj0302-0002.html), an [infobot](http://en.wikipedia.org/wiki/Infobot), was a particular favourite of mine. When instant messaging (IM) came along, we had a new chat interface – which took the form of one-on-one or conference (‘group’) chat. With [Jabber](http://www.jabber.org/) (XMPP), ‘Chatbot’ was a favourite in the various conference rooms. Back in late 2002, I even wrote about Chatbot in a 2-part series “The Command Line of the Future” (“[Is Jabber’s Chatbot the Command Line of the Future?](http://openp2p.com/pub/a/p2p/2002/01/11/jabber_bots.html)” and The “[Command Line of the Future Part 2: Expanding Chatbot’s Repertoire](http://openp2p.com/pub/a/p2p/2002/02/08/chatbot_two.html)“):
+This is a bit of a hand-wavy post, but I wanted to get my thoughts down. Recently there’s been a spate of interest around interaction with devices, applications and systems ... via a chat-style interface. This is nothing new, of course. Bots have existed on the IRC networks for a long time. The venerable [Purl](http://www.foo.be/docs/tpj/issues/vol3_2/tpj0302-0002.html), an [infobot](http://en.wikipedia.org/wiki/Infobot), was a particular favourite of mine. When instant messaging (IM) came along, we had a new chat interface – which took the form of one-on-one or conference (‘group’) chat. With [Jabber](http://www.jabber.org/) (XMPP), ‘Chatbot’ was a favourite in the various conference rooms. Back in late 2002, I even wrote about Chatbot in a 2-part series “The Command Line of the Future” (“[Is Jabber’s Chatbot the Command Line of the Future?](http://web.archive.org/web/20040203121753/http://www.openp2p.com/pub/a/p2p/2002/01/11/jabber_bots.html)” and The “[Command Line of the Future Part 2: Expanding Chatbot’s Repertoire](http://web.archive.org/web/20031203031620/http://www.openp2p.com/pub/a/p2p/2002/02/08/chatbot_two.html)“):
 
 > Consider for a moment what this command line of the future might look like. More and more people are online. More and more people are permanently connected, whether it be through DSL, cable, or 802.11 technology. And more and more of these people are communicating. Talking. Having conversations. In addition to email and Internet Relay Chat, or IRC, the (relatively) new kid on the block, Instant messaging (IM), is playing a huge part in facilitating these conversations. And in the same way that it’s common for us to have a command prompt or three sitting on our graphical desktop, it’s also becoming common to have chat windows more or less permanently open on the desktop too.
 
 > But when thinking of IM, why stop at conversations with people? The person-to-application (P2A) world isn’t the exclusive domain of the Web. Bots, applications or utilities that have their interface as a projection of a persona into the online chat world, are a great and fun way to bring people and applications together in a conversational way.
-> 
+>
 > Interacting with a bot is the same as interacting with a person: type something to it and it replies. And what’s more, because of the similarities between a classic command-line prompt and that of a chat window, where you’re talking with a bot — both scenarios are text-based — interaction with a bot is scriptable.
 
 Forward to the present.
@@ -32,7 +32,7 @@ Forward to the present.
 Just the other day, [@davemee](http://twitter.com/davemee) and [@technicalfault](http://twitter.com/technicalfault) alerted me to [@manairport](http://twitter.com/manairport), Manchester Airport’s online persona on Twitter, obviously yet another chat-style interface. You can interact with it via direct messages (DMs). You follow it, it will follow you back, and you’re away.
 
 > me: d manairport be7217
-> 
+>
 > manairport: Received request for information: be7217 manairport: Status of 17:40 flight BE7217 to Dusseldorf departing T3: Scheduled 17:40
 
 Nice and [useful](http://www.dopplr.com/trip/qmacro/825806)!
