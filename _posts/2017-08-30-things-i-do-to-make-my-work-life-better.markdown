@@ -32,7 +32,7 @@ If folks ask you do to something and they've not directly addressed you, that's 
 
 Managing email is not only about managing yourself, but about managing others.
 
-**Set reasonable meeting expectations**
+<a name="meetings"></a>**Set reasonable meeting expectations**
 
 There are as many articles on meetings as there are on emails, so I can be brief here too. Time is the most precious commodity. Some meetings are necessary, but they're the minority, especially if you're technical and have work to do. Here's what I do. Not everything all of the time, but when it feels appropriate.
 
@@ -44,7 +44,7 @@ If I'm working at a client, I allow myself up to a maximum of two 30 minute call
 
 Finally, don't waste your time if a meeting doesn't start on time. I usually wait for up to 5 minutes into the call (sometimes 10 minutes if I'm feeling generous and can work on stuff while I wait) and if it hasn't started, I'll leave the call.
 
-**Make time for lunch**
+<a name="lunch"></a>**Make time for lunch**
 
 I try to step away from the keyboard at lunch. It doesn't work all the time, and sometimes it's because I am putting some of my learning into practice. But your brain needs time to process what it's been working on during the morning, and it's not going to be able to to if you're still in front of the screen.
 
