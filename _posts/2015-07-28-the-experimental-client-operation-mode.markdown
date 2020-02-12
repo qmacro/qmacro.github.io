@@ -10,7 +10,7 @@ tags:
 - operationmode
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 25 by [DJ Adams](//qmacro.org/about/)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) &mdash; Day 25 by [DJ Adams](//qmacro.org/about/)**
 
 ![](/content/images/2018/02/Screen-Shot-2015-07-28-at-12.53.45-300x191.png)
 

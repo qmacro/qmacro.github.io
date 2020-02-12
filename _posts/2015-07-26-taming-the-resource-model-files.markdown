@@ -9,7 +9,7 @@ tags:
 - resourcemodel
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 23 by [Nathan Adams](http://twitter.com/lxinspc)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) &mdash; Day 23 by [Nathan Adams](http://twitter.com/lxinspc)**
 
 UI5’s support for multiple-languages, out of the box (see the post “[Multi-language support out of the box – UI5’s pedigree](/2015/07/16/multi-language-support-out-of-the-box-ui5s-pedigree/)” in this series) is impressive and easy to use. Creating a message resource bundle in your Component.js file is straightforward, especially if picking up the user’s language preferences in the browser.
 

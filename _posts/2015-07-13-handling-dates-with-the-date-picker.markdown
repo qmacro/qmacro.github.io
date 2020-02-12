@@ -7,7 +7,7 @@ tags:
 - openui5
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 10 by [James Hale](https://twitter.com/jameshale14)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) &mdash; Day 10 by [James Hale](https://twitter.com/jameshale14)**
 
 ![Date Picker control](/content/images/2018/02/30ui5-10-date-picker.jpg)
 

@@ -8,7 +8,7 @@ tags:
 - popover
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 8 by by [Sean Campbell](http://twitter.com/saoirse_22)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) &mdash; Day 8 by by [Sean Campbell](http://twitter.com/saoirse_22)**
 
 ![A selection of brightly coloured messages](/content/images/2018/02/Screen-Shot-2015-07-09-at-21.12.19-300x298.png)
 

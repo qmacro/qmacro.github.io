@@ -15,7 +15,7 @@ tags:
 - vim
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 18 by [DJ Adams](//qmacro.org/about/)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) &mdash; Day 18 by [DJ Adams](//qmacro.org/about/)**
 
 ![View and controller screenshot](/content/images/2018/02/Screen-Shot-2015-07-19-at-18.58.14-1.png)
 

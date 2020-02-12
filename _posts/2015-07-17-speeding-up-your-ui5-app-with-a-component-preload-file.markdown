@@ -9,7 +9,7 @@ tags:
 - preload
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 14 by [John Murray](http://jmurray.me/)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) &mdash; Day 14 by [John Murray](http://jmurray.me/)**
 
 In this post we’ll be looking at how you can speed up the load times of your UI5 applications by using a Component preload file. Those of you who are familiar with SAP Fiori applications will probably already know what a Component preload file is, however those of you who aren’t will almost definitely have all seen a reference to this file before. This file is referenced in an error message that appears in the console whenever you load a UI5 app, which is lacking a Component preload file.
 

@@ -11,7 +11,7 @@ tags:
 - projectmanagement
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 27 by [Jon Gregory](https://twitter.com/jongregs)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) &mdash; Day 27 by [Jon Gregory](https://twitter.com/jongregs)**
 
 ![](/content/images/2018/02/branches.png)
 

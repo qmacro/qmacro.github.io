@@ -9,7 +9,7 @@ tags:
 - 30ui5
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) - Day 5 by [DJ Adams](//qmacro.org/about/)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)  &mdash; Day 5 by [DJ Adams](//qmacro.org/about/)**
 
 ![A tile with a link to sap.m.Explored](/content/images/2018/01/Screen-Shot-2015-07-04-at-11.03.14.png)
 Explored, before its promotion.

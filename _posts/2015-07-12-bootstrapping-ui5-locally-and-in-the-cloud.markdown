@@ -11,7 +11,7 @@ tags:
 - webide
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 9 by [DJ Adams](//qmacro.org/about/)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) &mdash; Day 9 by [DJ Adams](//qmacro.org/about/)**
 
 ![Screenshot of files in a UI5 app directory](/content/images/2018/02/Screen-Shot-2015-07-11-at-16.05.52.png)
 

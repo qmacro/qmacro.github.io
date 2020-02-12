@@ -8,7 +8,7 @@ tags:
 - versioninfo
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)- Day 28 by [DJ Adams](//qmacro.org/about/)**
+**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) &mdash; Day 28 by [DJ Adams](//qmacro.org/about/)**
 
 ![](/content/images/2018/02/Screen-Shot-2015-07-31-at-13.04.22-624x312.png)
 
