@@ -4,7 +4,7 @@ title: About
 permalink: /about/
 ---
 
-![Head shot](/content/images/DJA-head.jpg)
+![Head shot](/content/images/DJA-head-small.jpg)
 
 DJ works on developer outreach and advocacy in SAP's [Developer](//developers.sap.com) Relations team. He's been hacking on SAP enterprise software for more than three decades, and has a strong connection to the Open Source community too.
 
