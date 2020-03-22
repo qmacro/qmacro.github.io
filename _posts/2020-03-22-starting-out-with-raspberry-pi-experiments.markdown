@@ -22,15 +22,15 @@ I've been learning a lot from two folks in particular, both of whom I came acros
 
 <img align="right" src="/content/images/2020/03/jeff.jpeg" />
 
-[Jeff Geerling](https://jeffgeerling.com) gave a talk at DrupalCon in 2019 called [Everything I know about Kubernetes I learned from a cluster of Raspberry Pis](https://www.jeffgeerling.com/blog/2019/everything-i-know-about-kubernetes-i-learned-cluster-raspberry-pis), which inspired me to put together my own cluster of Raspberry Pis. Clusters of Raspberry Pis are called brambles, which I think is a nice touch. Jeff named his cluster a Dramble, owing to the use of Drupal on it, and has some great resources at [pidramble.com](https://www.pidramble.com/). It was the hardware spec here that I used to base my cluster on. Moreover, I've been learning about Ansible from Jeff too, generally but also specifically for setting up the Pis. I even bought his book [Ansible for Kubernetes](https://www.jeffgeerling.com/project/ansible-kubernetes) which I can definitely recommend.
+[Jeff Geerling](https://jeffgeerling.com) gave a talk at DrupalCon in 2019 called [Everything I know about Kubernetes I learned from a cluster of Raspberry Pis](https://www.jeffgeerling.com/blog/2019/everything-i-know-about-kubernetes-i-learned-cluster-raspberry-pis), which inspired me to put together my own cluster of Raspberry Pis. Clusters of Raspberry Pis are called brambles, which I think is a nice touch. Jeff named his cluster a Dramble, owing to the use of Drupal on it, and has some great resources at [pidramble.com](https://www.pidramble.com/). Moreover, I've been learning about Ansible from Jeff too, generally but also specifically for setting up the Pis. I even bought his book [Ansible for Kubernetes](https://www.jeffgeerling.com/project/ansible-kubernetes) which I can definitely recommend.
+
+Jeff documented his hardware setup over on the PiDramble site, and in particular I went for a version of his [2019 Edition](https://www.pidramble.com/wiki/hardware/pis) which was to use power-over-ethernet (PoE) rather than running individual power cables to each Pi.
 
 <img align="right" src="/content/images/2020/03/alex.jpeg" />
 
 [Alex Ellis](https://www.alexellis.io/) has been doing some fascinating work in this space and sharing a ton of stuff on Kubernetes, serverless and in particular on [OpenFaaS](https://www.openfaas.com/) which he set up and runs as an open project. He's also a prolific writer and sharer, and I recommend you bookmark a few of his [articles](https://blog.alexellis.io/) which are rich in content and inspiration. I saw a recording of a talk he gave with [Scott Hanselman](https://www.hanselman.com/) at NDC London in 2018: [Building a Raspberry Pi Kubernetes Cluster and running .NET Core](https://www.youtube.com/watch?v=ZyTLMnzehyU), which is definitely worth a watch.
 
-Jeff documented his hardware setup over on the PiDramble site, and in particular I went for a version of his [2019 Edition](https://www.pidramble.com/wiki/hardware/pis) which was to use power-over-ethernet (PoE) rather than running individual power cables to each Pi.
-
-Here's what I ended up buying:
+To set my cluster up, here's what I ended up buying:
 
 - [Raspberry Pi 4 (4GB RAM version)](https://shop.pimoroni.com/products/raspberry-pi-4?variant=29157087445075) x 4
 - [Raspberry Pi PoE HAT](https://shop.pimoroni.com/products/raspberry-pi-poe-hat) x 4
@@ -39,7 +39,7 @@ Here's what I ended up buying:
 - [Techson 4 Layers Clear Acrylic Rack Case](https://www.amazon.co.uk/gp/product/B07TLSVTQP)
 - [NETGEAR 5-Port Gigabit Ethernet PoE Switch](https://www.amazon.co.uk/gp/product/B072BDGQR8/)
 
-There are plenty of cases and mounting possibilities; just make sure that if you go for something different that there's room for the PoE HAT mounted on top of each of the Pis.
+There are plenty of cases and mounting possibilities; just make sure, if you go for something different, that there's room for the PoE HAT mounted on top of each of the Pis.
 
 I'm pleased with the result as there's a lot less cabling to deal with - it's just a single ethernet cable from the switch to each Pi, an ethernet cable from the switch to the main network, plus the power supply and cable to the switch, and that's it.
 
