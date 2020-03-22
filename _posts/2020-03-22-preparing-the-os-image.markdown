@@ -93,6 +93,5 @@ ECDSA key fingerprint is SHA256:jFgPSwjEQsCSUx+nJcZ6ub9EhoGC1I1vSX5uSvVc1YE.
 Are you sure you want to continue connecting (yes/no)?
 ```
 
-In the next post, we'll find out how I discovered the IP address(es) to use to connect, but for now, this is a great start - the SSH service responded to my request to connect (the "authenticity" message is just my machine saying "hey, I don't recognise this remote host - are you sure you want to proceed?").
+In the next post, we'll find out how I discovered the IP address(es) to use to connect, but for now, this is a great start - the SSH service responded to my request to connect (the "authenticity" message is just my machine saying "hey, I don't recognise this remote host - are you sure you want to proceed?") - we're all ready to start setting up our Pis for some clustering goodness!
 
-Share & enjoy!
