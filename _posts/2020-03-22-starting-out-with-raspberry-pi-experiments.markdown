@@ -39,7 +39,7 @@ I'm pleased with the result as there's a lot less cabling to deal with - it's ju
 
 You can see this in the photo I took yesterday, which also shows an original Raspberry Pi Model B that I used as a console for various things.
 
-![Pi collection](/content/images/2020/09/picollection.png)
+![Pi collection](/content/images/2020/03/picollection.png)
 
 The setup is compact and I can keep it on a shelf behind my main desk. I'm somewhat averse to fan noise, which does mean that I don't run the cluster all the time, as there are fans on the PoE HATs that come on now and again. But the lights are pretty!
 
