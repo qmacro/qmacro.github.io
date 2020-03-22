@@ -80,7 +80,7 @@ And then created a new zip archive:
 
 I could then use this new image archive file `raspbian-buster-lite-ssh.zip` in my use of balena Etcher, creating all four SD cards ready for the Pis in the cluster. Result!
 
-![balena Etcher](etcher.png)
+![balena Etcher](/content/images/2020/03/etcher.png)
 
 > You may be wondering why there's no Raspbian image available that already contains the `ssh` file. That's because it would be a security risk; in other words, you have to explicitly enable SSH through this route if you want it; otherwise, the Pis stay locked down. That's the right approach.
 
