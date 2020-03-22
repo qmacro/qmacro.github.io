@@ -18,7 +18,7 @@ There's no point in installing a graphical user interface (GUI) or windowing sys
 
 There are different distributions of Linux for the Raspberry Pi, and at the time of writing, [Raspbian Buster](https://www.raspberrypi.org/downloads/raspbian/), a Raspberry Pi take on Debian's Buster release, is the latest available. Here, the "Lite" image, that comes without GUI software or a windowing system, is appropriate. This is convenient as the image is a lot smaller in size, too.
 
-![Raspbian Buster Lite](busterlite.png)
+![Raspbian Buster Lite](/content/images/2020/03/busterlite.png)
 
 **Remote access**
 
