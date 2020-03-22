@@ -8,13 +8,15 @@ _Now that we have our Pis booted and up and running on the network, we need to f
 
 This is a post in the "[Brambleweeny Cluster Experiments](/2020/03/22/brambleweeny-cluster-experiments/)" series of blog posts, which accompanies the [YouTube live stream recording playlist](https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe) of the same name.
 
-Having booted the Pis in the cluster using the [OS image that prepared earlier](/2020/03/22/preparing-the-os-image/), we now need to find them so that we can continue with the setup.
+Having booted the Pis in the cluster using the [OS image prepared earlier](/2020/03/22/preparing-the-os-image/), we now need to find them so that we can continue with the setup.
 
 What does that mean? Well, the Pis will have requested IP addresses via DHCP. In my case, I run DHCP via my Google Wifi setup, and have a range set up for DHCP leases. While I can guess what the IP addresses might be, it's not scientific. I could look at the Google Wifi app on my phone, and go through manually searching for the devices that called themselves something that includes the string "raspberrypi", then looking at the details to reveal the IP addresses. But that sounds too much hard work, and not something I'd learn from.
 
 <img src="/content/images/2020/03/wifiapp.png" alt="Google Wifi app" width="200" height="400" />
 
-I could use the `nmap` command, which has a wealth of possibilities. If all I wanted to do was to find the IP addresses, this would be what I'd want to use, specifying the `-sn` option (which means "don't do a port scan") for my home network (192.168.86.0/24), which would give results that look like this:
+**Using nmap**
+
+I could use the `nmap` command that Alex [uses](https://medium.com/@alexellisuk/walk-through-install-kubernetes-to-your-raspberry-pi-in-15-minutes-84a8492dc95a), which has a wealth of possibilities. If all I wanted to do was to find the IP addresses, this would be what I'd want to use, specifying the `-sn` option (which means "don't do a port scan", previously the option was `-sP`) for my home network (192.168.86.0/24), which would give results that look like this:
 
 ```shell
 -> nmap -sn 192.168.86.0/24
@@ -57,7 +59,7 @@ Given that I can work out what IP addresses might already be allocated on my net
 
 But that feels a little fuzzy to me.
 
-Moreover, I'm learning about Ansible from Jeff Geerling, as I mentioned in [Starting out with Raspberry Pi experiments](/2020/03/22/starting-out-with-raspberry-pi-experiments/) and want to use some of the Ansible goodness for the setup of the Pis, as explained in his wiki page [Network the Raspberry Pis](http://www.pidramble.com/wiki/setup/network). Jeff has a nice [networking setup](https://github.com/geerlingguy/raspberry-pi-dramble/tree/master/setup/networking) section in his GitHub repo [geerlingguy/raspberry-pi-dramble](https://github.com/geerlingguy/raspberry-pi-dramble) which I recommend you have a look at. In this networking setup he has a playbook (a series of tasks to carry out on a set of remote hosts) [`main.yml`](https://github.com/geerlingguy/raspberry-pi-dramble/blob/master/setup/networking/main.yml) that sets up networking, including allocating specific IP addresses to specific hosts.
+Moreover, I'm learning about [Ansible](https://www.ansible.com) from Jeff Geerling, as I mentioned in [Starting out with Raspberry Pi experiments](/2020/03/22/starting-out-with-raspberry-pi-experiments/), and want to use some of the Ansible goodness for the setup of the Pis, as explained in his wiki page [Network the Raspberry Pis](http://www.pidramble.com/wiki/setup/network). Jeff has a nice [networking setup](https://github.com/geerlingguy/raspberry-pi-dramble/tree/master/setup/networking) section in his GitHub repo [geerlingguy/raspberry-pi-dramble](https://github.com/geerlingguy/raspberry-pi-dramble) which I recommend you have a look at. In this networking setup he has a playbook (a series of tasks for Ansible to carry out on a set of remote hosts) [`main.yml`](https://github.com/geerlingguy/raspberry-pi-dramble/blob/master/setup/networking/main.yml) that sets up networking, including allocating specific IP addresses to specific hosts.
 
 How are these hosts identified and defined? In a `vars.yml` file, an example of which is [provided](https://github.com/geerlingguy/raspberry-pi-dramble/blob/master/setup/networking/example.vars.yml) in that networking setup section. It contains a mapping of MAC addresses to hostname and IP address pairs, which is exactly what I want. In other words, I want to give each of the Pis in the cluster a hostname, and a specific IP address that will persist and that I can remember.
 
@@ -91,7 +93,9 @@ I want to give the four Pis host numbers in the range 61-64, and name them after
 
 But how did I find out the MAC addresses?
 
-Well it pleases me to say that I found them out using a bit of technology that dates back to the early 1980s, and relates directly to one of the fundamental and critical parts of the Internet protocol suite - the Address Resolution Protocol (ARP). Essentially, ARP provides a mapping between the link layer address of a network device (i.e. a MAC address in this case) and the internet layer address (i.e. the IP address in this case).
+**Using arp-scan**
+
+Well it pleases me to say that I found them out using a bit of technology that dates back to the early 1980s, and relates directly to one of the fundamental and critical parts of the Internet protocol suite - the [Address Resolution Protocol](https://en.wikipedia.org/wiki/Address_Resolution_Protocol) (ARP). Essentially, ARP provides a mapping between the link layer address of a network device (i.e. a MAC address in this case) and the internet layer address (i.e. the IP address in this case).
 
 To work with ARP data there's a venerable program called `arp-scan` which is standard on real operating systems such as Linux. It's a system binary, which means it lives in `/usr/sbin` ("sbin" is short for "system binaries") which means, more or less, that it's for root use only.
 
@@ -138,11 +142,11 @@ Ending arp-scan 1.9.5: 256 hosts scanned in 4.639 seconds (55.18 hosts/sec). 27 
 
 Gosh that's nice, but how do I tell which are my new Raspberry Pis in the cluster?
 
-Well, to answer that, we need to understand how MAC addresses are formed. Each address is a series of byte values, in hexadecimal. They're assigned to hardware devices, most commonly to network interfaces. In the case of the Pis, this is the RJ45 Ethernet port you can see in the top right of this picture:
+Well, to answer that, we need to understand how MAC addresses are formed. Each address is a series of byte values, in hexadecimal. They're assigned to hardware devices, most commonly to network interfaces. In the case of the Pis, this is the RJ45 Ethernet port you can see in the top right of this picture of a Raspberry Pi 4:
 
 ![Raspberry Pi 4](/content/images/2020/03/pi4.png)
 
-Significantly, the first three bytes represent the hardware manufacturer, via a so-called Organisationally Unique Identifier (OUI). And if we look at the [canonical list of OUIs](http://standards-oui.ieee.org/oui.txt) we see that there's an entry for the Raspberry Pi organisation thus:
+Significantly, the first three bytes in a MAC address represent the hardware manufacturer, via a so-called Organisationally Unique Identifier (OUI). And if we look at the [canonical list of OUIs](http://standards-oui.ieee.org/oui.txt) we see that there's an entry for the Raspberry Pi organisation thus:
 
 ```
 DC-A6-32   (hex)        Raspberry Pi Trading Ltd
@@ -167,7 +171,9 @@ So all we have to do is reduce the output of `arp-scan` by filtering the output 
 ->
 ```
 
-Bingo! DHCP leases had indeed been given out for hosts 53, 54, 55 and 56 in the 192.168.86.0/24 network, and there we have each associated MAC address too.
+Bingo!
+
+DHCP leases had indeed been given out for hosts 53, 54, 55 and 56 in the 192.168.86.0/24 network, and there we have each associated MAC address too.
 
 So in preparing for the networking setup, the MAC addresses went into the `vars.yml` file as shown earlier, with the to-be IP addresses.
 
@@ -186,7 +192,7 @@ Based on the [`example.inventory`](https://github.com/geerlingguy/raspberry-pi-d
 ansible_ssh_user=pi
 ```
 
-I've changed the name of the group from "Dramble" to "Brambleweeny", and of course adjusted the IP addresses to the as-is ones that exist right now. There's also a variable in this file, `ansible_ssh_user`, but we'll look at that in the next post.
+I've changed the name of the group from "Dramble" to "Brambleweeny", and of course adjusted the IP addresses to the as-is ones that exist right now. There's also a variable in this file, `ansible_ssh_user`, but we'll ignore that for now.
 
 At this stage, we have found the Pis on the network, and gathered the appropriate information to supply to Ansible so that we can ask it to make the networking setup on each host, on our behalf.
 
