@@ -6,6 +6,8 @@ date: '2020-03-22 10:03:00'
 
 _This post provides some background to why I've started to experiment with Raspberry Pis, and to list the hardware components that I bought and set up with my son Joseph over the Christmas holidays._
 
+This is a post in the "[Brambleweeny Cluster Experiments](/2020/03/22/brambleweeny-cluster-experiments/)" series of blog posts, which accompanies the [YouTube live stream recording playlist](https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe) of the same name.
+
 I've been skirting around the edges of experimentation with Raspberry Pis, to learn about clustering and containerisation using such technologies as Docker and Kubernetes. The topic area is fascinating in and of itself, but I think it's an important collection of subjects that one should know about in the SAP tech world too, given the cloud direction we're taking and how resources, services and applications are managed there.
 
 I haven't gone too deep yet, having paused the project over the first couple of months of 2020 - I think one of the things holding me back was that I had stumbled my way through things at the start and wanted to hold off going further before I'd understood things a little more.
