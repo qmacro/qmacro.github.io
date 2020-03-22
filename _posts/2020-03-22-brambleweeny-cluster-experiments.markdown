@@ -14,9 +14,10 @@ That sharing comes in two forms: blog posts, which you'll find listed here, and 
 
 Here are the posts:
 
-- [Brambleweeny Cluster Experiments](/2020/03/22/brambleweeny-cluster-experiments) (this post)
-- [Starting out with Raspberry Pi experiments](/2020/03/22/starting-out-with-raspberry-pi-experiments)
-- [Preparing the OS image](/2020/03/22/preparing-the-os-image)
-- ...
+1. [Brambleweeny Cluster Experiments](/2020/03/22/brambleweeny-cluster-experiments) (this post)
+1. [Starting out with Raspberry Pi experiments](/2020/03/22/starting-out-with-raspberry-pi-experiments)
+1. [Preparing the OS image](/2020/03/22/preparing-the-os-image)
+1. [Finding the Pis on the network](/2020/03/22/finding-the-pis-on-the-network)
+...
 
 Share & enjoy!
