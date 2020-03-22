@@ -86,7 +86,7 @@ I could then use this new image archive file `raspbian-buster-lite-ssh.zip` in m
 
 After inserting the SD cards into the Raspberry Pis, and connecting up the Ethernet cables to power them up and have them boot the images for the first time, we can see that this SSH action was successful:
 
-```shell
+```
 -> ssh 192.168.86.53
 The authenticity of host '192.168.86.53 (192.168.86.53)' can't be established.
 ECDSA key fingerprint is SHA256:jFgPSwjEQsCSUx+nJcZ6ub9EhoGC1I1vSX5uSvVc1YE.
