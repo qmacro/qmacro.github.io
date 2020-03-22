@@ -37,7 +37,7 @@ To set my cluster up, here's what I ended up buying:
 - [Techson 4 Layers Clear Acrylic Rack Case](https://www.amazon.co.uk/gp/product/B07TLSVTQP)
 - [NETGEAR 5-Port Gigabit Ethernet PoE Switch](https://www.amazon.co.uk/gp/product/B072BDGQR8/)
 
-There are plenty of cases and mounting possibilities; just make sure that if you go for something different that there's room for the PoE HAT mounted on top of each of the Pis.
+There are plenty of cases and mounting possibilities; just make sure, if you go for something different, that there's room for the PoE HAT mounted on top of each of the Pis.
 
 I'm pleased with the result as there's a lot less cabling to deal with - it's just a single ethernet cable from the switch to each Pi, an ethernet cable from the switch to the main network, plus the power supply and cable to the switch, and that's it.
 
