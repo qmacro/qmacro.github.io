@@ -66,7 +66,7 @@ I used to [run a CodeClub](https://qmacro.org/2012/12/05/codeclub-and-becoming-a
 
 Here's a pic of me [giving a Scratch session](https://mcrcoderdojo.org.uk/underwater-scratch/) at Manchester CoderDojo:
 
-![Underwater Scratch](/content/images/2020/03/underwaterscratch.png)
+![Underwater Scratch](/content/images/2020/03/underwaterscratch.jpg)
 
 I'm a STEM Ambassador who has given sessions at schools including [Xaverian Sixth Form College](http://www.xaverian.ac.uk/computer-science-with-dj-adams/), I've given a session at TEDx Oldham on [Our Computational Future](https://www.youtube.com/watch?v=-gvOCaExeK0) (making the argument for teaching our kids to code).
 
