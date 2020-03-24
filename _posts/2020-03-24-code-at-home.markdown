@@ -14,12 +14,12 @@ First, a bit about who I am.
 
 <image src="https://qmacro.org/content/images/DJA-head-small.jpg" align="right" />
 
-My name's DJ Adams and I live in Woodhouses, near Failsworth, in Manchester. I am proud to work for SAP as a [developer advocate](https://community.sap.com/influencers/?program=devadvocates), and I feel supported by them in this endeavour. I have a short bio page here: [qmacro.org/about](https://qmacro.org/about). I've been involved with teaching kids to code for a good while now, and you can read more about that [down below](#moreinfo).
+My name's DJ Adams and I live in Woodhouses, Failsworth, in Manchester. I am proud to work for SAP as a [developer advocate](https://community.sap.com/influencers/?program=devadvocates), and I feel supported by them in this endeavour. I have a short bio page here: [qmacro.org/about](https://qmacro.org/about). I've been involved with teaching kids to code for a good while now, and you can read more about that [down below](#moreinfo).
 
 
 **The idea**
 
-The idea is that school children who are stuck at home can take part in some coding for beginners, by connecting to YouTube and joining a "Code at Home" live stream that I'll broadcast on a regular basis at a fixed time in the morning, for an hour. I don't have this all planned out, I'm just going to start it and see how it goes and would welcome input from anyone. What I do know is that I want it to be approachable and for beginners, where the age range is around 10 and up.
+The idea is that school children who are stuck at home can take part in some coding for beginners, by connecting to YouTube and joining a "Code at Home" live stream that I'll broadcast on a regular basis at a fixed time in the morning, for an hour. I don't have this all planned out, I'm just going to start it and see how it goes and would welcome input from anyone. What I do know is that I want it to be approachable and for beginners, where the age range is around 11 and up.
 
 ![Code at Home](/content/images/2020/03/codeathome.png)
 
