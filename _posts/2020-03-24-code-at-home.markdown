@@ -19,7 +19,7 @@ My name's DJ Adams and I live in Woodhouses, Failsworth, in Manchester. I am pro
 
 **The idea**
 
-The idea is that school children who are stuck at home can take part in some coding for beginners, by connecting to YouTube and joining a "Code at Home" live stream that I'll broadcast on a regular basis at a fixed time in the morning, for an hour. I don't have this all planned out, I'm just going to start it and see how it goes and would welcome input from anyone. What I do know is that I want it to be approachable and for beginners, where the age range is around 11 and up.
+The idea is that school children who are stuck at home can take part in some coding for beginners, by connecting to YouTube and joining a "Code at Home" live stream that I'll broadcast on a regular basis at a fixed time in the day, for an hour. I don't have this all planned out, I'm just going to start it and see how it goes and would welcome input from anyone. What I do know is that I want it to be approachable and for beginners, where the age range is around 11 and up.
 
 ![Code at Home](/content/images/2020/03/codeathome.png)
 
