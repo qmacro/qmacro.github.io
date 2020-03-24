@@ -16,9 +16,7 @@ The idea is that school children who are stuck at home can take part in some cod
 
 We'll be learning basic programming together using the most popular language out there (by some measurements) - JavaScript, and we'll be starting off by using some simple problems from the [Project Euler](https://projecteuler.net/) website. Here's [problem number 1](https://projecteuler.net/problem=1), titled "Multiples of 3 and 5", to give you an idea:
 
-_If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
-
-Find the sum of all the multiples of 3 or 5 below 1000._
+_If we list all the natural numbers below 10 that are multiples of 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23. Find the sum of all the multiples of 3 or 5 below 1000._
 
 The plan is that we'll use each hour to solve little problems like this, by writing code in JavaScript.
 
