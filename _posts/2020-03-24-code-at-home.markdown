@@ -10,7 +10,9 @@ Although it's super important for us to stay at home right now, it doesn't mean 
 
 **The idea**
 
-The idea is that school children who are stuck at home can take part in some coding for beginners, by connecting to YouTube and joining a live stream that I'll broadcast on a regular basis at a fixed time in the morning, for an hour. I don't have this all planned out, I'm just going to start it and see how it goes and would welcome input from anyone. What I do know is that I want it to be approachable and for beginners, where the age range is around 10 and up.
+The idea is that school children who are stuck at home can take part in some coding for beginners, by connecting to YouTube and joining a "Code at Home" live stream that I'll broadcast on a regular basis at a fixed time in the morning, for an hour. I don't have this all planned out, I'm just going to start it and see how it goes and would welcome input from anyone. What I do know is that I want it to be approachable and for beginners, where the age range is around 10 and up.
+
+![Code at Home](/content/images/2020/03/codeathome.png)
 
 We'll be learning basic programming together using the most popular language out there (by some measurements) - JavaScript, and we'll be starting off by using some simple problems from the [Project Euler](https://projecteuler.net/) website. Here's [problem number 1](https://projecteuler.net/problem=1), titled "Multiples of 3 and 5", to give you an idea:
 
