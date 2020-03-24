@@ -57,7 +57,7 @@ If you miss an actual live stream, don't worry, because they're all automaticall
 
 I'll start out by doing this regularly, on Mondays, Wednesdays and Fridays, always at the same time, from 16:00 to 17:00 (UK time). This is so that any school work at home can be completed and out of the way during the day first. 
 
-I'll do the first one this coming Friday 27 March - and have set up the live stream ready on [my YouTube channel](https://youtube.com/djadams-qmacro), so you can set a reminder for it.
+I'll do the first one this coming **Friday 27 March** - and have set up the live stream ready on [my YouTube channel](https://youtube.com/djadams-qmacro), so you can set a reminder for it.
 
 **What will it be like?**
 
