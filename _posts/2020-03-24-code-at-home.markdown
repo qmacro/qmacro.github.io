@@ -55,7 +55,9 @@ If you miss an actual live stream, don't worry, because they're all automaticall
 
 **When and how often is this happening?**
 
-I'll start out by doing this regularly, on Mondays, Wednesdays and Fridays, always at the same time, from 11:00 to 12:00 (UK time). I'll do the first one tomorrow (Wednesday 25 March) - and have set up the live stream ready on [my YouTube channel](https://youtube.com/djadams-qmacro), so you can set a reminder for it.
+I'll start out by doing this regularly, on Mondays, Wednesdays and Fridays, always at the same time, from 16:00 to 17:00 (UK time). This is so that any school work at home can be completed and out of the way during the day first. 
+
+I'll do the first one this coming Friday 27 March - and have set up the live stream ready on [my YouTube channel](https://youtube.com/djadams-qmacro), so you can set a reminder for it.
 
 **What will it be like?**
 
@@ -85,7 +87,7 @@ I've also helped out as a mentor at MadLab in Manchester during the [Young Rewir
 
 **OK, what's the next step?**
 
-Head on over to the channel on YouTube, get set up for tomorrow (Wed 25 Mar) and be ready to connect to the live stream at 11:00 UK time for an hour. Here's the YouTube link for tomorrow's live stream episode: [https://youtu.be/X7gtbWiHTBY](https://youtu.be/X7gtbWiHTBY).
+Head on over to the channel on YouTube, get set up the first one and be ready to connect to the live stream at 16:00 UK time this coming Friday 27 March. Here's the YouTube link for that first live stream episode: [https://youtu.be/X7gtbWiHTBY](https://youtu.be/X7gtbWiHTBY).
 
 If you have any questions, please reach out to me on Twitter (my handle is [@qmacro](https://twitter.com/qmacro)) where I'd be more than happy to try and answer them.
 
