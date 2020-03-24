@@ -70,8 +70,6 @@ I definitely encourage you parents to join too if you can, so you can satisfy yo
 <a name="moreinfo"></a>
 **More information on me**
 
-Basically, I guess I want to say that I'm not a weirdo or anything.
-
 I used to [run a CodeClub](https://qmacro.org/2012/12/05/codeclub-and-becoming-a-stem-ambassador/) at the Woodhouses Village School, I have been a volunteer at [Manchester CoderDojo](https://mcrcoderdojo.org.uk/) at MadLab and also at the Sharp Project in Newton Heath.
 
 Here's a pic of me [giving a Scratch session](https://mcrcoderdojo.org.uk/underwater-scratch/) at Manchester CoderDojo:
