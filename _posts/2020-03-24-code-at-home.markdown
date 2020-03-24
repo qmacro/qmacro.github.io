@@ -52,7 +52,7 @@ I'll start out by doing this regularly, on Mondays, Wednesdays and Fridays, alwa
 
 On the live streams I'll be sharing my screen, showing the problem we're looking at solving, and showing what I'm typing in the [repl.it](https://repl.it) website. There'll also be a little "picture-in-picture" of me on the camera. To get a rough idea, here's a still from last Friday's episode of another (more technical) live stream series that I run (called "[Hands-on SAP dev with qmacro](https://bit.ly/handsonsapdev)", which is for the SAP development and technical community):
 
-![still from Hands-on SAP dev](sapdev.png)
+![still from Hands-on SAP dev](/content/images/2020/03/sapdev.png)
 
 I definitely encourage you parents to join too if you can, so you can satisfy yourself that this is something that might help. Perhaps you can help with the setup too.
 
