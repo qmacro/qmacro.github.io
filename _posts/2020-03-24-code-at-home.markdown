@@ -8,6 +8,15 @@ _This post provides information on the simple Code at Home initiative - what it 
 
 Although it's super important for us to stay at home right now, it doesn't mean that we can't have some fun learning together online. If you have kids at home and want to give them a break from school work at the kitchen table, and they fancy learning a bit of programming for beginners, then this Code at Home idea might be helpful.
 
+**Who I am**
+
+First, a bit about who I am.
+
+<image src="https://qmacro.org/content/images/DJA-head-small.jpg" align="right" />
+
+My name's DJ Adams and I live in Woodhouses, near Failsworth, in Manchester. I am proud to work for SAP as a [developer advocate](https://community.sap.com/influencers/?program=devadvocates), and I feel supported by them in this endeavour. I have a short bio page here: [qmacro.org/about](https://qmacro.org/about). I've been involved with teaching kids to code for a good while now, and you can read more about that [down below](#moreinfo).
+
+
 **The idea**
 
 The idea is that school children who are stuck at home can take part in some coding for beginners, by connecting to YouTube and joining a "Code at Home" live stream that I'll broadcast on a regular basis at a fixed time in the morning, for an hour. I don't have this all planned out, I'm just going to start it and see how it goes and would welcome input from anyone. What I do know is that I want it to be approachable and for beginners, where the age range is around 10 and up.
@@ -31,7 +40,7 @@ To connect and join in, you'll need:
 - A laptop or desktop, it doesn't matter whether it's a MacBook, a Windows machine or anything else
 - On that laptop or desktop you need a web browser, like Chrome. You don't need anything else specific to programming
 
-If you want to join in and type along with me during the live stream, and want to use the same setup as I'll be showing, sign up to the following two websites:
+If you want to enable your kids join in and type along during the live stream, and want to use the same setup as I'll be showing, sign up to the following two websites:
 
 - [Project Euler](https://projecteuler.net) - it's not completely necessary, but if you sign up then you can enter your own answers to the problems and see your progress
 - [repl.it](https://repl.it) - this is a really nice coding environment online, that you can access and use from your web browser, and it's the one I will be using in the live stream sessions
@@ -56,11 +65,10 @@ On the live streams I'll be sharing my screen, showing the problem we're looking
 
 I definitely encourage you parents to join too if you can, so you can satisfy yourself that this is something that might help. Perhaps you can help with the setup too.
 
-**Who are you?**
+<a name="moreinfo"></a>
+**More information on me**
 
 Basically, I guess I want to say that I'm not a weirdo or anything.
-
-My name's DJ Adams and I live in Woodhouses, near Failsworth, in Manchester. I work as a developer advocate for SAP. I have a short bio page here: [qmacro.org/about](https://qmacro.org/about).
 
 I used to [run a CodeClub](https://qmacro.org/2012/12/05/codeclub-and-becoming-a-stem-ambassador/) at the Woodhouses Village School, I have been a volunteer at [Manchester CoderDojo](https://mcrcoderdojo.org.uk/) at MadLab and also at the Sharp Project in Newton Heath.
 
