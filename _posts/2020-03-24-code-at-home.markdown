@@ -4,7 +4,7 @@ title: Let's learn to "Code at Home"
 date: '2020-03-24 08:12:00'
 ---
 
-_This post provides information on the simple Code at Home initiative - what it is and what you need to join in._
+_This post provides information on the simple Code at Home initiative - what it is and what you need to join in. The canonical URL for this post is [bit.ly/code-at-home](https://bit.ly/code-at-home)_.
 
 Although it's super important for us to stay at home right now, it doesn't mean that we can't have some fun learning together online. If you have kids at home and want to give them a break from school work at the kitchen table, and they fancy learning a bit of programming for beginners, then this Code at Home idea might be helpful.
 
@@ -81,6 +81,6 @@ Head on over to the channel on YouTube, get set up for tomorrow (Wed 25 Mar) and
 
 If you have any questions, please reach out to me on Twitter (I'm [@qmacro](https://twitter.com/qmacro) where I'd be more than happy to try and answer them.
 
-Also, bookmark this blog post, to be able to come back to it at a later date, in case there are updates I have added, with extra information, a change in schedule, things like that.
+Also, bookmark this blog post (or you can use the short link [bit.ly/code-at-home](https://bit.ly/code-at-home)), to be able to come back to it at a later date, in case there are updates I have added, with extra information, a change in schedule, things like that.
 
 Please also wish me luck - while I've taught kids to code in many contexts, and I've live streamed in my professional life, I've never combined the two. I want this to be helpful in these trying times, and for that I will need your help too.Thanks!
