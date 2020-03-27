@@ -89,7 +89,7 @@ I've also helped out as a mentor at MadLab in Manchester during the [Young Rewir
 
 **OK, what's the next step?**
 
-Head on over to the channel on YouTube, get set up the first one and be ready to connect to the live stream at 16:00 UK time this coming Friday 27 March. Here's the YouTube link for that first live stream episode: [https://youtu.be/X7gtbWiHTBY](https://youtu.be/X7gtbWiHTBY).
+Head on over to the channel on YouTube, get set up for the first one and be ready to connect to the live stream at 16:00 UK time this coming Friday 27 March. Here's the YouTube link for that first live stream episode: [https://youtu.be/X7gtbWiHTBY](https://youtu.be/X7gtbWiHTBY).
 
 If you have any questions, please reach out to me on Twitter (my handle is [@qmacro](https://twitter.com/qmacro)) where I'd be more than happy to try and answer them.
 
