@@ -8,6 +8,8 @@ _This post provides information on the simple Code at Home initiative - what it 
 
 **First episode TODAY Fri 27 Mar 1600-1700 UK time → [www.youtube.com/watch?v=X7gtbWiHTBY](https://www.youtube.com/watch?v=X7gtbWiHTBY)**
 
+**Subscribe on YouTube and find all the upcoming episodes here: [youtube.com/djadams-qmacro](https://youtube.com/djadams-qmacro).**
+
 **Parents: if you have any questions (during the streams or in between) please don't hesitate to contact me at [qmacro+codeathome@gmail.com](mailto:qmacro+codeathome@gmail.com).**
 
 Although it's super important for us to stay at home right now, it doesn't mean that we can't have some fun learning together online. If you have kids at home and want to give them a break from school work at the kitchen table, and they fancy learning a bit of programming for beginners, then this Code at Home idea might be helpful.
