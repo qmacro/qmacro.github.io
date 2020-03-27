@@ -47,7 +47,7 @@ If you want to enable your kids join in and type along during the live stream, a
 - [Project Euler](https://projecteuler.net) - it's not completely necessary, but if you sign up then you can enter your own answers to the problems and see your progress
 - [repl.it](https://repl.it) - this is a really nice coding environment online, that you can access and use from your web browser, and it's the one I will be using in the live stream sessions
 
-Of course, and if all you want to do is watch, that's fine and then you don't need anything other than your web browser. But it's fun to type the code in yourself on your own computer too and see the results.
+Of course, if all you want to do is watch, that's fine and then you don't need anything other than your web browser. But it's fun to type the code in yourself on your own computer too and see the results.
 
 **How do we follow the schedule and get reminders?**
 
@@ -71,8 +71,6 @@ I definitely encourage you parents to join too if you can, so you can satisfy yo
 
 <a name="moreinfo"></a>
 **More information on me**
-
-Basically, I guess I want to say that I'm not a weirdo or anything.
 
 I used to [run a CodeClub](https://qmacro.org/2012/12/05/codeclub-and-becoming-a-stem-ambassador/) at the Woodhouses Village School, I have been a volunteer at [Manchester CoderDojo](https://mcrcoderdojo.org.uk/) at MadLab and also at the Sharp Project in Newton Heath.
 
