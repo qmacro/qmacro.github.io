@@ -6,6 +6,8 @@ date: '2020-03-24 08:12:00'
 
 _This post provides information on the simple Code at Home initiative - what it is and what you need to join in. The canonical URL for this post is [bit.ly/code-at-home](https://bit.ly/code-at-home)_.
 
+**First episode TODAY Fri 27 Mar 1600-1700 UK time → [www.youtube.com/watch?v=X7gtbWiHTBY](https://www.youtube.com/watch?v=X7gtbWiHTBY)**
+
 Although it's super important for us to stay at home right now, it doesn't mean that we can't have some fun learning together online. If you have kids at home and want to give them a break from school work at the kitchen table, and they fancy learning a bit of programming for beginners, then this Code at Home idea might be helpful.
 
 **Who I am**
@@ -55,7 +57,7 @@ If you miss an actual live stream, don't worry, because they're all automaticall
 
 **When and how often is this happening?**
 
-I'll start out by doing this regularly, on Mondays, Wednesdays and Fridays, always at the same time, from 16:00 to 17:00 (UK time). This is so that any school work at home can be completed and out of the way during the day first. 
+I'll start out by doing this regularly, on Mondays, Wednesdays and Fridays, always at the same time, from 16:00 to 17:00 (UK time). This is so that any school work at home can be completed and out of the way during the day first.
 
 I'll do the first one this coming **Friday 27 March** - and have set up the live stream ready on [my YouTube channel](https://youtube.com/djadams-qmacro), so you can set a reminder for it.
 
