@@ -23,7 +23,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
     <td valign="top">
       <a href="https://www.youtube.com/watch?v=X7gtbWiHTBY">Code at Home Ep.1<br>Setting up for our first challenge</a>
     </td>
-    <td>
+    <td valign="top">
       <p>In this first episode we set up the tools that we need - the <a href="https://projecteuler.net">Project Euler</a> and the <a href="https://repl.it">repl.it</a> websites. We also solve together the very first problem described on Project Euler: <a href="https://projecteuler.net/problem=1">Multiples of 3 and 5</a>.</p>
       <p>Code resources for this episode: <a href="https://repl.it/@qmacro/CodeAtHome1">CodeAtHome1</a></p>
     </td>
@@ -32,7 +32,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
     <td valign="top">
       <a href="https://www.youtube.com/watch?v=cfGQ-K7dvfg">Code at Home Ep.2<br>Fizz-Buzz and Fibonacci</a>
     </td>
-    <td>
+    <td valign="top">
       <p>We start off by looking at the little "homework" challenge from last time, with a program to generate the output of a Fizz-Buzz game. Then the main part of this episode sees us take a first look at the Fibonacci sequence, what it is and how to work out the termns in that sequence, coding together a simple program to do that.</p>
       <p>Code resources for this episode: <a href="https://repl.it/@qmacro/CodeAtHome2">CodeAtHome2</a> and <a href="https://repl.it/@qmacro/FizzBuzz">FizzBuzz</a></p>
     </td>
@@ -41,7 +41,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
     <td valign="top">
       <a href="https://www.youtube.com/watch?v=tYt7SsGbhu4">Code at Home Ep.3<br>Solving a Fibonacci related challenge</a>
     </td>
-    <td>
+    <td valign="top">
       <p>Following on from the previous episode we take another look together at what we wrote already to generate the Fibonacci sequence, and rewrite it to make it better, using a generator function and even creating a function that produces other functions. With that, we go and solve Project Euler problem 2: <a href="https://projecteuler.net/problem=2">Even Fibonacci numbers</a>.</p>
       <p>Code resources for this episode: <a href="https://repl.it/@qmacro/CodeAtHome3">CodeAtHome3</a></p>
     </td>
