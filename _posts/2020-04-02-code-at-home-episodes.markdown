@@ -41,6 +41,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
     </td>
     <td>
       Following on from the previous episode we take another look together at what we wrote already to generate the Fibonacci sequence, and rewrite it to make it better, using a generator function and even creating a function that produces other functions. With that, we go and solve Project Euler problem 2: <a href="https://projecteuler.net/problem=2">Even Fibonacci numbers</a>.
+    </td>
   </tr>
 </table>
   
