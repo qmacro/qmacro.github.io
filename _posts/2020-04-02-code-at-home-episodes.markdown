@@ -46,5 +46,14 @@ Here are the recordings of the live stream episodes so far. Click on the episode
       <p>Code resources for this episode: <a href="https://repl.it/@qmacro/CodeAtHome3">CodeAtHome3</a></p>
     </td>
   </tr>
+  <tr>
+    <td valign="top">
+      <a href="https://www.youtube.com/watch?v=yOfp681B_tg">Code at Home Ep.4<br>Figuring out sentence statistics!</a>
+    </td>
+    <td valign="top">
+      <p>Taking a break from numbers, we start to look at sentences and words, and how to parse them to grab basic data. In doing this we learn about arrays, and how to create and use them, even discovering functions and properties that are available on them. We also start to introduce the 'const' and 'let' keywords, and end with a gentle introduction to the super 'map' function.</p>
+      <p>Code resources for this episode: <a href="https://repl.it/@qmacro/CodeAtHome4">CodeAtHome4</a></p>
+    </td>
+  </tr>
 </table>
   
