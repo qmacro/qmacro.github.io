@@ -378,7 +378,7 @@ Now we have another four lines in our `~/.ssh/known_hosts` file, reflecting the 
 
 ## Wrapping up
 
-And that's it for this post. Ansible is indeed a powerful system, but taking the time to understand what's going on has taught me things about basic networking (and in particular some ins and outs of `ssh`) that I'm glad I know how.
+And that's it for this post. Ansible is indeed a powerful system, but taking the time to understand what's going on has taught me things about basic networking (and in particular some ins and outs of `ssh`) that I'm glad I know now.
 
 Moreover, I now have a nice set of four Pis set up from a basic networking perspective, ready for the next steps.
 
