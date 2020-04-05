@@ -61,8 +61,6 @@ This is the "to-be" state of the Pis, via configuration of specific hostnames an
 
 What's not to like?
 
-Well, with newly imaged Pis fresh on the network, there's a bit of a chicken and egg problem which we can delight in and learn a bit about `ssh` in the process.
-
 **Strict host key checking**
 
 Running the Ansible `main.yml` playbook as it stands right now presents us with a problem:
