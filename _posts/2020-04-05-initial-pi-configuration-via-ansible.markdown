@@ -12,7 +12,7 @@ Previous post in this series: [Finding the Pis on the network](/2020/03/22/findi
 
 > One of the main aims of this initial configuration is to establish reliable and fixed IP addresses for each of the Pis in the cluster; as a case in point, since writing the previous post, the DHCP leases for the Pis were renewed and some of them got new, different IP addresses, which are reflected in the "as-is" `inventory` file shown in this post ... the contents of which will look slightly different compared to what we saw in the last time for that very reason.
 
-**Ansible configuration**
+## Ansible configuration
 
 At the end of the previous post, we'd identified the MAC and current IP addresses of the Pis on the network. This information found its way into a couple of files used in a process that follows the general flow described in Jeff Geerling's [Raspberry Pi Networking Setup](https://github.com/geerlingguy/raspberry-pi-dramble/tree/master/setup/networking).
 
@@ -106,7 +106,7 @@ pi@192.168.86.42's password:
 
 Note that in this second example, even before the password has been entered, the key for this remote Pi has now already been added to `~/.ssh/known_hosts`.
 
-Ansible makes this easy for us to add `ssh` options to the `inventory` file, via the `ansible_ssh_common_args` variable, which we do, at the end of the file, like this:
+Ansible makes it easy for us to add `ssh` options to the `inventory` file, via the `ansible_ssh_common_args` variable, which we do, at the end of the file, like this:
 
 ```
 [brambleweeny:vars]
@@ -148,13 +148,13 @@ PLAY RECAP ***
 
 Notice that the `-o StrictHostKeyChecking=no` did what we wanted it to do, as we can see the following message for each host in the output: "Warning: Permanently added '192.168.86.nn' (ECDSA) to the list of known hosts".
 
-So we've got ssh to not refuse to connect because it doesn't initially recognise the hosts, but now we're getting a "Permission denied" issue.
+So we've got ssh to not refuse to connect because it doesn't initially recognise the hosts, but now we're getting a "permission denied" issue.
 
 **Uploading the ssh key**
 
-Of course, we're getting a permission denied issue because the remote Pis don't have the public key of the user of my current host (i.e. `~/.ssh/id_rsa.pub`) for public key based authentication, and we haven't supplied a password either (which for each of the freshly booted Pis, is 'raspberry' for the 'pi' user).
+Of course, we're getting a "permission denied" issue because the remote Pis don't have the public key of the user of my current host (i.e. `~/.ssh/id_rsa.pub`) for public key based authentication, and we haven't supplied a password either (which for each of the freshly booted Pis, is 'raspberry' for the 'pi' user).
 
-A passwordless based remote access flow is ideal, so this is something we should address now. We need somehow to get my public key across to each of the Pis, in the right place (if you've used public key based `ssh` access before, and if not, why not?) i.e. in the remote user's `~/.ssh/authorized_keys` file.
+A passwordless based remote access flow is ideal, so this is something we should address now. We need somehow to get my public key across to each of the Pis, in the right place i.e. in the remote user's `~/.ssh/authorized_keys` file. (If you've used public key based `ssh` access before, why not?) 
 
 There's a specific Ansible module for this - the [`authorized_key` module](https://docs.ansible.com/ansible/latest/modules/authorized_key_module.html), and we can use it in a short playbook like this, which we'll call `set_ssh_key.yml`:
 
@@ -178,10 +178,18 @@ But of course we can't just run this, as we're still unable to connect, for the 
 PLAY [brambleweeny] ***
 
 TASK [Gathering Facts] ***
-fatal: [192.168.86.42]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: pi@192.168.86.42: Permission denied (publickey,password).", "unreachable": true}
-fatal: [192.168.86.55]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: pi@192.168.86.55: Permission denied (publickey,password).", "unreachable": true}
-fatal: [192.168.86.54]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: pi@192.168.86.54: Permission denied (publickey,password).", "unreachable": true}
-fatal: [192.168.86.52]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: pi@192.168.86.52: Permission denied (publickey,password).", "unreachable": true}
+fatal: [192.168.86.42]: UNREACHABLE! => {"changed": false, "msg": 
+"Failed to connect to the host via ssh: pi@192.168.86.42: 
+Permission denied (publickey,password).", "unreachable": true}
+fatal: [192.168.86.55]: UNREACHABLE! => {"changed": false, "msg": 
+"Failed to connect to the host via ssh: pi@192.168.86.55: 
+Permission denied (publickey,password).", "unreachable": true}
+fatal: [192.168.86.54]: UNREACHABLE! => {"changed": false, "msg": 
+"Failed to connect to the host via ssh: pi@192.168.86.54: 
+Permission denied (publickey,password).", "unreachable": true}
+fatal: [192.168.86.52]: UNREACHABLE! => {"changed": false, "msg": 
+"Failed to connect to the host via ssh: pi@192.168.86.52: 
+Permission denied (publickey,password).", "unreachable": true}
 
 PLAY RECAP ***
 192.168.86.42              : ok=0    changed=0    unreachable=1    failed=0
