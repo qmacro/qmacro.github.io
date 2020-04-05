@@ -61,7 +61,7 @@ This is the "to-be" state of the Pis, via configuration of specific hostnames an
 
 What's not to like?
 
-**Strict host key checking**
+## Strict host key checking
 
 Running the Ansible `main.yml` playbook as it stands right now presents us with a problem:
 
@@ -150,7 +150,7 @@ Notice that the `-o StrictHostKeyChecking=no` did what we wanted it to do, as we
 
 So we've got ssh to not refuse to connect because it doesn't initially recognise the hosts, but now we're getting a "permission denied" issue.
 
-**Uploading the ssh key**
+## Uploading the ssh key, and sshpass
 
 Of course, we're getting a "permission denied" issue because the remote Pis don't have the public key of the user of my current host (i.e. `~/.ssh/id_rsa.pub`) for public key based authentication, and we haven't supplied a password either (which for each of the freshly booted Pis, is 'raspberry' for the 'pi' user).
 
@@ -247,7 +247,7 @@ Linux raspberrypi 4.19.97-v7l+ #1294 SMP Thu Jan 30 13:21:14 GMT 2020 armv7l
 pi@raspberrypi:~ $
 ```
 
-**Running the main playbook**
+## Running the main playbook
 
 At this point I can retry `main.yml` playbook, knowing that Ansible will be able to successfully connect to each of the Pis, using the public key we've transferred, and also using the default user defined in the `ansible_ssh_user` variable in the `inventory` file:
 
@@ -318,7 +318,7 @@ PLAY RECAP ***
 Very nice indeed!
 
 
-**Rebooting and updating the inventory**
+## Rebooting and updating the inventory
 
 At this stage, as advised in Jeff's [networking setup README](https://github.com/geerlingguy/raspberry-pi-dramble/tree/master/setup/networking), we can reboot the Pis with the following direct shell module based command:
 
@@ -331,14 +331,8 @@ At this stage, as advised in Jeff's [networking setup README](https://github.com
 > -B 60 \
 > -P 0
 192.168.86.52 | CHANGED | rc=-1 >>
-
-
 192.168.86.54 | CHANGED | rc=-1 >>
-
-
 192.168.86.55 | CHANGED | rc=-1 >>
-
-
 192.168.86.42 | CHANGED | rc=-1 >>
 ```
 
@@ -382,7 +376,7 @@ The `ansible_ssh_common_args` variable is still there, because we need it one mo
 
 Now we have another four lines in our `~/.ssh/known_hosts` file, reflecting the four Pis with their new keys, making a total of eight lines (one for each host when we had the DHCP-allocated IP addresses, and then one for each host with the new statically allocated IP addresses). To be thorough, it's probably a good idea to delete the first four lines, but more importantly, it's paramount that we remove the `ansible_ssh_common_args` line from the inventory file now, to prevent future (and inadvertent) suppression of potentially real key warnings.
 
-**Wrapping up**
+## Wrapping up
 
 And that's it for this post. Ansible is indeed a powerful system, but taking the time to understand what's going on has taught me things about basic networking (and in particular some ins and outs of `ssh`) that I'm glad I know how.
 
