@@ -57,7 +57,7 @@ dns_nameservers:
   - "8.8.4.4"
 ```
 
-This is the "to-be" state of the Pis, via configuration of specific hostnames and IP addresses, as well as what to use for domain name resolution, for each of the Pis that are to be identified by their MAC addresses. More explicitly, I want to move from dynamically allocated IP addresses (which are currently 53,54,55 and 56) to statically allocated IP addresses 61,62,63 and 64.
+This is the "to-be" state of the Pis, via configuration of specific hostnames and IP addresses, as well as what to use for domain name resolution, for each of the Pis that are to be identified by their MAC addresses. More explicitly, I want to move from dynamically allocated IP addresses (which are currently 42,52,54 and 55) to statically allocated IP addresses 61,62,63 and 64.
 
 What's not to like?
 
@@ -67,7 +67,7 @@ Well, with newly imaged Pis fresh on the network, there's a bit of a chicken and
 
 Running the Ansible `main.yml` playbook as it stands right now presents us with a problem:
 
-```shell
+```
 -> ansible-playbook -i inventory main.yml
 PLAY [brambleweeny] ***
 
@@ -87,7 +87,7 @@ We've never connected to these Pis before now, so `ssh`, which is at the heart o
 
 But for this particular operation we need to relax this approach, and for that we can use the `StrictHostKeyChecking` option, which can either be set in the `ssh` config file (`~/.ssh/config` at a user level) or on the command line. Here's the difference between trying to `ssh` to one of the Pis without and then with the option turned off:
 
-```shell
+```
 -> ssh pi@192.168.86.42
 The authenticity of host '192.168.86.42 (192.168.86.42)' can't be established.
 ECDSA key fingerprint is SHA256:AJ5628fGhewiqdu/V2+B1LkR2HKGa+nRcwjYiiTGqWg.
@@ -113,7 +113,7 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 
 Trying the playbook again, we don't get a problem with the inability of `ssh` to authenticate the Pi hosts' keys; instead. Great. But this just reveals the next problem, which again we can learn from:
 
-```shell
+```
 -> ansible-playbook -i inventory main.yml
 
 PLAY [brambleweeny] ***
@@ -157,7 +157,7 @@ There's a specific Ansible module for this - the [`authorized_key` module](https
 
 But of course we can't just run this, as we're still unable to connect, for the same reason:
 
-```shell
+```
 -> ansible-playbook -i inventory set_ssh_key.yml
 
 PLAY [brambleweeny] ***
@@ -181,7 +181,7 @@ It's worth spending a couple of minutes understanding how this actually operates
 
 We can see this in action with a simple test:
 
-```shell
+```
 -> sshpass -p 'raspberry' pi@192.168.86.42
 Linux raspberrypi 4.19.97-v7l+ #1294 SMP Thu Jan 30 13:21:14 GMT 2020 armv7l
 [...]
@@ -190,7 +190,7 @@ pi@raspberrypi:~ $
 
 Anyway, let's use the `-k` option with `ansible-playbook` to make use of this `sshpass` utility; Ansible will first ask us for the password and then use `sshpass` to pass it on to each of the `ssh` connections it makes:
 
-```shell
+```
 -> ansible-playbook -k -i inventory set_ssh_key.yml
 SSH password: *********
 
@@ -217,7 +217,7 @@ PLAY RECAP ***
 
 Success! From this point onwards, we can use `ssh` to connect to each of the Pis, but via our public key, rather than a password:
 
-```shell
+```
 -> ssh pi@192.168.86.42
 Linux raspberrypi 4.19.97-v7l+ #1294 SMP Thu Jan 30 13:21:14 GMT 2020 armv7l
 [...]
