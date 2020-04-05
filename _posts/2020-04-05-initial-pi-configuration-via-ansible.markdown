@@ -72,18 +72,23 @@ PLAY [brambleweeny] ***
 TASK [Gathering Facts] ***
 The authenticity of host '192.168.86.42 (192.168.86.42)' can't be established.
 ECDSA key fingerprint is SHA256:AJ5628fGhewiqdu/V2+B1LkR2HKGa+nRcwjYiiTGqWg.
-Are you sure you want to continue connecting (yes/no)? The authenticity of host '192.168.86.54 (192.168.86.54)' can't be established.
+Are you sure you want to continue connecting (yes/no)? 
+The authenticity of host '192.168.86.54 (192.168.86.54)' can't be established.
 ECDSA key fingerprint is SHA256:sn2otbKVAa9Jsj+i3W0poIK731+pBP+ivbUrATJGVQk.
-Are you sure you want to continue connecting (yes/no)? The authenticity of host '192.168.86.52 (192.168.86.52)' can't be established.
+Are you sure you want to continue connecting (yes/no)? 
+The authenticity of host '192.168.86.52 (192.168.86.52)' can't be established.
 ECDSA key fingerprint is SHA256:jFgPSwjEQsCSUx+nJcZ6ub9EhoGC1I1vSX5uSvVc1YE.
-Are you sure you want to continue connecting (yes/no)? The authenticity of host '192.168.86.55 (192.168.86.55)' can't be established.
+Are you sure you want to continue connecting (yes/no)? 
+The authenticity of host '192.168.86.55 (192.168.86.55)' can't be established.
 ECDSA key fingerprint is SHA256:Tl3t427yXmbPIXjgBNBDHtNuw+MQUS132xhX6DCgo9E.
 Are you sure you want to continue connecting (yes/no)?
 ```
 
 We've never connected to these Pis before now, so `ssh`, which is at the heart of Ansible's connection to them, will appropriately complain that it doesn't recognise them. This "complaint" comes about from `ssh`'s default approach to [checking the keys of remote hosts](https://www.ibm.com/support/knowledgecenter/SSLTBW_2.2.0/com.ibm.zos.v2r2.foto100/hostch.htm), which is what we normally want (i.e. be strict!).
 
-But for this particular operation we need to relax this approach, and for that we can use the `StrictHostKeyChecking` option, which can either be set in the `ssh` config file (`~/.ssh/config` at a user level) or on the command line. Here's the difference between trying to `ssh` to one of the Pis without and then with the option turned off:
+But for this particular operation we need to relax this approach, and for that we can use the `StrictHostKeyChecking` option, which can either be set in the `ssh` config file (`~/.ssh/config` at a user level) or on the command line. 
+
+Here's the difference between trying to `ssh` to one of the Pis without and then with the option turned off:
 
 ```
 -> ssh pi@192.168.86.42
@@ -93,7 +98,7 @@ Are you sure you want to continue connecting (yes/no)?
 Host key verification failed.
 ```
 
-```shell
+```
 -> ssh -o StrictHostKeyChecking=no pi@192.168.86.42
 Warning: Permanently added '192.168.86.42' (ECDSA) to the list of known hosts.
 pi@192.168.86.42's password:
@@ -109,7 +114,7 @@ ansible_ssh_user=pi
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 ```
 
-Trying the playbook again, we don't get a problem with the inability of `ssh` to authenticate the Pi hosts' keys; instead. Great. But this just reveals the next problem, which again we can learn from:
+Trying the playbook again, we don't get a problem with the inability of `ssh` to authenticate the Pi hosts' keys. Great! But this just reveals the next problem, which again we can learn from:
 
 ```
 -> ansible-playbook -i inventory main.yml
@@ -117,10 +122,22 @@ Trying the playbook again, we don't get a problem with the inability of `ssh` to
 PLAY [brambleweeny] ***
 
 TASK [Gathering Facts] ***
-fatal: [192.168.86.55]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: Warning: Permanently added '192.168.86.55' (ECDSA) to the list of known hosts.\r\npi@192.168.86.55: Permission denied (publickey,password).", "unreachable": true}
-fatal: [192.168.86.42]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: Warning: Permanently added '192.168.86.42' (ECDSA) to the list of known hosts.\r\npi@192.168.86.42: Permission denied (publickey,password).", "unreachable": true}
-fatal: [192.168.86.52]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: Warning: Permanently added '192.168.86.52' (ECDSA) to the list of known hosts.\r\npi@192.168.86.52: Permission denied (publickey,password).", "unreachable": true}
-fatal: [192.168.86.54]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: Warning: Permanently added '192.168.86.54' (ECDSA) to the list of known hosts.\r\npi@192.168.86.54: Permission denied (publickey,password).", "unreachable": true}
+fatal: [192.168.86.55]: UNREACHABLE! => {"changed": false, "msg": 
+"Failed to connect to the host via ssh: 
+Warning: Permanently added '192.168.86.55' (ECDSA) to the list of known hosts.\r\n
+pi@192.168.86.55: Permission denied (publickey,password).", "unreachable": true}
+fatal: [192.168.86.42]: UNREACHABLE! => {"changed": false, "msg": 
+"Failed to connect to the host via ssh: 
+Warning: Permanently added '192.168.86.42' (ECDSA) to the list of known hosts.\r\n
+pi@192.168.86.42: Permission denied (publickey,password).", "unreachable": true}
+fatal: [192.168.86.52]: UNREACHABLE! => {"changed": false, "msg": 
+"Failed to connect to the host via ssh: 
+Warning: Permanently added '192.168.86.52' (ECDSA) to the list of known hosts.\r\n
+pi@192.168.86.52: Permission denied (publickey,password).", "unreachable": true}
+fatal: [192.168.86.54]: UNREACHABLE! => {"changed": false, "msg": 
+"Failed to connect to the host via ssh: 
+Warning: Permanently added '192.168.86.54' (ECDSA) to the list of known hosts.\r\n
+pi@192.168.86.54: Permission denied (publickey,password).", "unreachable": true}
 
 PLAY RECAP ***
 192.168.86.42              : ok=0    changed=0    unreachable=1    failed=0
