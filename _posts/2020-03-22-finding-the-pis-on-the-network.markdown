@@ -8,6 +8,9 @@ _Now that we have our Pis booted and up and running on the network, we need to f
 
 This is a post in the "[Brambleweeny Cluster Experiments](/2020/03/22/brambleweeny-cluster-experiments/)" series of blog posts, which accompanies the [YouTube live stream recording playlist](https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe) of the same name.
 
+Previous post in this series: [Preparing the OS image](/2020/03/22/preparing-the-os-image/)<br>
+Next post in this series: [Initial Pi configuration via Ansible](/2020/04/05/initial-pi-configuration-via-ansible/)
+
 Having booted the Pis in the cluster using the [OS image prepared earlier](/2020/03/22/preparing-the-os-image/), we now need to find them so that we can continue with the setup.
 
 What does that mean? Well, the Pis will have requested IP addresses via DHCP. In my case, I run DHCP via my Google Wifi setup, and have a range set up for DHCP leases. While I can guess what the IP addresses might be, it's not scientific. I could look at the Google Wifi app on my phone, and go through manually searching for the devices that called themselves something that includes the string "raspberrypi", then looking at the details to reveal the IP addresses. But that sounds too much hard work, and not something I'd learn from.
