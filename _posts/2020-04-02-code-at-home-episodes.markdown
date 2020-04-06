@@ -55,5 +55,15 @@ Here are the recordings of the live stream episodes so far. Click on the episode
       <p>Code resources for this episode: <a href="https://repl.it/@qmacro/CodeAtHome4">CodeAtHome4</a></p>
     </td>
   </tr>
+
+  <tr>
+    <td>
+      <a href="https://www.youtube.com/watch?v=7HDJOKtSNUE">Code at Home Ep.5<br>More on arrays and array functions</a>
+    </td>
+    <td>
+      <p>Continuing on from the previous episode we start off by taking a look at character codes to understand the default sort() behaviour, digging in a little bit to the ASCII table. Then we look at a few more array functions, revisiting split() and map() and finally building a predicate function isPalindrome() that will tell us if the input is palindromic, a useful function that we'll need to solve <a href="https://projecteuler.net/problem=4">Project Euler problem 4</a> in the next episode.</p>
+      <p>Code resources for this episode: <a href="https://repl.it/@qmacro/CodeAtHome5">CodeAtHome5</a></p>
+    </td>
+  </tr>
 </table>
   
