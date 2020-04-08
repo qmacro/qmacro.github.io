@@ -65,5 +65,16 @@ Here are the recordings of the live stream episodes so far. Click on the episode
       <p>Code resources for this episode: <a href="https://repl.it/@qmacro/CodeAtHome5">CodeAtHome5</a></p>
     </td>
   </tr>
+
+  <tr>
+    <td>
+      <a href="https://www.youtube.com/watch?v=vQoZeQW4SbQ">Code at Home Ep.6<br>Solving the palindromic products puzzle</a>
+    </td>
+    <td>
+      <p>We start off by making slight improvements to our isPalindrome() function so that it will work with numbers as well as strings. Then we generate pairs of numbers in nested for loops, implementing an optimisation that will leave out duplicate calculations. We then check whether our code agrees with the answer to the sample in the problem (the product of two 2-digit numbers) and confident that it's OK, we put the code to work to calculate the main part of <a href="https://projecteuler.net/problem=4">Project Euler problem 4</a>, and it works!</p>
+      <p>Along the way, we define a function that we then use to influence the behaviour of the sort() function. Between now and the next episode, think about how this function works, by looking at the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort">Array.prototype.sort</a> documentation at MDN.</p>
+      <p>Code resources for this episode: <a href="https://repl.it/@qmacro/CodeAtHome6">CodeAtHome6</a></p>
+    </td>
+  </tr>
 </table>
   
