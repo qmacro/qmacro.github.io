@@ -76,5 +76,15 @@ Here are the recordings of the live stream episodes so far. Click on the episode
       <p>Code resources for this episode: <a href="https://repl.it/@qmacro/CodeAtHome6">CodeAtHome6</a></p>
     </td>
   </tr>
+  
+  <tr>
+    <td>
+      <a href="https://youtu.be/cIX5ThSpYGI">Code at Home Ep.7<br>Looking at sort functions</a>
+    </td>
+    <td>
+      <p>In this episode we dig more into why the default sort behaviour for our filtered palindromic products wasn't quite what we wanted, and looked into how the sort() function can use a 'compare function' to tell it how to behave. Then after creating a useful function to generate a nice list of random numbers on demand, we explore our own compare function implementation, passing it to sort() to influence the behaviour. Lots of fun!</p>
+      <p>Code resources for this episode: <a href="https://repl.it/@qmacro/CodeAtHome7">CodeAtHome7</a></p>
+    </td>
+  </tr>
 </table>
   
