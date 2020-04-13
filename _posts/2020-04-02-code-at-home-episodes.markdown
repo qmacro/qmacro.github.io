@@ -86,5 +86,15 @@ Here are the recordings of the live stream episodes so far. Click on the episode
       <p>Code resources for this episode: <a href="https://repl.it/@qmacro/CodeAtHome7">CodeAtHome7</a></p>
     </td>
   </tr>
+  <tr>
+    <td>
+      <a href="https://www.youtube.com/watch?v=hizi99N8F5A">Code at Home Ep.8<br>Finishing off sort, and introducing objects</a>
+    </td>
+    <td>
+      <p>In this episode we expand our horizons with respect to arrays, and learn how you can have arrays with different types of data, and even nest arrays inside each other. We then move on to objects, which are an even more powerful way of representing and manipulating data. As a brief aside, we take an initial look at <a href="https://projecteuler.net/problem=4">Project Euler Problem 4 - Names Scores</a>, which we'll start to solve together next. Finally, we write another compare function to call sort() with, so that we can sort by referring to values of properties inside object structures.</p>
+      <p>Code resources for this episode: <a href="https://repl.it/@qmacro/CodeAtHome8">CodeAtHome8</a></p>
+      <p>Data resources for this episode: <a href="https://gist.github.com/qmacro/7dcab532e7029ac1a1042bcf9f29f3af#file-episodes-a-js">episodes-A.js</a> which we copied into our repl.it workspace.</p>
+    </td>
+  </tr>
 </table>
   
