@@ -96,5 +96,23 @@ Here are the recordings of the live stream episodes so far. Click on the episode
       <p>Data resources for this episode: <a href="https://gist.github.com/qmacro/7dcab532e7029ac1a1042bcf9f29f3af#file-episodes-a-js">episodes-A.js</a> which we copied into our repl.it workspace.</p>
     </td>
   </tr>
+  <tr>
+    <td>
+      <a href="https://www.youtube.com/watch?v=3HrewK3Z114">Code at Home Ep.9<br>Looking at Project Euler problem Nr.22</a>
+    </td>
+    <td>
+      <p>We take a first proper look at the "Names Scores" problem, which is Nr.22 in the Project Euler series. There are a lot of things for us to do to solve the problem, but all of them definitely manageable. We spent a lot of this episode learning about how to open and read file contents, which we need to do to bring in the 5000+ first names that the problem is based upon.</p>
+      <p>Code resources for this episode: <a href="https://repl.it/@qmacro/CodeAtHome9">CodeAtHome9</a></p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <a href="https://www.youtube.com/watch?v=MCcOglgeiqE">Code at Home Ep.10<br>Continuing with Project Euler problem Nr.22</a>
+    </td>
+    <td>
+      <p>Now we're comfortable with reading in the data from the file from the previous episode, we can turn our attention to starting to pick off each task we need to achieve to solve the problem. In this episode we look at stripping off the double-quotes from each name, and how to go about calculating individual letter scores for each name. We also take a brief look at the raw data that is provided to us from the file read process, and work out what it represents, by translating between hexadecimal and decimal and looking up values in an ASCII table.</p>
+      <p>Code resources for this episode (same as the previous episode): <a href="https://repl.it/@qmacro/CodeAtHome9">CodeAtHome9</a></p>
+    </td>
+  </tr>
 </table>
   
