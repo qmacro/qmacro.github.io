@@ -114,5 +114,15 @@ Here are the recordings of the live stream episodes so far. Click on the episode
       <p>Code resources for this episode (same as the previous episode): <a href="https://repl.it/@qmacro/CodeAtHome9">CodeAtHome9</a></p>
     </td>
   </tr>
+
+  <tr>
+    <td>
+      <a href="https://www.youtube.com/watch?v=bzJ7UQoCqxI">Code at Home Ep.11<br>An introduction to reduce()</a>
+    </td>
+    <td>
+      <p>In this episode we took our time over getting acquainted with the powerful Array.prototype.reduce() function, the 'big sister' of Array.prototype.map(), Array.prototype.filter() and other similar array functions. Unlike map() and filter(), both of which expect to be passed functions that take a single parameter, and both of which produce an array as a result, the reduce() function expects to be passed a function that takes two parameters, and can produce a result of any shape (e.g. an array, an object or a scalar). We used reduce() to add up an array of numbers. 
+      <p>Code resources for this episode (same as the previous episode): <a href="https://repl.it/@qmacro/CodeAtHome9">CodeAtHome9</a></p>
+    </td>
+  </tr>
 </table>
   
