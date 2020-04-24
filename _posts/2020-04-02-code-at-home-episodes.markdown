@@ -134,5 +134,15 @@ Here are the recordings of the live stream episodes so far. Click on the episode
       <p>Code resources for this episode (same as the previous episode): <a href="https://repl.it/@qmacro/CodeAtHome9">CodeAtHome9</a></p>
     </td>
   </tr>
+
+  <tr>
+    <td>
+      <a href="https://youtu.be/S_2-cMRd4N8">Code at Home Ep.13<br>Looking at Base 2 and our next challenge</a>
+    </td>
+    <td>
+      <p>We start off by taking a peek at the next challenge which is <a href="https://projecteuler.net/problem=36">Project Euler Nr.36 - Double-base palindromes</a> where we have to check not only decimal but binary numbers for palindromic properties. So we take an excursion into binary, or Base 2, to understand how that works. Then we grab the isPalindrome() function from a previous CodeAtHome episode to reuse, and quite easily solve the problem together. Great!</p>
+      <p>Code resources for this episode <a href="https://repl.it/@qmacro/CodeAtHome13">CodeAtHome13</a></p>
+    </td>
+  </tr>
 </table>
   
