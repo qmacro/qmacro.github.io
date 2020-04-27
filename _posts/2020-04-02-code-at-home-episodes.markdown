@@ -144,5 +144,17 @@ Here are the recordings of the live stream episodes so far. Click on the episode
       <p>Code resources for this episode <a href="https://repl.it/@qmacro/CodeAtHome13">CodeAtHome13</a></p>
     </td>
   </tr>
+
+
+  <tr>
+    <td>
+      <a href="https://www.youtube.com/watch?v=570mDChjATM">Code at Home Ep.14<br>Refactoring to improve our code</a>
+    </td>
+    <td>
+      <p>There are nearly always opportunities to make improvements to code; whether that is for readability, performance, or other reasons. In this episode we looked at what we wrote for the solution we coded together on the previous episode and made a few improvements, by tweaking some values to make the calculation perform better, and by adding a "helper" function that we can use in lots of places and that encapsulates complexity that we can then forget about.</p>
+      <p>Code resources for this episode <a href="https://repl.it/@qmacro/CodeAtHome14">CodeAtHome14</a></p>
+    </td>
+  </tr>
 </table>
+  
   
