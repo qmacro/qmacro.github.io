@@ -145,7 +145,6 @@ Here are the recordings of the live stream episodes so far. Click on the episode
     </td>
   </tr>
 
-
   <tr>
     <td>
       <a href="https://www.youtube.com/watch?v=570mDChjATM">Code at Home Ep.14<br>Refactoring to improve our code</a>
@@ -153,6 +152,16 @@ Here are the recordings of the live stream episodes so far. Click on the episode
     <td>
       <p>There are nearly always opportunities to make improvements to code; whether that is for readability, performance, or other reasons. In this episode we looked at what we wrote for the solution we coded together on the previous episode and made a few improvements, by tweaking some values to make the calculation perform better, and by adding a "helper" function that we can use in lots of places and that encapsulates complexity that we can then forget about.</p>
       <p>Code resources for this episode <a href="https://repl.it/@qmacro/CodeAtHome14">CodeAtHome14</a></p>
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <a href="https://www.youtube.com/watch?v=2gf1lytLR3k">Code at Home Ep.15<br>Continuing our refactoring journey using 'range'</a>
+    </td>
+    <td>
+      <p>We refactored some of our code in the previous episode and in this one we continued to do so, creating our own utility module and moving functions into that, and then importing what we need to the main index.js file. Then before tackling our range() function we looked at how range() works in Python, so that we could emulate that, for consistency. Then we started to write a new version of our range() function accordingly.</p>
+      <p>Code resources for this episode <a href="https://repl.it/@qmacro/CodeAtHome15">CodeAtHome15</a></p>
     </td>
   </tr>
 </table>
