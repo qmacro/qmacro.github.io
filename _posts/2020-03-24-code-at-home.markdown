@@ -6,7 +6,7 @@ date: '2020-03-24 08:12:00'
 
 _This post provides information on the simple Code at Home initiative - what it is and what you need to join in. The canonical URL for this post is [bit.ly/code-at-home](https://bit.ly/code-at-home)_.
 
-- Episodes on Mondays / Wednesdays / Fridays at 15:30 UK time.
+- Episodes on Mondays and Fridays at 15:30 UK time.
 - Subscribe on YouTube and find all the upcoming episode links here: [youtube.com/djadams-qmacro](https://youtube.com/djadams-qmacro)
 - Find a summary list of the past episode recordings, with links, here: [Code at Home episodes](/2020/04/02/code-at-home-episodes/)
 - **New: Please take 30 seconds to let me know what you think, and what I can do to improve, in this <a href="https://docs.google.com/forms/d/e/1FAIpQLSfHWIWRTPb5cCO2TfMIntixT5bUEDw7wd4x8SFKC6q6a4RCbA/viewform">feedback form</a>. Thank you!**
@@ -62,7 +62,7 @@ If you miss an actual live stream, don't worry, because they're all automaticall
 
 **When and how often is this happening?**
 
-I'll start out by doing this regularly, on Mondays, Wednesdays and Fridays, always at the same time, from 16:00 to 17:00 (UK time). This is so that any school work at home can be completed and out of the way during the day first.
+I'll start out by doing this regularly from 15:30 to 16:30 (UK time). This is so that any school work at home can be completed and out of the way during the day first.
 
 I'll do the first one this coming **Friday 27 March** - and have set up the live stream ready on [my YouTube channel](https://youtube.com/djadams-qmacro), so you can set a reminder for it.
 
@@ -92,7 +92,7 @@ I've also helped out as a mentor at MadLab in Manchester during the [Young Rewir
 
 **OK, what's the next step?**
 
-Head on over to the channel on YouTube, get set up for the first one and be ready to connect to the live stream at 16:00 UK time this coming Friday 27 March. Here's the YouTube link for that first live stream episode: [https://youtu.be/X7gtbWiHTBY](https://youtu.be/X7gtbWiHTBY).
+Head on over to the channel on YouTube, get set up for the first one and be ready to connect to the live stream this coming Friday 27 March. Here's the YouTube link for that first live stream episode: [https://youtu.be/X7gtbWiHTBY](https://youtu.be/X7gtbWiHTBY).
 
 If you have any questions, please reach out to me on Twitter (my handle is [@qmacro](https://twitter.com/qmacro)) where I'd be more than happy to try and answer them.
 
