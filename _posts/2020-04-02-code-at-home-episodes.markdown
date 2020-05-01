@@ -164,6 +164,16 @@ Here are the recordings of the live stream episodes so far. Click on the episode
       <p>Code resources for this episode <a href="https://repl.it/@qmacro/CodeAtHome15">CodeAtHome15</a></p>
     </td>
   </tr>
+
+  <tr>
+    <td>
+      <a href="https://youtu.be/78Exn27aGXg">Code at Home Ep.16<br>recursion (noun): for a definition, see 'recursion'</a>
+    </td>
+    <td>
+      <p>After finishing off our reworked range() function so that it behaved more like Python 3's range() function, we moved on to start looking at <a href="https://en.wikipedia.org/wiki/Recursion">recursion</a> - what it is and where it came from. It's a wonderful concept but does take some time to understand, so we started slowly by looking at how we might use a recursive function definition to add some numbers together - with no explicit looping!</p>
+      <p>Code resources for this episode <a href="https://repl.it/@qmacro/CodeAtHome16">CodeAtHome16</a></p>
+    </td>
+  </tr>
 </table>
   
   
