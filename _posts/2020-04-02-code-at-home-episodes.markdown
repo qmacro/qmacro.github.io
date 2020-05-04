@@ -21,6 +21,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
   </tr>
   <tr>
     <td>
+      Fri 27 Mar 2020<br>
       <a href="https://www.youtube.com/watch?v=X7gtbWiHTBY">Code at Home Ep.1<br>Setting up for our first challenge</a>
     </td>
     <td>
@@ -30,6 +31,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
   </tr>
   <tr>
     <td>
+      Mon 30 Mar 2020<br>
       <a href="https://www.youtube.com/watch?v=cfGQ-K7dvfg">Code at Home Ep.2<br>Fizz-Buzz and Fibonacci</a>
     </td>
     <td>
@@ -39,6 +41,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
   </tr>
   <tr>
     <td>
+      Wed 01 Apr 2020<br>
       <a href="https://www.youtube.com/watch?v=tYt7SsGbhu4">Code at Home Ep.3<br>Solving a Fibonacci related challenge</a>
     </td>
     <td>
@@ -48,6 +51,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
   </tr>
   <tr>
     <td>
+      Fri 03 Apr 2020<br>
       <a href="https://www.youtube.com/watch?v=yOfp681B_tg">Code at Home Ep.4<br>Figuring out sentence statistics!</a>
     </td>
     <td>
@@ -58,6 +62,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
 
   <tr>
     <td>
+      Mon 06 Apr 2020<br>
       <a href="https://www.youtube.com/watch?v=7HDJOKtSNUE">Code at Home Ep.5<br>More on arrays and array functions</a>
     </td>
     <td>
@@ -68,6 +73,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
 
   <tr>
     <td>
+      Wed 08 Apr 2020<br>
       <a href="https://www.youtube.com/watch?v=vQoZeQW4SbQ">Code at Home Ep.6<br>Solving the palindromic products puzzle</a>
     </td>
     <td>
@@ -79,6 +85,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
   
   <tr>
     <td>
+      Fri 10 Apr 2020<br>
       <a href="https://youtu.be/cIX5ThSpYGI">Code at Home Ep.7<br>Looking at sort functions</a>
     </td>
     <td>
@@ -88,6 +95,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
   </tr>
   <tr>
     <td>
+      Mon 13 Apr 2020<br>
       <a href="https://www.youtube.com/watch?v=hizi99N8F5A">Code at Home Ep.8<br>Finishing off sort, and introducing objects</a>
     </td>
     <td>
@@ -98,6 +106,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
   </tr>
   <tr>
     <td>
+      Wed 15 Apr 2020<br>
       <a href="https://www.youtube.com/watch?v=3HrewK3Z114">Code at Home Ep.9<br>Looking at Project Euler problem Nr.22</a>
     </td>
     <td>
@@ -107,6 +116,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
   </tr>
   <tr>
     <td>
+      Fri 17 Apr 2020<br>
       <a href="https://www.youtube.com/watch?v=MCcOglgeiqE">Code at Home Ep.10<br>Continuing with Project Euler problem Nr.22</a>
     </td>
     <td>
@@ -117,6 +127,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
 
   <tr>
     <td>
+      Mon 20 Apr 2020<br>
       <a href="https://www.youtube.com/watch?v=bzJ7UQoCqxI">Code at Home Ep.11<br>An introduction to reduce()</a>
     </td>
     <td>
@@ -127,6 +138,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
 
   <tr>
     <td>
+      Wed 22 Apr 2020<br>
       <a href="https://youtu.be/puzpDLgWebA">Code at Home Ep.12<br>Finishing off Project Euler Nr.22</a>
     </td>
     <td>
@@ -137,6 +149,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
 
   <tr>
     <td>
+      Fri 24 Apr 2020<br>
       <a href="https://youtu.be/S_2-cMRd4N8">Code at Home Ep.13<br>Looking at Base 2 and our next challenge</a>
     </td>
     <td>
@@ -147,6 +160,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
 
   <tr>
     <td>
+      Mon 27 Apr 2020<br>
       <a href="https://www.youtube.com/watch?v=570mDChjATM">Code at Home Ep.14<br>Refactoring to improve our code</a>
     </td>
     <td>
@@ -157,6 +171,7 @@ Here are the recordings of the live stream episodes so far. Click on the episode
 
   <tr>
     <td>
+      Wed 29 Apr 2020<br>
       <a href="https://www.youtube.com/watch?v=2gf1lytLR3k">Code at Home Ep.15<br>Continuing our refactoring journey using 'range'</a>
     </td>
     <td>
@@ -167,11 +182,23 @@ Here are the recordings of the live stream episodes so far. Click on the episode
 
   <tr>
     <td>
+      Fri 01 May 2020<br>
       <a href="https://youtu.be/78Exn27aGXg">Code at Home Ep.16<br>recursion (noun): for a definition, see 'recursion'</a>
     </td>
     <td>
       <p>After finishing off our reworked range() function so that it behaved more like Python 3's range() function, we moved on to start looking at <a href="https://en.wikipedia.org/wiki/Recursion">recursion</a> - what it is and where it came from. It's a wonderful concept but does take some time to understand, so we started slowly by looking at how we might use a recursive function definition to add some numbers together - with no explicit looping!</p>
       <p>Code resources for this episode <a href="https://repl.it/@qmacro/CodeAtHome16">CodeAtHome16</a></p>
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      Mon 04 May 2020<br>
+      <a href="https://youtu.be/1whk_QC9CPw">Code at Home Ep.17<br>A little more exploration of recursion</a>
+    </td>
+    <td>
+      <p>In last Friday's episode we got our first taste of recursion, defining a recursive function sum() to add a list of numbers together. In this episode we had another look at that recursive definition to understand the pattern a bit more, with the base case and the main part, and then expanded our knowledge by creating a similar function mul() to multiply a list of numbers together, and making note of the (very few) things that had to change. Then we looked at what factorials were, and defined a recursive function to determine factorials for us. In fact, we defined it three different ways, ending up with a single-expression function that used the ternary operator. The definition was a little terse, but hopefully interesting!</p>
+      <p>Code resources for this episode <a href="https://repl.it/@qmacro/CodeAtHome17">CodeAtHome17</a></p>
     </td>
   </tr>
 </table>
