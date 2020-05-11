@@ -201,6 +201,17 @@ Here are the recordings of the live stream episodes so far. Click on the episode
       <p>Code resources for this episode <a href="https://repl.it/@qmacro/CodeAtHome17">CodeAtHome17</a></p>
     </td>
   </tr>
+
+  <tr>
+    <td>
+      Mon 11 May 2020<br>
+      <a href="https://youtu.be/gFZEDy6ZAxo">Code at Home Ep.18<br>Looking at our next coding challenge together</a>
+    </td>
+    <td>
+      <p>We embark upon our last challenge for this series, which is Project Euler problem 52 <a href="https://projecteuler.net/problem=52">Permuted Multiples</a>, and take our time exploring the problem space in the REPL together. We build up solid little functions to help us out along the way, and to codify what our thoughts are, starting with digits(), contains() and sameLength(). We get to the stage where we can check through to see if all the digits in one number are in another number ... but we're not done yet, as we saw towards the end where we came across the 'subset' issue. We'll finish this off in the next episode, by looking at solving that (using sameLength()) and improving the comparisons with the array function every().</p>
+      <p>Code resources for this episode <a href="https://repl.it/@qmacro/CodeAtHome18">CodeAtHome18</a></p>
+    </td>
+  </tr>
 </table>
   
   
