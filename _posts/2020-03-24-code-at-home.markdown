@@ -7,6 +7,7 @@ date: '2020-03-24 08:12:00'
 _This post provides information on the simple Code at Home initiative - what it is and what you need to join in. The canonical URL for this post is [bit.ly/code-at-home](https://bit.ly/code-at-home)_.
 
 - Episodes on Mondays and Fridays at 15:30 UK time.
+- Last episode in this first series will be Ep.20 on Mon 18 May.
 - Subscribe on YouTube and find all the upcoming episode links here: [youtube.com/djadams-qmacro](https://youtube.com/djadams-qmacro)
 - Find a summary list of the past episode recordings, with links, here: [Code at Home episodes](/2020/04/02/code-at-home-episodes/)
 - **New: Please take 30 seconds to let me know what you think, and what I can do to improve, in this <a href="https://docs.google.com/forms/d/e/1FAIpQLSfHWIWRTPb5cCO2TfMIntixT5bUEDw7wd4x8SFKC6q6a4RCbA/viewform">feedback form</a>. Thank you!**
