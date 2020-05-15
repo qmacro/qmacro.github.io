@@ -212,6 +212,17 @@ Here are the recordings of the live stream episodes so far. Click on the episode
       <p>Code resources for this episode <a href="https://repl.it/@qmacro/CodeAtHome18">CodeAtHome18</a></p>
     </td>
   </tr>
+
+  <tr>
+    <td>
+      Fri 15 May 2020<br>
+      <a href="https://youtu.be/qw8BY5kvoI8">Code at Home Ep.19<br>Finishing off our challenge, improving the code</a>
+    </td>
+    <td>
+      <p>We did it! We finished off and solved Project Euler problem 52 together. In finishing off, we completed the isPermutation() function, which we needed to check two things, in sequence - first, whether the length of each number was the same, and then (and only if the lengths were the same) whether the digits in the first number were in the second number. We also created the meetsRequirements() function, and indeed wrote two versions of it, which checked the actual requirements of the problem, for each number we could throw at it - which we did in a simple while loop at the end.</p>
+      <p>Code resources for this episode <a href="https://repl.it/@qmacro/CodeAtHome18">CodeAtHome18</a></p>
+    </td>
+  </tr>
 </table>
   
   
