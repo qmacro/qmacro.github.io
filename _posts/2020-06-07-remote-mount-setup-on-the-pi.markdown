@@ -6,7 +6,7 @@ date: '2020-6-07 15:46:00'
 
 _This post documents what I did to set up mount points for, and connect to, an Apple Airport Time Capsule here on my homelab network and also my Google Drive._
 
-My interest in Raspberry Pis has increased over the last few months, and I've taken delivery of a couple of Pi Zero W models and another Pi 4, all from [The Pi Hut](https://thepihut.com/), which I can heartily recommend. Using the Pis more often, I wanted to connect them to some remote storage, specifically my old but still relevant network storage device - an Airport Time Capsule from Apple - and also be able to seamlessly read and write files on my Google Drive. This short post documents what I did, so I can refer back to it if I need to do it again. Perhaps it might also be useful for you too.
+My interest in Raspberry Pis has increased over the last few months, and I've taken delivery of a couple of Pi Zero W models and another Pi 4, all from [The Pi Hut](https://thepihut.com/), which I can heartily recommend. Using the Pis more often, I wanted to connect them to some remote storage, specifically my old but still relevant network storage device - an Airport Time Capsule from Apple - and also be able to seamlessly read and write files on my Google Drive. This short post documents what I did, so I can refer back to it if I need to do it again. Perhaps it might be useful for you too.
 
 Here's the relevant section from a `tree -L 2` in my home directory:
 
@@ -34,7 +34,11 @@ Broken down bit by bit, we have:
 - `0`: Dump (disabled), i.e. no backing up of this partition
 - `0`: Boot time fsck (disabled), i.e. no file system check at boot time for this file system
 
-And that's it. After adding the line, a `mount -a` (as root) should do the trick, and of course the mount will happen on (re)boot too.
+A short note on the password (which isn't actually 'sekrit', obviously) - via the airport utility on my macOS device, I connected to the Time Capsule and set up the security for the disks with a "disk password", i.e. there is no user. This seemed simpler and good enough for what I need.
+
+![Disk configuration on the Time Capsule](/content/images/2020/06/diskconfig.png)
+
+And that's it. After adding the line, a `mount -a` (as root) did the trick, and of course the mount is performed on (re)boot too.
 
 
 ## Mounting Google Drive
@@ -43,7 +47,7 @@ This was a bit more involved, but still worked first time. It involves the use o
 
 Basically, I followed this excellent tutorial from Artur Klauser - [Mounting Google Drive on Raspberry Pi](https://medium.com/@artur.klauser/mounting-google-drive-on-raspberry-pi-f5002c7095c2), so I won't repeat all the details; instead, I'll list the commands and activities I went through here.
 
-### Installed `rclone`
+### Installed rclone
 
 I installed `rclone` from the standard repositories, and got version 1.45; in other words, I didn't bother with trying to get the latest through a `wget` pull of something newer - I think I'm happy with 1.45 (and it's worked well so far for me).
 
@@ -58,9 +62,9 @@ In order to use my own access configuration, I need a client ID and client secre
 ![The OAuth 2.0 Client ID](/content/images/2020/06/googleapiclient.png)
 
 
-### Configured `rclone`
+### Configured rclone
 
-After generating the credentials, I went back to the command line and fired up `rclone config`, following the guide in Artur's post mentioned earlier. Testing `rclone` after this was done (`rclone ls --max-depth 1 gdrive:`) showed that I could indeed see the contents of my Google Drive. A file `rclone.conf` was created in `~/.config/rclone/` too, this is what the contents look like (I've elided the credential details of course):
+After generating the credentials, I went back to the command line and fired up `rclone config`, following the guide in Artur's post mentioned earlier. Next, a simple test (`rclone ls --max-depth 1 gdrive:`) showed that I could indeed see the contents of my Google Drive. The configuration procedure caused a file `rclone.conf` to be created in `~/.config/rclone/` too, this is what the contents look like (I've elided the credential details of course):
 
 ```
 [gdrive]
