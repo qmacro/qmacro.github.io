@@ -30,7 +30,7 @@ Broken down bit by bit, we have:
 - `//timecapsule/Data`: The mount device, which is the Data share on the Time Capsule itself, which is identified here as the hostname `timecapsule`. I could have used an IP address but I'm happily running a local DNS setup on this homelab (on one of the Pi Zero W devices) using [Pi-hole](https://pi-hole.net/)
 - `/home/pi/mnt/timecapsule`: The mount point, where I want the Data share to be mounted
 - `cifs`: The file system type; Common Internet File System (CIFS) is a dialect of the more Windows specific Server Message Block (SMB) network protocol
-- `vers=1.0,password=sekrit,rw,uid=1000,iocharset=utf8,sec=ntlm`: There a few options specified here, such as the protocol version number, that the mount should be read-write, and so on (it seems as though the security mode 'ntlm', which was the default for a while, now must be specified explicitly
+- `vers=1.0,password=sekrit,rw,uid=1000,iocharset=utf8,sec=ntlm`: There a few options specified here, such as the protocol version number, that the mount should be read-write, and so on (it seems as though the security mode 'ntlm', which was the default for a while, now must be specified explicitly)
 - `0`: Dump (disabled), i.e. no backing up of this partition
 - `0`: Boot time fsck (disabled), i.e. no file system check at boot time for this file system
 
