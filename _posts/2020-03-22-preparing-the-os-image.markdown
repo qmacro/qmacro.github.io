@@ -82,7 +82,6 @@ And then created a new zip archive:
 ```shell
 -> zip 2020-05-27-raspios-buster-lite-armhf-ssh.zip 2020-05-27-raspios-buster-lite-armhf.img 
   adding: 2020-05-27-raspios-buster-lite-armhf.img
-->
 ```
 
 **Using the image**
