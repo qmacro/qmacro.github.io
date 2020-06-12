@@ -47,10 +47,9 @@ On my macOS machine (which is one of the few devices I have that has an SD card 
 -> unzip 2020-05-27-raspios-buster-lite-armhf.zip 
 Archive:  2020-05-27-raspios-buster-lite-armhf.zip
   inflating: 2020-05-27-raspios-buster-lite-armhf.img  
-->
 ```
 
-Then I used the DiskImageMounter utility (`hdiutil`) to mount the `.img` image file (noting also that the `boot` partition is only one of two partitions on the image - the other, of type "Linux", being the eventual root partition):
+Then I used the DiskImageMounter utility `hdiutil` to mount the `.img` image file (noting also that the `boot` partition is only one of two partitions on the image - the other, of type "Linux", being the eventual root partition):
 
 ```shell
 -> hdiutil mount 2020-05-27-raspios-buster-lite-armhf.img 
@@ -63,7 +62,7 @@ The `boot` partition was made available at `/Volumes/boot`, as we can see from w
 
 ```
 -> df | grep disk3
-/dev/disk3s1   516190    104290     411900    21%    0      0  100%   /Volumes/boot
+/dev/disk3s1  516190   104290   411900   21%   0    0  100%  /Volumes/boot
 ```
 
 I could then add an empty `ssh` file to the filesystem on that partition:
@@ -95,10 +94,30 @@ I could then use this new image archive file `2020-05-27-raspios-buster-lite-arm
 Balena Etcher is great, but if, like me, you're more of a terminal person, you can also perform this step from the command line. The steps are described well in [Copying an operating system image to an SD card using Mac OS](https://www.raspberrypi.org/documentation/installation/installing-images/mac.md) so here's a precis:
 
 ```
-...
+-> diskutil list
+/dev/disk0 (internal, physical):
+   #:                       TYPE NAME                    SIZE       IDENTIFIER
+   0:      GUID_partition_scheme                        *1.0 TB     disk0
+   1:                        EFI EFI                     314.6 MB   disk0s1
+   2:                 Apple_APFS Container disk1         1.0 TB     disk0s2
+
+[...]
+
+/dev/disk4 (external, physical):
+   #:                       TYPE NAME                    SIZE       IDENTIFIER
+   0:     FDisk_partition_scheme                        *31.9 GB    disk4
+   1:             Windows_FAT_32 boot                    268.4 MB   disk4s1
+   2:                      Linux                         31.6 GB    disk4s2
+   
+-> sudo diskutil unmountDisk /dev/disk4
+Password: ...
+Unmount of all volumes on disk4 was successful
+-> sudo dd bs=1m if=./2020-05-27-raspios-buster-lite-armhf.img of=/dev/rdisk4; sync
 ```
 
-> You may be wondering why there's no Raspbian image available that already contains the `ssh` file. That's because it would be a security risk; in other words, you have to explicitly enable SSH through this route if you want it; otherwise, the Pis stay locked down. That's the right approach.
+**A note on security** 
+
+You may be wondering why there's no Raspbian image available that already contains the `ssh` file. That's because it would be a security risk; in other words, you have to explicitly enable SSH through this route if you want it; otherwise, the Pis stay locked down. That's the right approach.
 
 **Booting and connecting**
 
