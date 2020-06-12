@@ -113,6 +113,11 @@ Balena Etcher is great, but if, like me, you're more of a terminal person, you c
 Password: ...
 Unmount of all volumes on disk4 was successful
 -> sudo dd bs=1m if=./2020-05-27-raspios-buster-lite-armhf.img of=/dev/rdisk4; sync
+1768+0 records in
+1768+0 records out
+1853882368 bytes transferred in 122.702619 secs (15108743 bytes/sec)
+-> sudo diskutil eject /dev/rdisk5
+Disk /dev/rdisk5 ejected
 ```
 
 **A note on security** 
