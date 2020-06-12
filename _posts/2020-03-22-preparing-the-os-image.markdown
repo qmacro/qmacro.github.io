@@ -23,6 +23,8 @@ There are different distributions of Linux for the Raspberry Pi, and at the time
 
 ![Raspbian Buster Lite](/content/images/2020/03/busterlite.png)
 
+> Update: Around May 2020 the name of the OS has changed, from Raspbian to Raspberry Pi OS, and this is reflected in the latest downloadable images at this new location: [Raspberry Pi OS](https://www.raspberrypi.org/downloads/raspberry-pi-os/). Don't worry, if you go to the [old location](https://www.raspberrypi.org/downloads/raspbian/) you'll be redirected to this new one.
+
 **Remote access**
 
 To access the headless Pis remotely, we'll be using Secure Shell (SSH). There's a bit of a chicken-and-egg problem though, in that we need to be able to configure the Pis to allow remote access via SSH, before we can make the connection. For that we'd need a keyboard and screen, to be able to log on, install and set up the SSH service.
