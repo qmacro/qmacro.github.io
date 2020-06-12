@@ -23,7 +23,7 @@ There are different distributions of Linux for the Raspberry Pi, and at the time
 
 ![Raspbian Buster Lite](/content/images/2020/03/busterlite.png)
 
-> Update: Around May 2020 the name of the OS has changed, from Raspbian to Raspberry Pi OS, and this is reflected in the latest downloadable images at this new location: [Raspberry Pi OS](https://www.raspberrypi.org/downloads/raspberry-pi-os/). Don't worry, if you go to the [old location](https://www.raspberrypi.org/downloads/raspbian/) you'll be redirected to this new one.
+> Update: Around May 2020 the name of the OS was changed from Raspbian to Raspberry Pi OS, and this is reflected in the latest downloadable images at this new location: [Raspberry Pi OS](https://www.raspberrypi.org/downloads/raspberry-pi-os/). Don't worry, if you go to the [old location](https://www.raspberrypi.org/downloads/raspbian/) you'll be redirected to this new one.
 
 **Remote access**
 
