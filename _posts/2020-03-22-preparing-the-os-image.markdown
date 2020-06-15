@@ -75,7 +75,7 @@ I could then add an empty `ssh` file to the filesystem on that partition:
 -> touch /Volumes/boot/ssh
 ```
 
-### Wifi connection
+## WiFi connection
 
 If you'd also like your Raspberry Pi to connect to your WiFi network when it boots (which will often be the case, even for headless mode), then at this stage you can also add another file, and this time, it's not an empty file like the `ssh` one, but one with configuration so that the Pi can connect to and authenticate with your WiFi network. 
 
