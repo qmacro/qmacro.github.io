@@ -6,6 +6,8 @@ date: '2020-03-22 13:26:00'
 
 _This post describes how I prepared the base OS image for each of the Raspberry Pis in my "Brambleweeny" cluster._
 
+Update: I've recorded a short (7 min) video of the steps described in this post: [Preparing the OS image for Raspberry Pis in a cluster](https://www.youtube.com/watch?v=IY5ZNZDI-EQ).
+
 This is a post in the "[Brambleweeny Cluster Experiments](/2020/03/22/brambleweeny-cluster-experiments/)" series of blog posts, which accompanies the [YouTube live stream recording playlist](https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe) of the same name.
 
 > This post has been updated to reflect the new name of the OS -- Raspberry Pi OS -- which changed (from Raspbian) around May 2020.
@@ -90,7 +92,11 @@ I could then use this new image archive file `2020-05-27-raspios-buster-lite-arm
 
 ![balena Etcher](/content/images/2020/03/etcher.png)
 
-Balena Etcher is great, but if, like me, you're more of a terminal person, you can also perform this step from the command line. The steps are described well in [Copying an operating system image to an SD card using Mac OS](https://www.raspberrypi.org/documentation/installation/installing-images/mac.md) so here's a precis:
+Balena Etcher is great, but if, like me, you're more of a terminal person, you can also perform this step from the command line. 
+
+Whether or not you use balena Etcher or the command line, it's at this stage of course that you insert the SD card. 
+
+The steps are described well in [Copying an operating system image to an SD card using Mac OS](https://www.raspberrypi.org/documentation/installation/installing-images/mac.md) so here's a precis:
 
 ```
 -> diskutil list
