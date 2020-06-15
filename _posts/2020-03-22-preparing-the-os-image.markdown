@@ -21,7 +21,7 @@ There are many ways to prepare base OS images for your Raspberry Pi computers. I
 
 The Pis in the cluster will be run headless (the only cable running to each of them will be an Ethernet cable). This has a couple of implications for us at this stage, which are (a) there's no point installing graphical tools or a full desktop, and (b) we'll be using remote access only.
 
-**No GUI**
+## No GUI
 
 There's no point in installing a graphical user interface (GUI) or windowing system on the Pis. That said, of course, with the power of X Windows we can have remote GUI windows but that's another story and a path we don't want to take for now.
 
@@ -29,7 +29,7 @@ There are different operating systems available for the Raspberry Pi, and at the
 
 ![Raspberry Pi OS (32-bit) Lite](/content/images/2020/03/os-image.png)
 
-**Remote access**
+## Remote access
 
 To access the headless Pis remotely, we'll be using Secure Shell (SSH). There's a bit of a chicken-and-egg problem though, in that we need to be able to configure the Pis to allow remote access via SSH, before we can make the connection. For that we'd need a keyboard and screen, to be able to log on, install and set up the SSH service.
 
@@ -37,7 +37,7 @@ However, headless use of Raspberry Pi computers is so common that there's a nice
 
 If you place a file called `ssh` in this boot partition, then when the image is inserted into a Pi and the Pi is booted, SSH will be enabled automatically and set up appropriately. Nice!
 
-**Preparing the image**
+## Preparing the image
 
 Most of the articles on the preparation of SD cards for Pis involve multiple steps: first, burn the OS image, then eject and re-insert the SD card to have the `boot` partition from that new image automatically mounted, then create the `ssh` file in that partition, and finally unmount the partition. This is fine for the occasional SD card preparation, but when preparing SD cards for an entire cluster, this can get tedious.
 
@@ -75,6 +75,27 @@ I could then add an empty `ssh` file to the filesystem on that partition:
 -> touch /Volumes/boot/ssh
 ```
 
+### Wifi connection
+
+If you'd also like your Raspberry Pi to connect to your WiFi network when it boots (which will often be the case, even for headless mode), then at this stage you can also add another file, and this time, it's not an empty file like the `ssh` one, but one with configuration so that the Pi can connect to and authenticate with your WiFi network. 
+
+If you want to do that, create a file in the same boot partition as you created the `ssh` file, called `wpa_supplicant.conf`, and add the following configuration to it:
+
+```
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=<Insert 2 letter ISO 3166-1 country code here>
+
+network={
+ ssid="<Name of your wireless LAN>"
+ psk="<Password for your wireless LAN>"
+}
+```
+
+(This example is taken directly from this useful page: [Setting up a Raspberry Pi headless](https://www.raspberrypi.org/documentation/configuration/wireless/headless.md)).
+
+> If you're in the UK and wondering about the ISO-3166-1 country code that you need, it's "GB".
+
 After that, I unmounted it:
 
 ```shell
@@ -88,7 +109,7 @@ And then created a new zip archive:
   adding: 2020-05-27-raspios-buster-lite-armhf.img
 ```
 
-**Using the image**
+## Using the image
 
 I could then use this new image archive file `2020-05-27-raspios-buster-lite-armhf-ssh.zip` in my use of balena Etcher, creating all four SD cards ready for the Pis in the cluster. Result!
 
@@ -127,11 +148,11 @@ Unmount of all volumes on disk4 was successful
 Disk /dev/rdisk5 ejected
 ```
 
-**A note on security** 
+## A note on security
 
 You may be wondering why there's no Raspbian image available that already contains the `ssh` file. That's because it would be a security risk; in other words, you have to explicitly enable SSH through this route if you want it; otherwise, the Pis stay locked down. That's the right approach.
 
-**Booting and connecting**
+## Booting and connecting
 
 After inserting the SD cards into the Raspberry Pis, and connecting up the Ethernet cables to power them up and have them boot the images for the first time, we can see that this SSH configuration action was successful:
 
