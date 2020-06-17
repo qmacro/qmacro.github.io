@@ -93,7 +93,7 @@ dns_nameservers:
 
 I want to give the four Pis host numbers in the range 12-15, and name them after the cluster name "Brambleweeny". I also want to tell them to use a local DNS server at 192.168.86.5 for domain name resolution. This is a tiny [Raspberry Pi Zero W](https://thepihut.com/products/raspberry-pi-zero-w) running the excellent [Pi-hole](https://pi-hole.net/).
 
-But how did I find out the MAC addresses?
+But putting aside the IP addresses for a moment - how did I find out the MAC addresses?
 
 **Using arp-scan**
 
