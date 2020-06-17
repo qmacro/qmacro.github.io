@@ -160,7 +160,7 @@ There's a specific Ansible module for this - the [`authorized_key` module](https
       authorized_key:
         user: pi
         state: present
-        key: "{{ lookup('file', '/home/pi/.ssh/id_rsa.pub') }}"
+        key: "{% raw %}{{ lookup('file', '/home/pi/.ssh/id_rsa.pub') }}{% endraw %}"
 ```
 
 But of course we can't just run this, as we're still unable to connect, for the same reason:
