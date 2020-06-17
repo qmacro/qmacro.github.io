@@ -6,13 +6,13 @@ permalink: /about/
 
 ![Head shot](/content/images/DJA-head-small.jpg)
 
-DJ works on developer outreach and advocacy in SAP's [Developer](//developers.sap.com) Relations team. He's been hacking on SAP enterprise software for more than three decades, and is still enjoying it. He's written books for O'Reilly and SAP Press, and speaks at conferences and meetups around the world. He runs a regular live coding series called "Hands-on SAP dev" on [his YouTube channel](https://youtube.com/DJAdams-qmacro) - find out more at <https://bit.ly/handsonsapdev>.
+DJ is a [Developer Advocate at SAP](https://developers.sap.com). He's been hacking on SAP enterprise software for more than three decades, and is still enjoying it. He's written books for O'Reilly and SAP Press, and speaks at conferences and meetups around the world, as well as [online](https://youtube.com/djadams-qmacro). He runs a regular live coding series called "Hands-on SAP dev with qmacro" on [his YouTube channel](https://youtube.com/DJAdams-qmacro) - find out more at <https://bit.ly/handsonsapdev>.
 
 He's contributed to the [SAP](http://community.sap.com), [Perl](http://search.cpan.org/~qmacro/), [XMPP (Jabber)](http://xmpp.org) and [Google](http://gtugs.org) developer communities and was made an [SAP Mentor](http://www.sap.com/uk/community/resources/influencer-programs.html) in recognition of his contributions to the [SAP Developer Network (now "SAP Community")](http://community.sap.com) which he co-created in 2003.
 
 He's been a member of SAP's [Mentors Advisory Board](https://blogs.sap.com/2016/03/08/introducing-the-new-sap-mentors-advisory-board-2016-2018/), and also a member of SAP's Developer Advisory Board.
 
-He teaches kids and teachers to code. He ran a [CodeClub](/2013/04/18/codeclub-thoughts/) in his local village school, is a voluteer at [Manchester CoderDojo](http://mcrcoderdojo.org.uk), a STEMnet Ambassador and in 2013 ran a centre in Manchester for [Young Rewired State](http://getcodingkids.com/young-rewired-state/).
+He has spent many happy hours teaching kids & teachers to code. He ran a [CodeClub](/2013/04/18/codeclub-thoughts/) in his local village school, is a voluteer at [Manchester CoderDojo](http://mcrcoderdojo.org.uk), a STEMnet Ambassador and in 2013 ran a centre in Manchester for [Young Rewired State](http://getcodingkids.com/young-rewired-state/).
 
 He is married to his theoretical childhood sweetheart Michelle, and has a son, [Joseph](http://jcla1.com), of whom he is **very** proud.
 
@@ -26,7 +26,7 @@ He's contributed articles to sites as diverse as O'Reilly's [OpenP2P](http://www
 
 He's spoken at conferences such as [OSCON](http://www.oscon.com), JabberConf, [FOSDEM](http://www.fosdem.org), [SAP Inside Track](http://scn.sap.com/community/events/inside-track), [SAP TechEd](http://www.sapteched.com), SAP d-kom, the [SAP UK & Ireland User Group Conference](http://www.sapusers.org/), the [SAP Architect & Developer Summit](http://www.bluefinsolutions.com/insights/dj-adams/november-2014/the-inaugural-sap-architect-developer-summit), [Manchester Digital Laboratory (MadLab)](http://madlab.org.uk), [Manchester Lambda Lounge](http://lambdalounge.org.uk), [UI5con](https://www.youtube.com/watch?v=CTgtS6Cd98Y) and [TEDx](http://www.youtube.com/watch?v=-gvOCaExeK0).
 
-Follow DJ on [Twitter](//twitter.com/qmacro), subscribe to his [YouTube channel](https://www.youtube.com/c/djadams-qmacro), read posts on his [personal blog](//qmacro.org), [Language Ramblings](http://langram.org), and his [current](//people.sap.com/dj.adams.sap) & [previous](//people.sap.com/dj.adams) blogs on the SAP Community.
+Follow DJ on [Twitter](//twitter.com/qmacro), subscribe to his [YouTube channel](https://youtube.com/djadams-qmacro), read posts on his [personal blog](//qmacro.org), on his [Language Ramblings](http://langram.org) blog, and his [current](//people.sap.com/dj.adams.sap) & [previous](//people.sap.com/dj.adams) blogs on the SAP Community.
 
 ![Programming Jabber](/content/images/books/programmingjabber.png)
 
