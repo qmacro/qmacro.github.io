@@ -97,7 +97,7 @@ Host key verification failed.
 
 ```
 -> ssh -o StrictHostKeyChecking=no pi@192.168.86.47
-Warning: Permanently added '192.168.86.42' (ECDSA) to the list of known hosts.
+Warning: Permanently added '192.168.86.47' (ECDSA) to the list of known hosts.
 pi@192.168.86.47's password:
 ```
 
@@ -114,33 +114,29 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 Trying the playbook again, we don't get a problem with the inability of `ssh` to authenticate the Pi hosts' keys. Great! But this just reveals the next problem, which again we can learn from:
 
 ```
--> ansible-playbook -i inventory main.yml
+-> ansible-playbook -i inventory main.yml 
 
 PLAY [brambleweeny] ***
 
 TASK [Gathering Facts] ***
-fatal: [192.168.86.47]: UNREACHABLE! => {"changed": false, "msg": 
-"Failed to connect to the host via ssh: 
+fatal: [192.168.86.47]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: 
 Warning: Permanently added '192.168.86.47' (ECDSA) to the list of known hosts.\r\n
 pi@192.168.86.47: Permission denied (publickey,password).", "unreachable": true}
-fatal: [192.168.86.15]: UNREACHABLE! => {"changed": false, "msg": 
-"Failed to connect to the host via ssh: 
+fatal: [192.168.86.15]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: 
 Warning: Permanently added '192.168.86.15' (ECDSA) to the list of known hosts.\r\n
 pi@192.168.86.15: Permission denied (publickey,password).", "unreachable": true}
-fatal: [192.168.86.158]: UNREACHABLE! => {"changed": false, "msg": 
-"Failed to connect to the host via ssh: 
+fatal: [192.168.86.158]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: 
 Warning: Permanently added '192.168.86.158' (ECDSA) to the list of known hosts.\r\n
 pi@192.168.86.158: Permission denied (publickey,password).", "unreachable": true}
-fatal: [192.168.86.125]: UNREACHABLE! => {"changed": false, "msg": 
-"Failed to connect to the host via ssh: 
+fatal: [192.168.86.125]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: 
 Warning: Permanently added '192.168.86.125' (ECDSA) to the list of known hosts.\r\n
 pi@192.168.86.125: Permission denied (publickey,password).", "unreachable": true}
-
+          to retry, use: --limit @/home/pi/raspberry-pi-dramble/setup/networking/main.retry
 PLAY RECAP ***
-192.168.86.47              : ok=0    changed=0    unreachable=1    failed=0
-192.168.86.15              : ok=0    changed=0    unreachable=1    failed=0
-192.168.86.158             : ok=0    changed=0    unreachable=1    failed=0
-192.168.86.125             : ok=0    changed=0    unreachable=1    failed=0
+192.168.86.125             : ok=0    changed=0    unreachable=1    failed=0   
+192.168.86.15              : ok=0    changed=0    unreachable=1    failed=0   
+192.168.86.158             : ok=0    changed=0    unreachable=1    failed=0   
+192.168.86.47              : ok=0    changed=0    unreachable=1    failed=0   
 ```
 
 Notice that the `-o StrictHostKeyChecking=no` did what we wanted it to do, as we can see the following message for each host in the output: "Warning: Permanently added '192.168.86.n' (ECDSA) to the list of known hosts".
@@ -151,7 +147,7 @@ So we've got `ssh` to not refuse to connect because it doesn't initially recogni
 
 Of course, we're getting a "permission denied" issue because the remote Pis don't have the public key of the user of my current host (i.e. `~/.ssh/id_rsa.pub`) for public key based authentication, and we haven't supplied a password either (which for each of the freshly booted Pis, is 'raspberry' for the 'pi' user).
 
-A passwordless based remote access flow is ideal, so this is something we should address now. We need somehow to get my public key across to each of the Pis, in the right place i.e. in the remote user's `~/.ssh/authorized_keys` file. (If you've used public key based `ssh` access before, why not?) 
+A passwordless based remote access flow is ideal, so this is something we should address now. We need somehow to get my public key across to each of the Pis, in the right place i.e. in the remote user's `~/.ssh/authorized_keys` file. (If you've not used public key based `ssh` access before, why not?) 
 
 There's a specific Ansible module for this - the [`authorized_key` module](https://docs.ansible.com/ansible/latest/modules/authorized_key_module.html), and we can use it in a short playbook like this, which we'll call `set_ssh_key.yml`:
 
@@ -164,7 +160,7 @@ There's a specific Ansible module for this - the [`authorized_key` module](https
       authorized_key:
         user: pi
         state: present
-        key: "{{ lookup('file', '/home/dj/.ssh/id_rsa.pub') }}"
+        key: "{{ lookup('file', '/home/pi/.ssh/id_rsa.pub') }}"
 ```
 
 But of course we can't just run this, as we're still unable to connect, for the same reason:
@@ -175,24 +171,21 @@ But of course we can't just run this, as we're still unable to connect, for the 
 PLAY [brambleweeny] ***
 
 TASK [Gathering Facts] ***
-fatal: [192.168.86.47]: UNREACHABLE! => {"changed": false, "msg": 
-"Failed to connect to the host via ssh: pi@192.168.86.47: 
-Permission denied (publickey,password).", "unreachable": true}
-fatal: [192.168.86.15]: UNREACHABLE! => {"changed": false, "msg": 
-"Failed to connect to the host via ssh: pi@192.168.86.15: 
-Permission denied (publickey,password).", "unreachable": true}
-fatal: [192.168.86.158]: UNREACHABLE! => {"changed": false, "msg": 
-"Failed to connect to the host via ssh: pi@192.168.86.158: 
-Permission denied (publickey,password).", "unreachable": true}
-fatal: [192.168.86.125]: UNREACHABLE! => {"changed": false, "msg": 
-"Failed to connect to the host via ssh: pi@192.168.86.125: 
-Permission denied (publickey,password).", "unreachable": true}
+fatal: [192.168.86.47]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: 
+pi@192.168.86.47: Permission denied (publickey,password).", "unreachable": true}
+fatal: [192.168.86.15]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: 
+pi@192.168.86.15: Permission denied (publickey,password).", "unreachable": true}
+fatal: [192.168.86.158]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: 
+pi@192.168.86.158: Permission denied (publickey,password).", "unreachable": true}
+fatal: [192.168.86.125]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: 
+pi@192.168.86.125: Permission denied (publickey,password).", "unreachable": true}
+        to retry, use: --limit @/home/pi/raspberry-pi-dramble/setup/networking/set_ssh_key.retry
 
 PLAY RECAP ***
-192.168.86.47              : ok=0    changed=0    unreachable=1    failed=0
-192.168.86.15              : ok=0    changed=0    unreachable=1    failed=0
-192.168.86.158             : ok=0    changed=0    unreachable=1    failed=0
-192.168.86.125             : ok=0    changed=0    unreachable=1    failed=0
+192.168.86.125             : ok=0    changed=0    unreachable=1    failed=0   
+192.168.86.15              : ok=0    changed=0    unreachable=1    failed=0   
+192.168.86.158             : ok=0    changed=0    unreachable=1    failed=0   
+192.168.86.47              : ok=0    changed=0    unreachable=1    failed=0  
 ```
 
 So we have to authenticate a different way - with the 'raspberry' password (remember, we're already supplying Ansible with the user via the `ansible_ssh_user` variable in the `inventory` file). The `-k` option for `ansible-playbook` tells it to ask for a connection password, which it will then use on our behalf when connecting to each host.
@@ -202,7 +195,7 @@ It's worth spending a couple of minutes understanding how this actually operates
 We can see this in action with a simple test:
 
 ```
--> sshpass -p 'raspberry' pi@192.168.86.47
+-> sshpass -p 'raspberry' ssh pi@192.168.86.47
 Linux raspberrypi 4.19.97-v7l+ #1294 SMP Thu Jan 30 13:21:14 GMT 2020 armv7l
 [...]
 pi@raspberrypi:~ $
@@ -217,22 +210,22 @@ SSH password: *********
 PLAY [brambleweeny] ***
 
 TASK [Gathering Facts] ***
-ok: [192.168.86.47]
 ok: [192.168.86.15]
-ok: [192.168.86.158]
 ok: [192.168.86.125]
+ok: [192.168.86.47]
+ok: [192.168.86.158]
 
 TASK [Set authorized key from file] ***
-changed: [192.168.86.47]
-changed: [192.168.86.15]
 changed: [192.168.86.158]
+changed: [192.168.86.47]
 changed: [192.168.86.125]
+changed: [192.168.86.15]
 
 PLAY RECAP ***
-192.168.86.47              : ok=2    changed=1    unreachable=0    failed=0
-192.168.86.15              : ok=2    changed=1    unreachable=0    failed=0
-192.168.86.158             : ok=2    changed=1    unreachable=0    failed=0
-192.168.86.125             : ok=2    changed=1    unreachable=0    failed=0
+192.168.86.125             : ok=2    changed=1    unreachable=0    failed=0   
+192.168.86.15              : ok=2    changed=1    unreachable=0    failed=0   
+192.168.86.158             : ok=2    changed=1    unreachable=0    failed=0   
+192.168.86.47              : ok=2    changed=1    unreachable=0    failed=0   
 ```
 
 Success! From this point onwards, we can use `ssh` to connect to each of the Pis, but via our public key, rather than a password:
@@ -249,7 +242,7 @@ pi@raspberrypi:~ $
 At this point I can retry `main.yml` playbook, knowing that Ansible will be able to successfully connect to each of the Pis, using the public key we've transferred, and also using the default user defined in the `ansible_ssh_user` variable in the `inventory` file:
 
 ```
--> ansible-playbook -i inventory.as-is main.yml
+-> ansible-playbook -i inventory main.yml
 
 PLAY [brambleweeny] ***
 
