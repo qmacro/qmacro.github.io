@@ -75,24 +75,23 @@ mac_address_mapping:
 
   "dc:a6:32:60:60:95":
     name: brambleweeny1.local
-    ip: "192.168.86.61"
+    ip: "192.168.86.12"
   "dc:a6:32:60:60:77":
     name: brambleweeny2.local
-    ip: "192.168.86.62"
+    ip: "192.168.86.13"
   "dc:a6:32:60:60:44":
     name: brambleweeny3.local
-    ip: "192.168.86.63"
+    ip: "192.168.86.14"
   "dc:a6:32:60:60:e3":
     name: brambleweeny4.local
-    ip: "192.168.86.64"
+    ip: "192.168.86.15"
 
 # Nameservers to use in resolv.conf.
 dns_nameservers:
-  - "8.8.8.8"
-  - "8.8.4.4"
+  - "192.168.86.5"
 ```
 
-I want to give the four Pis host numbers in the range 61-64, and name them after the cluster name "Brambleweeny".
+I want to give the four Pis host numbers in the range 12-15, and name them after the cluster name "Brambleweeny". I also want to tell them to use a local DNS server at 192.168.86.5 for domain name resolution. This is a tiny [Raspberry Pi Zero W](https://thepihut.com/products/raspberry-pi-zero-w) running the excellent [Pi-hole](https://pi-hole.net/).
 
 But how did I find out the MAC addresses?
 
