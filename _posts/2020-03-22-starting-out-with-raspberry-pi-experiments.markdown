@@ -61,4 +61,6 @@ The playlist is called [Brambleweeny Cluster Experiments](https://www.youtube.co
 
 Until next time, happy clustering!
 
+Next post in this series: [Preparing the OS image](/2020/03/22/preparing-the-os-image/)
+
 
