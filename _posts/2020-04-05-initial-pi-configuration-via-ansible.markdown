@@ -320,10 +320,10 @@ At this stage, as advised in Jeff's [networking setup README](https://github.com
 > -b \
 > -B 60 \
 > -P 0
-192.168.86.52 | CHANGED | rc=-1 >>
-192.168.86.54 | CHANGED | rc=-1 >>
-192.168.86.55 | CHANGED | rc=-1 >>
-192.168.86.42 | CHANGED | rc=-1 >>
+192.168.86.47  | CHANGED | rc=-1 >>
+192.168.86.15  | CHANGED | rc=-1 >>
+192.168.86.158 | CHANGED | rc=-1 >>
+192.168.86.125 | CHANGED | rc=-1 >>
 ```
 
 Note that this is the last time we'll be using these "as-is" IP addresses; when the Pis restart they'll have the static IP addresses defined in the `vars.yml` file we saw earlier. So at this point, the addresses in the inventory need to be updated to reflect that, for future Ansible-based management of these machines.
@@ -332,10 +332,10 @@ This is now what's in the updated `inventory` file:
 
 ```yml
 [brambleweeny]
-192.168.86.61
-192.168.86.62
-192.168.86.63
-192.168.86.64
+192.168.86.12
+192.168.86.13
+192.168.86.14
+192.168.86.15
 
 [brambleweeny:vars]
 ansible_ssh_user=pi
@@ -346,19 +346,19 @@ The `ansible_ssh_common_args` variable is still there, because we need it one mo
 
 ```
 -> ansible -m ping all -i inventory
-192.168.86.64 | SUCCESS => {
+192.168.86.12 | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
-192.168.86.61 | SUCCESS => {
+192.168.86.13 | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
-192.168.86.62 | SUCCESS => {
+192.168.86.14 | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
-192.168.86.63 | SUCCESS => {
+192.168.86.15 | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
