@@ -18,10 +18,10 @@ First, we have the `inventory` file defining the current ("as-is") IP addresses 
 
 ```yml
 [brambleweeny]
-192.168.86.42
-192.168.86.52
-192.168.86.54
-192.168.86.56
+192.168.86.47
+192.168.86.15
+192.168.86.158
+192.168.86.125
 
 [brambleweeny:vars]
 ansible_ssh_user=pi
@@ -38,24 +38,23 @@ mac_address_mapping:
 
   "dc:a6:32:60:60:95":
     name: brambleweeny1.local
-    ip: "192.168.86.61"
+    ip: "192.168.86.12"
   "dc:a6:32:60:60:77":
     name: brambleweeny2.local
-    ip: "192.168.86.62"
+    ip: "192.168.86.13"
   "dc:a6:32:60:60:44":
     name: brambleweeny3.local
-    ip: "192.168.86.63"
+    ip: "192.168.86.14"
   "dc:a6:32:60:60:e3":
     name: brambleweeny4.local
-    ip: "192.168.86.64"
+    ip: "192.168.86.15"
 
 # Nameservers to use in resolv.conf.
 dns_nameservers:
-  - "8.8.8.8"
-  - "8.8.4.4"
+  - "192.168.86.5"
 ```
 
-This is the "to-be" state of the Pis, via configuration of specific hostnames and IP addresses, as well as what to use for domain name resolution, for each of the Pis that are to be identified by their MAC addresses. More explicitly, I want to move from dynamically allocated IP addresses (which are currently 42,52,54 and 55) to statically allocated IP addresses 61,62,63 and 64.
+This is the "to-be" state of the Pis, via configuration of specific hostnames and IP addresses, as well as what to use for domain name resolution, for each of the Pis that are to be identified by their MAC addresses. More explicitly, I want to move from dynamically allocated IP addresses (which are currently 47, 15, 158 and 125) to statically allocated IP addresses 12, 13, 14 and 15.
 
 What's not to like?
 
@@ -68,16 +67,16 @@ Running the Ansible `main.yml` playbook as it stands right now presents us with 
 PLAY [brambleweeny] ***
 
 TASK [Gathering Facts] ***
-The authenticity of host '192.168.86.42 (192.168.86.42)' can't be established.
+The authenticity of host '192.168.86.47 (192.168.86.47)' can't be established.
 ECDSA key fingerprint is SHA256:AJ5628fGhewiqdu/V2+B1LkR2HKGa+nRcwjYiiTGqWg.
 Are you sure you want to continue connecting (yes/no)? 
-The authenticity of host '192.168.86.54 (192.168.86.54)' can't be established.
+The authenticity of host '192.168.86.15 (192.168.86.15)' can't be established.
 ECDSA key fingerprint is SHA256:sn2otbKVAa9Jsj+i3W0poIK731+pBP+ivbUrATJGVQk.
 Are you sure you want to continue connecting (yes/no)? 
-The authenticity of host '192.168.86.52 (192.168.86.52)' can't be established.
+The authenticity of host '192.168.86.158 (192.168.86.158)' can't be established.
 ECDSA key fingerprint is SHA256:jFgPSwjEQsCSUx+nJcZ6ub9EhoGC1I1vSX5uSvVc1YE.
 Are you sure you want to continue connecting (yes/no)? 
-The authenticity of host '192.168.86.55 (192.168.86.55)' can't be established.
+The authenticity of host '192.168.86.125 (192.168.86.125)' can't be established.
 ECDSA key fingerprint is SHA256:Tl3t427yXmbPIXjgBNBDHtNuw+MQUS132xhX6DCgo9E.
 Are you sure you want to continue connecting (yes/no)?
 ```
@@ -89,17 +88,17 @@ But for this particular operation we need to relax this approach, and for that w
 Here's the difference between trying to `ssh` to one of the Pis without and then with the option turned off:
 
 ```
--> ssh pi@192.168.86.42
-The authenticity of host '192.168.86.42 (192.168.86.42)' can't be established.
+-> ssh pi@192.168.86.47
+The authenticity of host '192.168.86.47 (192.168.86.47)' can't be established.
 ECDSA key fingerprint is SHA256:AJ5628fGhewiqdu/V2+B1LkR2HKGa+nRcwjYiiTGqWg.
 Are you sure you want to continue connecting (yes/no)?
 Host key verification failed.
 ```
 
 ```
--> ssh -o StrictHostKeyChecking=no pi@192.168.86.42
+-> ssh -o StrictHostKeyChecking=no pi@192.168.86.47
 Warning: Permanently added '192.168.86.42' (ECDSA) to the list of known hosts.
-pi@192.168.86.42's password:
+pi@192.168.86.47's password:
 ```
 
 Note that in this second example, even before the password has been entered, the key for this remote Pi has now already been added to `~/.ssh/known_hosts`.
@@ -120,33 +119,33 @@ Trying the playbook again, we don't get a problem with the inability of `ssh` to
 PLAY [brambleweeny] ***
 
 TASK [Gathering Facts] ***
-fatal: [192.168.86.55]: UNREACHABLE! => {"changed": false, "msg": 
+fatal: [192.168.86.47]: UNREACHABLE! => {"changed": false, "msg": 
 "Failed to connect to the host via ssh: 
-Warning: Permanently added '192.168.86.55' (ECDSA) to the list of known hosts.\r\n
-pi@192.168.86.55: Permission denied (publickey,password).", "unreachable": true}
-fatal: [192.168.86.42]: UNREACHABLE! => {"changed": false, "msg": 
+Warning: Permanently added '192.168.86.47' (ECDSA) to the list of known hosts.\r\n
+pi@192.168.86.47: Permission denied (publickey,password).", "unreachable": true}
+fatal: [192.168.86.15]: UNREACHABLE! => {"changed": false, "msg": 
 "Failed to connect to the host via ssh: 
-Warning: Permanently added '192.168.86.42' (ECDSA) to the list of known hosts.\r\n
-pi@192.168.86.42: Permission denied (publickey,password).", "unreachable": true}
-fatal: [192.168.86.52]: UNREACHABLE! => {"changed": false, "msg": 
+Warning: Permanently added '192.168.86.15' (ECDSA) to the list of known hosts.\r\n
+pi@192.168.86.15: Permission denied (publickey,password).", "unreachable": true}
+fatal: [192.168.86.158]: UNREACHABLE! => {"changed": false, "msg": 
 "Failed to connect to the host via ssh: 
-Warning: Permanently added '192.168.86.52' (ECDSA) to the list of known hosts.\r\n
-pi@192.168.86.52: Permission denied (publickey,password).", "unreachable": true}
-fatal: [192.168.86.54]: UNREACHABLE! => {"changed": false, "msg": 
+Warning: Permanently added '192.168.86.158' (ECDSA) to the list of known hosts.\r\n
+pi@192.168.86.158: Permission denied (publickey,password).", "unreachable": true}
+fatal: [192.168.86.125]: UNREACHABLE! => {"changed": false, "msg": 
 "Failed to connect to the host via ssh: 
-Warning: Permanently added '192.168.86.54' (ECDSA) to the list of known hosts.\r\n
-pi@192.168.86.54: Permission denied (publickey,password).", "unreachable": true}
+Warning: Permanently added '192.168.86.125' (ECDSA) to the list of known hosts.\r\n
+pi@192.168.86.125: Permission denied (publickey,password).", "unreachable": true}
 
 PLAY RECAP ***
-192.168.86.42              : ok=0    changed=0    unreachable=1    failed=0
-192.168.86.52              : ok=0    changed=0    unreachable=1    failed=0
-192.168.86.54              : ok=0    changed=0    unreachable=1    failed=0
-192.168.86.55              : ok=0    changed=0    unreachable=1    failed=0
+192.168.86.47              : ok=0    changed=0    unreachable=1    failed=0
+192.168.86.15              : ok=0    changed=0    unreachable=1    failed=0
+192.168.86.158             : ok=0    changed=0    unreachable=1    failed=0
+192.168.86.125             : ok=0    changed=0    unreachable=1    failed=0
 ```
 
-Notice that the `-o StrictHostKeyChecking=no` did what we wanted it to do, as we can see the following message for each host in the output: "Warning: Permanently added '192.168.86.nn' (ECDSA) to the list of known hosts".
+Notice that the `-o StrictHostKeyChecking=no` did what we wanted it to do, as we can see the following message for each host in the output: "Warning: Permanently added '192.168.86.n' (ECDSA) to the list of known hosts".
 
-So we've got ssh to not refuse to connect because it doesn't initially recognise the hosts, but now we're getting a "permission denied" issue.
+So we've got `ssh` to not refuse to connect because it doesn't initially recognise the hosts, but now we're getting a "permission denied" issue.
 
 ## Uploading the ssh key, and sshpass
 
@@ -176,24 +175,24 @@ But of course we can't just run this, as we're still unable to connect, for the 
 PLAY [brambleweeny] ***
 
 TASK [Gathering Facts] ***
-fatal: [192.168.86.42]: UNREACHABLE! => {"changed": false, "msg": 
-"Failed to connect to the host via ssh: pi@192.168.86.42: 
+fatal: [192.168.86.47]: UNREACHABLE! => {"changed": false, "msg": 
+"Failed to connect to the host via ssh: pi@192.168.86.47: 
 Permission denied (publickey,password).", "unreachable": true}
-fatal: [192.168.86.55]: UNREACHABLE! => {"changed": false, "msg": 
-"Failed to connect to the host via ssh: pi@192.168.86.55: 
+fatal: [192.168.86.15]: UNREACHABLE! => {"changed": false, "msg": 
+"Failed to connect to the host via ssh: pi@192.168.86.15: 
 Permission denied (publickey,password).", "unreachable": true}
-fatal: [192.168.86.54]: UNREACHABLE! => {"changed": false, "msg": 
-"Failed to connect to the host via ssh: pi@192.168.86.54: 
+fatal: [192.168.86.158]: UNREACHABLE! => {"changed": false, "msg": 
+"Failed to connect to the host via ssh: pi@192.168.86.158: 
 Permission denied (publickey,password).", "unreachable": true}
-fatal: [192.168.86.52]: UNREACHABLE! => {"changed": false, "msg": 
-"Failed to connect to the host via ssh: pi@192.168.86.52: 
+fatal: [192.168.86.125]: UNREACHABLE! => {"changed": false, "msg": 
+"Failed to connect to the host via ssh: pi@192.168.86.125: 
 Permission denied (publickey,password).", "unreachable": true}
 
 PLAY RECAP ***
-192.168.86.42              : ok=0    changed=0    unreachable=1    failed=0
-192.168.86.52              : ok=0    changed=0    unreachable=1    failed=0
-192.168.86.54              : ok=0    changed=0    unreachable=1    failed=0
-192.168.86.55              : ok=0    changed=0    unreachable=1    failed=0
+192.168.86.47              : ok=0    changed=0    unreachable=1    failed=0
+192.168.86.15              : ok=0    changed=0    unreachable=1    failed=0
+192.168.86.158             : ok=0    changed=0    unreachable=1    failed=0
+192.168.86.125             : ok=0    changed=0    unreachable=1    failed=0
 ```
 
 So we have to authenticate a different way - with the 'raspberry' password (remember, we're already supplying Ansible with the user via the `ansible_ssh_user` variable in the `inventory` file). The `-k` option for `ansible-playbook` tells it to ask for a connection password, which it will then use on our behalf when connecting to each host.
@@ -203,7 +202,7 @@ It's worth spending a couple of minutes understanding how this actually operates
 We can see this in action with a simple test:
 
 ```
--> sshpass -p 'raspberry' pi@192.168.86.42
+-> sshpass -p 'raspberry' pi@192.168.86.47
 Linux raspberrypi 4.19.97-v7l+ #1294 SMP Thu Jan 30 13:21:14 GMT 2020 armv7l
 [...]
 pi@raspberrypi:~ $
@@ -218,28 +217,28 @@ SSH password: *********
 PLAY [brambleweeny] ***
 
 TASK [Gathering Facts] ***
-ok: [192.168.86.42]
-ok: [192.168.86.52]
-ok: [192.168.86.54]
-ok: [192.168.86.55]
+ok: [192.168.86.47]
+ok: [192.168.86.15]
+ok: [192.168.86.158]
+ok: [192.168.86.125]
 
 TASK [Set authorized key from file] ***
-changed: [192.168.86.55]
-changed: [192.168.86.54]
-changed: [192.168.86.42]
-changed: [192.168.86.52]
+changed: [192.168.86.47]
+changed: [192.168.86.15]
+changed: [192.168.86.158]
+changed: [192.168.86.125]
 
 PLAY RECAP ***
-192.168.86.42              : ok=2    changed=1    unreachable=0    failed=0
-192.168.86.52              : ok=2    changed=1    unreachable=0    failed=0
-192.168.86.54              : ok=2    changed=1    unreachable=0    failed=0
-192.168.86.55              : ok=2    changed=1    unreachable=0    failed=0
+192.168.86.47              : ok=2    changed=1    unreachable=0    failed=0
+192.168.86.15              : ok=2    changed=1    unreachable=0    failed=0
+192.168.86.158             : ok=2    changed=1    unreachable=0    failed=0
+192.168.86.125             : ok=2    changed=1    unreachable=0    failed=0
 ```
 
 Success! From this point onwards, we can use `ssh` to connect to each of the Pis, but via our public key, rather than a password:
 
 ```
--> ssh pi@192.168.86.42
+-> ssh pi@192.168.86.47
 Linux raspberrypi 4.19.97-v7l+ #1294 SMP Thu Jan 30 13:21:14 GMT 2020 armv7l
 [...]
 pi@raspberrypi:~ $
@@ -255,28 +254,28 @@ At this point I can retry `main.yml` playbook, knowing that Ansible will be able
 PLAY [brambleweeny] ***
 
 TASK [Gathering Facts] ***
-ok: [192.168.86.42]
-ok: [192.168.86.55]
-ok: [192.168.86.54]
-ok: [192.168.86.52]
+ok: [192.168.86.47]
+ok: [192.168.86.15]
+ok: [192.168.86.158]
+ok: [192.168.86.125]
 
 TASK [Set the current MAC address for eth0.] ***
-ok: [192.168.86.42]
-ok: [192.168.86.52]
-ok: [192.168.86.54]
-ok: [192.168.86.55]
+ok: [192.168.86.47]
+ok: [192.168.86.15]
+ok: [192.168.86.158]
+ok: [192.168.86.125]
 
 TASK [Set variables based on eth0 MAC address.] ***
-ok: [192.168.86.42]
-ok: [192.168.86.52]
-ok: [192.168.86.54]
-ok: [192.168.86.55]
+ok: [192.168.86.47]
+ok: [192.168.86.15]
+ok: [192.168.86.158]
+ok: [192.168.86.125]
 
 TASK [Set up networking-related files.] ***
-changed: [192.168.86.54] => (item={'template': 'hostname.j2', 'dest': '/etc/hostname'})
-changed: [192.168.86.52] => (item={'template': 'hostname.j2', 'dest': '/etc/hostname'})
-changed: [192.168.86.42] => (item={'template': 'hostname.j2', 'dest': '/etc/hostname'})
-changed: [192.168.86.55] => (item={'template': 'hostname.j2', 'dest': '/etc/hostname'})
+changed: [192.168.86.47] => (item={'template': 'hostname.j2', 'dest': '/etc/hostname'})
+changed: [192.168.86.15] => (item={'template': 'hostname.j2', 'dest': '/etc/hostname'})
+changed: [192.168.86.158] => (item={'template': 'hostname.j2', 'dest': '/etc/hostname'})
+changed: [192.168.86.125] => (item={'template': 'hostname.j2', 'dest': '/etc/hostname'})
 changed: [192.168.86.42] => (item={'template': 'hosts.j2', 'dest': '/etc/hosts'})
 changed: [192.168.86.52] => (item={'template': 'hosts.j2', 'dest': '/etc/hosts'})
 changed: [192.168.86.55] => (item={'template': 'hosts.j2', 'dest': '/etc/hosts'})
