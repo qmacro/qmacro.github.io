@@ -10,8 +10,6 @@ This is a post in the "[Brambleweeny Cluster Experiments](/2020/03/22/bramblewee
 
 Previous post in this series: [Finding the Pis on the network](/2020/03/22/finding-the-pis-on-the-network/)
 
-> One of the main aims of this initial configuration is to establish reliable and fixed IP addresses for each of the Pis in the cluster; as a case in point, since writing the previous post, the DHCP leases for the Pis were renewed and some of them got new, different IP addresses, which are reflected in the "as-is" `inventory` file shown in this post ... the contents of which will look slightly different compared to what we saw in the last time for that very reason.
-
 ## Ansible configuration
 
 At the end of the previous post, we'd identified the MAC and current IP addresses of the Pis on the network. This information found its way into a couple of files used in a process that follows the general flow described in Jeff Geerling's [Raspberry Pi Networking Setup](https://github.com/geerlingguy/raspberry-pi-dramble/tree/master/setup/networking).
