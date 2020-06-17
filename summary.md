@@ -1,0 +1,2 @@
+DJ is a [Developer Advocate at SAP](https://developers.sap.com). He's been hacking on SAP enterprise software for more than three decades, and is still enjoying it. He's written books for O'Reilly and SAP Press, and speaks at conferences and meetups around the world, as well as [online](https://youtube.com/djadams-qmacro). He runs a regular live coding series called "Hands-on SAP dev with qmacro" on [his YouTube channel](https://youtube.com/DJAdams-qmacro) - find out more at <https://bit.ly/handsonsapdev>.
+
