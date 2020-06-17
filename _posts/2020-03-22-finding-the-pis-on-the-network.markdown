@@ -31,13 +31,13 @@ Nmap scan report for amazon-517762033.lan (192.168.86.47)
 Host is up (0.10s latency).
 Nmap scan report for pimodelb.lan (192.168.86.49)
 Host is up (0.0022s latency).
-Nmap scan report for 192.168.86.53
+Nmap scan report for 192.168.86.15
 Host is up (0.026s latency).
 Nmap scan report for raspberrypi.lan (192.168.86.54)
 Host is up (0.0039s latency).
-Nmap scan report for 192.168.86.55
+Nmap scan report for 192.168.86.47
 Host is up (0.0033s latency).
-Nmap scan report for 192.168.86.56
+Nmap scan report for 192.168.86.125
 Host is up (0.0023s latency).
 [...]
 Nmap done: 256 IP addresses (28 hosts up) scanned in 2.38 seconds
@@ -119,11 +119,11 @@ Starting arp-scan 1.9.5 with 256 hosts (https://github.com/royhills/arp-scan)
 192.168.86.39   18:b4:30:ec:11:2a       Nest Labs Inc.
 192.168.86.39   18:b4:30:ec:51:2a       Nest Labs Inc. (DUP: 2)
 192.168.86.28   00:0e:58:8a:c6:92       Sonos, Inc.
-192.168.86.53   dc:a6:32:60:60:77       (Unknown)
-192.168.86.54   dc:a6:32:60:60:95       (Unknown)
+192.168.86.15   dc:a6:32:60:60:77       (Unknown)
+192.168.86.47   dc:a6:32:60:60:95       (Unknown)
 192.168.86.48   9c:32:ce:7e:15:a1       (Unknown)
-192.168.86.55   dc:a6:32:60:60:44       (Unknown)
-192.168.86.56   dc:a6:32:60:60:e3       (Unknown)
+192.168.86.158  dc:a6:32:60:60:44       (Unknown)
+192.168.86.125  dc:a6:32:60:60:e3       (Unknown)
 192.168.86.20   6c:56:97:64:1d:6f       (Unknown)
 192.168.86.47   fc:65:de:08:1b:69       (Unknown)
 192.168.86.44   f4:f5:d8:ed:13:fa       Google, Inc.
@@ -166,29 +166,29 @@ So all we have to do is reduce the output of `arp-scan` by filtering the output 
 
 ```shell
 -> sudo arp-scan 192.168.86.0/24 | grep dc:a6:32
-192.168.86.53   dc:a6:32:60:60:77       (Unknown)
-192.168.86.54   dc:a6:32:60:60:95       (Unknown)
-192.168.86.55   dc:a6:32:60:60:44       (Unknown)
-192.168.86.56   dc:a6:32:60:60:e3       (Unknown)
+192.168.86.47   dc:a6:32:60:60:95       (Unknown)
+192.168.86.15   dc:a6:32:60:60:77       (Unknown)
+192.168.86.158  dc:a6:32:60:60:44       (Unknown)
+192.168.86.125  dc:a6:32:60:60:e3       (Unknown)
 ->
 ```
 
 Bingo!
 
-DHCP leases had indeed been given out for hosts 53, 54, 55 and 56 in the 192.168.86.0/24 network, and there we have each associated MAC address too.
+DHCP leases had indeed been given out for hosts 47, 15, 158 and 125 in the 192.168.86.0/24 network, and there we have each associated MAC address too.
 
-So in preparing for the networking setup, the MAC addresses went into the `vars.yml` file as shown earlier, with the to-be IP addresses.
+So in preparing for the networking setup, the MAC addresses went into the `vars.yml` file as shown earlier, with the **to-be** IP addresses.
 
-Of course, we need to help Ansible find the Pis to make this configuration, and for that we need to specify a list of the existing IP addresses, which we now also have. Those go into the Ansible inventory, effectively a list of hosts in this simple case.
+Of course, we need to help Ansible find the Pis to make this configuration, and for that we need to specify a list of the **existing** IP addresses, which we now also have. Those go into the Ansible inventory, effectively a list of hosts in this simple case.
 
 Based on the [`example.inventory`](https://github.com/geerlingguy/raspberry-pi-dramble/blob/master/setup/networking/example.inventory) in Jeff's repository, here's what we need for the setup in the case of our Brambleweeny cluster:
 
 ```yml
 [brambleweeny]
-192.168.86.54
-192.168.86.53
-192.168.86.55
-192.168.86.56
+192.168.86.47
+192.168.86.15
+192.168.86.158
+192.168.86.125
 
 [brambleweeny:vars]
 ansible_ssh_user=pi
