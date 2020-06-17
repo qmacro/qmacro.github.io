@@ -200,3 +200,6 @@ I've changed the name of the group from "Dramble" to "Brambleweeny", and of cour
 At this stage, we have found the Pis on the network, and gathered the appropriate information to supply to Ansible so that we can ask it to make the networking setup on each host, on our behalf.
 
 We'll get to that in the next post. Until then, happy arping!
+
+Next post in this series: [Initial Pi configuration via Ansible](/2020/04/05/initial-pi-configuration-via-ansible/)
+
