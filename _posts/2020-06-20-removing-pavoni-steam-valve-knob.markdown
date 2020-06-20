@@ -47,6 +47,7 @@ Here's the final result:
 
 ![knob removed](/content/images/2020/06/removed.jpg)
 
+
 ### Fitting the new knob
 
 Ironically, all this effort has been somewhat in vain, as the new wooden knob has a tiny hex nut that you are supposed to screw round and down into the shaft to hold it firm. But while I had plenty of Allen keys around the house, not one of them fitted snugly and I couldn't get a decent torque to turn the screw into the shaft. This meant that this securing mechanism - that relies on sheer force into the metal shaft - was useless.
