@@ -37,7 +37,7 @@ I needed to hammer the split pin out through the hole in the knob, so I used a f
 
 While the shaft and knob were supported, I could then use the appropriately sized punch with a small hammer to gently but firmly tap down on the split pin, driving it out slowly.
 
-![using a punch](/content/images/2020/06/punch.png)
+![using a punch](/content/images/2020/06/punch.jpg)
 
 It took a while - I was going gently and it took me a few minutes. Once the pin was sticking out enough through the end, I pulled it out with a pair of pliers (it was quite a struggle).
 
@@ -45,7 +45,7 @@ While tapping the pin punch into the hole, the rim cracked a little and a bit of
 
 Here's the final result:
 
-![knob removed](/content/images/2020/06/removed.png)
+![knob removed](/content/images/2020/06/removed.jpg)
 
 ### Fitting the new knob
 
