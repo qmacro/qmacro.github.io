@@ -37,16 +37,16 @@ Then, we also have the `vars.yml` file which is used by the [`main.yml`](https:/
 mac_address_mapping:
 
   "dc:a6:32:60:60:95":
-    name: brambleweeny1.local
+    name: brambleweeny1.lan
     ip: "192.168.86.12"
   "dc:a6:32:60:60:77":
-    name: brambleweeny2.local
+    name: brambleweeny2.lan
     ip: "192.168.86.13"
   "dc:a6:32:60:60:44":
-    name: brambleweeny3.local
+    name: brambleweeny3.lan
     ip: "192.168.86.14"
   "dc:a6:32:60:60:e3":
-    name: brambleweeny4.local
+    name: brambleweeny4.lan
     ip: "192.168.86.15"
 
 # Nameservers to use in resolv.conf.
