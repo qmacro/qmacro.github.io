@@ -6,11 +6,9 @@ date: '2020-03-22 13:26:00'
 
 _This post describes how I prepared the base OS image for each of the Raspberry Pis in my "Brambleweeny" cluster._
 
-Update: I've recorded a short (7 min) video of the steps described in this post: [Preparing the OS image for Raspberry Pis in a cluster](https://www.youtube.com/watch?v=IY5ZNZDI-EQ).
+This is a post in the "[Brambleweeny Cluster Experiments](/2020/03/22/brambleweeny-cluster-experiments/)" series of blog posts, which accompanies the [YouTube live stream recording playlist](https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe) of the same name.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/IY5ZNZDI-EQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-This is a post in the "[Brambleweeny Cluster Experiments](/2020/03/22/brambleweeny-cluster-experiments/)" series of blog posts, which accompanies the [YouTube live stream recording playlist](https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe) of the same name.
 
 > This post has been updated to reflect the new name of the OS -- Raspberry Pi OS -- which changed (from Raspbian) around May 2020.
 
