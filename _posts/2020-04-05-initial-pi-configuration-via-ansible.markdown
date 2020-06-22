@@ -56,8 +56,6 @@ dns_nameservers:
 
 This is the "to-be" state of the Pis, via configuration of specific hostnames and IP addresses, as well as what to use for domain name resolution, for each of the Pis that are to be identified by their MAC addresses. More explicitly, I want to move from dynamically allocated IP addresses (which are currently 47, 15, 158 and 125) to statically allocated IP addresses 12, 13, 14 and 15.
 
-What's not to like?
-
 ## Strict host key checking
 
 Running the Ansible `main.yml` playbook as it stands right now presents us with a problem:
