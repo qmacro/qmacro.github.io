@@ -10,10 +10,10 @@ This is a post in the "[Brambleweeny Cluster Experiments](/2020/03/22/bramblewee
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/IY5ZNZDI-EQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-> This post has been updated to reflect the new name of the OS -- Raspberry Pi OS -- which changed (from Raspbian) around May 2020.
-
 Previous post in this series: [Starting out with Raspberry Pi experiments](/2020/03/22/starting-out-with-raspberry-pi-experiments/)<br>
 Next post in this series: [Finding the Pis on the network](/2020/03/22/finding-the-pis-on-the-network/)
+
+> This post has been updated to reflect the new name of the OS -- Raspberry Pi OS -- which changed (from Raspbian) around May 2020.
 
 There are many ways to prepare base OS images for your Raspberry Pi computers. In the past I've used various devices and software to write bootable images to SD cards, but I've settled on using [balena Etcher](https://www.balena.io/etcher/) that I read about in Alex Ellis's [Walk-through — install Kubernetes to your Raspberry Pi in 15 minutes](https://medium.com/@alexellisuk/walk-through-install-kubernetes-to-your-raspberry-pi-in-15-minutes-84a8492dc95a).
 
