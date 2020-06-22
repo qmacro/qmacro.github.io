@@ -6,7 +6,9 @@ date: '2020-04-05 16:14:00'
 
 _In the previous post we identified the freshly booted Pis on the network; now it's time to perform some initial configuration, using Ansible._
 
-This is a post in the "[Brambleweeny Cluster Experiments](/2020/03/22/brambleweeny-cluster-experiments/)" series of blog posts, which accompanies the [YouTube live stream recording playlist](https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe) of the same name.
+This is a post in the "[Brambleweeny Cluster Experiments](/2020/03/22/brambleweeny-cluster-experiments/)" series of blog posts, which accompanies the [YouTube live stream recording playlist](https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe) of the same name. The video linked here is the one that accompanies this blog post.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/vooBccHq6_4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 Previous post in this series: [Finding the Pis on the network](/2020/03/22/finding-the-pis-on-the-network/)
 
@@ -267,40 +269,40 @@ changed: [192.168.86.47] => (item={'template': 'hostname.j2', 'dest': '/etc/host
 changed: [192.168.86.15] => (item={'template': 'hostname.j2', 'dest': '/etc/hostname'})
 changed: [192.168.86.158] => (item={'template': 'hostname.j2', 'dest': '/etc/hostname'})
 changed: [192.168.86.125] => (item={'template': 'hostname.j2', 'dest': '/etc/hostname'})
-changed: [192.168.86.42] => (item={'template': 'hosts.j2', 'dest': '/etc/hosts'})
-changed: [192.168.86.52] => (item={'template': 'hosts.j2', 'dest': '/etc/hosts'})
-changed: [192.168.86.55] => (item={'template': 'hosts.j2', 'dest': '/etc/hosts'})
-changed: [192.168.86.54] => (item={'template': 'hosts.j2', 'dest': '/etc/hosts'})
-changed: [192.168.86.55] => (item={'template': 'resolv.conf.j2', 'dest': '/etc/resolv.conf'})
-changed: [192.168.86.52] => (item={'template': 'resolv.conf.j2', 'dest': '/etc/resolv.conf'})
-changed: [192.168.86.54] => (item={'template': 'resolv.conf.j2', 'dest': '/etc/resolv.conf'})
-changed: [192.168.86.42] => (item={'template': 'resolv.conf.j2', 'dest': '/etc/resolv.conf'})
-changed: [192.168.86.55] => (item={'template': 'dhcpcd.conf.j2', 'dest': '/etc/dhcpcd.conf'})
-changed: [192.168.86.54] => (item={'template': 'dhcpcd.conf.j2', 'dest': '/etc/dhcpcd.conf'})
-changed: [192.168.86.52] => (item={'template': 'dhcpcd.conf.j2', 'dest': '/etc/dhcpcd.conf'})
-changed: [192.168.86.42] => (item={'template': 'dhcpcd.conf.j2', 'dest': '/etc/dhcpcd.conf'})
+changed: [192.168.86.47] => (item={'template': 'hosts.j2', 'dest': '/etc/hosts'})
+changed: [192.168.86.15] => (item={'template': 'hosts.j2', 'dest': '/etc/hosts'})
+changed: [192.168.86.158] => (item={'template': 'hosts.j2', 'dest': '/etc/hosts'})
+changed: [192.168.86.125] => (item={'template': 'hosts.j2', 'dest': '/etc/hosts'})
+changed: [192.168.86.47] => (item={'template': 'resolv.conf.j2', 'dest': '/etc/resolv.conf'})
+changed: [192.168.86.15] => (item={'template': 'resolv.conf.j2', 'dest': '/etc/resolv.conf'})
+changed: [192.168.86.158] => (item={'template': 'resolv.conf.j2', 'dest': '/etc/resolv.conf'})
+changed: [192.168.86.125] => (item={'template': 'resolv.conf.j2', 'dest': '/etc/resolv.conf'})
+changed: [192.168.86.47] => (item={'template': 'dhcpcd.conf.j2', 'dest': '/etc/dhcpcd.conf'})
+changed: [192.168.86.15] => (item={'template': 'dhcpcd.conf.j2', 'dest': '/etc/dhcpcd.conf'})
+changed: [192.168.86.158] => (item={'template': 'dhcpcd.conf.j2', 'dest': '/etc/dhcpcd.conf'})
+changed: [192.168.86.125] => (item={'template': 'dhcpcd.conf.j2', 'dest': '/etc/dhcpcd.conf'})
 
 RUNNING HANDLER [update hostname] ***
-changed: [192.168.86.52]
-changed: [192.168.86.54]
-changed: [192.168.86.55]
-changed: [192.168.86.42]
+changed: [192.168.86.47]
+changed: [192.168.86.15]
+changed: [192.168.86.158]
+changed: [192.168.86.125]
 
 RUNNING HANDLER [delete dhcp leases] ***
-ok: [192.168.86.55] => (item=/var/lib/dhcp/dhclient.leases)
-ok: [192.168.86.52] => (item=/var/lib/dhcp/dhclient.leases)
-ok: [192.168.86.54] => (item=/var/lib/dhcp/dhclient.leases)
-ok: [192.168.86.42] => (item=/var/lib/dhcp/dhclient.leases)
-ok: [192.168.86.55] => (item=/var/lib/dhcpcd5/dhcpcd-eth0.lease)
-ok: [192.168.86.42] => (item=/var/lib/dhcpcd5/dhcpcd-eth0.lease)
-ok: [192.168.86.54] => (item=/var/lib/dhcpcd5/dhcpcd-eth0.lease)
-ok: [192.168.86.52] => (item=/var/lib/dhcpcd5/dhcpcd-eth0.lease)
+ok: [192.168.86.47] => (item=/var/lib/dhcp/dhclient.leases)
+ok: [192.168.86.15] => (item=/var/lib/dhcp/dhclient.leases)
+ok: [192.168.86.158] => (item=/var/lib/dhcp/dhclient.leases)
+ok: [192.168.86.125] => (item=/var/lib/dhcp/dhclient.leases)
+ok: [192.168.86.47] => (item=/var/lib/dhcpcd5/dhcpcd-eth0.lease)
+ok: [192.168.86.15] => (item=/var/lib/dhcpcd5/dhcpcd-eth0.lease)
+ok: [192.168.86.158] => (item=/var/lib/dhcpcd5/dhcpcd-eth0.lease)
+ok: [192.168.86.125] => (item=/var/lib/dhcpcd5/dhcpcd-eth0.lease)
 
 PLAY RECAP ***
-192.168.86.42              : ok=6    changed=2    unreachable=0    failed=0
-192.168.86.52              : ok=6    changed=2    unreachable=0    failed=0
-192.168.86.54              : ok=6    changed=2    unreachable=0    failed=0
-192.168.86.55              : ok=6    changed=2    unreachable=0    failed=0
+192.168.86.47              : ok=6    changed=2    unreachable=0    failed=0
+192.168.86.15              : ok=6    changed=2    unreachable=0    failed=0
+192.168.86.158             : ok=6    changed=2    unreachable=0    failed=0
+192.168.86.125             : ok=6    changed=2    unreachable=0    failed=0
 ```
 
 Very nice indeed!
