@@ -14,6 +14,7 @@ He's been a member of SAP's [Mentors Advisory Board](https://blogs.sap.com/2016/
 
 He has spent many happy hours teaching kids & teachers to code. He ran a [CodeClub](/2013/04/18/codeclub-thoughts/) in his local village school, is a voluteer at [Manchester CoderDojo](http://mcrcoderdojo.org.uk), a STEMnet Ambassador and in 2013 ran a centre in Manchester for [Young Rewired State](http://getcodingkids.com/young-rewired-state/).
 
+<a name="writing"></a>
 ## Writing and Talks ##
 
 He's written two books for O'Reilly ([Programming Jabber](http://shop.oreilly.com/product/9780596002022.do) and [Google Pocket Guide](http://shop.oreilly.com/product/9780596005504.do)), conceived, edited and co-written a book on UI5 ([30 Days of UI5](https://www.amazon.co.uk/30-Days-UI5-Celebrating-milestone-ebook/dp/B017MOJEWG)) and is co-author of the SAP Press book [Practical Workflow for SAP (3rd Ed.)](https://www.amazon.co.uk/Practical-Workflow-Revised-Rickayzen-Hardcover/dp/B011DCBNZO).
@@ -25,6 +26,8 @@ He's contributed articles to sites as diverse as O'Reilly's [OpenP2P](http://www
 He's spoken at conferences such as [OSCON](http://www.oscon.com), JabberConf, [FOSDEM](http://www.fosdem.org), [SAP Inside Track](http://scn.sap.com/community/events/inside-track), [SAP TechEd](http://www.sapteched.com), SAP d-kom, the [SAP UK & Ireland User Group Conference](http://www.sapusers.org/), the [SAP Architect & Developer Summit](http://www.bluefinsolutions.com/insights/dj-adams/november-2014/the-inaugural-sap-architect-developer-summit), [Manchester Digital Laboratory (MadLab)](http://madlab.org.uk), [Manchester Lambda Lounge](http://lambdalounge.org.uk), [UI5con](https://www.youtube.com/watch?v=CTgtS6Cd98Y) and [TEDx](http://www.youtube.com/watch?v=-gvOCaExeK0).
 
 Follow DJ on [Twitter](//twitter.com/qmacro), subscribe to his [YouTube channel](https://youtube.com/djadams-qmacro), read posts on his [personal blog](//qmacro.org), on his [Language Ramblings](http://langram.org) blog, and his [current](//people.sap.com/dj.adams.sap) & [previous](//people.sap.com/dj.adams) blogs on the SAP Community.
+
+<a name="books"></a>
 
 ![Programming Jabber](/content/images/books/programmingjabber.png)
 
