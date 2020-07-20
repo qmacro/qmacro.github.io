@@ -1,5 +1,6 @@
 ---
 layout: post
+category: homelab
 title: Finding the Pis on the network
 date: '2020-03-22 16:59:00'
 ---

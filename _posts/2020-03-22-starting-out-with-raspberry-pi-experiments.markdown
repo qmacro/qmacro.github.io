@@ -1,5 +1,6 @@
 ---
 layout: post
+category: homelab
 title: Starting out with Raspberry Pi experiments
 date: '2020-03-22 10:03:00'
 ---

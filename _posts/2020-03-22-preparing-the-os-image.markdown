@@ -1,5 +1,6 @@
 ---
 layout: post
+category: homelab
 title: Preparing the OS image
 date: '2020-03-22 13:26:00'
 ---
@@ -46,18 +47,18 @@ After downloading the Raspbian Buster Lite image, I unzipped the archive to reve
 On my macOS machine (which is one of the few devices I have that has an SD card slot), I unzipped the archive like this:
 
 ```shell
--> unzip 2020-05-27-raspios-buster-lite-armhf.zip 
+-> unzip 2020-05-27-raspios-buster-lite-armhf.zip
 Archive:  2020-05-27-raspios-buster-lite-armhf.zip
-  inflating: 2020-05-27-raspios-buster-lite-armhf.img  
+  inflating: 2020-05-27-raspios-buster-lite-armhf.img
 ```
 
 Then I used the DiskImageMounter utility `hdiutil` to mount the `.img` image file (noting also that the `boot` partition is only one of two partitions on the image - the other, of type "Linux", being the eventual root partition):
 
 ```shell
--> hdiutil mount 2020-05-27-raspios-buster-lite-armhf.img 
-/dev/disk3              FDisk_partition_scheme         
+-> hdiutil mount 2020-05-27-raspios-buster-lite-armhf.img
+/dev/disk3              FDisk_partition_scheme
 /dev/disk3s1            Windows_FAT_32                  /Volumes/boot
-/dev/disk3s2            Linux                          
+/dev/disk3s2            Linux
 ```
 
 The `boot` partition was made available at `/Volumes/boot`, as we can see from what `df` tells us:
@@ -75,7 +76,7 @@ I could then add an empty `ssh` file to the filesystem on that partition:
 
 ## WiFi connection
 
-If you'd also like your Raspberry Pi to connect to your WiFi network when it boots (which will often be the case, even for headless mode), then at this stage you can also add another file, and this time, it's not an empty file like the `ssh` one, but one with configuration so that the Pi can connect to and authenticate with your WiFi network. 
+If you'd also like your Raspberry Pi to connect to your WiFi network when it boots (which will often be the case, even for headless mode), then at this stage you can also add another file, and this time, it's not an empty file like the `ssh` one, but one with configuration so that the Pi can connect to and authenticate with your WiFi network.
 
 If you want to do that, create a file in the same boot partition as you created the `ssh` file, called `wpa_supplicant.conf`, and add the following configuration to it:
 
@@ -103,7 +104,7 @@ After that, I unmounted it:
 And then created a new zip archive:
 
 ```shell
--> zip 2020-05-27-raspios-buster-lite-armhf-ssh.zip 2020-05-27-raspios-buster-lite-armhf.img 
+-> zip 2020-05-27-raspios-buster-lite-armhf-ssh.zip 2020-05-27-raspios-buster-lite-armhf.img
   adding: 2020-05-27-raspios-buster-lite-armhf.img
 ```
 
@@ -113,9 +114,9 @@ I could then use this new image archive file `2020-05-27-raspios-buster-lite-arm
 
 ![balena Etcher](/content/images/2020/03/etcher.png)
 
-Balena Etcher is great, but if, like me, you're more of a terminal person, you can also perform this step from the command line. 
+Balena Etcher is great, but if, like me, you're more of a terminal person, you can also perform this step from the command line.
 
-Whether or not you use balena Etcher or the command line, it's at this stage of course that you insert the SD card. 
+Whether or not you use balena Etcher or the command line, it's at this stage of course that you insert the SD card.
 
 The steps are described well in [Copying an operating system image to an SD card using Mac OS](https://www.raspberrypi.org/documentation/installation/installing-images/mac.md) so here's a precis:
 
@@ -134,7 +135,7 @@ The steps are described well in [Copying an operating system image to an SD card
    0:     FDisk_partition_scheme                        *31.9 GB    disk4
    1:             Windows_FAT_32 boot                    268.4 MB   disk4s1
    2:                      Linux                         31.6 GB    disk4s2
-   
+
 -> sudo diskutil unmountDisk /dev/disk4
 Password: ...
 Unmount of all volumes on disk4 was successful

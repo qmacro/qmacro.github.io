@@ -1,5 +1,6 @@
 ---
 layout: post
+category: homelab
 title: Remote mount setup on the Raspberry Pi
 date: '2020-6-07 15:46:00'
 ---

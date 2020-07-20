@@ -1,5 +1,6 @@
 ---
 layout: post
+category: homelab
 title: Brambleweeny Cluster Experiments
 date: '2020-03-22 08:21:00'
 ---
