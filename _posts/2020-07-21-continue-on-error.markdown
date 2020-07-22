@@ -1,7 +1,7 @@
 ---
 layout: post
 category: TIL
-title: continue-on-error can prevent a job step failure resulting in an action failure
+title: continue-on-error can prevent a job step failure causing an action failure
 date: '2020-07-21 14:45:00'
 ---
 
