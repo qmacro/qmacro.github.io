@@ -33,12 +33,10 @@ I can send a `StolenContent.png` image, if the referrer is from the rogue site.
 The result of the rewrite is that when viewed on SDN, the blog entry looks fine, and the screenshot images look as they’re supposed to:
 
 ![Images appear as they're supposed to](/content/images/2009/08/screenshot-sdn3.jpg)
-_Images appear as they're supposed to_
 
 But when the images are used on www.sap-abap4.com, they will appears differently:
 
 ![Image appears differently](/content/images/2009/08/screenshot-sap-abap41.jpg)
-_Images appear differently_
 
 So there you have it. It’s not a complete solution to the problem by any means, but it at least will alert unsuspecting readers of that website to what's happening (if you’re testing yourself, you might have to refresh the pages in your browser, as it will probably have cached the first version of each image). Perhaps the SAP community network team can apply this technique for the images hosted on SDN.
 
