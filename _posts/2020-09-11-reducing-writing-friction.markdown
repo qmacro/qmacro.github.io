@@ -28,4 +28,4 @@ date: '2020-09-11 17:07:17'
 
 That'll do for now!
 
-Incidentally, I'm already on a small path to writing more, having adopted Simon's [Today I Learned](https://til.simonwillison.net/) (TIL) mini-post approach. I've written a few TIL posts on this blog recently, such as [TIL: The open square bracket [ is an executable](https://qmacro.org/2020/08/21/open-square-bracket/), and I feel very freed by the constraints.
+Incidentally, I'm already on a small path to writing more, having adopted Simon's [Today I Learned](https://til.simonwillison.net/) (TIL) mini-post approach. I've written a few TIL posts on this blog recently, such as [TIL: The open square bracket \[ is an executable](https://qmacro.org/2020/08/21/open-square-bracket/), and I feel very freed by the constraints.
