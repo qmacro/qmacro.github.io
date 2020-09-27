@@ -1,11 +1,11 @@
 ---
 layout: post
 category: TIL
-title: Shell parameter expansion with :+
+title: Shell parameter expansion with :+ is useful
 date: '2020-09-27 14:49:00'
 ---
 
-_Shell parameter expansion with ':+' is indeed useful_
+_Use the shell parameter expansion form `:+` for expanding optional values_
 
 I've been increasing my Bash scripting activities recently, not least in relation to some [live stream episodes relating to Enterprise Messaging](https://github.com/SAP-samples/cloud-messaging-handsonsapdev) and have used some of the shell parameter expansion facilities described in [section 3.5.3 Shell Parameter Expansion](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html) of the GNU Bash manual. In particular, I've been using what I call the "default value" (`:-`) form:
 
