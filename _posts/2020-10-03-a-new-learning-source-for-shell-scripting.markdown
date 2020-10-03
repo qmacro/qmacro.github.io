@@ -3,7 +3,7 @@ layout: post
 title: A new learning source for shell scripting
 date: '2020-10-03 16:49:58'
 ---
-Recently I discovered [Mr Rob][https://rwx.gg] (and yes, I'll admit, it took me a day or so to realise the significance of 'rwx' in his website, and names on [Twitch](https://twitch.tv/rwxrob) and [YouTube](https://youtube.com/rwxrob). He has lots of experience and teaches directly and also indirectly, which appeals to me.
+Recently I discovered [Mr Rob](https://rwx.gg) (and yes, I'll admit, it took me a day or so to realise the significance of 'rwx' in his website, and names on [Twitch](https://twitch.tv/rwxrob) and [YouTube](https://youtube.com/rwxrob). He has lots of experience and teaches directly and also indirectly, which appeals to me.
 
 The range of subjects is wide, and breadth of discussions wider, and it's very [terminal](https://twitter.com/search?q=%23TheFutureIsTerminal&src=typed_query) centric, which I like.
 
