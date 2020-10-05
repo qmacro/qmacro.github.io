@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Tools & guides to help improve my scripting
+title: Improving my shell scripting
 date: '2020-10-05 13:01:19'
 ---
 
