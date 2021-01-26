@@ -1,10 +1,10 @@
 ---
 layout: post
-title: Columnar layout with Awk
+title: Columnar layout with AWK
 date: '2021-01-26 08:30:00'
 ---
 
-_Here's a breakdown of a simple Awk script I wrote to format values into neatly aligned columns_
+_Here's a breakdown of a simple AWK script I wrote to format values into neatly aligned columns_
 
 I'm organising my GitHub repositories locally by creating a directory structure representing the different GitHub servers that I use and the orgs and users that I have access to, with symbolic links at the ends of these structures pointing to where I've cloned the actual repositories.
 
@@ -28,7 +28,7 @@ github.com       qmacro-org          auto-tweeter
 
 In other words, I wanted to select columns from the output and have them printed neatly and aligned. Don't ask me why, I guess it's just some form of OCD.
 
-Anyway, I decided to write this in Awk, partly because I don't know Awk that well, but mostly as a meditation on the early days of Unix and a homage to [Brian Kernighan](https://en.wikipedia.org/wiki/Brian_Kernighan). Talking of homages, I've also decided to share this script by describing it line by line, in homage to [Randal L Schwartz](https://en.wikipedia.org/wiki/Randal_L._Schwartz), that maverick hero that I learned a great deal from in the Perl world.
+Anyway, I decided to write this in AWK, partly because I don't know AWK that well, but mostly as a meditation on the early days of Unix and a homage to [Brian Kernighan](https://en.wikipedia.org/wiki/Brian_Kernighan). Talking of homages, I've also decided to share this script by describing it line by line, in homage to [Randal L Schwartz](https://en.wikipedia.org/wiki/Randal_L._Schwartz), that maverick hero that I learned a great deal from in the Perl world.
 
 Randal [wrote columns for magazines](http://www.stonehenge.com/merlyn/columns.html), each time listing and describing a Perl script he'd written, line by line. I learned so much from Randal and enjoyed the format, so I thought I'd reproduce it here.
 
@@ -42,7 +42,7 @@ OK, so here's the entire script.
 
 <script src="https://gist.github.com/qmacro/c84f5a17dc4740dc2defa6a913cd3c2c.js"></script>
 
-Remember that an Awk scripts are generally data driven, in that you describe patterns and then what to do when those patterns are matched. This is described nicely in the [Getting Started with `awk`](https://www.gnu.org/software/gawk/manual/html_node/Getting-Started.html#Getting-Started) section of the GNU Awk manual. The approach is \<pattern\> \<action\>, where the actions are within a `{...}` block. In this script, there are two special (and common) patterns used: `BEGIN` and `END`, i.e. before and after all lines have been processed. The main block in the middle has no pattern, which means it's called for each and every line in the input.
+Remember that an AWK scripts are generally data driven, in that you describe patterns and then what to do when those patterns are matched. This is described nicely in the [Getting Started with `awk`](https://www.gnu.org/software/gawk/manual/html_node/Getting-Started.html#Getting-Started) section of the GNU AWK manual. The approach is \<pattern\> \<action\>, where the actions are within a `{...}` block. In this script, there are two special (and common) patterns used: `BEGIN` and `END`, i.e. before and after all lines have been processed. The main block in the middle has no pattern, which means it's called for each and every line in the input.
 
 **The invocation**
 
@@ -55,7 +55,7 @@ Here are what the options do:
 
 - `-F/` says that the input field separator is the `/` character
 - `-vCOLS=5,6,7` sets the value `5,6,7` for the variable `COLS`
-- `-f <script>` tells Awk where to find the script
+- `-f <script>` tells AWK where to find the script
 
 OK, let's start digging in.
 
@@ -69,7 +69,7 @@ Lines 14-35 represent the <action> for the default pattern, i.e. this is execute
 
 The script has to work out what the longest word in each column is, and for that it needs to read through the entire input. I think perhaps there may be better ways of doing this, but here's what I did.
 
-In line 18 the condition as to whether to execute the block in lines 19-25 is based upon the value of `NR`, which is a special Awk variable that represents the record number, i.e. the value is `1` for the first record, `2` for the second, and so on. Note that there's also `FNR` (file record number) which comes in handy when you're processing multiple input files. So lines 19-25 are only executed once, when processing the first record in the input. I could have used a pattern like this:
+In line 18 the condition as to whether to execute the block in lines 19-25 is based upon the value of `NR`, which is a special AWK variable that represents the record number, i.e. the value is `1` for the first record, `2` for the second, and so on. Note that there's also `FNR` (file record number) which comes in handy when you're processing multiple input files. So lines 19-25 are only executed once, when processing the first record in the input. I could have used a pattern like this:
 
 ```awk
 NR == 1 { ... }
@@ -105,7 +105,7 @@ So we need to supply two variables, the width to which the variable value should
 
 Noting that `printf` won't print a newline unless it's explicitly given (as `\n`), this works well because then the consecutive fields are printed on the same line. Line 46 takes care of printing a newline when all the fields are output for that record.
 
-And that's it. As the tagline for this blog says, I reserve the right to be wrong. I'm not a proficient Awk scripter, but this works for me.
+And that's it. As the tagline for this blog says, I reserve the right to be wrong. I'm not a proficient AWK scripter, but this works for me.
 
 Happy scripting!
 
