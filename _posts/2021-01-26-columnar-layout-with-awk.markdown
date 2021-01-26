@@ -108,3 +108,5 @@ Noting that `printf` won't print a newline unless it's explicitly given (as `\n`
 And that's it. As the tagline for this blog says, I reserve the right to be wrong. I'm not a proficient Awk scripter, but this works for me.
 
 Happy scripting!
+
+_Update, later the same day: Over on Lobsters, the user [gioele](https://gioele.io/) contributed a pipeline version, which also helps me in a different area (small pieces loosely joined) of the same Unix meditation: `find ~/gh -type | cut -d/ -f5,6,7 | column -s/ -t`. Thanks gioele!_
