@@ -6,9 +6,7 @@ date: '2021-02-01 07:55:10'
 
 _In 2021 I want to consolidate and improve upon some skills I already have, rather than add more. Here's what I mean, and how I got inspired._
 
-In October last year Samir Talwar [tweeted](https://twitter.com/SamirTalwar/status/1318904227935227905) something simple yet profound:
-
-"Do less, and do it better"
+In October last year Samir Talwar [tweeted](https://twitter.com/SamirTalwar/status/1318904227935227905) something simple yet profound: "_Do less, and do it better_".
 
 In my work and play I discover and start using various tools and technologies. The pace of change in this industry, coupled with the (not unpleasant) demands on what I have to produce, means that I often end up with only a shallow understanding of things. And sometimes these are things I use every day.
 
@@ -16,13 +14,17 @@ The nature of my job as a developer advocate (but I think this extends to develo
 
 To explain further, I'm going to stretch a metaphor relating to ploughing a field and sowing seeds.
 
+**Ploughing and sowing**
+
 As an individual, I sometimes feel as though I'm trying to prepare a large field and plant seeds there using a poorly hand-constructed and inefficient plough made of the wrong sort of wood and bits of string, combined with a seed drill made out of old toilet rolls and sticky tape. Not only that, but I'm trying to plant across the entire field, 50 furrows wide, as I move along.
 
-Needless to say, the ploughing doesn't go very well, and the seeds are planted imprecisely, sometimes superficially, mostly wastefully, resulting in poor distribution, low growth and wasteful energy expenditure.
+Needless to say, the ploughing doesn't go very well, and the seeds are planted imprecisely, sometimes superficially, mostly wastefully, resulting in poor distribution, low growth and high energy expenditure.
 
 But if I were to abandon the idea of going wide, and instead go narrow, focusing on just a handful of furrows, I could afford to take the time to correctly plant each seed, nurturing & watering each one, producing strong plants with deep roots and healthy growth.
 
 I've thought this for a while but never got round to doing anything about it. Samir's tweet has galvanised me into spending some time working out what that means for me.
+
+**Consolidating**
 
 So this year I'm attempting to "do less, and do it better" by acknowledging the tools I use day in day out, and learn more about them, restricting myself to a narrow set of topics, move a step closer towards mastery in each, and really benefit from everything they have to offer.
 
