@@ -58,7 +58,7 @@ I use video chapters in my live stream recordings; after a live stream is finish
 
 My other SAP Developer Advocate colleagues use video chapters too.
 
-Talking of SAP Developers video content, we've just launched the first video in a new shorter form show - SAP Tech Bytes. The videos here are deliberately short, to be more consumable in a shorter amount of time, to be focused on one specific topic, and also to provide form variation.
+Talking of [SAP Developers video content](https://youtube.com/sapdevs), we've just launched the first video in a new shorter form show - SAP Tech Bytes. The videos here are deliberately short, to be more consumable in a shorter amount of time, to be focused on one specific topic, and also to provide form variation.
 
 Here's the first episode: [SAP Tech Bytes: Tutorial - Create SAP HANA Database Project](https://www.youtube.com/watch?v=O0x7Jt6yre0). Note that there are video chapters even in this shorter form content.
 
