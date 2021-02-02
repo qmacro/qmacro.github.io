@@ -46,7 +46,7 @@ I use this in my live stream recordings; after a live stream is finished, I scru
 
 *_See [An overview of SAP Developers video content](https://blogs.sap.com/2020/11/09/an-overview-of-sap-developers-video-content/) for more details._
 
-![video chapters in the description](content/images/2021/02/videochapters.png)
+![video chapters in the description](/content/images/2021/02/videochapters.png)
 
 Talking of SAP Developers video content, we've just launched the first video in a new shorter form show - SAP Tech Bytes. The videos here are deliberately short, to be more consumable in a shorter amount of time, to be focused on one specific topic, and also to provide form variation.
 
