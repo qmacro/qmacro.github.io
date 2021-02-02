@@ -1,10 +1,10 @@
-  ---
-  layout: post
-  title: Thoughts on video content
-  date: '2021-02-02 11:37:35'
-  ---
+---
+layout: post
+title: Thoughts on video content
+date: '2021-02-02 11:37:35'
+---
 
-  _Here are some thoughts on video content - form, length, frequency and more, especially in a learning and sharing context, and specificially in a developer advocate content._
+_Here are some thoughts on video content - form, length, frequency and more, especially in a learning and sharing context, and specificially in a developer advocate content._
 
 Just now my good friend Ronnie Sletta [drew our attention to](https://twitter.com/rsletta/status/1356563739676471297) a question by [Chris Roberts](https://chrismroberts.com/) on video content: "_I’m thinking of making some free courses and putting them on YouTube. Do you prefer a series of short videos, or one long video? If a series, should I release one a week? If one long video, how long?_".
 
