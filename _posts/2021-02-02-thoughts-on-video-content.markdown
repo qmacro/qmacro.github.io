@@ -28,7 +28,7 @@ Before I proceed with this thought, let me be clear on what I mean by "long form
 
 For me though, an "hour" is long form. Anything longer than that is beyond the question at hand, and for me fits into the "_I want to watch my favourite streamer and relax, so I'll watch this recording as they're not live right now, or because it covers something I'm interested in_" category.
 
-It's worth pointing out at this point that the live stream episodes that I put out are deliberately limited to one hour. That's for many reasons, here's the main one:
+It's worth pointing out at this point that the [main live stream episodes that I put out](https://www.youtube.com/playlist?list=PL6RpkC85SLQABOpzhd7WI-hMpy99PxUo0) are deliberately limited to one hour. That's for many reasons, here's the main one:
 
 - the folks that join have other things to do in their day, meetings to go to, and so on; I don't want to make it harder for them to do that, and by streaming from the top of the hour to the top of the next hour makes it easier for them to fit the live stream attendance into their work calendar
 
