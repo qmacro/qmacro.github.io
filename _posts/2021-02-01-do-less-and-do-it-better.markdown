@@ -33,3 +33,7 @@ Here's an example from this weekend; I read the entirety of the main README for 
 Likewise for other tools that I use, tools that are not only essential, but which, when mastered, can make my workflows even better. I'm thinking of Vim (I've recently started watching my friend and colleague David Kunz's [DevOnDuty](https://www.youtube.com/channel/UCFU7a7OMYfcpjtIpu2j47_Q) series, which I can strongly recommend), [`tmux`](https://github.com/tmux/tmux/wiki) ([rwxrob](http://rwxrob.live/) is a great practitioner, and I should re-read Brian P. Hogan's great [book on tmux](https://pragprog.com/titles/bhtmux2/tmux-2/) too) and of course the environment and language that ties it all together for me - [Bash](https://www.gnu.org/software/bash/).
 
 The lockdown has afforded me time to read more, and I need to embrace that and work out how I can keep that momentum up. I want to tip the balance over from always having my fingers on the keyboard towards stepping away from the keyboard to read, reflect and consolidate my learning.
+
+---
+
+Update 02 Feb 2021: I've started digging deeper into `fzf` - see [fzf - the basics part 1 - layout](https://qmacro.org/autodidactics/2021/02/02/fzf-the-basics-1-layout/) over on my [Autodidactics](https://qmacro.org/autodidactics/) blog.
