@@ -13,9 +13,9 @@ tags:
 
 Is [tarpipe.com](http://tarpipe.com) an early example of a “Programming 2.0″ concept?
 
-I first read about Tarpipe from [Curt Cagle’s “Analysis 2009″](http://broadcast.oreilly.com/2009/01/analysis-2009-syndication-form.html). In turn, Curt points to [Jeff Barr’s post](http://www.jeff-barr.com/?p=1406) which describes the concept and the implementation very well. It’s a fascinating concoction of Web 2.0 services and visual programming (in the style of [Yahoo! Pipes](http://pipes.yahoo.com)), and in its beta infancy has that great “wow, imagine the full potential!” feel to it.
+I first read about Tarpipe from Curt Cagle’s "Analysis 2009". In turn, Curt points to [Jeff Barr’s post](http://jeff-barr.com/2008/12/31/tarpipe-rocks-a-quick-review/) which describes the concept and the implementation very well. It’s a fascinating concoction of Web 2.0 services and visual programming (in the style of [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes/)), and in its beta infancy has that great “wow, imagine the full potential!” feel to it.
 
-Here’s an example of what I’ve been playing around with. With my phone — and with the [G1](http://http://www.t-mobileg1.com/) it’s so easy — I can snap a picture of the beer I’m drinking, and email that picture to a Tarpipe workflow, along with the name of the beer in the subject line and a list of tags rating the beer in the body.
+Here’s an example of what I’ve been playing around with. With my phone — and with the Google G1 phone it’s so easy — I can snap a picture of the beer I’m drinking, and email that picture to a Tarpipe workflow, along with the name of the beer in the subject line and a list of tags rating the beer in the body.
 
 The workflow uses the existing Tarpipe connectors to:
 
@@ -37,7 +37,7 @@ But what’s more fabulous: Tarpipe has been ideal for my son [Joseph](http://jc
 
 on black and white low-res displays.
 
-After explaining a few concepts, Joseph was totally up and away, building [his first workflow](http://www.flickr.com/photos/8583308@N05/3392375982/) which is pretty impressive! (I’m a biased, [proud dad](http://www.flickr.com/photos/qmacro/3397440933/) of course :-) And now we’re off looking at [Yahoo! Pipes](http://pipes.yahoo.com) too, and he’s asking how we can link the two services together.
+After explaining a few concepts, Joseph was totally up and away, building [his first workflow](http://www.flickr.com/photos/8583308@N05/3392375982/) which is pretty impressive! (I’m a biased, [proud dad](http://www.flickr.com/photos/qmacro/3397440933/) of course :-) And now we’re off looking at [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes) too, and he’s asking how we can link the two services together.
 
 Hello, new programming world.
 
