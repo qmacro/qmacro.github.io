@@ -81,4 +81,4 @@ Each time a new journal entry (issue) is created, I rebuild the Atom feed. This 
 
 **Summary**
 
-And that's it, so far. As usual, I'm making this up as I go along, and things may change along the way. I've written a couple of journal entries already, [check them out](https://github.com/qmacro/thinking-aloud/issues) and let me know what you think.
+And that's it, so far. As usual, I'm making this up as I go along, and things may change along the way. I've written a couple of journal entries already, [check them out](https://github.com/qmacro/thinking-aloud/blob/main/recent.md) and let me know what you think.
