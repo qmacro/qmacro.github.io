@@ -34,9 +34,14 @@ And of course, when it comes to sharing thoughts, there's always [Twitter](https
 
 And so to [Thinking Aloud](https://github.com/qmacro/thinking-aloud). If I lay out the different outlets for my thoughts in decreasing order of magnitude, I end up with something that looks like this:
 
-|MAJOR|MINOR|MINI|MICRO|
-|-|-|-|-|
-|[qmacro.org](https://qmacro.org), [SAP Community](https://people.sap.com/dj.adams.sap#content:blogposts)|[autodidactics](https://qmacro.org/autodidactics/)|(something missing)|[Twitter](https://twitter.com/qmacro)|
+```
++---------------------------------------------------------------+
+|    Major      |    Minor      |    Mini       |     Micro     |
+|---------------|---------------|---------------|---------------|
+|  qmacro.org   | autodidactics |  (something   |    Twitter    |
+| SAP Community |               |   missing)    |               |
++---------------------------------------------------------------+
+```
 
 What do these categories mean to me?
 
