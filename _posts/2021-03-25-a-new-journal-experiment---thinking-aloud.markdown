@@ -4,7 +4,7 @@ title: A new journal experiment - Thinking Aloud
 date: '2021-03-25 06:28:30'
 ---
 
-_I'm trying out a new way of sharing thoughts in a GitHub issues based journal style blog called Thinking Aloud._
+_I'm trying out a new way of sharing thoughts in a GitHub issues based journal style blog called [Thinking Aloud](https://github.com/qmacro/thinking-aloud/issues)._
 
 I've been blogging for over 20 years, since 2000. I started with a Blogspot hosted blog over at <https://qmacro.blogspot.com> which amazingly is still around.
 
