@@ -36,7 +36,7 @@ And so to [Thinking Aloud](https://github.com/qmacro/thinking-aloud). If I lay o
 
 ```
 +---------------------------------------------------------------+
-|    Major      |    Minor      |    Mini       |     Micro     |
+|    Major      |    Minor      |     Mini      |     Micro     |
 |---------------|---------------|---------------|---------------|
 |  qmacro.org   | autodidactics |  (something   |    Twitter    |
 | SAP Community |               |   missing)    |               |
