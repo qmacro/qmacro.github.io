@@ -6,6 +6,8 @@ date: '2021-03-25 06:28:30'
 
 _I'm trying out a new way of sharing thoughts in a GitHub issues based journal style blog called [Thinking Aloud](https://github.com/qmacro/thinking-aloud)._
 
+TL;DR - My [Thinking Aloud repo](https://github.com/qmacro/thinking-aloud) is where I am experimenting with journalling via GitHub issues. Check out the [issues themselves](https://github.com/qmacro/thinking-aloud), the [rendered versions of recent entries](https://github.com/qmacro/thinking-aloud/blob/main/recent.md), the [Atom feed](https://raw.githubusercontent.com/qmacro/thinking-aloud/main/feed.xml) or the [GitHub Actions workflows](https://github.com/qmacro/thinking-aloud/tree/main/.github/workflows) with which I automate some of the process. 
+
 I've been blogging for over 20 years, since 2000. I started with a Blogspot hosted blog over at <https://qmacro.blogspot.com> which amazingly is still around.
 
 **This blog**
