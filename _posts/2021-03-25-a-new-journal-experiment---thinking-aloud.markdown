@@ -79,6 +79,8 @@ My editor (Vim) is then launched and I write Markdown, which is then sent to be 
 
 Each time a new journal entry (issue) is created, I rebuild the Atom feed. This is done via the power of GitHub Actions. Have a look at the [generate-feed workflow](https://github.com/qmacro/thinking-aloud/blob/main/.github/workflows/generate-feed.yml) to get an idea of how that works; in one of the steps there, I'm using `gh` to call the GitHub API to get the list of issues, and piping that (JSON) into a simple Node.js script [feed](https://github.com/qmacro/thinking-aloud/blob/main/feed) that uses the freakishly easy-to-use NPM module [feed](https://www.npmjs.com/package/feed) (thanks [jpmonette](https://github.com/jpmonette)!) to generate the Atom feed.
 
+Additionally, I have implemented some [simple rendering](https://github.com/qmacro/thinking-aloud/pull/5/files) to make the entries easier to consume - the [most recent entries are rendered into a Markdown file](https://github.com/qmacro/thinking-aloud/blob/main/recent.md) in the main repository, and GitHub's Markdown rendering is more than good enough to make things easy and pleasant to read.
+
 **Summary**
 
 And that's it, so far. As usual, I'm making this up as I go along, and things may change along the way. I've written a couple of journal entries already, [check them out](https://github.com/qmacro/thinking-aloud/blob/main/recent.md) and let me know what you think.
