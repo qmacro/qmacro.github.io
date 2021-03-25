@@ -18,7 +18,7 @@ Over the years I tried out various blogging software, including Ghost and Movabl
 
 **My posts on the SAP Community blog**
 
-Of course, I also publish on the SAP Community blog, which is a collective set of posts by many, many members of the SAP ecosphere. I have posts under the [dj.adams](https://people.sap.com/dj.adams) identifier and also (since I joined SAP) under the [dj.adams.sap](https://people.sap.com/dj.adams.sap) identifier, and as you might expect, the subject matter is very definitely SAP related. That said, you may be surprised at the breadth of topics - posts on subjects as diverse as [terminal tips](https://blogs.sap.com/tag/terminaltip/) and [fun runs](https://blogs.sap.com/2020/12/01/utfrw-unofficial-teched-fun-run-walk/) are all there.
+Of course, I also publish on the [SAP Community](https://community.sap.com) blog, which is a collective set of posts by many, many members of the SAP ecosphere. I have posts under the [dj.adams](https://people.sap.com/dj.adams) identifier and also (since I joined SAP) under the [dj.adams.sap](https://people.sap.com/dj.adams.sap) identifier, and as you might expect, the subject matter is very definitely SAP related. That said, you may be surprised at the breadth of topics - posts on subjects as diverse as [terminal tips](https://blogs.sap.com/tag/terminaltip/) and [fun runs](https://blogs.sap.com/2020/12/01/utfrw-unofficial-teched-fun-run-walk/) are all there.
 
 **My autodidactics blog**
 
