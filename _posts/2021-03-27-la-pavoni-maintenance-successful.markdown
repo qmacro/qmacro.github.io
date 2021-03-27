@@ -26,7 +26,7 @@ I ordered a [La Pavoni Lever Grouphead Service Kit (New Group)](https://www.thee
 
 Following the process demonstrated very ably by William Stiles in the video, I managed to remove the lever and then the grouphead, and then the piston.
 
-## Tools
+## Tools
 
 Having watched how William used his tools, I ordered a [set of snap ring pullers](https://www.amazon.co.uk/gp/product/B0818WLSGS/) to be able to remove the snap ring holding the piston shaft gasket in place.
 
