@@ -4,15 +4,15 @@ title: La Pavoni maintenance successful
 date: '2021-03-27 12:40:26'
 ---
 
-_I've successfully carried out maintenance on my La Pavoni espresso machine, and you can too. Here are some notes perhaps worth sharing._
+_I've successfully carried out maintenance on my La Pavoni espresso machine, and you can too. Here are some notes that may help._
 
 I'd been slightly apprehensive about replacing the gaskets on my La Pavoni lever espresso machine, as I'm not particularly skilled at this kind of thing and didn't want to break anything. But I've just gone through the process and things seem to have worked out OK, and I wanted to share that information - because if I can do it, you can too.
 
 ![My La Pavoni in mid-maintenance](/content/images/2021/03/lapavonimaintenance.jpeg)
 
-## Why I did it
+## Why I did it
 
-I'd started to notice some leakage in the grouphead - once the machine was up to temperature and pressure, water would drip out into the drip tray (or cup). Sometimes only a few drops; but at other times up to half an espresso cup's worth.
+I'd started to notice some leakage in the grouphead - once the machine was up to temperature and pressure, water would drip out into the drip tray (or cup). Sometimes only a few drops; but at other times almost up to an espresso cup's worth.
 
 Related, I'm sure, was the fact that the lever action, both up and down, was far from smooth. It was, how can I put it, bumpy and uneven, as though something was rubbing or catching. The odd thing is that because this happened over time, I didn't actually notice it in the early stages. But it became quite severe and I guessed it was a gasket issue - which was very likely related to the leakage too.
 
@@ -24,7 +24,7 @@ I watched and re-watched various videos on YouTube, and found that this one from
 
 I ordered a [La Pavoni Lever Grouphead Service Kit (New Group)](https://www.theespressoshop.co.uk/en/La-Pavoni-Lever-Grouphead-Service-Kit-New-Group/m-2791.aspx) from The Espresso Shop. I chose this to order as I wasn't sure what I needed, and in fact it came with some parts that were a nice bonus (more on that shortly).
 
-Following the process demonstrated very ably by William Stiles in the video, I managed to remove the lever and then the group head, and then the piston.
+Following the process demonstrated very ably by William Stiles in the video, I managed to remove the lever and then the grouphead, and then the piston.
 
 ## Tools
 
@@ -44,7 +44,7 @@ I went slowly and carefully, and everything pretty much went as William describe
 
 **Lever attachment**
 
-The lever attachment section was pretty dirty - especially the bolts and the roller nut; while I cleaned the lever itself, and the top of the grouphead, I didn't need to clean the bolts or the roller nut, as the service kit included new ones, and also new clips (called "circlips", which was new to me) that hold the bolts in place
+The lever attachment section was pretty dirty - especially the bolts and the roller nut; while I cleaned the lever itself, and the top of the grouphead, I didn't need to clean the bolts or the roller nut, as the service kit included new ones, and also new clips (called "circlips", which was new to me) that hold the bolts in place.
 
 **Removing the piston**
 
@@ -52,11 +52,11 @@ It was quite difficult to remove the piston from the grouphead; I whacked it wit
 
 But after removing the large gasket at the bottom of the grouphead, the one holding the shower screen in (i.e. the one that the top of the portafilter touches when you attach it when about to pull a shot) ... one more whack with the mallet did it and it came out much more easily.
 
-With it came a small amount of water - luckily, I'd placed a towel where the drip tray usually goes, not for any water, but to prevent the pistol scratching the chrome as it shot out of the bottom.
+With it came a small amount of water - luckily, I'd placed a towel where the drip tray usually goes, not for any water, but to prevent the piston scratching the chrome as it shot out of the bottom.
 
 **Cleaning the piston**
 
-I made sure to clean each and every part I could get access to, but the piston itself was by far the most grimy part. I spent about 15 minutes with some hot soapy water and a gentle panscrub to remove a layer, which was quite greasy (from the coffee oils, I guess).
+I made sure to clean each and every part I could get access to, but the piston itself was by far the most grimy. I spent about 10 minutes with some hot soapy water and a gentle panscrub to remove a layer, which was quite greasy (from the coffee oils, I guess).
 
 This was after removing the old piston gaskets, which looked pretty knackered. I found the pick set was useful for this, by the way.
 
@@ -68,13 +68,13 @@ Doing this helped, but it still took me a couple of attempts. First of all I man
 
 Removing it was difficult too, I didn't want to use the pick, or even a flathead screwdriver as they both had sharp bits and I didn't want to damage the new gaskets. But then I realised I could use the thin end of a teaspoon. Smooth, and, as it turns out, ideal!
 
-I didn't forget to put the gaskets on as William had instructed, i.e. like the shape of a guitar body.
+I made sure I put the gaskets on as William had instructed, i.e. like the shape of a guitar body.
 
 **The piston shaft gasket, washer and snap ring replacement**
 
 Getting to the piston shaft gasket was fiddly but doable - mostly thanks to one of the snap ring pullers in the set I bought. Definitely recommended. I've no idea how I would have removed the snap ring without it, and I'm pretty certain I would have had no chance to put it back either.
 
-By the way, the service kit also included a new snap ring, plus the washer that sits between the ring and the gasket. That was nice, as both the ring and washer were quite dirty and some limescale had built up there too. The gasket itself was pretty decrepit, as worn as the piston gaskets, if not worse.
+By the way, the service kit also included a new snap ring, plus the washer that sits between the ring and the gasket. That was nice, as both the ring and washer were quite dirty and some limescale had built up there too. The gasket itself was pretty decrepit, at least as worn as the piston gaskets, if not worse.
 
 **Re-inserting the piston**
 
@@ -92,7 +92,7 @@ One thing that was lovely to see - and feel - was the huge difference this maint
 
 The final task was to re-attach the screen at the bottom of the grouphead. I say "re-attach", but in fact the service kit also came with a new one, so I used that.
 
-Regarding the gasket - there were two in the service kit - one thinner one with a round cross-section, and one fatter one with a U cross-section. I guessed (correctly, I think) that it was the fatter one that I needed, based on the size of the old one I removed.
+Regarding the gasket - there were two in the service kit - one thinner one with a round cross-section, and one fatter one with a U cross-section. I guessed (correctly, I think) that it was the fatter one that I needed, based on the size of the old one that I'd removed.
 
 The idea is that you slide it over the screen, from the bottom of the screen up to the lip, first, and then insert both into the bottom of the grouphead.
 
@@ -106,9 +106,15 @@ I pulled it gently back out (using the smooth edge of the teaspoon again) and sl
 
 This was much better, and I could use the portafilter (without the basket, as William demonstrated) to push the screen and gasket up into the grouphead.
 
+**The group to boiler gasket**
+
+I didn't forget to replace the gasket between the grouphead and the boiler itself, that was the easiest part. It's important to note here, however, that I heeded William's advice not to over-tighten the two bolts that hold the grouphead onto the boiler. On tightening them, I came to feel a natural "stop" and didn't apply any further torque.
+
 ## Conclusion
 
-The entire process took about 90 mins, as I was going very slowly and also re-watching parts of the video as needed. I'm not very dextrous but managed to complete the service successfully, and wanted to let you know that, in case you're in my position too - thinking you need to do it but being a little apprehensive.
+The entire process took about 90 mins, as I was going very slowly and also re-watching parts of the video as needed. I'm not very dextrous but managed to complete the service successfully.
+
+I thought this experience and process was worth sharing, especially for folks that might be in my position right now - thinking or knowing you need to do it but being a little apprehensive.
 
 It's doable, and definitely worth it!
 
