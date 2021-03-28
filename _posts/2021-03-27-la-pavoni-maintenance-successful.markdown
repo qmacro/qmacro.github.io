@@ -106,6 +106,8 @@ I pulled it gently back out (using the smooth edge of the teaspoon again) and sl
 
 This was much better, and I could use the portafilter (without the basket, as William demonstrated) to push the screen and gasket up into the grouphead.
 
+Update: I realised after posting this, and re-examining the schematic diagram that came in the service kit, that the "other" gasket was perhaps not an alternative filter holder gasket, but a group sleeve gasket - item number 77 in the schematic (see later for a section of that diagram). The group sleeve is the light-coloured plastic or bakelite cylinder inside of the grouphead, inside which the piston moves. I couldn't get this off as I didn't have the right tool, but I'd decided that that was fine, I'd do that next time. Anyway, I think I now realise what this "spare" gasket is for.
+
 **The group to boiler gasket**
 
 I didn't forget to replace the gasket between the grouphead and the boiler itself, that was the easiest part. It's important to note here, however, that I heeded William's advice not to over-tighten the two bolts that hold the grouphead onto the boiler. On tightening them, I came to feel a natural "stop" and didn't apply any further torque.
@@ -118,3 +120,4 @@ I thought this experience and process was worth sharing, especially for folks th
 
 It's doable, and definitely worth it!
 
+![La Pavoni schematic diagram](/content/images/2021/03/schematic.png).
