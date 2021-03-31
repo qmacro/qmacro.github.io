@@ -21,11 +21,11 @@ What was profound was that the lack of relationship I had with the stuff I just 
 
 I'd been thinking about tools I use often, since [noticing how worn my hand milk frother was recently](https://twitter.com/qmacro/status/1374655713331544065).
 
-![Worn milk frother](/content/images/2021/03/milkfrother.jpeg)
+<img src="/content/images/2021/03/milkfrother.jpeg" alt="Worn milk frother" width="400" height="275"/>
 
 I've had that milk frother for about 10 years. I've had a moka pot for about that long too - originally one from Bialetti, which I eventually replaced with one from IKEA (which is surprisingly excellent).
 
-![IKEA RÅDIG moka pot](/content/images/2021/03/mokapot.png)
+<img src="/content/images/2021/03/mokapot.png" alt="IKEA RÅDIG moka pot" width="294" height="311"/>
 
 And I've had the La Pavoni Professional Lusso for almost 2 years.
 
