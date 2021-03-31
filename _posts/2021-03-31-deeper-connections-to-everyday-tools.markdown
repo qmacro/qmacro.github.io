@@ -81,12 +81,12 @@ Here are a few example of what I've only recently discovered, or perhaps uncover
 
 As those lovely folks that join my live stream sessions\* know - I'm not afraid of admitting that "I've no idea what I'm doing".
 
-\*I live stream usually weekly on Friday mornings UK time - look for the Hands-on SAP Dev episodes on the [SAP Developers](https://www.youtube.com/channel/UCNfmelKDrvRmjYwSi9yvrMg) YouTube channel).
+\*I live stream usually weekly on Friday mornings UK time - look for the Hands-on SAP Dev episodes on the [SAP Developers](https://www.youtube.com/channel/UCNfmelKDrvRmjYwSi9yvrMg) YouTube channel.
 
 At the beginning of last year, along with other folks in the [SAP Community](https://community.sap.com), I wrote up [my learning list for 2020](https://blogs.sap.com/2020/01/12/my-learning-list-for-2020/). In it, I had a section titled "Understanding core things better", and while that contained the kernel of the idea that I want to improve my understanding of fundamental things, I think I missed the mark somewhat. I failed to spot the tools that were right in front of me (or my fingers).
 
-So I guess this is a reminder for me that I'm nowhere near done. That's fine, continuous learning is a thing, and like many others, it's my thing.
+So I guess this is a reminder for me that I'm nowhere near done. That's fine, continuous learning is a thing, and as it is for many others, it's my thing.
 
-Triggered by some mundane moments recently (eBay, gasket maintenance, the wearing of a wooden handle), I've come to realise what I need to do. It won't be a short process, I think mastery of these tools will only come over years, but the journey will bear fruit from the outset.
+Triggered by some mundane moments recently (eBay activities, gasket maintenance, the wearing thin of a simple wooden handle), I've come to realise what I need to do. And that is far from mundane. It won't be a short process -- I think mastery of these tools will only come over years -- but the journey will enjoyable and rich from the outset.
 
 
