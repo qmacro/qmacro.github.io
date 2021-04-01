@@ -74,7 +74,7 @@ So while at least the La Pavoni machine has moving parts, it's still a block of 
 Here are a few example of what I've only recently discovered, or perhaps uncovered, with these tools.
 
 * I managed to write some Vimscript to call [`shfmt`](https://github.com/mvdan/sh) to pretty-print my shell scripts on save
-* I worked out how to get `tmux` to open a new window or pane in the same directory as I was when I invoked the open command
+* I [worked out](https://qmacro.org/autodidactics/2021/04/01/new-tmux-panes-and-windows-in-right-dir/) how to get `tmux` to open a new window or pane in the same directory as I was when I invoked the open command
 * Having read [Improving shell workflows with fzf](https://seb.jambor.dev/posts/improving-shell-workflows-with-fzf/) I learned about how to configure my own previews
 * I remembered (I'd forgotten) that I can use `--data-urlencode` to have values automatically URL encoded with `curl`
 * I'm only just now starting to feel comfortable enough to embrace `jq` as a complete language, with my [first script with function definitions](https://github.com/qmacro/dotfiles/blob/master/scripts/dwr#L21-L38)
