@@ -49,10 +49,11 @@ Without thinking too hard, here's a list of commands, of tools, that I use in th
 * `tmux` (terminal multiplexer)
 * `curl` (HTTP client)
 * `fzf` (fuzzy finder)
+* `jq` (JSON processor)
 
 (One could say that the combination of `vim`, `tmux` and the shell is my IDE.)
 
-Of course, I use other commands too, and many Bash shell builtins & features, but I'd say these are four actual tools that I find essential.
+Of course, I use other commands too, and many Bash shell builtins & features, but I'd say these are tools that I find essential.
 
 **More learning required**
 
@@ -66,18 +67,17 @@ In many ways, one could argue that these tools represent the zenith of achieveme
 * `tmux` is the de facto standard for managing terminal sessions
 * `curl` is possibly the most popular HTTP client mechanism out there, in command line tool form as well as in library form
 * someone [said this](https://lobste.rs/s/nsfdaw/improving_shell_workflows_with_fzf#c_2um216) about `fzf` recently, and I tend to agree: "_I don’t think any other single cli tool has ever had such a big and positive impact on my workflow than fzf has, it’s really a great piece of work_".
+* while there are other great options such as `fx`, it's `jq` that everyone turns to, to handle JSON data on the command line
 
 So while at least the La Pavoni machine has moving parts, it's still a block of stone compared to these tools, which all have such rich and varied features.
 
 Here are a few example of what I've only recently discovered, or perhaps uncovered, with these tools.
 
 * I managed to write some Vimscript to call [`shfmt`](https://github.com/mvdan/sh) to pretty-print my shell scripts on save
-
 * I worked out how to get `tmux` to open a new window or pane in the same directory as I was when I invoked the open command
-
 * Having read [Improving shell workflows with fzf](https://seb.jambor.dev/posts/improving-shell-workflows-with-fzf/) I learned about how to configure my own previews
-
 * I remembered (I'd forgotten) that I can use `--data-urlencode` to have values automatically URL encoded with `curl`
+* I'm only just now starting to feel comfortable enough to embrace `jq` as a complete language, with my [first script with function definitions](https://github.com/qmacro/dotfiles/blob/master/scripts/dwr#L21-L38)
 
 As those lovely folks that join my live stream sessions\* know - I'm not afraid of admitting that "I've no idea what I'm doing".
 
