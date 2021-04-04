@@ -22,7 +22,7 @@ So batch is still alive and well, in fact it never went away.
 
 Moreover, while for very large organisations the mainframe lives on, especially in financial circles, the concept of the mainframe lives on too. [The Eternal Mainframe](http://www.winestockwebdesign.com/Essays/Eternal_Mainframe.html) is a great essay that muses on that and more.
 
-**Realtime vs Resilient**
+**Realtime vs resilient**
 
 And in today's era, the obsession with realtime seems to be spilling over into the API world, where folks are wanting to interconnect their systems in a loosely coupled way with realtime interfaces. While [loose coupling](https://en.wikipedia.org/wiki/Loose_coupling) is usually the right approach, realtime interfaces are a different beast. In some cases of course, synchronous communication, with blocking, is required. But in many cases it's not.
 
@@ -38,7 +38,7 @@ Embracing & understanding the importance of this asynchronous nature might help 
 
 While writing this I've realised that there's another layer to GitHub Actions that adds to the appeal for me. When I first encountered batch processing, at Esso Petroleum at the start of my career, I spent many a happy hour writing Job Control Language (JCL), monitoring jobs, and obsessing over the detail of their output messages. One thing that was almost unspoken in this is that sitting at my silent terminal, I had no idea at the time where the machines were that processed my jobs, what they looked like, sounded like, nor did I have to care. They were looked after by the system operators.
 
-And so it is with GitHub Actions - unless I'm using self-hosted runners, I have no idea where the machines are upon which the jobs defined in my workflows are run. I don't know where they are, whether they're real or virtual, nothing. And as long as I remain within my execution quota, I don't have to care, either. Again, that's someone else's task.
+And so it is with GitHub Actions. Unless I'm using self-hosted runners, I have no idea about the machines upon which the jobs defined in my workflows are run. I don't know where they are, whether they're real or virtual, nothing. And as long as I remain within my execution quota, I don't have to care, either. Again, that's someone else's task.
 
 **SDSF for GitHub Actions**
 
