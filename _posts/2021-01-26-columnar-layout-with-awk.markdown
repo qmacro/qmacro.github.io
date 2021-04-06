@@ -30,6 +30,8 @@ github.com       qmacro-org          auto-tweeter
 
 In other words, I wanted to select columns from the output and have them printed neatly and aligned. Don't ask me why, I guess it's just some form of OCD.
 
+<a name="homage"></a>**Homage**
+
 Anyway, I decided to write this in AWK, partly because I don't know AWK that well, but mostly as a meditation on the early days of Unix and a homage to [Brian Kernighan](https://en.wikipedia.org/wiki/Brian_Kernighan). Talking of homages, I've also decided to share this script by describing it line by line, in homage to [Randal L Schwartz](https://en.wikipedia.org/wiki/Randal_L._Schwartz), that maverick hero that I learned a great deal from in the Perl world.
 
 Randal [wrote columns for magazines](http://www.stonehenge.com/merlyn/columns.html), each time listing and describing a Perl script he'd written, line by line. I learned so much from Randal and enjoyed the format, so I thought I'd reproduce it here.
