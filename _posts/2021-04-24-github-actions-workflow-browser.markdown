@@ -30,7 +30,7 @@ It consists of three parts:
 
 The `showgithubcontent` script was initially a function inside of the `workflowbrowser` script but I separated it out, first because it felt better and second because there was something more I could do once I'd browsed the workflow definitions with `workflowbrowser` and selected one - more on that later.
 
-## The `workflowbrowser` script
+## The workflowbrowser script
 
 Here's the script in its entirety, [as it stands right now](https://github.com/qmacro/dotfiles/blob/master/scripts/workflowbrowser):
 
@@ -79,7 +79,7 @@ main "$@"
 
 There's just a `main` function and a `workflows` function.
 
-### The `main` function
+### The main function
 
 The `main` function calls the `workflows` function a couple of times, because I have repositories under my own user [qmacro](https://github.com/qmacro) and also under a small experimental organisation [qmacro-org](https://github.com/qmacro-org) and I have workflows across both of these owner areas.
 
@@ -129,7 +129,7 @@ With `fzf`, if an item in the list is indeed selected, then the line passed into
 
 The final part of the `main` function takes the line emitted from `fzf` and outputs the same three fields (repo owner, repo name and workflow file path). Basically field 1 is just used as a "display" field for `fzf`.
 
-### The `workflows` function
+### The workflows function
 
 The `workflows` function is basically a wrapper around a call to the [GitHub Search API](https://docs.github.com/en/rest/reference/search). This is an API that I haven't used before now, and it's pretty powerful. There are different endpoints representing different search approaches. What worked for me, to find workflow definitions, was to use the [Search code](https://docs.github.com/en/rest/reference/search#search-code) endpoint with `/search/code`.
 
@@ -247,7 +247,7 @@ These lines are then ready for piping to `fzf` in `main()`. Great!
 
 Now let's move on to the second script, which is what `fzf` calls to present the previews (i.e. with `--preview='showgithubcontent {2} {3} {4} yaml always'`).
 
-## The `showgithubcontent` script
+## The showgithubcontent script
 
 As I mentioned earlier, this was originally just another function inside the `workflowbrowser` script, but I extracted it to use outside of that script too. You'll see why in a bit.
 
