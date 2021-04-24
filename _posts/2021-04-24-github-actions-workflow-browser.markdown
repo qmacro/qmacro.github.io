@@ -10,7 +10,7 @@ With a programming or definition language, especially one that's new and powerfu
 
 The YAML based syntax for definining GitHub Actions workflows is powerful and there are different ways of achieving similar things. And it's new to me too (although defining jobs and steps isn't - in many ways it's just like writing Job Control Language (JCL) back in the mainframe era, but that's a story for another time).
 
-So I decided to combine three of my favourite terminal power tools to help me:
+While the latest version of the GitHub command line client `gh` sports lovely new features for workflows and actions, it doesn't quite give me the quick cross-repository overview that I'm looking for. So I decided to combine three of my favourite terminal power tools to help me:
 
 - Bash, for my command line interface and utility scripting, my shell of choice
 - [`gh`](https://github.com/cli/cli), which is already a very accomplished command line interface (CLI) to GitHub and a really comfortable way of using the API
