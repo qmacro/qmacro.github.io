@@ -28,7 +28,7 @@ And in today's era, the obsession with realtime seems to be spilling over into t
 
 _What the R should really stand for here is not Realtime, but Resilient._
 
-(I'd like to take credit for this quotable nugget, but I have to attribute it to the person from whom I heard it from first - my friend and SAP colleague [Craig Stasila](https://people.sap.com/c.stasila).)
+(I'd like to take credit for this quotable nugget, but I have to attribute it to the person from whom I heard it first - my friend and SAP colleague [Craig Stasila](https://people.sap.com/c.stasila).)
 
 And what does that mean, exactly? Well to me it means not synchronous, but asynchronous. Message (i.e. event) based integration. Message events that are fired by a system, with a payload, managed by a message bus, and received & processed by other systems. We've looked into this a lot on our [Hands-on SAP Dev](https://blogs.sap.com/2020/11/09/an-overview-of-sap-developers-video-content/#shows) show, in particular the [Diving into SAP Enterprise Messaging](https://www.youtube.com/playlist?list=PL6RpkC85SLQCf--P9o7DtfjEcucimapUf) series (SAP's Enterprise Messaging service is now called Event Mesh, by the way).
 
