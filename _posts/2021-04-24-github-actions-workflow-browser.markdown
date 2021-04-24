@@ -344,6 +344,6 @@ That is:
 
 Here's an example of that pipeline flow in action:
 
-[![asciicast](https://asciinema.org/a/409631.svg)](https://asciinema.org/a/409631)
+<script id="asciicast-409631" src="https://asciinema.org/a/409631.js" async></script>
 
 I hope you found this useful and perhaps it will encourage you to create your own utility scripts using `gh` and `fzf`.
