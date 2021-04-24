@@ -18,7 +18,7 @@ So I decided to combine three of my favourite terminal power tools to help me:
 
 I combined them to build a "workflow browser". Here it is in action:
 
-[![asciicast](https://asciinema.org/a/409601.svg)](https://asciinema.org/a/409601)
+<script id="asciicast-409601" src="https://asciinema.org/a/409601.js" async></script>
 
 It consists of three parts:
 
@@ -30,7 +30,7 @@ It consists of three parts:
 
 The `showgithubcontent` script was initially a function inside of the `workflowbrowser` script but I separated it out, first because it felt better and second because there was something more I could do once I'd browsed the workflow definitions with `workflowbrowser` and selected one - more on that later.
 
-**The `workflowbrowser` script**
+## The `workflowbrowser` script
 
 Here's the script in its entirety, [as it stands right now](https://github.com/qmacro/dotfiles/blob/master/scripts/workflowbrowser):
 
@@ -39,7 +39,7 @@ Here's the script in its entirety, [as it stands right now](https://github.com/q
 
 # Find and browse GitHub Actions workflow definitions.
 # In addition to regular shell tools (such as sed), this
-# script uses gh, fzf, base64 and bat.
+# script uses gh and fzf.
 
 workflows() {
 
@@ -79,7 +79,7 @@ main "$@"
 
 There's just a `main` function and a `workflows` function.
 
-_`main()`_
+### The `main` function
 
 The `main` function calls the `workflows` function a couple of times, because I have repositories under my own user [qmacro](https://github.com/qmacro) and also under a small experimental organisation [qmacro-org](https://github.com/qmacro-org) and I have workflows across both of these owner areas.
 
@@ -95,7 +95,7 @@ This to me was the simplest way of combining output from two calls into a single
 
 > I did a 10 minute video on process substitution on Hands-on SAP Dev, in case you're interested: [Ep.39 - Looking at process substitution](https://www.youtube.com/watch?v=JF4lGw4Itpk&list=PL6RpkC85SLQAIntm7MkNk78ysDm3Ua8t0&index=41).
 
-I'll dig into the `workflows` function shortly, but for now, we need to know what it outputs, to understand better what we do that output, i.e. what we do downstream from `cat` in the pipeline.
+I'll dig into the `workflows` function shortly, but for now, we need to know what it outputs, to understand better what we do with that output, i.e. what we do downstream from `cat` in the pipeline.
 
 The output from `workflows` are records representing workflow definitions, in the form of lines with tab-separated fields, like this:
 
@@ -114,22 +114,22 @@ In order, the fields represent:
 
 The lines are piped into `fzf` which is used to present the workflow definitions and also a preview of their contents. This is done by using various options supplied to `fzf`.
 
-The first deals with what to show in the basic list display that `fzf` first presents, and that is the contents of the second field above (the combination). This is done using the `--with-nth` option; we also tell `fzf` how the fields are delimited:
+The first option deals with what to show in the basic list display that `fzf` first presents, and that is the contents of the first field above (the combination). This is done using the `--with-nth` option; we also tell `fzf` how the fields are delimited:
 
 * `--with-nth=1` - use field 1 in the list display
-* `--delimiter='\t' - fields are tab-delimited
+* `--delimiter='\t'` - fields are tab-delimited
 
 Then there's what to do from a preview perspective; when a particular entry in the list is selected, `fzf` can run a preview command to display something in a window:
 
 * `--preview='showgithubcontent {2} {3} {4} yaml always'`
 
-Whatever is emitted (via STDOUT) by the incantation supplied with the `--preview` option is shown in the preview window. Here, we call the `showgithubcontent` script, supplying that script with 5 arguments. The first three use `fzf`'s field reference syntax to pass the values of the second, third & fourth field, i.e. the repo owner, the repo name and the workflow file path. The last two arguments control how `showgithubcontent` displays things (we'll come to that later).
+Whatever is produced (via STDOUT) by the incantation supplied with the `--preview` option is shown in the preview window. Here, we call the `showgithubcontent` script, supplying that script with 5 arguments. The first three use `fzf`'s field reference syntax to pass the values of the second, third & fourth field, i.e. the repo owner, the repo name and the workflow file path. The last two arguments control how `showgithubcontent` displays things (we'll come to that later).
 
-With `fzf`, if an item in the list is indeed selected, then the line passed into `fzf` that represents the line selected is output to STDOUT. This makes `fzf` a very powerful tool that plays well with other tools, following the Unix philosophy (if no selection is made, e.g. by aborting `fzf` with Ctrl-C, then nothing is emitted.
+With `fzf`, if an item in the list is indeed selected, then the line passed into `fzf` that represents the line selected is output to STDOUT. This makes `fzf` a very powerful tool that plays well with other tools, following the Unix philosophy (if no selection is made, e.g. by aborting `fzf` with Ctrl-C, then nothing is emitted).
 
 The final part of the `main` function takes the line emitted from `fzf` and outputs the same three fields (repo owner, repo name and workflow file path). Basically field 1 is just used as a "display" field for `fzf`.
 
-_`workflows()`_
+### The `workflows` function
 
 The `workflows` function is basically a wrapper around a call to the [GitHub Search API](https://docs.github.com/en/rest/reference/search). This is an API that I haven't used before now, and it's pretty powerful. There are different endpoints representing different search approaches. What worked for me, to find workflow definitions, was to use the [Search code](https://docs.github.com/en/rest/reference/search#search-code) endpoint with `/search/code`.
 
@@ -137,11 +137,11 @@ This endpoint takes the search criteria in the form of a query string parameter 
 
 <https://github.com/search?q=org%3Aqmacro-org+path%3A.github%2Fworkflows%2F>
 
-One thing that tripped me up at first was while that I supplied the search criteria value in the `q` query string parameter correctly, like this (as you can see in the function):
+One thing that tripped me up at first was the wrong type of request was being made first of all. I supplied the search criteria value in the `q` query string parameter correctly, like this (as you can see in the function):
 
 * `--field "q=$ownertype:$owner path:.github/workflows/"`
 
-but the HTTP call that `gh` then made for me was a POST request, with this search query parameter in the body of the request. That didn't work. Checking in the API documentation, the `q` parameter needs to be in the query string. Explicitly setting the method to GET made this right:
+but the HTTP call that `gh` then made for me was a POST request, with this search query parameter in the body of the request. That wasn't right. Checking in the API documentation, the `q` parameter needs to be in the query string. Explicitly setting the method to GET made this right:
 
 * `--method GET`
 
@@ -151,7 +151,7 @@ There are a couple of other "housekeeping" parameters used here too:
 * `--cache "${GH_CACHETIME:-1h}"`
 
 I don't yet have that many workflow definitions, but if it comes to that, `gh` will work through the responses to get them all for me with `--paginate`.
-And the `--cache` parameter works both ways: my activities are well behaved when it comes to using the API endpoints, and also, after the first time the list of workflow definitions is retrieved, any subsequent uses of the workflow browser are that much snappier (this works also with the similar use of the `--cache` parameter in the `showgithubcontent` script we'll see shortly).
+And the `--cache` parameter works both ways: my activities are well behaved when it comes to using the API endpoints, and also, after the first time the list of workflow definitions is retrieved, any subsequent uses of the workflow browser are that much snappier (this works also with the similar use of the `--cache` parameter in the `showgithubcontent` script we'll see shortly). Note that if there's no value specified for `GH_CACHETIME`, the default will be 1 hour (`1h`) through the use of [shell parameter expansion](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html).
 
 Next we come to the use of the `--field` parameter, which allows me to specify the name and value for the search parameter `q`. I looked at the [Searching code](https://docs.github.com/en/github/searching-for-information-on-github/searching-code) documentation to find out about the `ownertype:owner` specification. The first time around this value will be "org:qmacro-org" and the second time around it will be "user:qmacro". Moreover, with `path` I can search for content that appears at a specific location - see [Search by file location](https://docs.github.com/en/github/searching-for-information-on-github/searching-code#search-by-file-location).
 
@@ -247,7 +247,7 @@ These lines are then ready for piping to `fzf` in `main()`. Great!
 
 Now let's move on to the second script, which is what `fzf` calls to present the previews (i.e. with `--preview='showgithubcontent {2} {3} {4} yaml always'`).
 
-**The `showgithubcontent` script**
+## The `showgithubcontent` script
 
 As I mentioned earlier, this was originally just another function inside the `workflowbrowser` script, but I extracted it to use outside of that script too. You'll see why in a bit.
 
@@ -256,9 +256,9 @@ Here's the script in its entirety:
 ```bash
 #!/usr/bin/env bash
 
-# Takes owner/repo/path and shows content of that resource from GitHub.
-# Assumes there's an extension on the resource name (e.g. yml) and uses
-# that for the value of bat's --language parameter.
+# Takes owner, repo and path and shows content of that resource from GitHub.
+# Also accepts optional language and colour parameter.
+# Uses gh, base64 and bat.
 
 declare owner=$1
 declare repo=$2
@@ -290,13 +290,13 @@ The reason we need the first three parameters is because they're required in the
 /repos/{owner}/{repo}/contents/{path}
 ```
 
-we can retrieve the contents of a resource (a file) in a repository. Great!
+we can retrieve the contents of a resource (a file) in a repository.
 
 Let's have a look what this gives us, in a sample call, for the following values:
 
-* owner: qmacro
-* repo: showntell
-* path: .github/workflows/main.yml
+* owner: "qmacro"
+* repo: "showntell"
+* path: ".github/workflows/main.yml"
 
 ```bash
 $ gh api /repos/qmacro/showntell/contents/.github/workflows/main.yml
@@ -319,8 +319,8 @@ The content isn't what we might first expect - where's the YAML? It's Base64 enc
 
 Once decoded, the workflow definition YAML content is piped into `bat`, with the following parameters:
 
-* `--color "$color"` - do we want colour? In preview mode, always (which is why we pass `always` in the call from the other script) but unless we're explicit about that, `bat` won't use colour. This is because of the [shell parameter expansion](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html) in the declaration of the `color` variable: `"${5:-never}"`, where the literal string "never" is used as a default value if none is supplied.
-* `--theme gruvbox` - who doesn't like a little gruvbox theming?
+* `--color "$color"` - do we want colour? In preview mode, always (which is why we pass `always` in the call from the other script) but unless we're explicit about that, `bat` won't use colour. This is because of the shell parameter expansion in the declaration of the `color` variable: `"${5:-never}"`, where the literal string "never" is used as a default value if none is supplied.
+* `--theme gruvbox` - who doesn't like a little [gruvbox](https://github.com/morhetz/gruvbox) theming?
 * `--plain` - this turns off any of the `bat` "chrome" like line numbers and headings.
 * `--language "$language"` - this tells `bat` about the content, in the form of a hint as to what language it is and therefore how to syntax highlight it.
 
@@ -333,18 +333,17 @@ That'a about it for the two scripts. I've found them to be useful and have had f
 And talking of that, here's the reason I split out the `showgithubcontent` function into a separate script. It's because I wanted to be able to browse the workflow definitions, but then if I selected one, I wanted to be taken into an editor with that definition's contents. And with a proper shell (like Bash, or most other Unix shells) this is simple:
 
 ```bash
-$ workflowbrowser  | xargs showgithubcontent | vim --not-a-term -
+$ workflowbrowser | xargs showgithubcontent | vim --not-a-term -
 ```
 
 That is:
 
-1. call `workflowbrowser`
-1. take the selected output from `workflowbrowser` (which will be the three values that `fzf` emits when I select a workflow definition) and, via `xargs`, send them as parameters to `showgithubcontent`
-1. this of course is a "second" call to `showgithubcontent` - it's been used in `fzf`'s preview window, but now we're calling it a single time, without the two extra arguments "yaml" and "always" so that the output of the workflow definition is without adornment
-1. that outputs the chosen workflow definition to STDOUT, which is then fed through the pipe to the STDIN of `vim`, my editor, where I tell it to read from STDIN (that's the use of `-`) and, using `--not-a-term`, tell it that its startup context is not a terminal (it's a pipe) - so it won't issue any warnings along those lines
+1. call `workflowbrowser` and take the selected output from `workflowbrowser` (which will be the three values that `fzf` emits when I select a workflow definition) and, by piping them through to a call to `xargs`, send them as parameters to `showgithubcontent`
+1. this of course is a "second" call to `showgithubcontent` - it's been used in `fzf`'s preview window, but now we're calling it explicitly, for the selected definition, without the two extra arguments "yaml" and "always" so that the the workflow definition is output without adornment
+1. that unadorned workflow definition goes to STDOUT, which is then fed through the pipe to the STDIN of `vim`, my editor, where I tell it to read from STDIN (that's the use of `-`) and, using `--not-a-term`, tell it that its startup context is not a terminal (it's a pipe) so that it won't issue any warnings along those lines
 
 Here's an example of that pipeline flow in action:
 
 [![asciicast](https://asciinema.org/a/409631.svg)](https://asciinema.org/a/409631)
 
-
+I hope you found this useful and perhaps it will encourage you to create your own utility scripts using `gh` and `fzf`.
