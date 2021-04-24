@@ -18,7 +18,7 @@ So I decided to combine three of my favourite terminal power tools to help me:
 
 I combined them to build a "workflow browser". Here it is in action:
 
-<script id="asciicast-409601" src="https://asciinema.org/a/409601.js" async></script>
+<script id="asciicast-409638" src="https://asciinema.org/a/409638.js" async></script>
 
 It consists of three parts:
 
@@ -344,6 +344,6 @@ That is:
 
 Here's an example of that pipeline flow in action:
 
-<script id="asciicast-409631" src="https://asciinema.org/a/409631.js" async></script>
+<script id="asciicast-409639" src="https://asciinema.org/a/409639.js" async></script>
 
 I hope you found this useful and perhaps it will encourage you to create your own utility scripts using `gh` and `fzf`.
