@@ -309,7 +309,6 @@ $ gh api /repos/qmacro/showntell/contents/.github/workflows/main.yml
   "type": "file",
   "content": "bmFtZTogYWRkX2FjdGl2aXR5X2NhcmQKCm9uOgogIGlzc3VlczoKICAgIHR5\ncGVzOiBvcGVuZWQKCmpvYnM6CiAgbGlzdF9wcm9qZWN0czoKICAgIHJ1bnMt\nb246IHVidW50dS1sYXRlc3QKICAgIG5hbWU6IEFzc2lnbiBuZXcgaXNzdWUg\ndG8gcHJvamVjdAogICAgc3RlcHM6CiAgICAtIG5hbWU6IENyZWF0ZSBuZXcg\ncHJvamVjdCBjYXJkIHdpdGggaXNzdWUKICAgICAgaWQ6IGxpc3QKICAgICAg\ndXNlczogcW1hY3JvL2FjdGlvbi1hZGQtaXNzdWUtdG8tcHJvamVjdC1jb2x1\nbW5AcmVsZWFzZXMvdjEKICAgICAgd2l0aDoKICAgICAgICB0b2tlbjogJHt7\nIHNlY3JldHMuR0lUSFVCX1RPS0VOIH19CiAgICAgICAgcHJvamVjdDogJ3Ax\nJwogICAgICAgIGNvbHVtbjogJ3RoaW5ncycK\n",
   "encoding": "base64"
-  }
 }
 ```
 
