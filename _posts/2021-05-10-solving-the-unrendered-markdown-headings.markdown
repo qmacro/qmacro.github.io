@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Solving the unrendered markdown headings
+title: Solving mysterious unrendered markdown headings
 date: '2021-05-10 12:33:10'
 ---
 
@@ -10,9 +10,9 @@ I've noticed over the years that occasionally the rendered version of my markdow
 
 ![Rendered markdown showing an unrendered heading - on GitHub](/content/images/2021/05/unrendered-heading-github.png)
 
-The second level 2 heading "Another heading level 2" remains unrendered, even though everything looks fine. Why? This has bugged me for a while, but not so much as to make me stop and work out why it was happening. Until now, I'd just go into the markdown source, rewrite the heading line, and all was fine.
+The second level 2 heading "Another heading level 2" remains unrendered, even though everything looks fine. Why? This has bugged me for a while, but not so much as to make me stop and work out why it was happening. When it happened, I'd just go into the markdown source, rewrite the heading line, and all was fine.
 
-So I finally stopped to spend a bit of time to look into it. Turns out it's quite simple and obvious now I know what was causing it.
+Today I finally stopped to spend a bit of time to look into it. Turns out it's quite simple and obvious now I know what was causing it.
 
 The [basic syntax](https://www.markdownguide.org/basic-syntax/) for headings involves one or more hashes (depending on the heading level needed) followed by the heading text. There's a space that should separate the hashes and the heading text. Here's an example:
 
@@ -69,14 +69,14 @@ What the heck is that following the two hex `23` hash characters?
            #   # 302 240
 ```
 
-Turns out it's a [non-breaking space](https://en.wikipedia.org/wiki/Non-breaking_space) character. And its UTF-8 [encoding](https://en.wikipedia.org/wiki/Non-breaking_space#Encodings), which is what the markdown file has, is ... wait for it ... `c2 a0`.
+Turns out it's a [non-breaking space](https://en.wikipedia.org/wiki/Non-breaking_space) character. And its UTF-8 [encoding](https://en.wikipedia.org/wiki/Non-breaking_space#Encodings), which is what the markdown file has, is `c2 a0`.
 
 So this second level 2 heading cannot be rendered as such, as the markdown cannot be recognised. Makes sense!
 
-But where is this non-breaking space coming from? How did it get there?
+But where are these non-breaking space coming from? How do they get there?
 
-Well, my daily driver is a macOS device, where it's notoriously more difficult that it should be to type a `#` character. One has to use `Option-3` (or `Alt-3`) to get it. And it turns out that after holding down `Option` to hit `3` a couple of times to introduce the `##` for a level 2 heading, my thumb is still on the `Option` key when I hit space.
+Well, my daily driver during the working week is a macOS device, where it's notoriously more difficult that it should be to type a `#` character. One has to use `Option-3` (or `Alt-3`) to get it. And it turns out that after holding down `Option` to hit `3` a couple of times to introduce the `##` for a level 2 heading, my thumb is sometimes still on the `Option` key when I hit `space`.
 
 And guess what - `Option-space` is how you type a non-breaking space on macOS!
 
-So basically it's me that's been causing this issue - by inadvertently inserting not a space but a **non-breaking space** after the `#` characters introducing markdown headings.
+So basically it's **me** that's been causing this issue - by inadvertently inserting not a space but a non-breaking space after the `#` characters introducing markdown headings.
