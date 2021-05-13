@@ -29,6 +29,7 @@ I went for `markdownlint` for a number of reasons:
 Markdownlint can be installed via `npm install` or via `brew`. The `brew` option is actually via a connected project [igorshubovych/markdownlint-cli](https://github.com/igorshubovych/markdownlint-cli). I ran the `brew install markdownlint-cli` command and was up and running pretty much immediately:
 
 ```shell
+# ~/Projects/gh/github.com/qmacro/qmacro.github.io (markdownlint-post *=)
 ; markdownlint
 Usage: markdownlint [options] <files|directories|globs>
 
@@ -45,12 +46,12 @@ Options:
  -r, --rules  [file|directory|glob|package]  custom rule files (default: [])
  -s, --stdin                                 read from STDIN (does not work with files)
  -h, --help                                  display help for command
-;
+
 ```
 
 From the options we can see that it works in the way we'd expect - point it at one or more files, optionally give it some configuration, and go.
 
-But we can also see that it allows the use of custom rules, and my colleague who had pointed me in this general direction had wanted to use a custom rule for checking title case (and I still went ahead, despite the fact that I *abhor* title case). The custom rules can be supplied in different forms as we can see from what can be specified with the `--rules` option; this particular one was of the exotic variety, i.e. an NPM package: [markdownlint-rule-titlecase](https://www.npmjs.com/package/markdownlint-rule-titlecase). In fact, there's a grouping of NPM packages that are custom rules for `markdownlint`, organised via the [markdownlint-rule keyword](https://www.npmjs.com/search?q=keywords:markdownlint-rule).
+But we can also see that it allows the use of custom rules, and my colleague who had pointed me in this general direction had wanted to use a custom rule for checking title case (and I still went ahead, despite the fact that I dislike title case intensely). The custom rules can be supplied in different forms as we can see from what can be specified with the `--rules` option; this particular one was of the exotic variety, i.e. an NPM package: [markdownlint-rule-titlecase](https://www.npmjs.com/package/markdownlint-rule-titlecase). In fact, there's a grouping of NPM packages that are custom rules for `markdownlint`, organised via the [markdownlint-rule keyword](https://www.npmjs.com/search?q=keywords:markdownlint-rule).
 
 ## Using markdownlint with Vim
 
@@ -62,7 +63,7 @@ I don't use [Conqueror of Completion (coc)](https://github.com/neoclide/coc.nvim
 
 ## Configuring markdownlint
 
-Configuration for `markdownlint` can be supplied with the `--config` option, or by configuration files in the right place - either in the current directory or (effectively) in one's home directory.
+Configuration for `markdownlint` can be supplied with the `--config` option, or by configuration files in the right place - either in the current directory or in one's home directory.
 
 I added the following to `~/.markdownlintrc`, and the grief about line length went away:
 
@@ -128,6 +129,4 @@ _posts/2021-05-13-notes-on-markdown-linting.markdown:75:1 titlecase-rule Titleca
 
 Yes! Works nicely. Although like I say, I'm not sure why anyone would *want* to use such a rule ... I may write one that complains if you _do_ use title case. But I digress.
 
-I think I'd like to be able to run these custom rules in Vim too, but I'll leave that for another time. I'm satisfied at least at this stage to be able to lint my Markdown files at all.
-
-I've had a quick look at putting something together to use `markdownlint` in a GitHub Actions workflow. I'll write that up next, in part 2.
+I think I'd like to be able to run these custom rules in Vim too, but I'll leave that for another time. I'm satisfied at least at this stage to be able to lint my Markdown files at all. And the next thing is actually to be able to use `markdownlint` in a GitHub Actions workflow. I'll write that up in part 2.
