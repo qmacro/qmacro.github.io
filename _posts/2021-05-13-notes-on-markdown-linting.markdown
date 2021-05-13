@@ -1,10 +1,10 @@
 ---
 layout: post
-title: Notes on Markdown linting
+title: Notes on Markdown linting - part 1
 date: '2021-05-13 13:04:21'
 ---
 
-_Here's what I found out about linting Markdown content._
+_Here's what I found out when I started to look into linting Markdown content._
 
 Related to some work activity with a colleague, I found myself having to get my brain around Markdown linting. Of course, not what it is, but what the current possibilities are and how they might apply to my situation. I thought I'd write some notes on what I found (mostly for my future self).
 
@@ -71,3 +71,65 @@ I added the following to `~/.markdownlintrc`, and the grief about line length we
   "line-length": false
 }
 ```
+
+## Trying a custom rule
+
+I then wanted to see if I could get the custom linting rule working, at least in a basic way. On the [NPM page for markdownlint-rule-titlecase](https://www.npmjs.com/package/markdownlint-rule-titlecase) it says:
+
+_Once installed using npm install markdownlint-rule-titlecase, run markdownlint with --rules "markdownlint-rule-titlecase"._
+
+Sounds fair, although a little worrying for me as I'm not going to be working with Markdown content in the context of a Node.js project any time soon. However, it turns out that I can still install the package and use it, even in a non-Node.js project directory:
+
+```shell
+# ~/Projects/gh/github.com/qmacro/qmacro.github.io (markdownlint-post *=)
+; npm i --no-package-lock markdownlint-rule-titlecase
+npm WARN saveError ENOENT: no such file or directory, open '/Users/i347491/Projects/gh/github.com/qmacro/qmacro.github.io/package.json'
+npm WARN enoent ENOENT: no such file or directory, open '/Users/i347491/Projects/gh/github.com/qmacro/qmacro.github.io/package.json'
+npm WARN qmacro.github.io No description
+npm WARN qmacro.github.io No repository field.
+npm WARN qmacro.github.io No README data
+npm WARN qmacro.github.io No license field.
+
++ markdownlint-rule-titlecase@0.1.0
+added 4 packages from 4 contributors and audited 4 packages in 0.838s
+found 0 vulnerabilities
+```
+
+The warnings are fair - there isn't a `package.json` file of course, why would there be?
+
+I do now have a smallish `node_modules/` directory, though - containing the custom rule package:
+
+```bash
+# ~/Projects/gh/github.com/qmacro/qmacro.github.io (markdownlint-post *%=)
+; tree -d node_modules/
+node_modules/
+├── markdownlint-rule-helpers
+├── markdownlint-rule-titlecase
+├── title-case
+│   ├── dist
+│   └── dist.es2015
+└── tslib
+    └── modules
+
+7 directories
+```
+
+Oh well, I guess I could delete it when I'm done, right?
+
+Anyway, can I take this new custom rule for a spin?
+
+```bash
+# ~/Projects/gh/github.com/qmacro/qmacro.github.io (markdownlint-post *%=)
+; markdownlint --rules markdownlint-rule-titlecase _posts/2021-05-13-notes-on-markdown-linting.markdown
+_posts/2021-05-13-notes-on-markdown-linting.markdown:11:1 titlecase-rule Titlecase rule [Title Case: 'Expected ## Which Linter?, found ## Which linter?']
+_posts/2021-05-13-notes-on-markdown-linting.markdown:27:1 titlecase-rule Titlecase rule [Title Case: 'Expected ## Installing Markdownlint, found ## Installing markdownlint']
+_posts/2021-05-13-notes-on-markdown-linting.markdown:55:1 titlecase-rule Titlecase rule [Title Case: 'Expected ## Using Markdownlint with Vim, found ## Using markdownlint with Vim']
+_posts/2021-05-13-notes-on-markdown-linting.markdown:63:1 titlecase-rule Titlecase rule [Title Case: 'Expected ## Configuring Markdownlint, found ## Configuring markdownlint']
+_posts/2021-05-13-notes-on-markdown-linting.markdown:75:1 titlecase-rule Titlecase rule [Title Case: 'Expected ## Trying a Custom Rule, found ## Trying a custom rule']
+```
+
+Yes! Works nicely. Although like I say, I'm not sure why anyone would *want* to use such a rule ... I may write one that complains if you _do_ use title case. But I digress.
+
+I think I'd like to be able to run these custom rules in Vim too, but I'll leave that for another time. I'm satisfied at least at this stage to be able to lint my Markdown files at all.
+
+I've had a quick look at putting something together to use `markdownlint` in a GitHub Actions workflow. I'll write that up next, in part 2.
