@@ -114,9 +114,7 @@ node_modules/
 7 directories
 ```
 
-Oh well, I guess I could delete it when I'm done, right?
-
-Anyway, can I take this new custom rule for a spin?
+Oh well, I guess I could delete it when I'm done. In the meantime, can I take this new custom rule for a spin?
 
 ```bash
 # ~/Projects/gh/github.com/qmacro/qmacro.github.io (markdownlint-post *%=)
