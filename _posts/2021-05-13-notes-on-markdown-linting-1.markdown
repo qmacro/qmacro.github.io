@@ -8,6 +8,8 @@ _Here's what I found out when I started to look into linting Markdown content._
 
 Related to some work activity with a colleague, I found myself having to get my brain around Markdown linting. Of course, not what it is, but what the current possibilities are and how they might apply to my situation. I thought I'd write some notes on what I found (mostly for my future self).
 
+(See also [Notes on Markdown linting - part 2](https://qmacro.org/2021/05/14/notes-on-markdown-linting-part-2/) where I learn how to get Markdown linting working in GitHub Actions).
+
 ## Which linter?
 
 The Node.js-based [DavidAnson/markdownlint](https://github.com/DavidAnson/markdownlint) is the linter of choice. I'll refer to it as `markdownlint` in this post.
