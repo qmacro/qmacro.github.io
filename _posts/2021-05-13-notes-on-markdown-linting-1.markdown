@@ -129,4 +129,6 @@ _posts/2021-05-13-notes-on-markdown-linting.markdown:75:1 titlecase-rule Titleca
 
 Yes! Works nicely. Although like I say, I'm not sure why anyone would *want* to use such a rule ... I may write one that complains if you _do_ use title case. But I digress.
 
-I think I'd like to be able to run these custom rules in Vim too, but I'll leave that for another time. I'm satisfied at least at this stage to be able to lint my Markdown files at all. And the next thing is actually to be able to use `markdownlint` in a GitHub Actions workflow. I'll write that up in part 2.
+I think I'd like to be able to run these custom rules in Vim too, but I'll leave that for another time. I'm satisfied at least at this stage to be able to lint my Markdown files at all. And the next thing is actually to be able to use `markdownlint` in a GitHub Actions workflow. 
+
+Update: [I've written that up in part 2](https://qmacro.org/2021/05/14/notes-on-markdown-linting-part-2/).
