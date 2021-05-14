@@ -103,9 +103,9 @@ Applying the regular expression, we can see that it will indeed pick out the val
 |`(\d+)`|`10`|`line`|
 |`:?`|`:`||
 |`(\d+)?`|`10`|`column`|
-|`\s`|` `||
+|`\s`|(a space)||
 |`([\w-\/]*)`|`MD011/no-reversed-links`|`code`|
-|`\s`|` `||
+|`\s`|(a space)||
 |`(.*)`|`Reversed link syntax [...]`|`message`|
 |`$`|(end of line)||
 
