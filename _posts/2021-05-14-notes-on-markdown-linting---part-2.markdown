@@ -95,19 +95,20 @@ docs/b.md:10:10 MD011/no-reversed-links Reversed link syntax [(reversed)[https:/
 
 Applying the regular expression, we can see that it will indeed pick out the values as desired. Taking the last message line as an example, we get:
 
-|Message part|Matched by|Value for|
+|Regular expression part|Matched text|Value for|
 |-|-|-|
-|(start of line)|`^`||
-|`docs/b.md`|`([^:]*)`|`file`|
+|`^`|(start of line)||
+|`([^:]*)`|`docs/b.md`|`file`|
 |`:`|`:`||
-|`10`|`(\d+)`|`line`|
-|`:`|`:?`||
-|`10`|`(\d+)?`|`column`|
-|` `|`\s`||
-|`MD011/no-reversed-links`|`([\w-\/]*)`|`code`|
-|` `|`\s`||
-|`Reversed link syntax [...]`|`(.*)`|`message`|
-|(end of line)|`$`||
+|`(\d+)`|`10`|`line`|
+|`:?`|`:`||
+|`(\d+)?`|`10`|`column`|
+|`\s`|` `||
+|`([\w-\/]*)`|`MD011/no-reversed-links`|`code`|
+|`\s`|` `||
+|`(.*)`|`Reversed link syntax [...]`|`message`|
+|`$`|(end of line)||
+
 
 > In this table, the escaping backslashes have been removed, as they're only there to make the JSON string happy.
 
