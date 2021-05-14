@@ -84,8 +84,8 @@ Sounds fair, although a little worrying for me as I'm not going to be working wi
 ```shell
 # ~/Projects/gh/github.com/qmacro/qmacro.github.io (markdownlint-post *=)
 ; npm i --no-package-lock markdownlint-rule-titlecase
-npm WARN saveError ENOENT: no such file or directory, open '/Users/i347491/Projects/gh/github.com/qmacro/qmacro.github.io/package.json'
-npm WARN enoent ENOENT: no such file or directory, open '/Users/i347491/Projects/gh/github.com/qmacro/qmacro.github.io/package.json'
+npm WARN saveError ENOENT: no such file or directory, open '/Users/dj/Projects/gh/github.com/qmacro/qmacro.github.io/package.json'
+npm WARN enoent ENOENT: no such file or directory, open '/Users/dj/Projects/gh/github.com/qmacro/qmacro.github.io/package.json'
 npm WARN qmacro.github.io No description
 npm WARN qmacro.github.io No repository field.
 npm WARN qmacro.github.io No README data
