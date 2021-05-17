@@ -53,7 +53,7 @@ Options:
 
 From the options we can see that it works in the way we'd expect - point it at one or more files, optionally give it some configuration, and go.
 
-But we can also see that it allows the use of custom rules, and Tobias, who had pointed me in this general direction had wanted to use a custom rule for checking title case (and I still went ahead, despite the fact that I dislike title case intensely :-)). The custom rules can be supplied in different forms as we can see from what can be specified with the `--rules` option; this particular one was of the exotic variety, i.e. an NPM package: [markdownlint-rule-titlecase](https://www.npmjs.com/package/markdownlint-rule-titlecase). In fact, there's a grouping of NPM packages that are custom rules for `markdownlint`, organised via the [markdownlint-rule keyword](https://www.npmjs.com/search?q=keywords:markdownlint-rule).
+But we can also see that it allows the use of custom rules. The custom rule that Tobias wanted to use was one that checks for title case (and I still went ahead, despite the fact that I dislike title case intensely :-)). The custom rules can be supplied in different forms as we can see from what can be specified with the `--rules` option; this particular one was of the exotic variety, i.e. an NPM package: [markdownlint-rule-titlecase](https://www.npmjs.com/package/markdownlint-rule-titlecase). In fact, there's a grouping of NPM packages that are custom rules for `markdownlint`, organised via the [markdownlint-rule keyword](https://www.npmjs.com/search?q=keywords:markdownlint-rule).
 
 ## Using markdownlint with Vim
 
