@@ -41,7 +41,7 @@ Nothing exciting in this workflow definition so far; I've included both `main` a
 
 ## Getting the pull request content
 
-To run `markdownlint` on the content of the pull request, we need that in the runner workspace, and the usual use of the standard action `actions/checkout` does the job here:
+To run `markdownlint` on the content of the pull request, we need that in the runner workspace, and the usual use of the standard [actions/checkout](https://github.com/actions/checkout) action does the job here:
 
 ```yaml
     - uses: actions/checkout@v2
@@ -83,7 +83,7 @@ This is what a matcher looks like, and it's the one I'm using to match the `mark
 }
 ```
 
-> The regular expression actually appears slightly more complex than it is, because the backslashes that are used to introduce the metacharacters `\d` (digit), `\s` (whitespace) and '\w' (alphanumeric) are escaped with backslashes in the JSON string value (so e.g. `\d` becomes `\\d`) ... so they don't get interpreted as escape characters themselves.
+> The regular expression actually appears slightly more complex than it is, because the backslashes that are used to introduce the metacharacters `\d` (digit), `\s` (whitespace) and `\w` (alphanumeric) are escaped with backslashes in the JSON string value (so e.g. `\d` becomes `\\d`). This is so they don't get interpreted as escape characters themselves.
 
 If we stare at the output earlier, we see this:
 
@@ -95,23 +95,24 @@ docs/b.md:10:10 MD011/no-reversed-links Reversed link syntax [(reversed)[https:/
 
 Applying the regular expression, we can see that it will indeed pick out the values as desired. Taking the last message line as an example, we get:
 
-|Message part|Matched by|Value for|
+|Regular expression part|Matched text|Value for|
 |-|-|-|
-|(start of line)|`^`||
-|`docs/b.md`|`([^:]*)`|`file`|
+|`^`|(start of line)||
+|`([^:]*)`|`docs/b.md`|`file`|
 |`:`|`:`||
-|`10`|`(\d+)`|`line`|
-|`:`|`:?`||
-|`10`|`(\d+)?`|`column`|
-|` `|`\s`||
-|`MD011/no-reversed-links`|`([\w-\/]*)`|`code`|
-|` `|`\s`||
-|`Reversed link syntax [(reversed)[https://qmacro.org]]`|`(.*)`|`message`|
-|(end of line)|`$`||
+|`(\d+)`|`10`|`line`|
+|`:?`|`:`||
+|`(\d+)?`|`10`|`column`|
+|`\s`|(a space)||
+|`([\w-\/]*)`|`MD011/no-reversed-links`|`code`|
+|`\s`|(a space)||
+|`(.*)`|`Reversed link syntax [...]`|`message`|
+|`$`|(end of line)||
+
 
 > In this table, the escaping backslashes have been removed, as they're only there to make the JSON string happy.
 
-The result of having a matcher like this is that as well as having the messages available in the workflow execution detail, we get the messages in context too, which is far more comfortable. They appear in the workflow execution summary, like this:
+The result of having a matcher like this is that as well as having the messages available in the workflow execution detail, we get the messages in context too, which is far more comfortable. They appear in the workflow execution summary, like this (see the "Annotations" section):
 
 ![workflow execution summary showing markdown lint output](/content/images/2021/05/execution-summary-messages.png)
 
@@ -139,7 +140,7 @@ Next, it's time to install the actual `markdownlint` tool, along with the custom
           markdownlint-cli markdownlint-rule-titlecase
 ```
 
-Using the `--no-package-lock` and `--no-save` options makes for a slightly cleaner environment, given what we're doing here (i.e. we are only really interested in NPM metadata for this current job's execution!).
+Using the `--no-package-lock` and `--no-save` options makes for a slightly cleaner environment, given what we're doing here (i.e. we are only really interested in NPM metadata for this current job's execution).
 
 ## Performing the linting
 
@@ -172,7 +173,7 @@ no-alt-text: true
 
 In other words, with this configuration, only those rules in that second stanza will be applied. Plus of course the explicit NPM package based title-case rule I've specified with the `--rules` option.
 
-> I've been [thinking about](https://github.community/t/best-practices-for-storing-organising-shell-scripts-for-workflow-steps/176822) where to store workflow related artifacts in a repository. I don't want to use `.github/workflows` for anything other than actual workflow definition files. So right now, I'm thinking along the lines of a hidden user/company based directory name (`.qmacro` here), to parallel `.github`.
+> I've been [thinking about](https://github.community/t/best-practices-for-storing-organising-shell-scripts-for-workflow-steps/176822) where to store workflow related artifacts in a repository. I don't want to use `.github/workflows` for anything other than actual workflow definition files. So right now, I'm thinking along the lines of a hidden user/organisation based directory name -- `.qmacro` in this example -- to parallel `.github`.
 
 The final thing to note in this invocation is that I'm passing a specific directory to be linted: `docs/`. This means only content there will be linted. I will probably want some sort of `.markdownlintignore` file at some stage, but for now this will do.
 
@@ -208,3 +209,5 @@ jobs:
           --rules markdownlint-rule-titlecase \
           docs/
 ```
+
+Everything works nicely, and I'm happy with the local and remote linting process. 

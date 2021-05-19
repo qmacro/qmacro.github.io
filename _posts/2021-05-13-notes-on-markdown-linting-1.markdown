@@ -6,7 +6,9 @@ date: '2021-05-13 13:04:21'
 
 _Here's what I found out when I started to look into linting Markdown content._
 
-Related to some work activity with a colleague, I found myself having to get my brain around Markdown linting. Of course, not what it is, but what the current possibilities are and how they might apply to my situation. I thought I'd write some notes on what I found (mostly for my future self).
+Thanks to some great direction and enlightenment from my colleague [Tobias](https://github.com/shegox), I found myself getting my brain around Markdown linting. Of course, not what it is, but what the current possibilities are and how they might apply to my situation. I thought I'd write some notes on what I found (mostly for my future self).
+
+(See also [Notes on Markdown linting - part 2](https://qmacro.org/2021/05/14/notes-on-markdown-linting-part-2/) where I learn how to get Markdown linting working in GitHub Actions).
 
 ## Which linter?
 
@@ -22,7 +24,7 @@ I went for `markdownlint` for a number of reasons:
 * I could install it on my macOS daily driver with `brew` (see later)
 * installing `mdl` involved RubyGems which I've never got on with
 * there was explicit information about using `markdownlint` in various editors (including in Vim)
-* my colleague had wanted to use a specific custom linting rule, something that `markdownlint` supports
+* Tobias had wanted to use a specific custom linting rule, something that `markdownlint` supports
 
 ## Installing markdownlint
 
@@ -51,7 +53,7 @@ Options:
 
 From the options we can see that it works in the way we'd expect - point it at one or more files, optionally give it some configuration, and go.
 
-But we can also see that it allows the use of custom rules, and my colleague who had pointed me in this general direction had wanted to use a custom rule for checking title case (and I still went ahead, despite the fact that I dislike title case intensely). The custom rules can be supplied in different forms as we can see from what can be specified with the `--rules` option; this particular one was of the exotic variety, i.e. an NPM package: [markdownlint-rule-titlecase](https://www.npmjs.com/package/markdownlint-rule-titlecase). In fact, there's a grouping of NPM packages that are custom rules for `markdownlint`, organised via the [markdownlint-rule keyword](https://www.npmjs.com/search?q=keywords:markdownlint-rule).
+But we can also see that it allows the use of custom rules. The custom rule that Tobias wanted to use was one that checks for title case (and I still went ahead, despite the fact that I dislike title case intensely :-)). The custom rules can be supplied in different forms as we can see from what can be specified with the `--rules` option; this particular one was of the exotic variety, i.e. an NPM package: [markdownlint-rule-titlecase](https://www.npmjs.com/package/markdownlint-rule-titlecase). In fact, there's a grouping of NPM packages that are custom rules for `markdownlint`, organised via the [markdownlint-rule keyword](https://www.npmjs.com/search?q=keywords:markdownlint-rule).
 
 ## Using markdownlint with Vim
 
@@ -84,8 +86,8 @@ Sounds fair, although a little worrying for me as I'm not going to be working wi
 ```shell
 # ~/Projects/gh/github.com/qmacro/qmacro.github.io (markdownlint-post *=)
 ; npm i --no-package-lock markdownlint-rule-titlecase
-npm WARN saveError ENOENT: no such file or directory, open '/Users/i347491/Projects/gh/github.com/qmacro/qmacro.github.io/package.json'
-npm WARN enoent ENOENT: no such file or directory, open '/Users/i347491/Projects/gh/github.com/qmacro/qmacro.github.io/package.json'
+npm WARN saveError ENOENT: no such file or directory, open '/Users/dj/Projects/gh/github.com/qmacro/qmacro.github.io/package.json'
+npm WARN enoent ENOENT: no such file or directory, open '/Users/dj/Projects/gh/github.com/qmacro/qmacro.github.io/package.json'
 npm WARN qmacro.github.io No description
 npm WARN qmacro.github.io No repository field.
 npm WARN qmacro.github.io No README data
@@ -129,4 +131,6 @@ _posts/2021-05-13-notes-on-markdown-linting.markdown:75:1 titlecase-rule Titleca
 
 Yes! Works nicely. Although like I say, I'm not sure why anyone would *want* to use such a rule ... I may write one that complains if you _do_ use title case. But I digress.
 
-I think I'd like to be able to run these custom rules in Vim too, but I'll leave that for another time. I'm satisfied at least at this stage to be able to lint my Markdown files at all. And the next thing is actually to be able to use `markdownlint` in a GitHub Actions workflow. I'll write that up in part 2.
+I think I'd like to be able to run these custom rules in Vim too, but I'll leave that for another time. I'm satisfied at least at this stage to be able to lint my Markdown files at all. And the next thing is actually to be able to use `markdownlint` in a GitHub Actions workflow. 
+
+Update: [I've written that up in part 2](https://qmacro.org/2021/05/14/notes-on-markdown-linting-part-2/).
