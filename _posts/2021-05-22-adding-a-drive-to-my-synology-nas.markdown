@@ -14,6 +14,8 @@ Earlier this month I took delivery of my first Network Attached Storage (NAS) de
 
 Synology also offer an expansion unit, a [DX517](https://www.synology.com/en-uk/products/DX517) which has 5 drive bays, and you can attach two of them to the DS1621+ adding up to a total of 6 + (5 + 5) = 16.
 
+> Thanks to [Frank](https://twitter.com/koehntopp) for answering all my early questions on Synology NAS systems.
+
 ## Initial setup
 
 I bought two Seagate IronWolf 4TB drives. I knew I wanted to go for the [Synology Hybrid Raid](https://www.synology.com/en-global/knowledgebase/DSM/tutorial/Storage/What_is_Synology_Hybrid_RAID_SHR) (SHR) disk arrangement (this has many advantages that appealed to me, not least the ability to add different sized drives in the future).
