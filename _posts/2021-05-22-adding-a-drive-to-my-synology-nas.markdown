@@ -52,7 +52,7 @@ Here's the newly inserted drive in a "Not initialized" state in the HDD/SDD list
 
 ## Adding the new drive to the storage pool
 
-Now the drive was known, I could add it to the storage pool. I did this with the "Action -> Add drive" menu item in the storage pool window, and the flow was fairly predictable, with the choice:
+Now the drive was known, I could add it to the storage pool. I did this with the "Action -> Add drive" menu item in the storage pool window, and the flow was fairly predictable, starting with the drive selection:
 
 ![adding the new drive - choosing the drive](/content/images/2021/05/storage-manager-storage-pool-add-drive-a.png)
 
