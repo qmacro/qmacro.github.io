@@ -70,6 +70,8 @@ Checking back over in the "HDD/SDD" display, the drive status has gone from "Not
 
 That was pretty much it - it wasn't an unexpected flow, but I was curious as to what would happen and how it would happen. Perhaps this helps someone who is also wondering. I've been writing this as I've been working through the flow, and now I've come to the end of this post, the status is still "Expanding" and shows that it's still less than 1% through a check of parity consistency - so it has a long way to go yet. I think I now realise why a "Hot Spare" might be useful. Anyway, I'll bring this post to an end now, and update it when the status changes.
 
+Update: 12 hours later, it's still at it - the status of the storage pool is "Expanding (Checking parity consistency 47.33%)". Some way to go yet.
+
 ---
 
 Further reading:
