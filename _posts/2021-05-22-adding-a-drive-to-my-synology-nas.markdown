@@ -20,13 +20,13 @@ I bought two Seagate IronWolf 4TB drives. I knew I wanted to go for the [Synolog
 
 SHR requires at least two drives, which is why two was the minimum purchase that made sense. But I also bought a couple more, a week later. It's amazing how cheap, relatively speaking, spinning disk storage has become.
 
-With the initial two drives, I'd set up a storage pool, following the instructions (it was pretty straightforward). Here's what the status of that storage pool looks like:
+With the initial two drives, I'd set up a storage pool, following the instructions (it was pretty straightforward). Here's what the status of that storage pool looked like:
 
 ![Status of Storage Pool 1 with 2 drives](/content/images/2021/05/storage-manager-storage-pool.png)
 
 There are a few things that are worth noting here:
 
-* SHR is using "1-drive fault tolerance" which basically means that only one of the two drives was usable for actual storage
+* SHR is using "1-drive fault tolerance" which basically means that the capacity of one entire drive is given over to data safety and not available for actual storage
 * this is why the "Total capacity" is at 3.63TB - remember that disk sizes are a bit misleading, this is effectively what you get with a 4TB drive, minus 0.01TB for overhead
 * the "Used capacity" is at 250.01GB, as I've created a single volume of 250GB so far in that storage pool
 
@@ -62,7 +62,7 @@ After a warning about any data being erased on the new drive, I was presented wi
 
 The result was as expected. The storage pool had this new drive listed, and went into an "Expanding" status (note the capacity is not yet shown as being increased):
 
-![the third drive shown in the storage pool, which was now being expanded](/content/images/2021/05/storage-manager-storage-pool-after-adding.png)
+![the third drive shown in the storage pool, which was now being expanded](/content/images/2021/05/storage-manager-storage-pool-after-add.png)
 
 Checking back over in the "HDD/SDD" display, the drive status has gone from "Not initialized" to "Healthy", and is showing an assignment to Storage Pool 1.
 
