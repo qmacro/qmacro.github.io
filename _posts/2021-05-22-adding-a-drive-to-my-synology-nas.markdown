@@ -72,6 +72,10 @@ That was pretty much it - it wasn't an unexpected flow, but I was curious as to 
 
 Update: 12 hours later, it's still at it - the status of the storage pool is "Expanding (Checking parity consistency 47.33%)". Some way to go yet.
 
+Further update: It's the next morning, and the storage pool is now showing "Healthy" again, and its new expanded state of 7.27TB:
+
+![storage pool in new expanded state](/content/images/2021/05/storage-manager-storage-pool-expanded.png)
+
 ---
 
 Further reading:
