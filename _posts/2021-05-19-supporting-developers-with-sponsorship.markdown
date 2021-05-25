@@ -15,3 +15,7 @@ But there's an avenue that resonates quite well with me, one that was introduced
 I've no idea how far I'll go yet, I'm just really starting. So far I'm sponsoring Alex for his work on Kubernetes, small machines and everything in between, and have also sponsored [Vidar Holen](https://github.com/koalaman), mostly for [shellcheck](https://github.com/koalaman/shellcheck), which has been a key part of how I'm [trying to improve my shell scripting](https://qmacro.org/2020/10/05/improving-my-shell-scripting). I've just started sponsoring [Rob Muhlestein](https://github.com/rwxrob) for everything that he shares and for his long term efforts to share knowledge with junior developers on his Twitch live streams.
 
 My contributions are minimal, but this is a scale thing - I would like to encourage you to consider doing the same and sponsoring someone for their work that collectively helps strengthen our community.
+
+---
+
+Update 25 May 2021 - I've now also started sponsoring [Lars Hvam](https://github.com/sponsors/larshp) for his work on ABAP outside the stack.
