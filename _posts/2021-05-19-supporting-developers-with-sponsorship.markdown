@@ -19,3 +19,4 @@ My contributions are minimal, but this is a scale thing - I would like to encour
 ---
 
 Update 25 May 2021 - I've now also started sponsoring [Lars Hvam](https://github.com/sponsors/larshp) for his work on ABAP outside the stack.
+Update 31 May 2021 - See also the [BACKERS file for fzf's creator June Gunn](https://github.com/junegunn/junegunn/blob/main/BACKERS.md)
