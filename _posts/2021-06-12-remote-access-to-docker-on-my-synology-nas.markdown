@@ -10,13 +10,13 @@ This post describes the steps I took to set up remote access to Docker running o
 
 ## Introduction
 
-Having followed the container revolution for a while, I've become more and more enamoured with the idea of disposable workspaces, services and apps that can be instantly reified and leave no trace when they're gone. This was one of the reasons I opted for a Synology NAS, my first NAS device (see [Adding a drive to my Synology NAS](https://qmacro.org/2021/05/22/adding-a-drive-to-my-synology-nas/), because it is to act not only as a storage device, but as a container server.
+Having followed the container revolution for a while, I've become more and more enamoured with the idea of disposable workspaces, services and apps that can be instantly reified and leave no trace when they're gone. This was one of the reasons I opted for a Synology NAS, my first NAS device (see [Adding a drive to my Synology NAS](https://qmacro.org/2021/05/22/adding-a-drive-to-my-synology-nas/)), because it is to act not only as a storage device, but as a container server.
 
-The Docker experience out of the box with the NAS's OS, DiskStation Manager (DSM) is very pleasant graphical user interface; I've been very happy with the way it works, especially in the initial discovery phase.
+The Docker experience out of the box with the NAS's operating system, DiskStation Manager (DSM), is very pleasant, via a graphical user interface. I've been very happy with the way it works, especially in the initial discovery phase.
 
 ![A screenshot of the Docker app installed on the Synology NAS, showing two running containers](/content/images/2021/06/docker-gui.png)
 
-But for this old mainframe and Unix dinosaur, a command line interface with access to a myriad remote servers is a much more appealing prospect, and the separation of client and server executables in Docker plays to the strengths of such a setup. So I wanted to use my Docker command line interface (CLI) `docker` to interact with the resources on the Synology NAS's Docker service. Not only for the sheer convenience, but also to be able to spin up CLIs and TUIs, as remote containers, and have seamless access to them from the comfort of my local machine command line.
+But for this old mainframe and Unix dinosaur, a command line interface with access to a myriad remote servers is a much more appealing prospect, and the separation of client and server executables in Docker plays to the strengths of such a setup. So I wanted to use my Docker command line interface (CLI) `docker` to interact with the resources on the Synology NAS's Docker service. Not only for the sheer convenience, but also to be able to spin up CLIs and TUIs, as remote containers, and have seamless access to them from the comfort of my local machine's command line.
 
 ## Setup steps
 
@@ -61,7 +61,7 @@ Nope, no existing `docker` group, at least in the regular place.
 
 #### Add the docker group, with the administrator user as a member
 
-Time to create the group then, using the DSM specific command:
+Time to create the group then, using the DSM specific command; I specified the `administrator` user to be added directly, as I did it:
 
 ```bash
 administrator@ds1621plus:~$ sudo synogroup --add docker administrator
@@ -79,7 +79,7 @@ administrator@ds1621plus:~$ grep -i docker /etc/group
 docker:x:65538:administrator
 ```
 
-Great, `docker` group now exists, with `administrator` as member.
+Great, the `docker` group now exists, with `administrator` as a member.
 
 #### Change the group owner of the Docker socket
 
@@ -135,7 +135,7 @@ However, trying a basic connection failed at first; running a simple `ssh`-based
 
 "_Exit status 127, please make sure the URL is valid, and Docker 18.09 or later is installed on the remote host: stderr=sh: docker: command not found_"
 
-In desparation I even tried explicit values (`ssh -l administrator -p 2222 ds1621plus docker -v`) but got the same message.
+In desperation I even tried explicit values (`ssh -l administrator -p 2222 ds1621plus docker -v`) but got the same message.
 
 It turns out that on SSH access, the environment variables are not set the same as when you connect via `ssh` for an actual login session. Crucially, the value of the `PATH` environment variable was rather limited. Here's the entirety of the environment on an `ssh` based invocation of `env`:
 
@@ -154,15 +154,17 @@ SSH_CONNECTION=192.168.86.50 54644 192.168.86.155 2222
 _=/usr/bin/env
 ```
 
+We can see that there are only four directories in the `PATH`: `/usr/bin`, `/bin`, `/usr/sbin` and `/sbin`.
+
 On the NAS, the `docker` client executable was in `/usr/local/bin`, not in the `PATH`; this was the cause of the error above - via a simple `ssh` invocation, the `docker` command wasn't found.
 
-So I had to address this.
+So I had to address this, and I did via SSH's "user environment" feature.
 
 #### Turn on user environment support in sshd
 
 SSH and its implementation, on client and server, is extremely accomplished, which is code for "there's so much about SSH I don't yet know". One thing I learned about in this mini adventure is that the SSH daemon has support for "user environments", via the `.ssh/environment` file, which is described in the [FILES section of the sshd documentation](http://man.openbsd.org/sshd.8#FILES).
 
-Basically, setting the `PATH` to include `/usr/local/bin`, via the support for user environments, was exactly what I needed. What's more, I was not having to "hack" anything on the NAS (such as copying or symbolic-linking `docker` to another place so that it would be accessible) that I might regret later.
+Basically, setting the `PATH` to include `/usr/local/bin`, via this support for user environments, was exactly what I needed. What's more, I was not having to "hack" anything on the NAS (such as copying or symbolic-linking `docker` to another place so that it would be accessible) that I might regret later.
 
 First, though, I needed to turn on user environment support on the SSH daemon service on the NAS. For this, I uncommented `PermitUserEnvironment` in `/etc/ssh/sshd_config` and set the value to `yes`, with this result:
 
@@ -173,11 +175,11 @@ PermitUserEnvironment yes
 
 I then restarted the NAS; I could have messed around finding a neater way just to restart the SSH daemon, but I'd read about some other gotchas doing this, and I was the only one using the NAS at the time, so I went for it.
 
-#### Include docker's location in the PATH variable in .ssh/environment
+#### Add the location of the docker executable in the PATH variable via .ssh/environment
 
 Now I could use the `.ssh/environment` file in the `administrator` user's home directory to set the value of the `PATH` environment variable to what I needed.
 
-To do this, I just logged on remotely to the NAS via `ssh`, and asked `env` to tell me what this was, in fact, I just wrote the output to the `.ssh/environment` file directly:
+To do this, I just started a remote login session on the NAS via `ssh`, and asked `env` to tell me what this was and also write it to the `.ssh/environment` file directly:
 
 ```bash
 ; ssh ds1621plus
@@ -186,7 +188,7 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/syno/sbin:/usr/syno/bin:/usr/local/sbin:
 administrator@ds1621plus:~$
 ```
 
-And that was it; now this `PATH` value was applicable when running commands remotely via `ssh`. So the remote invocation of `docker` now worked:
+And that was it; when running commands remotely via `ssh`, this `PATH` value was now applicable. So the remote invocation of `docker` now worked:
 
 ```bash
 ; ssh ds1621plus docker -v
