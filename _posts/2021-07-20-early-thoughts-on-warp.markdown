@@ -48,4 +48,8 @@ Whatever the answers to these questions turn out to be (and please note that I'v
 
 And that's fresh thinking and energy going into what I think is one of the most misunderstood superpowers of today's computing space. So whatever this team comes up with, it's an automatic thumbs up for me. I may come to enjoy all Warp's features, or I may only like some of them. But I love the focus and [brain power](https://www.warp.dev/about-us) that's going into Warp.
 
+Here's a picture of Warp, from the [How Warp works](https://blog.warp.dev/how-warp-works/) article, which I enjoyed reading.
+
+![A picture of Warp](https://blog.warp.dev/content/images/2021/07/pasted-image-0-2.png)
+
 Make it so!
