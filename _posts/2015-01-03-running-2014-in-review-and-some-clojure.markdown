@@ -14,67 +14,63 @@ tags:
 - vim
 ---
 
-
 I enjoyed running in 2014 and logged each one via [Endomondo](https://www.endomondo.com/profile/1074038). This post is a random collection of thoughts about the running, the data and some simple analysis, in Clojure.
 
+## Watches
 
-# Watches
+![Garmin Forerunner 110](/content/images/2015/01/garmin110.jpeg)
 
-<div class="wp-caption alignright" id="attachment_1825" style="width: 160px">[![Garmin Forerunner 110](/content/images/2015/01/garmin110-150x150.jpeg)](/content/images/2015/01/garmin110.jpeg)Garmin Forerunner 110
-
-</div>I’ve been using a [Garmin Forerunner 110](https://buy.garmin.com/en-GB/GB/watches-wearable-technology/wearables/forerunner-110/prod63511.html) watch which has been very good, on the whole, although the USB cable and connectivity left something to be desired.
+I’ve been using a [Garmin Forerunner 110](https://buy.garmin.com/en-GB/GB/watches-wearable-technology/wearables/forerunner-110/prod63511.html) watch which has been very good, on the whole, although the USB cable and connectivity left something to be desired.
 
 I bought my wife Michelle a [TomTom Runner Cardio](http://www.tomtom.com/en_gb/sports/running/products/runner-cardio-gps-watch/white-red/) for her birthday back in August, and have been intrigued by it ever since. And she bought me one for Christmas, so I’m trying that out for 2015. I went out on my first run of this year with it [just this morning](https://twitter.com/qmacro/status/551299062616817664), in fact.
 
-
-# Run data
+## Run data
 
 But back to 2014. I completed 101 runs (1,281.22km) and they’re all logged in Endomondo. I don’t have the premium subscription, just the basic, but the features are pretty good. There’s an option to upload from the Garmin watch, via a browser plugin which (on this OSX machine) has become pretty flakey recently and now only works in Safari, but once uploaded, the stats for each run are shown rather nicely:
 
-<div class="wp-caption alignnone" id="attachment_1826" style="width: 551px">[![A run on Endomondo](/content/images/2015/01/Screen-Shot-2015-01-03-at-10.16.43-1024x811.png)](/content/images/2015/01/Screen-Shot-2015-01-03-at-10.16.43.png)A run on Endomondo
+![A run on Endomondo](/content/images/2015/01/Screen-Shot-2015-01-03-at-10.16.43.png)
 
-</div>Endomondo also offers simple statistics and charts, and a tabular overview of the runs, that looks like this:
+Endomondo also offers simple statistics and charts, and a tabular overview of the runs, that looks like this:
 
-<div class="wp-caption alignnone" id="attachment_1827" style="width: 541px">[![Tabular view of runs in Endomondo](/content/images/2015/01/Screen-Shot-2015-01-03-at-10.19.25-1024x368.png)](/content/images/2015/01/Screen-Shot-2015-01-03-at-10.19.25.png)Tabular view of runs in Endomondo
+![Tabular view of runs in Endomondo](/content/images/2015/01/Screen-Shot-2015-01-03-at-10.19.25.png)
 
-</div>One thing that bothered me, at least with the free service, is that there was no option to download this data. So I paged through the tabular data, and copy/pasted the information into a Google Sheet, my favourite gathering-and-stepping-off point for a lot of my data munging.
+One thing that bothered me, at least with the free service, is that there was no option to download this data. So I paged through the tabular data, and copy/pasted the information into a Google Sheet, my favourite gathering-and-stepping-off point for a lot of my data munging.
 
-<div class="wp-caption alignnone" id="attachment_1829" style="width: 534px">[![Running history in a Google Sheet](/content/images/2015/01/Screen-Shot-2015-01-03-at-11.31.28.png)](/content/images/2015/01/Screen-Shot-2015-01-03-at-11.31.28.png)Running history in a Google Sheet
+![Running history in a Google Sheet](/content/images/2015/01/Screen-Shot-2015-01-03-at-11.31.28.png)
 
-</div>If nothing else, as long as the data is largely two dimensional, I’ve found it’s a good way to visually inspect the data at 10000 feet. It also affords the opportunity for some charting action, so I had a look at my pace over the year, to see how it had improved. This is the result:
+If nothing else, as long as the data is largely two dimensional, I’ve found it’s a good way to visually inspect the data at 10000 feet. It also affords the opportunity for some charting action, so I had a look at my pace over the year, to see how it had improved. This is the result:
 
-<div class="wp-caption alignnone" id="attachment_1830" style="width: 540px">[![Pace improvement in 2014](/content/images/2015/01/Screen-Shot-2015-01-03-at-11.33.37-1024x519.png)](/content/images/2015/01/Screen-Shot-2015-01-03-at-11.33.37.png)Pace improvement in 2014
+![Pace improvement in 2014](/content/images/2015/01/Screen-Shot-2015-01-03-at-11.33.37.png)
 
-</div>The three peaks in Feb, Jun and Sep are a couple of initial runs I did with Michelle plus her first 8km in London (now she’s in double km figures and has a decent pace, I’m very proud of her).
+The three peaks in Feb, Jun and Sep are a couple of initial runs I did with Michelle plus her first 8km in London (now she’s in double km figures and has a decent pace, I’m very proud of her).
 
-
-# Some Analysis in Clojure
+## Some Analysis in Clojure
 
 I could have gone further with the analysis in the spreadsheet itself, but I’m also just starting to try and teach myself [Clojure](http://clojure.org/), and thought this would be a nice little opportunity for a bit of data retrieval and analysis.
 
-
 ## Exposing the data
 
-<div class="wp-caption alignright" id="attachment_1831" style="width: 310px">[![Start of the JSON representation of the run data](/content/images/2015/01/Screen-Shot-2015-01-03-at-11.41.19-300x219.png)](/content/images/2015/01/Screen-Shot-2015-01-03-at-11.41.19.png)Start of the JSON representation of the run data
+[![Start of the JSON representation of the run data](/content/images/2015/01/Screen-Shot-2015-01-03-at-11.41.19-300x219.png)
 
-</div>Of course, the first thing to do was to make the data in the Google Sheet available, which I did with my trusty [SheetAsJSON](/2013/10/04/sheetasjson-google-spreadsheet-data-as-json/) mechanism. It [returned](http://bit.ly/qmacro-running-2014) a nice JSON structure that contained all the data that I needed.
+Of course, the first thing to do was to make the data in the Google Sheet available, which I did with my trusty [SheetAsJSON](/2013/10/04/sheetasjson-google-spreadsheet-data-as-json/) mechanism. It [returned](http://bit.ly/qmacro-running-2014) a nice JSON structure that contained all the data that I needed.
 
 So now I had something that I could get Clojure to retrieve. Here follows some of what I did.
 
-
 ## Creating the project
 
-I’m using [Leiningen](http://leiningen.org/), which is amazing in a combined couple of ways: it Just Works(tm), and it uses Maven.  My only previous experience of Maven had me concluding that Maven was an absolute nightmare, but Leiningen has completely changed my mind. Although I don’t actually have to think about Maven at all, Leiningen does it all for me, and my hair is not on fire (for those of you wondering, Leiningen’s tagline is “for automating Clojure projects without setting your hair on fire”, which I like).
+I’m using [Leiningen](http://leiningen.org/), which is amazing in a combined couple of ways: it Just Works(tm), and it uses Maven.  My only previous experience of Maven had me concluding that Maven was an absolute nightmare, but Leiningen has completely changed my mind. Although I don’t actually have to think about Maven at all, Leiningen does it all for me, and my hair is not on fire (for those of you wondering, Leiningen’s tagline is "for automating Clojure projects without setting your hair on fire", which I like).
 
 So I used Leiningen to create a new application project:
 
+```shell
 lein new app running-stats
+```
 
 and used my joint-favourite editor (Vim, obviously, along with Atom), with some super Clojure-related plugins such as [vim-fireplace,](https://github.com/tpope/vim-fireplace) to edit the core.clj file. (more on my Vim plugins another time).
 
 Here’s a short exerpt from what I wrote:
 
-[![Screen Shot 2015-01-03 at 12.51.47](/content/images/2015/01/Screen-Shot-2015-01-03-at-12.51.47.png)](/content/images/2015/01/Screen-Shot-2015-01-03-at-12.51.47.png)
+![Screen Shot 2015-01-03 at 12.51.47](/content/images/2015/01/Screen-Shot-2015-01-03-at-12.51.47.png)
 
 Let’s look at this code step by step.
 
@@ -167,5 +163,3 @@ As I embark upon my journey in this direction, I realise that’s a very true st
  
 
  
-
-
