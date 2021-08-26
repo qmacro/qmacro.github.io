@@ -8,7 +8,7 @@ _One of the ways I learn is by reading and sometimes rewriting other people's sc
 
 My friend [Christian Drumm](https://twitter.com/ceedee666) published a nice post this week on [Adapting the Bitwarden CLI with Shell Scripting](https://www.drumm.sh/blog/bw-cli), where he shared a script he wrote to conveniently grab passwords into his paste buffer at the command line.
 
-It's a good read and contains some nice CLI animations too. In the summary, Christian remarks that there may be some areas for improvement. I don't know about that, and I'm certainly no "shell scripting magician" but I thought I'd have a go at modifying the script to perhaps introduce some further Bash shell and `jq` features to dig into.
+It's a good read and contains some nice CLI animations too. In the summary, Christian remarks that there may be some areas for improvement. I don't know about that, and I'm certainly no "shell scripting magician" but I thought I'd have a go at modifying the script to perhaps introduce some further Bash shell, `jq` and `fzf` features to dig into.
 
 ## Emulating the CLI
 
@@ -137,18 +137,22 @@ This call is `main "$@"` which just passes on any and all values that were speci
 
 I like to qualify my variables, so use `local` here, which is a synonym for `declare`. I wrote about this in [Understanding declare](https://qmacro.org/autodidactics/2020/10/08/understanding-declare/) in case you want to dig in further.
 
-Because I have my emulator earlier, I can make almost the same-shaped call to the Bitwarden CLI, passing what was specified in `$searchterm` and retrieving the results (a JSON array) in the `logins` variable.
+Because I have my emulator earlier, I can make almost the same-shaped call to the Bitwarden CLI, passing what was specified in `searchterm` and retrieving the results (a JSON array) in the `logins` variable.
 
 Next comes perhaps the most involved part of the script, which results in a value being stored in the `selection` variable (if nothing is selected or available, then this will be empty, which we'll deal with too).
 
-The value for `selection` is determined from a combination of `jq` and `fzf`, which are also the two commands that Christian uses. This is the invocation:
+**Determining the selection part 1 - with `jq`**
+
+The value for `selection` is determined from a combination of `jq` and `fzf`, which are also the two commands that Christian uses.
+
+This is the invocation:
 
 ```Bash
 jq -r '.[] | "\(.name)\t\(.login)"' <<< "$logins" \
     | fzf --reverse --with-nth=1 --delimiter="\t" --select-1 --exit-0
 ```
 
-The first thing to notice is that I'm using a [here string](https://tldp.org/LDP/abs/html/x17837.html) which is like a [here document](https://tldp.org/LDP/abs/html/here-docs.html), but it's just the variable that gets expanded and fed to the STDIN of the command. This means that whatever is in `logins` gets expanded and passed to the STDIN of `jq`.
+The first thing to notice is that I'm using `<<<` which is a [here string](https://tldp.org/LDP/abs/html/x17837.html) - it's like a [here document](https://tldp.org/LDP/abs/html/here-docs.html), but it's just the variable that gets expanded and fed to the STDIN of the command. This means that whatever is in `logins` gets expanded and passed to the STDIN of `jq`.
 
 Given the emulation of the Bitwarden CLI above, a value that might be in `logins` looks like this:
 
@@ -205,11 +209,13 @@ baz     {"username":"bazuser","password":"hunter2"}
 
 Note that the `-r` option is supplied to `jq` to produce this raw output.
 
+**Determining the selection part 2 - with `fzf`**
+
 This is then passed to `fzf`, which is passed a few more options than we saw with Christian's script. Taking them one at a time:
 
 * `--reverse` - this is the same as Christian and is a layout option that causes the selection to be displayed from the top of the screen.
 * `--delimiter="\t"` - this tells `fzf` how the input fields are delimited, and as we're using a tab character to separate the name and login information, we need to tell `fzf` (using just spaces would give us issues with spaces in the values of the names).
-* `--with-nth=1` - this says "only use the value of the first field (number 1) in the selection list", where the fields are delimited as instructed (with the tab character here). This means that only the value of the "name" is presented, not the "login" (username and password) details.
+* `--with-nth=1` - this says "only use the value of the first field in the selection list", where the fields are delimited as instructed (with the tab character here). This means that only the value of the "name" is presented, not the "login" (username and password) details.
 * `--select-1` - this tells `fzf` that if there's only one item in the selection anyway, just automatically select it and don't show any selection dialogue.
 * `--exit-0` - this tells `fzf` to just end if there's nothing to select from at all (which would be the case if the invocation to `bw list items --search` returned nothing, i.e. an empty array).
 
@@ -219,11 +225,15 @@ Here's what the selection looks like if no search string is specified, i.e. it's
 
 Once we're done with determining the selection, we check to see that there is actually a value in `selection` and proceed to first show the name and then to call the `copy_uname_and_passwd` function.
 
-It's worth highlighting that while `fzf` only *presents* the names in the selection list, it will return the entire line that was selected, which is what we want. In other words, given the selection in the screenshot above, if the name "E45 S4HANA 2020 Sandbox" is chosen, then `fzf` will emit this to STDOUT (again, remember that there's a tab character between the name "E45 S4HANA 2020 Sandbox" and the JSON object with the login details):
+**Displaying the name and extracting the login details**
+
+It's worth highlighting that while `fzf` only *presents* the names in the selection list, it will *return* the entire line that was selected, which is what we want. In other words, given the selection in the screenshot above, if the name "E45 S4HANA 2020 Sandbox" is chosen, then `fzf` will emit this to STDOUT:
 
 ```
 E45 S4HANA 2020 Sandbox {"username":"e45user","password":"sappass"}
 ```
+
+(again, remember that there's a tab character between the name "E45 S4HANA 2020 Sandbox" and the JSON object with the login details).
 
 So to just print the name, we can use [shell parameter expansion](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html) to pick out the part we want. The `${parameter%%word}` form is appropriate here; this will remove anything with longest matching pattern first.
 
