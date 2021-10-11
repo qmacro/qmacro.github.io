@@ -28,7 +28,7 @@ If you're writing shell scripts, get `shellcheck` installed and wired up to your
 
 My son Joseph used to write a lot of Go, and I was fascinated by the philosophy of what the [`gofmt`](https://golang.org/cmd/gofmt/) formatting tool represented. Go programmers all expected code to be formatted the same way via this tool, and it's natural for them to have their code (re)formatted when they save it in the editor. I know that this is anathema to some programmers, which is why it caught my eye.
 
-There are formatters for other languages that work this way now (and I'm sure there were before, too) such as `rustfmt` ([used by Mr Rob, which is what gave me the idea](https://gitlab.com/rwxrob/dotfiles/-/blob/master/common/vim/vimrc#L174)) and there's a version for shell scripts called [`shfmt`](https://github.com/mvdan/sh), described as "a shell parser, formatter and interpreter".
+There are formatters for other languages that work this way now (and I'm sure there were before, too) such as `rustfmt` (used by Mr Rob, which is what gave me the idea) and there's a version for shell scripts called [`shfmt`](https://github.com/mvdan/sh), described as "a shell parser, formatter and interpreter".
 
 Having experimented with the `shfmt` options, I ended up choosing a few that would help me stay close to the style guide:
 
