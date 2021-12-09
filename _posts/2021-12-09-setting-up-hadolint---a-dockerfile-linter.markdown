@@ -8,7 +8,7 @@ _Having something to help me write better Dockerfiles is useful. Here's what I d
 
 I'm writing more Dockerfiles, not least because I'm using a [development container](https://github.com/qmacro/dotfiles/tree/main/devcontainer) for 95% of my daily work, but also because the dockerisation of tools and environments appeals to me greatly. I came across [hadolint][hadolint] which is a Dockerfile linter written in Haskell (hence the name, I guess).
 
-I'm a [big fan](https://qmacro.org/2021/05/19/supporting-developers-with-sponsorship/) of [shellcheck][shellcheck] (see the post [Improving my shell scripting](https://qmacro.org/2020/10/05/improving-my-shell-scripting/)) and the structured way it communicates the information, warning and error messages with codes in a standard format (SCnnnn). So I was immediately attracted to `hadolint` in two ways - first, that it referenced [shellcheck][shellcheck], but mostly because it implemented and managed its own [rules][https://github.com/hadolint/hadolint#rules] in a very similar way - each of them with a code in a standard format (DLnnnn) and individually documented too.
+I'm a [big fan](https://qmacro.org/2021/05/19/supporting-developers-with-sponsorship/) of [shellcheck][shellcheck] (see the post [Improving my shell scripting](https://qmacro.org/2020/10/05/improving-my-shell-scripting/)) and the structured way it communicates the information, warning and error messages with codes in a standard format (SCnnnn). So I was immediately attracted to `hadolint` in two ways - first, that it referenced [shellcheck][shellcheck], but mostly because it implemented and managed its own [rules](https://github.com/hadolint/hadolint#rules) in a very similar way - each of them with a code in a standard format (DLnnnn) and individually documented too, just like `shellcheck`.
 
 There are different points in your workflow that you can integrate such a tool - these are nicely described in a dedicated [integration](https://github.com/hadolint/hadolint/blob/master/docs/INTEGRATION.md) page. I wanted to have the linting happen in my editor, and am already using the [Asynchronous Linting Engine][ALE] so it was quite straightforward. Here's what I did:
 
@@ -29,11 +29,20 @@ let g:ale_linters = {
       \ }
 ```
 
+Because I sometimes create Dockerfiles with different names, I also added a new section to my Vim configuration telling it that these files are also to be treated as Dockerfiles:
+
+```vimrc
+augroup filetypes
+  au!
+  autocmd BufNewFile,BufRead Dockerfile* set filetype=dockerfile
+augroup END
+```
+
 Now I get lovely warnings and errors in the left hand column so that I can improve:
 
 ![warnings and errors in my editor from hadolint](/content/images/2021/12/hadolint.png)
 
-In case you're wondering, the details are shown at the bottom of my editor when I select the lines, and they are, in order:
+In case you're wondering, the message details are shown at the bottom of my editor when I select the lines, and they are (in order):
 
 * [DL3007](https://github.com/hadolint/hadolint/wiki/DL3007) Using latest is prone to errors if the image will ever update. Pin the version explicitly to a release tag.
 * [DL4000](https://github.com/hadolint/hadolint/wiki/DL4000) MAINTAINER is deprecated.
