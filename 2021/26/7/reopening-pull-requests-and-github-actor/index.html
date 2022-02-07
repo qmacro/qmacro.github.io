@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reopening pull requests and GITHUB_ACTOR</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Reopening pull requests and GITHUB_ACTOR</h1>
+
+<time datetime="2021-07-26">26 Jul 2021</time><a href="/blog/tags/autodidactics/" class="post-tag">autodidactics</a><a href="/blog/tags/github-actions/" class="post-tag">github-actions</a>
+
+<p><em>Today I learned that the <code>GITHUB_ACTOR</code> on a re-opened pull request reflects the person re-opening it, not the original creator.</em></p>
+<p>Over on the <a href="https://github.com/SAP-docs/contribution-guidelines">Community Guidelines</a> content for SAP's <a href="https://blogs.sap.com/2021/05/20/introducing-the-open-documentation-initiative/">Open Documentation Initiative</a> there was a <a href="https://github.com/SAP-docs/contribution-guidelines/pull/64">recent pull request</a> (PR) that was opened by user <code>cyberpinguin</code>.</p>
+<p>We have a GitHub Actions workflow <a href="https://github.com/SAP-docs/contribution-guidelines/blob/main/.github/workflows/disallowed-content-checks.yaml">Disallowed content checker</a> that ensures that contributions coming in via PRs are targeting the appropriate content. The workflow <a href="https://github.com/SAP-docs/contribution-guidelines/runs/2953360170?check_suite_focus=true">was duly triggered</a>, as expected, and appropriately <a href="https://github.com/SAP-docs/contribution-guidelines/pull/64#issuecomment-871460299">alerted</a> the user that the contribution was outside of the desired target location.</p>
+<p>We want to allow administrators of the repo to be able to maintain content across the whole repo, rather than restrict them, and we want those who are not administrators to be restricted. We do this by checking the collaborator permissions, using the <a href="https://docs.github.com/en/rest/reference/repos#get-repository-permissions-for-a-user">Collaborators</a> section of the GitHub API, like this:</p>
+<pre class="language-shell"><code class="language-shell">gh api <span class="token punctuation">\</span><br>  --jq .permission <span class="token punctuation">\</span><br>  <span class="token string">"/repos/<span class="token variable">$GITHUB_REPOSITORY</span>/collaborators/<span class="token variable">$GITHUB_ACTOR</span>/permission"</span></code></pre>
+<p>So far so good.</p>
+<p>Shortly after opening the PR, the user <a href="https://github.com/SAP-docs/contribution-guidelines/pull/64#event-4983349361">closed</a> it (by mistake, I think), and it was <a href="https://github.com/SAP-docs/contribution-guidelines/pull/64#event-4987076185">re-opened</a> by my colleague and fellow Contribution Guidelines administrator <a href="https://github.com/je-hal">Jens</a>. As a result of this re-opening of the PR, the workflow was triggered again.</p>
+<p>However, this time, no disallowed content alert was raised. Why was this?</p>
+<p>Looking at <a href="https://github.com/SAP-docs/contribution-guidelines/runs/3006185835?check_suite_focus=true">the execution for that workflow run</a>, it's clear that the steps that would have caused an alert to be issued were skipped; the skip logic looks like this:</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token punctuation">-</span> <span class="token key atrule">id</span><span class="token punctuation">:</span> check_files_changed<br>  <span class="token key atrule">name</span><span class="token punctuation">:</span> Checks if disallowed content has been changed<br>  <span class="token key atrule">if</span><span class="token punctuation">:</span> env.repo_permission <span class="token tag">!=</span> 'admin'<br>  <span class="token key atrule">uses</span><span class="token punctuation">:</span> dorny/paths<span class="token punctuation">-</span>filter@v2<br>  <span class="token key atrule">with</span><span class="token punctuation">:</span><br>    <span class="token key atrule">list-files</span><span class="token punctuation">:</span> <span class="token string">'shell'</span><br>    <span class="token key atrule">filters</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string"><br>      disallowed:<br>        - '!docs/**'</span><br><span class="token punctuation">-</span> <span class="token key atrule">id</span><span class="token punctuation">:</span> comment_on_disallowed<br>  <span class="token key atrule">if</span><span class="token punctuation">:</span> steps.check_files_changed.outputs.disallowed == 'true'<br>  <span class="token punctuation">...</span></code></pre>
+<p>So it would seem that the permissions for the <code>GITHUB_ACTOR</code> in this subsequent execution were 'admin'. Why?</p>
+<p>Because, as it turns out (and I confirmed this with a simple test just now) the value of <code>GITHUB_ACTOR</code> is set to the user who opens -- or re-opens -- a PR. In this case it was Jens, an administrator.</p>
+<p>This is not what I'd expected, so I thought I'd write it up and share it.</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2021/6/8/tmux-output-formatting/">tmux output formatting</a></li><li>Previous: <a href="/blog/2021/21/7/unix-tooling-join-don-t-extend/">Unix tooling - join, don&#39;t extend</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2021/26/7/reopening-pull-requests-and-github-actor/ -->
+  </body>
+</html>

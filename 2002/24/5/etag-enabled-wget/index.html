@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETag-enabled wget</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>ETag-enabled wget</h1>
+
+<time datetime="2002-05-24">24 May 2002</time>
+
+<p>Well, a little evening hack while watching <a href="http://www.inspectormorse.co.uk/">Inspector Morse</a> has produced a minimalist script <code>wget.pl</code> – a tiny wrapper around the <strong>wget</strong> command so that you can be more polite when retrieving HTTP based information – in particular RSS feeds.</p>
+<p>The idea was sparked by <a href="http://www.pocketsoap.com/weblog">Simon</a>'s <a href="http://www.pocketsoap.com/weblog/stories/2002/05/19/bdgToEtags.html">post</a> about using HTTP 1.1's ETag and If-None-Match headers. I wanted to write as small and minimal a script as possible, and rely on as little as possible (hence the cramped code style), in honour of <a href="http://www.oreillynet.com/%7Erael/lang/perl/blosxom">Blosxom</a>, and of course <a href="http://www.oreillynet.com/%7Erael/lang/perl/blagg">Blagg</a>, the RSS aggregator, for which the script was designed. You should be able to drop this script reference into Blagg by specifying the RSS retrieval program like this:</p>
+<p><code>my $get_prog = '/path/to/wget.pl';</code></p>
+<p>Don’t forget, the ETag advantage is only to be had from static files served by HTTP. Information generated on the fly, such as that from CGI scripts (such as <a href="http://www.oreillynet.com/%7Erael/lang/perl/blosxom">Blosxom</a>) aren’t given ETags.</p>
+<p></p>
+<p><strong>Update 06/06/2012</strong></p>
+<p>It’s now just over 10 years since I originally wrote this post, and in relation to a <a href="http://scn.sap.com/community/technology-innovation/blog/2012/06/03/restful-apis-from-scratch-lessons-learnt-so-far">great post on REST by Sascha Wenninger over on the SAP Community Network</a>, I’ve just re-found the script — thanks to a <a href="http://www.markbaker.ca/blog/2003/04/etag-enabled-wget-wrapper/">comment on Mark Baker’s blog</a> that <a href="http://www.w3.org/2001/12/rubyrdf/pack/tests/scutter/wget.pl">pointed to wget.pl being part of a Ruby RDF test package</a>. Thanks mrG, whoever you are!</p>
+<p>Here’s the script in its rude entirety for your viewing pleasure.</p>
+<pre class="language-perl"><code class="language-perl"><span class="token comment">#!/usr/bin/perl -w</span><br><br><span class="token comment"># ETag-aware wget</span><br><span class="token comment"># Uses wget to more politely retrieve HTTP based information</span><br><span class="token comment"># DJ Adams</span><br><span class="token comment"># Version 0+1b</span><br><br><span class="token comment"># wget --header='If-None-Match: "3ea6d375;3e2eee38"' http://www.w3.org/</span><br><br><span class="token comment"># Changes</span><br><span class="token comment"># 0+1b 2003-02-03 dja added User-Agent string to wget call</span><br><span class="token comment"># 0+1 original version</span><br><br><span class="token keyword">use</span> strict<span class="token punctuation">;</span><br><span class="token keyword">my</span> <span class="token variable">$cachedir</span> <span class="token operator">=</span> <span class="token string">'/tmp/etagcache'</span><span class="token punctuation">;</span> <span class="token comment"># change this if you want</span><br><span class="token keyword">my</span> <span class="token variable">$etagfile</span> <span class="token operator">=</span> <span class="token string">"$cachedir/"</span><span class="token operator">.</span>unpack<span class="token punctuation">(</span><span class="token string">"H*"</span><span class="token punctuation">,</span> <span class="token variable">$ARGV</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <br><span class="token keyword">my</span> <span class="token variable">$etag</span> <span class="token operator">=</span> <span class="token string">`cat $etagfile 2>/dev/null`</span><span class="token punctuation">;</span><br><span class="token variable">$etag</span> <span class="token operator">=~</span> <span class="token regex">s/\\"/"/g</span><span class="token punctuation">;</span><br><span class="token variable">$etag</span> <span class="token operator">=~</span> <span class="token regex">s/^ETag: (.*?)\n$/$1/</span> <span class="token operator">and</span> <span class="token variable">$etag</span> <span class="token operator">=</span> <span class="token string">qq[--header='If-None-Match: $etag']</span><span class="token punctuation">;</span><br><br><span class="token keyword">my</span> <span class="token variable">$com</span><span class="token operator">=</span><span class="token string">"wget -U 'blagg/0+4i+ (wget.pl/0+1b)' --timeout=60 -s --quiet $etag -O - $ARGV[0]"</span><span class="token punctuation">;</span><br><span class="token keyword">print</span> <span class="token string">"Running: $com"</span><span class="token punctuation">;</span><br><br><span class="token keyword">my</span> <span class="token punctuation">(</span><span class="token variable">$headers</span><span class="token punctuation">,</span> <span class="token variable">$body</span><span class="token punctuation">)</span> <span class="token operator">=</span> split<span class="token punctuation">(</span><span class="token regex">/\n\n/</span><span class="token punctuation">,</span> <span class="token string">`wget -U 'blagg/0+4i+ (wget.pl/0+1b)' --timeout=60 -s --quiet $etag -O - $ARGV[0]`</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token keyword">print</span> <span class="token string">"Got headers: $headers\n\n"</span><span class="token punctuation">;</span><br><span class="token keyword">if</span> <span class="token punctuation">(</span>defined <span class="token variable">$body</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token punctuation">(</span><span class="token variable">$etag</span><span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token variable">$headers</span> <span class="token operator">=~</span> <span class="token regex">/^(ETag:.*?)$/m</span><span class="token punctuation">;</span><br>  <span class="token keyword">print</span> <span class="token string">"Return value etag: $etag"</span><span class="token punctuation">;</span><br>  defined <span class="token variable">$etag</span> <span class="token operator">and</span> <span class="token variable">$etag</span> <span class="token operator">=~</span> <span class="token regex">s/\"/\\\"/g</span><span class="token punctuation">,</span> <span class="token string">`echo '$etag' > $etagfile`</span><span class="token punctuation">;</span><br>  <span class="token keyword">print</span> <span class="token string">"\n==========\n"</span><span class="token punctuation">;</span><br>  <span class="token keyword">print</span> <span class="token variable">$body</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><br><span class="token keyword">else</span> <span class="token punctuation">{</span><br>  <span class="token keyword">print</span> <span class="token string">"Cached."</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span></code></pre>
+
+<hr>
+<ul><li>Next: <a href="/blog/2002/24/5/top-tip/">Top tip</a></li><li>Previous: <a href="/blog/2002/21/5/more-thoughts-on-http-email-and-jabber/">More thoughts on HTTP, Email, and Jabber</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2002/24/5/etag-enabled-wget/ -->
+  </body>
+</html>

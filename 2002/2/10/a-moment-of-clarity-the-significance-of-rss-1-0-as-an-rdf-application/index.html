@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A moment of clarity: The significance of RSS 1.0 as an RDF application</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>A moment of clarity: The significance of RSS 1.0 as an RDF application</h1>
+
+<time datetime="2002-10-02">02 Oct 2002</time><a href="/blog/tags/rdf/" class="post-tag">rdf</a><a href="/blog/tags/rss-tag/" class="post-tag">rss-tag</a><a href="/blog/tags/xml/" class="post-tag">xml</a>
+
+<p>Walking on the beach this morning (yes we’re on holidays) I suddenly had a moment of clarity. It may be obvious to you, but I’ve been struggling to see what the theme was that lay beyond the clutter of the investigations into RDF and RSS, the <a href="/2002/09/21/more-thoughts-to-ponder/">contemplation of namespaces</a> and the various recent discussions on namespaces in comments to posts on <a href="http://rss.benhammersley.com/">Ben’s</a>, <a href="http://weblog.burningbird.net/">Shelley’s</a>, <a href="http://www.intertwingly.net/blog">Sam’s</a>, and doubtless others’ weblogs (all too much to keep track of).</p>
+<p>I’d been contemplating what a namespace-aware XML parser for <a href="http://www.purl.org/rss/1.0/" title="RSS (RDF Site Summary)">RSS 1.0</a> would look like, and how it would work in relation to the <a href="http://web.resource.org/rss/1.0/modules/">RSS modules</a>. (Of course for Perl programmers, for example, there’s the <a href="http://search.cpan.org/author/EISEN/XML-RSS-0.96/RSS.pm">XML::RSS</a> parser on CPAN, which is namespace aware but relies on the RSS 1.0 namespace being the <em>default</em> namespace — in other words, if you specify a prefix for the RSS 1.0 namespace, say, “rss10″, rather than have it as the default namespace in the document, and prefix the RSS 1.0 elements with this prefix (“rss10:channel”, “rss10:item”, etc) then XML::RSS isn’t going to like it. But I digress…)</p>
+<p>While namespace-aware XML parsing is indeed important, and namespaces are fundamental to RDF, the importance of handling namespaces correctly when parsing had clouded a question that I knew existed but hadn’t all the right words in the sentence, until now.</p>
+<p>“What is the significance of RDF in RSS?” Actually, that’s not quite right.</p>
+<p>While I’ve been looking at <a href="/2002/09/08/the-rdf-in-rss/">the RDF in RSS</a>, I’ve been concentrating on the bits that ‘look like’ RDF — the stuff that I highlighted in bold in the <a href="../../2002/Sep/08#tech/rdf/rssrdf">example RSS</a> (rdf:about, rdf:Seq, and so on). But it’s not as if there are some ‘bits’ of RDF in a format that’s RSS … the format RSS 1.0 <em>is</em> an RDF application. In other words, <em>all</em> of RSS 1.0 is RDF. The fact that it’s very similar to non-RDF RSS formats like 0.91 is of course an intended advantage. And the fact that the ‘transportable form’ that RDF takes is XML (RDF can be expressed in node/arc diagrams, or other forms such as <a href="http://www.w3.org/2000/10/swap/Primer.html">Notation 3</a>, or ‘N3′) also makes it nicely ‘compatible’.</p>
+<p>“So what?”, I hear you ask.</p>
+<p>Well, I’ve been wondering how complicated an XML parser (yes, a namespace aware one, but that’s not significant here) would have to get to support the plethora of RSS 1.0 modules available now and in the future. To be more specific, let’s take an example. Consider the <strong>creator</strong> property (element) from the <a href="http://purl.org/rss/1.0/modules/dc/">Dublin Core (dc)</a> module. The property is normally used by specifying a literal (a string) as its value, thus:</p>
+<pre><code>&lt;dc:creator&gt;DJ Adams&lt;/dc:creator&gt;
+</code></pre>
+<p>But what about <a href="http://web.resource.org/rss/1.0/modules/#s3.2">rich content model</a> usage of properties? Consider the use of this property in the <a href="http://rss.benhammersley.com/archives/001391.html#001391">discussions</a> of how to splice <a href="http://xmlns.com/foaf/0.1/">FOAF</a> with RSS. Dealing with a new element from a defined namespace, where the usage is of the <em>open tag – literal value – close tag</em> variety, is not that difficult when parsing based on XML events. But what about this, which is based on one of the suggestions from Dan Brickley in the discussion and further discussed <a href="http://groups.yahoo.com/group/rdfweb-dev/message/293">on the rdfweb-dev list</a>:</p>
+<pre><code>&lt;dc:creator&gt; &lt;foaf:Person&gt; &lt;foaf:Name&gt;DJ Adams&lt;/foaf:Name&gt; &lt;foaf:seeAlso rdf:resource='...' /&gt; ... &lt;/foaf:Person&gt; &lt;/dc:creator&gt;
+</code></pre>
+<p>Suddenly having to parsing this, as opposed to the simple ‘literal value’ example, is a whole new ballgame in state management (“where the hell am I <em>now</em> in this XML document and what do I do with these tags?”), and at least for this author, writing an XML parser to cope with all such data eventualities would be rather difficult in the context of XML-event based parsing.</p>
+<p>But that’s just it. Considering an <em>XML</em> parser is missing the point. An <em>RDF</em> parser is more appropriate here. Looking at the structure of RSS 1.0 and the modules available for it from an RDF point of view suddenly made things clear for me. With RDF, the <a href="http://www.w3.org/2001/10/stripes/">striped</a> nature of the information encoded in XML is neatly parsed, regardless of difficult-to-predict hierarchical complexity, and translated into a flat set of triples (subject, predicate, object) that you can then interrogate. What you do with that information is then up to you.</p>
+<p>There are many RDF tools, including parsers, listed on <a href="http://www.purl.org/net/dajobe/">Dave Beckett’s</a> <a href="http://www.ilrt.bristol.ac.uk/discovery/rdf/resources/">RDF resource site</a>. One of them is <a href="http://www.redland.opensource.ac.uk/">Redland</a>, his own RDF toolset. Just before I bring this post to a conclusion, let’s have a look at what the RDF parser in Redland produces for the two <strong>creator</strong> examples earlier.</p>
+<p>Simple literal value example gives:</p>
+<pre><code>{[//qmacro.org/about], [http://purl.org/dc/1.1/elements/creator], &quot;DJ Adams&quot;}
+</code></pre>
+<p>In other words:</p>
+<pre><code>    /--------  creator   +----------+     | qmacro |-----------&gt;| DJ Adams |     --------/            +----------+
+</code></pre>
+<p>Complex FOAF element structure example gives:</p>
+<pre><code>{[//qmacro.org/about], [http://dublincore.com/creator], (genid1)} {(genid1), [http://www.w3.org/1999/02/22-rdf-syntax-ns#type], [http://foaf.com/Person]} {(genid1), [http://foaf.com/name], &quot;DJ Adams&quot;} {(genid1), [http://www.w3.org/2000/01/rdf-schema#seeAlso], [http://www.pipetree.com/~dj/foaf.rdf]}
+</code></pre>
+<p>In other words:</p>
+<pre><code>                                     type      /--------                                +--------------&gt;| Person |                                |               --------/                                |     /--------  creator   /----------    name      +----------+     | qmacro |-----------&gt;|  genid1  |-------------&gt;| DJ Adams |     --------/            ----------/              +----------+                                |                                |               /----------                                +--------------&gt;| foaf.rdf |                                     seeAlso    ----------/
+</code></pre>
+<p>(Whee! ASCII art RDF diagrams :-)</p>
+<p>So what conclusion is there to draw from this bit of rambling? For me, it’s the emphasis on <em>RDF</em>, rather than <em>XML</em>, of RSS (and in fact the subtle relationships between those three things) that is significant in itself, especially when one considers the journey to data richness that seems to demand complex (and tricky-to-parse) XML structures. And what’s more, it’s not specifically RSS that wins here. It’s <em>any</em> RDF application.</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2002/5/10/notes-to-self-what-should-the-rdf-about-point-to/">Notes to self: What should the rdf:about point to?</a></li><li>Previous: <a href="/blog/2002/22/9/the-case-of-the-missing-rdf-description/">The case of the missing rdf:Description</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2002/2/10/a-moment-of-clarity-the-significance-of-rss-1-0-as-an-rdf-application/ -->
+  </body>
+</html>

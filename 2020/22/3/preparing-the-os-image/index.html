@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preparing the OS image</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Preparing the OS image</h1>
+
+<time datetime="2020-03-22">22 Mar 2020</time>
+
+<p><em>This post describes how I prepared the base OS image for each of the Raspberry Pis in my &quot;Brambleweeny&quot; cluster.</em></p>
+<p>This is a post in the &quot;<a href="/2020/03/22/brambleweeny-cluster-experiments/">Brambleweeny Cluster Experiments</a>&quot; series of blog posts, which accompanies the <a href="https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe">YouTube live stream recording playlist</a> of the same name. The video linked here is the one that accompanies this blog post.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/IY5ZNZDI-EQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<p>Previous post in this series: <a href="/2020/03/22/starting-out-with-raspberry-pi-experiments/">Starting out with Raspberry Pi experiments</a><br><br>
+Next post in this series: <a href="/2020/03/22/finding-the-pis-on-the-network/">Finding the Pis on the network</a></p>
+<blockquote>
+<p>This post has been updated to reflect the new name of the OS -- Raspberry Pi OS -- which changed (from Raspbian) around May 2020.</p>
+</blockquote>
+<p>There are many ways to prepare base OS images for your Raspberry Pi computers. In the past I've used various devices and software to write bootable images to SD cards, but I've settled on using <a href="https://www.balena.io/etcher/">balena Etcher</a> that I read about in Alex Ellis's <a href="https://medium.com/@alexellisuk/walk-through-install-kubernetes-to-your-raspberry-pi-in-15-minutes-84a8492dc95a">Walk-through — install Kubernetes to your Raspberry Pi in 15 minutes</a>.</p>
+<p>The Pis in the cluster will be run headless (the only cable running to each of them will be an Ethernet cable). This has a couple of implications for us at this stage, which are (a) there's no point installing graphical tools or a full desktop, and (b) we'll be using remote access only.</p>
+<h2 id="no-gui" tabindex="-1">No GUI <a class="direct-link" href="#no-gui" aria-hidden="true">#</a></h2>
+<p>There's no point in installing a graphical user interface (GUI) or windowing system on the Pis. That said, of course, with the power of X Windows we can have remote GUI windows but that's another story and a path we don't want to take for now.</p>
+<p>There are different operating systems available for the Raspberry Pi, and at the time of this edit, <a href="https://www.raspberrypi.org/downloads/raspberry-pi-os/">Raspberry Pi OS</a> (previously called Raspbian), is a Linux OS based on Debian Linux (currently Buster). Here, the &quot;Lite&quot; image, that comes without GUI software or a windowing system, is appropriate. This is convenient as the image is a lot smaller in size, too.</p>
+<p><img src="/blog/img/2020/03/os-image.png" alt="Raspberry Pi OS (32-bit) Lite"></p>
+<h2 id="remote-access" tabindex="-1">Remote access <a class="direct-link" href="#remote-access" aria-hidden="true">#</a></h2>
+<p>To access the headless Pis remotely, we'll be using Secure Shell (SSH). There's a bit of a chicken-and-egg problem though, in that we need to be able to configure the Pis to allow remote access via SSH, before we can make the connection. For that we'd need a keyboard and screen, to be able to log on, install and set up the SSH service.</p>
+<p>However, headless use of Raspberry Pi computers is so common that there's a nice way to solve this dilemma, and it's described in the official documentation, in a section on <a href="https://www.raspberrypi.org/documentation/configuration/boot_folder.md">the boot folder</a>. Basically, the OS image that is to be written to the SD card for installation on the Pis has a partition named <code>boot</code>. If you stick an SD card with a Linux image like Raspian Buster on it into your desktop computer or laptop, and automatic mounting is enabled, you'll see this boot partition mounted, and you can have a look inside.</p>
+<p>If you place a file called <code>ssh</code> in this boot partition, then when the image is inserted into a Pi and the Pi is booted, SSH will be enabled automatically and set up appropriately. Nice!</p>
+<h2 id="preparing-the-image" tabindex="-1">Preparing the image <a class="direct-link" href="#preparing-the-image" aria-hidden="true">#</a></h2>
+<p>Most of the articles on the preparation of SD cards for Pis involve multiple steps: first, burn the OS image, then eject and re-insert the SD card to have the <code>boot</code> partition from that new image automatically mounted, then create the <code>ssh</code> file in that partition, and finally unmount the partition. This is fine for the occasional SD card preparation, but when preparing SD cards for an entire cluster, this can get tedious.</p>
+<p>So I decided to embrace one of the <a href="http://threevirtues.com/">three virtues</a> of a programmer, namely laziness.</p>
+<p>After downloading the Raspbian Buster Lite image, I unzipped the archive to reveal the actual image file, which I then mounted. In the mounted partition, I added the <code>ssh</code> file, before unmounting it again. I then zipped the now-SSH-enabled image file up again, ready for writing to the SD cards.</p>
+<p>On my macOS machine (which is one of the few devices I have that has an SD card slot), I unzipped the archive like this:</p>
+<pre class="language-shell"><code class="language-shell">-<span class="token operator">></span> <span class="token function">unzip</span> <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf.zip<br>Archive:  <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf.zip<br>  inflating: <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf.img</code></pre>
+<p>Then I used the DiskImageMounter utility <code>hdiutil</code> to mount the <code>.img</code> image file (noting also that the <code>boot</code> partition is only one of two partitions on the image - the other, of type &quot;Linux&quot;, being the eventual root partition):</p>
+<pre class="language-shell"><code class="language-shell">-<span class="token operator">></span> hdiutil <span class="token function">mount</span> <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf.img<br>/dev/disk3              FDisk_partition_scheme<br>/dev/disk3s1            Windows_FAT_32                  /Volumes/boot<br>/dev/disk3s2            Linux</code></pre>
+<p>The <code>boot</code> partition was made available at <code>/Volumes/boot</code>, as we can see from what <code>df</code> tells us:</p>
+<pre><code>-&gt; df | grep disk3
+/dev/disk3s1  516190   104290   411900   21%   0    0  100%  /Volumes/boot
+</code></pre>
+<p>I could then add an empty <code>ssh</code> file to the filesystem on that partition:</p>
+<pre class="language-shell"><code class="language-shell">-<span class="token operator">></span> <span class="token function">touch</span> /Volumes/boot/ssh</code></pre>
+<h2 id="wifi-connection" tabindex="-1">WiFi connection <a class="direct-link" href="#wifi-connection" aria-hidden="true">#</a></h2>
+<p>If you'd also like your Raspberry Pi to connect to your WiFi network when it boots (which will often be the case, even for headless mode), then at this stage you can also add another file, and this time, it's not an empty file like the <code>ssh</code> one, but one with configuration so that the Pi can connect to and authenticate with your WiFi network.</p>
+<p>If you want to do that, create a file in the same boot partition as you created the <code>ssh</code> file, called <code>wpa_supplicant.conf</code>, and add the following configuration to it:</p>
+<pre><code>ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+country=&lt;Insert 2 letter ISO 3166-1 country code here&gt;
+
+network={
+ ssid=&quot;&lt;Name of your wireless LAN&gt;&quot;
+ psk=&quot;&lt;Password for your wireless LAN&gt;&quot;
+}
+</code></pre>
+<p>(This example is taken directly from this useful page: <a href="https://www.raspberrypi.org/documentation/configuration/wireless/headless.md">Setting up a Raspberry Pi headless</a>).</p>
+<blockquote>
+<p>If you're in the UK and wondering about the ISO-3166-1 country code that you need, it's &quot;GB&quot;.</p>
+</blockquote>
+<p>After that, I unmounted it:</p>
+<pre class="language-shell"><code class="language-shell">-<span class="token operator">></span> <span class="token function">umount</span> /Volumes/boot</code></pre>
+<p>And then created a new zip archive:</p>
+<pre class="language-shell"><code class="language-shell">-<span class="token operator">></span> <span class="token function">zip</span> <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf-ssh.zip <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf.img<br>  adding: <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf.img</code></pre>
+<h2 id="using-the-image" tabindex="-1">Using the image <a class="direct-link" href="#using-the-image" aria-hidden="true">#</a></h2>
+<p>I could then use this new image archive file <code>2020-05-27-raspios-buster-lite-armhf-ssh.zip</code> in my use of balena Etcher, creating all four SD cards ready for the Pis in the cluster. Result!</p>
+<p><img src="/blog/img/2020/03/etcher.png" alt="balena Etcher"></p>
+<p>Balena Etcher is great, but if, like me, you're more of a terminal person, you can also perform this step from the command line.</p>
+<p>Whether or not you use balena Etcher or the command line, it's at this stage of course that you insert the SD card.</p>
+<p>The steps are described well in <a href="https://www.raspberrypi.org/documentation/installation/installing-images/mac.md">Copying an operating system image to an SD card using Mac OS</a> so here's a precis:</p>
+<pre><code>-&gt; diskutil list
+/dev/disk0 (internal, physical):
+   #:                       TYPE NAME                    SIZE       IDENTIFIER
+   0:      GUID_partition_scheme                        *1.0 TB     disk0
+   1:                        EFI EFI                     314.6 MB   disk0s1
+   2:                 Apple_APFS Container disk1         1.0 TB     disk0s2
+
+[...]
+
+/dev/disk4 (external, physical):
+   #:                       TYPE NAME                    SIZE       IDENTIFIER
+   0:     FDisk_partition_scheme                        *31.9 GB    disk4
+   1:             Windows_FAT_32 boot                    268.4 MB   disk4s1
+   2:                      Linux                         31.6 GB    disk4s2
+
+-&gt; sudo diskutil unmountDisk /dev/disk4
+Password: ...
+Unmount of all volumes on disk4 was successful
+-&gt; sudo dd bs=1m if=./2020-05-27-raspios-buster-lite-armhf.img of=/dev/rdisk4; sync
+1768+0 records in
+1768+0 records out
+1853882368 bytes transferred in 122.702619 secs (15108743 bytes/sec)
+-&gt; sudo diskutil eject /dev/rdisk5
+Disk /dev/rdisk5 ejected
+</code></pre>
+<h2 id="a-note-on-security" tabindex="-1">A note on security <a class="direct-link" href="#a-note-on-security" aria-hidden="true">#</a></h2>
+<p>You may be wondering why there's no Raspbian image available that already contains the <code>ssh</code> file. That's because it would be a security risk; in other words, you have to explicitly enable SSH through this route if you want it; otherwise, the Pis stay locked down. That's the right approach.</p>
+<h2 id="booting-and-connecting" tabindex="-1">Booting and connecting <a class="direct-link" href="#booting-and-connecting" aria-hidden="true">#</a></h2>
+<p>After inserting the SD cards into the Raspberry Pis, and connecting up the Ethernet cables to power them up and have them boot the images for the first time, we can see that this SSH configuration action was successful:</p>
+<pre><code>-&gt; ssh 192.168.86.53
+The authenticity of host '192.168.86.53 (192.168.86.53)' can't be established.
+ECDSA key fingerprint is SHA256:jFgPSwjEQsCSUx+nJcZ6ub9EhoGC1I1vSX5uSvVc1YE.
+Are you sure you want to continue connecting (yes/no)?
+</code></pre>
+<p>In the next post, we'll find out how I discovered the IP address(es) to use to connect, but for now, this is a great start - the SSH service responded to my request to connect (the &quot;authenticity&quot; message is just my machine saying &quot;hey, I don't recognise this remote host - are you sure you want to proceed?&quot;) - we're all ready to start setting up our Pis for some clustering goodness!</p>
+<p>Next post in this series: <a href="/2020/03/22/finding-the-pis-on-the-network/">Finding the Pis on the network</a></p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2020/22/3/starting-out-with-raspberry-pi-experiments/">Starting out with Raspberry Pi experiments</a></li><li>Previous: <a href="/blog/2020/22/3/finding-the-pis-on-the-network/">Finding the Pis on the network</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2020/22/3/preparing-the-os-image/ -->
+  </body>
+</html>

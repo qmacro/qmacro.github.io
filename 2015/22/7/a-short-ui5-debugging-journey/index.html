@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Short UI5 Debugging Journey</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>A Short UI5 Debugging Journey</h1>
+
+<time datetime="2015-07-22">22 Jul 2015</time><a href="/blog/tags/debugging/" class="post-tag">debugging</a><a href="/blog/tags/openui5/" class="post-tag">openui5</a><a href="/blog/tags/supporttool/" class="post-tag">supporttool</a>
+
+<p><strong><a href="/2015/07/04/30-days-of-ui5/">30 Days of UI5</a> — Day 19 by <a href="//qmacro.org/about/">DJ Adams</a></strong></p>
+<p>In an earlier post in this <a href="/2015/07/04/30-days-of-ui5/">series</a>, entitled “<a href="/2015/07/18/the-ui5-support-tool-help-yourself/">The UI5 Support Tool – Help Yourself!</a>“, we looked at the Support Tool, examining the information available in the Control Tree. In particular we looked at the Properties and Binding Infos tabs. While exploring the new UI5 1.30 features with the Explored app, I re-noticed a small addition to the Explored UI – a Button that allowed me to switch to full screen mode to view control samples.</p>
+<p><img src="/blog/img/2018/02/fullscreentoggle-624x349.gif" alt="Fullscreen toggle example"></p>
+<p>I thought it would be fun to use the Support Tool and other debugging techniques to see what was exactly happening in the Explored app when we toggled that control.</p>
+<p><strong>Identifying the Button</strong></p>
+<p>First, we need to identify the Button control – by its ID. We can use a context menu feature of Chrome which will open up the Developer Tools: Right-click on the Button and select Inspect Element. This will show us the ID in the highlighted sections in the screenshot:</p>
+<p><img src="/blog/img/2018/02/Screen-Shot-2015-07-20-at-09.13.22-624x329.png" alt=""></p>
+<p>Here, the full ID highlighted is “__xmlview2–toggleFullScreenBtn-img”, as we right clicked on the image part of the Button. Go up a couple of levels in the HTML element hierarchy and you’ll see the button tag with an ID without the “-img” suffix. That’s what we want.</p>
+<p><strong>Stopping at the Press Event</strong></p>
+<p>We could at this stage <a href="http://mtg.wikia.com/wiki/Instant">play an instant</a> and use sap.ui.getCore().byId to get a handle on the control with this ID. But instead let’s look at the Support Tool and how it can expose event breakpoints.</p>
+<p>Opening the Support Tool, and the Control Tree section within, we can search for the ID “__xmlview2–toggleFullScreenBtn”. When we find it, we can switch to the Breakpoints tab and set a breakpoint for the firePress function (as that is what will be happening when we press the Button – a “press” event will be fired):</p>
+<p><img src="/blog/img/2018/02/Screen-Shot-2015-07-20-at-09.18.35-624x220.png" alt=""></p>
+<p>Now when we press the Button, we land inside Breakpoint.js:</p>
+<p><img src="/blog/img/2018/02/Screen-Shot-2015-07-20-at-09.22.29-624x329.png" alt=""></p>
+<p><strong>Finding the Event Handler</strong></p>
+<p>Now that we’re here, there’s plenty to explore, but let’s cut to the chase and look at the Button instance. In particular, we’ll look at an internal property “mEventRegistry” which is a map that holds the functions to be called when specific events are fired. Remember that this is an internal property, which we can’t use, or rely upon, when <em>building</em> apps (for more details on this, see the post “<a href="/2015/07/04/javascript-dos-and-donts-for-ui5/">JavaScript Do’s and Don’ts in UI5</a>” in this series). But we’re not building, we’re debugging, so all bets are off.</p>
+<p>The ‘this’ here is the Button control instance, and so we can see that the “this.mEventRegistry” map has an entry for “press”:</p>
+<pre class="language-javascript"><code class="language-javascript"><span class="token keyword">this</span><span class="token punctuation">.</span>mEventRegistry<br><span class="token operator">-</span><span class="token operator">></span> Object <span class="token punctuation">{</span><span class="token literal-property property">press</span><span class="token operator">:</span> Array<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">}</span></code></pre>
+<p>Looking at this single entry in the array for the “press” event, we can see that the function handler is in a controller (surprise surprise):</p>
+<pre class="language-javascript"><code class="language-javascript"><span class="token keyword">this</span><span class="token punctuation">.</span>mEventRegistry<span class="token punctuation">[</span><span class="token string">"press"</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span>fFunction<br><span class="token operator">-</span><span class="token operator">></span> sap<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>controller<span class="token punctuation">.</span><span class="token function">onToggleFullScreen</span><span class="token punctuation">(</span>oEvt<span class="token punctuation">)</span></code></pre>
+<p>Unless you’re using an older version of Chrome, you should be able to click on the function name to bring you to the “onToggleFullScreen” function definition:</p>
+<p><img src="/blog/img/2018/02/Screen-Shot-2015-07-20-at-09.29.55-624x222.png" alt=""></p>
+<p>Nice!</p>
+<p><strong>Examining What Happens</strong></p>
+<p>We can now put a breakpoint on line 163 (which I had done already before taking the screenshot above) and hit continue, to be able to then step into what this function calls (the updateMode function) when the stack gets here. This is what the updateMode function looks like:</p>
+<p><img src="/blog/img/2018/02/Screen-Shot-2015-07-20-at-09.34.58-624x237.png" alt=""></p>
+<p>It sets the Split App’s <a href="https://openui5.hana.ondemand.com/#docs/api/symbols/sap.m.SplitAppMode.html">mode</a> to the appropriate value (the default of “ShowHideMode”, or “HideMode” for the full screen effect). It also modifies the containing <a href="https://openui5.hana.ondemand.com/#docs/api/symbols/sap.m.Shell.html#getAppWidthLimited">Shell</a> control’s appWidthLimited property so that a real full screen effect can be properly achieved.</p>
+<p>So that’s it! If you can become comfortable helping yourself with these tools, you’ll be a better UI5 developer.</p>
+<p></p>
+<p></p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2015/23/7/fragments-and-minimum-viable-code/">Fragments and Minimum Viable Code</a></li><li>Previous: <a href="/blog/2015/21/7/mvc-model-view-controller-minimum-viable-code/">MVC - Model View Controller, Minimum Viable Code</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2015/22/7/a-short-ui5-debugging-journey/ -->
+  </body>
+</html>

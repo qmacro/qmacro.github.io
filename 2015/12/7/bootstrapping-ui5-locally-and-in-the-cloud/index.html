@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrapping UI5 Locally and in the Cloud</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Bootstrapping UI5 Locally and in the Cloud</h1>
+
+<time datetime="2015-07-12">12 Jul 2015</time><a href="/blog/tags/bootstrap/" class="post-tag">bootstrap</a><a href="/blog/tags/hcp/" class="post-tag">hcp</a><a href="/blog/tags/openui5/" class="post-tag">openui5</a><a href="/blog/tags/saphcp/" class="post-tag">saphcp</a><a href="/blog/tags/sapwebide/" class="post-tag">sapwebide</a><a href="/blog/tags/webide/" class="post-tag">webide</a>
+
+<p><strong><a href="/2015/07/04/30-days-of-ui5/">30 Days of UI5</a> — Day 9 by <a href="//qmacro.org/about/">DJ Adams</a></strong></p>
+<p><img src="/blog/img/2018/02/Screen-Shot-2015-07-11-at-16.05.52.png" alt="Screenshot of files in a UI5 app directory"></p>
+<p>Like many developers who find themselves building a lot with UI5, I find my working environment is mostly a local one, supplemented by activities in the cloud.</p>
+<p><strong>Local Environment</strong></p>
+<p>More precisely, while I often use the excellent <a href="http://scn.sap.com/docs/DOC-55465">SAP Web IDE</a> – for training, generating starter projects and custom Fiori work, my main development workflow is based upon tools that are local to my workstation. In my particular case, that’s most often my MacBook Pro running OSX, but sometimes a Debian-based environment running in a chroot on my Chromebook, courtesy of the awesome <a href="https://github.com/dnschneid/crouton">crouton</a> project. I use tools that work for me, that don’t get in the way of my flow, and at the bare essentials level, that means a decent editor (Vim or Atom), a local webserver (based on NodeJS), and a runtime platform that doubles as debugging, tracing and development (Chrome).</p>
+<p><strong>Cloud Environment</strong></p>
+<p>When I’m working in the cloud, specifically with the SAP Web IDE, the toolset is totally different. Not only that, but the bootstrapping of UI5 works slightly differently. In this short post, I wanted to explain what I do to flatten any speedbumps when transitioning between the two environments. The worst thing for me would be to have to alter my codebase slightly to take account of different runtime environments.</p>
+<p><strong>Different UI5 Versions</strong></p>
+<p>Locally, I maintain a variety of different UI5 versions, that I’ve picked up over the months and years. You never know when you’ll need to go back to a previous version, or even look through the complete history, to see how something has changed. This is what the contents my local ~/ui5/ folder look like:</p>
+<p><img src="/blog/img/2018/02/Screen-Shot-2015-07-11-at-16.37.15-624x545.png" alt="Screenshot of my ui5 directory"></p>
+<p>I use the NodeJS-based static_server.js  script to serve files from this folder, as well as another folder which contains my UI5 projects. From here, I can access different UI5 versions by changing the location that the UI5 bootstrap looks. (Note that while I can and do often access older versions, I pretty much always develop against the latest version, unless there’s a good reason not to … access to older versions is almost always for reference purposes.)</p>
+<p>Usually I specify “latest” in the URL, which refers to the symbolic link in the folder above, which (via the use of the small “setlatest” script) in turn points to whatever folder represents the latest unpacked zip:</p>
+<p><img src="/blog/img/2018/02/Screen-Shot-2015-07-11-at-16.10.56-624x75.png" alt="Screenshot showing relation of local URL and UI5 version"></p>
+<p>If I want to refer to an older version, I do so like this:</p>
+<p><img src="/blog/img/2018/02/Screen-Shot-2015-07-11-at-16.11.11-624x75.png" alt="Screenshot of another relation between local URL and UI5 version"></p>
+<p>The same approach with the URL path applies to the contents of the “src” attribute in the UI5 bootstrap:</p>
+<p><img src="/blog/img/2018/02/Screen-Shot-2015-07-12-at-08.50.35.png" alt="UI5 bootstrap with latest UI5 version"></p>
+<p><strong>Harmonising Local and Cloud Bootrapping</strong></p>
+<p>However, this doesn’t play well with the SAP Web IDE, at least not directly. So I’ve come up with an approach that minimises the fuss and disruption when taking a UI5 app repo that I’ve developed locally, and cloning it for use in the SAP Web IDE on the HANA Cloud Platform (HCP) environment, or vice versa.</p>
+<p>Let’s look at an almost empty UI5 project folder that I’ve created locally:</p>
+<p><img src="/blog/img/2018/02/Screen-Shot-2015-07-11-at-16.22.18-624x191.png" alt="app directory structure showing symbolic link for resources"></p>
+<p>In it, we have the index.html which contains a UI5 bootstrap that looks like this:</p>
+<p><img src="/blog/img/2018/02/Screen-Shot-2015-07-12-at-08.50.49.png" alt="UI5 bootstrap with relative reference to resources"></p>
+<p>The “src” attribute refers to a resources folder in the same location as the containing index.html. The value of this attribute (“resources/sap-ui-core.js”) is pretty much the de facto standard for “the location of the UI5 runtime”, so it’s sensible to change this only if you have a very good reason, if not only because you’re starting a battle that you might not want to see through.</p>
+<p>If you look at the folder listing above, you’ll see that this resources folder is actually a symbolic link to the resources folder in the “latest” UI5 version, as described earlier (yes, so we have a symbolic link following a symbolic link). So we’re bootstrapping whatever the latest version of UI5 is.</p>
+<p>We’re not interested in having this in our UI5 application repo (it would be of no use in most other contexts) so in our .gitignore file, we exclude it:</p>
+<p><img src="/blog/img/2018/02/Screen-Shot-2015-07-11-at-16.23.26.png" alt="contents of .gitignore"></p>
+<p>When we want to run the application in the HCP context, via SAP Web IDE, we use a mapping file that translates our bootstrap “src” attribute URL into a resource that is available globally on HCP. This mapping file is neo-app.json, and here, it contains this:</p>
+<p><img src="/blog/img/2018/02/Screen-Shot-2015-07-11-at-16.25.20.png" alt="contents of neo-app.json"></p>
+<p>The path “resources” is mapped to the target “sapui5″ service at “/resources”. This means that the script element in our index.html can successfully resolve and bootstrap UI5 from the right place, with zero changes between my local environment and HCP.</p>
+<p>With my “resources” symbolic link in place, along with the neo-app.json mapping, I can enjoy a smooth transition between local and cloud based development when I’m working on UI5 development with the latest version. It’s a simple technique; get it in place, and you could be looking at some happy productivity gains, without loss of any reference to older UI5 versions locally.</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2015/13/7/handling-dates-with-the-date-picker/">Handling Dates with the Date Picker</a></li><li>Previous: <a href="/blog/2015/11/7/user-notifications-with-the-message-popover/">User Notifications with the Message Popover</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2015/12/7/bootstrapping-ui5-locally-and-in-the-cloud/ -->
+  </body>
+</html>

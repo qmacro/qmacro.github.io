@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exploring fff part 1 - main</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Exploring fff part 1 - main</h1>
+
+<time datetime="2021-09-03">03 Sep 2021</time><a href="/blog/tags/autodidactics/" class="post-tag">autodidactics</a><a href="/blog/tags/fff/" class="post-tag">fff</a><a href="/blog/tags/shell/" class="post-tag">shell</a>
+
+<p><em>Here's what I learned from starting to read the source code to fff - in particular, the main function.</em></p>
+<p><a href="https://github.com/dylanaraps/fff"><code>fff</code></a> is &quot;a simple file manager written in Bash&quot;. As I'm always on the lookout to learn more about Bash, that description got my attention immediately. It's a small but perfectly formed offering, complete with man page and even a <code>Makefile</code> for installation. And the file manager executable* itself is a single Bash script.</p>
+<p>*I use this term deliberately, and it does make me stop and think every time I see scripts in a <code>bin</code> directory (where &quot;bin&quot; stands for binary). But that's a conversation for another time.</p>
+<p>The author, <a href="https://github.com/dylanaraps">Dylan Araps</a> has produced other interesting pieces of software (such as <a href="https://github.com/dylanaraps/neofetch">neofetch</a>) as well some great documents such as the <a href="https://github.com/dylanaraps/pure-bash-bible">pure bash bible</a> as well as the <a href="https://github.com/dylanaraps/pure-sh-bible">pure sh bible</a>. He's also the creator of <a href="https://kisslinux.org/">Kiss Linux</a>. He has a reputation for writing great Bash code, so this seems like an opportunity too good to miss to learn from better programmers.</p>
+<p>It seems that recently Dylan has <a href="https://www.reddit.com/r/kisslinux/comments/lsbz8n/an_update_on_dylan/">disappeared off the radar</a>, I don't know what the situation is but I wish him well.</p>
+<p>Anyway, I wanted to take a first look at <code>fff</code> to see what I could discern. I'm reviewing the code as it stands at the latest to-date <a href="https://github.com/dylanaraps/fff/commit/5b90a8599cce3333672947438bb1718e1298e068">commit</a>, i.e. <a href="https://github.com/dylanaraps/fff/tree/5b90a8599cce3333672947438bb1718e1298e068">here</a>.</p>
+<p>Where I can, I link to reference material so you can dig in further to Bash details that take your fancy. This reference material includes the following sites (and there are more of course):</p>
+<ul>
+<li><a href="https://www.gnu.org/software/bash/manual/html_node/index.html">Bash Reference Manual</a></li>
+<li><a href="https://unix.stackexchange.com/">Unix &amp; Linux Stack Exchange</a> (esp. the <a href="https://unix.stackexchange.com/questions/tagged/bash"><code>bash</code> tag</a>)</li>
+<li><a href="https://wiki.bash-hackers.org/start">Bash Hackers Wiki</a></li>
+<li>the <a href="https://mywiki.wooledge.org/BashFAQ">Bash FAQ on Greg's Wiki</a></li>
+<li>the <a href="https://github.com/koalaman/shellcheck/wiki">Shellcheck Wiki</a></li>
+</ul>
+<h1 id="structure-and-use-of-main-function" tabindex="-1">Structure and use of main function <a class="direct-link" href="#structure-and-use-of-main-function" aria-hidden="true">#</a></h1>
+<p>As I mentioned recently in <a href="https://qmacro.org/2021/08/26/learning-by-rewriting/">Learning by rewriting - bash, jq and fzf details</a>, I like to structure Bash scripts into functions, with a <code>main</code> function towards the end, followed by a simple call to that function, passing in everything that was specified on the command line via the <code>$@</code> <a href="https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html">special parameter</a> which &quot;expands to the positional parameters, starting from one&quot; (positional parameter zero is the name of the script itself).</p>
+<p>This is a practice I picked up, I think, from Google's <a href="https://google.github.io/styleguide/shellguide.html">Shell Style Guide</a> - see <a href="https://google.github.io/styleguide/shellguide.html#s7.8-main">this section</a> for details. I wrote about this guide last year in <a href="https://qmacro.org/2020/10/05/improving-my-shell-scripting/">Improving my shell scripting</a>.</p>
+<p>Dylan structures <code>fff</code> in the same way, and <a href="https://github.com/dylanaraps/fff/blob/5b90a8599cce3333672947438bb1718e1298e068/fff#L1145">uses the <code>main</code> pattern too</a>. For me, that's a good affirmation of this approach.</p>
+<p>The <code>main</code> function itself <a href="https://github.com/dylanaraps/fff/blob/5b90a8599cce3333672947438bb1718e1298e068/fff#L1074-L1078">begins with</a> a series of comments indented to the same level as the rest of the function body.</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function-name function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token comment"># Handle a directory as the first argument.</span><br>    <span class="token comment"># 'cd' is a cheap way of finding the full path to a directory.</span><br>    <span class="token comment"># It updates the '$PWD' variable on successful execution.</span><br>    <span class="token comment"># It handles relative paths as well as '../../../'.</span></code></pre>
+<p>I used to oscillate between putting comments that described a function <em>before</em> the function definition, and <em>within</em> the function definition. On balance I prefer the comments to be within, so the entire function content is encapsulated within the <code>{...}</code> brace-bound block.</p>
+<p>The comment here is interesting too; it shows that a knowledge of side effects (the setting of a value in <code>$PWD</code>) can be useful, and also a willingness to use <code>cd</code> itself; to quote Ward Cunningham, &quot;the simplest thing that could possibly work&quot; (this came up in a great interview with Ward, which I've transcoded to audio format in my &quot;Tech Aloud&quot; podcast - see <a href="https://anchor.fm/tech-aloud/episodes/The-Simplest-Thing-that-Could-Possibly-Work--A-conversation-with-Ward-Cunningham--Part-V---Bill-Venners-e5dpts">The Simplest Thing that Could Possibly Work, A conversation with Ward Cunningham</a>).</p>
+<h2 id="first-line-changing-directory" tabindex="-1">First line - changing directory <a class="direct-link" href="#first-line-changing-directory" aria-hidden="true">#</a></h2>
+<p>The <a href="https://github.com/dylanaraps/fff/blob/5b90a8599cce3333672947438bb1718e1298e068/fff#L1081">first actual executable line</a> is now ready for our gaze, and it's a beauty.</p>
+<pre class="language-bash"><code class="language-bash"><span class="token builtin class-name">cd</span> <span class="token string">"<span class="token variable">${2<span class="token operator">:-</span>$1}</span>"</span> <span class="token operator">&amp;></span>/dev/null <span class="token operator">||</span><span class="token builtin class-name">:</span></code></pre>
+<p>What can we unpack from that?</p>
+<a name="parameter-expansion"/>
+<h3 id="parameter-expansion-&quot;dollar2:-dollar1&quot;" tabindex="-1">Parameter expansion &quot;${2:-$1}&quot; <a class="direct-link" href="#parameter-expansion-&quot;dollar2:-dollar1&quot;" aria-hidden="true">#</a></h3>
+<p>Let's start with the <a href="https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html">parameter expansion</a> used here: <code>&quot;${2:-$1}&quot;</code>. The <code>${parameter:-word}</code> form lets you specify a default value, basically; if the value of 'parameter' is unset or null, then the expansion of 'word' is substituted.</p>
+<p>First of all, the idea is that if a value is specified when <code>fff</code> is invoked, it's used as the directory to start in. Now that's established, let's dig in a little more.</p>
+<p>The first question that comes to mind is why is <code>$2</code> (the second parameter) specified first, falling back to <code>$1</code> here? Well my take is that it's again a simple but effective way of handling optional parameters when the script is invoked.</p>
+<p>There has been an awful lot written about how best (and how not) to parse script parameters in Bash, from roll-your-own solutions, the use of the <code>switch</code> statement, and of course the <code>getopts</code> builtin. Each approach has its merits and downsides, and there doesn't seem to be a single, universal ideal.</p>
+<p>If we read a little further ahead in the <code>main</code> function, we notice checks for various options in <code>$1</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Check for</th>
+<th>Check with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Version information</td>
+<td><code>[[ $1 == -v ]] &amp;&amp; { ... }</code></td>
+</tr>
+<tr>
+<td>Help</td>
+<td><code>[[ $1 == -h ]] &amp;&amp; { ... }</code></td>
+</tr>
+<tr>
+<td>Some custom file picker processing</td>
+<td><code>[[ $1 == -p ]] &amp;&amp; { ... }</code></td>
+</tr>
+</tbody>
+</table>
+<p>So we know from this that there are at least three option parameters that <code>fff</code> understands, and that they are expected before anything else (the starting directory, if any) is passed on invocation (I guess we can assume that Dylan doesn't expect more than one of them to be specified in any single invocation too).</p>
+<p>Knowing this, the <code>&quot;${2:-$1}&quot;</code> incantation is easier to understand: it tries for the value of the second parameter to be the directory to start in, assuming that one of the option parameters might have been specified first. But if a option parameter <em>wasn't</em> specified, then any starting directory would not be in <code>$2</code>, but in <code>$1</code>, which the parameter expansion deals with perfectly here.</p>
+<p>I think this potentially saves some unnecessary conditional logic that would otherwise make this section of <code>main</code> more verbose. I like it!</p>
+<a name="output-redirection"/>
+<h3 id="output-redirection" tabindex="-1">Output redirection <a class="direct-link" href="#output-redirection" aria-hidden="true">#</a></h3>
+<p>What if no starting directory was specified at all? What if a value was specified but that value wasn't a directory, wasn't something that was going to make sense being passed to <code>cd</code>?</p>
+<p>Giving an inappropriate value to <code>cd</code> results in an error, for example:</p>
+<pre class="language-bash"><code class="language-bash">$ <span class="token builtin class-name">cd</span> foo  <span class="token comment"># foo doesn't exist</span><br>-bash: cd: foo: No such <span class="token function">file</span> or directory</code></pre>
+<p>or even just:</p>
+<pre class="language-bash"><code class="language-bash">$ <span class="token builtin class-name">cd</span> testfile <span class="token comment"># this is a file not a directory</span><br>-bash: cd: testfile: Not a directory</code></pre>
+<p>The behaviour actually appropriate in these cases is just to allow the <code>cd</code> invocation to fail, and for <code>fff</code> to start in whatever directory we happen to be in. We don't want to see any error messages, so they're redirected to <code>/dev/null</code>. This redirection construct used is quite interesting in itself, though.</p>
+<p>What we see here is <code>&amp;&gt;</code> and according to <a href="https://www.gnu.org/software/bash/manual/html_node/Redirections.html#Redirecting-Standard-Output-and-Standard-Error">3.6.4 Redirecting Standard Output and Standard Error</a> in the Bash manual, it's the preferred short form for redirecting both standard output (STDOUT) and standard error (STDERR) to the same place. Indeed, we see that</p>
+<pre><code>&amp;&gt;/dev/null
+</code></pre>
+<p>is equivalent to</p>
+<pre><code>&gt;/dev/null 2&gt;&amp;1
+</code></pre>
+<p>Moreover, you may be happy to find out that this in turn is a short form of</p>
+<pre><code>1&gt;/dev/null 2&gt;&amp;1
+</code></pre>
+<p>because the standard three file descriptors that are opened are:</p>
+<table>
+<thead>
+<tr>
+<th>Descriptor</th>
+<th>Representation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>standard input (STDIN)</td>
+</tr>
+<tr>
+<td>1</td>
+<td>standard output (STDOUT)</td>
+</tr>
+<tr>
+<td>2</td>
+<td>standard error (STDERR)</td>
+</tr>
+</tbody>
+</table>
+<p>This is just my guess, but because redirecting standard output to a file is very common, the simple short form <code>&gt;</code> (for <code>1&gt;</code>) is very useful and more logical to allow than a short form for redirecting standard error (<code>2&gt;</code>).</p>
+<p>Note that when using redirection, the <a href="https://wiki.bash-hackers.org/howto/redirection_tutorial#order_of_redirection_ie_file_2_1_vs_2_1_file">order of redirection</a> is important:</p>
+<pre><code>&gt;/dev/null 2&gt;&amp;1
+</code></pre>
+<p>is not the same as</p>
+<pre><code>2&gt;&amp;1 &gt;/dev/null
+</code></pre>
+<p>So we have to be careful. One could therefore argue then that the use of this short form of <code>&amp;&gt;</code> here in the <code>main</code> function is helpful because there's only one part to the construct, so you can't get it &quot;the wrong way round&quot;.</p>
+<p>I recommend the wonderfully illustrated <a href="https://wiki.bash-hackers.org/howto/redirection_tutorial">Redirection Tutorial in the Bash Hackers Wiki</a> for lots more goodness on this subject.</p>
+<a name="no-operation"/>
+<h3 id="the-no-operation-command-:-(colon)" tabindex="-1">The no operation command : (colon) <a class="direct-link" href="#the-no-operation-command-:-(colon)" aria-hidden="true">#</a></h3>
+<p>The comment above the <code>cd</code> invocation sort of explains the last bit:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># '||:': Do nothing if 'cd' fails. We don't care.</span><br><span class="token builtin class-name">cd</span> <span class="token string">"<span class="token variable">${2<span class="token operator">:-</span>$1}</span>"</span> <span class="token operator">&amp;></span>/dev/null <span class="token operator">||</span><span class="token builtin class-name">:</span></code></pre>
+<p>It's not unusual to see the logical operator for OR, i.e. <code>||</code>. What's interesting is that this operator is explained in the Bash manual in the context of <a href="https://www.gnu.org/software/bash/manual/html_node/Lists.html#Lists">lists</a> - as separators within such lists.</p>
+<p>So this invocation in the <code>main</code> function is called an &quot;OR list&quot;, i.e. <code>command1 || command2</code> where <code>command2</code> is executed if and only if <code>command1</code> fails. What does &quot;fail&quot; mean? Well, return a non-zero exit status, basically.</p>
+<p>So if the <code>cd</code> command fails, what gets executed as command2? Well that's the even more interesting part. It's <code>:</code>.</p>
+<p>Yes, the colon is a <a href="https://www.gnu.org/software/bash/manual/html_node/Bourne-Shell-Builtins.html">shell builtin inherited from the Bourne shell (sh)</a> and is the &quot;no operation&quot; command (a bit like, say, <code>pass</code> in Python). In some ways it has a similar effect to what <code>true</code> does (i.e. nothing, successfully) but it's also different, in that it will expand arguments and perform redirections. For example, you can specify stuff after the colon to manipulate files if needed.</p>
+<p>Read more on this no operation or &quot;null command&quot; in <a href="https://www.shell-tips.com/bash/null-command/">What is the Bash null command?</a>, and also take a look at <a href="https://github.com/dylanaraps/pash/blob/c61a24b981345be9e09af5e1d870a01fba6d8eac/pash#L176">this example</a>, from <code>pash</code>, <a href="https://github.com/dylanaraps/pash">a  password manager written in POSIX <code>sh</code></a> (from the same author), where <code>:</code> appears with &quot;side effects&quot;, using the <code>:=</code> parameter expansion to assign default values to a couple of variables:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token builtin class-name">:</span> <span class="token string">"<span class="token variable">${PASH_DIR<span class="token operator">:=</span>${XDG_DATA_HOME<span class="token operator">:=</span>$HOME<span class="token operator">/</span>.local<span class="token operator">/</span>share}</span>/pash}"</span></code></pre>
+<p>We'll examine the use of <code>:=</code> later in this post when we come across it.</p>
+<p>So now that we've looked through the interesting parts of this line, we can translate it to: &quot;<em>try to change directory to what was given in the second parameter when invoked, and failing that, the first parameter; don't show any errors or anything at all on the terminal, and if that fails generally, don't do anything</em>&quot;. Simple and minimal. A great start!</p>
+<h2 id="next-lines-handling-option-parameters" tabindex="-1">Next lines - handling option parameters <a class="direct-link" href="#next-lines-handling-option-parameters" aria-hidden="true">#</a></h2>
+<p>Following this first line we have those tests we saw briefly earlier, the ones that check for and act upon specific option parameters. Interestingly the availability of these option parameters is not documented, at least as far as I can see - either in the <a href="https://github.com/dylanaraps/fff/blob/5b90a8599cce3333672947438bb1718e1298e068/fff.1">man page</a> or in the GitHub repo in general.</p>
+<p>Anyway, I like the way these action-on-condition lines are written, they're short, concise and are also reminiscent of the sorts of expressions one sees in Perl scripts too (or is it the other way around - after all, Perl was created as an amalgam (and more) of various shell scripting substrates).</p>
+<p>Looking at the first instance, we see this:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token variable">$1</span> <span class="token operator">==</span> -v <span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">{</span><br>    <span class="token builtin class-name">printf</span> <span class="token string">'%s\n'</span> <span class="token string">"fff 2.2"</span><br>    <span class="token builtin class-name">exit</span><br><span class="token punctuation">}</span></code></pre>
+<p>Beyond the actual concise way this has been written, avoiding the wordy &quot;if ... then ... fi&quot; construct, there are a couple of things that are worth looking at.</p>
+<a name="conditional-expression"/>
+<h3 id="conditional-expression" tabindex="-1">Conditional expression <a class="direct-link" href="#conditional-expression" aria-hidden="true">#</a></h3>
+<p>Following the <code>if</code> of the standard construct, we have a command list, the exit code of which is checked to determine how to proceed. How this command list is expressed has changed over the years, as we've moved from <code>sh</code> to <code>bash</code> and had POSIX to think about too.</p>
+<p>More traditionally the condition <code>$1 == -v</code> might have been introduced with <code>test</code>, or expressed within single square brackets, i.e. <code>[ $1 == -v ]</code>. The opening single square bracket is interesting in its own right, being a synonym for <code>test</code>. In fact, while <code>[</code> is built in to many shells (including <code>bash</code>), it's also an external command, as is <code>test</code>. In case you want to find out more, you may find this post interesting: <a href="https://qmacro.org/autodidactics/2020/08/21/open-square-bracket/">The open square bracket [ is an executable</a>.</p>
+<p>These days one often sees the more modern version of double square brackets, as we see here. This is a construct also built into <code>bash</code> and allows for a richer set of expressions within. For example, the operator <code>=~</code>, which allows the use of a regular expression for matching, is not available within the <code>[ ... ]</code> construct but is available within <code>[[ ... ]]</code>. Moreover, there are different quoting rules; for example, in some cases, you can omit double quotes within some <code>[[ ... ]]</code>-enclosed conditions.</p>
+<p>Here are a couple of helpful answers with more information, on the Unix and Linux Stack Exchange:</p>
+<ul>
+<li><a href="https://unix.stackexchange.com/questions/68694/when-is-double-quoting-necessary/68748#68748">When is double-quoting necessary</a></li>
+<li><a href="https://unix.stackexchange.com/questions/32210/why-does-parameter-expansion-with-spaces-without-quotes-work-inside-double-brack/32227#32227">Why does parameter expansion with spaces without quotes work inside double brackets [[ but not inside single brackets [?</a></li>
+</ul>
+<a name="printf"/>
+<h3 id="use-of-printf" tabindex="-1">Use of printf <a class="direct-link" href="#use-of-printf" aria-hidden="true">#</a></h3>
+<p>Why is <code>printf</code> used here, and not the arguably simpler <code>echo</code>? The main differences between the two are:</p>
+<ul>
+<li>by default, <code>echo</code> adds a newline character, <code>printf</code> does not</li>
+<li><code>printf</code> allows for and centres around a format string</li>
+</ul>
+<p>There's some amazing background information on <a href="https://www.in-ulm.de/~mascheck/various/echo+printf/">echo(1) and printf(1)</a>, but for me the bottom line is that <code>printf</code> gives you more control over the output. Perhaps for those versed in programming languages where there's a similar format string focused <code>printf</code> function, using it feels more natural.</p>
+<p>Throughout the entire <code>fff</code> script there's no use of <code>echo</code>, only <code>printf</code>; my guess is simply that <code>printf</code> is used here for consistency throughout. I also am guessing that the separation of the format string from any variable values allows for a consistency in expression - none of the uses of <code>printf</code> in <code>fff</code> have the format string in anything other than single quotes, meaning there's less to worry about in terms of variable expansions.</p>
+<p>Before we leave this section, I think it's worth pointing out something minor but nonetheless interesting. I often have a <code>usage</code> function that emits instructions to standard out, and would be called in the situation where help was requested. I do like the way that the Unix philosophy is used even here; there's <a href="https://github.com/dylanaraps/fff/blob/5b90a8599cce3333672947438bb1718e1298e068/fff.1">man page content</a> as we saw earlier, so why not use that instead? This also emphasises the extremely short distance between script and interactive command line, with shell languages:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token variable">$1</span> <span class="token operator">==</span> -h <span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">{</span><br>    <span class="token function">man</span> fff<br>    <span class="token builtin class-name">exit</span><br><span class="token punctuation">}</span></code></pre>
+<h3 id="link-to-fff.vim" tabindex="-1">Link to fff.vim <a class="direct-link" href="#link-to-fff.vim" aria-hidden="true">#</a></h3>
+<p>Finally, let's take a quick look at the third option parameter here, <code>-p</code>:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># Store file name in a file on open instead of using 'FFF_OPENER'.</span><br><span class="token comment"># Used in 'fff.vim'.</span><br><span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token variable">$1</span> <span class="token operator">==</span> -p <span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">{</span><br>    <span class="token assign-left variable">file_picker</span><span class="token operator">=</span><span class="token number">1</span><br><span class="token punctuation">}</span></code></pre>
+<p>It looks like this is the one that caused the introduction of the <code>&quot;${2:-$1}&quot;</code> parameter expansion we examined earlier, when it was introduced with this commit: <a href="https://github.com/dylanaraps/fff/commit/7c2144abaaa012b1f61601dbcb326da482ec36e9">general: Added -p to store opened files in a file for use in fff.vim</a>. In addition to the comment here, the title of the commit sort of gives it away ... <code>-p</code> is for use from within the Vim plugin <a href="https://github.com/dylanaraps/fff.vim">fff.vim</a> which allows <code>fff</code> to be used as a file picker within the editor.</p>
+<h3 id="no-explicit-variable-declarations" tabindex="-1">No explicit variable declarations <a class="direct-link" href="#no-explicit-variable-declarations" aria-hidden="true">#</a></h3>
+<p>One last thing that catches my eye here; this is the first time we see a variable assignment. The odd thing (to me) is that nowhere in the script is the <code>file_picker</code> variable declared.</p>
+<p>There is some usage of <code>declare</code> elsewhere in the script, so we'll leave that examination until then, except to notice that this undeclaredness is not something that <code>shellcheck</code> complains about. If you ask <code>shellcheck</code> to check the source to <code>fff</code>, and get it to explicitly exclude specific errors as it does in the <a href="https://github.com/dylanaraps/fff/blob/c7e9b75648900d77e016ffc6a9ef2b7e807e49cc/.travis.yml#L8">CI configuration</a> (none of them related to variable declaration):</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">shellcheck</span> fff -e <span class="token number">2254</span> -e <span class="token number">2244</span> -e <span class="token number">1090</span> -e <span class="token number">1091</span></code></pre>
+<p>then <code>shellcheck</code> ends calmly and quietly with no errors. Maybe my fervent desire to use <code>declare</code> and <code>local</code> liberally throughout my scripts is misguided?</p>
+<h2 id="setup-section" tabindex="-1">Setup section <a class="direct-link" href="#setup-section" aria-hidden="true">#</a></h2>
+<p>The section that follows the processing of options is about handling certain contexts.</p>
+<h3 id="bash-version-check" tabindex="-1">Bash version check <a class="direct-link" href="#bash-version-check" aria-hidden="true">#</a></h3>
+<p>The <a href="https://github.com/dylanaraps/fff/blob/5b90a8599cce3333672947438bb1718e1298e068/fff#L1106-L1107">first of which</a> is for where we're running a relatively modern version of Bash:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token variable"><span class="token punctuation">((</span>BASH_VERSINFO[<span class="token number">0</span>] <span class="token operator">></span> <span class="token number">3</span><span class="token punctuation">))</span></span> <span class="token operator">&amp;&amp;</span><br>    <span class="token assign-left variable">read_flags</span><span class="token operator">=</span><span class="token punctuation">(</span>-t <span class="token number">0.05</span><span class="token punctuation">)</span></code></pre>
+<p>There's so much to unpack from this; let's start with the <code>BASH_VERSINFO</code> environment variable. What Bash environment variables are available, generally? Well, there's quite a few - getting the completion working for us with the Tab key, we see this:</p>
+<pre class="language-bash"><code class="language-bash">$ <span class="token builtin class-name">echo</span> <span class="token environment constant">$BASH</span><span class="token operator">&lt;</span>tab<span class="token operator">></span><br><span class="token environment constant">$BASH</span>                      <span class="token environment constant">$BASH_ARGC</span>                 <span class="token variable">$BASH_COMMAND</span>              <span class="token environment constant">$BASH_SOURCE</span><br><span class="token environment constant">$BASHOPTS</span>                  <span class="token environment constant">$BASH_ARGV</span>                 <span class="token variable">$BASH_COMPLETION_VERSINFO</span>  <span class="token variable">$BASH_SUBSHELL</span><br><span class="token variable">$BASHPID</span>                   <span class="token variable">$BASH_ARGV0</span>                <span class="token environment constant">$BASH_LINENO</span>               <span class="token environment constant">$BASH_VERSINFO</span><br><span class="token environment constant">$BASH_ALIASES</span>              <span class="token environment constant">$BASH_CMDS</span>                 <span class="token environment constant">$BASH_REMATCH</span>              <span class="token environment constant">$BASH_VERSION</span></code></pre>
+<p>There's <code>BASH_VERSION</code> which is a string like this:</p>
+<pre><code>5.1.4(1)-release
+</code></pre>
+<p>But there's also <code>BASH_VERSINFO</code> which is an array containing the various pieces of that version string, plus a bit more too:</p>
+<pre class="language-bash"><code class="language-bash">$ <span class="token keyword">for</span> <span class="token for-or-select variable">val</span> <span class="token keyword">in</span> <span class="token string">"<span class="token variable">${<span class="token environment constant">BASH_VERSINFO</span><span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span>"</span><span class="token punctuation">;</span> <span class="token keyword">do</span> <span class="token builtin class-name">echo</span> <span class="token string">"<span class="token variable">$val</span>"</span><span class="token punctuation">;</span> <span class="token keyword">done</span><br><span class="token number">5</span><br><span class="token number">1</span><br><span class="token number">4</span><br><span class="token number">1</span><br>release<br>x86_64-pc-linux-gnu</code></pre>
+<p>I hadn't known of the existence of <code>BASH_VERSINFO</code> until now. Using an element of this array is a better approach than parsing out the value from the <code>BASH_VERSION</code> string.</p>
+<p>Something else to unpack is the construct within which we find the reference to <code>BASH_VERSINFO</code> too. That's the <code>(( ... ))</code> construct, an <a href="https://wiki.bash-hackers.org/syntax/ccmd/arithmetic_eval">arithmetic evaluation</a> containing an <a href="https://www.gnu.org/software/bash/manual/html_node/Shell-Arithmetic.html">arithmetic expression</a>. I tend to think of these expressions as being in one of two categories:</p>
+<ul>
+<li>variable assignment, e.g. <code>(( answer = 40 + 2 ))</code></li>
+<li>condition, e.g. <code>(( answer &lt; 50 ))</code></li>
+</ul>
+<p>There's a related construct called an <a href="https://www.gnu.org/software/bash/manual/html_node/Arithmetic-Expansion.html">arithmetic expansion</a> which follows the usual Bash meaning of &quot;expansion&quot;, whereby the evaluation of the arithmetic expression it contains is substituted as the result; the construct looks like this: <code>$(( expression ))</code>.</p>
+<p>Anyway, here we have an arithmetic evaluation acting as a condition in a short form of the <code>if</code> construct. And what is executed if the condition is true, i.e. if the version of Bash is indeed greater than 3? Now <strong>that</strong> has had me scratching my head for a while. Not about <em>what</em> it is, but <em>why</em> Dylan used it.</p>
+<p>This is what I'm talking about:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token assign-left variable">read_flags</span><span class="token operator">=</span><span class="token punctuation">(</span>-t <span class="token number">0.05</span><span class="token punctuation">)</span></code></pre>
+<p>The <code>read_flags</code> variable is used later in this <code>main</code> function, in a call to <code>read</code>, like this:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token builtin class-name">read</span> <span class="token string">"<span class="token variable">${read_flags<span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span>"</span> -srn <span class="token number">1</span> <span class="token operator">&amp;&amp;</span> key <span class="token string">"<span class="token environment constant">$REPLY</span>"</span></code></pre>
+<p>I thought it was quite unusual, or at least very deliberate, to have used an array <code>(-t 0.05)</code> instead of just a string <code>&quot;-t 0.05&quot;</code> here. Dylan <a href="https://github.com/dylanaraps/fff/commit/f0023f93fde103a0d69eea26b4c3f589bf68e824">used this directly in a single commit introducing the read_flags feature</a>, as if it was obvious that this use of an array was the right thing to do from the outset. From a pragmatic point of view, it was clearly the right thing to do, as using a string like this:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token assign-left variable">read_flags</span><span class="token operator">=</span><span class="token string">"-t 0.05"</span> <span class="token builtin class-name">read</span> <span class="token string">"<span class="token variable">$read_flags</span>"</span> -srn <span class="token number">1</span></code></pre>
+<p>would have resulted in <code>read</code> complaining about the timeout (<code>-t</code>) value, like this:</p>
+<pre><code>read:  0.05: invalid timeout specification
+</code></pre>
+<p>I had struggled a little with this, knowing it was related to the whitespace before the 0.05 timeout value, but couldn't quite figure it out myself. I <a href="https://unix.stackexchange.com/questions/667139/bashs-read-builtin-errors-on-a-string-based-timeout-option-specification-but-no">asked on the Unix &amp; Linux Stack Exchange</a> and got some wonderful answers and insights, thank you folks. I'd encourage you to read the question and the answers supplied for enlightenment, if you're interested.</p>
+<p>A side effect of the enlightenment that came my way from this was the fact that in preparing the error message above, I realised that a simple string <em>could</em> have been used here, as long as it was <em>not</em> quoted in the invocation:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token assign-left variable">read_flags</span><span class="token operator">=</span><span class="token string">"-t 0.05"</span> <span class="token builtin class-name">read</span> <span class="token variable">$read_flags</span> -srn <span class="token number">1</span></code></pre>
+<p>This works fine and <code>read</code> doesn't complain, because the shell is <a href="https://mywiki.wooledge.org/WordSplitting">word splitting</a> on whitespace and thus the rogue space between <code>-t</code> and <code>0.05</code> which was being passed to <code>read</code> is now consumed in the word splitting action. I'm so used to quoting variables because, since <a href="https://qmacro.org/2020/10/05/improving-my-shell-scripting">introducing <code>shellcheck</code> into my scripting flow</a> I'm constantly reminded to so by <a href="https://github.com/koalaman/shellcheck/wiki/SC2086">SC2086</a>. I guess there are (rare) cases where you <em>don't</em> want to avoid word splitting on the value of a variable.</p>
+<h3 id="fff-settings-check" tabindex="-1">FFF settings check <a class="direct-link" href="#fff-settings-check" aria-hidden="true">#</a></h3>
+<p>The next two checks are related to <code>fff</code> options, based on the values of the environment variables <code>FFF_LS_COLORS</code> and <code>FFF_HIDDEN</code>. Both exhibit nice examples of a particular type of <a href="https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html">parameter expansion</a>, one that we briefly noticed earlier in this post in the <code>pash</code> script.</p>
+<p>This is what those checks look like:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token variable"><span class="token punctuation">((</span>${FFF_LS_COLORS<span class="token operator">:</span><span class="token operator">=</span><span class="token number">1</span>} <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">))</span></span> <span class="token operator">&amp;&amp;</span><br>    get_ls_colors<br><br><span class="token variable"><span class="token punctuation">((</span>${FFF_HIDDEN<span class="token operator">:</span><span class="token operator">=</span><span class="token number">0</span>} <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">))</span></span> <span class="token operator">&amp;&amp;</span><br>    <span class="token builtin class-name">shopt</span> -s dotglob</code></pre>
+<p>The <code>:=</code> form of shell parameter expansion lets us assign a parameter a value if it doesn't have one. To quote the documentation for this <code>${parameter:=word}</code> form:</p>
+<blockquote>
+<p>If <em>parameter</em> is unset or null, the expansion of <em>word</em> is assigned to <em>parameter</em>. The value of <em>parameter</em> is then substituted. Positional parameters and special parameters may not be assigned to in this way.</p>
+</blockquote>
+<p>So this is basically a default assignment, before the actual comparison with <code>==</code>. Taking the first example, we can think of it as: &quot;If the <code>FFF_LS_COLORS</code> variable is unset or null, assign it the value of <code>1</code>. Now, is the value of <code>FFF_LS_COLORS</code> equal to <code>1</code>?&quot;</p>
+<p>The second example is similar, except that the default value to assign to <code>FFF_HIDDEN</code>, before the actual comparison, is <code>0</code> not <code>1</code>.</p>
+<p>This is a very succinct way of assigning default values, with an expression. In some ways the shape and action of <code>:=</code> reminds me of Perl's <code>||=</code>. Or is it the other way round?</p>
+<p>While the <code>get_ls_colors</code> function is elsewhere in the <code>fff</code> script and we'll get to that another time, it's worth taking a quick look at what's executed if <code>FFF_HIDDEN</code> is <code>1</code>. The <a href="https://github.com/dylanaraps/fff/blob/5b90a8599cce3333672947438bb1718e1298e068/fff.1#L80-L82">relevant section of the man page</a> explains what this variable controls - whether hidden files are shown in the file manager or not. In fact, the explanation in the man page reflects the <code>:=0</code> part of the parameter expansion (i.e. the default value is <code>0</code>, as shown in the man page):</p>
+<pre><code># Show/Hide hidden files on open.
+# (On by default)
+export FFF_HIDDEN=0
+</code></pre>
+<p>How is this showing or hiding of hidden files controlled? Through the use of the &quot;shopt&quot; (shell option) builtin. While asking for help on this with <code>shopt --help</code> will give you basic information -- such as how to set (with <code>-s</code>) or unset (with <code>-u</code>) the options -- it doesn't enumerate what the options are. For that I had to look at <a href="https://www.gnu.org/software/bash/manual/html_node/The-Shopt-Builtin.html">the shopt builtin</a> of the Bash reference manual. The <code>dotglob</code> option is described thus:</p>
+<blockquote>
+<p>If set, Bash includes filenames beginning with a '.' in the results of filename expansion. The filenames '.' and '..' must always be matched explicitly, even if dotglob is set.</p>
+</blockquote>
+<p>Pretty self explanatory and not unexpected; still, it was nice to be able to see a shell option in action.</p>
+<p>In fact, there are other shell options in use a little bit further down in this <code>main</code> function, and they're explained in comments, too:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># 'nocaseglob': Glob case insensitively (Used for case insensitive search).</span><br><span class="token comment"># 'nullglob':   Don't expand non-matching globs to themselves.</span><br><span class="token builtin class-name">shopt</span> -s nocaseglob nullglob</code></pre>
+<p>These are sensible options for a file manager, at least, they make sense to me. Incidentally, there are more glob-related shell options: <code>extglob</code>, <code>failglob</code>, <code>globasciiranges</code> and <code>globstar</code>.</p>
+<h2 id="almost-ready-to-start" tabindex="-1">Almost ready to start <a class="direct-link" href="#almost-ready-to-start" aria-hidden="true">#</a></h2>
+<p>At this point the options have been dealt with (and the trash and cache directories have been created); it's now time to set a few hooks to handle various signals, and then call various functions.</p>
+<a name="signals"/>
+<h3 id="trapping-and-handling-signals" tabindex="-1">Trapping and handling signals <a class="direct-link" href="#trapping-and-handling-signals" aria-hidden="true">#</a></h3>
+<p>This is done with the <code>trap</code> builtin, and there are <a href="https://github.com/dylanaraps/fff/blob/5b90a8599cce3333672947438bb1718e1298e068/fff#L1123-L1127">two instances of this</a>:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># Trap the exit signal (we need to reset the terminal to a useable state.)</span><br><span class="token builtin class-name">trap</span> <span class="token string">'reset_terminal'</span> EXIT<br><br><span class="token comment"># Trap the window resize signal (handle window resize events).</span><br><span class="token builtin class-name">trap</span> <span class="token string">'get_term_size; redraw'</span> WINCH</code></pre>
+<p>Looking at the <a href="https://tldp.org/LDP/Bash-Beginners-Guide/html/sect_12_02.html">Bash Beginners Guide section on traps</a> we can see that the <code>trap</code> pattern is:</p>
+<pre><code>trap [COMMANDS] [SIGNALS]
+</code></pre>
+<p>Looking at the first instance, while it's common for specific and individual SIGNALS to begin &quot;SIG&quot;, there's also a general &quot;EXIT&quot; value that can be used; this triggers both when the shell script terminates of its own accord, or is terminated by the user with CTRL-C.</p>
+<p>Running this simple script <code>terminator</code> and allowing it to exit, and then running it and CTRL-C'ing it after a second, demonstrates this:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token builtin class-name">trap</span> <span class="token string">'echo EXITING...'</span> EXIT<br><span class="token builtin class-name">echo</span> Press CTRL-C or <span class="token function">wait</span> <span class="token number">5</span> seconds to <span class="token builtin class-name">exit</span><br><span class="token function">sleep</span> <span class="token number">5</span></code></pre>
+<p>Here's what happens:</p>
+<pre class="language-bash"><code class="language-bash">$ <span class="token function">bash</span> terminator<br>Press CTRL-C or <span class="token function">wait</span> <span class="token number">5</span> seconds to <span class="token builtin class-name">exit</span><br>EXITING<span class="token punctuation">..</span>.<br>$ <span class="token function">bash</span> terminator<br>Press CTRL-C or <span class="token function">wait</span> <span class="token number">5</span> seconds to <span class="token builtin class-name">exit</span><br>^CEXITING<span class="token punctuation">..</span>.</code></pre>
+<p>It took me a bit longer than I thought to find definitive documentation on the signal in the second instance - <code>SIGWINCH</code> (or <code>WINCH</code>). Rather than being Bash specific, this is of course related to the interaction between processes and terminals in a Unix context. The <a href="https://en.wikipedia.org/wiki/Signal_(IPC)">Signal (IPC) Wikipedia page</a> has a wealth of information, including a reference to <code>SIGWINCH</code> in the list of POSIX signals. To quote:</p>
+<blockquote>
+<p>The SIGWINCH signal is sent to a process when its controlling terminal changes its size (a window change).</p>
+</blockquote>
+<p>The footnote reference associated with this leads to a <a href="https://www.austingroupbugs.net/view.php?id=1151">recent (2017) proposal</a> which suggests why this signal is less widespread in coverage and use. While I'm aware of some of the more common signals (such as <code>SIGCHLD</code>, <code>SIGINT</code>, <code>SIGKILL</code> and so on) I'd never heard of <code>SIGWINCH</code> until now.</p>
+<p>The two functions that are called when this signal is trapped, <code>get_term_size</code> and <code>redraw</code>, make sense in the context of what this &quot;window change&quot; signal represents.</p>
+<h2 id="main-loop" tabindex="-1">Main loop <a class="direct-link" href="#main-loop" aria-hidden="true">#</a></h2>
+<p>The final part of the <code>main</code> script, after calling some functions to set things up, is what Dylan refers to as a &quot;Vintage infinite loop&quot;. It's <a href="https://github.com/dylanaraps/fff/blob/5b90a8599cce3333672947438bb1718e1298e068/fff#L1136-L1142">quite the eyecatcher</a>:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># Vintage infinite loop.</span><br><span class="token keyword">for</span> <span class="token variable"><span class="token punctuation">((</span><span class="token punctuation">;</span><span class="token punctuation">;</span><span class="token punctuation">))</span></span><span class="token punctuation">;</span> <span class="token punctuation">{</span><br>    <span class="token builtin class-name">read</span> <span class="token string">"<span class="token variable">${read_flags<span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span>"</span> -srn <span class="token number">1</span> <span class="token operator">&amp;&amp;</span> key <span class="token string">"<span class="token environment constant">$REPLY</span>"</span><br><br>    <span class="token comment"># Exit if there is no longer a terminal attached.</span><br>    <span class="token punctuation">[</span><span class="token punctuation">[</span> -t <span class="token number">1</span> <span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token builtin class-name">exit</span> <span class="token number">1</span><br><span class="token punctuation">}</span></code></pre>
+<p>Why not simply <code>while true; do ...; done</code>? I can only summise this is something playful, an enjoyment of the relationship that Bash has (or doesn't have, mostly) to the C programming language, where this so-called <a href="https://www.cyberciti.biz/faq/bash-for-loop/#C_style_for_loop">three-expression for loop</a> is widely used, with an initialiser, a loop continuation condition and a modifier that are separated by <code>;</code> characters. Common in C and related languages, but not so much in Bash, I would have thought.</p>
+<p>What has got me thinking, however, is why and how does <code>((;;))</code> even work?</p>
+<p>It's definitely a lesser used construct for loops in Bash; again, I had to search a little deeper to find official references to it. In <a href="https://tldp.org/LDP/abs/html/loops1.html">Advanced Bash-Scripting Guide: Chapter 11. Loops and Branches</a>, we see &quot;Example 11-13. A C-style for loop&quot;:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token assign-left variable">LIMIT</span><span class="token operator">=</span><span class="token number">10</span><br><br><span class="token keyword">for</span> <span class="token variable"><span class="token punctuation">((</span>a<span class="token operator">=</span><span class="token number">1</span><span class="token punctuation">;</span> a <span class="token operator">&lt;=</span> LIMIT <span class="token punctuation">;</span> a<span class="token operator">++</span><span class="token punctuation">))</span></span>  <span class="token comment"># Double parentheses, and naked "LIMIT"</span><br><span class="token keyword">do</span><br>  <span class="token builtin class-name">echo</span> -n <span class="token string">"<span class="token variable">$a</span> "</span><br><span class="token keyword">done</span>                           <span class="token comment"># A construct borrowed from ksh93.</span></code></pre>
+<p>I'm not sure if the reference to the Korn shell (ksh93)* in the comment relates to the entire construct, or particularly to the triple semicolon-separated expression within the arithmetic evaluation <code>(( ... ))</code>. In any case, while it's clear what this is and how it works, it remains to me somewhat of a mystery as to why the particular instance used in the <code>main</code> function here works, where all three expressions are null <code>((;;))</code>.</p>
+<p>*Since listening to a very enjoyable <a href="https://podcast.curiefense.io/">Committing to Cloud Native podcast</a> episode 22 recently: <a href="https://podcast.curiefense.io/22">Thoughts on Bash Becoming Interplanetary and More with Brian J. Fox</a> I've become more aware of the relationship between Brian Fox (Bash's creator) and David Korn (ksh's creator), and the features and style of their respective shells, that they were striving to finalise in 1989 as replacements for Stephen Bourne's <code>sh</code>.</p>
+<p>I am guessing first that the <code>for</code> knows to look for truthiness in the second expression (the one in between the two semicolons). That's a bit vague, I know. I'm also guessing that an empty value here is going to be &quot;truthy&quot;, in that, according to the <a href="https://wiki.bash-hackers.org/syntax/arith_expr#truth">Bash Hackers Wiki section on truth</a>, anything that's not 0 is true. That seems more likely, but I'd love to find out more about this.</p>
+<p>In any case, it's not always going to be an infinite loop; there's a <a href="https://www.gnu.org/software/bash/manual/html_node/Bash-Conditional-Expressions.html">conditional expression</a> within the loop to test whether a terminal is (still) attached. This is the <code>[[ -t 1 ]]</code> part. Here's how the <code>-t</code> test is described:</p>
+<blockquote>
+<p>True if file descriptor fd is open and refers to a terminal.</p>
+</blockquote>
+<p>In a happy circular twist of fate, we're back almost to where we started on this journey through the <code>main</code> function. File descriptor 1 refers to STDOUT, i.e. standard output. If <code>fff</code> (still) has its STDOUT connected to a terminal, then the loop continues. If not, it's terminated (<code>|| exit</code>).</p>
+<p>Is this all that the loop does? Well, the key part (if you forgive the pun) is the call to <code>key</code> here:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token builtin class-name">read</span> <span class="token string">"<span class="token variable">${read_flags<span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span>"</span> -srn <span class="token number">1</span> <span class="token operator">&amp;&amp;</span> key <span class="token string">"<span class="token variable">$reply</span>"</span></code></pre>
+<p>The <code>key</code> function handles keypresses, and acts accordingly. The core action part of <code>fff</code>, effectively. And it's only called if <code>read</code> successfully receives a keypress on that occasion. Nice!</p>
+<p>So that's it for the <code>main</code> function. Directory startup, option parameter handling, setup and initial calls, and the main loop. Such a lot to learn in so few lines.</p>
+<hr>
+<p>If you're still reading, thank you for indulging me, and I hope you've enjoyed the journey as much as I have. There's plenty more to learn from this script; let me know if you found it useful and whether I should venture further.</p>
+<p><strong>Update: You may like to know that there's now a second part: <a href="https://qmacro.org/autodidactics/2021/11/07/exploring-fff-part-2-get-ls-colors/">Exploring fff part 2 - get_ls_colors</a>.</strong></p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2021/12/9/improving-shell-fu-with-practice/">Improving shell fu with practice</a></li><li>Previous: <a href="/blog/2021/26/8/learning-by-rewriting-bash-jq-and-fzf-details/">Learning by rewriting - bash, jq and fzf details</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2021/3/9/exploring-fff-part-1-main/ -->
+  </body>
+</html>

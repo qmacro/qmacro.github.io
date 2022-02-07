@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Panopticon</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>The Panopticon</h1>
+
+<time datetime="2002-05-15">15 May 2002</time>
+
+<p>Everything that goes around, comes around. What thing links my old University (<a href="http://www.ucl.ac.uk/GrandLat/">UCL</a>), <a href="http://www.ucl.ac.uk/Bentham-Project/">Jeremy Bentham</a>, (whose <a href="http://www.ucl.ac.uk/Bentham-Project/images/auto_il.gif">preserved figure</a> sits in UCL’s South Cloisters), and this year’s <a href="http://conferences.oreillynet.com/etcon2002/">Emerging Technology Conference</a>?</p>
+<p>Why, the <a href="http://www.dnai.com/%7Emackey/thesis/panopticon.html">Panopticon</a>, of course. An architectural figure, envisioned by Bentham, which allows one to see but not be seen. “The Panopticon” is also the name given to a <a href="http://www.actuallyworks.com/panopticon">wonderful experiment</a> in “blogger stalking” (a phrase from <a href="http://boingboing.net/2002_05_01_archive.html#85087344">BoingBoing</a>) with avatars and a floormap of the conference area.</p>
+<p>This Panopticon’s creator, <a href="http://www.oblomovka.com/">Danny O’Brien</a> (of <a href="http://www.ntk.net/">NTK</a> fame), put out some <a href="http://www.actuallyworks.com/panopticon/explanation">instructions</a> as to how the thing worked, and mentioned that he would be streaming the metadata out of a port on his server. He asked if anyone could regurgitate the data to a Jabber room so other clients could grab it from there rather than hammer his server, so I took up the challenge :-) This is, in essence, poor man’s pubsub (again) in the spirit of load dissipation: with a ratio of, say, 1:50 (Panopticon port connections – to – Jabber conference room listeners) we can relieve the strain and have a bit of fun.</p>
+<p>Ok, well it was a very quick hack. The data coming out of the server port is a stream of XML. Hmmm. Sounds familiar ;-) I quickly hacked together a library, <a href="/~dj/Panopticon.pm">Panopticon.pm</a>, based loosely upon <a href="/jabber/jabberconnection/">Jabber::Connection</a>, a Perl library for building Jabber entities (XML streams flow over Jabber connections, too, y’know). With this quick and dirty library in hand, I wrote an equally quick and dirty script, <a href="/~dj/panpush.pl">panpush.pl</a>, which uses <a href="/~dj/Panopticon.pm">Panopticon.pm</a> and <a href="/jabber/jabberconnection/">Jabber::Connection</a> to do this:</p>
+<ul>
+<li>connect to a Jabber server and authenticate</li>
+<li>join a conference room</li>
+<li>open up the panopticon server port</li>
+<li>fire the data that comes out of the port into the conference room for all to see and read, on a continuous basis</li>
+</ul>
+<p>The Panopticon data is XML. Jabber is XML. So I decided the nice thing to do would be to avoid just blurting XML into the conference room – that would be like shouting gobbledygook in a room full of people. Instead, I wrote something sensible to the room each time some data fell out of the end of the Panopticon socket (the name of the blogger’s avatar), and <em>attached</em> the actual Panopticon XML as an extension to the groupchat message. Here’s an example:</p>
+<p>Panopticon produces this:</p>
+<pre class="language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>icon</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">'</span>4ee9da17f5839275ad0ca5d58c2bacaa<span class="token punctuation">'</span></span><span class="token punctuation">></span></span><br>	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>x</span><span class="token punctuation">></span></span>456<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>x</span><span class="token punctuation">></span></span><br>i	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>y</span><span class="token punctuation">></span></span>255<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>y</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>icon</span><span class="token punctuation">></span></span></code></pre>
+<p><code>panpush.pl</code> sends this to the room:</p>
+<pre class="language-xml"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>message</span> <span class="token attr-name">to</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">'</span>panopticon@conf.gnu.mine.nu<span class="token punctuation">'</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">'</span>groupchat<span class="token punctuation">'</span></span><span class="token punctuation">></span></span><br>	DJ Adams<br>	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>x</span> <span class="token attr-name">xmlns</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">'</span>panopticon:icon<span class="token punctuation">'</span></span><span class="token punctuation">></span></span><br>		<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>icon</span> <span class="token attr-name">id</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">'</span>4ee9da17f5839275ad0ca5d58c2bacaa<span class="token punctuation">'</span></span><span class="token punctuation">></span></span><br>			<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>x</span><span class="token punctuation">></span></span>456<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>x</span><span class="token punctuation">></span></span><br>			<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>y</span><span class="token punctuation">></span></span>255<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>y</span><span class="token punctuation">></span></span><br>		<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>icon</span><span class="token punctuation">></span></span><br>	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>x</span><span class="token punctuation">></span></span><br><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>message</span><span class="token punctuation">></span></span></code></pre>
+<p>The scary thing is that it seems to work! Grab your nearest Jabber client and enter room</p>
+<p><strong><a href="mailto:panopticon@conf.gnu.mine.nu">panopticon@conf.gnu.mine.nu</a></strong></p>
+<p>(remember, you don’t have to have a Jabber user account on <a href="http://gnu.mine.nu">gnu.mine.nu</a> to join a conference room there – just use your normal Jabber account, say, at <a href="http://jabber.org">jabber.org</a>). If it’s still working, you should see ‘panopticon’ in that room – that’s the <a href="http://panpush.pl">panpush.pl</a> script. When some avatar metadata changes and pops out of the Panopticon server’s port, it will appear in the room – currently represented as the avatar’s name.</p>
+<p>Want more? Want to actually do something with the data in the room?</p>
+<p>Well, I’ve just written an example antithesis to <a href="http://panpush.pl">panpush.pl</a> – <a href="/~dj/panclient.pl">panclient.pl</a>. This connects to the conference room, and listens out for packets containing the panopticon XML extensions. It just prints them out, but of course you can do with the data as you please. It’s just an example.</p>
+<p>Oh, one more thing. As <a href="/~dj/panpush.pl">panpush.pl</a> catches the panopticon XML and squirts it into the room, it also caches the actual avatar data, keyed by each icon’s id attribute. I plan to allow queries to be sent to the ‘panopticon’ room occupant, probably in the form of <strong>jabber:iq:browse</strong> IQ queries, so that clients can find out about what avatars are currently around, and what properties they have (name, url, xy coordinates, and so on).</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2002/20/5/web-h-h-hinternet-services-some-ramblings/">&quot;Web^H^H^HInternet Services&quot;? Some Ramblings.</a></li><li>Previous: <a href="/blog/2002/15/5/jabberconf-blaggplug-version-0-1b/">Jabberconf Blaggplug version 0+1b</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2002/15/5/the-panopticon/ -->
+  </body>
+</html>

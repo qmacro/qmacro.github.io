@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shell power and simplicity</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Shell power and simplicity</h1>
+
+<time datetime="2019-10-23">23 Oct 2019</time><a href="/blog/tags/language-ramblings/" class="post-tag">language-ramblings</a>
+
+<p>Sometimes we overlook the power of the shell, because the terminal context in which it's used is seen as outdated. That's far from the truth; in fact I think it would be a shame to lose sight of some fundamental and simple shell programming concepts which are as relevant, if not more, today, as they were ten years ago.</p>
+<h2 id="the-inspiration-for-this-post" tabindex="-1">The inspiration for this post <a class="direct-link" href="#the-inspiration-for-this-post" aria-hidden="true">#</a></h2>
+<p>Earlier this morning, on my travels, a <a href="https://twitter.com/david_ruizb/status/1186920793604796416">tweet</a> from <a href="https://twitter.com/david_ruizb">David Ruiz Badia</a> caught my eye:</p>
+<p>&quot;<em>Artificial intelligence + code repository on git = Autocomplete models when coding by @timoelliott Experience Intelligent Summit Barcelona #Intelligententerprise #experiencemanagement #sapchampions @SAPSpain</em>&quot;</p>
+<p>It wasn't the text or the main subject of the tweet, but the code on the slide that was shown in the accompanying picture:</p>
+<p><img src="https://pbs.twimg.com/media/EHjKKl3WoAAtxzl?format=jpg&amp;name=medium" alt="The slide on the tweet, showing Ruby code to work out lines by file extension">.</p>
+<p>Luckily the code on the slide is clear enough to read, so I won't reproduce it here.</p>
+<h2 id="the-challenge" tabindex="-1">The challenge <a class="direct-link" href="#the-challenge" aria-hidden="true">#</a></h2>
+<p>It's Ruby, and fairly simple code to sum up the total number of lines in files, by file type (extension), in a given directory.<br>
+So for example, assume you have the following files, each containing the indicated amount of lines:</p>
+<pre><code>a.txt (3 lines)
+b.txt (4 lines)
+c.dat (1 line)
+d.txt (2 lines)
+e.dat (5 lines)
+</code></pre>
+<p>What you want this program to produce is something like this:</p>
+<pre><code>dat -&gt; 6
+txt -&gt; 9
+</code></pre>
+<p>Thinking of files and lines immediately switched my brain to shell mode, where one part of the shell philosophy (do one thing and do it well - also attributable to the Unix philosophy in general) gives us the <a href="https://linux.die.net/man/1/wc">wc</a> program, which produces word, line, character and byte counts for files (and that's about it).</p>
+<p>Another part of the philosophy is &quot;small pieces loosely joined&quot;, which, in conjunction with the <a href="https://en.wikipedia.org/wiki/Pipeline_(Unix)">pipeline</a> concept, and combined with the wonderful simplicity of STDIN (standard input) and STDOUT (standard output), gives us the ridiculously useful ability to send the output of one command into the input of another.</p>
+<p>This ability might seem somewhat familiar, particularly if you've been discovering the <a href="https://en.wikipedia.org/wiki/Fluent_interface">fluent interface</a> style of method chaining in API consumption, as recently shown in how the <a href="https://developers.sap.com/topics/cloud-sdk.html">SAP Cloud SDK</a> is used - here's an example from a tutorial &quot;<a href="https://developers.sap.com/tutorials/cap-cloudsdk-2-v2-adapter.html">Install an OData V2 Adapter</a>&quot; which is part of one of this year's SAP TechEd App Space missions &quot;S/4HANA Extensions with Cloud Application Programming Model&quot;:</p>
+<pre class="language-javascript"><code class="language-javascript">BusinessPartnerAddress<br>        <span class="token punctuation">.</span><span class="token function">requestBuilder</span><span class="token punctuation">(</span><span class="token punctuation">)</span><br>        <span class="token punctuation">.</span><span class="token function">getAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span><br>        <span class="token punctuation">.</span><span class="token function">select</span><span class="token punctuation">(</span><br>                BusinessPartnerAddress<span class="token punctuation">.</span><span class="token constant">BUSINESS_PARTNER</span><span class="token punctuation">,</span><br>                BusinessPartnerAddress<span class="token punctuation">.</span><span class="token constant">ADDRESS_ID</span><span class="token punctuation">,</span><br>                BusinessPartnerAddress<span class="token punctuation">.</span><span class="token constant">CITY_NAME</span><span class="token punctuation">,</span><br>        <span class="token punctuation">)</span><br>        <span class="token punctuation">.</span><span class="token function">execute</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token literal-property property">url</span><span class="token operator">:</span><span class="token string">'http://localhost:3000/v2'</span><span class="token punctuation">}</span><span class="token punctuation">)</span><br>        <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">xs</span> <span class="token operator">=></span> xs<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token parameter">x</span> <span class="token operator">=></span> x<span class="token punctuation">.</span>cityName<span class="token punctuation">)</span><span class="token punctuation">)</span><br>        <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span>console<span class="token punctuation">.</span>log<span class="token punctuation">)</span></code></pre>
+<p>Anyway, I'm always happy for opportunities to practise my basic shell skills and Unix commands, so I thought I'd have a go at &quot;finishing the sentence&quot; in my mind, the one that had started with <code>wc</code>, and write a pipeline that would do the same thing as that lightly pedestrian Ruby code.</p>
+<blockquote>
+<p>I realise I don't have much context as to why the code is there or why it looks like it does - it relates to machine learning powered autocomplete features in code editors, so was likely something simple enough for the audience to understand but verbose enough to be of use as an example.</p>
+</blockquote>
+<h3 id="getting-the-line-counts" tabindex="-1">Getting the line counts <a class="direct-link" href="#getting-the-line-counts" aria-hidden="true">#</a></h3>
+<p>Starting with <code>wc</code> on the files, using the <code>-l</code> switch to request lines, we get this:</p>
+<pre class="language-shell"><code class="language-shell">→ <span class="token function">wc</span> -l *<br> <span class="token number">3</span> a.txt<br> <span class="token number">4</span> b.txt<br> <span class="token number">1</span> c.dat<br> <span class="token number">2</span> d.txt<br> <span class="token number">5</span> e.dat<br><span class="token number">15</span> total<br>→</code></pre>
+<blockquote>
+<p>There's nothing other than these 5 files in this directory, as you might have guessed.</p>
+</blockquote>
+<p>That's something we can definitely work with - we need to sum the numbers by file extension (<code>txt</code> or <code>dat</code> in this example).</p>
+<h3 id="stripping-the-extraneous-info" tabindex="-1">Stripping the extraneous info <a class="direct-link" href="#stripping-the-extraneous-info" aria-hidden="true">#</a></h3>
+<p>If we're to pass the output of <code>wc</code> directly into another program to do the summing, we may trip ourselves up because of this line at the end of the <code>wc</code> output:</p>
+<pre><code>15 total
+</code></pre>
+<p>We don't want the value 15 from that total summary line to be included. So we use another program to strip that line out, and pipe <code>wc</code>'s output into that.</p>
+<p>On <a href="https://en.wikipedia.org/wiki/GNU">GNU</a>-based Unix or Linux systems, we can use the <a href="https://en.wikipedia.org/wiki/Head_(Unix)">head</a> program to do that for us. <code>head</code> will display the first N lines of a file. The GNU version of <code>head</code> contains a flag <code>-n</code> that can take a negative number, to work backwards from the end of the file, so that we can do this:</p>
+<pre class="language-shell"><code class="language-shell">→ <span class="token function">wc</span> -l * <span class="token operator">|</span> <span class="token function">head</span> -n -1<br> <span class="token number">3</span> a.txt<br> <span class="token number">4</span> b.txt<br> <span class="token number">1</span> c.dat<br> <span class="token number">2</span> d.txt<br> <span class="token number">5</span> e.dat<br>→</code></pre>
+<p>The nice thing about this approach is that we will always strip off just the last line.</p>
+<p>Observe how the output of <code>wc</code> has been piped into the input of <code>head</code>. If you wanted to do this in a very inefficient but more or less equivalent way, using an intermediate file, you'd have to do this:</p>
+<pre class="language-shell"><code class="language-shell">→ <span class="token function">wc</span> -l * <span class="token operator">></span> intermediatefile<br>→ <span class="token function">head</span> -n -1 intermediatefile<br> <span class="token number">3</span> a.txt<br> <span class="token number">4</span> b.txt<br> <span class="token number">1</span> c.dat<br> <span class="token number">2</span> d.txt<br> <span class="token number">5</span> e.dat<br>→</code></pre>
+<p>Here, the <code>&gt;</code> symbol is redirecting the STDOUT from <code>wc</code> to a file called <code>intermediatefile</code>, and the <code>head</code> program reads from STDIN, or, if a filename is specified as it is here, will read from that file.</p>
+<p>On macOS, a decendant of BSD Unix, the GNU version of <code>head</code> isn't available, and so we cannot avail ourselves of the <code>-n -1</code> approach. Instead, we'd use the <a href="https://linux.die.net/man/1/grep">grep</a> command which in its basic form prints lines that match (or don't match) a pattern. We can use <code>grep</code>'s <code>-v</code> switch to negate it, i.e. to get it to print lines <em>not</em> matching the pattern, and specify &quot; total$&quot; as the pattern to match (the dollar sign at the end of the match string is a regular expression symbol that anchors the text &quot; total&quot; to the end of the line from a match perspective). While we do have to be careful not to have a file called <code>total</code>, it will do the job for us here:</p>
+<pre class="language-shell"><code class="language-shell">→ <span class="token function">wc</span> -l * <span class="token operator">|</span> <span class="token function">grep</span> -v <span class="token string">' total$'</span><br> <span class="token number">3</span> a.txt<br> <span class="token number">4</span> b.txt<br> <span class="token number">1</span> c.dat<br> <span class="token number">2</span> d.txt<br> <span class="token number">5</span> e.dat<br>→</code></pre>
+<p>Same result. Nice.</p>
+<h3 id="summing-by-extension" tabindex="-1">Summing by extension <a class="direct-link" href="#summing-by-extension" aria-hidden="true">#</a></h3>
+<p>Now we have some clean and predictable input to pass to another program. We'll use <code>awk</code> which is a very useful and powerful text processing tool, along with its sibling <code>sed</code>. The wonderful programming language Perl took inspiration from both <code>awk</code> and <code>sed</code> and other text processing tools, as it happens.</p>
+<blockquote>
+<p>It may be interesting to you to know that <code>awk</code>'s initials are from the authors, Aho, Weinberger and Kernighan, three luminaries from Bell Labs, the birthplace of C and Unix. On the <a href="https://qmacro.org/2019/09/17/new-podcast-tech-aloud/">Tech Aloud</a> podcast, you'll find an episode entitled &quot;<a href="https://anchor.fm/tech-aloud/episodes/C--the-Enduring-Legacy-of-Dennis-Ritchie---Alfred-V--Aho---07-Sep-2012-e7mp8r">C, the Enduring Legacy of Dennis Ritchie - Alfred V. Aho - 07 Sep 2012</a>&quot; to which you may enjoy listening.</p>
+</blockquote>
+<p><code>awk</code> reads lines from STDIN (standard input) and is used often to rearrange fields in those lines, or otherwise process them. In this case we're going to read in the output from our pipeline so far, and get <code>awk</code> to start out by splitting each one up into separate pieces, so that we go from this:</p>
+<pre><code> 3 a.txt
+ 4 b.txt
+ 1 c.dat
+ 2 d.txt
+ 5 e.dat
+</code></pre>
+<p>to this:</p>
+<pre><code> 3 a txt
+ 4 b txt
+ 1 c dat
+ 2 d txt
+ 5 e dat
+</code></pre>
+<p>In this new state we can now distinguish the file extensions, and thereby have a chance to sum the line counts by them.</p>
+<p>To do this, we use the <code>-F</code> switch which allows us to define what we want the &quot;field separator&quot; to be, what character (or which characters) we want <code>awk</code> to split each line on. In our case we want to split on space, and also period. So we do the following, specifying a simple in-line <code>awk</code> script as the main parameter:</p>
+<pre class="language-shell"><code class="language-shell">→ <span class="token function">wc</span> -l * <span class="token operator">|</span> <span class="token function">head</span> -n -1 <span class="token operator">|</span> <span class="token function">awk</span> -F <span class="token string">'[\ .]'</span> <span class="token string">'{print $2, $NF}'</span><br><span class="token number">3</span> txt<br><span class="token number">4</span> txt<br><span class="token number">1</span> dat<br><span class="token number">2</span> txt<br><span class="token number">5</span> dat</code></pre>
+<blockquote>
+<p>We have to escape the space in the list of delimiters, hence the <code>\</code> escape character.</p>
+</blockquote>
+<p>What the script (<code>{ print $2, $NF }</code>) is doing is simply printing out field number 2 and the last field. We specify field number 2 (<code>$2</code>) because there's an empty field number one, because we've split on space. We get the last field by specifying <code>$NF</code>, which represents &quot;the number of fields&quot;.</p>
+<p>Note that for every line of input, we get a line of output. This is deliberate - <code>awk</code> executes the bit in curly brackets for each line it processes. But we can also get <code>awk</code> to do something at the beginning, or at the end, of processing. Consider a change from the simple script that we have now:</p>
+<pre><code>{ print $2, $NF }
+</code></pre>
+<p>to this:</p>
+<pre><code>{ counts[$NF]+=$2 }
+END { for (ext in counts) print ext, &quot;-&gt;&quot;, counts[ext] }
+</code></pre>
+<p>This will accumulate the individual line counts for each file into an associative array <code>counts</code> keyed by the extension (e.g. <code>txt</code>). The <code>{ counts[$NF]+=$2 }</code> part runs for each line coming in on STDIN. Then at the end of processing, the block with the <code>for</code> loop is executed, printing out the totals by extension.</p>
+<p>Let's see this in action:</p>
+<pre class="language-shell"><code class="language-shell">→ <span class="token function">wc</span> -l * <span class="token operator">|</span> <span class="token function">head</span> -n -1 <span class="token operator">|</span> <span class="token function">awk</span> -F<span class="token string">'[\ .]'</span> <span class="token string">'{counts[$NF]+=$2}<br>> END {for (ext in counts) print ext, "->", counts[ext]}'</span><br>dat -<span class="token operator">></span> <span class="token number">6</span><br>txt -<span class="token operator">></span> <span class="token number">9</span></code></pre>
+<blockquote>
+<p>The <code>&gt;</code> symbol at the start of the second line is the &quot;continuation&quot; character, put there by the shell to tell me it was expecting more input, after I'd hit enter at the end of the first line (because I hadn't yet closed the opening single quote).</p>
+</blockquote>
+<h2 id="wrapping-up" tabindex="-1">Wrapping up <a class="direct-link" href="#wrapping-up" aria-hidden="true">#</a></h2>
+<p>And there we have it. We only used a few features of <code>awk</code> but they are certainly powerful enough for this task, when combined into a pipeline with <code>wc</code> and <code>head</code> (or <code>grep</code>).</p>
+<p>I'd encourage you to spend some time in a text-based Unix or Unix-like environment. All the major PC operating systems today have such environments available, either directly (with Linux and macOS) or indirectly via VMs (with ChromeOS and Windows 10).</p>
+<p>The future is terminal. Happy pipelining!</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2020/22/3/brambleweeny-cluster-experiments/">Brambleweeny Cluster Experiments</a></li><li>Previous: <a href="/blog/2019/17/9/new-podcast-tech-aloud/">New podcast - Tech Aloud</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2019/23/10/shell-power-and-simplicity/ -->
+  </body>
+</html>

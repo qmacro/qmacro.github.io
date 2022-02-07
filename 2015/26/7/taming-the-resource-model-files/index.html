@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taming the Resource Model Files</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Taming the Resource Model Files</h1>
+
+<time datetime="2015-07-26">26 Jul 2015</time><a href="/blog/tags/i18n/" class="post-tag">i18n</a><a href="/blog/tags/messagebundle/" class="post-tag">messagebundle</a><a href="/blog/tags/openui5/" class="post-tag">openui5</a><a href="/blog/tags/resourcemodel/" class="post-tag">resourcemodel</a>
+
+<p><strong><a href="/2015/07/04/30-days-of-ui5/">30 Days of UI5</a> — Day 23 by <a href="http://twitter.com/lxinspc">Nathan Adams</a></strong></p>
+<p>UI5’s support for multiple-languages, out of the box (see the post “<a href="/2015/07/16/multi-language-support-out-of-the-box-ui5s-pedigree/">Multi-language support out of the box – UI5’s pedigree</a>” in this series) is impressive and easy to use. Creating a message resource bundle in your Component.js file is straightforward, especially if picking up the user’s language preferences in the browser.</p>
+<p>What can be less straightforward though is organising these files into something manageable, for plenty of projects, your i18n file might be on the small side, but it’s pretty easy to build up a large file. An application I’m currently working on, which perhaps has only 50% of its views defined, already has just 100 definitions in the i18n file. (A quick look at the Fiori My Travel Expenses App v2 shows there are around 1000 lines, and about 500 definitions in the resource file and whilst reasonably well documented with comments – you may well be hunting for usage of a text).</p>
+<pre><code>#XBUT,20: Button that distributes (shares) the total amount evenly between all attendees
+
+DISTRIBUTE_EVENLY=Distribute Amounts Evenly
+
+#XBUT,20: add internal attendee button  
+ADD_INTERNAL_ATTENDEE=Add Internal Attendee
+
+#XBUT,20: add external attendee button  
+ADD_EXTERNAL_ATTENDEE=Add External Attendee
+
+#XFLD,20: FirstName – LastName in the right order, e.g. EN: Smith, John  
+ATTENDEE_FULLNAME_ARTIFACT={1}, {0}
+
+#XTIT: title of Add Internal Attendees select dialog  
+INTERNAL_ATTENDEES_TIT=Add Internal Attendees
+
+#XTIT: title of Add External Attendees dialog  
+EXTERNAL_ATTENDEES_TIT=Add External Attendees
+</code></pre>
+<p><em>Example of a Fiori Resource Model file from ‘My Travel Expenses’</em></p>
+<p>Before we dive into the structure of the key value pairs of the file though, it’s worth thinking about if one file for all your texts makes sense. In the majority of cases, you really wouldn’t want to add further complexity by adding more files. in my experience though, there are some cases where creating additional resource files may be useful.</p>
+<ul>
+<li>You may have texts which are more prone to change, perhaps email / telephone contact details in messages; putting these into a separate file might make sense to de-risk the process of updating them when they need to change</li>
+<li>Common elements across a suite of applications</li>
+<li>Master data texts, if you have a lot of these, then consider separate files for them</li>
+<li>You may have texts, or elements of texts which don’t need translation, and you want to keep consistent across all languages (that email example above, you don’t want to update that in multiple language files every time)</li>
+<li>Lastly just like code – if it’s too long, break it up. Large app with 100’s if not 1000’s of terms? Split it up, maybe by view, or group of views.</li>
+</ul>
+<p>As we move on into the structure of these files, it might not seem to be important (you can always search for a term in your chosen IDE after all), but like all good coding practices, structure can be immensely helpful in the following regards</p>
+<ul>
+<li>Identifying gaps in language files becomes easier – so you don’t discover in the first round of translation that you had some texts hardcoded into your XML views</li>
+<li>Making changes to texts, when a change is requested becomes a lot easier</li>
+<li>When sending out for translation, identifying which text is which becomes easier</li>
+<li>Because the file can be more easily understood, then it becomes an easier artefact to distribute, potentially removing the need for conversion back and forth between spreadsheets</li>
+</ul>
+<p>How you choose to organise the language file is a matter of preference, however in my experience there are two key things I like to highlight and organise in the language file:</p>
+<ul>
+<li>Common terms</li>
+<li>Terms organised by View or Fragment / Control / Property</li>
+</ul>
+<p>I’ll define all the common terms at the beginning of my language file. My preference for all my keys, is to use a dot notation to specify them (as it lines up nicely with identification of components). So here’s an example</p>
+<pre><code>#Common Terms
+common.thing=Foo
+common.items=Items
+common.add=Add
+...
+</code></pre>
+<p>Thing is though, common terms feel like something I should have in my application; you want to make sure that when you call a thing, <code>Foo</code> it’s always a <code>Foo</code> and when it’s requested to change to <code>Bar</code> I can change the common term, and my job is done. In practice though, this never really works. Why? Well I might be able to define those common terms, but in the majority of cases I always need to fit them into a longer text, such as <code>Create a Foo</code> or <code>Delete Foos</code>.</p>
+<p>OK so maybe I can define some common texts, and do some clever pre-processing with Grunt to expand placeholders in my text, or do the same when I load the resource file</p>
+<pre><code>#Specifc Terms (pre-process)
+master.things.addThing=Add {common.thing}
+master.things.deleteThings=Delete {common.thing}s
+</code></pre>
+<pre><code>#Specific Terms (post-process)
+master.things.addThing=Add Foo
+master.things.deleteThings=Delete Foos
+</code></pre>
+<p>Nice? Well not really, it’s not a great practice to make longer texts out of shorter texts. Consider the need to correctly handle plurals or other modifications you might require. Let’s say we can have <code>Foos</code> but it’s not <code>Bars</code> but <code>Baren</code> then my nice easy change above isn’t going to work. Then other languages might not have the same syntactic structures, and I could finish up chasing my tail trying to get it right across all languages, or finishing up like those pre-recorded train announcements made up of single recorded chunks – they work, but just sound awful.</p>
+<p>There is one valid place for common terms, and you might therefore still want to define them in your main i18n file (or even a separate one you don’t load). That’s as a glossary to help those maintaining the file. Adding <code>common.thing=Foo</code> to the head of the file, even if never used will help those coming along after to understand how things are referred to. It’s a good UX practice, and fundamental to building a consistent experience.</p>
+<p>So most of my definitions though, will be very specific to a view or fragment, and therefore, I like to identify these, in this manner, with the application as an implied root. If I’m developing a Split App, which has for example the following views</p>
+<ul>
+<li>Tasks (Master)</li>
+<li>Services (Master)</li>
+<li>Rounds (Detail)</li>
+<li>Details (Fragment used in Rounds)</li>
+</ul>
+<p>then I’ll structure my language file, very specifically to reference the view, the control(s) in the view, and where appropriate the property. Which might result in something like.</p>
+<pre><code>#Master views
+#Tasks
+master.tasks.title=Maintenance Tasks
+#Services
+master.services.title=Active Services
+master.services.toolbar.button.add=Add Service
+master.services.toolbar.button.delete=Delete Services
+#Detail Views
+#Rounds
+detail.rounds.title=Round Definition
+detail.rounds.tabBar.tab.details=Details
+detail.rounds.tabBar.tab.vehicles=Vehicles
+#Rounds / Vehicles fragment
+detail.rounds.fragment.vehicles.column.title.service=Service
+detail.rounds.fragment.vehicles.column.title.capacity=Capacity
+...
+</code></pre>
+<p>Admittedly this is quite a verbose approach, and it requires a little discipline to use, but the advantages are plain to see – I immediately get a sense of where a text might appear in the user interface, I also can get a sense of if anything is missing (for example I’d expect every view to have a <code>{view}.title</code> attribute.</p>
+<p>By taking a structured approach to the language file, it also makes it easier to set up controls with bindings to the language file, as there is no need to try and think of a name. It goes without saying that you should be building your xml views with bindings for texts from the very start of development – no one wants to go back and to add them all in at a later date (if you do, that’s precious velocity you’re wasting).</p>
+<p>Who thought such a straightforward flat structured concept could require so many considerations?</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2015/27/7/an-introduction-to-sap-ui-define/">An introduction to sap.ui.define</a></li><li>Previous: <a href="/blog/2015/25/7/merging-lists-with-ui5/">Merging lists with UI5</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2015/26/7/taming-the-resource-model-files/ -->
+  </body>
+</html>

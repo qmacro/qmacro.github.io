@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote access to Docker on my Synology NAS</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Remote access to Docker on my Synology NAS</h1>
+
+<time datetime="2021-06-12">12 Jun 2021</time><a href="/blog/tags/docker/" class="post-tag">docker</a><a href="/blog/tags/nas/" class="post-tag">nas</a>
+
+<p><em>Here's what I did to enable remote access to the Docker install on my Synology NAS.</em></p>
+<p>This post describes the steps I took to set up remote access to Docker running on my NAS, in the simplest and &quot;smallest footprint&quot; possible way I could find. There are other approaches, but this is what I did. It was a little less obvious than one might have expected, because of the way the Docker service is hosted on the NAS's operating system, and I ended up having to read around (see the reading list at the end).</p>
+<h2 id="introduction" tabindex="-1">Introduction <a class="direct-link" href="#introduction" aria-hidden="true">#</a></h2>
+<p>Having followed the container revolution for a while, I've become more and more enamoured with the idea of disposable workspaces, services and apps that can be instantly reified and leave no trace when they're gone. This was one of the reasons I opted for a Synology NAS, my first NAS device (see <a href="https://qmacro.org/2021/05/22/adding-a-drive-to-my-synology-nas/">Adding a drive to my Synology NAS</a>), because it is to act not only as a storage device, but as a container server.</p>
+<p>The Docker experience out of the box with the NAS's operating system, DiskStation Manager (DSM), is very pleasant, via a graphical user interface. I've been very happy with the way it works, especially in the initial discovery phase.</p>
+<p><img src="/blog/img/2021/06/docker-gui.png" alt="A screenshot of the Docker app installed on the Synology NAS, showing two running containers"></p>
+<p>But for this old mainframe and Unix dinosaur, a command line interface with access to a myriad remote servers is a much more appealing prospect, and the separation of client and server executables in Docker plays to the strengths of such a setup. So I wanted to use my Docker command line interface (CLI) <code>docker</code> to interact with the resources on the Synology NAS's Docker service. Not only for the sheer convenience, but also to be able to spin up CLIs and TUIs, as remote containers, and have seamless access to them from the comfort of my local machine's command line.</p>
+<h2 id="setup-steps" tabindex="-1">Setup steps <a class="direct-link" href="#setup-steps" aria-hidden="true">#</a></h2>
+<p>Here's what I did, starting from the Docker package already installed and running on the NAS.</p>
+<p><img src="/blog/img/2021/06/docker-package.png" alt="A screenshot of the Docker package installed on the NAS"></p>
+<p>From a command line perspective, this out of the box installation also gave me access to be able to run the <code>docker</code> client CLI while remotely logged into the NAS, but only as root, i.e. directly, or via <code>sudo</code> as shown in this example:</p>
+<pre><code>; ssh ds1621plus
+administrator@ds1621plus:~$ sudo docker -v
+Password:
+Docker version 20.10.3, build b35e731
+administrator@ds1621plus:~$ sudo docker image ls
+REPOSITORY                     TAG       IMAGE ID       CREATED       SIZE
+homeassistant/home-assistant   latest    832ca33fe14a   4 weeks ago   1.1GB
+linuxserver/freshrss           latest    09ffc08f14fe   4 weeks ago   120MB
+administrator@ds1621plus:~$
+</code></pre>
+<h3 id="allow-access-as-non-root-user" tabindex="-1">Allow access as non-root user <a class="direct-link" href="#allow-access-as-non-root-user" aria-hidden="true">#</a></h3>
+<p>The first thing I wanted to do is to allow myself to run the <code>docker</code> CLI as a non-root user; in my case (as in many basic Synology NAS contexts) this is the as the <code>administrator</code> user.</p>
+<p>In the standard Docker <a href="https://docs.docker.com/engine/install/linux-postinstall/">Post-installation steps for Linux</a>, there's a specific section for this: <a href="https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user">Manage Docker as a non-root user</a>. However, due to the way that users and groups are managed in DSM, this specific approach didn't work; there was no <code>docker</code> group that had been created, to which the <code>administrator</code> user could be added, and manually adding the group wasn't the right approach either, not least because DSM doesn't sport a <code>groupadd</code> command.</p>
+<p>In fact, there are DSM specific commands for managing local users, groups, network settings and more. They all begin <code>syno</code> and are described in the <a href="https://global.download.synology.com/download/Document/Software/DeveloperGuide/Firmware/DSM/All/enu/Synology_DiskStation_Administration_CLI_Guide.pdf">CLI Administrator Guide for Synology NAS</a>.</p>
+<p>So here's what I did. I'm a check-before-and-after kind of person, so some of these steps aren't essential, but they helped me to go carefully.</p>
+<h4 id="check-docker-group-doesn't-already-exist" tabindex="-1">Check docker group doesn't already exist <a class="direct-link" href="#check-docker-group-doesn't-already-exist" aria-hidden="true">#</a></h4>
+<p>First, I wanted to check that I wasn't about to clobber any existing <code>docker</code> group:</p>
+<pre><code>administrator@ds1621plus:~$ grep -i docker /etc/group
+administrator@ds1621plus:~$
+</code></pre>
+<p>Nope, no existing <code>docker</code> group, at least in the regular place.</p>
+<h4 id="add-the-docker-group-with-the-administrator-user-as-a-member" tabindex="-1">Add the docker group, with the administrator user as a member <a class="direct-link" href="#add-the-docker-group-with-the-administrator-user-as-a-member" aria-hidden="true">#</a></h4>
+<p>Time to create the group then, using the DSM specific command; I specified the <code>administrator</code> user to be added directly, as I did it:</p>
+<pre><code>administrator@ds1621plus:~$ sudo synogroup --add docker administrator
+Group Name: [docker]
+Group Type: [AUTH_LOCAL]
+Group ID:   [65538]
+Group Members:
+0:[administrator]
+</code></pre>
+<p>Checking to see if the group was now listed in <code>/etc/group</code> confirmed that these DSM specific commands weren't doing anything out of the ordinary:</p>
+<pre><code>administrator@ds1621plus:~$ grep -i docker /etc/group
+docker:x:65538:administrator
+</code></pre>
+<p>Great, the <code>docker</code> group now exists, with <code>administrator</code> as a member.</p>
+<h4 id="change-the-group-owner-of-the-docker-socket" tabindex="-1">Change the group owner of the Docker socket <a class="direct-link" href="#change-the-group-owner-of-the-docker-socket" aria-hidden="true">#</a></h4>
+<p>The <a href="https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user">Manage Docker as a non-root user</a> steps mentioned earlier showed that this is pretty much all one needs to do on a standard Docker-on-Linux install. However, there was an extra step needed on DSM, to actually assign to this new <code>docker</code> group access to the Unix socket that Docker uses.</p>
+<p>Before I did this, I wanted to see what the standard situation was:</p>
+<pre><code>administrator@ds1621plus:~$ ls -l /var/run/ | grep docker
+drwx------ 8 root         root             200 Jun 10 17:40 docker
+-rw-r--r-- 1 root         root               5 Jun 10 17:40 docker.pid
+srw-rw---- 1 root         root               0 Jun 10 17:40 docker.sock
+</code></pre>
+<p>The socket (<code>docker.sock</code>) in <code>/var/run/</code> was owned by <code>root</code> as user and <code>root</code> as group. This meant that no amount of membership of the <code>docker</code> group was going to get the <code>administrator</code> user any closer to being able to interact with Docker.</p>
+<p>So I changed the group ownership to <code>docker</code>:</p>
+<pre><code>administrator@ds1621plus:~$ sudo chown root:docker /var/run/docker.sock
+administrator@ds1621plus:~$ ls -l /var/run/ | grep docker
+drwx------ 8 root         root             200 Jun 10 17:40 docker
+-rw-r--r-- 1 root         root               5 Jun 10 17:40 docker.pid
+srw-rw---- 1 root         docker             0 Jun 10 17:40 docker.sock
+</code></pre>
+<h4 id="test-non-root-user-access" tabindex="-1">Test non-root user access <a class="direct-link" href="#test-non-root-user-access" aria-hidden="true">#</a></h4>
+<p>Now for the big moment. I logged out and back in again (for the new group membership to take effect) and tried a <code>docker</code> command:</p>
+<pre><code>administrator@ds1621plus:~$ logout
+Connection to ds1621plus closed.
+# ~
+; ssh ds1621plus
+administrator@ds1621plus:~$ docker image ls
+REPOSITORY                     TAG       IMAGE ID       CREATED       SIZE
+homeassistant/home-assistant   latest    832ca33fe14a   3 weeks ago   1.1GB
+linuxserver/freshrss           latest    09ffc08f14fe   4 weeks ago   120MB
+</code></pre>
+<p>Success!</p>
+<h3 id="setting-up-ssh-access-and-a-docker-context" tabindex="-1">Setting up SSH access and a Docker context <a class="direct-link" href="#setting-up-ssh-access-and-a-docker-context" aria-hidden="true">#</a></h3>
+<p>Now that I was able to safely interact with Docker on the NAS, I turned my attention to doing that remotely.</p>
+<p>Elsewhere in the Docker documentation, there's <a href="https://docs.docker.com/engine/security/protect-access/">Protect the Docker daemon socket</a> which has tips on using either SSH or TLS to do so. I'd already established public key based SSH access from my local machine to the NAS, and maintain SSH configuration for various hosts (which you can see in my <a href="https://github.com/qmacro/dotfiles/blob/master/ssh/config">dotfiles</a>). So the SSH route was appealing to me.</p>
+<p>The idea of this SSH access is to connect to the remote Docker service via <code>ssh</code> and run <code>docker</code> like that, remotely.</p>
+<p>However, trying a basic connection failed at first; running a simple <code>ssh</code>-based invocation of <code>docker</code> on the remote machine (<code>ssh ds1621plus docker -v</code>) resulted in an error that ended like this:</p>
+<p>&quot;<em>Exit status 127, please make sure the URL is valid, and Docker 18.09 or later is installed on the remote host: stderr=sh: docker: command not found</em>&quot;</p>
+<p>In desperation I even tried explicit values (<code>ssh -l administrator -p 2222 ds1621plus docker -v</code>) but got the same message.</p>
+<p>It turns out that on SSH access, the environment variables are not set the same as when you connect via <code>ssh</code> for an actual login session. Crucially, the value of the <code>PATH</code> environment variable was rather limited. Here's the entirety of the environment on an <code>ssh</code> based invocation of <code>env</code>:</p>
+<pre><code>; ssh ds1621plus env
+SHELL=/bin/sh
+SSH_CLIENT=192.168.86.50 54644 2222
+USER=administrator
+MAIL=/var/mail/administrator
+PATH=/usr/bin:/bin:/usr/sbin:/sbin
+PWD=/volume1/homes/administrator
+SHLVL=1
+HOME=/var/services/homes/administrator
+LOGNAME=administrator
+SSH_CONNECTION=192.168.86.50 54644 192.168.86.155 2222
+_=/usr/bin/env
+</code></pre>
+<p>We can see that there are only four directories in the <code>PATH</code>: <code>/usr/bin</code>, <code>/bin</code>, <code>/usr/sbin</code> and <code>/sbin</code>.</p>
+<p>On the NAS, the <code>docker</code> client executable was in <code>/usr/local/bin</code>, not in the <code>PATH</code>; this was the cause of the error above - via a simple <code>ssh</code> invocation, the <code>docker</code> command wasn't found.</p>
+<p>So I had to address this, and I did via SSH's &quot;user environment&quot; feature.</p>
+<h4 id="turn-on-user-environment-support-in-sshd" tabindex="-1">Turn on user environment support in sshd <a class="direct-link" href="#turn-on-user-environment-support-in-sshd" aria-hidden="true">#</a></h4>
+<p>SSH and its implementation, on client and server, is extremely accomplished, which is code for &quot;there's so much about SSH I don't yet know&quot;. One thing I learned about in this mini adventure is that the SSH daemon has support for &quot;user environments&quot;, via the <code>.ssh/environment</code> file, which is described in the <a href="http://man.openbsd.org/sshd.8#FILES">FILES section of the sshd documentation</a>.</p>
+<p>Basically, setting the <code>PATH</code> to include <code>/usr/local/bin</code>, via this support for user environments, was exactly what I needed. What's more, I was not having to &quot;hack&quot; anything on the NAS (such as copying or symbolic-linking <code>docker</code> to another place so that it would be accessible) that I might regret later.</p>
+<p>First, though, I needed to turn on user environment support on the SSH daemon service on the NAS. For this, I uncommented <code>PermitUserEnvironment</code> in <code>/etc/ssh/sshd_config</code> and set the value to <code>yes</code>, with this result:</p>
+<pre><code>administrator@ds1621plus:~$ sudo grep PermitUserEnvironment /etc/ssh/sshd_config
+PermitUserEnvironment yes
+</code></pre>
+<p>I then restarted the NAS; I could have messed around finding a neater way just to restart the SSH daemon, but I'd read about some other gotchas doing this, and I was the only one using the NAS at the time, so I went for it.</p>
+<h4 id="add-the-location-of-the-docker-executable-in-the-path-variable-via-.sshenvironment" tabindex="-1">Add the location of the docker executable in the PATH variable via .ssh/environment <a class="direct-link" href="#add-the-location-of-the-docker-executable-in-the-path-variable-via-.sshenvironment" aria-hidden="true">#</a></h4>
+<p>Now I could use the <code>.ssh/environment</code> file in the <code>administrator</code> user's home directory to set the value of the <code>PATH</code> environment variable to what I needed.</p>
+<p>To do this, I just started a remote login session on the NAS via <code>ssh</code>, and asked <code>env</code> to tell me what this was and also write it to the <code>.ssh/environment</code> file directly:</p>
+<pre><code>; ssh ds1621plus
+administrator@ds1621plus:~$ env | grep PATH | tee .ssh/environment
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/syno/sbin:/usr/syno/bin:/usr/local/sbin:/usr/local/bin
+administrator@ds1621plus:~$
+</code></pre>
+<p>And that was it; when running commands remotely via <code>ssh</code>, this <code>PATH</code> value was now applicable. So the remote invocation of <code>docker</code> now worked:</p>
+<pre><code>; ssh ds1621plus docker -v
+Docker version 20.10.3, build b35e731
+</code></pre>
+<h4 id="create-a-docker-context" tabindex="-1">Create a Docker context <a class="direct-link" href="#create-a-docker-context" aria-hidden="true">#</a></h4>
+<p>This final step was just for convenience, but worth it. With a context, I can avoid having to use <code>ssh</code> explicitly to interact with Docker on the NAS remotely.</p>
+<p>It's described in <a href="https://docs.docker.com/engine/security/protect-access/">Use SSH to protect the Docker daemon socket</a> mentioned earlier, so I'll just show here what I did.</p>
+<p>Create the context:</p>
+<pre><code>; docker context create \
+  --docker host=ssh://administrator@ds1621plus \
+  --description=&quot;Synology NAS&quot; \
+  synology
+</code></pre>
+<p>List the contexts, and select the new <code>synology</code> context for use:</p>
+<pre><code>; docker context list
+NAME                TYPE                DESCRIPTION                               DOCKER ENDPOINT                  KUBERNETES ENDPOINT                                                     ORCHESTRATOR
+default *           moby                Current DOCKER_HOST based configuration   unix:///var/run/docker.sock      https://api.c-681fdc3.kyma.shoot.live.k8s-hana.ondemand.com (default)   swarm
+synology            moby                Synology NAS                              ssh://administrator@ds1621plus
+# ~
+; docker context use synology
+synology
+# ~
+; docker image ls
+REPOSITORY                     TAG       IMAGE ID       CREATED       SIZE
+homeassistant/home-assistant   latest    832ca33fe14a   4 weeks ago   1.1GB
+linuxserver/freshrss           latest    09ffc08f14fe   4 weeks ago   120MB
+</code></pre>
+<p>Note that last command <code>docker image ls</code>; I invoked that on my client machine, but because of the context set, and the SSH based connection set up, the target was the Docker engine running on the Synology NAS. Success!</p>
+<h2 id="references" tabindex="-1">References <a class="direct-link" href="#references" aria-hidden="true">#</a></h2>
+<p>Here's what I read to find my way through this. Documents referenced in this post are also included here.</p>
+<ul>
+<li><a href="https://docs.docker.com/engine/security/protect-access/">Protect the Docker daemon socket</a></li>
+<li><a href="https://github.com/docker/machine/issues/1200">Feature request: add driver for Synology</a></li>
+<li><a href="https://github.com/microsoft/vscode-remote-release/issues/3748">Remote Docker version not detected correctly</a></li>
+<li><a href="https://www.synoforum.com/threads/permissions-for-user-to-run-docker.3536/">Permission for User to run Docker?</a></li>
+<li><a href="https://global.download.synology.com/download/Document/Software/DeveloperGuide/Firmware/DSM/All/enu/Synology_DiskStation_Administration_CLI_Guide.pdf">CLI Administrator Guide for Synology NAS</a></li>
+<li><a href="http://man.openbsd.org/sshd.8">OpenBSD manual page server for sshd</a></li>
+</ul>
+
+<hr>
+<ul><li>Next: <a href="/blog/2021/14/6/the-apc-smt750ic-ups-works-with-the-synology-nas-ds1621/">The APC SMT750IC UPS works with the Synology NAS DS1621+</a></li><li>Previous: <a href="/blog/2021/22/5/adding-a-drive-to-my-synology-nas/">Adding a drive to my Synology NAS</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2021/12/6/remote-access-to-docker-on-my-synology-nas/ -->
+  </body>
+</html>

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two-phase video uploads with YouTube API and curl</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Two-phase video uploads with YouTube API and curl</h1>
+
+<time datetime="2021-03-30">30 Mar 2021</time><a href="/blog/tags/autodidactics/" class="post-tag">autodidactics</a><a href="/blog/tags/curl/" class="post-tag">curl</a><a href="/blog/tags/youtube/" class="post-tag">youtube</a><a href="/blog/tags/shell/" class="post-tag">shell</a>
+
+<p><em>TIL how to use the YouTube API to upload a video, with <code>curl</code>, using a two-phase approach.</em></p>
+<p>I'm becoming more familiar with the YouTube API surface area, and a task recently required me to look into an efficient way of uploading videos to a YouTube channel. While I managed the upload technically, it was ultimately in vain due to a recent <a href="https://developers.google.com/youtube/v3/revision_history#release_notes_07_28_2020">change to the terms of service</a>. But it's still worth sharing the two-phase approach that I was able to take.</p>
+<p>The YouTube Data API has a <a href="https://developers.google.com/youtube/v3/docs/videos/insert">Videos: insert</a> facility. It's worth reading through this, and, if you get the chance, through other areas of the API, because they're quite similar, and what appeared initially a little overwhelming to me has become more familiar.</p>
+<p>The approach revolves around the following flow:</p>
+<ol>
+<li>prepare a <a href="https://developers.google.com/youtube/v3/docs/videos#resource">video resource</a> - this is a JSON structure where you put your video metadata</li>
+<li>POST this JSON structure to the API endpoint, and expect a Location header in the response</li>
+<li>POST the binary content of the video itself to the URL that the Location header pointed to</li>
+</ol>
+<p>Here's a brief example based on a throwaway script I created to use the API.</p>
+<p><strong>Preparing the video resource</strong></p>
+<p>I don't like writing JSON by hand, I prefer writing YAML and then having it converted to JSON on the fly. Here's a function I wrote to produce the video resource:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function-name function">videoresource</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  yq e -j -I<span class="token operator">=</span><span class="token number">0</span> - <span class="token operator">&lt;&lt;</span><span class="token string">EODATA<br>snippet:<br>  categoryId: 28<br>  title: The video title<br>  description: |<br>    A longer description that can run over<br>    several lines if needed. This is the text<br>    that appears beneath the video on YouTube.<br>  tags:<br>    - sap<br>    - bash<br>    - jq<br>    - scripting<br>    - btp<br>status:<br>  selfDeclaredMadeForKids: False<br>  privacyStatus: Unlisted<br>recordingDetails:<br>  recordingDate: 2018-03-31T00:00:00Z<br>EODATA</span><br><span class="token punctuation">}</span></code></pre>
+<p>I'm using <code>yq</code> to evaluate (<code>e</code>) the YAML and emit JSON (<code>-j</code>). The <code>-I=0</code> tells <code>yq</code> to put all the JSON output on a single line (by default it will nicely pretty-print it with whitespace).</p>
+<p><strong>Posting the JSON video resource</strong></p>
+<p>In making a POST request to the <a href="https://developers.google.com/youtube/v3/docs/videos/insert">Videos: insert</a> endpoint, you need to specify the <code>part</code> parameter, which, amongst other things, describes what you're sending in the video resource. I prepare my <code>part</code> parameter like this (and yes, I know I should URL encode the values, but hey, it's a throwaway script and it worked):</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function-name function">urlparameters</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token function">paste</span> -s -d<span class="token string">'&amp;'</span> - <span class="token operator">&lt;&lt;</span><span class="token string">EOPARM<br>part=snippet,status,recordingDetails<br>notifySubscribers=False<br>uploadType=resumable<br>EOPARM</span><br><span class="token punctuation">}</span></code></pre>
+<p>As well as adding the optional parameter <code>notifySubscribers</code> I also added the <code>uploadType</code> parameter. While not directly documented on the <a href="https://developers.google.com/youtube/v3/docs/videos/insert">Videos: insert</a> page, it appears in the <a href="https://developers.google.com/youtube/v3/docs/videos/insert#ruby">Ruby code sample</a> there and seems to be quite important.</p>
+<p>Using the two functions thus defined, it's a straightforward matter of using the Swiss Army toolchain of HTTP clients, the venerable <code>curl</code>:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">curl</span> <span class="token punctuation">\</span><br>  <span class="token string">"https://www.googleapis.com/upload/youtube/v3/videos?<span class="token variable"><span class="token variable">$(</span>urlparameters<span class="token variable">)</span></span>"</span> <span class="token punctuation">\</span><br>  --verbose <span class="token punctuation">\</span><br>  --header <span class="token string">"Authorization: Bearer <span class="token variable"><span class="token variable">$(</span>tget<span class="token variable">)</span></span>"</span> <span class="token punctuation">\</span><br>  --header <span class="token string">"Accept: application/json"</span> <span class="token punctuation">\</span><br>  --header <span class="token string">"Content-Type: application/json"</span> <span class="token punctuation">\</span><br>  --data <span class="token string">"<span class="token variable"><span class="token variable">$(</span>videoresource<span class="token variable">)</span></span>"</span></code></pre>
+<p>You'll need to supply an OAuth access token as the value for the Bearer token in the <code>Authorization</code> header - I want to focus on the actual two-phase upload here so I'll leave the <code>tget</code> script that I have for another time.</p>
+<p>Here's a slightly redacted snippet of the HTTP request and response:</p>
+<pre><code>&gt; POST /upload/youtube/v3/videos?part=snippet... HTTP/2
+&gt; Host: www.googleapis.com
+&gt; User-Agent: curl/7.64.1
+&gt; Authorization: Bearer ya23supersekritaccesstokenhunter2
+&gt; Accept: application/json
+&gt; Content-Type: application/json
+&gt; Content-Length: 111
+&gt;
+&lt; HTTP/2 200
+&lt; content-type: text/plain; charset=utf-8
+&lt; content-type: application/json; charset=UTF-8
+&lt; x-guploader-uploadid: ABg5...
+&lt; location: https://www.googleapis.com/upload/youtube/v3/videos?part=snippet...&amp;upload_id=ABg5someuniqueuploadidentifier
+&lt; content-length: 0
+&lt; date: Tue, 30 Mar 2021 07:14:47 GMT
+&lt; server: UploadServer
+</code></pre>
+<p>While there are a couple of odd aspects to that HTTP response (see below), what we're looking for here is the Location header. The URL there is the one to which we must now send the binary data of the video.</p>
+<p><strong>Sending the binary data</strong></p>
+<p>In the first phase we sent the JSON representation of the video resource, the video's metadata, effectively. In this second phase we now send the video content itself, to the URL in the Location header in the first phase's response.</p>
+<p>With <code>curl</code>, sending binary data in a file is easier than you think:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">curl</span> <span class="token punctuation">\</span><br>  <span class="token string">"https://www.googleapis.com/upload/youtube/v3/videos?part=snippet...&amp;upload_id=ABg5someuniqueuploadidentifier"</span> <span class="token punctuation">\</span><br>  --header <span class="token string">"Authorization: Bearer <span class="token variable"><span class="token variable">$(</span>tget<span class="token variable">)</span></span>"</span> <span class="token punctuation">\</span><br>  --data-binary @videofile.mp4</code></pre>
+<p><strong>Wrapping up</strong></p>
+<p>That's pretty much it. I must say, I have struggled to get my brain around some of the YouTube API surface area, but the mist is starting to clear. If you're like me and also trying to grok things, perhaps this post will help a little.</p>
+<p>Oh yes, and those odd aspects to the first phase HTTP response earlier?</p>
+<p>Well, for a start, why are there two different Content-Type headers?</p>
+<p>More importantly though, sending an HTTP 200 response to the request seems a little suspect. It's HTTP status <a href="https://tools.ietf.org/html/rfc2616#section-10.2.2">201 CREATED</a> that is appropriate here, not <a href="https://tools.ietf.org/html/rfc2616#section-10.2.1">200 OK</a>. And while a Location header in an HTTP response is appropriate (and more or less required) with a 201 CREATED status, with a 200 OK status it is not.</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2021/31/3/deeper-connections-to-everyday-tools/">Deeper connections to everyday tools</a></li><li>Previous: <a href="/blog/2021/27/3/la-pavoni-maintenance-successful/">La Pavoni maintenance successful</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2021/30/3/two-phase-video-uploads-with-youtube-api-and-curl/ -->
+  </body>
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>&#39;Conneg&#39; and the duality of weblogs.</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>&#39;Conneg&#39; and the duality of weblogs.</h1>
+
+<time datetime="2003-02-28">28 Feb 2003</time><a href="/blog/tags/blosxom/" class="post-tag">blosxom</a><a href="/blog/tags/conneg/" class="post-tag">conneg</a><a href="/blog/tags/http/" class="post-tag">http</a><a href="/blog/tags/rss-tag/" class="post-tag">rss-tag</a><a href="/blog/tags/weblogs/" class="post-tag">weblogs</a>
+
+<p>Q: <em>When is a blog not a blog?</em></p>
+<p>A: <em>When it’s an <acronym title="Rich Site Summary">RSS</acronym> feed.</em></p>
+<p>I’ve <a href="/2002/10/05/notes-to-self-what-should-the-rdfabout-point-to/">pondered the relationship between weblog and RSS before</a>, and in an <a href="http://www.oldspeckledhen.co.uk/introduction.htm">Old Speckled Hen</a>-induced philosophical state of mind, have decided for experimental purposes that for all URI intents and purposes they are one and the same.</p>
+<p>With that in mind, my thoughts turned (naturally) to connection negotiation, or ‘conneg’. My weblog, whether HTML or RSS, is my weblog. Same thing, different representation. So perhaps both representations should actually have the same URI, <a href="/">/</a>. Clients could use conneg to specify which representation they wanted, for example:</p>
+<p><acronym title="Rich Site Summary">RSS</acronym> 0.91:</p>
+<pre><code>[dj@cicero dj]$ GET -H&quot;Accept: application/rss+xml&quot; -Use /
+GET //qmacro.org/about 
+Accept: application/rss+xml 
+200 OK 
+Content-Type: application/rss+xml 
+&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;!-- name=&quot;generator&quot; content=&quot;bloxsom&quot; --&gt; 
+&lt;rss version=&quot;0.91&quot;&gt; 
+&lt;channel&gt; &lt;title&gt;DJ's Weblog&lt;/title&gt; ...
+[dj@cicero dj]$ 
+</code></pre>
+<p>Or <acronym title="Rich Site Summary">RSS</acronym> 1.0:</p>
+<pre><code>[dj@cicero dj]$ curl -H&quot;Accept:application/rdf+xml&quot; /
+&lt;?xml version=&quot;1.0&quot;?&gt; 
+&lt;rdf:RDF xmlns=&quot;http://purl.org/rss/1.0/&quot; ... &gt; 
+&lt;channel rdf:about=&quot;//qmacro.org/about&quot;&gt; 
+&lt;title&gt;DJ's Weblog&lt;/title&gt; ...
+[dj@cicero dj]$ 
+</code></pre>
+<p>Or even simply HTML:</p>
+<pre><code>[dj@cicero dj]$ GET -Use / 
+200 OK 
+Content-Type: text/html; charset=ISO-8859-1   
+&lt;title&gt;DJ's Weblog&lt;/title&gt; ...
+[dj@cicero dj]$ 
+</code></pre>
+<p>In other words, specify what representation you want in the <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">Accept</a> header. Here’s a quick summary of how (90% of) the Accept: header is used:</p>
+<blockquote>
+<p>As an HTTP client, you say what media types (which roughly translates to ‘representations’ here) you’re willing to accept for a given resource (URI). You can specify multiple media types, and with the aid of a sort of ranking mechanism, you can say which media types you prefer over others, if given the choice. You do this by assigning values, so that “<em>application/rdf+xml, application/rss+xml;q=0.5, <em>/</em>;q=0.1</em>” means “I’d love application/rdf+xml, but if you haven’t got that, then send me application/rss+xml; failing that, anything will do. The values used are between 0 and 1 (in ascending preference), any media type without a value is assumed to have a value of 1.</p>
+</blockquote>
+<p>So, as a first offering to the <a href="http://www.raelity.org/apps/blosxom/plugin.shtml#registry">Blosxom plugin love-in</a>, I wrote <a href="/~dj/2003/02/conneg">conneg</a>, a plugin with which you can determine the flavour required according to the HTTP Accept header. Here’s how it works:</p>
+<ol>
+<li>You define the flavours you want to have ‘available’ via connection negotiation in a configurable variable</li>
+<li>In a new plugin event, ‘flavour’, control is given to the <a href="/~dj/2003/02/conneg">conneg</a> plugin to determine the flavour according to the connection negotiation</li>
+<li>The content types are determined for each flavour specified, and ‘scored’ according to the client’s Accept preferences</li>
+<li>They are then ranked, and the flavour is overridden with the ‘winner’</li>
+</ol>
+<p>As you can see from the code, the plugin takes into account what content-types you’ve specified in the ‘content_type.<em>flavour</em>‘ files in your blog hierarchy.</p>
+<p>Note I said ‘new plugin event’. There are a number of <a href="http://www.raelity.org/apps/blosxom/plugin.shtml">standard plugin hooks</a> in Blosxom (2.0 beta3). For this ‘flavour’ plugin to work, I’ve added another hook thus:</p>
+<pre><code>[dj@cicero blosxom_2_0_beta]$ diff blosxom_2_0_b3.cgi blosxom_2_0_b3.cgi.dj 
+208a209,211 
+&gt; # Plugins: Flavour 
+&gt; map { $_-&gt;can('flavour') and $_-&gt;flavour() } @plugins; 
+&gt;
+[dj@cicero dj]$ 
+</code></pre>
+<p>This is in the ‘Dynamic’ section of the code.</p>
+<p>I’ll run this new plugin hook past Rael shortly. It’s a sort of chicken and egg situation – I can’t explain the reason for the patch until I’ve done it and written about it. Rather like conneg and weblogs, perhaps. <acronym title="Rich Site Summary">RSS</acronym> <a href="http://www.oreillynet.com/%7Erael/lang/perl/blagg">aggregators</a> might not start doing conneg until weblog RSS content is available by that method, and there’s little incentive if no-one’s asking for it. So I thought I’d make a move. Experimental, mind you.</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2003/5/3/new-blosxom-plugin-submission/">New Blosxom plugin &#39;submission&#39;</a></li><li>Previous: <a href="/blog/2003/22/2/tiki-parser-for-moinmoin/">Tiki parser for MoinMoin</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2003/28/2/conneg-and-the-duality-of-weblogs/ -->
+  </body>
+</html>

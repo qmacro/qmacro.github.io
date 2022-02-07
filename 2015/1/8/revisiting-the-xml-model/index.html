@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revisiting the XML Model</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Revisiting the XML Model</h1>
+
+<time datetime="2015-08-01">01 Aug 2015</time><a href="/blog/tags/openui5/" class="post-tag">openui5</a><a href="/blog/tags/xmlmodel/" class="post-tag">xmlmodel</a>
+
+<p><strong><a href="/2015/07/04/30-days-of-ui5/">30 Days of UI5</a> — Day 29 by <a href="//qmacro.org/about/">DJ Adams</a></strong></p>
+<p><img src="/blog/img/2018/02/Screen-Shot-2015-08-01-at-11.56.50.png" alt=""></p>
+<p>It’s been more than a couple of years since I first had a look at XML data in the context of UI5. In my “<a href="https://www.youtube.com/watch?v=wZUXz5f1CHI">Re-presenting my site with SAPUI5</a>” video <a href="https://github.com/qmacro/sapui5bin/blob/master/blogui/resources/blogarchive.controller.js#L9-L10">I used an XML Model to load the XML feed</a> of my weblog into a UI5 app (gosh, <a href="https://github.com/qmacro/sapui5bin/tree/master/blogui/resources">JavaScript views</a>!).</p>
+<p>The XML Model mechanism proved very useful this week on a project, and I thought I’d re-examine some of its features. Everyone knows about the JSON and OData Model mechanisms; at least in my UI5 conversations, I don’t hear folks talk about the XML Model much. So I thought I’d give it some love here.</p>
+<p>The <a href="https://openui5.hana.ondemand.com/#docs/api/symbols/sap.ui.model.xml.XMLModel.html">API reference documentation for the XML Model</a> is a little dry. As Frank Zappa once said, “<em>The computer can’t tell you the emotional story. It can give you the exact mathematical design, but what’s missing is the eyebrows</em>“. We need to look elsewhere for the emotional story, for the eyebrows; and I think a nice place might be the <a href="https://openui5.hana.ondemand.com/test-resources/sap/ui/core/qunit/XMLModel.qunit.html">QUnit tests for the XML Model</a>.</p>
+<p><strong>Learning from the QUnit sources</strong></p>
+<p>Let’s have a look at the source, and see what we can learn. There are actually a couple of QUnit test files; we’ll have a look at just one of them – <a href="https://github.com/SAP/openui5/blob/48324c5fd9ed365620bc49b32c4046aa76269bc7/src/sap.ui.core/test/sap/ui/core/qunit/XMLModel.qunit.html">XMLModel.qunit.html</a>. We’ll just examine the setup and a couple of tests to see what we can find – what we can expect to be able to do with an XML Model. You can explore the rest of the QUnit test files on your own.</p>
+<p>At the start of XMLModel.qunit.html, <a href="https://github.com/SAP/openui5/blob/48324c5fd9ed365620bc49b32c4046aa76269bc7/src/sap.ui.core/test/sap/ui/core/qunit/XMLModel.qunit.html#L31-L46">a couple of XML Models are instantiated with some test data</a> as follows:</p>
+<pre class="language-javascript"><code class="language-javascript"><span class="token keyword">var</span> testdata <span class="token operator">=</span> <span class="token string">"&lt;teamMembers>"</span> <span class="token operator">+</span><br>  <span class="token string">"&lt;member firstName=\"Andreas\" lastName=\"Klark\">&lt;/member>"</span> <span class="token operator">+</span><br>  <span class="token string">"&lt;member firstName=\"Peter\" lastName=\"Miller\">&lt;/member>"</span> <span class="token operator">+</span><br>  <span class="token string">"&lt;member firstName=\"Gina\" lastName=\"Rush\">&lt;/member>"</span> <span class="token operator">+</span><br>  <span class="token string">"&lt;member firstName=\"Steave\" lastName=\"Ander\">&lt;/member>"</span> <span class="token operator">+</span><br>  <span class="token string">"&lt;member firstName=\"Michael\" lastName=\"Spring\">&lt;/member>"</span> <span class="token operator">+</span><br>  <span class="token string">"&lt;member firstName=\"Marc\" lastName=\"Green\">&lt;/member>"</span> <span class="token operator">+</span><br>  <span class="token string">"&lt;member firstName=\"Frank\" lastName=\"Wallace\">&lt;/member>"</span> <span class="token operator">+</span><br>  <span class="token string">"&lt;/teamMembers>"</span><span class="token punctuation">;</span><br><br><span class="token keyword">var</span> testdataChild <span class="token operator">=</span> <span class="token string">"&lt;pets>"</span> <span class="token operator">+</span><br>  <span class="token string">"&lt;pet type=\"ape\" age=\"1\">&lt;/pet>"</span> <span class="token operator">+</span><br>  <span class="token string">"&lt;pet type=\"bird\" age=\"2\">&lt;/pet>"</span> <span class="token operator">+</span><br>  <span class="token string">"&lt;pet type=\"cat\" age=\"3\">&lt;/pet>"</span> <span class="token operator">+</span><br>  <span class="token string">"&lt;pet type=\"fish\" age=\"4\">&lt;/pet>"</span> <span class="token operator">+</span><br>  <span class="token string">"&lt;pet type=\"dog\" age=\"5\">&lt;/pet>"</span> <span class="token operator">+</span><br>  <span class="token string">"&lt;/pets>"</span><span class="token punctuation">;</span></code></pre>
+<p><strong>setXML and setData</strong></p>
+<p>The <a href="https://github.com/SAP/openui5/blob/48324c5fd9ed365620bc49b32c4046aa76269bc7/src/sap.ui.core/test/sap/ui/core/qunit/XMLModel.qunit.html#L48-L53">XML data is added to the XML Models</a> with the setXML function:</p>
+<pre class="language-javascript"><code class="language-javascript">	<span class="token keyword">var</span> oModel <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">sap<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>model<span class="token punctuation">.</span>xml<span class="token punctuation">.</span>XMLModel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>	oModel<span class="token punctuation">.</span><span class="token function">setXML</span><span class="token punctuation">(</span>testdata<span class="token punctuation">)</span><span class="token punctuation">;</span><br>	sap<span class="token punctuation">.</span>ui<span class="token punctuation">.</span><span class="token function">getCore</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setModel</span><span class="token punctuation">(</span>oModel<span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>	<span class="token keyword">var</span> oModelChild <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">sap<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>model<span class="token punctuation">.</span>xml<span class="token punctuation">.</span>XMLModel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>	oModelChild<span class="token punctuation">.</span><span class="token function">setXML</span><span class="token punctuation">(</span>testdataChild<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>This is different to the setData function, which is also present on the JSON Model, with an equivalent semantic. Here in the XML Model, the <a href="https://openui5.hana.ondemand.com/#docs/api/symbols/sap.ui.model.xml.XMLModel.html#setData">setData</a> function would be expecting an <strong>XML encoded data object</strong>, not a literal string containing XML.</p>
+<p>As an example, if we have a variable containing some XML string like this:</p>
+<pre class="language-javascript"><code class="language-javascript">xmlstring <span class="token operator">=</span> <span class="token string">"&lt;root>&lt;name>DJ&lt;/name>&lt;/root>"</span></code></pre>
+<p>then we could either set it on an XML Model with setXML, like this:</p>
+<pre><code>m = new sap.ui.model.xml.XMLModel()
+=&gt; sap.ui.d…e.C.e…d.constructor {mEventRegistry: Object, mMessages: Object, id: &quot;id-1438428838337-6&quot;, oData: Object, bDestroyed: false…}
+
+m.setXML(xmlstring)
+=&gt; undefined
+
+m.getProperty(&quot;/name&quot;)
+=&gt; &quot;DJ&quot;
+</code></pre>
+<p>or with setData, creating an XML encoded data object, like this:</p>
+<pre><code>m = new sap.ui.model.xml.XMLModel()
+=&gt; sap.ui.d…e.C.e…d.constructor {mEventRegistry: Object, mMessages: Object, id: &quot;id-1438428927599-7&quot;, oData: Object, bDestroyed: false…}
+
+m.setData(new DOMParser().parseFromString(xmlstring, &quot;text/xml&quot;))
+=&gt; undefined
+
+m.getProperty(&quot;/name&quot;)
+=&gt; &quot;DJ&quot;
+</code></pre>
+<p><strong>A couple of tests</strong></p>
+<p>Then we’re off on the tests. There are <a href="https://github.com/SAP/openui5/blob/48324c5fd9ed365620bc49b32c4046aa76269bc7/src/sap.ui.core/test/sap/ui/core/qunit/XMLModel.qunit.html#L61-L71">a couple of tests to check getProperty</a>, the first using a relative context binding:</p>
+<pre class="language-javascript"><code class="language-javascript">	<span class="token function">test</span><span class="token punctuation">(</span><span class="token string">"test model getProperty with context"</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><br>		<span class="token keyword">var</span> oContext <span class="token operator">=</span> oModel<span class="token punctuation">.</span><span class="token function">createBindingContext</span><span class="token punctuation">(</span><span class="token string">"/member/6"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>		<span class="token keyword">var</span> value <span class="token operator">=</span> oModel<span class="token punctuation">.</span><span class="token function">getProperty</span><span class="token punctuation">(</span><span class="token string">"@lastName"</span><span class="token punctuation">,</span> oContext<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// relative path when using context</span><br>		<span class="token function">equal</span><span class="token punctuation">(</span>value<span class="token punctuation">,</span> <span class="token string">"Wallace"</span><span class="token punctuation">,</span> <span class="token string">"model value"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>	<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><br>	<span class="token function">test</span><span class="token punctuation">(</span><span class="token string">"test model getProperty"</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><br>		<span class="token keyword">var</span> value <span class="token operator">=</span> oModel<span class="token punctuation">.</span><span class="token function">getProperty</span><span class="token punctuation">(</span><span class="token string">"/member/6/@lastName"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>		<span class="token function">equal</span><span class="token punctuation">(</span>value<span class="token punctuation">,</span> <span class="token string">"Wallace"</span><span class="token punctuation">,</span> <span class="token string">"model value"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>	<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>What we can see here already is that we can access XML attribute values (“lastName” in this case) with the XPath @ accessor. As an aside, the use of the optional second oContext parameter in the getProperty call is something one doesn’t see very much, but is extremely useful.</p>
+<p><strong>Element content retrieval</strong></p>
+<p>The rest of the file contain a load of other tests, all useful reading material, from the rare-to-see <a href="https://github.com/SAP/openui5/blob/48324c5fd9ed365620bc49b32c4046aa76269bc7/src/sap.ui.core/test/sap/ui/core/qunit/XMLModel.qunit.html#L83">use of the unbindProperty</a> function to <a href="https://github.com/SAP/openui5/blob/48324c5fd9ed365620bc49b32c4046aa76269bc7/src/sap.ui.core/test/sap/ui/core/qunit/XMLModel.qunit.html#L174-L195">aggregation bindings that are comfortable to use</a>.</p>
+<p>One thing that we have to wait until <a href="https://github.com/SAP/openui5/blob/48324c5fd9ed365620bc49b32c4046aa76269bc7/src/sap.ui.core/test/sap/ui/core/qunit/XMLModel.qunit.html#L197-L211">test 15</a> to see is the use of element content:</p>
+<pre class="language-javascript"><code class="language-javascript"><span class="token function">test</span><span class="token punctuation">(</span><span class="token string">"test XMLModel XML constructor"</span><span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">{</span><br><br>  <span class="token keyword">var</span> testModel <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">sap<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>model<span class="token punctuation">.</span>xml<span class="token punctuation">.</span>XMLModel</span><span class="token punctuation">(</span><br><br>  <span class="token punctuation">)</span><span class="token punctuation">;</span><br>  testModel<span class="token punctuation">.</span><span class="token function">setXML</span><span class="token punctuation">(</span><span class="token string">"&lt;root>"</span> <span class="token operator">+</span><br>    <span class="token string">"&lt;foo>The quick brown fox jumps over the lazy dog.&lt;/foo>"</span> <span class="token operator">+</span><br>    <span class="token string">"&lt;bar>ABCDEFG&lt;/bar>"</span> <span class="token operator">+</span><br>    <span class="token string">"&lt;baz>52&lt;/baz>"</span> <span class="token operator">+</span><br>    <span class="token string">"&lt;/root>"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token function">equal</span><span class="token punctuation">(</span>testModel<span class="token punctuation">.</span><span class="token function">getProperty</span><span class="token punctuation">(</span><span class="token string">"/foo"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"The quick brown fox jumps over the lazy dog."</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token function">equal</span><span class="token punctuation">(</span>testModel<span class="token punctuation">.</span><span class="token function">getProperty</span><span class="token punctuation">(</span><span class="token string">"/bar"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"ABCDEFG"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br>  <span class="token function">equal</span><span class="token punctuation">(</span>testModel<span class="token punctuation">.</span><span class="token function">getProperty</span><span class="token punctuation">(</span><span class="token string">"/baz"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">52</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>Until now we’ve only seen examples of XML where the data is stored in attributes. What about the more classic case of text nodes, like this example XML here?</p>
+<p>Well, as we can see, a simple call to getProperty will do what we want. If we’re XPath inclined, we could even add the text() specification like this:</p>
+<pre><code>testModel.getProperty(&quot;/bar/text()&quot;)
+=&gt; &quot;ABCDEFG&quot;
+</code></pre>
+<p>and still get what we expect.</p>
+<p><strong>Ending where we started</strong></p>
+<p>And of course, to round things off, we can always get back to an <strong>XML encoded data object</strong> with getObject, like this:</p>
+<pre><code>testModel.getObject(&quot;/bar&quot;)
+=&gt; &lt;bar&gt;ABCDEFG&lt;/bar&gt;
+</code></pre>
+<p>(that result is indeed an object), in a similar way to how we retrieve the whole object from the model:</p>
+<pre><code>testModel.getData()
+=&gt; #document
+   &lt;root&gt;
+    &lt;foo&gt;The quick brown fox jumps over the lazy dog.&lt;/foo&gt;
+    &lt;bar&gt;ABCDEFG&lt;/bar&gt;
+    &lt;baz&gt;52&lt;/baz&gt;
+  &lt;/root&gt;
+</code></pre>
+<p>The XML Model is a powerful ally, and the QUnit tests are a rich source of information about it. Spend a coffee break looking through the sources, you won’t be disappointed!</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2015/2/8/the-origin-of-becoming-a-fundamental-enabler-for-fiori/">The origin of becoming a fundamental enabler for Fiori</a></li><li>Previous: <a href="/blog/2015/31/7/ui5-version-info/">UI5 Version Info</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2015/1/8/revisiting-the-xml-model/ -->
+  </body>
+</html>

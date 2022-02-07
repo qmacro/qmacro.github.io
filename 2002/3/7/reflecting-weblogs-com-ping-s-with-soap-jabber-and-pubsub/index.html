@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reflecting weblogs.com &#39;ping&#39;s with SOAP, Jabber, and Pubsub</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Reflecting weblogs.com &#39;ping&#39;s with SOAP, Jabber, and Pubsub</h1>
+
+<time datetime="2002-07-03">03 Jul 2002</time>
+
+<p>Last month, <a href="http://www.pocketsoap.com/weblog/index.html" title="Simon Fell's weblog">Simon</a> answered a <a href="http://www.pocketsoap.com/weblog/2002/06/13.html#a604">cry for help</a> from someone in the weblog community by creating <a href="http://www.pocketsoap.com/weblog/2002/06/15.html#a608">blogToaster</a>, a neat little IM-based app that alerts people about updates (coordinated through <a href="http://www.weblogs.com/">www.weblogs.com</a>) to weblogs that they’re interested in.</p>
+<p>But the most intriguing thing was his <a href="http://www.pocketsoap.com/weblog/stories/2002/02/12/subscriberInterfaceForWeblogscom.html">Subscriber Interface for weblogs.com</a>, the mechanism on which the blogToaster is based. It’s a SOAP-based frontend to the <a href="http://weblogs.com">weblogs.com</a> ‘Recently Changed Weblogs’ information. You tell the interface what weblog URLs you’re interested in and it gives you SOAPy pings at the URL you specified whenever they’re updated, taking care of the nasty polling business for you (and for everyone else, which is the whole point).</p>
+<p>Inspired by this generous infrastructural act, I put together an experimental bit of code which reflects this mechanism out into Jabber plasma. It’s a pubsub concentrator that sits in front of Simon’s Subscriber Interface and allows any app that can send and receive simple Jabber packets to request and receive weblogs.com-based update pings via this subscriber interface, without all the tedious mucking about in HTTP and SOAP protocols [1] (with apologies to Douglas Adams).</p>
+<p>The idea is that in the same way that the <a href="../../2002/May/15#panopticon">Jabber extensions for Danny O’Brien’s Panopticon</a> gave the Panopticon server some breathing space by effectively diffusing the data to Jabber entities via a conference room, so this new mechanism abstracts the Subscriber Interface out and allows many subscribers to share one subscription connection. Publish/Subscribe. One publisher, many subscribers. The publisher, in this case the Subscriber Interface, only has to send out one SOAPy ping per updated weblog URL to reach potentially many notification recipients (subscribers).</p>
+<p>So rather than reproduce a blogToaster-like mechanism, I thought I’d have a go at putting together a mini-infrastructure on top of which lots of different blogToaster-like mechanisms could be built.</p>
+<p>The mechanism is running at JID ‘<strong><a href="http://weblogs.gnu.mine.nu">weblogs.gnu.mine.nu</a></strong>‘, and the packets are based on the <a href="http://www.jabber.org/jeps/jep-0024.html">Jabber PubSub JEP</a>. It’s still alpha, and likely to fall over if you look at it the wrong way.</p>
+<p>Here’s an example of how it works. You send a ‘subscribe’ packet, saying you want to be notified when <a href="">DJ’s Weblog</a> is updated:</p>
+<p>SEND:</p>
+<pre><code>&lt;iq type='set' to='weblogs.gnu.mine.nu'&gt;
+	&lt;query xmlns='pipetree:iq:pubsub'&gt;
+		&lt;subscribe to='//qmacro.org/about'/&gt;
+	&lt;/query&gt;
+&lt;/iq&gt;
+</code></pre>
+<p>Then, whenever the weblog specified is updated, you get a packet pushed to you like this:</p>
+<p>RECV:</p>
+<pre><code>&lt;iq type='set' from='weblogs.gnu.mine.nu' to='user@host/resource'&gt;
+	&lt;query xmlns='pipetree:iq:pubsub'&gt;
+		&lt;publish from='//qmacro.org/about'&gt;
+			&lt;url&gt;//qmacro.org/about&lt;/url&gt;
+			&lt;name&gt;DJ's Weblog&lt;/name&gt;
+			&lt;timestamp&gt;2002-07-03T21:35:51Z&lt;/timestamp&gt;
+		&lt;/publish&gt;
+	&lt;/query&gt;
+&lt;/iq&gt;
+</code></pre>
+<p>The information in the <em>name</em>, <em>url</em> and <em>timestamp</em> tags (in the publish IQ) is taken directly from the <em>weblog</em> tag in the SOAP-enveloped callback message described at the bottom of the <a href="http://www.pocketsoap.com/weblog/stories/2002/02/12/subscriberInterfaceForWeblogscom.html">Subscriber Interface description</a> page.</p>
+<p>For now, as a bonus (or an immoral twisting of the Jabber pubsub packet philosophy, depending on how you look at it ;-) I’ve set up the mechanism to send you not only a publish IQ as shown above, but also a simple <em>message</em> packet with the same information, so that you can use your regular Jabber client to ‘process’ (read: see) the pings. So if you’re feeling brave, break out your Jabber debug app and send a few pubsub packets to <strong><a href="http://weblogs.gnu.mine.nu">weblogs.gnu.mine.nu</a></strong>. If you’re not feeling so brave, you can wait until tomorrow – I’ve got a a few helper example apps that will hopefully make things clearer. In either case, remember this: if it works, it works because of the coolness of what <a href="http://www.scripting.com/">Dave W</a> <a href="http://www.weblogs.com/">built</a>, the coolness of what <a href="http://www.pocketsoap.com/weblog/index.html" title="Simon Fell's weblog">Simon</a> <a href="http://www.pocketsoap.com/weblog/stories/2002/02/12/subscriberInterfaceForWeblogscom.html">built</a>, and the coolness that is ‘net based collaboration and open standards. Time for bed now.</p>
+<p>[1] Ooh, talking of HTTP and SOAP protocols, I just read an interesting <a href="http://mail.python.org/pipermail/xml-sig/2002-February/007183.html">XML-SIG post</a> by <a href="http://www.prescod.net/">Paul Prescod</a> which made some valid (but also nicely philosophical, IMHO) points towards the end of the mail regarding whether SOAP is actually a protocol (as opposed to, say, an encoding), and how much, despite its ‘independence’ of transport, it depends upon its binding to HTTP, as much as any protocol depends on its binding to a lower-level transport. But I digress..</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2002/8/7/the-80-20-of-http/">The 80/20 of HTTP</a></li><li>Previous: <a href="/blog/2002/28/6/programming-jabber-review/">Programming Jabber review</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2002/3/7/reflecting-weblogs-com-ping-s-with-soap-jabber-and-pubsub/ -->
+  </body>
+</html>

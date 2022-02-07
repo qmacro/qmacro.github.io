@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sourcing vs executing in Bash</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Sourcing vs executing in Bash</h1>
+
+<time datetime="2021-10-14">14 Oct 2021</time><a href="/blog/tags/autodidactics/" class="post-tag">autodidactics</a><a href="/blog/tags/shell/" class="post-tag">shell</a>
+
+<p><em>Checking the value of $0 allows me to source rather than execute an entire script.</em></p>
+<p>Today I wrote a script <code>checksubmissions</code> to check submitted pull requests in the <a href="https://github.com/SAP-samples/devtoberfest-2021">SAP-samples/devtoberfest-2021</a> repo related to Devtoberfest from SAP this year, specifically the <a href="https://github.com/SAP-samples/devtoberfest-2021/tree/main/topics/Week2_Best_Practices">Best Practices</a> week.</p>
+<p><a href="https://github.com/SAP-samples/devtoberfest-2021/blob/730e998d350282ae368d80abbfbf3a322823981c/topics/Week2_Best_Practices/challenge/checksubmissions">In its current form, at the time of writing</a>, the script follows a pattern that I've used for a while now</p>
+<ul>
+<li>some general settings and possibly global variables</li>
+<li>then some function definitions, including a <code>main</code> function definition</li>
+<li>then finally, the invocation of that <code>main</code> function, passing on to it any parameters that were supplied when the script is invoked</li>
+</ul>
+<p>For the sake of illustration, here's a super simplified script called <code>myscript</code> that follows that pattern:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token shebang important">#!/usr/bin/env bash</span><br><br><span class="token builtin class-name">set</span> -o errexit<br><br><span class="token function-name function">func1</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token builtin class-name">echo</span> <span class="token string">"Inside func1"</span><br><span class="token punctuation">}</span><br><br><span class="token function-name function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token builtin class-name">echo</span> <span class="token string">"Running main with <span class="token variable">$*</span>"</span><br>  func1<br><span class="token punctuation">}</span><br><br>main <span class="token string">"<span class="token variable">$@</span>"</span></code></pre>
+<p>Sometimes, especially when building out scripts like this, I like to test the functions individually, from the command line if possible. In the example from today, I check every pull request each time, initiated from <code>main</code> like this:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function-name function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br><br>  getprs <span class="token operator">|</span> <span class="token keyword">while</span> <span class="token builtin class-name">read</span> -r number title<span class="token punctuation">;</span> <span class="token keyword">do</span><br><br>    check <span class="token string">"<span class="token variable">$number</span>"</span> <span class="token string">"<span class="token variable">$title</span>"</span><br>    <span class="token function">sleep</span> <span class="token number">1</span><br><br>  <span class="token keyword">done</span><br><br><span class="token punctuation">}</span><br><br>main <span class="token string">"<span class="token variable">$@</span>"</span></code></pre>
+<p>(<a href="https://github.com/SAP-samples/devtoberfest-2021/blob/730e998d350282ae368d80abbfbf3a322823981c/topics/Week2_Best_Practices/challenge/checksubmissions#L104-L113">Source</a>)</p>
+<p>But while developing, I wanted to test out the <code>check</code> function (<a href="https://github.com/SAP-samples/devtoberfest-2021/blob/730e998d350282ae368d80abbfbf3a322823981c/topics/Week2_Best_Practices/challenge/checksubmissions#L62-L100">source</a>) manually on a single pull request. Of course, editing the script to do that wasn't much of an effort, but I wondered if there was another way.</p>
+<p>What if, from the shell prompt, I could <a href="https://tldp.org/HOWTO/Bash-Prompt-HOWTO/x237.html">source</a> the script, to bring the function definitions into my current environment, and then manually invoke the <code>check</code> function on a single pull request?</p>
+<p>Sourcing the script as it is would have the unwanted effect of running checks on all the pull requests, because the last line in the script actually invokes <code>main</code>, as it's supposed to.</p>
+<p>It turns out that it is possible to determine whether a script is being <a href="https://tldp.org/HOWTO/Bash-Prompt-HOWTO/x237.html">sourced</a> just by close examination of the <code>$0</code> variable.</p>
+<blockquote>
+<p>There's also the <code>BASH_SOURCE</code> environment variable, which I want to look into as well (e.g. by reading this StackOverflow post: <a href="https://stackoverflow.com/questions/35006457/choosing-between-0-and-bash-source">Choosing between $0 and BASH_SOURCE</a>) but that's for another time.</p>
+</blockquote>
+<p>First, I can replace the simple invocation:</p>
+<pre class="language-bash"><code class="language-bash">main <span class="token string">"<span class="token variable">$@</span>"</span></code></pre>
+<p>with this:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token keyword">if</span> <span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token variable">$0</span> <span class="token operator">=~</span> ^-bash <span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span><br>  <span class="token builtin class-name">return</span> <span class="token number">0</span><br><span class="token keyword">else</span><br>  main <span class="token string">"<span class="token variable">$@</span>"</span><br><span class="token keyword">fi</span></code></pre>
+<p>When the script is executed, the value of <code>$0</code> is the name of the script. But when it's <em>sourced</em>, it's <code>-bash</code>.</p>
+<p>Now, if I implement this change in the super simplified <code>myscript</code> above, then this is what happens, at a Bash shell prompt.</p>
+<p>First, to show there's nothing up my sleeve, an attempt to invoke <code>func1</code> fails:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">;</span> func1<br>-bash: func1: <span class="token builtin class-name">command</span> not found</code></pre>
+<p>Now I execute the script, and it behaves as expected:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">;</span> ./myscript hello world<br>running main with hello world<br>Inside func1</code></pre>
+<p>Of course, we still don't have the <code>func1</code> function available to us:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">;</span> func1<br>-bash: func1: <span class="token builtin class-name">command</span> not found</code></pre>
+<p>But what if I <em>source</em> the script rather than execute it? I can do that with <code>source myscript</code> or simply <code>. myscript</code>:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">;</span> <span class="token builtin class-name">source</span> myscript</code></pre>
+<p>Nothing seems to happen. Which is good -- we don't get the &quot;running main with hello world&quot; or &quot;Inside func1&quot; output.</p>
+<p>But now the definition of <code>func1</code> is available, and we can run it:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">;</span> func1<br>Inside func1</code></pre>
+<p>That seems rather appealing!</p>
+<p>This is early days, I may have missed a fundamental gotcha, but for now, I've found a way (which vaguely reminds me of Python's <code>if __name__ == &quot;__main__&quot;</code> pattern) to be able to reduce that (already small) gap even further between the interactive shell and script content.</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2021/29/10/embracing-jq-and-json/">Embracing jq and JSON</a></li><li>Previous: <a href="/blog/2021/15/9/using-functions-more/">Using functions more</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2021/14/10/sourcing-vs-executing-in-bash/ -->
+  </body>
+</html>

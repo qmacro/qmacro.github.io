@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>git diff can emit different exit codes</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>git diff can emit different exit codes</h1>
+
+<time datetime="2020-07-20">20 Jul 2020</time><a href="/blog/tags/autodidactics/" class="post-tag">autodidactics</a><a href="/blog/tags/tools/" class="post-tag">tools</a>
+
+<p><em>You can combine git diff exit codes and the POSIX <code>!</code> operator to control GitHub Actions job step execution based on git changes.</em></p>
+<p>When defining a job step in GitHub Actions, you can specify a <a href="https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#job-status-check-functions">condition</a> that must be met for a job step to run (in a broadly similar way to how things were in Job Control Language). In my <a href="https://github.com/qmacro/qmacro/blob/03246248853b563bb6774697e7156bfb183e3f0a/.github/workflows/build.yml">profile repo's builder workflow</a>, I wanted only to proceed with a git commit step if there were actual changes that had been made in a previous step.</p>
+<p>Supplying the <code>--exit-code</code> option to <a href="https://git-scm.com/docs/git-diff">git diff</a> makes it emit an exit code of 1 if there are differences, and 0 if not. This option is implicit in <code>--quiet</code>, too.</p>
+<p>As exit code 1 represents a fail in job step conditionals, the output of git diff can be reversed with the POSIX <code>!</code> operator. So in this pair of steps, the second one will only run if there are no differences detected in the first one:</p>
+<pre><code>- name: Check for changes (fail if none)
+  run: |
+    ! git diff --quiet
+
+- name: Commit changes if required
+  if: ${{ success() }}
+  run: |
+    git config --global user.email &quot;qmacro-bot@example.com&quot;
+    git config --global user.name &quot;qmacro bot&quot;
+    git add README.md
+    git commit -m 'update README' || exit 0
+    git push
+</code></pre>
+<blockquote>
+<p>I had to write the <code>! git diff --quiet</code> within a YAML multiline expression (introduced with <code>|</code>) as the GitHub Actions runner didn't like it on the same line, i.e. <code>run: ! git diff --quiet</code>.</p>
+</blockquote>
+
+<hr>
+<ul><li>Next: <a href="/blog/2020/21/7/continue-on-error-can-prevent-a-job-step-failure-causing-an-action-failure/">continue-on-error can prevent a job step failure causing an action failure</a></li><li>Previous: <a href="/blog/2020/20/7/in-an-mta-yaml-file-you-can-use-the-service-name-parameter-to-point-to-an-existing-resource/">In an mta.yaml file you can use the service-name parameter to point to an existing resource</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2020/20/7/git-diff-can-emit-different-exit-codes/ -->
+  </body>
+</html>

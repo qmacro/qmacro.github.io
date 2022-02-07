@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You can mask sensitive hostnames with wildcards and host aliases</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>You can mask sensitive hostnames with wildcards and host aliases</h1>
+
+<time datetime="2020-08-25">25 Aug 2020</time><a href="/blog/tags/autodidactics/" class="post-tag">autodidactics</a><a href="/blog/tags/ssh/" class="post-tag">ssh</a>
+
+<p><em>The HOSTALIASES feature works well when combined with wildcard host definitions in SSH config</em></p>
+<p>I run my own DNS locally via Pi-hole, but I also like to have SSH configuration to specify various options depending on the hosts I'm remotely connecting to. Usually it's the username to use, sometimes it's whether I want to do X11 forwarding, and so on.</p>
+<h1 id="problem" tabindex="-1">Problem <a class="direct-link" href="#problem" aria-hidden="true">#</a></h1>
+<p>My work machines have very odd and hard to remember hostnames. I could use the SSH configuration feature (via the <code>.ssh/config</code> file) to get around this, like this:</p>
+<pre><code>Host easy
+    HostName hard-to-remember
+    User username-to-use
+</code></pre>
+<p>Then I could just remotely connect to that <code>hard-to-remember</code> host machine like this:</p>
+<pre><code>ssh easy
+</code></pre>
+<p>(As a bonus, having securely shared public key credentials with <code>ssh-copy-id</code> beforehand makes this process even smoother.)</p>
+<p>But I don't want to expose those <code>hard-to-remember</code> work machine hostnames in the configuration.</p>
+<h1 id="hello-hostaliases" tabindex="-1">Hello HOSTALIASES <a class="direct-link" href="#hello-hostaliases" aria-hidden="true">#</a></h1>
+<p>I learned today about the <code>HOSTALIASES</code> environment variable which is supported by <code>glibc</code>'s resolver function <code>gethostbyname()</code>. Pointing <code>HOSTALIASES</code> to a file of &quot;aliasname realname&quot; pairs of hostnames means that commands that use <code>gethostbyname()</code> to resolve hostnames can be given alias hostnames instead of real hostnames. The <code>ssh</code> command uses that function.</p>
+<h1 id="solution" tabindex="-1">Solution <a class="direct-link" href="#solution" aria-hidden="true">#</a></h1>
+<p>This is what I did:</p>
+<p>First, I created a file <code>host.aliases</code> (making sure not to check this file into a git repo, by adding the file name to <code>.gitignore</code>) with content like this:</p>
+<pre><code>oldmbp realsecrethostname1
+newmbp anothersecretworkhostname
+</code></pre>
+<p>Then, in my <code>.bashrc</code>, I set the <code>HOSTALIASES</code> environment variable to point to this file:</p>
+<pre><code>export HOSTALIASES=&quot;$HOME/.dotfiles/host.aliases&quot;
+</code></pre>
+<p>Finally, I modified the contents of my <code>.ssh/config</code> file to use wildcards matching the aliases:</p>
+<pre><code>Host *mbp
+    User username-to-use
+</code></pre>
+<p>That way I can use easy and memorable hostnames when connecting to my work machines (e.g. <code>ssh oldmbp</code>) without exposing the hostnames in any public configuration.</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2020/11/9/reducing-writing-friction/">Reducing writing friction</a></li><li>Previous: <a href="/blog/2020/21/8/the-open-square-bracket-is-an-executable/">The open square bracket [ is an executable</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2020/25/8/you-can-mask-sensitive-hostnames-with-wildcards-and-host-aliases/ -->
+  </body>
+</html>

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waiting for jobs, and the concept of the shell</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Waiting for jobs, and the concept of the shell</h1>
+
+<time datetime="2020-12-28">28 Dec 2020</time><a href="/blog/tags/autodidactics/" class="post-tag">autodidactics</a><a href="/blog/tags/shell/" class="post-tag">shell</a>
+
+<p><em>Bash's 'wait' builtin helps me understand Bash scripting as a language</em></p>
+<p>I was browsing the source code of the main script in the <a href="https://github.com/RaymiiOrg/bash-http-monitoring">bash-http-monitoring</a> project that had been shared on a social news site recently. The general idea was that it fired off a number of background web requests to run in parallel and eventually produce a report on the availability of various websites. Nice, neat and simple.</p>
+<p>In the main part of the project's <code>srvmon</code> script, I saw this:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># Do the checks parallel</span><br><span class="token keyword">for</span> <span class="token for-or-select variable">key</span> <span class="token keyword">in</span> <span class="token string">"<span class="token variable">${<span class="token operator">!</span>urls<span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span>"</span><br><span class="token keyword">do</span><br>  <span class="token assign-left variable">value</span><span class="token operator">=</span><span class="token variable">${urls<span class="token punctuation">[</span>$key<span class="token punctuation">]</span>}</span><br>  <span class="token keyword">if</span> <span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token string">"<span class="token variable"><span class="token variable">$(</span><span class="token function">jobs</span> <span class="token operator">|</span> <span class="token function">wc</span> -l<span class="token variable">)</span></span>"</span> -ge <span class="token variable">${maxConcurrentCurls}</span> <span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token punctuation">;</span> <span class="token keyword">then</span> <span class="token comment"># run 12 curl commands at max parallel</span><br>      <span class="token function">wait</span> -n<br>  <span class="token keyword">fi</span><br>  doRequest <span class="token string">"<span class="token variable">$key</span>"</span> <span class="token string">"<span class="token variable">$value</span>"</span> <span class="token operator">&amp;</span><br><span class="token keyword">done</span><br><span class="token function">wait</span></code></pre>
+<p>I noticed the use of <code>wait</code> in those two places and was intrigued; although I could guess what it did, I wanted to learn more. On digging in a little, and reflecting on it, it struck me that <code>wait</code> helps me understand better the origins of shell scripting and why it seems to be often misunderstood.</p>
+<p><strong>The <code>wait</code> builtin in action</strong></p>
+<p>First, what is <code>wait</code>? Well, it's (usually a) builtin, i.e. a command that is built in to the shell executable itself, rather than existing as a separate program. The headline description is that <code>wait</code> &quot;waits for job completion and returns the exit status&quot;. The <a href="https://en.wikipedia.org/wiki/Wait_(command)">Wikipedia entry</a> for it notes that it's a builtin because it &quot;<em>needs to be aware of the job table of the current shell execution environment</em>&quot;, which makes sense, given its purpose.</p>
+<p>While the above snippet of code gives a couple of examples, I thought I'd spend a coffee writing a little exploratory script called <code>jobwait</code> to feel how <code>wait</code> can work. Here it is:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token shebang important">#!/usr/bin/env bash</span><br><br><span class="token function-name function">log</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token builtin class-name">echo</span> <span class="token string">"<span class="token variable"><span class="token variable">$(</span><span class="token function">date</span> +%H:%M:%S<span class="token variable">)</span></span> <span class="token variable">$*</span>"</span><br><span class="token punctuation">}</span><br><br><span class="token function-name function">createjob</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token builtin class-name">local</span> <span class="token assign-left variable">time</span><span class="token operator">=</span><span class="token variable">$1</span><br>  <span class="token builtin class-name">local</span> <span class="token assign-left variable">message</span><span class="token operator">=</span><span class="token variable">$2</span><br>  <span class="token punctuation">(</span>sleep <span class="token string">"<span class="token variable">$time</span>"</span> <span class="token operator">&amp;&amp;</span> log <span class="token string">"<span class="token variable">$message</span>"</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span><br>  log <span class="token string">"created job '<span class="token variable">$message</span>' (<span class="token variable">${time}</span>s) PID=<span class="token variable">$!</span>"</span><br><span class="token punctuation">}</span><br><br><span class="token function-name function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  createjob <span class="token number">10</span> medium<br>  createjob <span class="token number">15</span> long<br>  createjob <span class="token number">5</span> short<br>  log <span class="token string">"jobs created"</span><br>  <span class="token function">wait</span> -n <span class="token operator">&amp;&amp;</span> log <span class="token string">"a job has finished"</span><br>  <span class="token function">wait</span> <span class="token operator">&amp;&amp;</span> log <span class="token string">"all jobs have finished"</span><br><span class="token punctuation">}</span><br><br>main <span class="token string">"<span class="token variable">$@</span>"</span></code></pre>
+<p>Running this script produced the following output - note the times on each of the log records, which shows when each log record was issued:</p>
+<pre><code>; ./jobwait
+09:03:11 created job 'medium' (10s) PID=72679
+09:03:11 created job 'long' (15s) PID=72682
+09:03:11 created job 'short' (5s) PID=72685
+09:03:11 jobs created
+09:03:16 short
+09:03:16 a job has finished
+09:03:21 medium
+09:03:26 long
+09:03:26 all jobs have finished
+;
+</code></pre>
+<p>Now there's nothing unexpected about this; nevertheless, it was quite satisfying seeing things happen in the order that they did. Note that <code>wait</code> returns the job exit status too, and with the use of <code>&amp;&amp;</code> I'm ignoring that here at my peril, but it's only a test script.</p>
+<p>The <code>-n</code> option makes <code>wait</code> wait for the next job to terminate, whatever that job is. So here we see that the &quot;a job has finished&quot; log entry is issued as soon as one of the jobs terminates - the 'short' one, in this case.</p>
+<p><strong>The shell as a command environment</strong></p>
+<p>Now we know what <code>wait</code> can do, I'd like to think a little bit about what it represents, too.</p>
+<p>Recently my learning radar has been picking up various conversations where it seemed to me that people were <a href="https://twitter.com/qmacro/status/1332303180240216066">misunderstanding what shell scripting is</a>. It also came up this month in a Lobster thread, where the user &quot;pm&quot; really <a href="https://lobste.rs/s/yeloyn/minimal_safe_bash_script_template#c_q4gyqw">helped me put my finger on</a> what is frustrating about the &quot;Bash vs a real programming language&quot; discussion.</p>
+<p>The shell is like a <a href="https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop">REPL</a> to your operating system, an interactive environment where you can have a conversation with it - manage resources, execute programs and so on. In that sense, the language of that conversation needs to be simple and have minimal noise. You want to just type something in and have it happen.</p>
+<p>Moreover, you want to specify values with as little fuss as possible. Run a program that operates on a word, or a list of words, or a file or list of files - you don't want to be messing around with having to quote those things in the basic case. And the facilities that the REPL provides to enable you to take full advantage of the resources and programs you're working with, are super important. I'm thinking of the Unix pipeline, and IO redirection as two great examples of that.</p>
+<p>That reference to Unix reminds me of a wonderful paper written in 1976 by one of Unix's fathers, Ken Thompson. It's <a href="https://archive.org/details/theunixcommandlanguage">THE UNIX COMMAND LANGUAGE</a> which is available via the Internet Archive but has also been made more consumable in different formats in <a href="https://susam.github.io/tucl/">this lovely repository</a> too. This paper is purportedly the first ever written about the Unix shell, and is a great read. It has a beautifully simple introduction to subshells, pipelines and IO redirection too.</p>
+<p>Perhaps more subtly, what we know as the source for shell scripting today is referred to in the paper's title as a &quot;command language&quot;, and that's what it is. There is much in the paper that is quoteworthy, but I'll pick just one here that helps me think about what the shell (and, by implication, its language) is:</p>
+<p>&quot;<em>The Shell, and the commands it executes, form an expression language ... [which is] easily extensible</em>&quot;</p>
+<p>So this REPL, our interface to the operating system and its resources, is a command environment and our direct interaction with it is via a command language that has been designed to express our intentions in a straighforward and as consistent a way as possible.</p>
+<p>Here's another quote, from the section &quot;THE SHELL AS A COMMAND&quot;:</p>
+<p>&quot;<em>The Shell is just another command and by redirecting its standard input, it is possible to execute commands from files.</em>&quot;</p>
+<p><strong>A natural progression to scripting</strong></p>
+<p>So it's at this point in this thinking journey that we start to transition from a REPL, where the interaction is direct ... to a collection of commands that can be saved in a file and passed to the shell, which I guess one could see as indirect interaction.</p>
+<p>This of course is a move to scripting, as intentional collections of command language elements. And this is where <code>wait</code> makes a lot of sense; perhaps it would be used interactively, but it seems more useful to me as a way of getting things to pause while other things complete, when in indirect mode ... in unattended command language execution mode. Scripting.</p>
+<p>The transition from using the command language directly (including the syntax that allows us to join programs together in pipelines and manage input and output) to scripting, is in this way very subtle, and feels to me like a natural conclusion. And the features that make the command environment and its language so useful in the context of direct interaction in the REPL, are exactly those features that are available for scripting too.</p>
+<p>To me, this is the essence of shell scripting, and explains why it is how it is. While it makes sense to write individual programs in whatever language one finds suitable -- while of course making sure those programs behave in predictable and useful ways in the context of the command environment, especially in relation to STDIN, STDOUT and STDERR -- it makes absolute no sense to me whatsoever to suggest that shell scripting itself should be replaced by &quot;a modern language&quot; (whatever that means).</p>
+<p>To echo a (deliberately preposterous) concept mentioned in the Lobsters thread earlier, try replacing your shell with a &quot;modern language&quot; REPL such as Node.js's or Python's, and see how your productivity plummets. Try harnessing operating system resources, executing programs and filtering their output, or submitting background jobs (and <code>wait</code>ing for them to complete before proceeding further) - and you'll soon come unstuck.</p>
+<p>The shell is how it is for a reason. I'm happy with that.</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2021/26/1/columnar-layout-with-awk/">Columnar layout with AWK</a></li><li>Previous: <a href="/blog/2020/3/12/implicit-values-in-bash-for-loop-construct/">Implicit values in Bash for loop construct</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2020/28/12/waiting-for-jobs-and-the-concept-of-the-shell/ -->
+  </body>
+</html>

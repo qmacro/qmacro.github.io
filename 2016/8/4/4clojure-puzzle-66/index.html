@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>4Clojure Puzzle 66</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>4Clojure Puzzle 66</h1>
+
+<time datetime="2016-04-08">08 Apr 2016</time><a href="/blog/tags/language-ramblings/" class="post-tag">language-ramblings</a>
+
+<p>In my quest to teach myself more Clojure, I'm solving puzzles. Puzzles from websites such as <a href="http://projecteuler.net">Project Euler</a> and <a href="http://www.adventofcode.com">Advent of Code</a>. More recently I've been plugging away at puzzles on <a href="https://www.4clojure.com">4Clojure</a>.</p>
+<p>One of the nice things about 4Clojure is that you can &quot;follow&quot; other users, the practical upshot of which is that when you provide a correct solution for a given puzzle, you can look at the solutions from your followers too. I'm following five users, and often their solutions are delightfully different to mine - sometimes simpler, sometimes more elegant, sometimes using an approach I'd never thought of, and sometimes all of the above.</p>
+<p><strong>Learning by Doing</strong></p>
+<p>I gave a talk last month at the <a href="http://www.lambdalounge.org.uk">Manchester Lambda Lounge</a>. It was titled &quot;<a href="https://docs.google.com/presentation/d/176SJNJEjkri4u18pxMg5hT72xFQturmMG4CoNoKBxb0/edit#slide=id.p">Learning by Doing - Beginning Clojure by Solving Puzzles</a>&quot;. I talked through my approaches to solving a few puzzles, sharing my thought processes with the other members of the group. It was fun, and educational - certainly for me!</p>
+<p>The theme running through the talk turned out to be &quot;everything is a list&quot;. There's a lot to say on this, but I'll limit it here to suggest that in building solutions, it's possible to think in terms of lists, of sequences, and functions that operate thereon. Intertwined with this was my attempt to not mutate any state, and not to approach problems mechanically ... avoiding the <em>how</em>, and focusing on the <em>what</em>.</p>
+<p><strong>4Clojure 66</strong></p>
+<p>So here's my approach to solving the 4Clojure problem number 66 &quot;<a href="https://www.4clojure.com/problem/66">Greatest Common Divisor</a>&quot;. Please bear in mind it's not the most efficient or elegant. I just wanted to share my thinking. It's the sort of thing I'd like to read if I was exploring a new language, to see different possible ways of thinking computationally.</p>
+<p>You can read the <a href="https://www.4clojure.com/problem/66">puzzle statement</a> over on the 4Clojure site. One of the test cases looks like this:</p>
+<pre class="language-clojure"><code class="language-clojure"><span class="token punctuation">(</span><span class="token keyword">=</span> <span class="token punctuation">(</span><span class="token function">__</span> <span class="token number">1023</span> <span class="token number">858</span><span class="token punctuation">)</span> <span class="token number">33</span><span class="token punctuation">)</span></code></pre>
+<p>We'll use this as a basis for our direction. In this test case, as in all of them, we need to define a function that will sit where the <code>__</code> placeholder is, so that the whole expression, or form, is true. So we need a function that takes two arguments (1023 and 858) and returns 33 as the greatest common divisor.</p>
+<p><strong>Where we'll get to</strong></p>
+<p>Here's the complete solution which we'll be working our way towards:</p>
+<pre class="language-clojure"><code class="language-clojure"><span class="token punctuation">(</span><span class="token keyword">fn</span> <span class="token punctuation">[</span>&amp; args<span class="token punctuation">]</span><br>  <span class="token punctuation">(</span><span class="token function">letfn</span> <span class="token punctuation">[</span><span class="token punctuation">(</span><span class="token function">common-div</span> <span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token punctuation">(</span><span class="token keyword">zero?</span> <span class="token punctuation">(</span><span class="token keyword">reduce</span> + <span class="token punctuation">(</span><span class="token keyword">map</span> <span class="token operator">#</span><span class="token punctuation">(</span><span class="token function">mod</span> % i<span class="token punctuation">)</span> args<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">]</span><br>    <span class="token punctuation">(</span><span class="token keyword">->></span> <span class="token punctuation">(</span><span class="token keyword">range</span> <span class="token punctuation">(</span><span class="token keyword">apply</span> min args<span class="token punctuation">)</span> <span class="token number">0</span> -<span class="token number">1</span><span class="token punctuation">)</span><br>         <span class="token punctuation">(</span><span class="token keyword">filter</span> common-div<span class="token punctuation">)</span><br>         first<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p><strong>A helper function</strong></p>
+<p>Breaking the problem down, it would be good to have a function that told me whether a given number was a divisor of some other numbers. So in a <code>letfn</code> binding I defined a function <code>common-div</code> which did exactly that. The function was defined to close over the <code>args</code> to the main (outer) function, i.e. in this particular test case, 1023 and 858.</p>
+<p>This <code>common-div</code> function works out whether the number supplied, <code>i</code>, divides evenly into the numbers in <code>args</code>. It does this by mapping an anonymous function <code>#(mod % i)</code> over the <code>args</code>. This anonymous function returns the modulo, or remainder, of dividing the number(s) by <code>i</code>. If the numbers are all evenly divisible, then this should produce a list of zeros, like this:</p>
+<pre><code>scratchpad.core=&gt; (def args [1023 858])
+#'scratchpad.core/args
+scratchpad.core=&gt; (def i 3)
+#'scratchpad.core/i
+scratchpad.core=&gt; (map #(mod % i) args)
+(0 0)
+</code></pre>
+<p>And folding over this list of remainders, using <code>reduce</code>, with the addition function, should produce zero, if <code>i</code> is a common divisor:</p>
+<pre><code>scratchpad.core=&gt; (reduce + (map #(mod % i) args))
+0
+</code></pre>
+<p><strong>Finding the answer</strong></p>
+<p>Now we have such a helper function, we can rattle through the puzzle. Inside our <code>letfn</code> binding we start with a threading macro (<code>-&gt;&gt;</code>) which simply allows us to write a sequence of functions in a way that's arguably more readable. What we want to 'thread' is a list of numbers, ranging from the lower of the two <code>args</code> down to 1 inclusive. So in this case we want a range from 858 to 1.</p>
+<pre><code>scratchpad.core=&gt; (range (apply min args) 0 -1)
+(858 857 856 ... 1)
+</code></pre>
+<p>The <code>apply</code> here is doing a similar thing to what it does in JavaScript. If we called <code>min</code> with the <code>args</code> directly, we'd get this:</p>
+<pre><code>scratchpad.core=&gt; (min args)
+[1023 858]
+</code></pre>
+<p>because min treats <code>args</code> as a single entity (the list of two numbers ... actually a vector in this case). The function <code>apply</code> applies the given function to the content of the list, breaking them out of that list:</p>
+<pre><code>scratchpad.core=&gt; (apply min args)
+858
+</code></pre>
+<p>This list produced by <code>range</code> is passed into the <code>filter</code> function which is using our <code>common-div</code> function we defined earlier, which should result in a much shorter list of those numbers that divide evenly into the two <code>args</code>, i.e. <code>(33 11 3 1)</code>.</p>
+<p>And because we're working backwards down to 1, the first number in this filtered list we come across is the one we want: 33. Bingo!</p>
+<p><strong>Final thoughts</strong></p>
+<p>As I mentioned at the outset, this is not necessarily the most efficient solution. But it shows that you can think in terms of lists, with logic that doesn't require any mutation of state. It becomes simply an expression that evaluates to an answer. It's a different way of thinking, but I like it very much.</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2016/10/4/fiux2-week-7-build-your-own-sap-fiori-app/">&quot;fiux2&quot; Week 7 - Build Your Own SAP Fiori App</a></li><li>Previous: <a href="/blog/2016/5/4/fiux2-week-6-extend-sap-fiori-apps/">&quot;fiux2&quot; Week 6 - Extend SAP Fiori Apps</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2016/8/4/4clojure-puzzle-66/ -->
+  </body>
+</html>

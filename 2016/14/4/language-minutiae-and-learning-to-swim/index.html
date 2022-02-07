@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language minutiae and learning to SWIM</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Language minutiae and learning to SWIM</h1>
+
+<time datetime="2016-04-14">14 Apr 2016</time><a href="/blog/tags/language-ramblings/" class="post-tag">language-ramblings</a>
+
+<p>Further to <a href="http://langram.org/2016/04/12/enlightenment-in-action/">Enlightenment in action</a>, here's a tiny bit more light that I discovered on my journey up to Newcastle this morning.</p>
+<p>I solved 4Clojure puzzle 100 (<a href="https://www.4clojure.com/problem/100">Least Common Multiple</a>) with this code:</p>
+<pre class="language-clojure"><code class="language-clojure"><span class="token punctuation">(</span><span class="token keyword">fn</span> <span class="token punctuation">[</span>&amp; args<span class="token punctuation">]</span><br>  <span class="token punctuation">(</span><span class="token keyword">let</span> <span class="token punctuation">[</span><span class="token punctuation">[</span>x &amp; xs<span class="token punctuation">]</span> <span class="token punctuation">(</span><span class="token keyword">reverse</span> <span class="token punctuation">(</span><span class="token keyword">sort</span> args<span class="token punctuation">)</span><span class="token punctuation">)</span><br>        are-divisors? <span class="token punctuation">(</span><span class="token keyword">fn</span> <span class="token punctuation">[</span>n<span class="token punctuation">]</span> <span class="token punctuation">(</span><span class="token keyword">zero?</span> <span class="token punctuation">(</span><span class="token keyword">reduce</span> <span class="token operator">#</span><span class="token punctuation">(</span><span class="token keyword">+</span> %<span class="token number">1</span> <span class="token punctuation">(</span><span class="token function">mod</span> n %<span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token number">0</span> xs<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">]</span><br>    <span class="token punctuation">(</span><span class="token keyword">->></span> <span class="token punctuation">(</span><span class="token keyword">iterate</span> <span class="token punctuation">(</span><span class="token keyword">partial</span> + x<span class="token punctuation">)</span> x<span class="token punctuation">)</span><br>         <span class="token punctuation">(</span><span class="token keyword">filter</span> are-divisors?<span class="token punctuation">)</span><br>         first<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>I'm not a mathematician, so forgive me, but my approach to the solution was to take the largest of the numbers supplied, and build a lazy sequence of its multiples, (e.g. starting with 7 it would be 7, 14, 21, 28 etc). The first number in that sequence that had the rest of the numbers as factors was the answer.</p>
+<p>Expressing that in Clojure, I first marshalled the input and prepared a function that I could use in the main part of the resolution. In the <code>let</code> binding, I split the input numbers into a single scalar - the greatest of them - and a sequence of the rest of them. Then I defined a function on the fly to close over that &quot;rest&quot; sequence (represented by the <code>xs</code> var) and determined whether those numbers were divisors of a given number <code>n</code>.</p>
+<p>Looking in detail at this function, here's what I was expressing:</p>
+<ul>
+<li>fold over the list of numbers: <code>(reduce ... 0 xs)</code></li>
+<li>in each case, calculate the modulo of <code>n</code> divided by that number</li>
+<li>by wrapping this in a <code>reduce</code>, add up the total of the modulo results: <code>#(+ %1 (mod n %2))</code></li>
+<li>look to see if the total was zero, which would represent the fact that all the numbers were indeed divisors: <code>(zero? ...)</code></li>
+</ul>
+<p>Neat enough, I thought.</p>
+<p>But the nature of this is <em>slightly</em> mechanical ... I wanted to know whether every number was a divisor, and did that with maths (deriving a modulo total and checking for zero). So while I was doing well, I didn't entirely Say What I Mean (SWIM).</p>
+<p>Looking at someone else's solution, I discovered the predicate function <code>every?</code> that was perfect, and would allow me to SWIM better.</p>
+<p>Here's my definition:</p>
+<pre class="language-clojure"><code class="language-clojure"><span class="token punctuation">(</span><span class="token keyword">fn</span> <span class="token punctuation">[</span>n<span class="token punctuation">]</span> <span class="token punctuation">(</span><span class="token keyword">zero?</span> <span class="token punctuation">(</span><span class="token keyword">reduce</span> <span class="token operator">#</span><span class="token punctuation">(</span><span class="token keyword">+</span> %<span class="token number">1</span> <span class="token punctuation">(</span><span class="token function">mod</span> n %<span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token number">0</span> xs<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>and here's a version using <code>every?</code>:</p>
+<pre class="language-clojure"><code class="language-clojure"><span class="token punctuation">(</span><span class="token keyword">fn</span> <span class="token punctuation">[</span>n<span class="token punctuation">]</span> <span class="token punctuation">(</span><span class="token keyword">every?</span> <span class="token operator">#</span><span class="token punctuation">(</span><span class="token keyword">zero?</span> <span class="token punctuation">(</span><span class="token function">mod</span> n %<span class="token punctuation">)</span><span class="token punctuation">)</span> xs<span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>Yes, it's shorter, which is nice, but the difference is striking. With this version, I'm now saying: &quot;<em>is every modulo of <code>n</code>, and the numbers under test, zero?</em>&quot;</p>
+<p>One small step closer to a more natural ability to Say What I Mean.</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2016/3/5/fofp-1-1-introduction/">FOFP 1.1 Introduction</a></li><li>Previous: <a href="/blog/2016/13/4/finding-a-wonderland-number/">Finding a wonderland number</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2016/14/4/language-minutiae-and-learning-to-swim/ -->
+  </body>
+</html>

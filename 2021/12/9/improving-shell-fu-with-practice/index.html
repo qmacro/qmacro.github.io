@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Improving shell fu with practice</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Improving shell fu with practice</h1>
+
+<time datetime="2021-09-12">12 Sep 2021</time><a href="/blog/tags/autodidactics/" class="post-tag">autodidactics</a><a href="/blog/tags/kitty/" class="post-tag">kitty</a><a href="/blog/tags/shell/" class="post-tag">shell</a>
+
+<p><em>Practising in the shell helps me improve and exposes me to new knowledge. Here's an example.</em></p>
+<p>At the end of the working day I'm tired, but there's often just enough energy left in my brain to explore new options for some Unix commands, and practise my shell fu. Here's a few trivial things that I just learned, by writing a pipeline to choose and display a new theme for my current terminal of choice, <a href="https://sw.kovidgoyal.net/kitty/">kitty</a>.</p>
+<p>There's <a href="https://github.com/dexpota/kitty-themes">a nice selection of themes for kitty</a>; I've installed the contents of the repo in the right place and can select a theme by <a href="https://github.com/qmacro/dotfiles/blob/ba940b5b70b069010e18d22d8d88da01acaf9048/config/kitty/kitty.conf#L1287">adding an include at the bottom of my <code>kitty.conf</code> file</a>:</p>
+<pre><code>include ./theme.conf
+</code></pre>
+<p>and then creating <code>theme.conf</code> as a symbolic link pointing to the actual theme configuration file (from the repo) that I want to use:</p>
+<pre><code>lrwxr-xr-x   1 i347491  staff     72 13 Sep 18:07 theme.conf -&gt; kitty-themes/themes/SpaceGray.conf
+</code></pre>
+<p>This was achieved with the following:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token builtin class-name">cd</span> <span class="token variable">$DOTFILES</span>/config/kitty/ <span class="token punctuation">\</span><br>  <span class="token operator">&amp;&amp;</span> <span class="token function">find</span> kitty-themes/themes -name <span class="token string">'*.conf'</span> <span class="token punctuation">\</span><br>    <span class="token operator">|</span> <span class="token function">shuf</span> -n <span class="token number">1</span> <span class="token punctuation">\</span><br>    <span class="token operator">|</span> <span class="token function">xargs</span> -J % <span class="token function">ln</span> -fsv % theme.conf <span class="token punctuation">\</span><br>    <span class="token operator">|</span> <span class="token function">grep</span> -P -o <span class="token string">'\w+(?=\.conf$)'</span></code></pre>
+<p>This uses <code>find</code> to look for <code>conf</code> files in the <code>kitty-themes/themes/</code> directory within my dotfiles configuration for <code>kitty</code>. The output of such a <code>find</code> command looks like this:</p>
+<pre><code>kitty-themes/themes/SpaceGray_Eighties_Dull.conf
+kitty-themes/themes/Monokai.conf
+kitty-themes/themes/Floraverse.conf
+...
+</code></pre>
+<p>I pass this list to <code>shuf</code> (short for &quot;shuffle&quot;), which &quot;generates random permutations&quot; and ask it via <code>-n 1</code> to only give me one back.</p>
+<p>Then of course it would be nice to use <code>xargs</code> to pass that single, random theme file name, for example <code>kitty-themes/themes/SpaceGray.conf</code>, to the <code>ln</code> command to create a symbolic link. The thing is, <code>xargs</code> puts what it's given at the end of the list; in other words, if we did this:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token builtin class-name">echo</span> kitty-themes/themes/SpaceGray.conf <span class="token operator">|</span> <span class="token function">xargs</span> <span class="token function">ln</span> -fsv theme.conf</code></pre>
+<p>then the <code>ln</code> command invoked would be the wrong way round, i.e.:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">ln</span> -fsv theme.conf kitty-themes/themes/SpaceGray.conf</code></pre>
+<p>instead of</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">ln</span> -fsv kitty-themes/themes/SpaceGray.conf theme.conf</code></pre>
+<p>Luckily <code>xargs</code> has the <code>-J</code> option which allows us to specify a pattern, and then refer to that pattern to insert the value appropriately, which is what is happening here - the <code>%</code> is the pattern and shows where in the <code>ln</code> command the value should be put:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function">xargs</span> -J % <span class="token function">ln</span> -fsv % theme.conf</code></pre>
+<p>What of the <code>ln</code> command itself? Well there's the <code>-s</code> option which is the main deal, i.e. we want to create a symbolic link. The <code>-f</code> option tells <code>ln</code> to not worry about any existing file (i.e. if there's already a <code>theme.conf</code>) and to just overwrite it. And the <code>-v</code> is a verbose option which outputs what is being done.</p>
+<p>This last <code>-v</code> option is used so that I can get the name of the randomly selected theme. Without the last part of the pipeline, into <code>grep</code>, we'd see something like this, output because of this <code>-v</code> option to <code>ln</code>:</p>
+<pre><code>theme.conf -&gt; kitty-themes/themes/SpaceGray.conf
+</code></pre>
+<p>So we can then pipe this into <code>grep</code> to grab the <code>SpaceGray</code> part, invoking the powerful Perl Compatible Regular Expression (PCRE) class of regular expressions (for which I have to use the <code>-P</code> option) to be able to use a positive lookahead assertion <code>(?=\.conf$)</code> to say <em>what we're trying to match, <code>\w+</code> (a sequence of at least one word character), must be directly followed by <code>.conf</code> up against the end of the line (<code>$</code>)</em>.</p>
+<p>Such an assertion is not part of the actual match, which means we can then simply use the <code>-o</code> option to tell <code>grep</code> to output just the match itself, i.e.:</p>
+<pre><code>SpaceGray
+</code></pre>
+<p>I use this technique in <a href="https://github.com/SAP-samples/sap-tech-bytes/blob/8cbc01e51a8adcc6051fe9c6800c91a4093f1af9/getbtpcli">getbtpcli</a> (see <a href="https://github.com/SAP-samples/sap-tech-bytes/blob/8cbc01e51a8adcc6051fe9c6800c91a4093f1af9/getbtpcli#L61">line 61</a>) - if you're interested in reading more about this, have a look at the blog post <a href="https://blogs.sap.com/2021/09/01/sap-tech-bytes-btp-cli-installation/">SAP Tech Bytes: btp CLI - installation</a>, and the comments too.</p>
+<p>And that's pretty much it. Nothing earth shattering, but certainly a couple of things that I found out (in particular <code>ln</code>'s <code>-v</code> option and <code>xargs</code>'s <code>-J</code> option.</p>
+<p>Happy learning!</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2021/15/9/using-functions-more/">Using functions more</a></li><li>Previous: <a href="/blog/2021/3/9/exploring-fff-part-1-main/">Exploring fff part 1 - main</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2021/12/9/improving-shell-fu-with-practice/ -->
+  </body>
+</html>

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading List Mark 2 - Part 3</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Reading List Mark 2 - Part 3</h1>
+
+<time datetime="2011-10-14">14 Oct 2011</time><a href="/blog/tags/appsscript/" class="post-tag">appsscript</a><a href="/blog/tags/google/" class="post-tag">google</a><a href="/blog/tags/gtug/" class="post-tag">gtug</a><a href="/blog/tags/madlab/" class="post-tag">madlab</a><a href="/blog/tags/mangtug/" class="post-tag">mangtug</a><a href="/blog/tags/tasks/" class="post-tag">tasks</a><a href="/blog/tags/ui/" class="post-tag">ui</a><a href="/blog/tags/urlfetch/" class="post-tag">urlfetch</a>
+
+<p>This is Part 3 in a series about an example app that I put together to demonstrate and describe the use of various Google Apps Script features. See <a href="/2011/10/08/reading-list-mark-2-part-1/">Part 1</a> for an introduction. This part is “<strong>Using the UrlFetch Services to interact with the Google+ API (after all, it’s REST-based!) and grab info on articles pointed to by users in their activity stream</strong>“.</p>
+<p><strong>Parts Overview</strong></p>
+<ol>
+<li><a href="/2011/10/08/reading-list-mark-2-part-1/">Introduction to the app, and a short screencast showing the features</a></li>
+<li><a href="/2011/10/10/reading-list-mark-2-part-2/">Using the Tasks API to retrieve and insert tasklists, and the Ui Services to build the tasklist chooser component</a></li>
+<li><a href="/2011/10/14/reading-list-mark-2-part-3/">Using the UrlFetch Services to interact with the Google+ API and grab info on articles pointed to by users in their activity stream</a> <strong>&lt;– You Are Here</strong></li>
+<li><a href="/2011/10/15/reading-list-mark-2-part-4/">Synchronising the URL list in the spreadsheet with corresponding tasks in the chosen tasklist</a></li>
+<li><a href="/2011/10/16/reading-list-mark-2-part-5/">Putting it all together and using the OnOpen event to insert a new 2-item menu entry on the spreadsheet’s page</a></li>
+</ol>
+<p><strong>UrlFetch Services</strong></p>
+<p>If you’ve ever used an HTTP client library in other contexts, you’ll be completely at home with the base classes available in the <a href="http://code.google.com/googleapps/appsscript/service_urlfetch.html">UrlFetch Services</a>. Following the <a href="http://c2.com/xp/DoTheSimplestThingThatCouldPossiblyWork.html">simplest thing that could possibly work</a> philosophy, all we need to do to fetch a resource and grab the payload is to use the UrlFetchApp class, specifically the fetch() method. It returns an <a href="http://code.google.com/googleapps/appsscript/class_httpresponse.html">HTTPResponse</a> object, which has everything you need: content, headers and response code.</p>
+<p>Here’s an example of getting the signature from the server that serves this site:</p>
+<p>var response = UrlFetchApp.fetch('<a href="http://www.pipetree.com/">http://www.pipetree.com/</a>'); Logger.log(response.getHeaders()['Server']);</p>
+<p>--&gt; Apache/2.2.14 (Ubuntu)</p>
+<p>The Google+ API largely follows a RESTful design, which means that we can use the UrlFetch Services to interact with it.</p>
+<p><strong>The Google+ API</strong></p>
+<p>The <a href="https://developers.google.com/+/api/">Google+ API</a> is relatively new, and at the moment, read-only. This is fine for what we want to use it for in this example. There are two aspects of the API that are relevant for us:</p>
+<ul>
+<li>The REST-based nature means that we see the Google+ objects such as People, Activities and Comments as resources that we retrieve with HTTP</li>
+<li>To use the API we need either an OAuth 2.0 token or an API key</li>
+</ul>
+<p>The UrlFetch Services provides us with a facility in the form of the OAuthConfig class for configuring and managing OAuth in a client context. But we’ll go for the simpler approach and use an API key, which we can obtain by using the Google API Console – see the previous instalment of this series for more details about this: <a href="/2011/10/10/reading-list-mark-2-part-2/">Using the Tasks API to retrieve and insert tasklists, and the Ui Services to build the tasklist chooser component</a>.</p>
+<p>The idea for this example app is to capture a list of URLs that a person on Google+ has posted, and perhaps commented on. We can get this info from the <a href="https://developers.google.com/+/api/latest/activities">Activities</a> part of the API.</p>
+<p>To get the activity stream for a given person, we need to retrieve the following resource:</p>
+<p><a href="https://www.googleapis.com/plus/v1/people/%7BuserId%7D/activities/%7Bcollection%7D">https://www.googleapis.com/plus/v1/people/{userId}/activities/{collection}</a></p>
+<p>The {userId} is the Google+ ID of the person, and {collection} in this case is “public”, the only collection available right now. In addition we need to specify our API key on a ‘key’ parameter in the query string. The default representation is JSON. This is what we get back as a result (heavily elided for brevity):</p>
+<p>{ &quot;kind&quot;: &quot;plus#activityFeed&quot;, &quot;title&quot;: &quot;Plus Public Activity Feed for Martin Hawksey&quot;, &quot;id&quot;: &quot;tag:google.com,2010:/plus/people/1146628[...]/activities/public&quot;, &quot;items&quot;: [ { &quot;kind&quot;: &quot;plus#activity&quot;, &quot;title&quot;: &quot;Latest post from me. Elevator pitch: [...]&quot;, &quot;id&quot;: &quot;z12cxlppixzwjbqzi04cdnvg1wbyflbz3r00k&quot;, &quot;url&quot;: &quot;<a href="https://plus.google.com/1146628%5B...%5D">https://plus.google.com/1146628[...]</a>&quot;, &quot;verb&quot;: &quot;post&quot;, &quot;object&quot;: { &quot;objectType&quot;: &quot;note&quot;, &quot;content&quot;: &quot;Latest post from me. Elevator pitch: Service [...]&quot;, &quot;originalContent&quot;: &quot;&quot;, &quot;url&quot;: &quot;<a href="https://plus.google.com/1146628%5B...%5D">https://plus.google.com/1146628[...]</a>&quot;, &quot;attachments&quot;: [ { &quot;objectType&quot;: &quot;article&quot;, &quot;displayName&quot;: &quot;SpreadEmbed: Turning a Google Spreadsheet [...]&quot;, &quot;url&quot;: &quot;<a href="http://mashe.hawksey.info/2011/10/spreadembed/">http://mashe.hawksey.info/2011/10/spreadembed/</a>&quot; }, { &quot;objectType&quot;: &quot;photo&quot;, &quot;image&quot;: { &quot;url&quot;: &quot;<a href="http://images0-focus-opensocial.google">http://images0-focus-opensocial.google</a>[...]&quot;, &quot;type&quot;: &quot;image/jpeg&quot; }, &quot;fullImage&quot;: { &quot;url&quot;: &quot;<a href="http://mcdn.hawksey.info/content/images/%5B...%5D">http://mcdn.hawksey.info/content/images/[...]</a>&quot;, &quot;type&quot;: &quot;image/jpeg&quot;, &quot;height&quot;: 204, &quot;width&quot;: 350 } [...]</p>
+<p>Even after heavy eliding for this blog post, that’s still an awful lot of JSON, but we’re only actually interested in the URLs that the person links to. We can spot these in the “plus#activity” items array, as attachments with objectType “article” – they have url and displayName attributes:</p>
+<p>{ &quot;items&quot;: [ { &quot;kind&quot;: &quot;plus#activity&quot;, &quot;object&quot;: { &quot;attachments&quot;: [ { &quot;objectType&quot;: &quot;article&quot;, &quot;displayName&quot;: &quot;SpreadEmbed: Turning a Google Spreadsheet [...]&quot;, &quot;url&quot;: &quot;<a href="http://mashe.hawksey.info/2011/10/spreadembed/">http://mashe.hawksey.info/2011/10/spreadembed/</a>&quot; }, [...]</p>
+<p><strong>Partial Responses</strong></p>
+<p>And it just so happens that in the interests of efficiency, Google offers <a href="https://developers.google.com/+/api/#partial-response">partial responses</a>, in the form of a fields parameter. So we can add this parameter to the query string, with an XPath-style value like this:</p>
+<p>fields=items/object/attachments(url,displayName)</p>
+<p><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif; font-size: 13px; line-height: 19px; white-space: normal;">So the resulting JSON representation is a lot lighter, like this:</span></p>
+<p>{ &quot;items&quot;: [ { &quot;object&quot;: { &quot;attachments&quot;: [ { &quot;displayName&quot;: &quot;SpreadEmbed: Turning a Google Spreadsheet[...]&quot;, &quot;url&quot;: &quot;<a href="http://mashe.hawksey.info/2011/10/spreadembed/">http://mashe.hawksey.info/2011/10/spreadembed/</a>&quot; } ] } }, ] }</p>
+<p>Much better!</p>
+<p><strong>Retrieving the Activity Data</strong></p>
+<p>So now it’s time to have a look at the code that will retrieve the activity info and insert the URLs into the spreadsheet. We’ll do this in a single function retrieveActivityUrls_(), which will</p>
+<ul>
+<li>grab any existing URLs listed in the sheet, so we can work out whether each new one retrieved with the API call is already there or not</li>
+<li>Determine the ID of the person on Google+ we want to follow</li>
+<li>Build the name of the Google+ activity resource (the Google+ API URL), fetch it and parse the content</li>
+<li>Look through the parsed content and note any new URLs that the person has linked to on Google+</li>
+<li>Insert those new URLs into the sheet</li>
+</ul>
+<p>Let’s go!</p>
+<p>First, some constants.</p>
+<p>APIKEY = 'AIza[...]drBs'; // (get your own!) ACTIVITYLISTURL = '<a href="https://www.googleapis.com/plus/v1/people/%7BuserId%7D/activities/%7Bcollection%7D">https://www.googleapis.com/plus/v1/people/{userId}/activities/{collection}</a>'; USERIDCELL = 'B1'; USERID = '106413090159067280619'; // Fallback: Mahemoff!</p>
+<p>Now for the function. We get a handle on the active sheet, note the last row (which denotes where the list of URLs currently ends), and gets those URLs. We’re assuming that the list starts at row 2, i.e. there’s a header line in row 1. The resulting urlList array is two dimensional, although as we’ve specified we only want 1 column width of values, the data will look something like this:</p>
+<p>[[<a href="http://cloud9ide.com">http://cloud9ide.com</a>], [<a href="http://jsconf.eu">http://jsconf.eu</a>], [...]]</p>
+<p>We create an object to hold the existing (‘old’) URLs, and the eventual ‘new’ URLs about to be retrieved. We’re using an object ‘old’ for the existing URLs so we can easily check whether a new one is in the list or not. We just need to use an array for the ‘new’ URLs.</p>
+<p>function retrieveActivityUrls_() { // Grab existing list of URLs var sh = SpreadsheetApp.getActiveSheet(); var lastRow = sh.getLastRow(); var urlList = sh.getRange(2, 1, lastRow - 1 || 1) .getValues(); var list = {'old': {}, 'new': []}; for (var i in urlList){ list['old'][urlList[i]] = 1; }</p>
+<p>We’re going to retrieve the activity for a Google+ person, and the person is identified by an ID either in a cell in the sheet identified by the range in constant USERIDCELL, (see the screencast in <a href="/2011/10/08/reading-list-mark-2-part-1/">Part 1</a>) or a default specified in constant USERID.</p>
+<p>// Use the userid in the sheet, fallback to a favourite var userid = sh.getRange(USERIDCELL).getValue() || USERID;</p>
+<p>Now we have enough information to build the Google+ API resource URL, so we call a helper function buildActivityListUrl_() passing it the user ID, the collection (‘public’), and our API key. (We’ll look at buildActivityListUrl_() shortly.) We use the UrlFetchApp fetch() method to grab the resource, calling getContentText() to obtain the JSON content. And with a JSON parser available in the <a href="http://code.google.com/googleapps/appsscript/service_utilities.html">Utilities Services</a>, we quickly have all we need to retrieve those URLs posted in the activity list in the ‘activities’ object.</p>
+<p>// Build Google+ API resource and retrieve it; parse JSON content var actListUrl = buildActivityListUrl_(userid, 'public', APIKEY); var jsonString = UrlFetchApp.fetch(actListUrl).getContentText(); var activities = Utilities.jsonParse(jsonString);</p>
+<p>From examining the JSON representation of the activities earlier in this post, we know we’ll be expecting items, and within each item an object member, and within that object member a number of attachments. We’re only interested in those attachments of type ‘article’, and if we find one, we want the url and the displayName.</p>
+<p>If we’ve got an article attachment, we then need to determine whether it’s a new URL or one we have already. That’s where the list object comes in. Unless we can find the URL in the ‘old’ object, it’s a new one so we need to add it to the ‘new’ list.</p>
+<p>// We're looking for the item object attachments, where the // attachment's objectType is 'article'. We want the url and displayName for (var i in activities.items) { var attachments = activities.items[i].object.attachments; for (var a in attachments) { var attachment = attachments[a]; // We've got a URL and title; store it as new if it doesn't // already exist. Store it as list of lists, ready for // a setValues([][]) insert if (attachment.objectType == 'article') { if (! (attachment.url in list['old'])) { list['new'].push([attachment.url, attachment.displayName]); } } } }</p>
+<p>At this stage, we’re ready to add any new URLs to the list in the sheet. Note that when we pushed onto the ‘new’ list, we pushed an array of the url and displayName. This is the ideal two dimensional array ([[a, b], [c, d], [...]) to specify as the value in the <a href="http://code.google.com/googleapps/appsscript/class_range.html#setValues">setValues()</a> call on a two dimensional cell Range. And useful if we want to follow the sage advice in “<a href="http://code.google.com/googleapps/appsscript/guide_common_tasks.html">Common Programming Tasks</a>” on using batch operations where possible: we can add all the new URL info to the sheet in a single getRange() and setValues() call pair:</p>
+<p>// Blammo! if (list['new'].length) { sh.getRange(lastRow + 1, 1, list['new'].length, 2).setValues(list['new']); } }</p>
+<p>Now that’s the retrieveActivityUrls_()  function out of the way, let’s just have a look at the helper function buildActivityListUrl_() that we called earlier. It takes three parameters: the ID of the person on Google+, the collection we want to retrieve (‘public’ in this case), and the API key. It uses a URL template in the ACTIVITYLISTURL constant and replaces the placeholders. It also adds the API key, and the XPath fields statement.</p>
+<p>function buildActivityListUrl_(userId, collection, apiKey) { var actListUrl = ACTIVITYLISTURL; actListUrl = actListUrl.replace(/{userId}/, userId); actListUrl = actListUrl.replace(/{collection}/, collection); actListUrl += '?key=' + apiKey; actListUrl += '&amp;fields=items/object/attachments(url,displayName)'; return actListUrl; }</p>
+<p>That brings us to the end of this part in the series. At this stage we have covered the tasklist determination using a user interface and pulled the URLs posted on a Google+ activity stream, storing them in the sheet.</p>
+<p>In the next part, we’ll look at synchronising the URLs in the sheet with tasks on the chosen tasklist.</p>
+<p>Stay tuned!</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2011/15/10/reading-list-mark-2-part-4/">Reading List Mark 2 - Part 4</a></li><li>Previous: <a href="/blog/2011/10/10/reading-list-mark-2-part-2/">Reading List Mark 2 - Part 2</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2011/14/10/reading-list-mark-2-part-3/ -->
+  </body>
+</html>

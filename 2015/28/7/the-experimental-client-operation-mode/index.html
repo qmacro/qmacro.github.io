@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The experimental Client operation mode</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>The experimental Client operation mode</h1>
+
+<time datetime="2015-07-28">28 Jul 2015</time><a href="/blog/tags/northwind/" class="post-tag">northwind</a><a href="/blog/tags/odata/" class="post-tag">odata</a><a href="/blog/tags/odatamodel/" class="post-tag">odatamodel</a><a href="/blog/tags/openui5/" class="post-tag">openui5</a><a href="/blog/tags/operationmode/" class="post-tag">operationmode</a>
+
+<p><strong><a href="/2015/07/04/30-days-of-ui5/">30 Days of UI5</a> — Day 25 by <a href="//qmacro.org/about/">DJ Adams</a></strong></p>
+<p><img src="/blog/img/2018/02/Screen-Shot-2015-07-28-at-12.53.45-300x191.png" alt=""></p>
+<p>A few months ago a preview release of 1.28 was made available. In <a href="http://openui5.tumblr.com/post/113243652527/new-openui5-preview-release-1-28">the blog post that accompanied it</a>, a number of the new features were introduced. Without much fanfare, certainly without any cool looking screenshots, the experimental “Client” operation mode was announced for the OData Model mechanism.</p>
+<p><strong>OData Model – Server-side</strong></p>
+<p>The OData Model is special, in that it is <a href="https://openui5.hana.ondemand.com/#docs/guide/e1b625940c104b558e52f47afe5ddb4f.html">classified</a> as a server-side model, unlike its client-side siblings such as the JSON Model or the XML Model (or the Resource Model, for that matter). This means that the data “home” is seen as the server, rather than the client (the browser). Consequently, any operations on that data, even read-only operations such as sorting and filtering, take place on the server. That means extra network calls. <a href="https://en.wikipedia.org/wiki/Fermat%27s_Last_Theorem#Fermat.27s_conjecture">There are truly marvellous advantages also, which the margin [of this post] is too narrow to contain. </a></p>
+<p>There are circumstances, even when dealing with entity sets in OData services, where sorting and filtering could and should take place on the client, rather than on the server. To this end, 1.28 brought an initial experimental feature to the OData Model mechanism – the <a href="https://openui5.hana.ondemand.com/#docs/api/symbols/sap.ui.model.odata.OperationMode.html">OData Operation Mode</a>.</p>
+<p><strong>Operation Mode</strong></p>
+<p>The Operation Mode joins a small but important set of modes relating to the OData Model mechanism. By default, the Operation Mode is “Server”. But it can be set to “Client”, which causes all data to be loaded from the server and for subsequent sorting and filtering operations to be performed in the client, without further network calls. As the blog post mentions, this only really makes sense as long as there isn’t a ton of data.</p>
+<p>Note that the Operation Mode is related to the OData Model mechanism instantiation in that it is the <em>default</em> for that model instance. You actually specify the mode for a binding, as shown in the code snippet in the blog post:</p>
+<pre class="language-javascript"><code class="language-javascript">oTable<span class="token punctuation">.</span><span class="token function">bindRows</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>   <span class="token literal-property property">path</span><span class="token operator">:</span> <span class="token string">"/Product_Sales_for_1997"</span><span class="token punctuation">,</span><br>   <span class="token literal-property property">parameters</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token literal-property property">operationMode</span><span class="token operator">:</span> sap<span class="token punctuation">.</span>ui<span class="token punctuation">.</span>model<span class="token punctuation">.</span>odata<span class="token punctuation">.</span>OperationMode<span class="token punctuation">.</span>Client<br>   <span class="token punctuation">}</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p><strong>Experiment!</strong></p>
+<p>This experimental feature was crying out for … well, experimentation. So I threw together an MVC (<a href="/2015/07/21/mvc-model-view-controller-minimum-viable-code/">model view controller, minimum viable code</a>) based app to test it out. Here’s the result:</p>
+<p><img src="/blog/img/2018/02/clientoperationmode.gif" alt="client operation mode"></p>
+<p>Here we have a test app with a List, where the items aggregation is bound to the Categories entity set in the public Northwind OData service at <a href="http://services.odata.org/V2/Northwind/Northwind.svc/">http://services.odata.org/V2/Northwind/Northwind.svc/</a>.</p>
+<p>Note that the Operation Mode is only available on <a href="https://openui5.hana.ondemand.com/#docs/api/symbols/sap.ui.model.odata.v2.ODataModel.html#constructor">the v2 version of the OData Model mechanism</a>, so that’s what I’m using here.</p>
+<p>Initially the binding to the List’s items aggregation is with the (default) value of “Server” for the Operation Mode. You can see the network calls that are made to ask the OData service to return the entities in a specific order (with the $orderby OData parameter) each time I hit the sort button, which is toggling between ascending and descending sorting of the category names.</p>
+<p>But then, in the console, I grab the List, and re-bind the items aggregation, to the same path (“/Categories”) but in “Client” Operation Mode. The result is that a new call is made to fetch the entities to satisfy that (new) binding, but further sorts are done entirely on the client – there are no more network calls made.</p>
+<p>I’d call that experiment a success, and I’m looking forward to developments in this area. Nice work, UI5 team!</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2015/29/7/ui5-looking-back-and-forward/">UI5 - looking back and forward</a></li><li>Previous: <a href="/blog/2015/27/7/an-introduction-to-sap-ui-define/">An introduction to sap.ui.define</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2015/28/7/the-experimental-client-operation-mode/ -->
+  </body>
+</html>

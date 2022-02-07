@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote mount setup on the Raspberry Pi</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Remote mount setup on the Raspberry Pi</h1>
+
+<time datetime="2020-06-07">07 Jun 2020</time>
+
+<p><em>This post documents what I did to set up mount points for, and connect to, an Apple Airport Time Capsule here on my homelab network and also my Google Drive.</em></p>
+<p>My interest in Raspberry Pis has increased over the last few months, and I've taken delivery of a couple of Pi Zero W models and another Pi 4, all from <a href="https://thepihut.com/">The Pi Hut</a>, which I can heartily recommend. Using the Pis more often, I wanted to connect them to some remote storage, specifically my old but still relevant network storage device - an Airport Time Capsule from Apple - and also be able to seamlessly read and write files on my Google Drive. This short post documents what I did, so I can refer back to it if I need to do it again. Perhaps it might be useful for you too.</p>
+<p>Here's the relevant section from a <code>tree -L 2</code> in my home directory:</p>
+<pre><code>.
+└── mnt
+    ├── gdrive
+    └── timecapsule
+</code></pre>
+<h2 id="mounting-the-time-capsule" tabindex="-1">Mounting the Time Capsule <a class="direct-link" href="#mounting-the-time-capsule" aria-hidden="true">#</a></h2>
+<p>This was pretty straightforward and involves adding a new line in <code>/etc/fstab</code> to represent the mount. This is the line:</p>
+<pre><code>//timecapsule/Data /home/pi/mnt/timecapsule cifs vers=1.0,password=sekrit,rw,uid=1000,iocharset=utf8,sec=ntlm 0 0
+</code></pre>
+<p>Broken down bit by bit, we have:</p>
+<ul>
+<li><code>//timecapsule/Data</code>: The mount device, which is the Data share on the Time Capsule itself, which is identified here as the hostname <code>timecapsule</code>. I could have used an IP address but I'm happily running a local DNS setup on this homelab (on one of the Pi Zero W devices) using <a href="https://pi-hole.net/">Pi-hole</a></li>
+<li><code>/home/pi/mnt/timecapsule</code>: The mount point, where I want the Data share to be mounted</li>
+<li><code>cifs</code>: The file system type; Common Internet File System (CIFS) is a dialect of the more Windows specific Server Message Block (SMB) network protocol</li>
+<li><code>vers=1.0,password=sekrit,rw,uid=1000,iocharset=utf8,sec=ntlm</code>: There a few options specified here, such as the protocol version number, that the mount should be read-write, and so on (it seems as though the security mode 'ntlm', which was the default for a while, now must be specified explicitly)</li>
+<li><code>0</code>: Dump (disabled), i.e. no backing up of this partition</li>
+<li><code>0</code>: Boot time fsck (disabled), i.e. no file system check at boot time for this file system</li>
+</ul>
+<p>A short note on the password (which isn't actually 'sekrit', obviously) - via the airport utility on my macOS device, I connected to the Time Capsule and set up the security for the disks with a &quot;disk password&quot;, i.e. there is no user. This seemed simpler and good enough for what I need.</p>
+<p><img src="/blog/img/2020/06/diskconfig.png" alt="Disk configuration on the Time Capsule"></p>
+<p>And that's it. After adding the line, a <code>mount -a</code> (as root) did the trick, and of course the mount is performed on (re)boot too.</p>
+<h2 id="mounting-google-drive" tabindex="-1">Mounting Google Drive <a class="direct-link" href="#mounting-google-drive" aria-hidden="true">#</a></h2>
+<p>This was a bit more involved, but still worked first time. It involves the use of <a href="https://rclone.org/">rclone</a>, which is described as &quot;a command line program to manage files on cloud storage&quot;, and support for Google Drive is included.</p>
+<p>Basically, I followed this excellent tutorial from Artur Klauser - <a href="https://medium.com/@artur.klauser/mounting-google-drive-on-raspberry-pi-f5002c7095c2">Mounting Google Drive on Raspberry Pi</a>, so I won't repeat all the details; instead, I'll list the commands and activities I went through here.</p>
+<h3 id="installed-rclone" tabindex="-1">Installed rclone <a class="direct-link" href="#installed-rclone" aria-hidden="true">#</a></h3>
+<p>I installed <code>rclone</code> from the standard repositories, and got version 1.45; in other words, I didn't bother with trying to get the latest through a <code>wget</code> pull of something newer - I think I'm happy with 1.45 (and it's worked well so far for me).</p>
+<pre><code>sudo apt install rclone
+</code></pre>
+<h3 id="set-up-a-google-api-project" tabindex="-1">Set up a Google API project <a class="direct-link" href="#set-up-a-google-api-project" aria-hidden="true">#</a></h3>
+<p>In order to use my own access configuration, I need a client ID and client secret pair for OAuth based authentication to the Google Drive API, and so I needed to get those from Google. I set up a fresh project &quot;homelab-rclone&quot;, enabled the Google Drive API, and generated some OAuth 2.0 client credentials.</p>
+<p><img src="/blog/img/2020/06/googleapiclient.png" alt="The OAuth 2.0 Client ID"></p>
+<h3 id="configured-rclone" tabindex="-1">Configured rclone <a class="direct-link" href="#configured-rclone" aria-hidden="true">#</a></h3>
+<p>After generating the credentials, I went back to the command line and fired up <code>rclone config</code>, following the guide in Artur's post mentioned earlier. Next, a simple test (<code>rclone ls --max-depth 1 gdrive:</code>) showed that I could indeed see the contents of my Google Drive. The configuration procedure caused a file <code>rclone.conf</code> to be created in <code>~/.config/rclone/</code> too, this is what the contents look like (I've elided the credential details of course):</p>
+<pre><code>[gdrive]
+type = drive
+client_id = 693105092413-sv17[...].apps.googleusercontent.com
+client_secret = dQwG[...]
+scope = drive
+token = {&quot;access_token&quot;:&quot;ya29[...]&quot;,&quot;token_type&quot;:&quot;Bearer&quot;,&quot;refresh_token&quot;:&quot;1ae03[...]&quot;,&quot;expiry&quot;:&quot;2020-06-07T16:58:38.185331858+01:00&quot;}
+</code></pre>
+<p>Note that the permissions for this config file are appropriately set to 0600 (read-write for the owner, i.e. me, only).</p>
+<h3 id="set-up-automatic-mounting" tabindex="-1">Set up automatic mounting <a class="direct-link" href="#set-up-automatic-mounting" aria-hidden="true">#</a></h3>
+<p>Using Artur's instructions, I set up a user mode service to execute <code>rclone</code>, including the use of <a href="https://wiki.archlinux.org/index.php/Systemd/User#Automatic_start-up_of_systemd_user_instances">lingering</a>. Here, briefly, are the commands I used:</p>
+<p>Create a new directory for this new user mode service:</p>
+<pre><code>mkdir -p ~/.config/systemd/user/
+</code></pre>
+<p>Add the <code>[Unit]</code> and <code>[Service]</code> entries as directed in the blog post, with a little modification as some of the options to <code>rclone</code> did't work for me:</p>
+<pre><code>cat &lt;&lt;EOF &gt; ~/.config/systemd/user/rclone@.service
+[Unit]
+Description=rclone: Remote FUSE filesystem for cloud storage config %i
+Documentation=man:rclone(1)
+
+[Service]
+Type=notify
+ExecStartPre=/bin/mkdir -p %h/mnt/%i
+ExecStart= \
+  /usr/bin/rclone mount \
+    --fast-list \
+    %i: %h/mnt/%i
+
+[Install]
+WantedBy=default.target
+EOF
+</code></pre>
+<p>Enable &amp; start the service:</p>
+<pre><code>systemctl --user enable rclone@gdrive
+systemctl --user start rclone@gdrive
+</code></pre>
+<p>Set up lingering:</p>
+<pre><code>loginctl enable-linger $USER
+</code></pre>
+<p>And that's it. After rebooting (to test), I can see the contents of my Google Drive at <code>~/mnt/gdrive/</code>. Success!</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2020/20/6/removing-the-knob-on-a-la-pavoni-steam-valve/">Removing the knob on a La Pavoni steam valve</a></li><li>Previous: <a href="/blog/2020/5/4/initial-pi-configuration-via-ansible/">Initial Pi configuration via Ansible</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2020/7/6/remote-mount-setup-on-the-raspberry-pi/ -->
+  </body>
+</html>

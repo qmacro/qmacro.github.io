@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unpacking Bash shell tips from a GitHub Actions workflow</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Unpacking Bash shell tips from a GitHub Actions workflow</h1>
+
+<time datetime="2021-04-28">28 Apr 2021</time><a href="/blog/tags/autodidactics/" class="post-tag">autodidactics</a><a href="/blog/tags/shell/" class="post-tag">shell</a><a href="/blog/tags/github-actions/" class="post-tag">github-actions</a>
+
+<p><em>Someone shared a GitHub Actions workflow step which was written to find out some pull request info, but I thought even the first couple of shell lines, using IFS and awk, were worth staring at for a second or two.</em></p>
+<p>I don't know about you, but I find value in staring at other people's shell activities, so I thought I'd share what occurred to me as I did so on this occasion, in case it helps newcomers become a little more acquainted.</p>
+<p>A colleague wanted to find out something about the pull request ID when a workflow was triggered. This is a shortened version of what was shared:</p>
+<pre class="language-yaml"><code class="language-yaml"><span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> PR ID<br>  <span class="token key atrule">run</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string"><br>    IFS='/' read -r OWNER REPOSITORY &lt;&lt;&lt; "$GITHUB_REPOSITORY"<br>    HEADREFNAME=$(echo ${{ github.event.ref }} | awk -F'/' '{print $NF}')<br>    PR_ID=$(curl -s -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \<br>      -X POST \<br>      -d "{\"query\": ... }" \<br>      "$GITHUB_GRAPHQL_URL" \<br>      | jq '.data.repository.pullRequests.nodes[].number' \<br>    )</span><br>  <span class="token key atrule">shell</span><span class="token punctuation">:</span> bash</code></pre>
+<p>I've omitted the detail of the API call being made with <code>curl</code>, partly because it's not relevant, and partly because it's a GraphQL call and extremely ugly.</p>
+<p>So what can we learn from this? Let's take it line by line.</p>
+<h2 id="obtaining-the-owner-and-repository-values" tabindex="-1">Obtaining the owner and repository values <a class="direct-link" href="#obtaining-the-owner-and-repository-values" aria-hidden="true">#</a></h2>
+<pre class="language-bash"><code class="language-bash"><span class="token assign-left variable"><span class="token environment constant">IFS</span></span><span class="token operator">=</span><span class="token string">'/'</span> <span class="token builtin class-name">read</span> -r OWNER REPOSITORY <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token variable">$GITHUB_REPOSITORY</span>"</span></code></pre>
+<p>This is a nice way of splitting the value in a variable into a couple of variables. What's in <code>$GITHUB_REPOSITORY</code>? The <a href="https://docs.github.com/en/actions/reference/environment-variables#default-environment-variables">Default environment variables</a> documentation tells us that it's going to be the repository owner and name, joined with a <code>/</code> character, e.g. <code>octocat/Hello-World</code>.</p>
+<p>Let's pick this line apart.</p>
+<h3 id="using-the-ifs-environment-variable" tabindex="-1">Using the IFS environment variable <a class="direct-link" href="#using-the-ifs-environment-variable" aria-hidden="true">#</a></h3>
+<p>The first thing we see is <code>IFS='/'</code>. <code>IFS</code> is an environment variable in Bash and stands for <a href="https://en.wikipedia.org/wiki/Input_Field_Separators">Input Field Separators</a> (or Internal Field Separators). Notice that &quot;separators&quot; is plural. Note also that some folks like to think of them as delimiters, rather than separators, but that's a debate for another time. The default value for the <code>IFS</code> environment variable is the list of different whitespace types, i.e. space, tab and newline.</p>
+<p>Here, we only want to split on <code>/</code> characters, rather than on any whitespace characters.</p>
+<p>There are a number of places that <code>IFS</code> is used in the context of the shell. One of these places is with the <code>read</code> command, and in particular, it comes into play when there are multiple variable names specified. But we'll get to that shortly.</p>
+<p>The other thing to note is that the setting of the value for <code>IFS</code> is done &quot;in the same breath&quot; as the <code>read</code> command, on the same line. This means that the value assigned is temporary, just for the duration of the command or builtin that follows. What actually happens is that the <code>IFS='/'</code> assignment is passed as part of the environment within which the command or builtin is executed. (I found <a href="https://stackoverflow.com/questions/25153582/why-cant-i-set-ifs-for-one-call-of-printf/25154499#25154499">this explanation on StackOverflow very helpful in understanding this</a>).</p>
+<p>This means, in turn, that when (in this case) <code>read</code> consults the value of <code>IFS</code> it gets the <code>/</code> character, and not whatever <code>IFS</code> was set or defaulted to before that incantation. But once the processing of whatever is on that line is finished, that temporary, execution-environment-specific assignment is done with, and effectively we're back with whatever <code>IFS</code> was before we started.</p>
+<h3 id="splitting-with-read" tabindex="-1">Splitting with read <a class="direct-link" href="#splitting-with-read" aria-hidden="true">#</a></h3>
+<p>Next we have the actual execution of the <code>read</code> builtin: <code>read -r OWNER REPOSITORY</code>.</p>
+<blockquote>
+<p>In case you're wondering, &quot;builtin&quot; just means that <code>read</code> is part of the Bash shell itself, rather than a separate executable. One implication of this is that the execution of <code>read</code> is going to be faster (although unless you're running it many times in a loop, or on a very slow machine, the difference is going to be almost imperceptible). Another implication is that you'll want to use <code>read --help</code> to find out what <code>read</code> does, rather than <code>man read</code>.</p>
+</blockquote>
+<p>Looking at what <code>read --help</code> tells us, we see that it reads a line from STDIN and splits it into fields. Note the phase &quot;a line&quot; - it only reads one line, so if you have multiple lines, you'll need to execute <code>read</code> in a loop (a common idiom is to use a <code>while</code> loop here). Next, then, is the <code>-r</code> option, which prevents any backslashes from escaping characters. Often with input you'll find control characters, such as tab or newline, written in an escaped form, i.e. <code>\t</code> and <code>\n</code> respectively. In this instance, this is not desired - any actual backslash should be interpreted directly as such.</p>
+<p>Knowing that the value in <code>$GITHUB_REPOSITORY</code> is going to be an owner and a repository name, stuck together with a <code>/</code> character (such as &quot;octocat/Hello-World&quot;) we can understand what the variable names <code>OWNER</code> and <code>REPOSITORY</code> are likely to receive, given the temporary assignment of <code>/</code> to <code>IFS</code>.</p>
+<h3 id="io-redirection-and-using-a-here-string" tabindex="-1">I/O redirection and using a here string <a class="direct-link" href="#io-redirection-and-using-a-here-string" aria-hidden="true">#</a></h3>
+<p>But we know <code>read</code> reads lines from STDIN. So how do we get it to read the value of a variable (<code>$GITHUB_REPOSITORY</code>) instead? We get it to do that using a &quot;here string&quot; - and that's the last bit of the line that we should now stare at for a second, the <code>&lt;&lt;&lt; &quot;$GITHUB_REPOSITORY&quot;</code> part.</p>
+<p>To understand what a &quot;here string&quot; is, let's take a few steps back, starting at the concept of STDIN (&quot;standard input&quot;). In the context of the shell, this is often what is supplied to a program in a pipeline, like this:</p>
+<pre class="language-bash"><code class="language-bash">$ producer <span class="token operator">|</span> consumer</code></pre>
+<p>Whatever <code>producer</code> emits to STDOUT, that's what <code>consumer</code> receives on STDIN.</p>
+<p>There are other ways to supply data to <code>consumer</code>. One way is to use &quot;redirection&quot;, which is useful if you want to use files:</p>
+<pre class="language-bash"><code class="language-bash">$ producer <span class="token operator">></span> some-file<br>$ consumer <span class="token operator">&lt;</span> some-file</code></pre>
+<p>The first line uses &quot;output redirection&quot;, i.e. the output that <code>producer</code> emits to STDOUT is redirected to <code>some-file</code>. The second line uses &quot;input redirection&quot;, where <code>some-file</code> is opened for reading on <code>consumer</code>'s STDIN.</p>
+<p>There's another type of redirection, called a &quot;here document&quot;, which allows us to specify input lines directly, i.e. &quot;here&quot;, like this:</p>
+<pre class="language-bash"><code class="language-bash">$ consumer <span class="token operator">&lt;&lt;</span><span class="token string">EOF<br>first line of input<br>second line of input<br>last line of input<br>EOF</span></code></pre>
+<p>The three lines of input are what are supplied to <code>consumer</code>'s STDIN. The string <code>EOF</code> is declared as a delimiter, and all lines up until that delimiter is seen are taken as input.</p>
+<p>And there's a variation on such &quot;here document&quot;, and that's a &quot;here string&quot;, which is what we have in our example. While regular STDIN redirection is introduced with a single <code>&lt;</code>, and a &quot;here document&quot;-based redirection is introduced with a double <code>&lt;&lt;</code>, a &quot;here string&quot; is introduced with a triple <code>&lt;&lt;&lt;</code>, and takes whatever is supplied, appends a single newline and passes that to STDIN.</p>
+<p>In this case, a variable <code>$GITHUB_REPOSITORY</code> is supplied, so that is expanded to the value it contains, and passed to <code>read</code>'s STDIN.</p>
+<h2 id="getting-the-head-reference" tabindex="-1">Getting the HEAD reference <a class="direct-link" href="#getting-the-head-reference" aria-hidden="true">#</a></h2>
+<p>The second line is also interesting and deserves a little attention. It's a single assignment statement, assigning a value to the variable <code>HEADREFNAME</code>. It doesn't matter too much what this is, but it doesn't hurt to make a guess. Based on the context in which this will run, i.e. in a pull request event, and the reference to the GitHub event property &quot;ref&quot; (in <code>github.event.ref</code>), we can see from the <a href="https://docs.github.com/en/developers/webhooks-and-events/webhook-events-and-payloads">Webhook events and payloads</a> section of the documentation that this is likely to be something that looks like this:</p>
+<pre><code>refs/head/main
+</code></pre>
+<p>Let's stare at this line to see what it does and how it works:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token assign-left variable">HEADREFNAME</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span><span class="token builtin class-name">echo</span> $<span class="token punctuation">{</span><span class="token punctuation">{</span> github.event.ref <span class="token punctuation">}</span><span class="token punctuation">}</span> <span class="token operator">|</span> <span class="token function">awk</span> -F<span class="token string">'/'</span> <span class="token string">'{print $NF}'</span><span class="token variable">)</span></span></code></pre>
+<h3 id="use-of-command-substitution-with-dollar(...)" tabindex="-1">Use of command substitution with $(...) <a class="direct-link" href="#use-of-command-substitution-with-dollar(...)" aria-hidden="true">#</a></h3>
+<p>We can see that what is assigned to the <code>HEADREFNAME</code> variable is something inside this construct: <code>$(...)</code>. This is the <a href="https://www.gnu.org/software/bash/manual/html_node/Command-Substitution.html">command substitution</a> construct. This allows the output of a command to be substituted in-place. In other words, whatever the output of what's expressed within the <code>$(...)</code> construct is substituted, and (in this case) assigned as the value to <code>HEADREFNAME</code>.</p>
+<blockquote>
+<p>You may see an alternative command substitution construct in this form: <code>`...`</code>; this is the older style of the construct, but the newer <code>$(...)</code> style is preferred due to some quoting complexities with the older style.</p>
+</blockquote>
+<h3 id="using-awk" tabindex="-1">Using awk <a class="direct-link" href="#using-awk" aria-hidden="true">#</a></h3>
+<p>So what is the command that is producing the output that will be substituted and assigned to the <code>HEADREFNAME</code> variable here? Let's have a look:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token builtin class-name">echo</span> <span class="token variable">${{ github.event.ref }</span><span class="token punctuation">}</span> <span class="token operator">|</span> <span class="token function">awk</span> -F<span class="token string">'/'</span> <span class="token string">'{print $NF}'</span></code></pre>
+<p>Remember that the definition context here is a GitHub Actions workflow definition. This is where the <code>${{ ... }}</code> comes from - it's not a shell expression; rather, it's an <a href="https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions">expression in the workflow definition format</a>. It basically means that the value of the property <code>github.event.ref</code> is substituted; this is before the line is executed by Bash.</p>
+<p>Assuming for now that the value of <code>github.event.ref</code> is indeed <code>refs/head/main</code>, this amounts to:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token builtin class-name">echo</span> refs/head/main <span class="token operator">|</span> <span class="token function">awk</span> -F<span class="token string">'/'</span> <span class="token string">'{print $NF}'</span></code></pre>
+<p>So the value is piped into the STDIN of <code>awk</code>, the venerable and still useful tool for <a href="https://en.wikipedia.org/wiki/AWK">text processing, data extraction and reporting</a>. And it is here that data extraction is taking place. Let's break down how it works.</p>
+<h3 id="awk-condition-action-pairs-and-built-in-variables" tabindex="-1">Awk condition-action pairs and built-in variables <a class="direct-link" href="#awk-condition-action-pairs-and-built-in-variables" aria-hidden="true">#</a></h3>
+<p>The structure of an <code>awk</code> script is one or more &quot;condition action&quot; pairs. The basic idea is that <code>awk</code> processes lines that it receives via STDIN, and for each line, applies the condition, and if the condition is true, executes the corresponding action. Conditions are often regular expressions, and there's the special (and common) case of &quot;no condition&quot;, in which case the action is executed regardless. (There are also the special <code>BEGIN</code> and <code>END</code> conditions which can be used for pre- and post-processing respectively).</p>
+<p>Actions are enclosed in curly braces <code>{ ... }</code>.</p>
+<p>For quick one-liners, <code>awk</code> scripts are often expressed &quot;in-line&quot; like we see here. In other more complex cases they're stored in separate script files - you can see a couple of examples of <code>.awk</code> file contents in the <a href="https://github.com/SAP-samples/cloud-messaging-handsonsapdev/tree/main/graphing">graphing</a> directory within the <a href="https://github.com/SAP-samples">SAP samples</a> repository <a href="https://github.com/SAP-samples/cloud-messaging-handsonsapdev">cloud-messaging-handsonsapdev</a>.</p>
+<p>This particular one-liner looks like this:</p>
+<pre><code>(no condition) { print $NF }
+</code></pre>
+<p>In other words, the action will be executed for every line coming in on STDIN. Considering that there's only going to be one line coming in (the <code>refs/head/main</code> string), that's just a single instance of that action. But what does it do? To understand that, we have to look at <code>$NF</code> and, in turn, the value <code>'/'</code> passed to the <code>-F</code> option in the <code>awk</code> invocation.</p>
+<p>There are a number of built-in variables in <code>awk</code>, and <code>NF</code> is one that represents the number of fields.</p>
+<p>What does &quot;number of fields&quot; mean, exactly? Well, first, it's the number of fields in the input line currently being processed. And the number of fields is determined by the value of the <code>FS</code> built-in variable - the &quot;field separator&quot;. The default value of <code>FS</code> is whitespace, but this can be changed using the <code>-F</code> option, which is what's happening here.</p>
+<p>With that knowledge, we can guess what this might produce (note the addition of <code>FS</code> and the deliberate omission for now of the <code>$</code> prefix to <code>NF</code>):</p>
+<pre><code>echo refs/head/main | awk -F'/' '{print FS, NF}'
+</code></pre>
+<p>It produces this, i.e. the value of the field separator and the number of fields.</p>
+<pre><code>/ 3
+</code></pre>
+<p>Fields in an <code>awk</code> script can be referred to positionally with <code>$1</code>, <code>$2</code>, <code>$3</code> and so on. But usefully, with a touch of indirection, we can prefix <code>NF</code> with <code>$</code> to refer to fields relatively, such that <code>$NF</code>, which resolves to <code>$3</code>, is the last field in this input, <code>$NF-1</code> is the second to last, and so on.</p>
+<p>So the action <code>{ print $NF }</code> just prints the last field on the line.</p>
+<p>In other words, what this entire line does is assign whatever the last part of the value of <code>github.event.ref</code> (i.e. <code>main</code>, here) to the <code>HEADREFNAME</code> variable.</p>
+<p>And that's it. While there's more in this workflow definition step, I'll stop here to let you take things in. Hopefully if you're taking some tentative steps towards embracing more terminal based command of your working environment, this has helped break down the barriers a little to the syntax and use of Bash shell expressions and scripts.</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2021/10/5/solving-mysterious-unrendered-markdown-headings/">Solving mysterious unrendered markdown headings</a></li><li>Previous: <a href="/blog/2021/24/4/github-actions-workflow-browser/">GitHub Actions workflow browser</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2021/28/4/unpacking-bash-shell-tips-from-a-github-actions-workflow/ -->
+  </body>
+</html>

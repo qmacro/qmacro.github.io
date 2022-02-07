@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SheetAsJSON - Google Spreadsheet Data as JSON</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>SheetAsJSON - Google Spreadsheet Data as JSON</h1>
+
+<time datetime="2013-10-04">04 Oct 2013</time><a href="/blog/tags/appsscript/" class="post-tag">appsscript</a><a href="/blog/tags/contentservice/" class="post-tag">contentservice</a><a href="/blog/tags/google/" class="post-tag">google</a><a href="/blog/tags/json/" class="post-tag">json</a><a href="/blog/tags/jsonp/" class="post-tag">jsonp</a><a href="/blog/tags/spreadsheet/" class="post-tag">spreadsheet</a><a href="/blog/tags/spreadsheetservice/" class="post-tag">spreadsheetservice</a>
+
+<p>This is a short post to explain how to expose a 'typical' Google spreadsheet (rows of columnar data, with first header row) as JSON, via HTTP. It might sound somewhat esoteric but believe me it’s helped me and others out quite a bit in the past.</p>
+<p>If you’ve got a sheet and want to consume that from a web app, for example, via JSON or JSONP, or just want a different way of getting data out of a spreadsheet for further processing in the environment of your choice (that has a JSON parser) then this could be useful for you.</p>
+<p>The idea is that you have a base URL and append a query string, supplying values for two parameters: the id of the spreadsheet and the name of the sheet within the spreadsheet. For example, for this sheet, the value for <code>id</code> would be</p>
+<p>0AuAssa05Fog5dGc5WVNRbFZDcWJCLVY2V2NidWFKeXc</p>
+<p>and the value for <code>sheet</code> would be</p>
+<p>Sheet1</p>
+<p><img src="//qmacro.org/content/images/2013/10/sheet1.png" alt=""></p>
+<p>The exposure is via a Google Apps Script, which uses a couple of Apps Script APIs from the <a href="https://developers.google.com/apps-script/reference/spreadsheet/">Spreadsheet</a> and <a href="https://developers.google.com/apps-script/reference/content/">Content</a> services. The script, <a href="https://script.google.com/d/143u0RLuppsmYJ0B3wzo6i0jZYSfIFV2NLJMHPM-Sqczpr9bLwdffc-Wx/edit?usp=sharing">SheetAsJSON</a>, runs as a <a href="https://developers.google.com/apps-script/execution_web_apps">web app</a>, which puts a few requirements on the script itself.</p>
+<p>It must implement a doGet method (for HTTP GET). It must be versioned (only versions of scripts can be deployed):</p>
+<p><img src="//qmacro.org/content/images/2013/10/version.png" alt=""></p>
+<p>It must also be deployed as a web app and made available for others (or just yourself) to execute:</p>
+<p><img src="//qmacro.org/content/images/2013/10/deploy-268x300.png" alt=""></p>
+<p>As you can see in the above screenshot, you also need to make sure the script is authorised to run. See the <a href="https://developers.google.com/apps-script/">Google Apps Script documentation</a> for more details.</p>
+<p>The <a href="https://script.google.com/d/143u0RLuppsmYJ0B3wzo6i0jZYSfIFV2NLJMHPM-Sqczpr9bLwdffc-Wx/edit?usp=sharing">script source is here</a>, and contains just a handful of functions which I’ll briefly describe here.</p>
+<p><strong>doGet</strong>: Creates a text output object, grabs the id and sheet query parameter values, opens the spreadsheet, reads the header and data records (via readData_), setting them as an array of objects in the data['records'] element, and then returns the content, pausing for a second only to work out whether JSONP or JSON was required, and returning the content and the content-type appropriately.</p>
+<p><strong>readData_</strong>: Goes and reads the header row via getHeaderRow_, and then the data rows via getDataRows_. It replaces any whitespace in the header values with underscores.</p>
+<p><strong>getHeaderRow_</strong>: Grabs the first row of the sheet, with the intention of treating the content of each cell in that row as the property names of the data objects.</p>
+<p><strong>getDataRows_</strong>: Grabs the rest of the rows of the sheet, creating JavaScript objects with properties one for each column.</p>
+<p>Yes, it’s perhaps over-simple in places, but it works for me, and may work for you too.</p>
+<p>So with that in mind, let’s say we use the &quot;Typical Spreadsheet&quot; shown in the screenshot above, and take its id and the name of the first and only sheet. When we append the query parameters appropriately onto the web app’s URL for this particular instance of the script (mine), we get:</p>
+<p><span style="color: #ff6600;"><a href="https://script.google.com/macros/s/AKfycbxOLElujQcy1-ZUer1KgEvK16gkTLUqYftApjNCM_IRTL3HSuDk/exec">https://script.google.com/macros/s/AKfycbxOLElujQcy1-ZUer1KgEvK16gkTLUqYftApjNCM_IRTL3HSuDk/exec</a></span>?<span style="color: #339966;">id=0AuAssa05Fog5dGc5WVNRbFZDcWJCLVY2V2NidWFKeXc</span>&amp;<span style="color: #0000ff;">sheet=Sheet1</span></p>
+<p>which will return this:<br>
+<img src="//qmacro.org/content/images/2013/10/json.png" alt=""></p>
+<p>Note that there’s a redirect which means the final URL you see in the URL bar is not the one above. Note also that the formatting in my browser is down to the great Chrome extension &quot;<a href="https://chrome.google.com/webstore/detail/jsonview/chklaanhfefbnpoihckbnefhakgolnmc?hl=en">JSONView</a>&quot;.</p>
+<p>Share and enjoy!</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2013/27/11/sap-uk-and-ireland-user-group-conference-demo-jam/">SAP UK &amp; Ireland User Group Conference - Demo Jam!</a></li><li>Previous: <a href="/blog/2013/10/8/yrs2013-hacks-on-github/">#YRS2013 Hacks on Github</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2013/4/10/sheetasjson-google-spreadsheet-data-as-json/ -->
+  </body>
+</html>

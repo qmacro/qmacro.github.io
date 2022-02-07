@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exploring fff part 2 - get_ls_colors</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Exploring fff part 2 - get_ls_colors</h1>
+
+<time datetime="2021-11-07">07 Nov 2021</time><a href="/blog/tags/autodidactics/" class="post-tag">autodidactics</a><a href="/blog/tags/fff/" class="post-tag">fff</a><a href="/blog/tags/shell/" class="post-tag">shell</a>
+
+<p><em>Continuing to read and learn from the source code to fff - this time, the get_ls_colors function.</em></p>
+<p>In <a href="https://qmacro.org/autodidactics/2021/09/03/exploring-fff-part-1-main/">part 1</a> I took a first look at <a href="https://github.com/dylanaraps/fff"><code>fff</code></a>, &quot;a simple file manager written in Bash&quot;, focusing on the <code>main</code> function, and learned a lot. In this part I take a look at the first function called from <code>main</code>, and that is <code>get_ls_colors</code>. I'm continuing to use the same commit reference as last time, i.e. the state of <code>fff</code> <a href="https://github.com/dylanaraps/fff/tree/5b90a8599cce3333672947438bb1718e1298e068">here</a>.</p>
+<p><a name="ls_colors"></a></p>
+<h2 id="ls_colors-and-where-get_ls_colors-comes-in" tabindex="-1">LS_COLORS and where get_ls_colors comes in <a class="direct-link" href="#ls_colors-and-where-get_ls_colors-comes-in" aria-hidden="true">#</a></h2>
+<p><a href="https://github.com/dylanaraps/fff/blob/5b90a8599cce3333672947438bb1718e1298e068/fff#L1109-L1110">Here's</a> the context of the call to <code>get_ls_colors</code> from <code>main</code>:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token variable"><span class="token punctuation">((</span>${FFF_LS_COLORS<span class="token operator">:</span><span class="token operator">=</span><span class="token number">1</span>} <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">))</span></span> <span class="token operator">&amp;&amp;</span><br>    get_ls_colors</code></pre>
+<p>Now it's fairly obvious that this has something to do with how the <code>fff</code> display is coloured, and we get some extra clue about this <a href="https://github.com/dylanaraps/fff/blob/5b90a8599cce3333672947438bb1718e1298e068/fff.1#L75-L78">from the man page content</a>, in the customisation section:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># Use LS_COLORS to color fff.</span><br><span class="token comment"># (On by default if available)</span><br><span class="token comment"># (Ignores FFF_COL1)</span><br><span class="token builtin class-name">export</span> <span class="token assign-left variable">FFF_LS_COLORS</span><span class="token operator">=</span><span class="token number">1</span></code></pre>
+<p>First, what is <code>LS_COLORS</code>? Well it's an environment variable that controls colourisation for the output of <code>ls</code> - so different types of files can be shown in different colours. And it looks like <code>fff</code> can use the configuration in <code>LS_COLORS</code>.</p>
+<p>So far so good, but there's also some fallback colour mechanism that we can see in the <a href="https://github.com/dylanaraps/fff/tree/5b90a8599cce3333672947438bb1718e1298e068#customization">Customisation section of the main README</a> too. I didn't quite grok the comment &quot;On by default if available&quot; but it came clear once I'd looked into <code>LS_COLORS</code> and remembered the assignment type of <a href="https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html">parameter expansion</a> that we see above. In other words, <code>${FFF_LS_COLORS:=1}</code> above takes care of the &quot;On by default&quot; part.</p>
+<p>What about the &quot;if available&quot; part though?</p>
+<p><a name="differentflavours"></a></p>
+<h3 id="different-flavours-of-ls-colourisation" tabindex="-1">Different flavours of ls colourisation <a class="direct-link" href="#different-flavours-of-ls-colourisation" aria-hidden="true">#</a></h3>
+<p>My operating system preference is Linux, but I've not had the chance to use it for work for a long time; my current work machine OS is macOS. While that goes quite far in giving me the *nix environment I feel most at home in, its heritage is the BSD flavour, which I'm not as used to.</p>
+<p>One of the differences which is very relevant here is how the colours for <code>ls</code> output are controlled. I'd been looking for the existence of <code>LS_COLORS</code> in my shell prompt on my main macOS machine, but hadn't found it. What I <em>had</em> found was an environment variable <code>CLICOLOR</code> which was set to <code>true</code>, and there was a <code>-G</code> option for <code>ls</code> to turn on colours, instead of the <code>--color=auto</code> that I've seen before. And confusingly, I'd seen reference to <code>LSCOLORS</code> (not <code>LS_COLORS</code>).</p>
+<p>I hadn't really paid much attention until now because the output of <code>ls</code> in my macOS terminal is coloured already; this is because having the <code>CLICOLOR</code> environment variable set has the same effect as the <code>-G</code> option, i.e. to turn on colours.</p>
+<p>Moreover, the colours in this context can be customised using values in another environment variable <code>LSCOLORS</code>.</p>
+<p>That's all well and good, but since I've <a href="https://github.com/qmacro/dotfiles/tree/main/devcontainer">started using dev containers</a> in earnest, I have remote, portable, consistent and reconnectable access to my ideal working environment (I run most of my containers on <a href="https://www.google.com/search?q=site%3Aqmacro.org+synology">my Synology NAS</a>). So I'm back to a Linux flavoured *nix environment, which is wonderful.</p>
+<p>But this means that I'm now using a non-BSD <code>ls</code>, which means that <code>CLICOLOR</code> isn't applicable, nor is <code>LSCOLORS</code>. There's been a whole host of articles, posts and Stack Overflow Q&amp;A entries written on this, so I won't add to it. Suffice it to say that <code>fff</code> respects the GNU <code>ls</code>, which means <code>LS_COLORS</code> is relevant ... and not <code>LSCOLORS</code>. While both these environment variables are used to customise the colours, the format of how the colour selections are specified are wildly different. Shortly, we'll see the <code>LS_COLORS</code> format, and how it's processed in <code>get_ls_colors</code>.</p>
+<p>Regarding the <code>LS_COLORS</code> environment variable, I read a few posts online to learn more about this. One that I found helpful is <a href="http://www.bigsoft.co.uk/blog/2008/04/11/configuring-ls_colors">Configuring LS_COLORS</a>. This one also introduced me to the related <code>dircolors</code> command. And looking at the example value for <code>LS_COLORS</code>, it's clear that it's quite a complex combination of specifications.</p>
+<p>Anyway, let's get back to the script.</p>
+<p><a name="diggingintothecode"></a></p>
+<h2 id="digging-into-the-code" tabindex="-1">Digging into the code <a class="direct-link" href="#digging-into-the-code" aria-hidden="true">#</a></h2>
+<p>Rather than look directly on the Web at what the <code>LS_COLORS</code> specifications are, let's first see if we can get a general feeling for them from reading the code here. Actually we get our first clue from the <a href="https://github.com/dylanaraps/fff/blob/5b90a8599cce3333672947438bb1718e1298e068/fff#L104-L107">comment that describes the function as a whole</a>:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token function-name function">get_ls_colors</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>    <span class="token comment"># Parse the LS_COLORS variable and declare each file type</span><br>    <span class="token comment"># as a separate variable.</span><br>    <span class="token comment"># Format: ':.ext=0;0:*.jpg=0;0;0:*png=0;0;0;0:'</span></code></pre>
+<p>The value looks like a series of <code>:</code> separated pairs of file patterns and colour specifications.</p>
+<p>The first bit of code is there so <code>get_ls_colors</code> can be aborted if there's nothing to parse:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">[</span><span class="token punctuation">[</span> -z <span class="token environment constant">$LS_COLORS</span> <span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">{</span><br>    <span class="token assign-left variable">FFF_LS_COLORS</span><span class="token operator">=</span><span class="token number">0</span><br>    <span class="token builtin class-name">return</span><br><span class="token punctuation">}</span></code></pre>
+<p>Here we have the classic <a href="https://qmacro.org/autodidactics/2021/09/03/exploring-fff-part-1-main/#conditional-expression">conditional expression that we saw in part 1</a>; here, the <code>-z</code> unary expression evaluates to true if the length of the given string -- in this case the value of the <code>LS_COLORS</code> variable -- is zero. If it is, there's no point in trying to parse anything, and the variable that keeps track of whether colours should be shown (<code>FFF_LS_COLORS</code>) is set to <code>0</code> before the function is ended early.</p>
+<p>In my journey through Bash scripting so far, seeing the <code>return</code> statement like this is still quite unusual, but it makes a lot of sense here. <a href="https://tldp.org/LDP/abs/html/complexfunct.html#RETURNREF">It can take</a> an optional integer argument which is returned to the caller as the exit status.</p>
+<p><a name="splittingpairs"></a></p>
+<h3 id="splitting-the-pairs-into-an-array" tabindex="-1">Splitting the pairs into an array <a class="direct-link" href="#splitting-the-pairs-into-an-array" aria-hidden="true">#</a></h3>
+<p>Next comes a lovely line, with a comment:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># Turn $LS_COLORS into an array.</span><br><span class="token assign-left variable"><span class="token environment constant">IFS</span></span><span class="token operator">=</span>: <span class="token builtin class-name">read</span> -ra ls_cols <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token environment constant">$LS_COLORS</span>"</span></code></pre>
+<blockquote>
+<p>Don't confuse <code>=:</code> with any sort of assignment operator you might have seen elsewhere (such as <code>:=</code> in Go or Mathematica) - it's just the assignment (<code>=</code>) of a colon (<code>:</code>) to <code>IFS</code>.</p>
+</blockquote>
+<p>We saw one use of <code>read</code> in <a href="https://qmacro.org/autodidactics/2021/09/03/exploring-fff-part-1-main/">part 1</a> but that was more about how the read flags were constructed and used. Here we have another use of <code>read</code>, arguably a very common one, i.e. in combination with a temporary setting of a value for the <code>IFS</code> environment variable. By temporary, I mean that the assignment holds just for the rest of that same line only.</p>
+<p>Let's break it down: we have the explicit setting of <code>IFS</code>, a <code>read</code> statement, which is being given the value of the <code>LS_COLORS</code> variable as its input, via the rather splendid looking <code>&lt;&lt;&lt;</code>.</p>
+<p><a name="IFS"></a></p>
+<h3 id="the-ifs-environment-variable" tabindex="-1">The IFS environment variable <a class="direct-link" href="#the-ifs-environment-variable" aria-hidden="true">#</a></h3>
+<p>So first, what's <code>IFS</code>? Well, it stands for &quot;input field separator&quot;, or &quot;internal field separator&quot;. The best overview I've found is <a href="https://mywiki.wooledge.org/IFS">on the Bash Wiki</a> where it describes <code>IFS</code> as &quot;a string of special characters which are to be treated as delimiters between words/fields when splitting a line of input&quot;. The default value for <code>IFS</code> consists of three different whitespace characters:</p>
+<ul>
+<li>space</li>
+<li>tab</li>
+<li>newline</li>
+</ul>
+<p>And if <code>IFS</code> is unset (i.e. &quot;has no value&quot;, which is different from &quot;has a value that is empty&quot;) then the effect is as if it were to contain these three characters.</p>
+<p>What's the splitting that's going on here, then? Well that's in the context of the <code>read</code> command.</p>
+<p><a name="readcommand"></a></p>
+<h3 id="the-read-command" tabindex="-1">The read command <a class="direct-link" href="#the-read-command" aria-hidden="true">#</a></h3>
+<p>The <code>read</code> command is a builtin, the description of which is &quot;Read a line from the standard input and split it into fields&quot;. We'll get to what's being read shortly, but at least we now understand the context of the splitting. Moreover, the read invocation here is with a couple of options:</p>
+<ul>
+<li><code>-r</code> do not allow backslashes to escape any characters</li>
+<li><code>-a array</code> assign the words read to sequential indices of the array variable, starting at zero</li>
+</ul>
+<p>The first option is very commonly seen with <code>read</code> and in fact if you don't specify it in your script, <a href="https://github.com/koalaman/shellcheck">shellcheck</a> will point it out with message <a href="https://github.com/koalaman/shellcheck/wiki/SC2162">2162 read without -r will mangle backslashes</a>. It's rare that you're going to want to have backslashes in your input to be treated as escape characters, but that's what <code>read</code> will do, unless you supply the <code>-r</code> option.</p>
+<p>The second option means that the fields that result from splitting will be placed in an array. Without an array, you might do something like this:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">;</span> <span class="token builtin class-name">read</span> -r first second <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"hello world"</span><br><span class="token punctuation">;</span> <span class="token builtin class-name">echo</span> <span class="token variable">$first</span><br>hello<br><span class="token punctuation">;</span> <span class="token builtin class-name">echo</span> <span class="token variable">$second</span><br>world</code></pre>
+<p>Using an array is sometimes more helpful, from a dynamic perspective:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">;</span> <span class="token builtin class-name">read</span> -ra words <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"hello world"</span><br><span class="token punctuation">;</span> <span class="token builtin class-name">echo</span> <span class="token variable">${words<span class="token punctuation">[</span>0<span class="token punctuation">]</span>}</span><br>hello<br><span class="token punctuation">;</span> <span class="token builtin class-name">echo</span> <span class="token variable">${words<span class="token punctuation">[</span>1<span class="token punctuation">]</span>}</span><br>world</code></pre>
+<p><a name="ioredirection"></a></p>
+<h3 id="inputoutput-redirection-here-documents-and-here-strings" tabindex="-1">Input/output redirection, here documents and here strings <a class="direct-link" href="#inputoutput-redirection-here-documents-and-here-strings" aria-hidden="true">#</a></h3>
+<p>In <a href="https://qmacro.org/autodidactics/2021/09/03/exploring-fff-part-1-main/">part 1</a> I took <a href="https://github.com/qmacro/autodidactics/blob/fff-1/_posts/2021-08-30-exploring-fff-part-1---main.markdown#output-redirection">a brief look at output redirection</a>. Now it's the time to look at input redirection.</p>
+<p>I see the use of the input redirection symbol (<code>&lt;</code>), and how it &quot;grows&quot; (to <code>&lt;&lt;</code> and even <code>&lt;&lt;&lt;</code>) as the input &quot;shrinks&quot;, in the same way as I see the first part of vehicle licence plates in Germany.</p>
+<p>When I was over there, my car had the licence plate <code>KR DJ 400</code>. The first part of a licence plate, before the space, reflects the place the vehicle was registered. For large cities and towns, there's a single letter, for example D represents Düsseldorf. For medium sized places there are two letters, for example KR for Krefeld. And for small places there are three letters, for example WOB for Wolfsburg.</p>
+<p>What do I mean about the input shrinking? Well to me, a file is &quot;large&quot;, some in-line data is &quot;smaller&quot;, and a string is &quot;smaller still&quot;. Let's have a look at each one in turn. The syntax, examples are taken verbatim from the GNU Bash Reference Manual's <a href="https://www.gnu.org/software/bash/manual/html_node/Redirections.html">redirections</a> section and contain extra syntax (such as the <code>[n]</code> below) but you can ignore that for now.</p>
+<p><a name="standardredirection"></a></p>
+<h4 id="standard-redirection-(less)" tabindex="-1">Standard redirection (<code>&lt;</code>) <a class="direct-link" href="#standard-redirection-(less)" aria-hidden="true">#</a></h4>
+<pre><code>[n]&lt;word
+</code></pre>
+<p>From the GNU Bash Reference Manual: &quot;<em>The file whose name results from the expansion of</em> word <em>to be opened for reading on file descriptor n, or the standard input (file descriptor 0) if n is not specified.</em>&quot;. In other words, input is taken from the file <code>word</code>.</p>
+<p><a name="heredocument"></a></p>
+<h4 id="here-document-(lessless)" tabindex="-1">Here document (<code>&lt;&lt;</code>) <a class="direct-link" href="#here-document-(lessless)" aria-hidden="true">#</a></h4>
+<pre><code>[n]&lt;&lt;[-]word
+  here-document
+delimiter
+</code></pre>
+<p>A slightly strange name, this is a &quot;here document&quot;. I think of this as &quot;the input is right here!&quot;, rather than in a file. So, arguably &quot;smaller&quot; than a file (to follow the German licence place parallel). To quote the GNU Bash Reference Manual, &quot;<em>input from the current source [is taken] until a line containing only</em> word <em>(with no trailing blanks) is seen.</em>&quot;. In other words, <code>word</code> here is not a filename, but a delimiter. The delimiter <code>EOF</code> is often seen.</p>
+<p>I do find that this example from the reference manual is a little confusing as <code>word</code> is not the same as <code>delimiter</code> (which it would be in reality), and the indentation you see relates to the <code>&lt;&lt;-</code> version which you can read up on in that section.</p>
+<p><a name="herestring"></a></p>
+<h4 id="here-string-(lesslessless)" tabindex="-1">Here string (<code>&lt;&lt;&lt;</code>) <a class="direct-link" href="#here-string-(lesslessless)" aria-hidden="true">#</a></h4>
+<pre><code>[n]&lt;&lt;&lt; word
+</code></pre>
+<p>Smaller still is the &quot;here string&quot;, the younger sibling of the &quot;here document&quot;. This time, <code>word</code> is not a filename, nor is it a delimiter. It's actually the input.</p>
+<p>To quote the GNU Bash Reference Manual again, &quot;<em>the word undergoes tilde expansion, parameter and variable expansion, command substitution, arithmetic expansion, and quote removal. Filename expansion and word splitting are not performed. The result is supplied as a single string, with a newline appended, to the command on its standard input (or file descriptor n if n is specified)</em>&quot;.</p>
+<p>Sensibly, in the case of here documents, none of the expansions happen, of course. Now hopefully the &quot;hello world&quot; example earlier makes sense.</p>
+<p>Anyway, where in the <code>fff</code> script were we? Ah yes, at this line:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># Turn $LS_COLORS into an array.</span><br><span class="token assign-left variable"><span class="token environment constant">IFS</span></span><span class="token operator">=</span>: <span class="token builtin class-name">read</span> -ra ls_cols <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token environment constant">$LS_COLORS</span>"</span></code></pre>
+<p>So we now know that via a here string construction, the value of the <code>LS_COLORS</code> variable is the input that is read (into the <code>ls_cols</code> array).</p>
+<p>Now we understand that, the final thing to think about is how the <code>IFS</code> value of <code>:</code> comes into play here. In the &quot;hello world&quot; example earlier, the default whitespace value(s) in <code>IFS</code> meant that &quot;hello world&quot; was split into &quot;hello&quot; and &quot;world&quot;. To understand why <code>IFS</code> is being set to <code>:</code>, we need to know what a typical value for <code>LS_COLORS</code> looks like.</p>
+<p>The comment we came across earlier gives us a nice small example:</p>
+<pre><code># Format: ':.ext=0;0:*.jpg=0;0;0:*png=0;0;0;0:'
+</code></pre>
+<p>Let's manually set the value of <code>LS_COLORS</code> to the example value here, execute the line with the <code>read</code> command, and then look at what we get in <code>ls_cols</code>:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">;</span> <span class="token assign-left variable"><span class="token environment constant">LS_COLORS</span></span><span class="token operator">=</span><span class="token string">':.ext=0;0:*.jpg=0;0;0:*png=0;0;0;0:'</span><br><span class="token punctuation">;</span> <span class="token assign-left variable"><span class="token environment constant">IFS</span></span><span class="token operator">=</span>: <span class="token builtin class-name">read</span> -ra ls_cols <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token environment constant">$LS_COLORS</span>"</span><br><span class="token punctuation">;</span> <span class="token builtin class-name">echo</span> <span class="token string">"<span class="token variable">${ls_cols<span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span>"</span><br> .ext<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span><span class="token number">0</span> *.jpg<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span><span class="token number">0</span><span class="token punctuation">;</span><span class="token number">0</span> *png<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span><span class="token number">0</span><span class="token punctuation">;</span><span class="token number">0</span><span class="token punctuation">;</span><span class="token number">0</span></code></pre>
+<p>OK, sort of as expected. But what's that space character right at the start of the line, just before the <code>.ext=0;0</code>? We can see it more clearly by asking for the values to be printed on separate lines, like this:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">;</span> <span class="token builtin class-name">printf</span> <span class="token string">"%s<span class="token entity" title="\n">\n</span>"</span> <span class="token string">"<span class="token variable">${ls_cols<span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span>"</span><br><br>.ext<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span><span class="token number">0</span><br>*.jpg<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span><span class="token number">0</span><span class="token punctuation">;</span><span class="token number">0</span><br>*png<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span><span class="token number">0</span><span class="token punctuation">;</span><span class="token number">0</span><span class="token punctuation">;</span><span class="token number">0</span></code></pre>
+<p>Because the value of <code>LS_COLORS</code> <em>starts with</em> a colon, there's an empty value that gets put into the first slot of the array.</p>
+<p>But this empty value doesn't seem to matter, as the rest of the <code>get_ls_colors</code> function is looking for specific patterns anyway. So let's start looking at that next.</p>
+<p><a name="processingitems"></a></p>
+<h3 id="processing-the-individual-ls_colors-items" tabindex="-1">Processing the individual LS_COLORS items <a class="direct-link" href="#processing-the-individual-ls_colors-items" aria-hidden="true">#</a></h3>
+<p><a href="https://github.com/dylanaraps/fff/blob/5b90a8599cce3333672947438bb1718e1298e068/fff#L116-L127">Next up</a> we have something similar to what we saw in <a href="https://qmacro.org/autodidactics/2021/09/03/exploring-fff-part-1-main/">part 1</a> - a C-style for loop. This time it's not infinite:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token keyword">for</span> <span class="token variable"><span class="token punctuation">((</span>i<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>i<span class="token operator">&lt;</span>${#ls_cols[@]}<span class="token punctuation">;</span>i<span class="token operator">++</span><span class="token punctuation">))</span></span><span class="token punctuation">;</span> <span class="token punctuation">{</span><br>    <span class="token comment"># Separate patterns from file types.</span><br>    <span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token variable">${ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span>}</span> <span class="token operator">=~</span> ^<span class="token punctuation">\</span>*<span class="token punctuation">[</span>^<span class="token punctuation">\</span>.<span class="token punctuation">]</span> <span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span><br>        <span class="token assign-left variable">ls_patterns</span><span class="token operator">+=</span><span class="token string">"<span class="token variable">${ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">/</span>=*}</span>|"</span><br><br>    <span class="token comment"># Prepend 'ls_' to all LS_COLORS items</span><br>    <span class="token comment"># if they aren't types of files (symbolic links, block files etc.)</span><br>    <span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token variable">${ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span>}</span> <span class="token operator">=~</span> ^<span class="token punctuation">(</span><span class="token punctuation">\</span>*<span class="token operator">|</span><span class="token punctuation">\</span>.<span class="token punctuation">)</span> <span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">{</span><br>        ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">=</span><span class="token variable">${ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">#</span>\*}</span><br>        ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">=</span>ls_<span class="token variable">${ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">#</span>.}</span><br>    <span class="token punctuation">}</span><br><span class="token punctuation">}</span></code></pre>
+<p>The loop control is based on iterating through the indices of the <code>ls_cols</code> array. Within the loop there are two actions that can be carried out, each dependent on a particular condition. Let's look at them one at a time, helped by what we see in the comments.</p>
+<p><a name="collectingpatterns"></a></p>
+<h4 id="collecting-patterns" tabindex="-1">Collecting patterns <a class="direct-link" href="#collecting-patterns" aria-hidden="true">#</a></h4>
+<p>Not having looked too hard at the <code>LS_COLORS</code> specification, I wasn't exactly sure what this first condition/action was, what a &quot;pattern&quot; was, specifically. I had a rough idea of course, but things became clearer by looking at the detail of the condition:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token variable">${ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span>}</span> <span class="token operator">=~</span> ^<span class="token punctuation">\</span>*<span class="token punctuation">[</span>^<span class="token punctuation">\</span>.<span class="token punctuation">]</span> <span class="token punctuation">]</span><span class="token punctuation">]</span></code></pre>
+<p>This is another <a href="https://qmacro.org/autodidactics/2021/09/03/exploring-fff-part-1-main/#conditional-expression">conditional expression</a>, this time using the binary operator <code>=~</code> which allows for the use of a POSIX extended regular expression for matching (more information is available on the <a href="https://www.gnu.org/s/bash/manual/html_node/Conditional-Constructs.html">Conditional Constructs</a> page of the GNU Bash Reference Manual).</p>
+<p>Each of the items in <code>ls_cols</code> (via the <code>i</code> iterator) is tested according to the regular expression <code>^\*[^\.]</code> which breaks down like this:</p>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Matches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>^</code></td>
+<td>Anchors to the start of the string</td>
+</tr>
+<tr>
+<td><code>\*</code></td>
+<td>An actual asterisk character</td>
+</tr>
+<tr>
+<td><code>[^\.]</code></td>
+<td>Any character except an actual period (<code>.</code>)</td>
+</tr>
+</tbody>
+</table>
+<p>Out of the values we see in the example <code>LS_COLORS</code> above, only this one matches:</p>
+<pre><code>*png=0;0;0;0
+</code></pre>
+<p>It looks like these &quot;patterns&quot; are different from &quot;file types&quot; in that it's not about the file extension (which would be introduced by a period). I'm still not sure what this distinction holds, but anyway, I'm going to keep going.</p>
+<p>If this conditional expression is true, then what happens? Well, this line gets executed, and it's another beauty:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token assign-left variable">ls_patterns</span><span class="token operator">+=</span><span class="token string">"<span class="token variable">${ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">/</span>=*}</span>|"</span></code></pre>
+<p>Let's start with <code>ls_patterns</code>. This is the first time this variable name appears. No previous declarations, no nothing. Is that a good thing? I'm not sure, but I do defer to Dylan's superior skill, style and experience here. It does turn out that, according to the <a href="https://tldp.org/LDP/abs/html/index.html">Advanced Bash Scripting Guide</a>, specifically section <a href="https://tldp.org/LDP/abs/html/untyped.html">4.3. Bash Variables Are Untyped</a>, &quot;<em>Bash variables are character strings</em>&quot;. That is, unless they're explicitly <a href="https://tldp.org/LDP/abs/html/declareref.html">declared</a> to be something else such as integers or arrays. So here <code>ls_patterns</code> is a string, and it starts out having no value.</p>
+<p>That brief excursion helps us contextualise the <code>+=</code> assignment operator which is covered in the <a href="https://www.gnu.org/software/bash/manual/html_node/Shell-Parameters.html">Shell Parameters</a> section of the GNU Bash Reference Manual. Unless the variable is an integer or an array, this assignment operator does what we expect it to do, i.e. appends the value on the right hand side to any existing value already in the left hand side. Seeing the <code>|</code> at the end of the string on the right hand side, here:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token string">"<span class="token variable">${ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">/</span>=*}</span>|"</span></code></pre>
+<p>gives us a hint that it's going to be a pipe (<code>|</code>) separated string of those patterns that were matched.</p>
+<p>But not exactly those patterns. Notice the <code>/=*</code> just after the <code>ls_cols[i]</code>. This is actually a short version of this string replacement form of <a href="https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html">shell parameter expansion</a>:</p>
+<pre><code>${parameter/pattern/string}
+</code></pre>
+<p>Specifically, what we're seeing is this rule in play: &quot;<em>If string is null, matches of</em> pattern <em>are deleted and the / following</em> pattern <em>may be omitted.</em>&quot;.</p>
+<p>So <code>/=*</code> will cause anything starting with (and including) an equals sign to be removed from the value. Looking again at the <code>LS_COLORS</code> item matched above:</p>
+<pre><code>*png=0;0;0;0
+</code></pre>
+<p>this would remove the <code>=0;0;0;0</code> part, leaving just <code>*png</code> to be appended to <code>ls_patterns</code>, plus the <code>|</code> as the separator, i.e. <code>*png|</code>.</p>
+<blockquote>
+<p>This is not a mutating replacement; the value of the current item remains what it was.</p>
+</blockquote>
+<p>So that's the &quot;collecting patterns&quot; part of this loop. What else is there?</p>
+<p><a name="itemtypes"></a></p>
+<h4 id="digging-into-ls_colors-item-types" tabindex="-1">Digging into LS_COLORS item types <a class="direct-link" href="#digging-into-ls_colors-item-types" aria-hidden="true">#</a></h4>
+<p>The other part within the loop is similar; it is also introduced by a conditional expression using the <code>=~</code> operator, and the entire thing also takes the form <code>[[ condition ]] &amp;&amp; action</code> as we've seen in multiple places already:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># Prepend 'ls_' to all LS_COLORS items</span><br><span class="token comment"># if they aren't types of files (symbolic links, block files etc.)</span><br><span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token variable">${ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span>}</span> <span class="token operator">=~</span> ^<span class="token punctuation">(</span><span class="token punctuation">\</span>*<span class="token operator">|</span><span class="token punctuation">\</span>.<span class="token punctuation">)</span> <span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> <span class="token punctuation">{</span><br>    ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">=</span><span class="token variable">${ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">#</span>\*}</span><br>    ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">=</span>ls_<span class="token variable">${ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">#</span>.}</span><br><span class="token punctuation">}</span></code></pre>
+<p>Again, each <code>ls_cols</code> item is being tested, but what's the pattern this time? Well, there a clue in the comment. Digging into the regular expression <code>^(\*|\.)</code> we have this:</p>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Matches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>^</code></td>
+<td>Anchors to the start of the string</td>
+</tr>
+<tr>
+<td>`(</td>
+<td>)`</td>
+</tr>
+<tr>
+<td><code>\*</code></td>
+<td>An actual asterisk</td>
+</tr>
+<tr>
+<td><code>\.</code></td>
+<td>An actual period</td>
+</tr>
+</tbody>
+</table>
+<p>So it seems as though this regular expression would actually match some of the items that the previous one would - anything beginning with an asterisk, basically. Perhaps now would be a good time to look at a larger examples of a <code>LS_COLORS</code> value in the wild. I'll use the <code>dircolors</code> command to produce one, as described in the <a href="http://www.bigsoft.co.uk/blog/2008/04/11/configuring-ls_colors">Configuring LS_COLORS</a> article I mentioned earlier (I've artificially wrapped the <code>LS_COLORS</code> line to fit better into this blog post format):</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">;</span> <span class="token function">dircolors</span><br><span class="token assign-left variable"><span class="token environment constant">LS_COLORS</span></span><span class="token operator">=</span><span class="token string">'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01<br>:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st<br>=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.<br>lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=0<br>1;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=<br>01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*<br>.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=0<br>1;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*<br>.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01<br>;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;3<br>5:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xp<br>m=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01<br>;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*<br>.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vo<br>b=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35<br>:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=0<br>1;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*<br>.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=<br>00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*<br>.opus=00;36:*.spx=00;36:*.xspf=00;36:'</span><span class="token punctuation">;</span><br><span class="token builtin class-name">export</span> <span class="token environment constant">LS_COLORS</span></code></pre>
+<blockquote>
+<p>This is another pattern in the *nix world - some commands (like <code>dircolors</code> here) output further commands that can be executed using <code>eval</code>; in other words, if you run <code>eval $(dircolors)</code> you'll end up with your <code>LS_COLORS</code> variable set to the value you see, and also exported. Nice!</p>
+</blockquote>
+<p>In the items in <code>LS_COLORS</code> above, there are two different types of values before the equals signs. It's easier to see if we display the items on separate lines. There are many ways to do this, one might be to use <code>tr</code> to translate each separating colon (<code>:</code>) to a newline, like this:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">;</span> <span class="token builtin class-name">echo</span> <span class="token environment constant">$LS_COLORS</span> <span class="token operator">|</span> <span class="token function">tr</span> <span class="token string">':'</span> <span class="token string">'\n'</span><br><span class="token assign-left variable">rs</span><span class="token operator">=</span><span class="token number">0</span><br><span class="token assign-left variable">di</span><span class="token operator">=</span>01<span class="token punctuation">;</span><span class="token number">34</span><br><span class="token assign-left variable">ln</span><span class="token operator">=</span>01<span class="token punctuation">;</span><span class="token number">36</span><br><span class="token assign-left variable">mh</span><span class="token operator">=</span>00<br><span class="token assign-left variable">pi</span><span class="token operator">=</span><span class="token number">40</span><span class="token punctuation">;</span><span class="token number">33</span><br><span class="token assign-left variable">so</span><span class="token operator">=</span>01<span class="token punctuation">;</span><span class="token number">35</span><br><span class="token punctuation">..</span>.</code></pre>
+<p>Not bad. But there's a more Bash specific way, and that is to make use of the parameter expansion mechanism we've already seen, to perform a string replacement like this:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">;</span> <span class="token builtin class-name">echo</span> -e <span class="token variable">${<span class="token environment constant">LS_COLORS</span><span class="token operator">/</span><span class="token operator">/</span><span class="token operator">:</span><span class="token operator">/</span>\\n}</span><br><span class="token assign-left variable">rs</span><span class="token operator">=</span><span class="token number">0</span><br><span class="token assign-left variable">di</span><span class="token operator">=</span>01<span class="token punctuation">;</span><span class="token number">34</span><br><span class="token assign-left variable">ln</span><span class="token operator">=</span>01<span class="token punctuation">;</span><span class="token number">36</span><br><span class="token assign-left variable">mh</span><span class="token operator">=</span>00<br><span class="token assign-left variable">pi</span><span class="token operator">=</span><span class="token number">40</span><span class="token punctuation">;</span><span class="token number">33</span><br><span class="token assign-left variable">so</span><span class="token operator">=</span>01<span class="token punctuation">;</span><span class="token number">35</span><br><span class="token punctuation">..</span>.</code></pre>
+<p>This is another form of:</p>
+<pre><code>${parameter/pattern/string}
+</code></pre>
+<p>But in this case, because the actual pattern starts with a forward slash (i.e. the second one in <code>LS_COLORS//</code>), the replacement is &quot;global&quot; rather than singular, i.e. every occurrence of <code>pattern</code> is replaced with <code>string</code>. The <code>string</code> in this case is <code>\\n</code> which is a newline, where the first backslash is an escape, so that the second backslash (which goes with the <code>n</code> to make the newline character <code>\n</code>) is interpreted as an actual backslash.</p>
+<p>Moreover, by default, <code>echo</code> suppresses any interpretation of backslashes in the way that we want, so the <code>-e</code> option is needed here to enable that interpretation (so that <code>\n</code> is actually interpreted as a newline).</p>
+<p>Anyway, this larger example value for <code>LS_COLORS</code> shows that not only are there items starting with an asterisk, but also other two-character items - these represent file types. Examples are <code>ln</code> for symbolic links, <code>di</code> for directories, <code>so</code> for sockets, and so on.</p>
+<p>Now the second regular expression <code>^(\*|\.)</code> that also matches items beginning with asterisks makes more sense, in that beyond what's matched here as well, there are other item types, and fits with the &quot;<em>if they aren't types of files...</em>&quot; comment.</p>
+<p>But anyway, back down to business. What is to be done with <code>LS_COLORS</code> items that match this second regular expression - items that are <em>not</em> file types? Let's take a closer look, bearing in mind what's in the comment that hints at prefixing &quot;ls_&quot; to these items:</p>
+<pre class="language-bash"><code class="language-bash">ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">=</span><span class="token variable">${ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">#</span>\*}</span><br>ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">=</span>ls_<span class="token variable">${ls_cols<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token operator">#</span>.}</span></code></pre>
+<p>This is effectively a two-pass change of the item value, by means of a <a href="https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html">parameter expansion</a> mechanism, specifically the <code>${parameter#word}</code> variety. Working through these two passes, based on the example value of <code>*.ogg=0;36</code>, this is what happens:</p>
+<ol>
+<li>any leading asterisk (<code>*</code>) is removed, resulting in <code>.ogg=0;36</code></li>
+<li>any (now) leading period (<code>.</code>) is removed, and the string <code>ls_</code> is prepended, resulting in <code>ls_ogg=0;36</code></li>
+</ol>
+<p>I'm honestly not sure what the significance of this prefix is, but I guess we'll find out later.</p>
+<blockquote>
+<p>I had a hard time remembering the difference between the meanings of the <code>${parameter#word}</code> and <code>${parameter%word}</code> varieties (and their double versions, i.e. <code>${parameter##word}</code> and <code>${parameter%%word}</code>) until I decided to think about <code>#</code> being the character to introduce a comment at the <em>start of</em> a line, and <code>%</code> being the percent character that one puts after (<em>at the end of</em>) a number.</p>
+</blockquote>
+<p><a name="processingallatonce"></a></p>
+<h3 id="processing-all-the-ls_colors-items-at-once" tabindex="-1">Processing all the LS_COLORS items at once <a class="direct-link" href="#processing-all-the-ls_colors-items-at-once" aria-hidden="true">#</a></h3>
+<p>Once this loop is complete, we may have some value in <code>ls_patterns</code> (if there were some items that started with an asterisk but without an immediately following period), and we definitely have all the item values in the <code>ls_cols</code> array, some of which will have been modified.</p>
+<p>There's now a further modification, as the comment explains, to remove characters that wouldn't be allowed in a variable name. We'll see why this is important shortly. The modification here is not within an explicit loop, but in one single go - it's quite spectacular:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># Strip non-ascii characters from the string as they're</span><br><span class="token comment"># used as a key to color the dir items and variable</span><br><span class="token comment"># names in bash must be '[a-zA-z0-9_]'.</span><br><span class="token assign-left variable">ls_cols</span><span class="token operator">=</span><span class="token punctuation">(</span><span class="token string">"<span class="token variable">${ls_cols<span class="token punctuation">[</span>@<span class="token punctuation">]</span><span class="token operator">/</span><span class="token operator">/</span><span class="token punctuation">[</span><span class="token operator">^</span>a-zA-Z0-9=\\;<span class="token punctuation">]</span><span class="token operator">/</span>_}</span>"</span><span class="token punctuation">)</span></code></pre>
+<p>The comment is great, not only because it tells us what's happening, but also why it's being done. I often wish more comments in the code that I have to read reflected the &quot;why&quot; as well as the &quot;what&quot;. But that's a story for another time.</p>
+<p>If we stare at the actual executable line for a bit, it's not that scary. It's the assignment of an array to <code>ls_cols</code> (which is what it is already, but the point here is that we want to modify values within it). This is the array assignment bit:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token assign-left variable">ls_cols</span><span class="token operator">=</span><span class="token punctuation">(</span><span class="token punctuation">..</span>.<span class="token punctuation">)</span></code></pre>
+<p>In the <a href="https://wiki.bash-hackers.org/syntax/arrays#storing_values">Storing Values</a> section of the <a href="https://wiki.bash-hackers.org/syntax/arrays">Bash Hackers Wiki</a> this is called a &quot;compound assignment&quot;. But what is being assigned? Well, it's this:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token string">"<span class="token variable">${ls_cols<span class="token punctuation">[</span>@<span class="token punctuation">]</span><span class="token operator">/</span><span class="token operator">/</span><span class="token punctuation">[</span><span class="token operator">^</span>a-zA-Z0-9=\\;<span class="token punctuation">]</span><span class="token operator">/</span>_}</span>"</span></code></pre>
+<p>And by now we should recognise that immediately, albeit in a slightly different guise. It's our old friend the <code>${parameter/pattern/string}</code> parameter expansion, but this time, applied not to a scalar variable but to an array. The <a href="https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html">Shell Parameter Expansion</a> section for this variation has this to say: &quot;<em>If parameter is an array variable subscripted with ‘@’ or ‘*’, the substitution operation is applied to each member of the array in turn, and the expansion is the resultant list.</em>&quot;.</p>
+<p>That's what we could probably guess would happen, but it's nice to have the behaviour described explicitly.</p>
+<p>So what's happening in this parameter expansion? Well, the pattern is <code>[^a-zA-Z0-9=\\;]</code>, matching anything that <em>isn't</em> alphanumeric or an equals sign, an actual backslash or a semicolon, and replacing all occurrences (all because the second forward slash signifies &quot;global&quot;) with underscores. And this global replacement is performed on each member of the <code>ls_cols</code> array.</p>
+<p>A short visualisation might help here. Let's say we have five items in the <code>ls_cols</code> array; we can set that up like this:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">;</span> <span class="token assign-left variable">ls_cols</span><span class="token operator">=</span><span class="token punctuation">(</span>ab-c D%EF gh<span class="token punctuation">\</span><span class="token punctuation">\</span>i <span class="token operator">=</span>jkl x123<span class="token punctuation">)</span></code></pre>
+<p>Applying this parameter expansion and printing the results, one item on each line, looks like this</p>
+<pre class="language-bash"><code class="language-bash"><span class="token punctuation">;</span> <span class="token builtin class-name">printf</span> <span class="token string">"%s<span class="token entity" title="\n">\n</span>"</span> <span class="token string">"<span class="token variable">${ls_cols<span class="token punctuation">[</span>@<span class="token punctuation">]</span><span class="token operator">/</span><span class="token operator">/</span><span class="token punctuation">[</span><span class="token operator">^</span>a-zA-Z0-9=\\;<span class="token punctuation">]</span><span class="token operator">/</span>_}</span>"</span></code></pre>
+<p>And the output is as follows:</p>
+<pre><code>ab_c
+D_EF
+gh\i
+=jkl
+x123
+</code></pre>
+<p><a name="regex"></a></p>
+<h3 id="setting-up-a-regex-for-the-patterns" tabindex="-1">Setting up a regex for the patterns <a class="direct-link" href="#setting-up-a-regex-for-the-patterns" aria-hidden="true">#</a></h3>
+<p>There's a bit more processing before we're done with this function. Again, the comments are great. Let's take a look:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># Store the patterns in a '|' separated string</span><br><span class="token comment"># for use in a REGEX match later.</span><br><span class="token assign-left variable">ls_patterns</span><span class="token operator">=</span><span class="token variable">${ls_patterns<span class="token operator">/</span><span class="token operator">/</span>\*}</span><br><span class="token assign-left variable">ls_patterns</span><span class="token operator">=</span><span class="token variable">${ls_patterns<span class="token operator">%</span>?}</span></code></pre>
+<p>This is another two-pass process, modifying the contents of <code>ls_patterns</code>, which, if it contains anything*, has pipe-separated pattern content.</p>
+<p>*the <code>dircolors</code>-generated value for <code>LS_COLORS</code> didn't have any such &quot;patterns&quot; at all</p>
+<p>In the first pass here, any and all asterisks are removed. Then in the second pass any trailing question mark is removed. This makes sense, as asterisks and question marks have special meaning in regular expressions and if they were left in, they'd take on those meanings, which is very unlikely to be what's wanted.</p>
+<p><a name="ls_cols"></a></p>
+<h3 id="making-the-ls_cols-variables-available" tabindex="-1">Making the ls_cols variables available <a class="direct-link" href="#making-the-ls_cols-variables-available" aria-hidden="true">#</a></h3>
+<p>The contents of the <code>ls_cols</code> array are string items from the <code>LS_COLORS</code> variable, parsed and modified. Some of them -- the ones that are not file types like <code>di</code>, <code>so</code> and so on -- will have been prefixed with <code>ls_</code> too.</p>
+<p>The last thing this <code>get_ls_colors</code> function does is to make these available as variable names. Here's the line, with the comments that go with it:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># Define the ls_ variables.</span><br><span class="token comment"># 'declare' can't be used here as variables are scoped</span><br><span class="token comment"># locally. 'declare -g' is not available in 'bash 3'.</span><br><span class="token comment"># 'export' is a viable alternative.</span><br><span class="token builtin class-name">export</span> <span class="token string">"<span class="token variable">${ls_cols<span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span>"</span> <span class="token operator">&amp;></span> /dev/null</code></pre>
+<p>I was a bit confused at first as to what the comments signified, but a little digging down, via the <code>git blame</code> feature, allowed me to peel back the <a href="https://en.wikipedia.org/wiki/Palimpsest">palimpsest</a> to reveal earlier versions of this part of the function.</p>
+<p>The earliest occurrence of this form <a href="https://github.com/dylanaraps/fff/commit/3bc14f4ef9fd2e5155b6769c714913d66e7d8585#diff-f284bdc3c1c9e24a494e285cb387c69510f28de51c15bb93179d9c7f28705398L110">appeared in Feb 2019</a>, and replaced a previous use of <code>source</code> with the following:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># Declare all LS_COLORS variables.</span><br><span class="token builtin class-name">declare</span> -g <span class="token string">"<span class="token variable">${ls_cols<span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span>"</span></code></pre>
+<blockquote>
+<p>The actual use of <code>source</code> that this replaced is amazing in its own right, and I know I can learn from it (and the linked source/eval meme image), but I'll leave that for another time: <code>source /dev/stdin &lt;&lt;&lt; &quot;${ls_exts/#;}&quot; &gt;/dev/null 2&gt;&amp;1</code></p>
+</blockquote>
+<p>So the first version of this was using <code>declare</code>, with the <code>-g</code> option, to declare those values as variables. If you're interested in learning more about declare, you may enjoy the post <a href="https://qmacro.org/autodidactics/2020/10/08/understanding-declare/">Understanding declare</a>. It includes a quote from the help page that talks specifically about using the <code>-g</code> (&quot;global&quot;) option when <code>declare</code> is used within a function (as it is here) to ensure the variables are not just local to that function.</p>
+<p>Later the same day, <a href="https://github.com/dylanaraps/fff/commit/b76ca4c13a13d21f723a1099fff92fb3e7fffdae">this was changed</a> to almost what we have now:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># Define the ls_ variables.</span><br><span class="token builtin class-name">export</span> <span class="token string">"<span class="token variable">${ls_cols<span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span>"</span></code></pre>
+<p>Additionally, this <a href="https://github.com/dylanaraps/fff/commit/d11a6a6adadf57adc4f72128f3afbc39d8a11733">was expanded to</a></p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># Define the ls_ variables.</span><br><span class="token builtin class-name">export</span> <span class="token string">"<span class="token variable">${ls_cols<span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span>"</span> <span class="token operator">&amp;></span>/dev/null</code></pre>
+<p>to deal silently with anything that might go wrong with the export, and just a few days after that, in a <a href="https://github.com/dylanaraps/fff/commit/7bebeb28c7181bf9480e676e0660e5cab3eaa5ed">cleanup commit</a>, the comments that we see now were added.</p>
+<p>Now that we have glimpsed a little of the history, and (via <a href="https://qmacro.org/autodidactics/2020/10/08/understanding-declare/">Understanding declare</a>) know that <code>-g</code> must be used with <code>declare</code> within a function to declare variables that have an existence beyond the function's scope, the comments make more sense.</p>
+<p>I guess we'll find out <em>how</em> these variables are used elsewhere in the script, but for now, this brings this post, on <code>get_ls_colors</code>, to an end.</p>
+<p><a name="wrappingup"></a></p>
+<h3 id="wrapping-up" tabindex="-1">Wrapping up <a class="direct-link" href="#wrapping-up" aria-hidden="true">#</a></h3>
+<p>I have again learned a lot by poring over the details of this, and I'm always happy to hear from you too. Has this helped? Did I miss something, or get something wrong? Whatever it is, please feel free to let me know in the comments mechanism below. Thanks for reading this far, and thanks especially to my son Joseph for a great eye and some very helpful observations!</p>
+<p><a name="splittingpairs"></a></p>
+<h3 id="splitting-the-pairs-into-an-array-1" tabindex="-1">Splitting the pairs into an array <a class="direct-link" href="#splitting-the-pairs-into-an-array-1" aria-hidden="true">#</a></h3>
+<p>Next comes a lovely line, with a comment:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># Turn $LS_COLORS into an array.</span><br><span class="token assign-left variable"><span class="token environment constant">IFS</span></span><span class="token operator">=</span>: <span class="token builtin class-name">read</span> -ra ls_cols <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token environment constant">$LS_COLORS</span>"</span></code></pre>
+<blockquote>
+<p>Don't confuse <code>=:</code> with any sort of assignment operator you might have seen elsewhere (such as <code>:=</code> in Go or Mathematica) - it's just the assignment (<code>=</code>) of a colon (<code>:</code>) to <code>IFS</code>.</p>
+</blockquote>
+<p>We saw one use of <code>read</code> in <a href="https://qmacro.org/autodidactics/2021/09/03/exploring-fff-part-1-main/">part 1</a> but that was more about how the read flags were constructed and used. Here we have another use of <code>read</code>, arguably a very common one, i.e. in combination with a temporary setting of a value for the <code>IFS</code> environment variable. By temporary, I mean that the assignment holds just for the rest of that same line only.</p>
+<p>Let's break it down: we have the explicit setting of <code>IFS</code>, a <code>read</code> statement, which is being given the value of the <code>LS_COLORS</code> variable as its input, via the rather splendid looking <code>&lt;&lt;&lt;</code>.</p>
+<hr>
+<p>I managed to get this post finished while stuck on the ICE 1011 from Düsseldorf to Frankfurt which has been stationary for over two and a half hours already (and we're still stationary) due to a serious incident further down the line.</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2021/9/12/setting-up-hadolint-a-dockerfile-linter/">Setting up hadolint - a Dockerfile linter</a></li><li>Previous: <a href="/blog/2021/29/10/embracing-jq-and-json/">Embracing jq and JSON</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2021/7/11/exploring-fff-part-2-get-ls-colors/ -->
+  </body>
+</html>

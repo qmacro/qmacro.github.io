@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Producing JSON with jq for appending issue titles</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Producing JSON with jq for appending issue titles</h1>
+
+<time datetime="2021-04-13">13 Apr 2021</time><a href="/blog/tags/autodidactics/" class="post-tag">autodidactics</a><a href="/blog/tags/jq/" class="post-tag">jq</a><a href="/blog/tags/tools/" class="post-tag">tools</a><a href="/blog/tags/shell/" class="post-tag">shell</a>
+
+<p><em>I learned how to use <code>jq</code> to <strong>produce</strong> JSON, while writing a script to enhance my Thinking Aloud journal entry titles.</em></p>
+<p>In my <a href="https://github.com/qmacro/thinking-aloud">Thinking Aloud</a> journal, the entries are issues in a GitHub repository. To <a href="https://github.com/qmacro/thinking-aloud/issues/1">reduce friction</a> I decided to just use the current date and time for the journal entry title.</p>
+<p>That's worked fine, but in the overview of the issues it wasn't really practical to pick out the one I wanted to read or edit, because all I had to go on was the timestamp. Of course, I could scan the <a href="https://github.com/qmacro/thinking-aloud/blob/main/recent.md">recent entries</a> but that would quickly become a little limiting as the number of journal entries grows.</p>
+<p>In a small script <a href="https://github.com/qmacro/thinking-aloud/blob/main/preptweet">preptweet</a>, used when automatically tweeting about new entries, I was extracting the first 50 characters from the body and using that in the tweet. You can see an example in <a href="https://twitter.com/qmacro/status/1380500800879919105">this tweet</a> - &quot;I've been thinking about field naming conventions today …&quot;.</p>
+<p>I thought this would be a useful string to have in the journal entry (issue) titles too, so I wrote a script <a href="https://github.com/qmacro/thinking-aloud/blob/main/appendtitle">appendtitle</a> that would do that for me for the existing issues. I have yet to decide how to modify the process of creating a new journal entry (I could just have this script run as a separate job step in the <a href="https://github.com/qmacro/thinking-aloud/blob/main/.github/workflows/process-new-entry.yaml">workflow</a> I already have, for example).</p>
+<p><a href="https://github.com/qmacro/thinking-aloud/blob/main/appendtitle">appendtitle</a> contains essentially a single incantation, deliberately so, in my journey to practise my scripting. It's not the most readable but it helps me think about pipelining and how data flows through such a pipeline.</p>
+<p>I thought it might be useful to share and explain, in case others are on a similar journey. In it, I'll show how I used <code>jq</code> to cleanly <em>produce</em> JSON - I normally <em>consume</em> JSON with <code>jq</code>, so this was a nice departure.</p>
+<pre class="language-bash"><code class="language-bash"> <span class="token number">1</span> <span class="token comment">#!/usr/bin/env bash</span><br> <span class="token number">2</span><br> <span class="token number">3</span> <span class="token comment"># Convert journal entry issues where the issue title is currently</span><br> <span class="token number">4</span> <span class="token comment"># just the date and time stamp, by adding the first &lt;length> chars</span><br> <span class="token number">5</span> <span class="token comment"># of the issue body to the title.</span><br> <span class="token number">6</span><br> <span class="token number">7</span> <span class="token builtin class-name">readonly</span> <span class="token assign-left variable">length</span><span class="token operator">=</span><span class="token number">50</span><br> <span class="token number">8</span><br> <span class="token number">9</span> gh api <span class="token string">"/repos/:owner/:repo/issues?state=open&amp;labels=entry"</span> <span class="token punctuation">\</span><br><span class="token number">10</span>   --jq <span class="token string">".[] | [.number, .title, .body[0:<span class="token variable">$length</span>]+<span class="token entity" title="\&quot;">\"</span>…<span class="token entity" title="\&quot;">\"</span>] | @tsv"</span> <span class="token punctuation">\</span><br><span class="token number">11</span>   <span class="token operator">|</span> <span class="token function">grep</span> -E <span class="token string">'\t\d\d\d\d-\d\d-\d\d \d\d:\d\d:\d\d\t'</span> <span class="token punctuation">\</span><br><span class="token number">12</span>   <span class="token operator">|</span> <span class="token function">sed</span> <span class="token string">'s/\t/ /g'</span> <span class="token punctuation">\</span><br><span class="token number">13</span>   <span class="token operator">|</span> <span class="token keyword">while</span> <span class="token builtin class-name">read</span> -r number <span class="token function">date</span> <span class="token function">time</span> text<span class="token punctuation">;</span> <span class="token keyword">do</span><br><span class="token number">14</span>     <span class="token assign-left variable">newtitle</span><span class="token operator">=</span><span class="token string">"<span class="token variable">$date</span> <span class="token variable">$time</span> <span class="token variable">$text</span>"</span><br><span class="token number">15</span>     jq -n --arg key title --arg value <span class="token string">"<span class="token variable">$newtitle</span>"</span> <span class="token string">'{($key):$value}'</span> <span class="token punctuation">\</span><br><span class="token number">16</span>       <span class="token operator">|</span> gh api <span class="token string">"/repos/:owner/:repo/issues/<span class="token variable">$number</span>"</span> --input -<br><span class="token number">17</span>     <span class="token function">sleep</span> <span class="token number">0.25</span><br><span class="token number">18</span>   <span class="token keyword">done</span></code></pre>
+<p>Here's a breakdown, by line:</p>
+<p>9: Invoke the GitHub API with <code>gh</code> to retrieve the open issues representing journal entries.</p>
+<p>10: Use <code>gh</code>'s <code>--jq</code> flag to pass a script to pull out the issue number, current title &amp; first &lt;length&gt; characters from the body (plus an ellipsis to denote an elision). Output these values in tab-separated format.</p>
+<p>So far, here's typical output produced from lines 9 and 10:</p>
+<pre><code>19      2021-04-09 13:17:08 I've been thinking about field naming conventions …
+18      2021-04-07 16:27:58 One consequence of using repo issues for journal e…
+15      2021-04-07 09:04:01 Does it make sense to create a workflow to clean u…
+</code></pre>
+<p>Those are tab characters between the three columns number, timestamp and text.</p>
+<p>Continuing on:</p>
+<p>11: The output produced is passed via <code>grep</code> to check for a timestamp (nnnn-nn-nn nn:nn:nn) bounded on either side with tab characters (\t). This ensures that only those entries with a title that is (still) only a timestamp are processed (In constructing the pattern, I found it clearer to write out each of the <code>\d</code> digits than use something like e.g. <code>\d{4}</code> for the four-digit year).</p>
+<p>12: Rather than mess around with tabs from this point on, <code>sed</code> is used to convert each tab to a space; this will keep things simple for reading each &quot;field&quot; on the next line.</p>
+<p>13: The output is now passed into a <code>while</code> loop, where <code>read</code> is used to capture each field. The default delineation is whitespace, so perhaps you're thinking &quot;what happens to the words beyond the first one, for the text value on each line?&quot;. Well because there are no further variable names following <code>text</code> in the <code>read</code> invocation, <code>text</code> gets the rest of the line, not just the next whitespace separated token. In other words, taking the first output line as an example, we don't just get &quot;I've&quot; in <code>text</code>, but all of &quot;I've been thinking about field naming conventions …&quot;.</p>
+<p>14: The values are marshalled into a new title format, in <code>newtitle</code>.</p>
+<p>15: Using <code>jq</code>, a properly formatted chunk of JSON is produced, to prepare a payload value to pass in the GitHub API call to <a href="https://docs.github.com/en/rest/reference/issues#update-an-issue">update an issue</a>.</p>
+<p>If the value of <code>newtitle</code> was &quot;2021-04-09 13:17:08 I've been thinking about field naming conventions …&quot;, then this <code>jq</code> invocation would produce this (including the whitespace):</p>
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"2021-04-09 13:17:08 I've been thinking about field naming conventions …"</span><br><span class="token punctuation">}</span></code></pre>
+<p>16: This JSON thus produced can be then supplied in the API call, again using <code>gh</code>, with the value <code>-</code> (classically denoting &quot;take from STDIN&quot;) for the <code>--input</code> parameter.</p>
+<p>17: A short pause between API calls keeps the GitHub API endpoint sweet, and we're done.</p>
+<p>This is the first time I've used <code>jq</code> to produce JSON, and it feels a lot safer than messing around with quoting, and the quotes required for the JSON format itself. Thanks <code>jq</code>, and of course thanks GitHub API!</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2021/24/4/github-actions-workflow-browser/">GitHub Actions workflow browser</a></li><li>Previous: <a href="/blog/2021/4/4/mainframes-sdsf-and-github-actions/">Mainframes, SDSF and GitHub Actions</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2021/13/4/producing-json-with-jq-for-appending-issue-titles/ -->
+  </body>
+</html>

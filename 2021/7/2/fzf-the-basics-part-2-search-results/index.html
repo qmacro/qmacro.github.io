@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>fzf - the basics part 2 - search results</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>fzf - the basics part 2 - search results</h1>
+
+<time datetime="2021-02-07">07 Feb 2021</time><a href="/blog/tags/autodidactics/" class="post-tag">autodidactics</a><a href="/blog/tags/fzf/" class="post-tag">fzf</a><a href="/blog/tags/tools/" class="post-tag">tools</a>
+
+<p><em>Here’s more of what I learned from reading the first part of the fzf README and paying attention. Now I have a better setup and understanding of the basics and how to control the appearance, it's time to turn my attention to setting some defaults to control what I get in my search results.</em></p>
+<p>In <a href="https://qmacro.org/autodidactics/2021/02/02/fzf-the-basics-1-layout/">fzf - the basics part 1 - layout</a> I shared what I learned about controlling <code>fzf</code>'s layout. In the examples I showed, based on directories and files in the <a href="https://github.com/SAP-samples/teched2020-developer-keynote">SAP TechEd 2020 Developer Keynote repository</a> (which I'll use again in this post), <code>fzf</code> presented a total of over 17000 items from which to make my choice.</p>
+<p>That's a lot, and far more than I want to consider wading through.</p>
+<p>In a pipeline context, <code>fzf</code> will present choices given to it in that pipeline, i.e. via STDIN, like this:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> <span class="token builtin class-name">printf</span> <span class="token string">"one<span class="token entity" title="\n">\n</span>two<span class="token entity" title="\n">\n</span>three"</span> <span class="token operator">|</span> fzf --layout<span class="token operator">=</span>reverse --height<span class="token operator">=</span><span class="token number">40</span>%<br><span class="token operator">></span><br>  <span class="token number">3</span>/3<br><span class="token operator">></span> one<br>  two<br>  three</code></pre>
+<blockquote>
+<p>Interestingly, to copy/paste this example from my terminal, I had to (discover and) use the <code>--no-mouse</code> option from the Interface category so that the mouse was free to use and not locked to <code>fzf</code> during that moment.</p>
+</blockquote>
+<p>But I want to think about using <code>fzf</code> in a pipeline at another time; right now I'm just digging into options where <code>fzf</code> is used without receiving anything on STDIN.</p>
+<p><a name="default-command"></a><br>
+<strong>Default command</strong></p>
+<p>So what does <code>fzf</code> do if it's not fed anything to display via STDIN? Well, the README states that unless otherwise directed, <code>fzf</code> uses the <code>find</code> command to build the list of items. The actual sentence in the <a href="https://github.com/junegunn/fzf#usage">Usage</a> section reads as follows:</p>
+<p><em>&quot;Without STDIN pipe, fzf will use find command to fetch the list of files excluding hidden ones.&quot;</em></p>
+<p>At first, I stopped reading after &quot;fzf will use find command to fetch the list of files&quot;, and missed the &quot;excluding hidden ones&quot;.</p>
+<p><a name="basic-uses-of-find"></a><br>
+<strong>Basic uses of <code>find</code></strong></p>
+<p>That careless omission did cause me a pleasant coffee length digression into the nuances of basic uses of the <code>find</code> command. I created a set of test files and directories like this, some hidden, some not, as you can see:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token builtin class-name">.</span><br>├── Fruit<br>│   ├── apple<br>│   ├── banana<br>│   ├── cherry<br>│   └── .damson<br>├── .Trees<br>│   ├── ash<br>│   └── birch<br>├── aardvark<br>├── badger<br>└── .cow</code></pre>
+<p>If pressed, I'd say that I'd naturally use the following incantation as a basic way to find files and directories: <code>find . -type f</code>. The results are interesting.</p>
+<blockquote>
+<p>In all the following examples, I'm in the directory denoted by <code>.</code> at the top of the tree as shown above. The <code>;</code> is my simple prompt (inspired by <a href="https://twitter.com/thingskatedid">Kate</a>), with my directory location shown in a line above that (<code># /tmp/testdir</code>).</p>
+</blockquote>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span> <span class="token function">find</span> <span class="token builtin class-name">.</span> -type f<br>./Fruit/apple<br>./Fruit/cherry<br>./Fruit/.damson<br>./Fruit/banana<br>./.cow<br>./aardvark<br>./.Trees/birch<br>./.Trees/ash<br>./badger<br><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span></code></pre>
+<p>(9 entries)</p>
+<p>I'd always considered that the &quot;default&quot; behaviour, but on reflection, it's arguably not default, as I'm using something specific (<code>.</code>) as the first argument to <code>find</code>, whereas I could just as easily have used <code>*</code>, thus:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span> <span class="token function">find</span> * -type f<br>Fruit/apple<br>Fruit/cherry<br>Fruit/.damson<br>Fruit/banana<br>aardvark<br>badger<br><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span></code></pre>
+<p>(6 entries)</p>
+<p>That's quite a difference! The Stack Overflow entry <a href="https://stackoverflow.com/questions/46578534/difference-between-find-and-find-in-unix">Difference between find . and find * in unix</a> confirms that difference.</p>
+<ul>
+<li>passing <code>.</code> results in everything in <code>.</code> being found, including the hidden file <code>.cow</code> and the hidden directory (and its contents) <code>.Trees/</code></li>
+<li>passing <code>*</code> results in only the &quot;visible&quot; content in <code>.</code> being returned; note that this visibility difference only applies to the starting directory in question - as <code>Fruit/.damson</code> was reported even though <code>.cow</code> and <code>.Trees/</code> weren't</li>
+</ul>
+<p>So I wonder if either of these two incantations are what <code>fzf</code> uses by default. Let's see what <code>fzf</code> gives, in this same starting directory:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span> fzf --height<span class="token operator">=</span><span class="token number">40</span>% --reverse<br><span class="token operator">></span><br>  <span class="token number">5</span>/5<br><span class="token operator">></span> Fruit/apple<br>  Fruit/cherry<br>  Fruit/banana<br>  aardvark<br>  badger</code></pre>
+<p>(5 entries)</p>
+<p>Nope!</p>
+<p>Of course, there's that &quot;excluding hidden ones&quot; phrase from the README to which I must now pay attention. What I need is to tell <code>find</code> explicitly to exclude hidden files and directories. This will do the trick:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span> <span class="token function">find</span> <span class="token builtin class-name">.</span> -type f -not -path <span class="token string">'*/\.*'</span><br>./Fruit/apple<br>./Fruit/cherry<br>./Fruit/banana<br>./aardvark<br>./badger<br><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span></code></pre>
+<p>(5 entries)</p>
+<p>That's more like it! In fact, because we're explicitly excluding content based on a pattern, the same results are forthcoming whether we use a <code>.</code> or <code>*</code> as the first argument to <code>find</code>. Here's what we get with a <code>*</code>:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span> <span class="token function">find</span> * -type f -not -path <span class="token string">'*/\.*'</span><br>Fruit/apple<br>Fruit/cherry<br>Fruit/banana<br>aardvark<br>badger<br><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span></code></pre>
+<p>(5 entries)</p>
+<p>OK, there is a subtle difference, in that in this latter case, the <code>./</code> prefix is not included in the output of each entry. This is closest to what we see with <code>fzf</code> too.</p>
+<p><a name="FZF_DEFAULT_COMMAND"></a><br>
+<strong>FZF_DEFAULT_COMMAND</strong></p>
+<p>So if I wanted <code>fzf</code> to actually show me hidden files, how would I do that? Well of course one way would be to run the appropriate <code>find</code> command and then pipe the output into <code>fzf</code>, like this:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span> <span class="token function">find</span> <span class="token builtin class-name">.</span> -type f  <span class="token operator">|</span> fzf --height<span class="token operator">=</span><span class="token number">40</span>% --reverse<br><span class="token operator">></span><br>  <span class="token number">9</span>/9<br><span class="token operator">></span> ./Fruit/apple<br>  ./Fruit/cherry<br>  ./Fruit/.damson<br>  ./Fruit/banana<br>  ./.cow<br>  ./aardvark<br>  ./.Trees/birch<br>  ./.Trees/ash<br>  ./badger</code></pre>
+<p>But I want to leave the pipeline approach until another time. Can I influence <code>fzf</code>'s search behaviour when, as the README puts it, &quot;input is [the] tty&quot;?</p>
+<p>The answer is yes and is in the form of the environment variable <code>FZF_DEFAULT_COMMAND</code>. If set, <code>fzf</code> will use its value as the command to execute to find the files to display. So instead of using the pipeline above, I could do this:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span> <span class="token builtin class-name">export</span> <span class="token assign-left variable">FZF_DEFAULT_COMMAND</span><span class="token operator">=</span><span class="token string">'find . -type f'</span><br><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span> fzf --height<span class="token operator">=</span><span class="token number">40</span>% --reverse<br><span class="token operator">></span><br>  <span class="token number">9</span>/9<br><span class="token operator">></span> ./Fruit/apple<br>  ./Fruit/cherry<br>  ./Fruit/.damson<br>  ./Fruit/banana<br>  ./.cow<br>  ./aardvark<br>  ./.Trees/birch<br>  ./.Trees/ash<br>  ./badger</code></pre>
+<p>Nice - now <code>fzf</code> shows me hidden files.</p>
+<p><a name="alternative-commands"></a><br>
+<strong>Alternative commands</strong></p>
+<p>If we can modify what <code>fzf</code> uses to find files, we can go further, as the README suggests, and use another utility entirely, as described in the README's <a href="https://github.com/junegunn/fzf#tips">Tips</a> section (and hinted at also in the <a href="https://github.com/junegunn/fzf#environment-variables">Environment variables</a> section).</p>
+<p>I've installed the search utility <a href="https://github.com/BurntSushi/ripgrep">ripgrep</a>, known as <code>rg</code>, as it works for me in a more natural <a href="https://en.wikipedia.org/wiki/DWIM">DWIM</a> (Do What I Mean) mode.</p>
+<p>Let's see what <code>rg</code> will do for us with the same content. It is as much like <code>grep</code> than <code>find</code> and so we need to tell it to search at the file level, with <code>--files</code>, for the purposes of this exploration:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span> rg --files<br>badger<br>aardvark<br>Fruit/banana<br>Fruit/cherry<br>Fruit/apple<br><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span></code></pre>
+<p>(5 entries)</p>
+<p><code>rg</code> won't consider hidden files and directories unless told to explicitly with <code>--hidden</code>:</p>
+<pre><code># /tmp/testdir
+; rg --files --hidden
+badger
+.Trees/ash
+.Trees/birch
+aardvark
+.cow
+Fruit/banana
+Fruit/.damson
+Fruit/cherry
+Fruit/apple
+# /tmp/testdir
+;
+</code></pre>
+<p>(9 entries)</p>
+<p>At this level, <code>rg</code> delivers results similar to what we already get with <code>find</code>.</p>
+<p><a name="respecting-.gitignore"></a><br>
+<strong>Respecting .gitignore</strong></p>
+<p>Where <code>rg</code> comes into its own, DWIM-like, is when the search in question is within a git repository. In that case, it will respect what you have in your <a href="https://git-scm.com/docs/gitignore"><code>.gitignore</code></a> file.</p>
+<p>I was curious to see this in action in the context of the simple set of files above. I added a <code>.gitignore</code> file in <code>/tmp/testdir</code> containing a single entry (<code>Fruit</code>) and then ran both <code>find . -type f -not -path '*/\.*'</code> and <code>rg --files</code>:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span> <span class="token function">cat</span> .gitignore<br>Fruit<br><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span> <span class="token function">find</span> <span class="token builtin class-name">.</span> -type f -not -path <span class="token string">'*/\.*'</span><br>./Fruit/apple<br>./Fruit/cherry<br>./Fruit/banana<br>./aardvark<br>./badger<br><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span> rg --files<br>badger<br>aardvark<br>Fruit/banana<br>Fruit/cherry<br>Fruit/apple<br><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span></code></pre>
+<p>Hmm, so what's going on here? They both produce the same list of files, despite the presence of the <code>.gitignore</code> file and its contents.</p>
+<p>Turns out that it will only respect <code>.gitignore</code> in the context of an actual git repository, which makes sense. So a quick <code>git init</code> in the directory later, and we now see a different result for <code>rg --files</code>:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/testdir</span><br><span class="token punctuation">;</span> <span class="token function">git</span> init<br>Initialized empty Git repository <span class="token keyword">in</span> /private/tmp/testdir/.git/<br><span class="token comment"># /tmp/testdir (master #%)</span><br><span class="token punctuation">;</span> rg --files<br>badger<br>aardvark<br><span class="token comment"># /tmp/testdir (master #%)</span><br><span class="token punctuation">;</span></code></pre>
+<p>That's more like it - the <code>Fruit/</code> directory and its contents are ignored.</p>
+<p><a name="using-rg-for-real"></a><br>
+<strong>Using rg for real</strong></p>
+<p>Moving back to the <a href="https://github.com/SAP-samples/teched2020-developer-keynote">repository</a> content that I have been using to explore <code>fzf</code> in more depth (especially in <a href="https://qmacro.org/autodidactics/2021/02/02/fzf-the-basics-1-layout/">fzf - the basics part 1 - layout</a>), let's see what effect <code>rg</code>'s respect for <code>.gitignore</code> has on the results in this more realistic scenario.</p>
+<p>First, what does the incantation of <code>find</code> that most closely resembles <code>fzf</code>'s default behaviour give us from the top level of that repository?</p>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/teched2020-developer-keynote (main *=)</span><br><span class="token punctuation">;</span> <span class="token function">find</span> <span class="token builtin class-name">.</span> -type f -not -path <span class="token string">'*/\.*'</span>  <span class="token operator">|</span> <span class="token function">wc</span> -l<br>   <span class="token number">17688</span><br><span class="token comment"># /tmp/teched2020-developer-keynote (main *=)</span><br><span class="token punctuation">;</span></code></pre>
+<p>OK, so that's what we got in the <a href="https://qmacro.org/autodidactics/2021/02/02/fzf-the-basics-1-layout/">previous post</a>. The repository has a <code>.gitignore</code> file:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/teched2020-developer-keynote (main *=)</span><br><span class="token punctuation">;</span> <span class="token function">cat</span> .gitignore<br>node_modules/<br>*.swp<br>sk*.json<br>default-env.json<br>.DS_Store<br>dashboard.zip<br>mta_archives/<br>ui/resources<br>*.db-journal<br>*.token<br>kubeconfig.*<br><span class="token comment"># /tmp/teched2020-developer-keynote (main *=)</span><br><span class="token punctuation">;</span></code></pre>
+<p>So let's see what <code>rg</code> gives us:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/teched2020-developer-keynote (main *=)</span><br><span class="token punctuation">;</span> rg --files <span class="token operator">|</span> <span class="token function">wc</span> -l<br>     <span class="token number">163</span><br><span class="token comment"># /tmp/teched2020-developer-keynote (main *=)</span><br><span class="token punctuation">;</span></code></pre>
+<p>That is certainly a huge difference, mostly a result of ignoring a load of stuff - not least in the various <code>node_modules/</code> directories within the repository.</p>
+<p><a name="showing-hidden-files"></a><br>
+<strong>Showing hidden files</strong></p>
+<p>Now that the list of choices is more manageable, I can now start to think about what it actually contains, and what it doesn't contain. There are hidden files in the repository that I actually want to be able to select. <code>fzf</code>'s default behaviour is preventing that from happening, but it's only now that my head is clear enough to address this (looking through a list of 17000+ files fogged my thinking).</p>
+<p>So I remember I can use the <code>--hidden</code> option with <code>rg</code>; let's try that:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/teched2020-developer-keynote (main *=)</span><br><span class="token punctuation">;</span> rg --files --hidden <span class="token operator">|</span> <span class="token function">wc</span> -l<br>     <span class="token number">209</span><br><span class="token comment"># /tmp/teched2020-developer-keynote (main *=)</span><br><span class="token punctuation">;</span></code></pre>
+<p>OK, so a few more than the 163 that <code>rg --files</code> returned. Good stuff. But what are those extra hidden files? Let's take a look, using a regular expression to reduce the output to entries where there's a <code>.</code> either at the start of the line or following a <code>/</code>:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/teched2020-developer-keynote (main *=)</span><br><span class="token punctuation">;</span> rg --files --hidden <span class="token operator">|</span> <span class="token function">grep</span> -E <span class="token string">'(^|\/)\.'</span> <span class="token operator">|</span> <span class="token function">sort</span><br>.abapgit.xml<br>.git/HEAD<br>.git/config<br>.git/description<br>.git/hooks/applypatch-msg.sample<br>.git/hooks/commit-msg.sample<br>.git/hooks/fsmonitor-watchman.sample<br>.git/hooks/post-update.sample<br>.git/hooks/pre-applypatch.sample<br>.git/hooks/pre-commit.sample<br>.git/hooks/pre-merge-commit.sample<br>.git/hooks/pre-push.sample<br>.git/hooks/pre-rebase.sample<br>.git/hooks/pre-receive.sample<br>.git/hooks/prepare-commit-msg.sample<br>.git/hooks/update.sample<br>.git/index<br>.git/info/exclude<br>.git/logs/HEAD<br>.git/logs/refs/heads/main<br>.git/logs/refs/remotes/origin/HEAD<br>.git/objects/pack/pack-8933b87ef40a05f8e4974179d6b7288c4cbb0a39.idx<br>.git/objects/pack/pack-8933b87ef40a05f8e4974179d6b7288c4cbb0a39.pack<br>.git/packed-refs<br>.git/refs/heads/main<br>.git/refs/remotes/origin/HEAD<br>.github/workflows/image-build-and-publish.yml<br>.github/workflows/out-of-office.yml<br>.gitignore<br>.reuse/dep5<br>cap/brain/.cdsrc.json<br>cap/brain/.dockerignore<br>cap/brain/.eslintrc<br>cap/brain/.gitignore<br>cap/brain/.prettierignore<br>cap/brain/.prettierrc.json<br>cap/brain/.vscode/extensions.json<br>cap/brain/.vscode/launch.json<br>cap/brain/.vscode/settings.json<br>cap/brain/.vscode/tasks.json<br>converter/.dockerignore<br>rapreceiver/.gitignore<br>s4hana/sandbox/.gitignore<br>s4hana/sandbox/router/.dockerignore<br>s4hana/sandbox/router/.prettierignore<br>s4hana/sandbox/router/.prettierrc.json<br><span class="token comment"># /tmp/teched2020-developer-keynote (main *=)</span><br><span class="token punctuation">;</span></code></pre>
+<p>That's nice - I can see important hidden files such as <code>.abapgit.xml</code>, <code>cap/brain/.dockerignore</code> and <code>github/workflows/image-build-and-publish.yml</code> now.</p>
+<p>However, the presence of all those files in the <code>.git/</code> directory are clouding that overview. Let's get rid of those with <code>rg</code>'s <code>--glob</code> option, with which one can include, or (using a <code>!</code> to negate things) exclude results:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/teched2020-developer-keynote (main *=)</span><br><span class="token punctuation">;</span> rg --files --hidden --glob <span class="token string">'!.git/'</span> <span class="token operator">|</span> <span class="token function">wc</span> -l<br>     <span class="token number">184</span><br><span class="token comment"># /tmp/teched2020-developer-keynote (main *=)</span><br><span class="token punctuation">;</span></code></pre>
+<p>Let's see what makes up the list of hidden files now:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/teched2020-developer-keynote (main *=)</span><br><span class="token punctuation">;</span> rg --files --hidden --glob <span class="token string">'!.git/'</span> <span class="token operator">|</span> <span class="token function">grep</span> -E <span class="token string">'(^|\/)\.'</span> <span class="token operator">|</span> <span class="token function">sort</span><br>.abapgit.xml<br>.github/workflows/image-build-and-publish.yml<br>.github/workflows/out-of-office.yml<br>.gitignore<br>.reuse/dep5<br>cap/brain/.cdsrc.json<br>cap/brain/.dockerignore<br>cap/brain/.eslintrc<br>cap/brain/.gitignore<br>cap/brain/.prettierignore<br>cap/brain/.prettierrc.json<br>cap/brain/.vscode/extensions.json<br>cap/brain/.vscode/launch.json<br>cap/brain/.vscode/settings.json<br>cap/brain/.vscode/tasks.json<br>converter/.dockerignore<br>rapreceiver/.gitignore<br>s4hana/sandbox/.gitignore<br>s4hana/sandbox/router/.dockerignore<br>s4hana/sandbox/router/.prettierignore<br>s4hana/sandbox/router/.prettierrc.json<br><span class="token comment"># /tmp/teched2020-developer-keynote (main *=)</span><br><span class="token punctuation">;</span></code></pre>
+<p>Now we're talking! That looks like the level of results that will work for me generally. So I can now <a href="https://github.com/qmacro/dotfiles/commit/29368542f9249de85ada759591cf87b52c2b3c0e?branch=29368542f9249de85ada759591cf87b52c2b3c0e&amp;diff=unified">add that glob exclusion</a> to the value for <code>FZF_DEFAULT_COMMAND</code> like this:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/teched2020-developer-keynote (main *=)</span><br><span class="token punctuation">;</span> <span class="token builtin class-name">export</span> <span class="token assign-left variable">FZF_DEFAULT_COMMAND</span><span class="token operator">=</span><span class="token string">'rg --files --hidden --glob '</span><span class="token string">"'"</span>'<span class="token operator">!</span>.git/<span class="token string">'"'</span>"<br><span class="token comment"># /tmp/teched2020-developer-keynote (main *=)</span><br><span class="token punctuation">;</span></code></pre>
+<blockquote>
+<p>The <code>&quot;'&quot;</code> sequences are to supply single quotes in an otherwise single-quoted string.</p>
+</blockquote>
+<p>This can be seen in <a href="https://github.com/qmacro/dotfiles/blob/master/bashrc.d/82-fzf.sh">my Bash configuration script for <code>fzf</code></a>.</p>
+<p><a name="the-final-result"></a><br>
+<strong>The final result</strong></p>
+<p>Now I've customised exactly which type of entries I want to be included (and excluded) in the search results that <code>fzf</code> presents to me in a tty context, I'm happy:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token comment"># /tmp/teched2020-developer-keynote (main *=)</span><br><span class="token punctuation">;</span> fzf --height<span class="token operator">=</span><span class="token number">40</span>% --reverse<br><span class="token operator">></span><br>  <span class="token number">184</span>/184<br><span class="token operator">></span> enabling-workflows.md<br>  message-bus-settings.sh<br>  .gitignore<br>  README.md<br>  quickstart.md<br>  .reuse/dep5<br>  images/whiteboard.jpg<br>  images/enable-kyma.png<br>  images/enabling-workflows.png<br>  images/split-terminals.png<br>  kymaruntime/README.md<br>  mock-converter/index.js<br>  storyboard.md<br>  .abapgit.xml<br>  mock-converter/package.json<br>  abap/README.md</code></pre>
+<p>Far easier to deal with (than the 17000+ files previously) but nothing important omitted.</p>
+<p>Turns out that <code>FZF_DEFAULT_COMMAND</code> is useful, and it's also not the only environment variable that <code>fzf</code> sports. I'll look into others in the next post.</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2021/15/3/aborting-a-script-with-parameter-expansion/">Aborting a script with parameter expansion</a></li><li>Previous: <a href="/blog/2021/2/2/thoughts-on-video-content/">Thoughts on video content</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2021/7/2/fzf-the-basics-part-2-search-results/ -->
+  </body>
+</html>

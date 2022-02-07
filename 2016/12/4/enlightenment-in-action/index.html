@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enlightenment in action</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Enlightenment in action</h1>
+
+<time datetime="2016-04-12">12 Apr 2016</time><a href="/blog/tags/language-ramblings/" class="post-tag">language-ramblings</a>
+
+<p>One of the ideas that Clojure embraces is this <a href="http://www.cs.yale.edu/homes/perlis-alan/quotes.html">Perlism</a>:</p>
+<blockquote>
+<p>It is better to have 100 functions operate on one data structure than 10 functions on 10 data structure</p>
+</blockquote>
+<p>This makes a lot of sense. But it also is clear that the language, as a set of functions and features, is large. Of course, at a low level, the language is very small; but the layers that have been built to operate on data structures have a depth that I haven't yet mastered.</p>
+<p>It's not a case of the layers or functions being too complicated ... rather, I just haven't discovered everything that's possible yet. And when I haven't, I am resorting to mechanical solutions. I suppose this is simply a part of the journey, and while building a mechanical solution to a problem is irksome, it's educational, especially when you are shown something so much more succinct.</p>
+<p><strong>An example</strong></p>
+<p>Here's one example, a solution to 4Clojure problem 63 &quot;<a href="https://www.4clojure.com/problem/63">Group a Sequence</a>&quot;. A fairly straightforward challenge, but one that I couldn't see an obviously neat way of solving. (Note that the rules prevented the use of the <code>group-by</code> function, with which it would have been a cinch to solve, of course!).</p>
+<p><em>A clean but mechanical approach</em></p>
+<p>Here's what I ended up with:</p>
+<pre class="language-clojure"><code class="language-clojure"><span class="token punctuation">(</span><span class="token keyword">fn</span> p63 <span class="token punctuation">[</span>f xs<span class="token punctuation">]</span><br>  <span class="token punctuation">(</span><span class="token keyword">loop</span> <span class="token punctuation">[</span>elements xs<br>         result <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">]</span><br>    <span class="token punctuation">(</span><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">empty?</span> elements<span class="token punctuation">)</span><br>      result<br>      <span class="token punctuation">(</span><span class="token keyword">let</span> <span class="token punctuation">[</span>element <span class="token punctuation">(</span><span class="token keyword">first</span> elements<span class="token punctuation">)</span><br>            value <span class="token punctuation">(</span><span class="token function">f</span> element<span class="token punctuation">)</span><br>            values <span class="token punctuation">(</span><span class="token keyword">or</span> <span class="token punctuation">(</span><span class="token function">result</span> value<span class="token punctuation">)</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">]</span><br>        <span class="token punctuation">(</span><span class="token keyword">recur</span> <span class="token punctuation">(</span><span class="token keyword">rest</span> elements<span class="token punctuation">)</span><br>               <span class="token punctuation">(</span><span class="token keyword">assoc</span> result value <span class="token punctuation">(</span><span class="token keyword">conj</span> values element<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>In one way, I'm happy, because it's using the <code>loop/recur</code> construction (tail recursion idiom), with the &quot;<a href="http://langram.org/tag/firstrest/">first/rest</a>&quot; pattern, and it's not mutating any state. And I typed this in directly and it solved the puzzle first time :-)</p>
+<p>But there's a mechanical nature to it. Here's what it does, generally:</p>
+<ul>
+<li>starts a <code>loop</code> with the elements given, and an empty result map</li>
+<li>if there are no elements, it just returns whatever's in the result map at that time</li>
+<li>otherwise it takes the first element, calculates the result of applying the function to that element, and retrieves the current values for that result key (defaulting to an empty vector if there aren't any yet)</li>
+<li>then in the body of the <code>let</code> binding it simply <code>recur</code>s with the <code>rest</code> of the elements (all but the <code>first</code>), setting the value for the <code>result</code> var to be that plus the addition of the calculated value in the right place in the map</li>
+</ul>
+<p><em>A neater approach</em></p>
+<p>Here's the solution from another 4Clojure user that I'm following (and I am learning a great deal from them, whoever they are!):</p>
+<pre class="language-clojure"><code class="language-clojure"><span class="token punctuation">(</span><span class="token keyword">fn</span> <span class="token punctuation">[</span>f s<span class="token punctuation">]</span><br>  <span class="token punctuation">(</span><span class="token keyword">apply</span> merge-with concat <span class="token punctuation">(</span><span class="token keyword">map</span> <span class="token operator">#</span><span class="token punctuation">(</span><span class="token keyword">hash-map</span> <span class="token punctuation">(</span><span class="token function">f</span> %<span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">[</span>%<span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span> s<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>Wow. The power of this solution, and the secret of its brevity, is the <code>merge-with</code> function, which is documented thus:</p>
+<p><em>Returns a map that consists of the rest of the maps conj-ed onto the first.  If a key occurs in more than one map, the mapping(s) from the latter (left-to-right) will be combined with the mapping in the result by calling (f val-in-result val-in-latter).</em></p>
+<p>This was exactly the right thing. The <code>(map #(hash-map (f %1) [%1]) s)</code> form simply returned a flat list of hash-maps with the keys being the result of applying the given function to the element, and the values being the elements themselves. Beautifully simple, in the philosophy of focusing on performing just one task.</p>
+<p>And then the myriad hash-maps were gathered together with <code>merge-with</code> using the <code>concat</code> function to resolve same-key clashes (in other words, &quot;just group them together&quot;).</p>
+<p>Taking the first of the puzzle's unit tests as an example, here's what stage one (pre <code>merge-with</code>) looks like. This:</p>
+<pre class="language-clojure"><code class="language-clojure"><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">fn</span> <span class="token punctuation">[</span>f s<span class="token punctuation">]</span> <span class="token punctuation">(</span><span class="token keyword">map</span> <span class="token operator">#</span><span class="token punctuation">(</span><span class="token keyword">hash-map</span> <span class="token punctuation">(</span><span class="token function">f</span> %<span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">[</span>%<span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span> s<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">#</span><span class="token punctuation">(</span><span class="token keyword">></span> % <span class="token number">5</span><span class="token punctuation">)</span> <span class="token punctuation">[</span><span class="token number">1</span> <span class="token number">3</span> <span class="token number">6</span> <span class="token number">8</span><span class="token punctuation">]</span><span class="token punctuation">)</span></code></pre>
+<p>produces this:</p>
+<pre class="language-clojure"><code class="language-clojure"><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token boolean">false</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">}</span> <span class="token punctuation">{</span><span class="token boolean">false</span> <span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">}</span> <span class="token punctuation">{</span><span class="token boolean">true</span> <span class="token punctuation">[</span><span class="token number">6</span><span class="token punctuation">]</span><span class="token punctuation">}</span> <span class="token punctuation">{</span><span class="token boolean">true</span> <span class="token punctuation">[</span><span class="token number">8</span><span class="token punctuation">]</span><span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre>
+<p>Then applying the <code>merge-with concat</code> we get the result:</p>
+<pre class="language-clojure"><code class="language-clojure"><span class="token punctuation">{</span><span class="token boolean">false</span> <span class="token punctuation">(</span><span class="token number">1</span> <span class="token number">3</span><span class="token punctuation">)</span> <span class="token boolean">true</span> <span class="token punctuation">(</span><span class="token number">6</span> <span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">}</span></code></pre>
+<p>Lovely. I'm still on my journey to enlightenment, and am enjoying learning about functions such as <code>merge-with</code> on the way.</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2016/13/4/finding-a-wonderland-number/">Finding a wonderland number</a></li><li>Previous: <a href="/blog/2016/10/4/fiux2-week-7-build-your-own-sap-fiori-app/">&quot;fiux2&quot; Week 7 - Build Your Own SAP Fiori App</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2016/12/4/enlightenment-in-action/ -->
+  </body>
+</html>

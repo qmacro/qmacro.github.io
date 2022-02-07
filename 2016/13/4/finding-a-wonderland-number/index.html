@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finding a wonderland number</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Finding a wonderland number</h1>
+
+<time datetime="2016-04-13">13 Apr 2016</time><a href="/blog/tags/language-ramblings/" class="post-tag">language-ramblings</a>
+
+<p>I came across a simple puzzle this evening, on <a href="https://github.com/gigasquid/wonderland-clojure-katas">Wonderland Clojure Katas</a>. My brain is half dead from starting work extra early and slogging through the day, but I wanted to include a tiny bit of Clojure recreation this evening, before the day was out.</p>
+<p>Pretty much at random, I picked the <a href="https://github.com/gigasquid/wonderland-clojure-katas/tree/master/wonderland-number">wonderland-number</a> puzzle where you have to find number with particular properties. In a way, the puzzle is similar to the ones you can find on <a href="https://projecteuler.net/">Project Euler</a>.</p>
+<p>The problem statement is simple. It's about finding a <a href="https://en.wikipedia.org/wiki/Cyclic_number">Cyclic number</a>, thus:</p>
+<ul>
+<li>it has six digits</li>
+<li>if you multiply it by 2,3,4,5, or 6, the resulting number has all the same digits in at as the original number. The only difference is the position that they are in</li>
+</ul>
+<p>As I'm tired, it was quite nice to be able to apply the philosophy of building up from small blocks to reach the solution. So, here goes.</p>
+<p><strong>Step 1 - Getting the digits of a number</strong></p>
+<p>We're going to be comparing digits of a number, so let's have a function that will return a sequence of digits for a given number:</p>
+<pre class="language-clojure"><code class="language-clojure"><span class="token punctuation">(</span><span class="token keyword">defn</span> digits <span class="token punctuation">[</span>n<span class="token punctuation">]</span> <span class="token punctuation">(</span><span class="token keyword">map</span> <span class="token operator">#</span><span class="token punctuation">(</span><span class="token keyword">-</span> <span class="token punctuation">(</span><span class="token keyword">int</span> %<span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token keyword">int</span> <span class="token char">\0</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token keyword">str</span> n<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>The <code>str</code> function calls <code>.toString</code> on its argument, here turning a number into a string, and therefore, more importantly, a sequence that we can <code>map</code> over.</p>
+<p>The anonymous function we're using in the map simply converts the char value of each of the string characters to their numeric equivalents. (I do find converting a string representing a digit to its numeric value equivalent a little clunky in Clojure, having a background in scripting languages that make that more seamless. Perhaps I'm missing something. But I digress.)</p>
+<p>Let's try it out:</p>
+<pre class="language-clojure"><code class="language-clojure">scratchpad.core=> <span class="token punctuation">(</span><span class="token function">digits</span> <span class="token number">12401</span><span class="token punctuation">)</span><br><span class="token punctuation">(</span><span class="token number">1</span> <span class="token number">2</span> <span class="token number">4</span> <span class="token number">0</span> <span class="token number">1</span><span class="token punctuation">)</span></code></pre>
+<p><strong>Step 2 - A unique set of digits</strong></p>
+<p>We actually want a unique set of digits, so we can better compare them:</p>
+<pre class="language-clojure"><code class="language-clojure"><span class="token punctuation">(</span><span class="token keyword">def</span> digit-set <span class="token punctuation">(</span><span class="token keyword">comp</span> set digits<span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>Simply <a href="https://clojuredocs.org/clojure.core/comp">composing</a> the function <code>set</code> with our new <code>digits</code> function does the trick.</p>
+<p>Let's try it out:</p>
+<pre class="language-clojure"><code class="language-clojure">scratchpad.core=> <span class="token punctuation">(</span><span class="token function">digit-set</span> <span class="token number">12401</span><span class="token punctuation">)</span><br><span class="token operator">#</span><span class="token punctuation">{</span><span class="token number">0</span> <span class="token number">1</span> <span class="token number">2</span> <span class="token number">4</span><span class="token punctuation">}</span></code></pre>
+<p><strong>Step 3 - Multiple results</strong></p>
+<p>So now we want to generate the list of results of multiplying the number under test with 2, 3, 4, 5 and 6. We want those results as digit sets. Here goes:</p>
+<pre class="language-clojure"><code class="language-clojure"><span class="token punctuation">(</span><span class="token keyword">defn</span> mult-result <span class="token punctuation">[</span>n<span class="token punctuation">]</span> <span class="token punctuation">(</span><span class="token keyword">map</span> <span class="token operator">#</span><span class="token punctuation">(</span><span class="token function">digit-set</span> <span class="token punctuation">(</span><span class="token keyword">*</span> n %<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token keyword">range</span> <span class="token number">2</span> <span class="token number">7</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>All we're doing is folding (with <code>map</code>) an anonymous function over the <code>range</code> of &quot;multiplier&quot; numbers 2 through 6 inclusive. And this anonymous function multiplies the number under test with the particular multiplier being folded over, and produces a digit set from the result.</p>
+<p>Let's try it out:</p>
+<pre class="language-clojure"><code class="language-clojure">scratchpad.core=> <span class="token punctuation">(</span><span class="token function">mult-result</span> <span class="token number">123456</span><span class="token punctuation">)</span><br><span class="token punctuation">(</span><span class="token operator">#</span><span class="token punctuation">{</span><span class="token number">1</span> <span class="token number">2</span> <span class="token number">4</span> <span class="token number">6</span> <span class="token number">9</span><span class="token punctuation">}</span> <span class="token operator">#</span><span class="token punctuation">{</span><span class="token number">0</span> <span class="token number">3</span> <span class="token number">6</span> <span class="token number">7</span> <span class="token number">8</span><span class="token punctuation">}</span> <span class="token operator">#</span><span class="token punctuation">{</span><span class="token number">2</span> <span class="token number">3</span> <span class="token number">4</span> <span class="token number">8</span> <span class="token number">9</span><span class="token punctuation">}</span> <span class="token operator">#</span><span class="token punctuation">{</span><span class="token number">0</span> <span class="token number">1</span> <span class="token number">2</span> <span class="token number">6</span> <span class="token number">7</span> <span class="token number">8</span><span class="token punctuation">}</span> <span class="token operator">#</span><span class="token punctuation">{</span><span class="token number">0</span> <span class="token number">3</span> <span class="token number">4</span> <span class="token number">6</span> <span class="token number">7</span><span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre>
+<p><strong>Step 4 - Checking the digits are the same</strong></p>
+<p>The last thing we have to do is check whether the digits are the same in each of the multiplier cases.</p>
+<pre class="language-clojure"><code class="language-clojure"><span class="token punctuation">(</span><span class="token keyword">defn</span> same-digits? <span class="token punctuation">[</span>n<span class="token punctuation">]</span> <span class="token punctuation">(</span><span class="token keyword">apply</span> = <span class="token punctuation">(</span><span class="token function">mult-result</span> n<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>Using <code>apply</code> with a function allows that function to be used with the contents of the sequence supplied, rather than with the sequence itself. So the <code>=</code> function operates on the multiple arguments that are the elements of the sequence produced by <code>(mult-result n)</code>. The function name ends with a question mark in the tradition for Clojure predicate functions that return true or false.</p>
+<p>Let's try it out:</p>
+<pre class="language-clojure"><code class="language-clojure">scratchpad.core=> <span class="token punctuation">(</span><span class="token function">same-digits?</span> <span class="token number">123456</span><span class="token punctuation">)</span><br><span class="token boolean">false</span></code></pre>
+<p><strong>Step 5 - Profit</strong></p>
+<p>Now we have all we need, and can use the <code>same-digits?</code> function as a predicate in calling <code>filter</code> on the six digit numbers:</p>
+<pre class="language-clojure"><code class="language-clojure">scratchpad.core=> <span class="token punctuation">(</span><span class="token keyword">first</span> <span class="token punctuation">(</span><span class="token keyword">filter</span> same-digits? <span class="token punctuation">(</span><span class="token keyword">range</span> <span class="token number">100000</span> <span class="token number">1000000</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><br><span class="token number">142857</span></code></pre>
+<p>Result!</p>
+<p>So there are undoubtedly better ways of approaching this puzzle, but I wanted to illustrate the bottom-up approach of computing that Clojure, and functional programming in general lends itself rather well to. And on the occasions when you're tired and can only think in small chunks, it's ideal :-)</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2016/14/4/language-minutiae-and-learning-to-swim/">Language minutiae and learning to SWIM</a></li><li>Previous: <a href="/blog/2016/12/4/enlightenment-in-action/">Enlightenment in action</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2016/13/4/finding-a-wonderland-number/ -->
+  </body>
+</html>

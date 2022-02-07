@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting started with Gmail Contextual Gadgets</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Getting started with Gmail Contextual Gadgets</h1>
+
+<time datetime="2010-06-21">21 Jun 2010</time><a href="/blog/tags/appengine/" class="post-tag">appengine</a><a href="/blog/tags/contextual/" class="post-tag">contextual</a><a href="/blog/tags/dashboard-tag/" class="post-tag">dashboard-tag</a><a href="/blog/tags/gadgets/" class="post-tag">gadgets</a><a href="/blog/tags/gmail/" class="post-tag">gmail</a>
+
+<p><a href="http://code.google.com/apis/gmail/gadgets/contextual/">Gmail contextual gadgets</a> were announced by Google a few months back and were <a href="http://googleenterprise.blogspot.com/2010/05/putting-email-in-context-with-gmail.html">made available to developers in May this year</a>, just before making a <a href="http://code.google.com/events/io/2010/sessions/deep-dive-gmail-contextual-gadgets.html">strong appearance at Google IO</a>.</p>
+<p>Expanding upon the concept of an earlier contextual project called <a href="/2003/07/11/dashboard-a-compelling-articulation-for-realtime-contextual-information-2/">Dashboard</a>, Gmail contextual gadgets give a clear message that email, as a universal information carrier and workflow pipeline, is not only here to stay, but is being given a new lease of life as it plays a foundational role in Google’s enterprise scale application platform strategy. A Gmail contextual gadget enhances email messages by providing information or functionality that is relevant to the context of that email … right inside the email itself. Context is exposed by content extractors in the form of ‘clues’ in Gmail (akin to Dashboard’s ‘<a href="http://www.ibm.com/developerworks/xml/library/x-desktop/index.html#h2">cluepackets</a>‘) and matched content is provided to the gadget at runtime.</p>
+<p>Extractors, optional filters, and scope declarations (used by the installer of a gadget to decide whether to install or not based upon privacy and security requirements) are defined in a manifest, along with references to the gadgets themselves, via gadget spec files, that are to be triggered.</p>
+<p><img src="/blog/img/2010/06/additnow.png" alt="additnow"></p>
+<p>What makes these Gmail contextual gadgets even more attractive is the Google Apps Marketplace, where developers can make gadgets available, and consumers can use the “<a href="https://www.google.com/support/a/bin/answer.py?hl=en&amp;answer=172482">Add it now</a>” button to start using them in their own domains.</p>
+<p>Developing Gmail contextual gadgets is relatively straightforward, but there are a few things that might cause you to stumble, such as documentation (we’re early adopters!), cacheing issues and not being completely aware of what match information is provided.</p>
+<p>Despite the advent of Wave and Buzz, it’s obvious that Google sees, rightly in my opinion, a tremendous amount of value in the venerable email application, and I thought I’d take the opportunity to document my first attempt at enhancing the contextual experience with a Twitter-flavoured Gmail contextual “Hello World” gadget.</p>
+<p><strong>Twitter User Info</strong></p>
+<p>‘Twitter User Info’ is a Gmail contextual gadget that provides basic info about Twitter users whose Twitter handles appear in the email Subject line. In this example, the profile image and basic Twitter user info is shown for Joseph, whose Twitter handle <a href="http://twitter.com/@jcla1">@jcla1</a> appears in the Subject of the email from Michelle:</p>
+<p><img src="/blog/img/2010/06/twitteruserinfoannotated.png" alt="Twitter User Info for @jcla1"></p>
+<p>The contextual gadget appears directly below the email body, and starts with the title and description “Twitter – User Info” (defined in the gadget spec) and contains HTML showing the Twitter info.</p>
+<p><strong>Components and hosting</strong></p>
+<p>What are the components that make up this gadget? First of all, we need the manifest and the gadget spec itself. To support the dynamic creation of contextual content in the email, we will be using <a href="http://jquery.com/">jQuery</a>, not only because it’s a fantastically useful and powerful library for manipulating web page content, but also because of Google’s intention to use <a href="http://code.google.com/p/google-caja/">Caja</a> to provide a layer of protection for the user of Javascript-based apps. The jQuery library is listed as one of the development frameworks that will be compatible with Caja. There’s also a tiny bit of CSS.</p>
+<p>Beyond that, we will of course be making a call to one of the <a href="http://dev.twitter.com/">Twitter API</a> endpoints, and calling upon one of my favourite HTTP tools <a href="http://postbin.org">PostBin</a>, to dump Google gadget libary method return values for inspection.</p>
+<p>While the manifest is uploaded to Google when you make your gadget available in the Marketplace, your gadget spec needs to be accessible online (so the gadget container can pull it in at the appropriate moment). There are many options for hosting content online, but for this experiment I decided to create a new App Engine application ‘<a href="http://qmacro-contextual.appspot.com">qmacro-contextual</a>‘ and host the gadget and CSS as static files there (I’m also storing the manifest there too). This might appear as overkill, but as I progress further into contextual gadget development, I will most definitely want to do some of the heavy app lifting outside of the actual gadget spec, and for this, App Engine is ideal.</p>
+<p>Here’s part of the app.yaml file showing the handler declarations for the static manifest, gadget and CSS resources:</p>
+<pre><code>application: qmacro-contextual version: 1 runtime: python api_version: 1 handlers: - url: /manifests static_dir: manifests expiration: 1m - url: /gadgets static_dir: gadgets expiration: 1m - url: /css static_dir: css - url: .* script: main.py&lt;span style=&quot;font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif; line-height: 19px; white-space: normal; font-size: 13px;&quot;&gt; &lt;/span&gt;
+</code></pre>
+<p>Note that I’ve specified an expiration period of 1 minute for the manifest and gadget spec directories. This is for development only, so that I can be sure that at least App Engine will serve up the resources with a very short shelf life, so that I can tweak the definitions and code and have them reloaded by the gadget container.</p>
+<p>Incidentally, there’s also a URL query string parameter you can specify that causes gadget cacheing to be turned off – just append “?nogadgetcache=1″ to the Gmail URL and this should do the trick.</p>
+<p><strong>The Manifest</strong></p>
+<p>I followed the Developer’s Guide to construct the manifest, which you can see here in full:</p>
+<p><a href="http://qmacro-contextual.appspot.com/manifests/twitter-user-info.manifest.xml">http://qmacro-contextual.appspot.com/manifests/twitter-user-info.manifest.xml</a></p>
+<p>The interesting parts of the manifest which relate to Gmail contextual gadgets are the Extractor, Gadget and Scope declarations.</p>
+<p>The Extractor declaration looks like this:</p>
+<pre><code>&lt;!-- EXTRACTOR --&gt; &lt;Extension id=&quot;SubjectExtractor&quot; type=&quot;contextExtractor&quot;&gt; &lt;Name&gt;Twitter IDs in Subject&lt;/Name&gt; &lt;Url&gt;google.com:SubjectExtractor&lt;/Url&gt; &lt;Param name=&quot;subject&quot; value=&quot;.*@[a-z]+.*&quot;/&gt; &lt;Triggers ref=&quot;TwitterUserInfoGadget&quot;/&gt; &lt;Scope ref=&quot;emailSubject&quot;/&gt; &lt;Container name=&quot;mail&quot;/&gt; &lt;/Extension&gt;
+</code></pre>
+<p>Each extractor (there can be more than one for any given manifest) is defined with an id and name and references a particular Extractor ID which does the work of pulling the info out of the email. Here we’re referencing <a href="http://code.google.com/apis/gmail/gadgets/contextual/#extractor">google.com:SubjectExtractor</a>, which is an extractor provided by Google for pulling out the Subject line. Google will be opening up opportunities for developers to build their own extractors if the pre-defined ones don’t provide what we need.</p>
+<p>The <a href="http://google.com">google.com</a>:SubjectExtractor is defined as returning one output field, @subject, which is made available to the gadget to do with as it wishes – more on that later. It also has one scope defined, tag:google.com,2010:auth/contextual/extractor/SUBJECT, which must be linked with a scope definition in a later section of the manifest.</p>
+<p>We can see the reference to the @subject output field in the <Param/> tag. This is a filter definition, which says here that we only want the extractor to trigger the gadget if the email subject matches the given regular expression – i.e. if it contains a Twitter handle. Clearly, we want to avoid triggering gadgets when there’s nothing for the gadget to do; not only to avoid unnecessary almost-empty gadget displays, but also for performance reasons; without a filter, this extractor would fire for every email you looked at. The filter is optional, but Google recommends that even if you want to match on every occurrence, you put an explicit catch-all regular expression “.*” to make that clear.</p>
+<p>The reference to “TwitterUserInfoGadget” points to the next declaration, that of the gadget itself:</p>
+<pre><code>&lt;!-- GADGET --&gt; &lt;Extension id=&quot;TwitterUserInfoGadget&quot; type=&quot;gadget&quot;&gt; &lt;Name&gt;Twitter User Info contextual gadget&lt;/Name&gt; &lt;Url&gt;http://qmacro-contextual.appspot.com/gadgets/twitter-user-info.gadget.xml&lt;/Url&gt; &lt;Container name=&quot;mail&quot;/&gt; &lt;/Extension&gt;
+</code></pre>
+<p>The id of the gadget, “TwitterUserInfoGadget” is what is referred to in the <Triggers/> tag of the previous Extractor declaration. The gadget is a resource, located at</p>
+<p><a href="http://qmacro-contextual.appspot.com/gadgets/twitter-user-info.gadget.xml">http://qmacro-contextual.appspot.com/gadgets/twitter-user-info.gadget.xml</a></p>
+<p>and this is what will be requested by the Gmail contextual gadget container to pull in the gadget spec. Here’s part of an App Engine log record showing the gadget spec being fetched:</p>
+<p><img src="/blog/img/2010/06/feedfetcherpullsgadget1.png" alt="Google Feedfetcher pulls gadget spec"></p>
+<p>The name declared in this Gadget declaration (“Twitter User Info contextual gadget”), along with the name in the Extractor declaration (“Twitter IDs in Subject”) and the general name and description from elsewhere in the manifest, are text items that appear to the Google Apps domain administrator when selecting the gadget for installation, like this:</p>
+<p><img src="/blog/img/2010/06/appoverview.png" alt="App Overview"></p>
+<p>Finally, we have the Scope declaration, which was indicated in the Extractor declaration earlier. This is “emailSubject”, and contains the scope URI defined for the extractor being used. There may be more than one scope for a given extractor; if this is the case, they must be each defined separately and explicitly.</p>
+<!-- SCOPE --> <Scope id="emailSubject"> <Url>tag:google.com,2010:auth/contextual/extractor/SUBJECT</Url> <Reason>This application looks at the subject of each email looking for Twitter handles</Reason> </Scope>
+<p>This information appears during gadget installation, where the administrator can review what the gadget will access, and decide whether or not to proceed:</p>
+<p><img src="NaN" alt="Grant Data Access"></p>
+<p><strong>The Gadget Spec – Declarations</strong></p>
+<p>Now we’ve dealt with the manifest, it’s time to turn our attention to the gadget spec. Remember that the gadget is triggered when we get a Subject line that contains one or more Twitter handles. If you’ve developed a gadget before, for iGoogle, for example, this should be familiar to you. First we have the ModulePrefs section where we declare basic gadget information and the features that we require. There’s a feature specific to Gmail contextual gadgets that we must declare here. Then we have the gadget code itself, in a CDATA section.</p>
+<p>Here’s what the ModulePrefs section looks like:</p>
+<pre><code> &lt;ModulePrefs title=&quot;Twitter&quot; description=&quot;User Info&quot; height=&quot;50&quot; author=&quot;DJ Adams&quot; author_email=&quot;dj.adams@pobox.com&quot; author_location=&quot;Manchester&quot;&gt; &lt;Require feature=&quot;dynamic-height&quot;/&gt; &lt;Require feature=&quot;google.contentmatch&quot;&gt; &lt;Param name=&quot;extractors&quot;&gt; google.com:SubjectExtractor &lt;/Param&gt; &lt;/Require&gt; &lt;/ModulePrefs&gt;
+</code></pre>
+<p>The title and description in the module prefs shows up (”Twitter – User Info”) when the gadget is displayed at the bottom of the email. We define a height for the gadget which can be auto-adjusted later with the dynamic-height feature declared in this section too. A feature that’s specific to Gmail contextual gadgets, and that must be declared for all such gadgets, is google.contentmatch. In declaring this feature, you must list the Extractor id (or ids) that will be triggering this gadget.</p>
+<p>The google.contentmatch feature gives us the facility we need to avail ourselves of the, ahem, content that was matched in this context. As you will see, we use the getContentMatches() method to do this.</p>
+<p><strong>The Gadget Spec – Code</strong></p>
+<p>With the ModulePrefs declarations out of the way, we get to the Javascript that breathes life into our gadget. The Javascript is defined in the <Content/> tag. The view type “card” is the only one supported by Gmail contextual gadgets right now.</p>
+<pre><code>&lt;script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'&gt;&lt;/script&gt; &lt;script type=&quot;text/javascript&quot;&gt; // Expect subject as first element keyed by 'subject' matches = google.contentmatch.getContentMatches(); jQuery.post('http://qmacro-postbin.appspot.com/1jd620g', 'matches:' + JSON.stringify(matches)); var subject = matches[0]['subject']; // Only do something if we actually have a subject to work with if (subject) { // Pick out the twitter @handles and process them var handles = subject.match(/@[a-z0-9_]+/g); if (handles) { $('head').append('&lt;link rel=&quot;stylesheet&quot; href=&quot;http://qmacro-contextual.appspot.com/css/twitter-user-info.css&quot; /&gt;'); for (var i = 0; i &lt; handles.length; i++) { var user_resource = 'http://api.twitter.com/users/show/' + handles[i] + '.json?callback=?'; $.getJSON(user_resource, function(data) { jQuery.post('http://qmacro-postbin.appspot.com/1jd620g', 'userinfo:' + JSON.stringify(data)); var loc = &quot;&quot;; if (data.location) { loc = ' (' + data.location + ')'; } var tw_info = '&lt;table border=&quot;0&quot;&gt;' + '&lt;tr&gt;' + '&lt;td&gt;' + '&lt;a href=&quot;' + data.url + '&quot;&gt;' + '&lt;img src=&quot;' + data.profile_image_url + '&quot; /&gt;' + '&lt;/a&gt;' + '&lt;/td&gt;' + '&lt;td class=&quot;userinfo&quot;&gt;' + '&lt;a href=&quot;http://twitter.com/' + data.screen_name + '&quot;&gt;@' + data.screen_name + '&lt;/a&gt;' + '&lt;br /&gt;' + data.name + loc + '&lt;br /&gt;' + data.description + '&lt;/td&gt;' + '&lt;/tr&gt;&lt;/table&gt;'; jQuery(tw_info).appendTo('body'); }); } gadgets.window.adjustHeight(100); } } &lt;/script&gt;&lt;span style=&quot;font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif; font-size: small;&quot;&gt;&lt;span&gt;&lt;/span&gt;&lt;/span&gt;
+</code></pre>
+<p>First, we pull in the jQuery library with a <code>&lt;script/&gt;</code> tag, and then we’re off with our gadget code.</p>
+<p>We use the google.contentmatch.getContentMatches() method to pull in the matches supplied to us by the Extractor. One of my favourite phrases is “<a href="http://en.wikiquote.org/wiki/Only_Fools_and_Horses#Chain_Gang_.5B6.3.5D">let the dog see the rabbit</a>” – let’s have a look at the data, in this case. What does the getContentMatches() actually return? What does it look like? This is where the rather useful PostBin comes in to play. When we get the response from the call to getContentMatches(), encode it into a JSON string form with JSON.stringify() and bung the whole lot to a Postbin too see. Easy! Of course, this is only appropriate for development and debugging – I’d remove it for a production gadget. By the way, I’m running my own instance of Postbin – you can <a href="http://github.com/progrium/postbin">run you own instance</a> too.</p>
+<p><img src="/blog/img/2010/06/matchesinpostbin1.png" alt="Matches in Postbin">So from looking at what we get, we can see that what we’re after is the value of the ’subject’ key in the first element of the matches array.</p>
+<p>By definition, we’re only instantiated because there was a Twitter handle in the Subject. There could be more than one, of course. After collecting them into a handles array, we’re ready to process each one. First, though – we pull in the CSS resource to the current document. The resource is served as a static file from the App Engine app:</p>
+<p><a href="http://qmacro-contextual.appspot.com/css/twitter-user-info.css">http://qmacro-contextual.appspot.com/css/twitter-user-info.css</a></p>
+<p>For each of the Twitter handles, we want to display some basic info, as shown in the screenshot earlier. To retrieve this, we make a simple call to the Twitter API. Specifically,</p>
+<p><a href="http://apiwiki.twitter.com/Twitter-REST-API-Method:-users%C2%A0show">http://api.twitter.com/users/show/[Twitter-handle].json?callback=</a>?</p>
+<p>will give us a nice chunk of JSON with the information we want, like this:</p>
+<pre><code>{ &quot;description&quot;:&quot;Developer and Linux Expert&quot;, &quot;screen_name&quot;:&quot;Jcla1&quot;, &quot;url&quot;:&quot;http://www.pipetree.com/josephadams&quot;, &quot;name&quot;:&quot;Joseph Adams&quot;, &quot;profile_image_url&quot;:&quot;http://a1.twimg.com/profile_images/106288960/JosephWithLomaxCar_normal.jpg&quot;, &quot;location&quot;:&quot;Krefeld,Germany&quot;, ... }
+</code></pre>
+<p>I’d originally started with the<a href="http://plugins.jquery.com/project/jtwitter"> jTwitter</a> jQuery plugin but found that it didn’t quite do what I wanted, and in any case using the Twitter API from jQuery is straightforward anyway. But thank you <a href="http://plugins.jquery.com/user/9986">uzbekjon</a> for getting me started.</p>
+<p>You can see from the code that I’m making more use of Postbin, by gratuitously dumping the results of the Twitter API call in there too. I like to see what I’m dealing with. <a href="http://search.cpan.org/perldoc?Data::Dumper">Data::Dumper</a> is my alltime favourite Perl module, if you hadn’t guessed.</p>
+<p>Once we have the info from Twitter, it’s just a simple matter of constructing some HTML, making use of the CSS via the ‘userinfo’ class, and appending that to the email. Job done!</p>
+<p>I’ve pushed my fledgeling <a href="http://github.com/qmacro/qmacro-contextual">qmacro-contextual App Engine project to Github</a>, so you can take a look and create your own “Hello World” Gmail contextual gadget.</p>
+<p>Share and enjoy!</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2010/11/10/not-your-father-s-sap/">Not your father&#39;s SAP</a></li><li>Previous: <a href="/blog/2010/4/3/scratching-an-itch-magic-the-gathering-card-info/">Scratching an itch - Magic The Gathering card info</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2010/21/6/getting-started-with-gmail-contextual-gadgets/ -->
+  </body>
+</html>

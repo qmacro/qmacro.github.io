@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Today&#39;s TIL trio</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/blog/css/index.css">
+    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/blog/">Home</a></li>
+        <li class="nav-item"><a href="/blog/about/">About</a></li>
+        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Today&#39;s TIL trio</h1>
+
+<time datetime="2021-08-22">22 Aug 2021</time><a href="/blog/tags/autodidactics/" class="post-tag">autodidactics</a><a href="/blog/tags/tools/" class="post-tag">tools</a>
+
+<p><em>Here are three mini TILs from today, on minimum JSON, using <code>tee</code>, and <code>netstat</code> options.</em></p>
+<p>I enjoy finding time to catch up on reading blog posts and watching videos in my queue, but the time is often tinged with a slight uneasy feeling that I'm seeing things in passing which are not part of what the main content is about, and I'm not acknowledging or capturing that knowledge.</p>
+<p>Here are three very small things I learned (or was reminded of) in passing today, and I thought I'd share them.</p>
+<h2 id="a-simple-double-quoted-string-is-valid-json" tabindex="-1">A simple double-quoted string is valid JSON <a class="direct-link" href="#a-simple-double-quoted-string-is-valid-json" aria-hidden="true">#</a></h2>
+<p>Often when using <a href="https://stedolan.github.io/jq/"><code>jq</code></a>, the command line JSON processor, what I'm looking for is a scalar string, when I just want to extract the value of a property.</p>
+<pre class="language-shell"><code class="language-shell">$ <span class="token builtin class-name">echo</span> <span class="token string">'{"foo":"bar"}'</span> <span class="token operator">|</span> jq .foo<br><span class="token string">"bar"</span></code></pre>
+<p>I always vaguely thought that this was <code>jq</code> just doing what I wanted and giving me the value, which was nice. But it was actually doing more than that. The <a href="https://stedolan.github.io/jq/manual/#Invokingjq">Invoking jq</a> section of <code>jq</code>'s manual has this (emphasis mine):</p>
+<blockquote>
+<p>jq filters run on a stream of JSON data. The input to jq is parsed as a sequence of whitespace-separated JSON values which are passed through the provided filter one at a time. <strong>The output(s) of the filter are written to standard out, again as a sequence of whitespace-separated JSON data.</strong></p>
+</blockquote>
+<p>What <code>jq</code> aims to do is not only read JSON, but <em>write JSON to STDOUT</em>, unless otherwise directed.</p>
+<p>In the above invocation (<code>jq .foo</code>) I didn't direct <code>jq</code> to do anything special, so it wrote <code>&quot;bar&quot;</code> on STDOUT.</p>
+<p>And that's appropriate, because <code>&quot;bar&quot;</code> is completely valid JSON.</p>
+<p>I'd vaguely thought that JSON data was only valid in the context of a structure (a map or array) but had never looked into it properly. But my explorations of what <code>jq</code> can do led me down the familiar path of wonder, whereupon I realised that, according to the most up to date specification of JSON, <a href="http://www.ietf.org/rfc/rfc7159.txt">RFC 7159</a>, a JSON text (this is as good a word as any to use as a name for a lump of JSON) &quot;is a serialised value&quot;. This <a href="https://stackoverflow.com/questions/7487869/is-this-simple-string-considered-valid-json/7487892#7487892">Stack Overflow answer</a> is a good summary of the situation.</p>
+<p>So when <code>jq</code> gives you just a simple double-quoted string as the output for your incantation, it's giving you JSON. Which is what it is designed to do.</p>
+<p>I realised this when watching <a href="https://www.youtube.com/watch?v=MvI6Z85EgVo">David Hand - &quot;Non-trivial jq&quot;</a>.</p>
+<h2 id="i-should-use-tee-more" tabindex="-1">I should use tee more <a class="direct-link" href="#i-should-use-tee-more" aria-hidden="true">#</a></h2>
+<p>It's easy to overlook this perhaps unloved and semi-forgotten Unix command. According to the (very brief!) man page, <code>tee</code> is a &quot;pipe fitting&quot;, which:</p>
+<blockquote>
+<p>copies STDIN to STDOUT, making a copy in zero or more files.</p>
+</blockquote>
+<p>The <code>tee</code> command crops up in more places than you think; it appears regularly in installation commands. Take this example* from the <a href="https://docs.docker.com/engine/install/debian/">installation instructions for Docker on Debian Linux</a>:</p>
+<pre class="language-shell"><code class="language-shell">$ <span class="token builtin class-name">echo</span> <span class="token string">"deb [arch=amd64 ...] https://.../linux/debian buster stable"</span> <span class="token punctuation">\</span><br>  <span class="token operator">|</span> <span class="token function">sudo</span> <span class="token function">tee</span> /etc/apt/sources.list.d/docker.list <span class="token operator">></span> /dev/null</code></pre>
+<p>*I've modified the actual command that appears in the <a href="https://docs.docker.com/engine/install/debian/#set-up-the-repository">Set up the repository</a> section for readability.</p>
+<p>Here's another example that appeared in the same video I mentioned earlier:</p>
+<pre class="language-shell"><code class="language-shell">$ <span class="token function">curl</span> http://some.json/api <span class="token operator">|</span> <span class="token function">tee</span> example1.json</code></pre>
+<p>In both cases, <code>tee</code> is used to show the operator what text is flowing into the file. The text (that string starting &quot;deb&quot; in the first example, and the JSON resource retrieved with <code>curl</code> in the second example) is shown on STDOUT ... and also written to the file specified (those being <code>/etc/apt/sources.list.d/docker.list</code> and <code>example1.json</code> respectively in these two examples).</p>
+<p>I bring in <code>tee</code> for specific use cases; for example, <a href="https://github.com/qmacro/dotfiles/commit/2ce53780daf31f8f07681d74fa00b0a6e71602db#diff-65c9282a9859d16acdc87f650a575e909d6200072927fb266b769c4d0241f215R31-R38">in this <code>cache</code> script</a>, to generate the output, show it, and cache it:</p>
+<pre class="language-bash"><code class="language-bash"><span class="token comment"># If there's no cache file or it's older than N mins then</span><br><span class="token comment"># run the command for real, cacheing the output (again).</span><br><span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token operator">!</span> -f <span class="token string">"<span class="token variable">$cachefile</span>"</span> <span class="token punctuation">]</span> <span class="token punctuation">\</span><br>  <span class="token operator">||</span> <span class="token builtin class-name">test</span> <span class="token string">"<span class="token variable"><span class="token variable">$(</span><span class="token function">find</span> <span class="token string">"<span class="token variable">$cachefile</span>"</span> -mmin +<span class="token string">"<span class="token variable">$mins</span>"</span><span class="token variable">)</span></span>"</span><span class="token punctuation">;</span> <span class="token keyword">then</span><br>  <span class="token string">"<span class="token variable">$@</span>"</span> <span class="token operator">|</span> <span class="token function">tee</span> <span class="token string">"<span class="token variable">$cachefile</span>"</span><br><span class="token keyword">else</span><br>  <span class="token function">cat</span> <span class="token string">"<span class="token variable">$cachefile</span>"</span><br><span class="token keyword">fi</span></code></pre>
+<p>But I want to use <code>tee</code> more regularly in my daily scripting activities. With <a href="https://tldp.org/LDP/abs/html/process-sub.html">process substitution</a>, it can be a powerful ally.</p>
+<h2 id="use-netstat's-listening-option" tabindex="-1">Use netstat's --listening option <a class="direct-link" href="#use-netstat's-listening-option" aria-hidden="true">#</a></h2>
+<p>When I want to see what sockets are being listened to on a machine, my muscle memory types out:</p>
+<pre class="language-shell"><code class="language-shell">$ <span class="token function">netstat</span> -atn <span class="token operator">|</span> <span class="token function">grep</span> LISTEN</code></pre>
+<p>This is fine, and gives me what I want - the lines showing what ports are bound with listening processes. Here's an example:</p>
+<pre class="language-shell"><code class="language-shell">$ <span class="token function">netstat</span> -atn <span class="token operator">|</span> <span class="token function">grep</span> LISTEN<br>tcp4       <span class="token number">0</span>      <span class="token number">0</span>  <span class="token number">127.0</span>.0.1.53           *.*                    LISTEN<br>tcp4       <span class="token number">0</span>      <span class="token number">0</span>  <span class="token number">127.0</span>.0.1.28196        *.*                    LISTEN<br>tcp6       <span class="token number">0</span>      <span class="token number">0</span>  fe80::aede:48ff:.49158 *.*                    LISTEN<br>tcp6       <span class="token number">0</span>      <span class="token number">0</span>  fe80::aede:48ff:.49157 *.*                    LISTEN<br>tcp6       <span class="token number">0</span>      <span class="token number">0</span>  fe80::aede:48ff:.49156 *.*                    LISTEN<br>tcp6       <span class="token number">0</span>      <span class="token number">0</span>  fe80::aede:48ff:.49155 *.*                    LISTEN<br>tcp6       <span class="token number">0</span>      <span class="token number">0</span>  fe80::aede:48ff:.49154 *.*                    LISTEN<br>tcp6       <span class="token number">0</span>      <span class="token number">0</span>  fe80::aede:48ff:.49153 *.*                    LISTEN<br>tcp4       <span class="token number">0</span>      <span class="token number">0</span>  *.22                   *.*                    LISTEN<br>tcp6       <span class="token number">0</span>      <span class="token number">0</span>  *.22                   *.*                    LISTEN<br>$</code></pre>
+<p>But I learned something as a side effect from reading a great post (which I <a href="https://twitter.com/qmacro/status/1429463349239197701">auto-tweeted</a> from my [<a href="https://github.com/qmacro-org/url-notes">https://github.com/qmacro-org/url-notes</a>](URL Notes) repo today): <a href="https://twitter.com/qmacro/status/1429463349239197701">Bringing the Unix Philosophy to the 21st Century - Brazil's Blog</a>.</p>
+<p>The author gave this example of using their <code>jc</code> utility (which looks fascinating) to be able to more easily parse this sort of <code>netstat</code> output:</p>
+<pre class="language-shell"><code class="language-shell">$ <span class="token function">netstat</span> -tln <span class="token operator">|</span> jc --netstat <span class="token operator">|</span> jq <span class="token string">'.[].local_port_num'</span></code></pre>
+<p>The <code>-l</code> flag used here for <code>netstat</code> is the short form of <code>--listening</code>, and combined with <code>-t</code> (<code>--tcp</code>) and <code>-n</code> (<code>--numeric</code>) shows only TCP sockets that are being listened on. Here's an example:</p>
+<pre class="language-shell"><code class="language-shell">$ <span class="token function">netstat</span> -tln<br>Active Internet connections <span class="token punctuation">(</span>only servers<span class="token punctuation">)</span><br>Proto Recv-Q Send-Q Local Address           Foreign Address         State<br>tcp        <span class="token number">0</span>      <span class="token number">0</span> <span class="token number">0.0</span>.0.0:2222            <span class="token number">0.0</span>.0.0:*               LISTEN<br>tcp6       <span class="token number">0</span>      <span class="token number">0</span> :::2222                 :::*                    LISTEN</code></pre>
+<p>Of course, because we're not using <code>grep</code>, we still get the heading output from <code>netstat</code> here. But the <code>--listening</code> does the job nicely!</p>
+<p>Unfortunately, it won't be any time soon that I can switch to this option, because the macOS version of <code>netstat</code> doesn't support <code>-l</code>. In fact, it does have a <code>-l</code> option but it's for something completely different (printing full IPv6 addresses).</p>
+<p>That said, this is yet another small step towards me moving further away from macOS-local activities, and more fully to Linux based dev containers running on my Synology NAS. But that's a post for another time.</p>
+
+<hr>
+<ul><li>Next: <a href="/blog/2021/26/8/learning-by-rewriting-bash-jq-and-fzf-details/">Learning by rewriting - bash, jq and fzf details</a></li><li>Previous: <a href="/blog/2021/12/8/session-switching-with-the-tmux-menu/">Session switching with the tmux menu</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /blog/2021/22/8/today-s-til-trio/ -->
+  </body>
+</html>
