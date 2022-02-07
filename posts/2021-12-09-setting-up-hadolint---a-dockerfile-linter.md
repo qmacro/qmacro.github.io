@@ -1,4 +1,5 @@
 ---
+layout: post
 title: Setting up hadolint - a Dockerfile linter
 tags:
   - docker
