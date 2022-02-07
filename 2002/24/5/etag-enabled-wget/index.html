@@ -5,20 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ETag-enabled wget</title>
     <meta name="description" content="Reserving the right to be wrong.">
-    <link rel="stylesheet" href="/blog/css/index.css">
-    <link rel="stylesheet" href="/blog/css/prism-base16-monokai.dark.css">
-    <link rel="alternate" href="/blog/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
-    <link rel="alternate" href="/blog/feed/feed.json" type="application/json" title="DJ Adams">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/feed/feed.json" type="application/json" title="DJ Adams">
     <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
   </head>
   <body>
     <header>
-      <h1 class="home"><a href="/blog/">DJ Adams</a></h1>
+      <h1 class="home"><a href="/">DJ Adams</a></h1>
       <ul class="nav">
-        <li class="nav-item"><a href="/blog/">Home</a></li>
-        <li class="nav-item"><a href="/blog/about/">About</a></li>
-        <li class="nav-item"><a href="/blog/posts/">Archive</a></li>
-        <li class="nav-item"><a href="/blog/tags/">Tags</a></li>
+        <li class="nav-item"><a href="/">Home</a></li>
+        <li class="nav-item"><a href="/about/">About</a></li>
+        <li class="nav-item"><a href="/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/tags/">Tags</a></li>
       </ul>
     </header>
 
@@ -38,13 +38,13 @@
 <pre class="language-perl"><code class="language-perl"><span class="token comment">#!/usr/bin/perl -w</span><br><br><span class="token comment"># ETag-aware wget</span><br><span class="token comment"># Uses wget to more politely retrieve HTTP based information</span><br><span class="token comment"># DJ Adams</span><br><span class="token comment"># Version 0+1b</span><br><br><span class="token comment"># wget --header='If-None-Match: "3ea6d375;3e2eee38"' http://www.w3.org/</span><br><br><span class="token comment"># Changes</span><br><span class="token comment"># 0+1b 2003-02-03 dja added User-Agent string to wget call</span><br><span class="token comment"># 0+1 original version</span><br><br><span class="token keyword">use</span> strict<span class="token punctuation">;</span><br><span class="token keyword">my</span> <span class="token variable">$cachedir</span> <span class="token operator">=</span> <span class="token string">'/tmp/etagcache'</span><span class="token punctuation">;</span> <span class="token comment"># change this if you want</span><br><span class="token keyword">my</span> <span class="token variable">$etagfile</span> <span class="token operator">=</span> <span class="token string">"$cachedir/"</span><span class="token operator">.</span>unpack<span class="token punctuation">(</span><span class="token string">"H*"</span><span class="token punctuation">,</span> <span class="token variable">$ARGV</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <br><span class="token keyword">my</span> <span class="token variable">$etag</span> <span class="token operator">=</span> <span class="token string">`cat $etagfile 2>/dev/null`</span><span class="token punctuation">;</span><br><span class="token variable">$etag</span> <span class="token operator">=~</span> <span class="token regex">s/\\"/"/g</span><span class="token punctuation">;</span><br><span class="token variable">$etag</span> <span class="token operator">=~</span> <span class="token regex">s/^ETag: (.*?)\n$/$1/</span> <span class="token operator">and</span> <span class="token variable">$etag</span> <span class="token operator">=</span> <span class="token string">qq[--header='If-None-Match: $etag']</span><span class="token punctuation">;</span><br><br><span class="token keyword">my</span> <span class="token variable">$com</span><span class="token operator">=</span><span class="token string">"wget -U 'blagg/0+4i+ (wget.pl/0+1b)' --timeout=60 -s --quiet $etag -O - $ARGV[0]"</span><span class="token punctuation">;</span><br><span class="token keyword">print</span> <span class="token string">"Running: $com"</span><span class="token punctuation">;</span><br><br><span class="token keyword">my</span> <span class="token punctuation">(</span><span class="token variable">$headers</span><span class="token punctuation">,</span> <span class="token variable">$body</span><span class="token punctuation">)</span> <span class="token operator">=</span> split<span class="token punctuation">(</span><span class="token regex">/\n\n/</span><span class="token punctuation">,</span> <span class="token string">`wget -U 'blagg/0+4i+ (wget.pl/0+1b)' --timeout=60 -s --quiet $etag -O - $ARGV[0]`</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><span class="token keyword">print</span> <span class="token string">"Got headers: $headers\n\n"</span><span class="token punctuation">;</span><br><span class="token keyword">if</span> <span class="token punctuation">(</span>defined <span class="token variable">$body</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token punctuation">(</span><span class="token variable">$etag</span><span class="token punctuation">)</span> <span class="token operator">=</span> <span class="token variable">$headers</span> <span class="token operator">=~</span> <span class="token regex">/^(ETag:.*?)$/m</span><span class="token punctuation">;</span><br>  <span class="token keyword">print</span> <span class="token string">"Return value etag: $etag"</span><span class="token punctuation">;</span><br>  defined <span class="token variable">$etag</span> <span class="token operator">and</span> <span class="token variable">$etag</span> <span class="token operator">=~</span> <span class="token regex">s/\"/\\\"/g</span><span class="token punctuation">,</span> <span class="token string">`echo '$etag' > $etagfile`</span><span class="token punctuation">;</span><br>  <span class="token keyword">print</span> <span class="token string">"\n==========\n"</span><span class="token punctuation">;</span><br>  <span class="token keyword">print</span> <span class="token variable">$body</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span><br><span class="token keyword">else</span> <span class="token punctuation">{</span><br>  <span class="token keyword">print</span> <span class="token string">"Cached."</span><span class="token punctuation">;</span><br><span class="token punctuation">}</span></code></pre>
 
 <hr>
-<ul><li>Next: <a href="/blog/2002/24/5/top-tip/">Top tip</a></li><li>Previous: <a href="/blog/2002/21/5/more-thoughts-on-http-email-and-jabber/">More thoughts on HTTP, Email, and Jabber</a></li>
+<ul><li>Next: <a href="/2002/24/5/top-tip/">Top tip</a></li><li>Previous: <a href="/2002/21/5/more-thoughts-on-http-email-and-jabber/">More thoughts on HTTP, Email, and Jabber</a></li>
 </ul>
 
     </main>
 
     <footer></footer>
 
-    <!-- Current page: /blog/2002/24/5/etag-enabled-wget/ -->
+    <!-- Current page: /2002/24/5/etag-enabled-wget/ -->
   </body>
 </html>
