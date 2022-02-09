@@ -6,7 +6,7 @@ tags:
 ---
 There's a great discussion going on right now over on the SAP Community in the following thread:
 
-[New to the SAP Community? A friend of someone already here?](https://groups.community.sap.com/t5/coffee-corner/new-to-the-sap-community-a-friend-of-someone-already-here/td-p/2862)
+[New or not to the SAP Community, share your story!](https://groups.community.sap.com/t5/coffee-corner/new-to-the-sap-community-a-friend-of-someone-already-here/td-p/2862)
 
 Craig kicks things off talking about the community and asks folks for their story - how they came to be involved. I replied to the thread [sharing my story](https://groups.community.sap.com/t5/coffee-corner/new-to-the-sap-community-a-friend-of-someone-already-here/m-p/2905/highlight/true#M731), and I've also reproduced it here.
 
