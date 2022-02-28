@@ -5,8 +5,8 @@ tags:
   - autodidactics
   - shell
 ---
-
-_Checking the value of $0 allows me to source rather than execute an entire script._
+Checking the value of $0 allows me to source rather than execute an entire script.
+<!--excerpt-->
 
 Today I wrote a script `checksubmissions` to check submitted pull requests in the [SAP-samples/devtoberfest-2021](https://github.com/SAP-samples/devtoberfest-2021) repo related to Devtoberfest from SAP this year, specifically the [Best Practices](https://github.com/SAP-samples/devtoberfest-2021/tree/main/topics/Week2_Best_Practices) week.
 

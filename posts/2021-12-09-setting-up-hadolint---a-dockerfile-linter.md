@@ -6,8 +6,8 @@ tags:
   - tools
   - linting
 ---
-
-_Having something to help me write better Dockerfiles is useful. Here's what I did to set up a Dockerfile linter in my development environment._
+Having something to help me write better Dockerfiles is useful. Here's what I did to set up a Dockerfile linter in my development environment.
+<!--excerpt-->
 
 I'm writing more Dockerfiles, not least because I'm using a [development container](https://github.com/qmacro/dotfiles/tree/main/devcontainer) for 95% of my daily work, but also because the dockerisation of tools and environments appeals to me greatly. I came across [hadolint][hadolint] which is a Dockerfile linter written in Haskell (hence the name, I guess).
 

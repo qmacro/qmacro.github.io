@@ -6,8 +6,8 @@ tags:
   - chrome
   - shell
 ---
-
-_Here's how I used the chrome-cli tool to help me open up URLs in different tabs in a new Chrome window. From the command line._
+Here's how I used the chrome-cli tool to help me open up URLs in different tabs in a new Chrome window. From the command line.
+<!--excerpt-->
 
 In analysing various GitHub issues and pull requests recently, I needed to be able to open up a number of them in my browser, one in each tab. The GitHub issue and pull request URLs are determined from a script, and I wanted to be able to open up a new Chrome window on the screen with all of the URLs loaded.
 

@@ -6,8 +6,8 @@ tags:
   - fff
   - shell
 ---
-
-_Here's what I learned from starting to read the source code to fff - in particular, the main function._
+Here's what I learned from starting to read the source code to fff - in particular, the main function.
+<!--excerpt-->
 
 [`fff`](https://github.com/dylanaraps/fff) is "a simple file manager written in Bash". As I'm always on the lookout to learn more about Bash, that description got my attention immediately. It's a small but perfectly formed offering, complete with man page and even a `Makefile` for installation. And the file manager executable\* itself is a single Bash script.
 

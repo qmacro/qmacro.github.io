@@ -4,6 +4,9 @@ title: How I got involved in the SAP community
 tags:
   - sap-community
 ---
+Here's a quick summary of how I got involved in the SAP community, from a discussion thread over there.
+<!--excerpt-->
+
 There's a great discussion going on right now over on the SAP Community in the following thread:
 
 [New or not to the SAP Community, share your story!](https://groups.community.sap.com/t5/coffee-corner/new-to-the-sap-community-a-friend-of-someone-already-here/td-p/2862)

@@ -6,8 +6,8 @@ tags:
   - jq
   - btp
 ---
-
-_Finding objects in a complex JSON structure isn't as scary as I thought with jq._
+Finding objects in a complex JSON structure isn't as scary as I thought with jq.
+<!--excerpt-->
 
 My friend and colleague Rui was asking today about finding directory information for a given global account on SAP's [Business Technology Platform](https://www.sap.com/uk/products/business-technology-platform.html) (BTP). Of course, being an awesome chap, he was asking in the context of the [BTP CLI tool](https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/7c6df2db6332419ea7a862191525377c.html), `btp`.
 

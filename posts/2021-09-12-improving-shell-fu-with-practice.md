@@ -6,8 +6,8 @@ tags:
   - kitty
   - shell
 ---
-
-_Practising in the shell helps me improve and exposes me to new knowledge. Here's an example._
+Practising in the shell helps me improve and exposes me to new knowledge. Here's an example.
+<!--excerpt-->
 
 At the end of the working day I'm tired, but there's often just enough energy left in my brain to explore new options for some Unix commands, and practise my shell fu. Here's a few trivial things that I just learned, by writing a pipeline to choose and display a new theme for my current terminal of choice, [kitty](https://sw.kovidgoyal.net/kitty/).
 

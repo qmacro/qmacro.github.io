@@ -6,8 +6,8 @@ tags:
   - shell
   - tools
 ---
-
-_I learned about the `psFormat` Docker configuration option recently, and it got me thinking about how I strive for neat terminal output._
+I learned about the `psFormat` Docker configuration option recently, and it got me thinking about how I strive for neat terminal output.
+<!--excerpt-->
 
 I'm unashamedly a fan of the terminal, of the command line experience. The hashtag [#TheFutureIsTerminal](https://twitter.com/search?q=%23TheFutureIsTerminal) is one I'm fond of using.
 

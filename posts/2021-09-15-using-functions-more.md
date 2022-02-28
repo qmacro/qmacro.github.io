@@ -5,8 +5,8 @@ tags:
   - autodidactics
   - shell
 ---
-
-_Using functions more in my shell seems to bring benefits. Here's an example._
+Using functions more in my shell seems to bring benefits. Here's an example.
+<!--excerpt-->
 
 Bash functions seem to sit in a sweet spot between aliases and full blown scripts. I've defined a number of functions in my dotfiles which are all useful. Unlike aliases, they can take parameters and have greater scope for doing things; unlike scripts, they run in the context of the current shell which means, for example, that I can set a value in a variable during the course of a function's execution and it's available directly afterwards, in the same shell session.
 

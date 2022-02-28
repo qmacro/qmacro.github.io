@@ -6,8 +6,8 @@ tags:
   - fff
   - shell
 ---
-
-_Continuing to read and learn from the source code to fff - this time, the get_ls_colors function._
+Continuing to read and learn from the source code to fff - this time, the getls_colors function.
+<!--excerpt-->
 
 In [part 1][part-1] I took a first look at [`fff`](https://github.com/dylanaraps/fff), "a simple file manager written in Bash", focusing on the `main` function, and learned a lot. In this part I take a look at the first function called from `main`, and that is `get_ls_colors`. I'm continuing to use the same commit reference as last time, i.e. the state of `fff` [here](https://github.com/dylanaraps/fff/tree/5b90a8599cce3333672947438bb1718e1298e068).
 
