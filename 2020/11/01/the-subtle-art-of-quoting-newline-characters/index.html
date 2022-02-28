@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The subtle art of quoting newline characters</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/">Home</a></li>
+        <li class="nav-item"><a href="/about/">About</a></li>
+        <li class="nav-item"><a href="/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/tags/">Tags</a></li>
+        <li class="nav-item"><a href="/feed.xml">Feed</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>The subtle art of quoting newline characters</h1>
+
+<time datetime="2020-11-01">01 Nov 2020</time>
+
+<p><em>Putting a backslash at the end of a line in the shell (or in a shell script) means &quot;continued on the next line!&quot;, right? Well yes, but it's more subtle, more simple and more beautifully shell-like than I thought.</em></p>
+<p>I was staring absentmindedly at a helper script that I'd written on last Friday's #HandsOnSAPDev live stream (replay here: <a href="https://www.youtube.com/watch?v=E9Ha0tnXGS4">Generating Enterprise Messaging artifact graphs with shell scripting and Graphviz - Part 1</a>) which looks like this:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token shebang important">#!/usr/bin/env bash</span><br><br><span class="token builtin class-name">declare</span> <span class="token assign-left variable">fontname</span><span class="token operator">=</span><span class="token string">"Victor Mono"</span><br><span class="token builtin class-name">declare</span> <span class="token assign-left variable">fontsize</span><span class="token operator">=</span><span class="token string">"16"</span><br><br>dot <span class="token punctuation">\</span><br>  -Tpng <span class="token punctuation">\</span><br>  -Nfontname<span class="token operator">=</span><span class="token string">"<span class="token variable">$fontname</span>"</span> <span class="token punctuation">\</span><br>  -Nfontsize<span class="token operator">=</span><span class="token string">"<span class="token variable">$fontsize</span>"</span> <span class="token punctuation">\</span><br>  test.dot <span class="token operator">></span> test.png</code></pre>
+<p>(yes, I know we need to talk about the hashbang, but let's leave that for another time).</p>
+<p>I like to make my scripts readable, so I often split commands over separate lines, as I've done here in the invocation of the <code>dot</code> command, with its various switches and arguments.</p>
+<p>I had always vaguely thought that &quot;OK, well if I want to continue on the next line, I have to put a backslash (<code>\</code>) at the end of the preceding line&quot;, like I've done here. So in that sense, I was considering the backslash as a sort of continuation character.</p>
+<p>Bzzt. Wrong. Or at least not entirely accurate.</p>
+<p>Yesterday the YouTube algorithm, which knows I'm currently geeking out on all things shell, suggested a short series of videos by <a href="https://www.youtube.com/channel/UCseUQK4kC3x2x543nHtGpzw">Brian Will</a>: <a href="https://www.youtube.com/playlist?list=PLFAC320731F539902">Unix Terminals and Shells</a>. In the second video in this playlist, he listed the characters in Bash that had special meaning:</p>
+<pre><code># ' &quot; \ $ ` * ~ ? &lt; &gt; ( ) ! | &amp; ; space newline
+</code></pre>
+<p>Some may be more obvious or familiar than others. Note the last two in the list - <code>space</code> and <code>newline</code>. In particular, <code>newline</code> normally denotes the end of a command (of course, there are other special characters that denote this too - notably <code>;</code> and <code>&amp;</code>). See <a href="https://www.gnu.org/software/bash/manual/bash.html#Lists">Section 3.2.3 Lists of Commands</a> in the Bash manual for details.</p>
+<p>Brian goes on to explain the function of the backslash character in a quoting or escape capacity - to remove the special meaning of the immediately following character, so that it's treated as-is. So for example if you actually wanted a dollar sign, which normally has a special meaning if you use it, you'd use <code>\$</code>.</p>
+<p>Likewise, then for the newline character. If you want the meaning of newline to be cancelled, i.e. &quot;please do <em>not</em> treat this point as the end of the command&quot;, then you need to use the backslash to quote it:</p>
+<pre><code>\newline
+</code></pre>
+<p>(of course, I'm representing an actual newline with <code>newline</code> here).</p>
+<p>I don't know about you, but I've always used &quot;escape&quot; as a verb here, rather than &quot;quote&quot;, i.e. &quot;to remove the special meaning of character x, you have to escape it with a <code>\</code>&quot;. I think a more accurate way of saying it is &quot;... you have to quote it with a <code>\</code>&quot;. The cause is probably the fact that <code>\</code> is known as the &quot;escape character&quot;. The escape character is documented in Section <a href="https://www.gnu.org/software/bash/manual/bash.html#Escape-Character">3.1.2.1 Escape Character</a> of the Bash manual, which is quite short, and worth quoting, thus:</p>
+<p>&quot;<em>A non-quoted backslash ‘\’ is the Bash escape character. It preserves the literal value of the next character that follows, with the exception of newline. If a \newline pair appears, and the backslash itself is not quoted, the \newline is treated as a line continuation (that is, it is removed from the input stream and effectively ignored)</em>&quot;.</p>
+<p>This rounds out this post neatly for me, in that in fact, yes, the special meaning of <code>newline</code> is removed if you quote it with a backslash, so you can continue on the next line; what's more, it's actually removed from the input stream. I mean, it's just whitespace anyway, but that's a curious and interesting detail.</p>
+<p>Anyway, I'm now enlightened - I thought the backslash was doing something &quot;special&quot; here in the context of the script above (and many others like it), but no, in fact, it's just doing its normal job of removing the special meaning of the immediately following character, which to us is invisible.</p>
+
+<hr>
+<style>
+.utterances {
+  margin-left: inherit !important;
+}
+</style>
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script>
+
+<hr>
+<ul><li>Next: <a href="/2020/11/03/computer-unit-1979/">Computer Unit 1979</a></li><li>Previous: <a href="/2020/10/16/case-modification-operators-in-parameter-substitution/">Case modification operators in parameter substitution</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /2020/11/01/the-subtle-art-of-quoting-newline-characters/ -->
+  </body>
+</html>

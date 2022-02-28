@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embracing jq and JSON</title>
+    <meta name="description" content="Reserving the right to be wrong.">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="stylesheet" href="/css/prism-base16-monokai.dark.css">
+    <link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+    <link rel="alternate" href="/feed/feed.json" type="application/json" title="DJ Adams">
+    <link href="https://unpkg.com/prismjs@1.20.0/themes/prism-okaidia.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1 class="home"><a href="/">DJ Adams</a></h1>
+      <ul class="nav">
+        <li class="nav-item"><a href="/">Home</a></li>
+        <li class="nav-item"><a href="/about/">About</a></li>
+        <li class="nav-item"><a href="/posts/">Archive</a></li>
+        <li class="nav-item"><a href="/tags/">Tags</a></li>
+        <li class="nav-item"><a href="/feed.xml">Feed</a></li>
+      </ul>
+    </header>
+
+    <main class="tmpl-post">
+      <h1>Embracing jq and JSON</h1>
+
+<time datetime="2021-10-29">29 Oct 2021</time><a href="/tags/autodidactics/" class="post-tag">autodidactics</a><a href="/tags/jq/" class="post-tag">jq</a><a href="/tags/btp/" class="post-tag">btp</a>
+
+<p>Finding objects in a complex JSON structure isn't as scary as I thought with jq.</p>
+<p>My friend and colleague Rui was asking today about finding directory information for a given global account on SAP's <a href="https://www.sap.com/uk/products/business-technology-platform.html">Business Technology Platform</a> (BTP). Of course, being an awesome chap, he was asking in the context of the <a href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/7c6df2db6332419ea7a862191525377c.html">BTP CLI tool</a>, <code>btp</code>.</p>
+<p>For a given (fictitious) trial global account, let's say I have a structure that looks like this:</p>
+<p><img src="/img/2021/10/btp-global-account-structure.png" alt="BTP global account structure"></p>
+<p>With the <code>btp</code> tool, I can see this information cleanly in my environment of choice, my Bash shell, with this invocation:</p>
+<pre class="language-bash"><code class="language-bash">btp get accounts/global-account --show-hierarchy</code></pre>
+<p>which shows me something like this:</p>
+<pre><code>Showing details for global account 42bb4252-2b49-4685-bcd7-62c8d85d8b13...
+
+├─ 7f81446xtrial (42bb4252-2b49-4685-bcd7-62c8d85d8b13 - global account)
+│  ├─ trial (b3f3b2a3-d96d-4bea-8bbf-57ee84a9fc23 - subaccount)
+│  ├─ mydir (e6cde265-5d78-4e7c-a8cb-8625a4daaa04 - directory)
+│  │  ├─ fruit (4cc2e8f8-8cef-4828-82af-9b5adae387de - directory)
+│  │  │  ├─ apple (3b4ba347-973f-4571-b4af-7862886104be - directory)
+│  │  │  ├─ banana (0b58163d-5c49-4eb5-b359-17c9a0d94138 - directory)
+│  │  ├─ this and that (4a050bbe-5c4d-4ac0-9a66-d7e513f8b4c8 - directory)
+
+type:            id:                                    display name:   parent id:                             parent type:
+global account   42bb4252-2b49-4685-bcd7-62c8d85d8b13   7f81446xtrial
+subaccount       b3f3b2a3-d96d-4bea-8bbf-57ee84a9fc23   trial           42bb4252-2b49-4685-bcd7-62c8d85d8b13   global account
+directory        e6cde265-5d78-4e7c-a8cb-8625a4daaa04   mydir           42bb4252-2b49-4685-bcd7-62c8d85d8b13   global account
+directory        4cc2e8f8-8cef-4828-82af-9b5adae387de   fruit           e6cde265-5d78-4e7c-a8cb-8625a4daaa04   directory
+directory        3b4ba347-973f-4571-b4af-7862886104be   apple           4cc2e8f8-8cef-4828-82af-9b5adae387de   directory
+directory        0b58163d-5c49-4eb5-b359-17c9a0d94138   banana          4cc2e8f8-8cef-4828-82af-9b5adae387de   directory
+directory        4a050bbe-5c4d-4ac0-9a66-d7e513f8b4c8   this and that   e6cde265-5d78-4e7c-a8cb-8625a4daaa04   directory
+</code></pre>
+<p>The directories are hierarchically related, as you can see from the graphical depiction. But they're presented in a nice flat list towards the end, and I'm tempted to use standard *nix tools to parse that information out.</p>
+<p>First, I'm only interested in the data in the second half, in the table that has headers like &quot;type:&quot;, &quot;id:&quot; and so on. So I can remove all the lines up to (and including) that header line like this:</p>
+<pre class="language-bash"><code class="language-bash">btp get accounts/global-account --show-hierarchy <span class="token punctuation">\</span><br>  <span class="token operator">|</span> <span class="token function">sed</span> -e <span class="token string">'1,/^type:\s/d'</span></code></pre>
+<p>This gives me the following:</p>
+<pre><code>global account   42bb4252-2b49-4685-bcd7-62c8d85d8b13   7f81446xtrial
+subaccount       b3f3b2a3-d96d-4bea-8bbf-57ee84a9fc23   trial           42bb4252-2b49-4685-bcd7-62c8d85d8b13   global account
+directory        e6cde265-5d78-4e7c-a8cb-8625a4daaa04   mydir           42bb4252-2b49-4685-bcd7-62c8d85d8b13   global account
+directory        4cc2e8f8-8cef-4828-82af-9b5adae387de   fruit           e6cde265-5d78-4e7c-a8cb-8625a4daaa04   directory
+directory        3b4ba347-973f-4571-b4af-7862886104be   apple           4cc2e8f8-8cef-4828-82af-9b5adae387de   directory
+directory        0b58163d-5c49-4eb5-b359-17c9a0d94138   banana          4cc2e8f8-8cef-4828-82af-9b5adae387de   directory
+directory        4a050bbe-5c4d-4ac0-9a66-d7e513f8b4c8   this and that   e6cde265-5d78-4e7c-a8cb-8625a4daaa04   directory
+</code></pre>
+<p>Now I can more reliably look for the <code>directory</code> entries, right?</p>
+<pre class="language-bash"><code class="language-bash">btp get accounts/global-account --show-hierarchy <span class="token punctuation">\</span><br>  <span class="token operator">|</span> <span class="token function">sed</span> <span class="token string">'1,/^type:\s/d'</span> <span class="token punctuation">\</span><br>  <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">'^directory\s'</span></code></pre>
+<p>This gives me:</p>
+<pre><code>directory        e6cde265-5d78-4e7c-a8cb-8625a4daaa04   mydir           42bb4252-2b49-4685-bcd7-62c8d85d8b13   global account
+directory        4cc2e8f8-8cef-4828-82af-9b5adae387de   fruit           e6cde265-5d78-4e7c-a8cb-8625a4daaa04   directory
+directory        3b4ba347-973f-4571-b4af-7862886104be   apple           4cc2e8f8-8cef-4828-82af-9b5adae387de   directory
+directory        0b58163d-5c49-4eb5-b359-17c9a0d94138   banana          4cc2e8f8-8cef-4828-82af-9b5adae387de   directory
+directory        4a050bbe-5c4d-4ac0-9a66-d7e513f8b4c8   this and that   e6cde265-5d78-4e7c-a8cb-8625a4daaa04   directory
+</code></pre>
+<p>Now all I need to do is grab the value of the third column ... oh, wait.</p>
+<p>The directory named &quot;this and that&quot; is going to give me a bit of a headache; because it's not tabs that separate the columns, but normal spaces, I can't easily distinguish the spaces separating the columns from the spaces separating the words in the name &quot;this and that&quot;.</p>
+<p>While it's possible I could come up with some solution here, I think it's getting a little complex.</p>
+<p>The BTP CLI sports a <a href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/dcb85b7dea61432cbafaab4ce0ec9b08.html">JSON output mode</a>. This provides me with a more reliable and predictable data structure that I can parse. The natural tool to reach for here is of course <a href="https://stedolan.github.io/jq/">jq</a>, the &quot;lightweight and flexible command-line JSON processor&quot;.</p>
+<p>However, the structure of the JSON in this particular case is not regular; the nesting of parent and child objects reflects the structure of the actual hierarchy in the global account. That makes sense of course, but to be honest, the prospect of wielding some <code>jq</code> incantation to parse an object structure that I cannot know in advance felt a little scary; I had visions of recursive procedures and more.</p>
+<p>Here's a short section of the <a href="/autodidactics/content/2021/10/hierarchy.json">JSON output</a>, to show you what I mean:</p>
+<p><img src="/img/2021/10/json-output-structure.png" alt="JSON output structure"></p>
+<p>As it turns out, finding the objects in this hierarchy of nested parents and children turned out to be not as scary as I thought. Here's the invocation again, this time passing the option <code>--format json</code> when invoking <code>btp</code>, and parsing the output with <code>jq</code>:</p>
+<pre class="language-bash"><code class="language-bash">btp --format json get accounts/global-account --show-hierarchy <span class="token punctuation">\</span><br>  <span class="token operator">|</span> jq -r <span class="token string">'recurse | objects | select(.directoryType=="FOLDER") | .displayName'</span></code></pre>
+<p>This produces the following output to STDOUT:</p>
+<pre><code>fruit
+banana
+apple
+this and that
+</code></pre>
+<p>Wonderful!</p>
+<p>Here's a quick summary of what each of the items in the <code>jq</code> pipeline does:</p>
+<ul>
+<li><code>recurse</code>: Recursively descends <code>.</code>, producing every value</li>
+<li><code>objects</code>: Selects only inputs that are objects</li>
+<li><code>select(boolean_expression)</code>: produces its input unchanged if the expression returns true</li>
+</ul>
+<p>The boolean expression used with <code>select</code> ensures that only objects that have a JSON property <code>directoryType</code> with the specific value <code>FOLDER</code> are picked out. From those, just the value of the <code>displayName</code> property is then produced.</p>
+<p>And that's it. Not as scary as I thought.</p>
+<p>I need to improve my <code>jq</code> fu, and using it like this to process output from CLI tools such as <code>btp</code> is one way of doing it.</p>
+
+<hr>
+<style>
+.utterances {
+  margin-left: inherit !important;
+}
+</style>
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script>
+
+<hr>
+<ul><li>Next: <a href="/2021/11/07/exploring-fff-part-2-get-ls-colors/">Exploring fff part 2 - get_ls_colors</a></li><li>Previous: <a href="/2021/10/14/sourcing-vs-executing-in-bash/">Sourcing vs executing in Bash</a></li>
+</ul>
+
+    </main>
+
+    <footer></footer>
+
+    <!-- Current page: /2021/10/29/embracing-jq-and-json/ -->
+  </body>
+</html>
