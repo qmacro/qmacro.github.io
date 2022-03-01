@@ -10,7 +10,7 @@ tags:
 I wanted to see how a jq track might work in Exercism. Here's what I tried out this morning.
 <!--excerpt-->
 
-[Exercism](exercism.org) is a great resource for learning and practising languages. I've dabbled in a couple of tracks and it's a fun and compelling way to iterate and meditate on constructs in the languages you're interested in. One of the very appealing things to me is that as well as a very capable online editor environment, there's a command line interface (CLI) for [working locally](https://exercism.org/docs/using/solving-exercises/working-locally).
+[Exercism](https://exercism.org) is a great resource for learning and practising languages. I've dabbled in a couple of tracks and it's a fun and compelling way to iterate and meditate on constructs in the languages you're interested in. One of the very appealing things to me is that as well as a very capable online editor environment, there's a command line interface (CLI) for [working locally](https://exercism.org/docs/using/solving-exercises/working-locally).
 
 ## Digging into jq
 
