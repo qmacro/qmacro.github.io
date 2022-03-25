@@ -5,12 +5,80 @@
 	
 	<link href="https://qmacro.org/feed/feed.xml" rel="self"/>
 	<link href="https://qmacro.org/"/>
-	<updated>2022-03-14T00:00:00Z</updated>
+	<updated>2022-03-25T00:00:00Z</updated>
 	<id>https://qmacro.org/</id>
 	<author>
 		<name>DJ Adams</name>
 		<email>qmacro@gmail.com</email>
 	</author>
+	
+	<entry>
+		<title>Understanding jq&#39;s reduce function</title>
+		<link href="https://qmacro.org/2022/03/25/understanding-jq-s-reduce-function/"/>
+		<updated>2022-03-25T00:00:00Z</updated>
+		<id>https://qmacro.org/2022/03/25/understanding-jq-s-reduce-function/</id>
+		<content type="html">&lt;p&gt;It took me a bit of time to get my head around jq&#39;s reduce function. In this post I show how it relates to the equivalent function in JavaScript, which helped me understand it better, and might help you too.&lt;/p&gt;
+&lt;p&gt;The concept of the reduce function generally is a beautiful thing. I&#39;ve written about reduce in previous posts on this blog:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://qmacro.org/2016/10/02/f3c-part-3-reduce-basics/&quot;&gt;F3C Part 3 - Reduce basics&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://qmacro.org/2016/10/02/f3c-part-4-reduce-advanced/&quot;&gt;F3C Part 4 - Reduce advanced&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://qmacro.org/2019/04/08/es6-reduce-and-pipe/&quot;&gt;ES6, reduce and pipe&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Being a predominantly functional language, the fact that &lt;code&gt;jq&lt;/code&gt; has a &lt;a href=&quot;https://stedolan.github.io/jq/manual/#Reduce&quot;&gt;reduce function&lt;/a&gt; comes as no surprise. However, its structure and how it is wielded is a little different from what I was used to. I think this is partly due to how &lt;code&gt;jq&lt;/code&gt; programs are constructed, as pipelines for JSON data to flow through.&lt;/p&gt;
+&lt;p&gt;I decided to write this post after reading an invocation of &lt;code&gt;reduce&lt;/code&gt; in an &lt;a href=&quot;https://stackoverflow.com/a/71587417/384366&quot;&gt;answer to a Stack Overflow question&lt;/a&gt;, which had this really interesting approach to achieving what was desired:&lt;/p&gt;
+&lt;pre class=&quot;language-jq&quot;&gt;&lt;code class=&quot;language-jq&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;reduce&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator pipe&quot;&gt;|&lt;/span&gt; to_entries&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token variable&quot;&gt;$i&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token dot important&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token variable&quot;&gt;$i&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;key&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;a &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token variable&quot;&gt;$i&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;value&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Because my reading comprehension of &lt;code&gt;jq&lt;/code&gt;&#39;s &lt;code&gt;reduce&lt;/code&gt; was a little off, I found this difficult to understand at first. But now it&#39;s much clearer to me.&lt;/p&gt;
+&lt;h2 id=&quot;the-manual-entry-for-reduce&quot; tabindex=&quot;-1&quot;&gt;The manual entry for reduce &lt;a class=&quot;direct-link&quot; href=&quot;https://qmacro.org/2022/03/25/understanding-jq-s-reduce-function/#the-manual-entry-for-reduce&quot; aria-hidden=&quot;true&quot;&gt;#&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;When I first read the entry for &lt;code&gt;reduce&lt;/code&gt; in the &lt;code&gt;jq&lt;/code&gt; manual, I found myself scratching my head a little. This is what it says:&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;The reduce syntax in jq allows you to combine all of the results of an expression by accumulating them into a single answer. As an example, we&#39;ll pass [3,2,1] to this expression:&lt;/em&gt;&lt;/p&gt;
+&lt;pre class=&quot;language-jq&quot;&gt;&lt;code class=&quot;language-jq&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;reduce&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token variable&quot;&gt;$item&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token dot important&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token variable&quot;&gt;$item&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;em&gt;For each result that .[] produces, . + $item is run to accumulate a running total, starting from 0.&lt;/em&gt;&lt;/p&gt;
+&lt;h2 id=&quot;invoking-the-example&quot; tabindex=&quot;-1&quot;&gt;Invoking the example &lt;a class=&quot;direct-link&quot; href=&quot;https://qmacro.org/2022/03/25/understanding-jq-s-reduce-function/#invoking-the-example&quot; aria-hidden=&quot;true&quot;&gt;#&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;In case you&#39;re wondering, the complete invocation, supplying the array &lt;code&gt;[3,2,1]&lt;/code&gt;, could be done in a number of ways, depending on your preference. Here are two examples:&lt;/p&gt;
+&lt;p&gt;Passing in the array as a string for &lt;code&gt;jq&lt;/code&gt; to consume via STDIN:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;3,2&lt;/span&gt;,1&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; jq &lt;span class=&quot;token string&quot;&gt;&#39;reduce .[] as $item (0; . + $item)&#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Using &lt;code&gt;jq&lt;/code&gt;&#39;s &lt;code&gt;-n&lt;/code&gt; option, which tells &lt;code&gt;jq&lt;/code&gt; to use &#39;null&#39; as the single input value (effectively saying &amp;quot;don&#39;t expect any input&amp;quot;) and then using a literal array within the &lt;code&gt;jq&lt;/code&gt; code:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;jq -n &lt;span class=&quot;token string&quot;&gt;&#39;[3,2,1] | reduce .[] as $item (0; . + $item)&#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;examining-the-pieces-in-javascript&quot; tabindex=&quot;-1&quot;&gt;Examining the pieces in JavaScript &lt;a class=&quot;direct-link&quot; href=&quot;https://qmacro.org/2022/03/25/understanding-jq-s-reduce-function/#examining-the-pieces-in-javascript&quot; aria-hidden=&quot;true&quot;&gt;#&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Regardless of how it is invoked, I wanted to work out which bit of the &lt;code&gt;reduce&lt;/code&gt; construct did what. I did so by relating the structure to what I was more familiar with - the &lt;code&gt;reduce&lt;/code&gt; function in JavaScript, which, if we were to do the equivalent of the above, would look like this:&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;reduce&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;a&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; x&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; a &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; x&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So here we have:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;the array of values that we&#39;re processing with &lt;code&gt;reduce&lt;/code&gt; &lt;code&gt;[3,2,1]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;the call to the &lt;code&gt;reduce&lt;/code&gt; function itself, with two things passed to it:
+&lt;ul&gt;
+&lt;li&gt;the anonymous function &lt;code&gt;(a, x) =&amp;gt; a + x&lt;/code&gt; that implements how we want to reduce over the list, often referred to as the &amp;quot;callback&amp;quot; function&lt;/li&gt;
+&lt;li&gt;the starting value &lt;code&gt;0&lt;/code&gt; for the accumulator&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If you want to understand each of these parts better, take a quick look at &lt;a href=&quot;https://qmacro.org/2016/10/02/f3c-part-3-reduce-basics/&quot;&gt;F3C Part 3 - Reduce basics&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;When the line of JavaScript above is processed, the &lt;code&gt;reduce&lt;/code&gt; function first determines the initial value of the accumulator, which is &lt;code&gt;0&lt;/code&gt; here (the second of the two parameters passed to it). Then it works through the array, calling the anonymous function for each item, and passing:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;the current value of the accumulator (which is &lt;code&gt;0&lt;/code&gt; for the first item), received in parameter &lt;code&gt;a&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;the value of the array item being processed (which will be &lt;code&gt;3&lt;/code&gt; the first time, then &lt;code&gt;2&lt;/code&gt;, then &lt;code&gt;1&lt;/code&gt;), received in parameter &lt;code&gt;x&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Whatever that function produces (which in this case is the value of &lt;code&gt;a + x&lt;/code&gt;) becomes the new accumulator value, and the process continues with the next array item, and so on.&lt;/p&gt;
+&lt;p&gt;The final value of the accumulator is the final value of the reduction process (the &lt;code&gt;reduce&lt;/code&gt; function can produce any shape of data, not just scalar values, but that&#39;s an exploration for another time).&lt;/p&gt;
+&lt;h2 id=&quot;relating-it-to-jq&#39;s-reduce&quot; tabindex=&quot;-1&quot;&gt;Relating it to jq&#39;s reduce &lt;a class=&quot;direct-link&quot; href=&quot;https://qmacro.org/2022/03/25/understanding-jq-s-reduce-function/#relating-it-to-jq&#39;s-reduce&quot; aria-hidden=&quot;true&quot;&gt;#&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;So how do we interpret the &lt;code&gt;reduce&lt;/code&gt; construct in &lt;code&gt;jq&lt;/code&gt;? Let&#39;s see, this is what we&#39;re looking at:&lt;/p&gt;
+&lt;pre class=&quot;language-jq&quot;&gt;&lt;code class=&quot;language-jq&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;reduce&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token variable&quot;&gt;$item&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token dot important&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token variable&quot;&gt;$item&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If we modify the &lt;code&gt;$item&lt;/code&gt; variable name so it&#39;s &lt;code&gt;$x&lt;/code&gt;, we can more easily pick out the component parts and relate them to what we&#39;ve just seen:&lt;/p&gt;
+&lt;pre class=&quot;language-jq&quot;&gt;&lt;code class=&quot;language-jq&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;reduce&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token variable&quot;&gt;$x&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token dot important&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token variable&quot;&gt;$x&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Here we see:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;.[] as $x&lt;/code&gt; is the reference to the array we want to process with &lt;code&gt;reduce&lt;/code&gt; (remember, this will pass through whatever list is piped into this filter) and the the variable (&lt;code&gt;$x&lt;/code&gt;) that will be used to represent each array item as they&#39;re processed&lt;/li&gt;
+&lt;li&gt;the &lt;code&gt;0&lt;/code&gt; is the starting value for the accumulator&lt;/li&gt;
+&lt;li&gt;the &lt;code&gt;. + $x&lt;/code&gt; is the expression that is executed each time around (equivalent to &lt;code&gt;a + x&lt;/code&gt; in the JavaScript example), where the accumulator is passed in to it (i.e. the accumulator is the &lt;code&gt;.&lt;/code&gt; in the expression)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;And the final value of the &lt;code&gt;. + $x&lt;/code&gt; expression, i.e. the final value of the accumulator, is what then represents the output of this &lt;code&gt;reduce&lt;/code&gt; function invocation.&lt;/p&gt;
+&lt;p&gt;That&#39;s pretty much it!&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;You may also be interested in this live stream recording on what &lt;code&gt;reduce&lt;/code&gt; is and how it can be used to build related functions:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=4BptIHoRDAk&quot;&gt;HandsOnSAPDev Ep.81 - Growing functions in JS from reduce() upwards&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://qmacro.org/img/2022/03/ep81.jpeg&quot; alt=&quot;Episode 81 thumbnail&quot; /&gt;&lt;/p&gt;
+</content>
+	</entry>
 	
 	<entry>
 		<title>Setting up my own Cloud Foundry</title>
