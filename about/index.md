@@ -1,10 +1,12 @@
 ---
 layout: layouts/home.njk
-title: About
+title: About Me
 eleventyNavigation:
-  key: About
+  key: About Me
   order: 2
 ---
+
+# About Me
 
 ![Head shot]({{ "/img/DJA-head-small.jpg" | url }})
 
