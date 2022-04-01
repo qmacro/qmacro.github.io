@@ -10,14 +10,6 @@ eleventyNavigation:
 
 _Here's a list of upcoming talks and other sessions I'll be presenting or hosting._
 
-## Introducing ABAP on Exercism - practice and improve your ABAP skills online
-
-When: Fri 01 Apr 2022 at 0800 BST (UTC+1)
-
-Exercism is a website for coding exercises and mentorship to help folks gain true fluency in their chosen programming languages. It's open-source and not-for-profit. And there's now an ABAP language track! Join us in this special live stream where we talk to the folks behind this new track and understand more about how Exercism works and what the ABAP track looks like.
-
-More: [https://twitter.com/qmacro/status/1506911556029853697](https://twitter.com/qmacro/status/1506911556029853697)
-
 ## Level up Your SAP BTP Resource Management Skills with Command Line Tools and APIs
 
 When: Tue 12 Apr 2022 at 1145 BST (UTC+1) / 1245 SAST (UTC+2) [⏰](https://www.timeanddate.com/worldclock/converter.html?iso=20220412T104500&p1=302&p2=111)
@@ -39,3 +31,16 @@ While exploring service brokers and service consumption on SAP Business Technolo
 In essence, I wanted my own Cloud Foundry environment instance, that I controlled and administered. That way I would be able to explore the SAP Service Manager, and service catalogues and marketplaces in general, in more detail.
 
 More: [https://blogs.sap.com/2022/03/21/sitsyd-sap-tech-night-sydney-april-20th-2022/](https://blogs.sap.com/2022/03/21/sitsyd-sap-tech-night-sydney-april-20th-2022/)
+
+# Past
+
+Perhaps I should list all of my past talks here? 
+
+## Introducing ABAP on Exercism - practice and improve your ABAP skills online
+
+When: Fri 01 Apr 2022 at 0800 BST (UTC+1)
+
+Exercism is a website for coding exercises and mentorship to help folks gain true fluency in their chosen programming languages. It's open-source and not-for-profit. And there's now an ABAP language track! Join us in this special live stream where we talk to the folks behind this new track and understand more about how Exercism works and what the ABAP track looks like.
+
+More: [https://twitter.com/qmacro/status/1506911556029853697](https://twitter.com/qmacro/status/1506911556029853697)
+
