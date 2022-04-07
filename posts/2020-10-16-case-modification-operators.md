@@ -4,6 +4,7 @@ title:  "Case modification operators in parameter substitution"
 tags:
   - autodidactics
   - shell
+  - exercism
 ---
 _Today I learned that in addition to the usual ways of uppercasing strings, Bash 4 brought the addition of case modification operators to the parameter substitution family._
 

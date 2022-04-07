@@ -6,6 +6,7 @@ tags:
   - learning
   - bats
   - shell
+  - exercism
 ---
 I wanted to see how a jq track might work in Exercism. Here's what I tried out this morning.
 <!--excerpt-->
