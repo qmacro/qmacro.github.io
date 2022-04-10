@@ -13,6 +13,8 @@ I've been a member of SAP's [Mentors Advisory Board](https://blogs.sap.com/2016/
 
 I have spent many happy hours teaching kids & teachers to code. I ran a [CodeClub](/2013/04/18/codeclub-thoughts/) in my local village school, I've been a volunteer at [Manchester CoderDojo](http://mcrcoderdojo.org.uk), a STEMnet Ambassador and in 2013 I ran a centre in Manchester for [Young Rewired State](http://getcodingkids.com/young-rewired-state/).
 
+I have a wonderful son Joseph, of whom I'm **very** proud.
+
 ## Writing and Talks
 
 I've written two books for O'Reilly ([Programming Jabber](http://shop.oreilly.com/product/9780596002022.do) and [Google Pocket Guide](http://shop.oreilly.com/product/9780596005504.do)), conceived, edited and co-written a book on UI5 ([30 Days of UI5](https://www.amazon.co.uk/30-Days-UI5-Celebrating-milestone-ebook/dp/B017MOJEWG)) and am a co-author of the SAP Press book [Practical Workflow for SAP (3rd Ed.)](https://www.amazon.co.uk/Practical-Workflow-Revised-Rickayzen-Hardcover/dp/B011DCBNZO).
