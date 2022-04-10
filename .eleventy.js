@@ -1,145 +1,146 @@
-const { DateTime } = require("luxon");
-const fs = require("fs");
-const pluginRss = require("@11ty/eleventy-plugin-rss");
-const pluginSyntaxHighlight = require("@11ty/eleventy-plugin-syntaxhighlight");
-const pluginNavigation = require("@11ty/eleventy-navigation");
-const markdownIt = require("markdown-it");
-const markdownItAnchor = require("markdown-it-anchor");
+const { DateTime } = require('luxon');
+const readingTime = require('eleventy-plugin-reading-time');
+const pluginRss = require('@11ty/eleventy-plugin-rss');
+const syntaxHighlight = require('@11ty/eleventy-plugin-syntaxhighlight');
+const htmlmin = require('html-minifier')
+const fs = require('fs');
+const path = require('path');
 
-module.exports = function(eleventyConfig) {
-  // Excerpts for posts
-  eleventyConfig.setFrontMatterParsingOptions({
-    excerpt: true,
-    excerpt_separator: '<!--excerpt-->'
-  });
+const isDev = process.env.ELEVENTY_ENV === 'development';
+const isProd = process.env.ELEVENTY_ENV === 'production'
 
-  // Copy the `img` and `css` folders to the output
-  eleventyConfig.addPassthroughCopy("img");
-  eleventyConfig.addPassthroughCopy("css");
+const manifestPath = path.resolve(
+  __dirname,
+  'public',
+  'assets',
+  'manifest.json'
+);
 
-  // Add plugins
-  eleventyConfig.addPlugin(pluginRss);
-  eleventyConfig.addPlugin(pluginSyntaxHighlight);
-  eleventyConfig.addPlugin(pluginNavigation);
-
-  // Alias `layout: post` to `layout: layouts/post.njk`
-  eleventyConfig.addLayoutAlias("post", "layouts/post.njk");
-
-  eleventyConfig.addFilter("readableDate", dateObj => {
-    return DateTime.fromJSDate(dateObj, {zone: 'utc'}).toFormat("dd LLL yyyy");
-  });
-
-  // https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#valid-date-string
-  eleventyConfig.addFilter('htmlDateString', (dateObj) => {
-    return DateTime.fromJSDate(dateObj, {zone: 'utc'}).toFormat('yyyy-LL-dd');
-  });
-
-  // For use in the permalink, so the URL path is /yyyy/mm/dd/title-slug/
-  eleventyConfig.addFilter('urlPathDate', (dateObj) => DateTime.fromJSDate(dateObj, {zone: 'utc'}).toFormat('yyyy/MM/dd'))
-
-  // Get the first `n` elements of a collection.
-  eleventyConfig.addFilter("head", (array, n) => {
-    if(!Array.isArray(array) || array.length === 0) {
-      return [];
+const manifest = isDev
+  ? {
+      'main.js': '/assets/main.js',
+      'main.css': '/assets/main.css',
     }
-    if( n < 0 ) {
+  : JSON.parse(fs.readFileSync(manifestPath, { encoding: 'utf8' }));
+
+module.exports = function (eleventyConfig) {
+  eleventyConfig.addPlugin(readingTime);
+  eleventyConfig.addPlugin(pluginRss);
+  eleventyConfig.addPlugin(syntaxHighlight);
+
+  // setup mermaid markdown highlighter
+  const highlighter = eleventyConfig.markdownHighlighter;
+  eleventyConfig.addMarkdownHighlighter((str, language) => {
+    if (language === 'mermaid') {
+      return `<pre class="mermaid">${str}</pre>`;
+    }
+    return highlighter(str, language);
+  });
+
+  eleventyConfig.setDataDeepMerge(true);
+  eleventyConfig.addPassthroughCopy({ 'src/images': 'images' });
+  eleventyConfig.setBrowserSyncConfig({ files: [manifestPath] });
+
+  eleventyConfig.addShortcode('bundledcss', function () {
+    return manifest['main.css']
+      ? `<link href="${manifest['main.css']}" rel="stylesheet" />`
+      : '';
+  });
+
+  eleventyConfig.addShortcode('bundledjs', function () {
+    return manifest['main.js']
+      ? `<script src="${manifest['main.js']}"></script>`
+      : '';
+  });
+
+  eleventyConfig.addFilter('excerpt', (post) => {
+    const content = post.replace(/(<([^>]+)>)/gi, '');
+    return content.substr(0, content.lastIndexOf(' ', 200)) + '...';
+  });
+
+  eleventyConfig.addFilter('readableDate', (dateObj) => {
+    return DateTime.fromJSDate(dateObj, { zone: 'utc' }).toFormat(
+      'dd LLL yyyy'
+    );
+  });
+
+  eleventyConfig.addFilter('htmlDateString', (dateObj) => {
+    return DateTime.fromJSDate(dateObj, { zone: 'utc' }).toFormat('yyyy-LL-dd');
+  });
+
+  eleventyConfig.addFilter('dateToIso', (dateString) => {
+    return new Date(dateString).toISOString()
+  });
+
+  eleventyConfig.addFilter('head', (array, n) => {
+    if (n < 0) {
       return array.slice(n);
     }
 
     return array.slice(0, n);
   });
 
-  // Return the smallest number argument
-  eleventyConfig.addFilter("min", (...numbers) => {
-    return Math.min.apply(null, numbers);
-  });
-
-  function filterTagList(tags) {
-    return (tags || []).filter(tag => ["all", "nav", "post", "posts"].indexOf(tag) === -1);
-  }
-
-  eleventyConfig.addFilter("filterTagList", filterTagList)
-
-  // Create an array of all tags
-  eleventyConfig.addCollection("tagList", function(collection) {
+  eleventyConfig.addCollection('tagList', function (collection) {
     let tagSet = new Set();
-    collection.getAll().forEach(item => {
-      (item.data.tags || []).forEach(tag => tagSet.add(tag));
+    collection.getAll().forEach(function (item) {
+      if ('tags' in item.data) {
+        let tags = item.data.tags;
+
+        tags = tags.filter(function (item) {
+          switch (item) {
+            case 'all':
+            case 'nav':
+            case 'post':
+            case 'posts':
+              return false;
+          }
+
+          return true;
+        });
+
+        for (const tag of tags) {
+          tagSet.add(tag);
+        }
+      }
     });
 
-    return filterTagList([...tagSet]);
+    return [...tagSet];
   });
 
-  // Customize Markdown library and settings:
-  let markdownLibrary = markdownIt({
-    html: true,
-    breaks: true,
-    linkify: true
-  }).use(markdownItAnchor, {
-    permalink: markdownItAnchor.permalink.ariaHidden({
-      placement: "after",
-      class: "direct-link",
-      symbol: "#",
-      level: [1,2,3,4],
-    }),
-    slugify: eleventyConfig.getFilter("slug")
+  eleventyConfig.addFilter('pageTags', (tags) => {
+    const generalTags = ['all', 'nav', 'post', 'posts'];
+
+    return tags
+      .toString()
+      .split(',')
+      .filter((tag) => {
+        return !generalTags.includes(tag);
+      });
   });
-  eleventyConfig.setLibrary("md", markdownLibrary);
 
-  // Override Browsersync defaults (used only with --serve)
-  eleventyConfig.setBrowserSyncConfig({
-    callbacks: {
-      ready: function(err, browserSync) {
-        const content_404 = fs.readFileSync('_site/404.html');
+  eleventyConfig.addTransform('htmlmin', function(content, outputPath) {
+    if ( outputPath && outputPath.endsWith(".html") && isProd) {
+      return htmlmin.minify(content, {
+        removeComments: true,
+        collapseWhitespace: true,
+        useShortDoctype: true,
+      });
+    }
 
-        browserSync.addMiddleware("*", (req, res) => {
-          // Provides the 404 content without redirect.
-          res.writeHead(404, {"Content-Type": "text/html; charset=UTF-8"});
-          res.write(content_404);
-          res.end();
-        });
-      },
-    },
-    ui: false,
-    ghostMode: false
+    return content;
   });
 
   return {
-    // Control which files Eleventy will process
-    // e.g.: *.md, *.njk, *.html, *.liquid
-    templateFormats: [
-      "md",
-      "njk",
-      "html",
-      "liquid"
-    ],
-
-    // Pre-process *.md files with: (default: `liquid`)
-    markdownTemplateEngine: "njk",
-
-    // Pre-process *.html files with: (default: `liquid`)
-    htmlTemplateEngine: "njk",
-
-    // -----------------------------------------------------------------
-    // If your site deploys to a subdirectory, change `pathPrefix`.
-    // Don’t worry about leading and trailing slashes, we normalize these.
-
-    // If you don’t have a subdirectory, use "" or "/" (they do the same thing)
-    // This is only used for link URLs (it does not affect your file structure)
-    // Best paired with the `url` filter: https://www.11ty.dev/docs/filters/url/
-
-    // You can also pass this in on the command line using `--pathprefix`
-
-    // Optional (default is shown)
-    // pathPrefix: "/",
-    // -----------------------------------------------------------------
-
-    // These are all optional (defaults are shown):
     dir: {
-      input: ".",
-      includes: "_includes",
-      data: "_data",
-      output: "_site"
-    }
+      input: 'src',
+      output: 'public',
+      includes: 'includes',
+      data: 'data',
+      layouts: 'layouts',
+      passthroughFileCopy: true,
+      templateFormats: ['html', 'njk', 'md'],
+      htmlTemplateEngine: 'njk',
+      markdownTemplateEngine: 'njk',
+    },
   };
 };
