@@ -11,21 +11,14 @@ There's such a rich seam of material out there to read and learn from that it's 
 
 I couldn't find such a podcast, so I decided to start one myself. It's called "[Tech Aloud](https://anchor.fm/tech-aloud)" and is hosted on Anchor FM. It's already available in many of the podcast systems:
 
-- [Player FM](https://player.fm/series/tech-aloud)
-
-- [Google Podcasts](https://podcasts.google.com/?feed=aHR0cHM6Ly9hbmNob3IuZm0vcy9lNWRjMzZjL3BvZGNhc3QvcnNz)
-
-- [Spotify](https://open.spotify.com/show/5l4AR3Q3HKZEpE7x9j0tdJ)
-
-- [Breaker](https://www.breaker.audio/tech-aloud)
-
-- [Overcast](https://overcast.fm/itunes1480329467/tech-aloud)
-
-- [Pocket Casts](https://pca.st/kyepz7uy)
-
-- [Radio Public](https://radiopublic.com/tech-aloud-6N3Nrw)
-
-- [Apple Podcasts](https://podcasts.apple.com/gb/podcast/tech-aloud/id1480329467)
+* [Player FM](https://player.fm/series/tech-aloud)
+* [Google Podcasts](https://podcasts.google.com/?feed=aHR0cHM6Ly9hbmNob3IuZm0vcy9lNWRjMzZjL3BvZGNhc3QvcnNz)
+* [Spotify](https://open.spotify.com/show/5l4AR3Q3HKZEpE7x9j0tdJ)
+* [Breaker](https://www.breaker.audio/tech-aloud)
+* [Overcast](https://overcast.fm/itunes1480329467/tech-aloud)
+* [Pocket Casts](https://pca.st/kyepz7uy)
+* [Radio Public](https://radiopublic.com/tech-aloud-6N3Nrw)
+* [Apple Podcasts](https://podcasts.apple.com/gb/podcast/tech-aloud/id1480329467)
 
 If you want to add it to your own podcast listening workflow, the RSS feed URL is: <https://anchor.fm/s/e5dc36c/podcast/rss>.
 
@@ -33,11 +26,11 @@ You can learn more about this new podcast by listening to the first episode "[We
 
 I have a system for bookmarking articles and posts that I want to read, and this podcast is me basically dipping into that list, picking entries out that seem suitable for audio, and recording them as episodes in this new podcast. How do I pick which articles or posts to read aloud? Well, there are a few rules of thumb:
 
-- each audio episode should be fairly short (say, up to 10 minutes), so super long essays are not going to make the cut, no matter how interesting they are (I reserve the right to make exceptions, though!)
+First, each audio episode should be fairly short (say, up to 10 minutes), so super long essays are not going to make the cut, no matter how interesting they are (I reserve the right to make exceptions, though!).
 
-- the content must be mostly text; in other words, if it's code or diagram heavy, it's not going to translate well into a pure audio format
+Second, the content must be mostly text; in other words, if it's code or diagram heavy, it's not going to translate well into a pure audio format.
 
-- the range of topics is wide, and basically whatever takes my fancy
+And finally, the range of topics is wide, and basically whatever takes my fancy.
 
 On that last point, I might even think about letting you submit requests (for certain articles or posts of your choosing to be included). More on that another time, perhaps.
 
