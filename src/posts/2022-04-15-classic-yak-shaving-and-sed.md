@@ -216,3 +216,45 @@ Great, I can now get on with putting the script together. I'll also need a way t
 But I'm not done with my descent yet. I'm not really sure exactly what the `!d` part in the first `sed` instruction is, and how it works. So at this point I send the [sed manual](https://www.gnu.org/software/sed/manual/sed.html) to my trusty Nexus 9 tablet, and head off to make a cup of coffee to enjoy while reading and learning more about this venerable stream editor that's been around [for almost half a century](https://en.wikipedia.org/wiki/Sed#History).
 
 I'm further away than ever from writing that post about the Exercism community solution I'd seen, but that's all fine. Yak shaving doesn't feel so bad when you're aware of when you're doing it.
+
+---
+
+## Update
+
+I've had my coffee and read some of the manual. It's now clear to me how the initial `sed` invocation works. Here it is in isolation:
+
+```
+/^tags:/,/---/!d
+```
+
+The first thing I needed to realise is that the `!` doesn't belong to the `d`, it belongs to the part before it.
+
+The [sed script overview](https://www.gnu.org/software/sed/manual/sed.html#sed-script-overview) explains that `sed` commands have this structure:
+
+```
+[addr]X[options]
+```
+
+where "addr" is an address and "X" represents the actual command, or operation.
+
+Looking at the [Addresses](https://www.gnu.org/software/sed/manual/sed.html#sed-addresses) section, we see that there are multiple ways of specifying lines that the given command is to operate upon. The specifications include direct line numbers ("numeric addresses"), and text matching ("regexp addresses"). Moreover, a [range](https://www.gnu.org/software/sed/manual/sed.html#Range-Addresses) can be specified, with the start and end specifications joined with a comma `,`.
+
+This is all fine, and we grokked that in building our sed instructions earlier. But the thing I didn't realise is that the `!` character is part of the "addr" specification (not part of the "X" command) and serves to _negate_ whatever address was specified.
+
+In other words, the "addr" part is actually:
+
+```
+/^tags:/,/---/!
+```
+
+which means "all the lines that are NOT in this range". And then the `d` command [deletes](https://www.gnu.org/software/sed/manual/sed.html#index-Text_002c-deleting) what's specified, i.e. deletes everything apart from sequences like this:
+
+```
+tags:
+  - shell
+  - til
+  - exercism
+---
+```
+
+So there you have it.
