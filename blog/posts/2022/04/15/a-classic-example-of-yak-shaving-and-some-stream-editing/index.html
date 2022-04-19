@@ -1,0 +1,119 @@
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2022/04/15/a-classic-example-of-yak-shaving-and-some-stream-editing/"><link href="/assets/main.05e665c4602227b0048e.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>A classic example of yak shaving, and some stream editing | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="A classic example of yak shaving, and some stream editing"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2022/04/15/a-classic-example-of-yak-shaving-and-some-stream-editing/"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:creator" content="@qmacro"><meta name="description" content="A classic example of yak shaving, and some stream editing 15 Apr 2022 | 4 min read It&#39;s not often that I&#39;m relaxed enough to be aware of how..."><meta property="og:description" content="A classic example of yak shaving, and some stream editing 15 Apr 2022 | 4 min read It&#39;s not often that I&#39;m relaxed enough to be aware of how..."><meta name="description" content="A classic example of yak shaving, and some stream editing 15 Apr 2022 | 4 min read It&#39;s not often that I&#39;m relaxed enough to be aware of how..."><meta property="og:image" content="https://qmacro.org/images/DJA-head.png"><meta name="twitter:image" content="https://qmacro.org/images/DJA-head.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/talks">Talks</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>A classic example of yak shaving, and some stream editing</h1><div class="post__details"><time datetime="2022-04-15">15 Apr 2022 </time><span>| </span><span>4 min read</span></div></header><main class="post__content"><p>It's not often that I'm relaxed enough to be aware of how my mind is (or isn't) working, and what it's doing. So it was a surprise when I realised that what I've been doing for the past 15 minutes is descending through multiple levels into some classic yak shaving territory.</p><h2>Level 1</h2><p>I thought I'd write about another Exercism community solution that caught my eye this morning. So I went to my blog repository locally, and thought:</p><blockquote><p>Actually, what I need is an updated version of my old script that sets up a new blog post file, so I can streamline the authoring of a new post.</p></blockquote><p>I've recently moved to <a href="https://www.11ty.dev/">11ty</a> and it's a decent static site generator; it has introduced a slightly new structure, and I'm happy with it so far, but it means I need a slightly different workflow to create a new blog post file.</p><p>Anyway, this thought should have been an early warning sign, but I sort of ignored it.</p><h2>Level 2</h2><p>Then, in thinking about what I'd want this script to do, I started to think about what input I'd give it. Initially just the blog post title, perhaps, but then:</p><blockquote><p>What about tags, and how would I specify them? Why don't I choose them from a list? But then how would I determine that list?</p></blockquote><p>The tags in any given post are declared in the frontmatter; here's the frontmatter for the previous post <a href="2022-04-10-bash-notes-2">Bash notes 2</a>:</p><pre><code>---
+layout: post
+title: Bash notes 2
+tags:
+  - shell
+  - til
+  - exercism
+---
+</code></pre><p>I had the idea of pulling out all the tags from all the Markdown files that represented posts. But how would I do that? I quickly descended to the next level down in my yak shaving journey.</p><h2>Level 3</h2><p>I could simply look through each of the files for any line that started with a couple of spaces, had a dash, and then a word. But I couldn't be sure that this approach wouldn't be too eager, and match blog post body content that wasn't tag related. So I thought it best to match those lines where <code>tags:</code> preceded them.</p><p>I had an inkling that something like multiline matching with <code>grep</code> might help, or even <code>sed</code>. There was a related question on Stack Overflow to which <a href="https://stackoverflow.com/a/2686369/384366">this answer</a> seemed as intriguing as it was concise:</p><pre class="language-bash"><code class="language-bash"><span class="token function">sed</span> -e <span class="token string">'/abc/,/efg/!d'</span> <span class="token punctuation">[</span>file-with-content<span class="token punctuation">]</span></code></pre><p>The first iteration of translating this into my requirements, and trying it out on the blog post files for this year so far, looks like this:</p><pre class="language-bash"><code class="language-bash"><span class="token function">sed</span> -e <span class="token string">'/^tags:/,/---/!d'</span> <span class="token number">2022</span>-*</code></pre><p>This gave me the following output:</p><pre><code>tags:
+  - sap-community
+---
+tags:
+  - jq
+  - learning
+  - bats
+  - shell
+  - exercism
+---
+tags:
+  - cloudfoundry
+  - kubernetes
+---
+tags:
+  - jq
+  - functional
+  - javascript
+---
+tags:
+  - shell
+  - til
+  - exercism
+---
+tags:
+  - shell
+  - til
+  - exercism
+---
+tags:
+  - shell
+---
+tags:
+  - shell
+  - til
+  - exercism
+---
+</code></pre><p>A second iteration, adding a second instruction <code>/^ - /!d</code> to search within the results for just the tag lines, looks like this:</p><pre class="language-bash"><code class="language-bash"><span class="token function">sed</span> -e <span class="token string">'/^tags:/,/---/!d; /^  - /!d'</span> <span class="token number">2022</span>-*</code></pre><p>And this gave me (output reduced for brevity):</p><pre><code>  - sap-community
+  - jq
+  - learning
+  - bats
+  - shell
+  - exercism
+  - cloudfoundry
+  - kubernetes
+  - jq
+  - functional
+  - javascript
+  - shell
+  - til
+  - exercism
+  - shell
+  - til
+  - exercism
+  - shell
+  - shell
+  ...
+</code></pre><p>So there are two more tasks here - to reduce each line to just the tag name (i.e. to remove the bullet point and spaces) and to deduplicate the list.</p><p>As we're already in <code>sed</code> mode, the first of these reductions might as well be a third instruction, specifically <code>s/ - //</code>, like this:</p><pre class="language-bash"><code class="language-bash"><span class="token function">sed</span> -e <span class="token string">'/^tags:/,/---/!d; /^  - /!d; s/^  - //'</span> <span class="token number">2022</span>-*</code></pre><p>This results in:</p><pre><code>sap-community
+jq
+learning
+bats
+shell
+exercism
+cloudfoundry
+kubernetes
+jq
+functional
+javascript
+shell
+til
+exercism
+shell
+til
+exercism
+shell
+shell
+...
+</code></pre><p>And while we could turn to <code>uniq</code> to deduplicate the list, we'll have to sort it first anyway, so we might as well use the <code>-u</code> option to <code>sort</code>:</p><pre class="language-bash"><code class="language-bash"><span class="token function">sed</span> -e <span class="token string">'/^tags:/,/---/!d; /^  - /!d; s/^  - //'</span> <span class="token number">2022</span>-* <span class="token operator">|</span> <span class="token function">sort</span> -u</code></pre><p>This gives us what we want, a nice clean, unique list of tags:</p><pre><code>bats
+cloudfoundry
+exercism
+functional
+javascript
+jq
+kubernetes
+learning
+sap-community
+shell
+til
+</code></pre><p>I can now use this with <a href="https://github.com/junegunn/fzf">fzf</a> and its multi select mode to give me the option of choosing one or more tags:</p><pre class="language-bash"><code class="language-bash"><span class="token function">sed</span> -e <span class="token string">'/^tags:/,/---/!d; /^  - /!d; s/^  - //'</span> <span class="token number">2022</span>-* <span class="token operator">|</span> <span class="token function">sort</span> -u <span class="token operator">|</span> fzf -m</code></pre><p>This gives me a nice interface like this:</p><pre><code>&gt; til
+  shell
+  sap-community
+  learning
+  kubernetes
+  jq
+  javascript
+ &gt;functional
+ &gt;exercism
+  cloudfoundry
+ &gt;bats
+  11/11 (3)
+</code></pre><p>(Here, I've selected the three tags <code>functional</code>, <code>exercism</code> and <code>bats</code>, and my selection cursor is currently pointing to <code>til</code>.)</p><h2>Level 4</h2><p>Great, I can now get on with putting the script together. I'll also need a way to specify a new tag if it's not in the list, but I'll deal with that when I get to it.</p><p>But I'm not done with my descent yet. I'm not really sure exactly what the <code>!d</code> part in the first <code>sed</code> instruction is, and how it works. So at this point I send the <a href="https://www.gnu.org/software/sed/manual/sed.html">sed manual</a> to my trusty Nexus 9 tablet, and head off to make a cup of coffee to enjoy while reading and learning more about this venerable stream editor that's been around <a href="https://en.wikipedia.org/wiki/Sed#History">for almost half a century</a>.</p><p>I'm further away than ever from writing that post about the Exercism community solution I'd seen, but that's all fine. Yak shaving doesn't feel so bad when you're aware of when you're doing it.</p><hr><h2>Update</h2><p>I've had my coffee and read some of the manual. It's now clear to me how the initial <code>sed</code> invocation works. Here it is in isolation:</p><pre><code>/^tags:/,/---/!d
+</code></pre><p>The first thing I needed to realise is that the <code>!</code> doesn't belong to the <code>d</code>, it belongs to the part before it.</p><p>The <a href="https://www.gnu.org/software/sed/manual/sed.html#sed-script-overview">sed script overview</a> explains that <code>sed</code> commands have this structure:</p><pre><code>[addr]X[options]
+</code></pre><p>where &quot;addr&quot; is an address and &quot;X&quot; represents the actual command, or operation.</p><p>Looking at the <a href="https://www.gnu.org/software/sed/manual/sed.html#sed-addresses">Addresses</a> section, we see that there are multiple ways of specifying lines that the given command is to operate upon. The specifications include direct line numbers (&quot;numeric addresses&quot;), and text matching (&quot;regexp addresses&quot;). Moreover, a <a href="https://www.gnu.org/software/sed/manual/sed.html#Range-Addresses">range</a> can be specified, with the start and end specifications joined with a comma <code>,</code>.</p><p>This is all fine, and we grokked that in building our sed instructions earlier. But the thing I didn't realise is that the <code>!</code> character is part of the &quot;addr&quot; specification (not part of the &quot;X&quot; command) and serves to <em>negate</em> whatever address was specified.</p><p>In other words, the &quot;addr&quot; part is actually:</p><pre><code>/^tags:/,/---/!
+</code></pre><p>which means &quot;all the lines that are NOT in this range&quot;. And then the <code>d</code> command <a href="https://www.gnu.org/software/sed/manual/sed.html#index-Text_002c-deleting">deletes</a> what's specified, i.e. deletes everything apart from sequences like this:</p><pre><code>tags:
+  - shell
+  - til
+  - exercism
+---
+</code></pre><p>So there you have it.</p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/shell/">#shell</a> <a href="/tags/yak-shaving/">#yak-shaving</a> <a href="/tags/sed/">#sed</a></div><style>.utterances {
+  margin-left: inherit !important;
+}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2022/04/17/bash-notes-3/"><span>←</span> <span>Bash notes 3</span> </a><a href="/blog/posts/2022/04/10/bash-notes-2/"><span>Bash notes 2</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a href="https://twitter.com/qmacro" target="_blank" rel="noopener noreferrer">Twitter</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
