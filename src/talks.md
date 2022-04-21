@@ -3,20 +3,6 @@ title: Upcoming Talks
 layout: talks.njk
 ---
 
-## Setting up my own Cloud Foundry
-
-When: Wed 20 Apr 2022 at 0900 BST (UTC+1) / 1800 AEDT (UTC+10) [⏰](https://www.timeanddate.com/worldclock/converter.html?iso=20220420T080000&p1=302&p2=240)
-
-As a developer with access to SAP’s Business Technology Platform, I already have free access to multiple runtime environments and services. These environments include Kubernetes, via Kyma, and Cloud Foundry.
-
-While exploring service brokers and service consumption on SAP Business Technology Platform recently, with a view to understanding the context and role of the SAP Service Manager (another open source project in the form of Peripli), I wanted to go beyond the developer level access I had to a Cloud Foundry runtime.
-
-In essence, I wanted my own Cloud Foundry environment instance, that I controlled and administered. That way I would be able to explore the SAP Service Manager, and service catalogues and marketplaces in general, in more detail.
-
-### Links
-
-* [General info](https://blogs.sap.com/2022/03/21/sitsyd-sap-tech-night-sydney-april-20th-2022/)
-
 ## Exploring SAP Service Manager on SAP Business Technology Platform
 
 When: Fri 22 Apr at 0800 BST (UTC+1)
@@ -30,6 +16,21 @@ Let's explore the Service Manager and find out together what it is, why it's the
 # Past talks
 
 Here is a list of some of my recent talks.
+
+## Setting up my own Cloud Foundry
+
+When: Wed 20 Apr 2022 at 0900 BST (UTC+1) / 1800 AEDT (UTC+10) [⏰](https://www.timeanddate.com/worldclock/converter.html?iso=20220420T080000&p1=302&p2=240)
+
+As a developer with access to SAP’s Business Technology Platform, I already have free access to multiple runtime environments and services. These environments include Kubernetes, via Kyma, and Cloud Foundry.
+
+While exploring service brokers and service consumption on SAP Business Technology Platform recently, with a view to understanding the context and role of the SAP Service Manager (another open source project in the form of Peripli), I wanted to go beyond the developer level access I had to a Cloud Foundry runtime.
+
+In essence, I wanted my own Cloud Foundry environment instance, that I controlled and administered. That way I would be able to explore the SAP Service Manager, and service catalogues and marketplaces in general, in more detail.
+
+### Links
+
+* [Talk recording](https://www.youtube.com/watch?v=o2NKhW2z9eg)
+* [General info](https://blogs.sap.com/2022/03/21/sitsyd-sap-tech-night-sydney-april-20th-2022/)
 
 ## Level up Your SAP BTP Resource Management Skills with Command Line Tools and APIs
 
