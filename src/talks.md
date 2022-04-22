@@ -3,6 +3,32 @@ title: Upcoming Talks
 layout: talks.njk
 ---
 
+## Digging deeper into service brokering and consumption on SAP Business Technology Platform
+
+When: Fri 29 Apr at 0800 BST (UTC+1)
+
+Continuing from where we left off last time, we take further steps towards understanding how SAP Service Manager and the Open Service Broker API work together for service discovery and use on SAP Business Technology Platform. (🔴 Live stream)
+
+### Links
+
+* [Live stream](https://youtu.be/9OAlu1wuf78)
+
+## Accessing SAP BTP resources with APIs and the CLI
+
+_Note: Session proposal only._
+
+When: Wed 09 Jun in 2850 Boom, BE
+
+A brief but technically heavy exploration of how to explore and manage resources on the SAP Business Technology platform with command line tools and APIs, both of which are key to being able to move fully to the cloud from a devops and automation perspective.
+
+### Links
+
+* [General info](https://www.flexso.com/en/events/sapdeveloperday)
+
+# Past talks
+
+Here is a list of some of my recent talks.
+
 ## Exploring SAP Service Manager on SAP Business Technology Platform
 
 When: Fri 22 Apr at 0800 BST (UTC+1)
@@ -11,11 +37,7 @@ Let's explore the Service Manager and find out together what it is, why it's the
 
 ### Links
 
-* [Live stream](https://www.youtube.com/watch?v=5_Ns0ihQPD4)
-
-# Past talks
-
-Here is a list of some of my recent talks.
+* [Recording](https://www.youtube.com/watch?v=5_Ns0ihQPD4)
 
 ## Setting up my own Cloud Foundry
 
