@@ -39,6 +39,7 @@ Let's explore the Service Manager and find out together what it is, why it's the
 
 * [Recording](https://www.youtube.com/watch?v=5_Ns0ihQPD4)
 
+<a name="setting-up-my-own-cloud-foundry"></a>
 ## Setting up my own Cloud Foundry
 
 When: Wed 20 Apr 2022 at 0900 BST (UTC+1) / 1800 AEDT (UTC+10) [⏰](https://www.timeanddate.com/worldclock/converter.html?iso=20220420T080000&p1=302&p2=240)
@@ -52,7 +53,9 @@ In essence, I wanted my own Cloud Foundry environment instance, that I controlle
 ### Links
 
 * [Talk recording](https://www.youtube.com/watch?v=o2NKhW2z9eg)
-* [General info](https://blogs.sap.com/2022/03/21/sitsyd-sap-tech-night-sydney-april-20th-2022/)
+* [Event info](https://blogs.sap.com/2022/03/21/sitsyd-sap-tech-night-sydney-april-20th-2022/)
+* [Exploring service brokers and service consumption on SAP Business Technology Platform](https://blogs.sap.com/2022/03/08/exploring-service-brokers-and-cf-on-sap-business-technology-platform/) (blog post)
+* [Setting up my own Cloud Foundry](https://qmacro.org/blog/posts/2022/03/14/setting-up-my-own-cloud-foundry/) (blog post)
 
 ## Level up Your SAP BTP Resource Management Skills with Command Line Tools and APIs
 
