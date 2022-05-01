@@ -3,15 +3,15 @@ title: Upcoming Talks
 layout: talks.njk
 ---
 
-## Digging deeper into service brokering and consumption on SAP Business Technology Platform
+## Wrapping up our adventures with the SAP Service Manager on SAP Business Technology Platform
 
-When: Fri 29 Apr at 0800 BST (UTC+1)
+When: Fri 06 May at 0800 BST (UTC+1)
 
-Continuing from where we left off last time, we take further steps towards understanding how SAP Service Manager and the Open Service Broker API work together for service discovery and use on SAP Business Technology Platform. (🔴 Live stream)
+A third and final episode in this mini-series where we journey together to explore the SAP Service Manager. (🔴 Live stream)
 
 ### Links
 
-* [Live stream](https://youtu.be/9OAlu1wuf78)
+* [Live Stream](https://youtu.be/c0quSmzE8mc)
 
 ## Accessing SAP BTP resources with APIs and the CLI
 
@@ -28,6 +28,16 @@ A brief but technically heavy exploration of how to explore and manage resources
 # Past talks
 
 Here is a list of some of my recent talks.
+
+## Digging deeper into service brokering and consumption on SAP Business Technology Platform
+
+When: Fri 29 Apr at 0800 BST (UTC+1)
+
+Continuing from where we left off last time, we take further steps towards understanding how SAP Service Manager and the Open Service Broker API work together for service discovery and use on SAP Business Technology Platform. (🔴 Live stream)
+
+### Links
+
+* [Recording](https://youtu.be/9OAlu1wuf78)
 
 ## Exploring SAP Service Manager on SAP Business Technology Platform
 
