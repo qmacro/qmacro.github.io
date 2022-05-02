@@ -59,7 +59,7 @@ cd "${2:-$1}" &>/dev/null ||:
 
 What can we unpack from that?
 
-<a name="parameter-expansion"/>
+<a name="parameter-expansion"></a>
 
 ### Parameter expansion "${2:-$1}"
 
@@ -85,7 +85,7 @@ Knowing this, the `"${2:-$1}"` incantation is easier to understand: it tries for
 
 I think this potentially saves some unnecessary conditional logic that would otherwise make this section of `main` more verbose. I like it!
 
-<a name="output-redirection"/>
+<a name="output-redirection"></a>
 
 ### Output redirection
 
@@ -151,7 +151,7 @@ So we have to be careful. One could therefore argue then that the use of this sh
 
 I recommend the wonderfully illustrated [Redirection Tutorial in the Bash Hackers Wiki](https://wiki.bash-hackers.org/howto/redirection_tutorial) for lots more goodness on this subject.
 
-<a name="no-operation"/>
+<a name="no-operation"></a>
 
 ### The no operation command : (colon)
 
@@ -197,7 +197,7 @@ Looking at the first instance, we see this:
 
 Beyond the actual concise way this has been written, avoiding the wordy "if ... then ... fi" construct, there are a couple of things that are worth looking at.
 
-<a name="conditional-expression"/>
+<a name="conditional-expression"></a>
 
 ### Conditional expression
 
@@ -212,7 +212,7 @@ Here are a couple of helpful answers with more information, on the Unix and Linu
 * [When is double-quoting necessary](https://unix.stackexchange.com/questions/68694/when-is-double-quoting-necessary/68748#68748)
 * [Why does parameter expansion with spaces without quotes work inside double brackets \[\[ but not inside single brackets \[?](https://unix.stackexchange.com/questions/32210/why-does-parameter-expansion-with-spaces-without-quotes-work-inside-double-brack/32227#32227)
 
-<a name="printf"/>
+<a name="printf"></a>
 
 ### Use of printf
 
@@ -398,7 +398,7 @@ These are sensible options for a file manager, at least, they make sense to me. 
 
 At this point the options have been dealt with (and the trash and cache directories have been created); it's now time to set a few hooks to handle various signals, and then call various functions.
 
-<a name="signals"/>
+<a name="signals"></a>
 
 ### Trapping and handling signals
 
