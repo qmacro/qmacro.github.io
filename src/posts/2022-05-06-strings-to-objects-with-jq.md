@@ -334,6 +334,21 @@ So there we are, I can now produce a simulation of what `gh`'s JSON output creat
 
 There is some brief discussion of this post on [Hacker News](https://news.ycombinator.com/item?id=31293982#31294281) and [Lobsters](https://lobste.rs/s/qi5tge/converting_strings_objects_with_jq).
 
+---
+
+Update: in the middle of the night last night, after publishing this post, I woke up and suddenly realised that I could make this even neater, by the use of the `--null-input` (`-n`) option, which is described as follows:
+
+> Don't read any input at all! Instead, the filter is run once using null as the input.
+
+That in turn means that I could avoid the two-item list of `.` and `inputs`, and simply have:
+
+```bash
+jq -R -n '[inputs]' names.txt
+```
+
+I do still have a place in my heart for `[.,inputs]` because it reminds me of the fundamental "first and rest", or "head and tail" concept from functional programming. See the "Subsequent understanding" section in [The beauty of recursion and list machinery](/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/) for more on this, if you're interested.
+
+
 [manual-object-construction]: [https://stedolan.github.io/jq/manual/#ObjectConstruction:{}]
 [manual-array-construction]: [https://stedolan.github.io/jq/manual/#Arrayconstruction:[]]
 [manual-array-slice]: [https://stedolan.github.io/jq/manual/#Array/StringSlice:.[10:15]]
