@@ -197,6 +197,8 @@ was missing, as it was already "consumed" ... but happily available in `.`. So I
 jq -R '[.,inputs]' names.txt
 ```
 
+> See the end of this post for an update on this.
+
 Lo and behold, it seems that this is exactly the sort of thing I'm looking to start with:
 
 ```json
