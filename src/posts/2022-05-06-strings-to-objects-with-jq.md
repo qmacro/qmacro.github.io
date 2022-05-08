@@ -5,11 +5,11 @@ tags:
   - jq
   - github
 ---
-In preparing some data for another upcoming blog post, I needed to convert a list of fully qualified GitHub repository names into a JSON array of single-property objects (to reflect the style of JSON output from GitHub's `gh` CLI). I achieved this with a short jq filter. Here's how, recorded here, with my working thoughts, mostly for my outboard memory.
+In preparing some data for another upcoming blog post (now published: [Exploring GitHub repo name distribution with jq](/blog/posts/2022/05/07/exploring-github-repo-name-distribution-with-jq/)), I needed to convert a list of fully qualified GitHub repository names into a JSON array of single-property objects (to reflect the style of JSON output from GitHub's `gh` CLI). I achieved this with a short jq filter. Here's how, recorded here, with my working thoughts, mostly for my outboard memory.
 
 ## The starting data
 
-For that other blog post I wanted to start with a list of repositories from GitHub. The list produced by the command I was invoking (`gh repo list SAP-samples --limit 10 --public`) was fine but to illustrate the wider point of the post I wanted to select specific repository names. So I ended up with a manually edited list like this, in a file called `names.txt`:
+For [that other blog post](/blog/posts/2022/05/07/exploring-github-repo-name-distribution-with-jq/) I wanted to start with a list of repositories from GitHub. The list produced by the command I was invoking (`gh repo list SAP-samples --limit 10 --public`) was fine but to illustrate the wider point of the post I wanted to select specific repository names. So I ended up with a manually edited list like this, in a file called `names.txt`:
 
 ```text
 SAP-samples/cloud-sdk-js
