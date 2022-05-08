@@ -330,6 +330,9 @@ and it produces exactly the same thing. And what it produces, is what we're look
 
 So there we are, I can now produce a simulation of what `gh`'s JSON output creates, from a flat list of simple strings, using a modest filter with `jq`. Of course, there are other ways of achieving this, but I'm happy with this for now.
 
+---
+
+There is some brief discussion of this post on [Hacker News](https://news.ycombinator.com/item?id=31293982#31294281) and [Lobsters](https://lobste.rs/s/qi5tge/converting_strings_objects_with_jq).
 
 [manual-object-construction]: [https://stedolan.github.io/jq/manual/#ObjectConstruction:{}]
 [manual-array-construction]: [https://stedolan.github.io/jq/manual/#Arrayconstruction:[]]
