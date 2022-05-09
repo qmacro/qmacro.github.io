@@ -5,7 +5,8 @@ title: Things I do to make my work life better
 
 IT and consulting. Two words that can conjur up thoughts of magic, awe and wonder. But like any other business, it has its challenges and you need to have your wits about you to survive and grow. Here are five things that I strive to do in this context.
 
-<a name="learn"></a>**Make time to learn**
+<a name="learn"></a>
+## **Make time to learn**
 
 If there's one thing that's constant in IT and consulting, it's change. Yes, that's a cliché, but it's definitely true here. And unless you're happy becoming eventually obsolete, you need to keep learning. It doesn't come easy - days are busy, coffee breaks are a welcome relief where you can let your brain coast and process thoughts in the background, and in the evenings you're tired.
 
@@ -15,7 +16,8 @@ Learning isn't just about reading of course, there's putting knowledge into prac
 
 (You may be interested to read this post I wrote about reading and learning: [Tech Skills Chat with JonERP – A Follow-on Story](https://blogs.sap.com/2009/11/05/tech-skills-chat-with-jonerp-a-follow-on-story/)).
 
-<a name="email"></a>**Don't be a slave to email**
+<a name="email"></a>
+## **Don't be a slave to email**
 
 There are so many articles on this subject I don't need to go into detail here. But I wanted to share a few of things I do in this regard that work well for me.
 
@@ -31,7 +33,8 @@ If folks ask you do to something and they've not directly addressed you, that's 
 
 Managing email is not only about managing yourself, but about managing others.
 
-<a name="meetings"></a>**Set reasonable meeting expectations**
+<a name="meetings"></a>
+## **Set reasonable meeting expectations**
 
 There are as many articles on meetings as there are on emails, so I can be brief here too. Time is the most precious commodity. Some meetings are necessary, but they're the minority, especially if you're technical and have work to do. Here's what I do. Not everything all of the time, but when it feels appropriate.
 
@@ -43,7 +46,8 @@ If I'm working at a client, I allow myself up to a maximum of two 30 minute call
 
 Finally, don't waste your time if a meeting doesn't start on time. I usually wait for up to 5 minutes into the call (sometimes 10 minutes if I'm feeling generous and can work on stuff while I wait) and if it hasn't started, I'll leave the call.
 
-<a name="lunch"></a>**Make time for lunch**
+<a name="lunch"></a>
+## **Make time for lunch**
 
 I try to step away from the keyboard at lunch. It doesn't work all the time, and sometimes it's because I am putting some of my learning into practice. But your brain needs time to process what it's been working on during the morning, and it's not going to be able to to if you're still in front of the screen.
 
@@ -51,14 +55,11 @@ Stepping away is a discipline I learned from practising the Pomodoro technique (
 
 Also, lunch time isn't fixed. My day starts early, which means lunch for me is around 1130. That's great, because when I get back from my lunch, others are just going, which means a little more peace than the rest of the day :-)
 
-<a name="people"></a>**Remember it's the people that matter**
+<a name="people"></a>
+## **Remember it's the people that matter**
 
 If I'm honest, it's taken me a while to come to this conclusion. I've been fortunate recently to move into a position where I can look after a team of folks who are all amazing, technically and otherwise. And through my career hacking on SAP technology, it's been the [people that matter](https://twitter.com/qmacro/status/902434375010275328).
 
 I try to think what I can do to help them. Not all the time, I'm not that saintly. But when I can, when I'm mindful of what's important, I try to make time. I've been in this business for three decades now, and it stands to reason that I probably have some wisdom to share, even if it's "don't do that, I did, and it's not good".
 
 There's this idea of being a 10x developer. I'm not sure if this is just mythical or metaphorical, but there's a simple truth in there which is that a good way for one person to scale is by making other folks better. And that's what I'm trying to learn to do now.
-
-
-
-
