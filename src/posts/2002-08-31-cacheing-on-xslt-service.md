@@ -4,7 +4,7 @@ title: Cacheing on XSLT service
 ---
 
 
-To speed things up on the experimental [RSS-in-Mozilla-sidebar thingy](/2002/Aug/29#tech/sidebar "yesterday's musings on RSS, Mozilla, and Sidebars"), I’ve [added in some cacheing](/~dj/XSLTc.pm) (using a little MySQL db) to the [simple XSL-Transform service](../../../service/xslt) that’s used to transform RSS to HTML on the fly, for inclusion into the sidebar. It makes it a lot faster, obviously, and takes a bit of strain off our poor old Celeron. I’ve exposed the gubbins a bit, in that it’s possible to specify a ‘cachelife’ parameter on the call. So if you want to customise the URL passed in the sidebar.addPanel() call, you can send this now:
+To speed things up on the experimental [RSS-in-Mozilla-sidebar thingy](/blog/posts/2002/Aug/29#tech/sidebar "yesterday's musings on RSS, Mozilla, and Sidebars"), I’ve [added in some cacheing](/~dj/XSLTc.pm) (using a little MySQL db) to the [simple XSL-Transform service](../../../service/xslt) that’s used to transform RSS to HTML on the fly, for inclusion into the sidebar. It makes it a lot faster, obviously, and takes a bit of strain off our poor old Celeron. I’ve exposed the gubbins a bit, in that it’s possible to specify a ‘cachelife’ parameter on the call. So if you want to customise the URL passed in the sidebar.addPanel() call, you can send this now:
 
 ```
 http://www.pipetree.com/service/xslt
