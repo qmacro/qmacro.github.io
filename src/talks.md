@@ -3,15 +3,15 @@ title: Upcoming Talks
 layout: talks.njk
 ---
 
-## Wrapping up our adventures with the SAP Service Manager on SAP Business Technology Platform
+## Back to basics: OData - the Open Data Protocol
 
-When: Fri 06 May at 0800 BST (UTC+1)
+When: Fri 13 May at 0800 BST (UTC+1)
 
-A third and final episode in this mini-series where we journey together to explore the SAP Service Manager. (🔴 Live stream)
+Join us in this first episode of a new series where we explore fundamental building blocks together. This week we'll start to look at OData. Everyone welcome, especially beginners! (🔴 Live stream)
 
 ### Links
 
-* [Live Stream](https://youtu.be/c0quSmzE8mc)
+* [Live Stream / Recording](https://youtu.be/O3OU2rSUqs0)
 
 ## Accessing SAP BTP resources with APIs and the CLI
 
@@ -29,6 +29,16 @@ A brief but technically heavy exploration of how to explore and manage resources
 
 Here is a list of some of my recent talks.
 
+## Wrapping up our adventures with the SAP Service Manager on SAP Business Technology Platform
+
+When: Fri 06 May at 0800 BST (UTC+1)
+
+A third and final episode in this mini-series where we journey together to explore the SAP Service Manager. (🔴 Live stream)
+
+### Links
+
+* [Live Stream / Recording](https://youtu.be/c0quSmzE8mc)
+
 ## Digging deeper into service brokering and consumption on SAP Business Technology Platform
 
 When: Fri 29 Apr at 0800 BST (UTC+1)
@@ -37,7 +47,7 @@ Continuing from where we left off last time, we take further steps towards under
 
 ### Links
 
-* [Recording](https://youtu.be/9OAlu1wuf78)
+* [Live Stream / Recording](https://youtu.be/9OAlu1wuf78)
 
 ## Exploring SAP Service Manager on SAP Business Technology Platform
 
@@ -47,7 +57,7 @@ Let's explore the Service Manager and find out together what it is, why it's the
 
 ### Links
 
-* [Recording](https://www.youtube.com/watch?v=5_Ns0ihQPD4)
+* [Live Stream / Recording](https://www.youtube.com/watch?v=5_Ns0ihQPD4)
 
 <a name="setting-up-my-own-cloud-foundry"></a>
 ## Setting up my own Cloud Foundry
