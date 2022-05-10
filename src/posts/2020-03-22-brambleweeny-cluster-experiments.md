@@ -14,11 +14,11 @@ That sharing comes in two forms: blog posts, which you'll find listed here, and 
 
 Here are the posts:
 
-1. [Brambleweeny Cluster Experiments](/2020/03/22/brambleweeny-cluster-experiments) (this post)
-1. [Starting out with Raspberry Pi experiments](/2020/03/22/starting-out-with-raspberry-pi-experiments)
-1. [Preparing the OS image](/2020/03/22/preparing-the-os-image)
-1. [Finding the Pis on the network](/2020/03/22/finding-the-pis-on-the-network)
-1. [Initial Pi configuration via Ansible](/2020/04/05/initial-pi-configuration-via-ansible)
+1. [Brambleweeny Cluster Experiments](/blog/posts/2020/03/22/brambleweeny-cluster-experiments) (this post)
+1. [Starting out with Raspberry Pi experiments](/blog/posts/2020/03/22/starting-out-with-raspberry-pi-experiments)
+1. [Preparing the OS image](/blog/posts/2020/03/22/preparing-the-os-image)
+1. [Finding the Pis on the network](/blog/posts/2020/03/22/finding-the-pis-on-the-network)
+1. [Initial Pi configuration via Ansible](/blog/posts/2020/04/05/initial-pi-configuration-via-ansible)
 
 ...
 

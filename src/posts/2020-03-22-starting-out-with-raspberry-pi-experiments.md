@@ -6,9 +6,9 @@ title: Starting out with Raspberry Pi experiments
 
 _This post provides some background to why I've started to experiment with Raspberry Pis, and to list the hardware components that I bought and set up with my son Joseph over the Christmas holidays._
 
-This is a post in the "[Brambleweeny Cluster Experiments](/2020/03/22/brambleweeny-cluster-experiments/)" series of blog posts, which accompanies the [YouTube live stream recording playlist](https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe) of the same name.
+This is a post in the "[Brambleweeny Cluster Experiments](/blog/posts/2020/03/22/brambleweeny-cluster-experiments/)" series of blog posts, which accompanies the [YouTube live stream recording playlist](https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe) of the same name.
 
-Next post in this series: [Preparing the OS image](/2020/03/22/preparing-the-os-image/)
+Next post in this series: [Preparing the OS image](/blog/posts/2020/03/22/preparing-the-os-image/)
 
 I've been skirting around the edges of experimentation with Raspberry Pis, to learn about clustering and containerisation using such technologies as Docker and Kubernetes. The topic area is fascinating in and of itself, but I think it's an important collection of subjects that one should know about in the SAP tech world too, given the cloud direction we're taking and how resources, services and applications are managed there.
 
@@ -61,6 +61,6 @@ The playlist is called [Brambleweeny Cluster Experiments](https://www.youtube.co
 
 Until next time, happy clustering!
 
-Next post in this series: [Preparing the OS image](/2020/03/22/preparing-the-os-image/)
+Next post in this series: [Preparing the OS image](/blog/posts/2020/03/22/preparing-the-os-image/)
 
 

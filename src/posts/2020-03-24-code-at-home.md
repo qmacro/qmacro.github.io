@@ -8,7 +8,7 @@ _This post provides information on the simple Code at Home initiative - what it 
 - Episodes on Mondays and Fridays at 15:30 UK time.
 - Last episode in this first series will be Ep.20 on Mon 18 May.
 - Subscribe on YouTube and find all the upcoming episode links here: [youtube.com/djadams-qmacro](https://youtube.com/djadams-qmacro)
-- Find a summary list of the past episode recordings, with links, here: [Code at Home episodes](/2020/04/02/code-at-home-episodes/)
+- Find a summary list of the past episode recordings, with links, here: [Code at Home episodes](/blog/posts/2020/04/02/code-at-home-episodes/)
 - **New: Please take 30 seconds to let me know what you think, and what I can do to improve, in this <a href="https://docs.google.com/forms/d/e/1FAIpQLSfHWIWRTPb5cCO2TfMIntixT5bUEDw7wd4x8SFKC6q6a4RCbA/viewform">feedback form</a>. Thank you!**
 
 Parents: if you have any questions (during the streams or in between) please don't hesitate to contact me at [qmacro+codeathome@gmail.com](mailto:qmacro+codeathome@gmail.com).

@@ -6,12 +6,12 @@ title: Preparing the OS image
 
 _This post describes how I prepared the base OS image for each of the Raspberry Pis in my "Brambleweeny" cluster._
 
-This is a post in the "[Brambleweeny Cluster Experiments](/2020/03/22/brambleweeny-cluster-experiments/)" series of blog posts, which accompanies the [YouTube live stream recording playlist](https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe) of the same name. The video linked here is the one that accompanies this blog post.
+This is a post in the "[Brambleweeny Cluster Experiments](/blog/posts/2020/03/22/brambleweeny-cluster-experiments/)" series of blog posts, which accompanies the [YouTube live stream recording playlist](https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe) of the same name. The video linked here is the one that accompanies this blog post.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/IY5ZNZDI-EQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-Previous post in this series: [Starting out with Raspberry Pi experiments](/2020/03/22/starting-out-with-raspberry-pi-experiments/)<br>
-Next post in this series: [Finding the Pis on the network](/2020/03/22/finding-the-pis-on-the-network/)
+Previous post in this series: [Starting out with Raspberry Pi experiments](/blog/posts/2020/03/22/starting-out-with-raspberry-pi-experiments/)<br>
+Next post in this series: [Finding the Pis on the network](/blog/posts/2020/03/22/finding-the-pis-on-the-network/)
 
 > This post has been updated to reflect the new name of the OS -- Raspberry Pi OS -- which changed (from Raspbian) around May 2020.
 
@@ -163,4 +163,4 @@ Are you sure you want to continue connecting (yes/no)?
 
 In the next post, we'll find out how I discovered the IP address(es) to use to connect, but for now, this is a great start - the SSH service responded to my request to connect (the "authenticity" message is just my machine saying "hey, I don't recognise this remote host - are you sure you want to proceed?") - we're all ready to start setting up our Pis for some clustering goodness!
 
-Next post in this series: [Finding the Pis on the network](/2020/03/22/finding-the-pis-on-the-network/)
+Next post in this series: [Finding the Pis on the network](/blog/posts/2020/03/22/finding-the-pis-on-the-network/)

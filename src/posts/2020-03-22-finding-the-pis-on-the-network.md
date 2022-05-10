@@ -6,14 +6,14 @@ title: Finding the Pis on the network
 
 _Now that we have our Pis booted and up and running on the network, we need to find them to configure them further._
 
-This is a post in the "[Brambleweeny Cluster Experiments](/2020/03/22/brambleweeny-cluster-experiments/)" series of blog posts, which accompanies the [YouTube live stream recording playlist](https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe) of the same name. The video linked here is the one that accompanies this blog post.
+This is a post in the "[Brambleweeny Cluster Experiments](/blog/posts/2020/03/22/brambleweeny-cluster-experiments/)" series of blog posts, which accompanies the [YouTube live stream recording playlist](https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe) of the same name. The video linked here is the one that accompanies this blog post.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/hx7DB7Iqslk" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-Previous post in this series: [Preparing the OS image](/2020/03/22/preparing-the-os-image/)<br>
-Next post in this series: [Initial Pi configuration via Ansible](/2020/04/05/initial-pi-configuration-via-ansible/)
+Previous post in this series: [Preparing the OS image](/blog/posts/2020/03/22/preparing-the-os-image/)<br>
+Next post in this series: [Initial Pi configuration via Ansible](/blog/posts/2020/04/05/initial-pi-configuration-via-ansible/)
 
-Having booted the Pis in the cluster using the [OS image prepared earlier](/2020/03/22/preparing-the-os-image/), we now need to find them so that we can continue with the setup.
+Having booted the Pis in the cluster using the [OS image prepared earlier](/blog/posts/2020/03/22/preparing-the-os-image/), we now need to find them so that we can continue with the setup.
 
 What does that mean? Well, the Pis will have requested IP addresses via DHCP. In my case, I run DHCP via my Google Wifi setup, and have a range set up for DHCP leases. While I can guess what the IP addresses might be, it's not scientific. I could look at the Google Wifi app on my phone, and go through manually searching for the devices that called themselves something that includes the string "raspberrypi", then looking at the details to reveal the IP addresses. But that sounds too much hard work, and not something I'd learn from.
 
@@ -64,7 +64,7 @@ Given that I can work out what IP addresses might already be allocated on my net
 
 But that feels a little fuzzy to me.
 
-Moreover, I'm learning about [Ansible](https://www.ansible.com) from Jeff Geerling, as I mentioned in [Starting out with Raspberry Pi experiments](/2020/03/22/starting-out-with-raspberry-pi-experiments/), and want to use some of the Ansible goodness for the setup of the Pis, as explained in his wiki page [Network the Raspberry Pis](http://www.pidramble.com/wiki/setup/network). Jeff has a nice [networking setup](https://github.com/geerlingguy/raspberry-pi-dramble/tree/master/setup/networking) section in his GitHub repo [geerlingguy/raspberry-pi-dramble](https://github.com/geerlingguy/raspberry-pi-dramble) which I recommend you have a look at. In this networking setup he has a playbook (a series of tasks for Ansible to carry out on a set of remote hosts) [`main.yml`](https://github.com/geerlingguy/raspberry-pi-dramble/blob/master/setup/networking/main.yml) that sets up networking, including allocating specific IP addresses to specific hosts.
+Moreover, I'm learning about [Ansible](https://www.ansible.com) from Jeff Geerling, as I mentioned in [Starting out with Raspberry Pi experiments](/blog/posts/2020/03/22/starting-out-with-raspberry-pi-experiments/), and want to use some of the Ansible goodness for the setup of the Pis, as explained in his wiki page [Network the Raspberry Pis](http://www.pidramble.com/wiki/setup/network). Jeff has a nice [networking setup](https://github.com/geerlingguy/raspberry-pi-dramble/tree/master/setup/networking) section in his GitHub repo [geerlingguy/raspberry-pi-dramble](https://github.com/geerlingguy/raspberry-pi-dramble) which I recommend you have a look at. In this networking setup he has a playbook (a series of tasks for Ansible to carry out on a set of remote hosts) [`main.yml`](https://github.com/geerlingguy/raspberry-pi-dramble/blob/master/setup/networking/main.yml) that sets up networking, including allocating specific IP addresses to specific hosts.
 
 How are these hosts identified and defined? In a `vars.yml` file, an example of which is [provided](https://github.com/geerlingguy/raspberry-pi-dramble/blob/master/setup/networking/example.vars.yml) in that networking setup section. It contains a mapping of MAC addresses to hostname and IP address pairs, which is exactly what I want. In other words, I want to give each of the Pis in the cluster a hostname, and a specific IP address that will persist and that I can remember.
 
@@ -202,4 +202,4 @@ At this stage, we have found the Pis on the network, and gathered the appropriat
 
 We'll get to that in the next post. Until then, happy arping!
 
-Next post in this series: [Initial Pi configuration via Ansible](/2020/04/05/initial-pi-configuration-via-ansible/)
+Next post in this series: [Initial Pi configuration via Ansible](/blog/posts/2020/04/05/initial-pi-configuration-via-ansible/)
