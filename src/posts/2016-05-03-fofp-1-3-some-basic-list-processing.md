@@ -4,9 +4,9 @@ title: FOFP 1.3 Some basic list processing
 tags:
   - language-ramblings
 ---
-Part of the [Fundamentals of Functional Programming](/2016/05/03/fofp) document.
+Part of the [Fundamentals of Functional Programming](/blog/posts/2016/05/03/fofp-fundamentals-of-functional-programming/) document.
 
-Prev: [FOFP 1.2 Trying things out](/2016/05/03/fofp-1-2-trying-things-out)
+Prev: [FOFP 1.2 Trying things out](/blog/posts/2016/05/03/fofp-1.2-trying-things-out)
 
 Let's explore the difference between imperative and functional programming approaches with the simple processing of a list of integers 1, 2, 3, 4, 5. We want to turn them into their "squared" equivalents 1, 4, 9, 16, 25.
 
@@ -105,4 +105,4 @@ squares
 
 But the improvement comes at a cost - yet more stuff to hold in your head, this time about the `squares` array.
 
-Next: [FOFP 1.4 A different approach with map](/2016/05/03/fofp-1-4-a-different-approach-with-map)
+Next: [FOFP 1.4 A different approach with map](/blog/posts/2016/05/03/fofp-1.4-a-different-approach-with-map)

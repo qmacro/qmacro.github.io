@@ -21,7 +21,7 @@ There’s an idea that has been a long time in gestation – the idea of a loose
 
 > Everything is a resource
 
-This is a key tenet that underpins the values of REST and related directions in information architecture: that if a piece of data (or, indirectly, a business function, for that matter) is important, you should give it a name, an address – [make it a first class citizen on the web](/2009/06/29/information-vs-behaviour/). From there, everything else follows. You can manipulate it, you can describe it, and you can link to it.
+This is a key tenet that underpins the values of REST and related directions in information architecture: that if a piece of data (or, indirectly, a business function, for that matter) is important, you should give it a name, an address – [make it a first class citizen on the web](/blog/posts/2009/06/29/information-vs-behaviour/). From there, everything else follows. You can manipulate it, you can describe it, and you can link to it.
 
 With Firebase, each piece of JSON data you store in the backend gets its own URL. Each object, array, element and attribute is automatically given an address, as you create them. You can manipulate the data via the [Javascript library](http://www.firebase.com/docs/), through a [REST API](http://www.firebase.com/docs/rest-api.html) and also through a lovely graphical debugger that looks like this:
 

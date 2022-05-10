@@ -9,7 +9,7 @@ tags:
 - operationmode
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) &mdash; Day 25 by [DJ Adams](//qmacro.org/about/)**
+**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 25 by [DJ Adams](//qmacro.org/about/)**
 
 ![]( {{ "/images/2018/02/Screen-Shot-2015-07-28-at-12.53.45-300x191.png" | url }})
 
@@ -38,7 +38,7 @@ oTable.bindRows({
 
 **Experiment!**
 
-This experimental feature was crying out for … well, experimentation. So I threw together an MVC ([model view controller, minimum viable code](/2015/07/21/mvc-model-view-controller-minimum-viable-code/)) based app to test it out. Here’s the result:
+This experimental feature was crying out for … well, experimentation. So I threw together an MVC ([model view controller, minimum viable code](/blog/posts/2015/07/21/mvc-model-view-controller-minimum-viable-code/)) based app to test it out. Here’s the result:
 
 ![client operation mode]( {{ "/images/2018/02/clientoperationmode.gif" | url }})
 

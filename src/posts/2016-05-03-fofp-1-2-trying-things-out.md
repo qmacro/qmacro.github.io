@@ -4,9 +4,9 @@ title: FOFP 1.2 Trying things out
 tags:
   - language-ramblings
 ---
-Part of the [Fundamentals of Functional Programming](/2016/05/03/fofp) document.
+Part of the [Fundamentals of Functional Programming](/blog/posts/2016/05/03/fofp-fundamentals-of-functional-programming/) document.
 
-Prev: [FOFP 1.1 Introduction](/2016/05/03/fofp-1-1-introduction)
+Prev: [FOFP 1.1 Introduction](/blog/posts/2016/05/03/fofp-1.1-introduction)
 
 To start exploring some of the fundamental concepts of functional programming, you don't need anything more than you've probably already got. Of course, there are "more" functional languages such as Haskell, Standard ML, and various dialects of Lisp, such as Scheme, Common Lisp and Clojure. But there's a language that's pretty ubiquitous and that has some very good support for core functional programming concepts.
 
@@ -32,6 +32,6 @@ The developer tools have opened up next to the tab you're on. Choose the "Consol
 
 At this stage, you're ready to explore.
 
-Next: [FOFP 1.3 Some basic list processing](/2016/05/03/fofp-1-3-some-basic-list-processing)
+Next: [FOFP 1.3 Some basic list processing](/blog/posts/2016/05/03/fofp-1.3-some-basic-list-processing)
 
 [^2]: You can clear the console, and therefore remove the errors, with Ctrl-L (or Cmd-L on a Mac).

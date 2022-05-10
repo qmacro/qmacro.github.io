@@ -4,7 +4,7 @@ title: '"fiux2" Week 5 - Enhance an SAP Fiori Master Detail App'
 ---
 
 
-(See first post in this series — [“fiux2″ – The openSAP Fiori Course – 2016 Edition](/2016/03/04/fiux2-the-opensap-fiori-course-2016-edition/) — for links to the other posts).
+(See first post in this series — [“fiux2″ – The openSAP Fiori Course – 2016 Edition](/blog/posts/2016/03/04/fiux2-the-opensap-fiori-course-2016-edition/) — for links to the other posts).
 
 So week 5 came and went rather quickly – perhaps it was the Bank Holiday weekend! This week sees the introduction of the Develop Challenge, as well as the main content of this week – looking at more advanced features of the SAP Web IDE. Let’s review the units.
 
@@ -42,7 +42,7 @@ Finally, it would have been nice to hear a more compelling explanation of the re
 
 All in all this unit was a useful, if slightly inconguent, poke in the ribs for the attendees to let them know it’s not just point-and-click in the Web IDE Layout Editor. I guess my comment about occasional users earlier in this post is relevant here too :-)
 
-**Unit 4 “Creating an SAP Fiori App with a Smart Template”.** The combination of OData, annotations, and Smart Templates is a powerful one. We had a brief introduction to Smart Templates in [week 3](/2016/03/17/fiux2-week-3-get-ready-to-create-your-first-app/) so I need not dwell on them too much again here.
+**Unit 4 “Creating an SAP Fiori App with a Smart Template”.** The combination of OData, annotations, and Smart Templates is a powerful one. We had a brief introduction to Smart Templates in [week 3](/blog/posts/2016/03/17/fiux2-week-3-get-ready-to-create-your-first-app/) so I need not dwell on them too much again here.
 
 Suffice it to say that this unit showed a pretty impressive demo – a happy path demo, but a good one nevertheless. One of the things that stood out from the slide notes, and brought up by the presenter, was that with Smart Templates, there are “NO modifications”. I’ve yet to find out what that really implies; read-only code sometimes goes hand-in hand with auto-generation, but I’m pretty certain that what we’re going to end up with is something workable. The UI5 toolkit itself does a lot of the heavy lifting here, so it’s not as if there’s a ton of code that’s being emitted.
 

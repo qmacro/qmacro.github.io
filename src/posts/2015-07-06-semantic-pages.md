@@ -8,7 +8,7 @@ tags:
 - semanticpage
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)  &mdash; Day 3 by [DJ Adams](//qmacro.org/about/)**
+**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/)  &mdash; Day 3 by [DJ Adams](//qmacro.org/about/)**
 
 ![image]({{ "/images/2018/01/download1-1.jpeg)](http://www.bloomsbury.com/au/primer-of-greek-grammar-9780715612583/" | url }})
 

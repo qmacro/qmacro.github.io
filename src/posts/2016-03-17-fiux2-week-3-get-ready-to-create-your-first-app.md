@@ -4,11 +4,11 @@ title: '"fiux2" Week 3 - Get Ready to Create Your First App'
 ---
 
 
-(See first post in this series — [“fiux2″ – The openSAP Fiori Course – 2016 Edition](/2016/03/04/fiux2-the-opensap-fiori-course-2016-edition/) — for links to the other posts).
+(See first post in this series — [“fiux2″ – The openSAP Fiori Course – 2016 Edition](/blog/posts/2016/03/04/fiux2-the-opensap-fiori-course-2016-edition/) — for links to the other posts).
 
 It’s around this time of the week that the changeover between each week’s worth of content happens. Week 3 of the [Build Your Own SAP Fiori App in the Cloud – 2016 Edition](http://open.sap.com/courses/fiux2) course has just come to a close, so it’s time for me to write down my thoughts.
 
-This week’s content was shorter than usual. Deliberately so, to give the attendees a better chance at completing the Design Challenge, which started in Unit 7 of Week 2 (see my comments for that unit in [the previous post in this series](/2016/03/08/fiux2-week-2-design-your-first-sap-fiori-app/)). There were only three units, so let’s have a look at those first, and then finish with a few observations on the Design Challenge.
+This week’s content was shorter than usual. Deliberately so, to give the attendees a better chance at completing the Design Challenge, which started in Unit 7 of Week 2 (see my comments for that unit in [the previous post in this series](/blog/posts/2016/03/08/fiux2-week-2-design-your-first-sap-fiori-app/)). There were only three units, so let’s have a look at those first, and then finish with a few observations on the Design Challenge.
 
 **Unit 1 “Anatomy of SAP Fiori Apps”.** I enjoyed this unit very much, as it really started to explain well how the rubber hits the road. At some stage, UX needs to turn into UI and become real. Using a combination of the excellent [SAP Fiori Design Guidelines](https://experience.sap.com/fiori-design/) and the actual controls in the UI5 toolkit itself (see [the Explored app](https://sapui5.hana.ondemand.com/explored.html) for a great showcase of many of them) – advice and building blocks in harmony – is a great way to get started on your Fiori app development journey.
 
@@ -22,7 +22,7 @@ That said, if it hadn’t have been skipped, I could imagine the unit being four
 
 *An old post on SCN from 2004 – “[Real Web Services with REST and ICF](http://www.sdn.sap.com/irj/scn/go/portal/prtroot/docs/library/uuid/ea8db790-0201-0010-af98-de15b6c1ee1a?overridelayout=true)” – where I expounded on the virtues of the REpresentational State Transfer (REST) based approach to data services … and was slightly disowned by SAP ;-)*
 
-**Unit 3 “Introduction to Annotations and Smart Templates”. **This was a very interesting unit, not least because of the implications and the reasoning behind augmenting the metadata with extra semantics. I’ve written about semantic information before (see [Semantic Pages](/2015/07/06/semantic-pages/), a post in the [30 Days of UI5](/2015/07/04/30-days-of-ui5/) series). This time it’s about adding extra information to the OData metadata to enable a more rapid construction – in some cases automatic – of UI5 based application components. A control, or set of controls, that can understand the data that is bound to it, is capable of more than acting passively.
+**Unit 3 “Introduction to Annotations and Smart Templates”. **This was a very interesting unit, not least because of the implications and the reasoning behind augmenting the metadata with extra semantics. I’ve written about semantic information before (see [Semantic Pages](/blog/posts/2015/07/06/semantic-pages/), a post in the [30 Days of UI5](/2015/07/04/30-days-of-ui5/) series). This time it’s about adding extra information to the OData metadata to enable a more rapid construction – in some cases automatic – of UI5 based application components. A control, or set of controls, that can understand the data that is bound to it, is capable of more than acting passively.
 
 There’s a lot driving the concept of annotations and their use in smart controls and templates, not least SAP’s need to produce yet more SAP Fiori apps, more quickly and more reliably. Finding a way for apps, or parts of apps, to write themselves, is going to help that process.
 

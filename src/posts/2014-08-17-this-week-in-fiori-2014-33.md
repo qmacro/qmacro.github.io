@@ -30,7 +30,7 @@ Even now I come across folks who are still looking for a good explanation of Fio
 <span style="line-height: 1.714285714; font-size: 1rem;">(Warning, you need to complete a free signup to get to the content. Come on [Inside SAP](http://www.insidesap.com.au/), you can do better than that!)</span>
 
 **SAP Fiori Course Offerings by SAP
-**In [TWIF 2014-31](/2014/08/01/this-week-in-fiori-2014-31/) I mentioned that the OpenSAP MOOC is offering a free course “Introduction to SAP Fiori UX” starting in September this year. I thought I’d take a look at what SAP offers in the way of more traditional courses, relating to Fiori. This is what I found on the [SAP Fiori curriculum page](https://training.sap.com/gb/en/curriculum/fiori_uk-sap-fiori-uk/):
+**In [TWIF 2014-31](/blog/posts/2014/08/01/this-week-in-fiori-2014-31/) I mentioned that the OpenSAP MOOC is offering a free course “Introduction to SAP Fiori UX” starting in September this year. I thought I’d take a look at what SAP offers in the way of more traditional courses, relating to Fiori. This is what I found on the [SAP Fiori curriculum page](https://training.sap.com/gb/en/curriculum/fiori_uk-sap-fiori-uk/):
 
 ![image]({{ "/images/2014/08/Screen-Shot-2014-08-17-at-10.52.03.png" | url }})
 

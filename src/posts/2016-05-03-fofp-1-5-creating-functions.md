@@ -4,9 +4,9 @@ title: FOFP 1.5 Creating functions
 tags:
   - language-ramblings
 ---
-Part of the [Fundamentals of Functional Programming](/2016/05/03/fofp) document.
+Part of the [Fundamentals of Functional Programming](/blog/posts/2016/05/03/fofp-fundamentals-of-functional-programming/) document.
 
-Prev: [FOFP 1.4 A different approach with map](/2016/05/03/fofp-1-4-a-different-approach-with-map)
+Prev: [FOFP 1.4 A different approach with map](/blog/posts/2016/05/03/fofp-1.4-a-different-approach-with-map)
 
 In our previous example, we defined a helper function `square` and used it like this:
 
@@ -96,4 +96,4 @@ nums.map(times(2))
 
 Neat!
 
-Next: [FOFP 2.1 A look at filter](/2016/05/04/fofp-2-1-a-look-at-filter)
+Next: [FOFP 2.1 A look at filter](/blog/posts/2016/05/04/fofp-2-1.a-look-at-filter)

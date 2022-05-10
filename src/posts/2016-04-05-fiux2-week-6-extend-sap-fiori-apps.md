@@ -4,7 +4,7 @@ title: '"fiux2" Week 6 - Extend SAP Fiori Apps'
 ---
 
 
-(See first post in this series — [“fiux2″ – The openSAP Fiori Course – 2016 Edition](/2016/03/04/fiux2-the-opensap-fiori-course-2016-edition/) — for links to the other posts).
+(See first post in this series — [“fiux2″ – The openSAP Fiori Course – 2016 Edition](/blog/posts/2016/03/04/fiux2-the-opensap-fiori-course-2016-edition/) — for links to the other posts).
 
 Well we’re on to the penultimate week of learnings, in the midst of the Design Challenge Peer Review due in at the end of this week, and at the start of the Develop Challenge. Phew! Let’s take a look at the units this week.
 
@@ -19,7 +19,7 @@ There were a couple of things that I wanted to draw your attention to with the e
 
 Caveat developer!
 
-**Unit 2 “Extensibility with SAP Web IDE – SAP Fiori Cloud Example”.** This unit is definitely worthwhile and a very quick walkthrough of what you can do yourself too. Last year at SAP TechEd EMEA, I was lucky enough to co-present a number of SAP Fiori related workshops (see “[Speaking at SAP TechEd EMEA 2015](/2015/11/03/speaking-at-sap-teched-emea-2015/)“). One of them was to have the participants walk through extending an app in the Fiori Cloud Edition, just like the instructor did in this unit. You can do it yourself too now – just visit the [SAP Fiori Demo Cloud Edition](https://www.sapfioritrial.com/) home and follow your nose. There’s also an exercise following this unit which will take you through something similar.
+**Unit 2 “Extensibility with SAP Web IDE – SAP Fiori Cloud Example”.** This unit is definitely worthwhile and a very quick walkthrough of what you can do yourself too. Last year at SAP TechEd EMEA, I was lucky enough to co-present a number of SAP Fiori related workshops (see “[Speaking at SAP TechEd EMEA 2015](/blog/posts/2015/11/03/speaking-at-sap-teched-emea-2015/)“). One of them was to have the participants walk through extending an app in the Fiori Cloud Edition, just like the instructor did in this unit. You can do it yourself too now – just visit the [SAP Fiori Demo Cloud Edition](https://www.sapfioritrial.com/) home and follow your nose. There’s also an exercise following this unit which will take you through something similar.
 
 With extensions, we have many questions to answer. Why, how, what and where, for starters. The “why” is simple – because you want to have the app meet your specific business needs and nuances. The “how” is what this unit covers at a high level: the extension concept in general, along with the great support in the SAP Web IDE.
 

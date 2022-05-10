@@ -11,7 +11,7 @@ tags:
 - 30ui5
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/)  &mdash; Day 2 by [DJ Adams](//qmacro.org/about/)**
+**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/)  &mdash; Day 2 by [DJ Adams](//qmacro.org/about/)**
 
 ![Expression Binding samples]( {{ "/images/2018/01/Screen-Shot-2015-07-05-at-13.34.07.png" | url }})
 

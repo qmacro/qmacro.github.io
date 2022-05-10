@@ -51,7 +51,7 @@ I could have gone further with the analysis in the spreadsheet itself, but I’m
 
 ![image]({{ "/images/2015/01/Screen-Shot-2015-01-03-at-11.41.19-300x219.png" | url }})
 
-Of course, the first thing to do was to make the data in the Google Sheet available, which I did with my trusty [SheetAsJSON](/2013/10/04/sheetasjson-google-spreadsheet-data-as-json/) mechanism. It [returned](http://bit.ly/qmacro-running-2014) a nice JSON structure that contained all the data that I needed.
+Of course, the first thing to do was to make the data in the Google Sheet available, which I did with my trusty [SheetAsJSON](/blog/posts/2013/10/04/sheetasjson-google-spreadsheet-data-as-json/) mechanism. It [returned](http://bit.ly/qmacro-running-2014) a nice JSON structure that contained all the data that I needed.
 
 So now I had something that I could get Clojure to retrieve. Here follows some of what I did.
 

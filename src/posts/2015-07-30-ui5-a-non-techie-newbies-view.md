@@ -10,11 +10,11 @@ tags:
 - projectmanagement
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) &mdash; Day 27 by [Jon Gregory](https://twitter.com/jongregs)**
+**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 27 by [Jon Gregory](https://twitter.com/jongregs)**
 
 ![]( {{ "/images/2018/02/branches.png" | url }})
 
-I’m mid-flight in my first UI5/Gateway project, working with a great team of developers who have all contributed to this [30 Days of UI5 series](/2015/07/04/30-days-of-ui5/). As a non-techie Project Manager embarking on mobile development for the first time, I thought I’d share some of my experiences and tips.
+I’m mid-flight in my first UI5/Gateway project, working with a great team of developers who have all contributed to this [30 Days of UI5 series](/blog/posts/2015/07/04/30-days-of-ui5/). As a non-techie Project Manager embarking on mobile development for the first time, I thought I’d share some of my experiences and tips.
 
 **This isn’t regular SAP configuration – this is mobile development.**
 

@@ -26,10 +26,10 @@ Here’s a short screencast that shows the ‘Reading List Mark 2′ in action:
 I’ll describe how everything is put together over the next few blog posts:
 
 1. This introduction
-2. [Using the Tasks API to retrieve and insert tasklists, and the Ui Services to build the tasklist chooser component](/2011/10/10/reading-list-mark-2-part-2/)
-3. [Using the UrlFetch Setvices to interact with the Google+ API and grab info on articles pointed to by users in their activity stream](/2011/10/14/reading-list-mark-2-part-3/)
-4. [Synchronising the URL list in the spreadsheet with corresponding tasks in the chosen tasklist](/2011/10/15/reading-list-mark-2-part-4/)
-5. [Putting it all together and using the OnOpen event to insert a new 2-item menu entry on the spreadsheet’s page](/2011/10/16/reading-list-mark-2-part-5/)
+2. [Using the Tasks API to retrieve and insert tasklists, and the Ui Services to build the tasklist chooser component](/blog/posts/2011/10/10/reading-list-mark-2-part-2/)
+3. [Using the UrlFetch Setvices to interact with the Google+ API and grab info on articles pointed to by users in their activity stream](/blog/posts/2011/10/14/reading-list-mark-2-part-3/)
+4. [Synchronising the URL list in the spreadsheet with corresponding tasks in the chosen tasklist](/blog/posts/2011/10/15/reading-list-mark-2-part-4/)
+5. [Putting it all together and using the OnOpen event to insert a new 2-item menu entry on the spreadsheet’s page](/blog/posts/2011/10/16/reading-list-mark-2-part-5/)
 
 Stay tuned!
 

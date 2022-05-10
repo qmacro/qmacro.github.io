@@ -11,6 +11,6 @@ In the years since becoming an [SAP Mentor](https://www.sap.com/uk/community/abo
 
 There's an end to pretty much everything though, and I've been planning to retire to SAP Mentor Alumnus status for a while. There are many reasons for this, but the main one is to make way for new blood. I can and will continue to be active in the community - becoming an SAP Mentor Alumnus doesn't mean that changes. 
 
-My move to SAP Mentor Alumnus status also coincides with a couple of other events; of course, there's my recent move to [join the SAP family](/2018/01/17/coming-home/), but there's also the end of the term of membership of the [SAP Mentors Advisory Board](https://blogs.sap.com/2016/03/08/introducing-the-new-sap-mentors-advisory-board-2016-2018/) (MAB). So I think the timing is right. 
+My move to SAP Mentor Alumnus status also coincides with a couple of other events; of course, there's my recent move to [join the SAP family](/blog/posts/2018/01/17/coming-home/), but there's also the end of the term of membership of the [SAP Mentors Advisory Board](https://blogs.sap.com/2016/03/08/introducing-the-new-sap-mentors-advisory-board-2016-2018/) (MAB). So I think the timing is right. 
 
 Thank you to my fellow SAP Mentors and the programme team, and also to my esteemed co-members of the MAB. I don't see this as a big change - I'm just moving from one group of folks I respect to another. 

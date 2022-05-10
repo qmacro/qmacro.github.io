@@ -4,7 +4,7 @@ title: FOFP 1.1 Introduction
 tags:
   - language-ramblings
 ---
-Part of the [Fundamentals of Functional Programming](/2016/05/03/fofp) document.
+Part of the [Fundamentals of Functional Programming](/blog/posts/2016/05/03/fofp-fundamentals-of-functional-programming/) document.
 
 This document introduces some fundamental building blocks in the functional programming world.
 
@@ -35,6 +35,6 @@ All these types are known as being first-class, meaning that they can be used as
 
 In functional programming, functions are first-class too. This means that functions can also be passed as input to other functions, and that functions can produce other functions as output [4.12.1.2].
 
-Next: [Trying things out](/2016/05/03/fofp-1-2-trying-things-out)
+Next: [Trying things out](/blog/posts/2016/05/03/fofp-1.2-trying-things-out)
 
 [^1]: Some might argue that strings are not scalar, but complex structures. But that's for another time.

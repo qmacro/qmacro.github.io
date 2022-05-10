@@ -8,9 +8,9 @@ tags:
 - xmlfragments
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) &mdash; Day 20 by [DJ Adams](//qmacro.org/about/)**
+**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 20 by [DJ Adams](//qmacro.org/about/)**
 
-In an earlier post in this series, [MVC – Model View Controller, Minimum Viable Code](/2015/07/21/mvc-model-view-controller-minimum-viable-code/), I showed how you could write a single-file UI5 app but still embrace and use the concepts of Model View Controller, having separate controller definitions and declarative XML Views. I also mentioned you could use XML Fragments in this way too, and [Robin van het Hof asked](https://twitter.com/Qualiture/status/623467858652200960) if I could explain how. So here we go, thanks Robin!
+In an earlier post in this series, [MVC – Model View Controller, Minimum Viable Code](/blog/posts/2015/07/21/mvc-model-view-controller-minimum-viable-code/), I showed how you could write a single-file UI5 app but still embrace and use the concepts of Model View Controller, having separate controller definitions and declarative XML Views. I also mentioned you could use XML Fragments in this way too, and [Robin van het Hof asked](https://twitter.com/Qualiture/status/623467858652200960) if I could explain how. So here we go, thanks Robin!
 
 If we take the code from the previous post and run it, we end up with a UI that looks like this:
 

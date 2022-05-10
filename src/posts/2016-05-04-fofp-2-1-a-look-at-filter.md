@@ -4,9 +4,9 @@ title: FOFP 2.1 A look at filter
 tags:
   - language-ramblings
 ---
-Part of the [Fundamentals of Functional Programming](/2016/05/03/fofp) document.
+Part of the [Fundamentals of Functional Programming](/blog/posts/2016/05/03/fofp-fundamentals-of-functional-programming/) document.
 
-Prev: [FOFP 1.5 Creating functions](/2016/05/03/fofp-1-5-creating-functions)
+Prev: [FOFP 1.5 Creating functions](/blog/posts/2016/05/03/fofp-1.5-creating-functions)
 
 We've already seen our first higher-order function, `map`, in action. A close sibling is `filter`.
 
@@ -40,7 +40,7 @@ nums.filter(is_odd)
 
 Notice that the program is starting to become easier to read, the more we move away from the mechanical nature of the imperative style of programming towards a more declarative style.
 
-And it doesn't end there. If we wanted to take the numbers we'd filtered our list down to (1, 3 and 5) and transform them, all we'd need to do is chain calls together ... remember that `map` and `filter` both consume and produce lists. Remembering our `times` function from [FOFP 1.5](/2016/05/03/fofp-1-5-creating-functions/), we could form a chain like this:
+And it doesn't end there. If we wanted to take the numbers we'd filtered our list down to (1, 3 and 5) and transform them, all we'd need to do is chain calls together ... remember that `map` and `filter` both consume and produce lists. Remembering our `times` function from [FOFP 1.5](/blog/posts/2016/05/03/fofp-1.5-creating-functions/), we could form a chain like this:
 
 ```javascript
 nums.filter(is_odd)
@@ -49,4 +49,3 @@ nums.filter(is_odd)
 ```
 
 Now that we've seen `map` and `filter`, it's time to have a look at their somewhat more powerful sibling, `fold`.
-

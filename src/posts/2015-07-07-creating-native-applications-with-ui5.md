@@ -10,7 +10,7 @@ tags:
 - 30ui5
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) – Day 4 by [John Murray](http://jmurray.me/)**
+**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) – Day 4 by [John Murray](http://jmurray.me/)**
 
 ![PhoneGap:Build logo]( {{ "/images/2018/01/download.jpeg" | url }})
 

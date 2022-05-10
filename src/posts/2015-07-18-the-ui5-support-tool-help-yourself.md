@@ -9,7 +9,7 @@ tags:
 - xml
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) &mdash; Day 15 by [DJ Adams](//qmacro.org/about/)**
+**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 15 by [DJ Adams](//qmacro.org/about/)**
 
 ![part of the Support Tool Menu]( {{ "/images/2018/02/Screenshot-2015-07-18-at-12.12.33.png" | url }})
 

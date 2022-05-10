@@ -8,7 +8,7 @@ tags:
 ---
 
 
-At the inaugural [SAP Architect & Developer Summit](http://bit.ly/anzsummit) last week, [one of the things that I did](/2014/10/19/speaking-at-the-sap-architect-developer-summit/) was prepare and deliver a 2 hour hands-on workshop: “[Learn To Drive Fiori Applications From Underneath And Level Up!](http://lanyrd.com/2014/sap-architect-and-developer-summit/sdfyrf/)“. This was a fun and successful workshop which focused on working within, and using the tools of, the powerful Chrome Developer Console. It triggered great conversations afterwards with some folks, including fellow SAP Mentor Matt Harding, who also [tweeted](https://twitter.com/mattharding/status/535968961221754880):
+At the inaugural [SAP Architect & Developer Summit](http://bit.ly/anzsummit) last week, [one of the things that I did](/blog/posts/2014/10/19/speaking-at-the-sap-architect-developer-summit/) was prepare and deliver a 2 hour hands-on workshop: “[Learn To Drive Fiori Applications From Underneath And Level Up!](http://lanyrd.com/2014/sap-architect-and-developer-summit/sdfyrf/)“. This was a fun and successful workshop which focused on working within, and using the tools of, the powerful Chrome Developer Console. It triggered great conversations afterwards with some folks, including fellow SAP Mentor Matt Harding, who also [tweeted](https://twitter.com/mattharding/status/535968961221754880):
 
 ![image]({{ "/images/2014/11/Screen-Shot-2014-11-24-at-14.58.39.png" | url }})
 

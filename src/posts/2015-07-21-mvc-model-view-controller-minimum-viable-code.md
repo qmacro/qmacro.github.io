@@ -14,7 +14,7 @@ tags:
 - vim
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) &mdash; Day 18 by [DJ Adams](//qmacro.org/about/)**
+**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 18 by [DJ Adams](//qmacro.org/about/)**
 
 ![View and controller screenshot]( {{ "/images/2018/02/Screen-Shot-2015-07-19-at-18.58.14-1.png" | url }})
 
@@ -43,7 +43,7 @@ Here’s a brief rundown of what you see:
 
 **9-16**: This is the UI5 bootstrap, nothing unusual here
 
-**18-28**: Here we have a script element that is of a made-up type “ui5/xmlview”. This could be pretty much anything, as long as the browser doesn’t try to process it. It’s a technique used in templating systems. This contains some XML, which as you can see is a small but perfectly formed view definition (which incidentally conforms to the [UI5 Coding Standards explained in a previous post](/2015/07/19/ui5-and-coding-standards/) in this series.
+**18-28**: Here we have a script element that is of a made-up type “ui5/xmlview”. This could be pretty much anything, as long as the browser doesn’t try to process it. It’s a technique used in templating systems. This contains some XML, which as you can see is a small but perfectly formed view definition (which incidentally conforms to the [UI5 Coding Standards explained in a previous post](/blog/posts/2015/07/19/ui5-and-coding-standards/) in this series.
 
 **31-36**: This is the local controller definition, which is referenced in the View’s controllerName attribute (in line 20). It has the onPress handler for the Button’s press event.
 

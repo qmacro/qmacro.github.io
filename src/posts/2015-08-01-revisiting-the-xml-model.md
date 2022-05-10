@@ -6,7 +6,7 @@ tags:
 - xmlmodel
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) &mdash; Day 29 by [DJ Adams](//qmacro.org/about/)**
+**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 29 by [DJ Adams](//qmacro.org/about/)**
 
 ![]( {{ "/images/2018/02/Screen-Shot-2015-08-01-at-11.56.50.png" | url }})
 

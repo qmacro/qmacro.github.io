@@ -12,7 +12,7 @@ tags:
 
 At [SAP TechEd in Madrid](http://www.sapteched.com/emea) this year, I had the privilege of interviewing SAP’s Head of Technology & Innovation Platform (TIP) Marketing,﻿ [Aiaz Kazi](http://www.sdn.sap.com/irj/scn/weblogs?blog=/pub/u/251736460), on the [SAP TechEd Live](http://www.sapteched.com/online) TV channel. The interview is available [here](http://www.sapvirtualevents.com/teched/sessiondetails.aspx?sId=841).
 
-His team has an enormous scope, covering Mobile, In-Memory, On-Demand, HANA and more. While the word “Marketing” might be auto-filtered by a techie’s radar-filter, what became clear very quickly is that this group is totally developer focused. His group is already building a brand-new Developer Center ([I wrote about this earlier this week](/2011/11/08/sap-developer-center/)) and is focused on helping the developer help themselves. What’s more, the group is staffed with developers. I’ve not managed to find anyone in TIP yet that doesn’t have a developer background.
+His team has an enormous scope, covering Mobile, In-Memory, On-Demand, HANA and more. While the word “Marketing” might be auto-filtered by a techie’s radar-filter, what became clear very quickly is that this group is totally developer focused. His group is already building a brand-new Developer Center ([I wrote about this earlier this week](/blog/posts/2011/11/08/sap-developer-center/)) and is focused on helping the developer help themselves. What’s more, the group is staffed with developers. I’ve not managed to find anyone in TIP yet that doesn’t have a developer background.
 
 ![DJ Adams interviews Aiaz Kazi at SAP TechEd Live 2011]( {{ "/images/2011/11/interview_screengrab-300x171.png" | url }})
 

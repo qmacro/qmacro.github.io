@@ -4,9 +4,9 @@ title: FOFP 1.4 A different approach with map
 tags:
   - language-ramblings
 ---
-Part of the [Fundamentals of Functional Programming](/2016/05/03/fofp) document.
+Part of the [Fundamentals of Functional Programming](/blog/posts/2016/05/03/fofp-fundamentals-of-functional-programming/) document.
 
-Prev: [FOFP 1.3 Some basic list processing](/2016/05/03/fofp-1-3-some-basic-list-processing)
+Prev: [FOFP 1.3 Some basic list processing](/blog/posts/2016/05/03/fofp-1.3-some-basic-list-processing)
 
 In our second attempt at basic list processing, we used the Array object's `push` function. There are other functions that operate on Array objects like our `nums` list. JavaScript has a set of functions that are often talked about together, and which take us into the realms of functional programming.
 
@@ -65,7 +65,7 @@ You may be familiar with the Unix approach of small programs each focusing on do
 
 Notice that `map` just produces a new Array, for you to look at, catch and store in a variable, or even allow to fall to the floor and disappear. So we could just as easily feed the output of that `map` into the input of another function that worked on Arrays - perhaps one of `map`'s siblings `filter` or `reduce`. We'll take a look at that later.
 
-Next: [FOFP 1.5 Creating functions](/2016/05/03/fofp-1-5-creating-functions)
+Next: [FOFP 1.5 Creating functions](/blog/posts/2016/05/03/fofp-1.5-creating-functions)
 
 
 

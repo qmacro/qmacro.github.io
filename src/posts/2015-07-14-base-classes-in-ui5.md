@@ -11,7 +11,7 @@ tags:
 - openui5
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) &mdash; Day 12 by [Thilo Seidel](https://twitter.com/ThiloDev)**
+**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 12 by [Thilo Seidel](https://twitter.com/ThiloDev)**
 
 Learning your way around UI5 can be hard sometimes. With the new tutorials and improved structure in the developer guide, help on the journey to UI5 mastery has got better over the last few months.
 

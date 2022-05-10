@@ -3,7 +3,7 @@ layout: post
 title: '"fiux2" Week 2 – Design Your First SAP Fiori App'
 ---
 
-(See first post in this series — [“fiux2″ – The openSAP Fiori Course – 2016 Edition](/2016/03/04/fiux2-the-opensap-fiori-course-2016-edition/) — for links to the other posts).
+(See first post in this series — [“fiux2″ – The openSAP Fiori Course – 2016 Edition](/blog/posts/2016/03/04/fiux2-the-opensap-fiori-course-2016-edition/) — for links to the other posts).
 
 Well, the weeks certainly come around fast in these [openSAP](http://open.sap.com) courses, and so we find ourselves on Week 2 of the [Build Your Own SAP Fiori App in the Cloud – 2016 Edition](http://open.sap.com/courses/fiux2). Here’s a quick run down of what was covered, with some thoughts from me.
 
@@ -51,6 +51,6 @@ There’s one more aspect of this course that I wanted to mention last time but 
 
 And on this note of constant change, I’ll leave you with one thought from Martin Fowler. I was reminded of this wisdom via [Sascha Wenninger’s tweet this morning](https://twitter.com/sufw/status/707105718403371008): “If it hurts, do it more often” :-)
 
-(For links to commentary for further weeks, see the first post in this series: [“fiux2″ – The openSAP Fiori Course – 2016 Edition](/2016/03/04/fiux2-the-opensap-fiori-course-2016-edition/).)
+(For links to commentary for further weeks, see the first post in this series: [“fiux2″ – The openSAP Fiori Course – 2016 Edition](/blog/posts/2016/03/04/fiux2-the-opensap-fiori-course-2016-edition/).)
 
 

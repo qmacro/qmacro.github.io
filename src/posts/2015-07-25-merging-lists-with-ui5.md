@@ -7,7 +7,7 @@ tags:
 - openui5
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) &mdash; Day 22 by [Chris Choy](https://uk.linkedin.com/pub/christopher-choy/53/21/b71)**
+**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 22 by [Chris Choy](https://uk.linkedin.com/pub/christopher-choy/53/21/b71)**
 
 Whilst recently developing a custom UI5 app with an SAP PI backend, I came across some useful mechanisms. My aim was to merge 2 sets of data from 2 service calls into an Object List Item.  Having already bound one set of data my XML View my initial thought was to perhaps use a formatter and pass in 2 arrays of objects and manipulate the data within the Formatter.js file. As you probably guessed, this simply didn’t work, I should mention that both service calls return data in a JSON format rather than standard OData. My next approach was to manipulate the 2 arrays in the View’s controller and merge them both into a new sorted array assigning it to the Component’s Model. One of the benefits of doing this is that you can define your own attribute names and data which is then globally accessible within the app.
 

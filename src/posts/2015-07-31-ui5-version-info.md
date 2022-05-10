@@ -7,7 +7,7 @@ tags:
 - versioninfo
 ---
 
-**[30 Days of UI5](/2015/07/04/30-days-of-ui5/) &mdash; Day 28 by [DJ Adams](//qmacro.org/about/)**
+**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 28 by [DJ Adams](//qmacro.org/about/)**
 
 ![]( {{ "/images/2018/02/Screen-Shot-2015-07-31-at-13.04.22-624x312.png" | url }})
 
@@ -36,7 +36,7 @@ I wanted to address a couple of things:
 - have the smartphone as the target device, rebuilding the UI with an App control
 - improve the binding, to a single data collection
 
-The UI part was straightforward. I used my MVC technique (see [MVC – Model View Controller, Minimum Viable Code](/2015/07/21/mvc-model-view-controller-minimum-viable-code/) from earlier in this series) to define a new View, declaratively in XML. I used an App control with a couple of Pages, and a simple controller for the view which handled all the view lifecycle and user-generated events, as well as being the container for the formatter functions.
+The UI part was straightforward. I used my MVC technique (see [MVC – Model View Controller, Minimum Viable Code](/blog/posts/2015/07/21/mvc-model-view-controller-minimum-viable-code/) from earlier in this series) to define a new View, declaratively in XML. I used an App control with a couple of Pages, and a simple controller for the view which handled all the view lifecycle and user-generated events, as well as being the container for the formatter functions.
 
 I also used some of my favourite JavaScript functions to bind together the disparate data into a nice cohesive single array of maps. I left the original data manipulation as it was, and then grabbed what it produced to make my array. I could then bind the List in UI to this single array, and then confer the right binding context to the second Page for a selected item from the array.
 

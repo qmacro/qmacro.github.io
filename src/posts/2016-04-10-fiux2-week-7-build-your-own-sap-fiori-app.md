@@ -4,7 +4,7 @@ title: '"fiux2" Week 7 - Build Your Own SAP Fiori App'
 ---
 
 
-(See first post in this series — [“fiux2″ – The openSAP Fiori Course – 2016 Edition](/2016/03/04/fiux2-the-opensap-fiori-course-2016-edition/) — for links to the other posts).
+(See first post in this series — [“fiux2″ – The openSAP Fiori Course – 2016 Edition](/blog/posts/2016/03/04/fiux2-the-opensap-fiori-course-2016-edition/) — for links to the other posts).
 
 We’re into week 7, the final week of this openSAP course “Build Your Own SAP Fiori App in the Cloud – 2016 Edition”. As we’re in the midst of building our app for the Develop Challenge, this final week is deliberately short, with only two units.
 

@@ -7,12 +7,12 @@ title: '"fiux2" - The openSAP Fiori Course - 2016 Edition'
 *Links to the rest of the series:*
 
 [“fiux2″ Week 2 – Design Your First SAP Fiori App  
-](/2016/03/08/fiux2-week-2-design-your-first-sap-fiori-app/)
+](/blog/posts/2016/03/08/fiux2-week-2-design-your-first-sap-fiori-app/)
 [“fiux2″ Week 3 – Get Ready to Create Your First App  
-](/2016/03/17/fiux2-week-3-get-ready-to-create-your-first-app/) [“fiux2″ Week 4 – Create Your First SAP Fiori App  
+](/blog/posts/2016/03/17/fiux2-week-3-get-ready-to-create-your-first-app/) [“fiux2″ Week 4 – Create Your First SAP Fiori App  
 ](/undefined/) [“fiux2″ Week 5 – Enhance an SAP Fiori App  
-](/2016/03/31/fiux2-week-5-enhance-an-sap-fiori-master-detail-app/) [“fiux2″ Week 6 – Extend SAP Fiori Apps](/2016/04/05/fiux2-week-6-extend-sap-fiori-apps/)  
-[“fiux2″ Week 7 – Build Your Own SAP Fiori App](/2016/04/10/fiux2-week-7-build-your-own-sap-fiori-app/)
+](/blog/posts/2016/03/31/fiux2-week-5-enhance-an-sap-fiori-master-detail-app/) [“fiux2″ Week 6 – Extend SAP Fiori Apps](/2016/04/05/fiux2-week-6-extend-sap-fiori-apps/)  
+[“fiux2″ Week 7 – Build Your Own SAP Fiori App](/blog/posts/2016/04/10/fiux2-week-7-build-your-own-sap-fiori-app/)
 
 I’ve written about the [openSAP](http://open.sap.com) Massive Open Online Courses (MOOC) system in the past. I’m a big fan, particularly for the way the folks run the ship. They are “open” in the best possible ways.
 
