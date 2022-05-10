@@ -14,7 +14,7 @@ Q: *When is a blog not a blog?*
 
 A: *When it’s an <acronym title="Rich Site Summary">RSS</acronym> feed.*
 
-I’ve [pondered the relationship between weblog and RSS before](/2002/10/05/notes-to-self-what-should-the-rdfabout-point-to/), and in an [Old Speckled Hen](http://www.oldspeckledhen.co.uk/introduction.htm)-induced philosophical state of mind, have decided for experimental purposes that for all URI intents and purposes they are one and the same.
+I’ve [pondered the relationship between weblog and RSS before](/blog/posts/2002/10/05/notes-to-self-what-should-the-rdfabout-point-to/), and in an [Old Speckled Hen](http://www.oldspeckledhen.co.uk/introduction.htm)-induced philosophical state of mind, have decided for experimental purposes that for all URI intents and purposes they are one and the same.
 
 With that in mind, my thoughts turned (naturally) to connection negotiation, or ‘conneg’. My weblog, whether HTML or RSS, is my weblog. Same thing, different representation. So perhaps both representations should actually have the same URI, [/](/). Clients could use conneg to specify which representation they wanted, for example:
 

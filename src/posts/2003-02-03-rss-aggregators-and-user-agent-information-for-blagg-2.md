@@ -22,6 +22,6 @@ my $get_prog = 'wget -U 'blagg/0+4i (wget)' --quiet -O -';
 
 was all that it took.
 
-(In fact, personally I’m using my [ETag-aware version of wget](/2002/05/24/etag-enabled-wget/) so I made the change in that small script, [wget.pl](/~dj/wget.pl) rather than in Blagg itself.)
+(In fact, personally I’m using my [ETag-aware version of wget](/blog/posts/2002/05/24/etag-enabled-wget/) so I made the change in that small script, [wget.pl](/~dj/wget.pl) rather than in Blagg itself.)
 
 
