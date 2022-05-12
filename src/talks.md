@@ -25,6 +25,16 @@ A brief but technically heavy exploration of how to explore and manage resources
 
 * [General info](https://www.flexso.com/en/events/sapdeveloperday)
 
+## First steps towards automating your SAP BTP cloud based systems and resources
+
+When: Mon 20 Jun in Manchester
+
+An overview of what the SAP Business Technology Platform (BTP) really is beneath the surface, what it's constructed from, and how to navigate and understand it using the Cockpit. Then, going a little deeper, a quick tour of CLI tools and APIs for the BTP resources that can be used to build automations that work for you.
+
+### Links
+* [Event info](https://www.epiuselabs.com/epi-use-labs-uk-ireland-user-group-event-2022)
+
+
 # Past talks
 
 Here is a list of some of my recent talks.
