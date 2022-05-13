@@ -3,15 +3,15 @@ title: Upcoming Talks
 layout: talks.njk
 ---
 
-## Back to basics: OData - the Open Data Protocol
+## Back to basics: OData - the Open Data Protocol - Part 2 - Basic operations
 
-When: Fri 13 May at 0800 BST (UTC+1)
+When: Fri 20 May at 0800 BST (UTC+1)
 
-Join us in this first episode of a new series where we explore fundamental building blocks together. This week we'll start to look at OData. Everyone welcome, especially beginners! (🔴 Live stream)
+Join us for more on OData, where we look at basic operations. Everyone welcome, especially beginners! (🔴 Live stream)
 
 ### Links
 
-* [Live Stream / Recording](https://youtu.be/O3OU2rSUqs0)
+* [Live Stream / Recording](https://youtu.be/f9w61GxMztY)
 
 ## Accessing SAP BTP resources with APIs and the CLI
 
@@ -38,6 +38,16 @@ An overview of what the SAP Business Technology Platform (BTP) really is beneath
 # Past talks
 
 Here is a list of some of my recent talks.
+
+## Back to basics: OData - the Open Data Protocol
+
+When: Fri 13 May at 0800 BST (UTC+1)
+
+Join us in this first episode of a new series where we explore fundamental building blocks together. This week we'll start to look at OData. Everyone welcome, especially beginners! (🔴 Live stream)
+
+### Links
+
+* [Live Stream / Recording](https://youtu.be/O3OU2rSUqs0)
 
 ## Wrapping up our adventures with the SAP Service Manager on SAP Business Technology Platform
 
