@@ -50,3 +50,8 @@ Follow me on [Twitter](//twitter.com/qmacro), and find all the latest content vi
 ![SAP Fiori and SAPUI5: Debugging the User Interface]({{ "/images/books/debugging.png" | url}})
 [SAP Fiori and SAPUI5: Debugging the User Interface](https://www.sap-press.com/sap-fiori-and-sapui5-debugging-the-user-interface_4305/)<br>SAP Press, 2016
 <hr>
+
+<a name="bio"></a>
+## Bio and photos
+
+A short bio can be found on the [Developer Advocates](https://developers.sap.com/developer-advocates.html) page, and there are a couple of photos ([with jacket](../images/DJA-with-jacket.jpg) and [without jacket](../images/DJA-without-jacket.jpg)) available too.
