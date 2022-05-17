@@ -17,8 +17,6 @@ Join us for more on OData, where we look at basic operations. Everyone welcome, 
 <a name="accessing-sap-btp-resources-with-apis-and-the-cli"></a>
 ## Accessing SAP BTP resources with APIs and the CLI
 
-_Note: Session proposal only._
-
 When: Wed 09 Jun in 2850 Boom, BE
 
 [General info](https://www.flexso.com/en/events/sapdeveloperday)
