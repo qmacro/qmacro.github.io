@@ -19,7 +19,7 @@ Join us for more on OData, where we look at basic operations. Everyone welcome, 
 
 When: Wed 09 Jun in 2850 Boom, BE
 
-[General info](https://www.flexso.com/en/events/sapdeveloperday)
+[Event info](https://www.flexso.com/en/events/sapdeveloperday)
 
 A brief but technically heavy exploration of how to explore and manage resources on the SAP Business Technology platform with command line tools and APIs, both of which are key to being able to move fully to the cloud from a devops and automation perspective.
 
