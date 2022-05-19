@@ -492,15 +492,15 @@ So I can see that the most common topic here is "cloud".
 I'm happy with this approach, how I'm starting to get a better feel for how data flows through a jq filter, and also that I can use such filters with the GitHub CLI.
 
 
-[sap-samples]: [https://github.com/SAP-samples]
-[gh]: [https://github.com/cli/cli]
-[jq]: [https://stedolan.github.io/jq/]
-[manual-split]: [https://stedolan.github.io/jq/manual/#split(str)]
-[manual-sort]: [https://stedolan.github.io/jq/manual/#sort,sort_by(path_expression)]
-[manual-minmax]: [https://stedolan.github.io/jq/manual/#min,max,min_by(path_exp),max_by(path_exp)]
-[manual-reverse]: [https://stedolan.github.io/jq/manual/#reverse]
-[manual-groupby]: [https://stedolan.github.io/jq/manual/#group_by(path_expression)]
-[manual-arrayobjectiterator]: [https://stedolan.github.io/jq/manual/#Array/ObjectValueIterator:.[]]
-[manual-map]: [https://stedolan.github.io/jq/manual/#map(x),map_values(x)]
-[manual-arrayconstructor]: [https://stedolan.github.io/jq/manual/#Arrayconstruction:[]]
-[manual-formatstringsandescaping]: [https://stedolan.github.io/jq/manual/#Formatstringsandescaping]
+[sap-samples]: https://github.com/SAP-samples
+[gh]: https://github.com/cli/cli
+[jq]: https://stedolan.github.io/jq/
+[manual-split]: https://stedolan.github.io/jq/manual/#split(str)
+[manual-sort]: https://stedolan.github.io/jq/manual/#sort,sort_by(path_expression)
+[manual-minmax]: https://stedolan.github.io/jq/manual/#min,max,min_by(path_exp),max_by(path_exp)
+[manual-reverse]: https://stedolan.github.io/jq/manual/#reverse
+[manual-groupby]: https://stedolan.github.io/jq/manual/#group_by(path_expression)
+[manual-arrayobjectiterator]: https://stedolan.github.io/jq/manual/#Array/ObjectValueIterator:.[]
+[manual-map]: https://stedolan.github.io/jq/manual/#map(x),map_values(x)
+[manual-arrayconstructor]: https://stedolan.github.io/jq/manual/#Arrayconstruction:[]
+[manual-formatstringsandescaping]: https://stedolan.github.io/jq/manual/#Formatstringsandescaping

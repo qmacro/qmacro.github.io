@@ -351,9 +351,9 @@ jq -R -n '[inputs]' names.txt
 I do still have a place in my heart for `[.,inputs]` because it reminds me of the fundamental "first and rest", or "head and tail" concept from functional programming. See the "Subsequent understanding" section in [The beauty of recursion and list machinery](/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/) for more on this, if you're interested.
 
 
-[manual-object-construction]: [https://stedolan.github.io/jq/manual/#ObjectConstruction:{}]
-[manual-array-construction]: [https://stedolan.github.io/jq/manual/#Arrayconstruction:[]]
-[manual-array-slice]: [https://stedolan.github.io/jq/manual/#Array/StringSlice:.[10:15]]
-[manual-inputs]: [https://stedolan.github.io/jq/manual/#inputs]
-[manual-sub]: [https://stedolan.github.io/jq/manual/#sub(regex;tostring)sub(regex;string;flags)]
-[manual-map]: [https://stedolan.github.io/jq/manual/#map(x),map_values(x)]
+[manual-object-construction]: https://stedolan.github.io/jq/manual/#ObjectConstruction:{}
+[manual-array-construction]: https://stedolan.github.io/jq/manual/#Arrayconstruction:[]
+[manual-array-slice]: https://stedolan.github.io/jq/manual/#Array/StringSlice:.[10:15]
+[manual-inputs]: https://stedolan.github.io/jq/manual/#inputs
+[manual-sub]: https://stedolan.github.io/jq/manual/#sub(regex;tostring)sub(regex;string;flags)
+[manual-map]: https://stedolan.github.io/jq/manual/#map(x),map_values(x)
