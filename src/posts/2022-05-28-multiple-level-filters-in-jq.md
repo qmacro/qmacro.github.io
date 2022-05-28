@@ -17,8 +17,8 @@ The OData URL for this request looks like this:
 
 ```
 http://localhost:4004/northwind-model/Suppliers
-?$filter=Country eq 'UK'
-&$expand=Products($filter=UnitsInStock le 15)
+  ?$filter=Country eq 'UK'
+  &$expand=Products($filter=UnitsInStock le 15)
 ```
 
 It turned out to be pretty simple. First, I grabbed the basic data:
