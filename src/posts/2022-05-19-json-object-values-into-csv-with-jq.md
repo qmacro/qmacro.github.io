@@ -140,7 +140,7 @@ jq '.value | length' entities.json
 
 returns the following:
 
-```bash
+```text
 3
 ```
 
@@ -152,7 +152,7 @@ jq '.value[] | length' entities.json
 
 has a slightly different output:
 
-```bash
+```text
 4
 4
 4
@@ -304,7 +304,7 @@ jq '
 
 Perhaps unsurprisingly, this gives us the same result:
 
-```bash
+```text
 [
   "City",
   "CompanyName",
@@ -328,7 +328,7 @@ jq '
 
 produces this:
 
-```bash
+```text
 "City"
 "CompanyName"
 "ContactName"
@@ -392,7 +392,7 @@ jq '
 
 This produces:
 
-```bash
+```text
 "City"
 "CompanyName"
 "ContactName"
@@ -427,7 +427,7 @@ jq '
 
 This gives us a combination of values like this:
 
-```bash
+```json
 [
   "City",
   {
@@ -496,7 +496,7 @@ jq --raw-output '
 
 This produces a perfect single CSV record:
 
-```bash
+```text
 "Berlin","Alfreds Futterkiste","Maria Anders","Customers"
 ```
 
@@ -547,10 +547,6 @@ And yes, this produces the same output:
 ## Wrapping up
 
 This turned out to be a longer post than I'd intended to write. I found that I wanted to make sure I explained each part of the solution, and why it was how it was. Of course, this has the benefit of causing me to think a little harder about what `jq` is doing, which in turn helps me learn a little bit more about it.
-
-
-
-
 
 [manual-object-identifier-index]: https://stedolan.github.io/jq/manual/#ObjectIdentifier-Index:.foo,.foo.bar
 [manual-array-value-iterator]: https://stedolan.github.io/jq/manual/#Array/ObjectValueIterator:.[]

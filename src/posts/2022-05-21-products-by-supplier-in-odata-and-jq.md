@@ -79,14 +79,14 @@ This gives a nice structure that we can dig into with `jq`. It turns out to be q
 
 Being an OData v4 entityset, the data is in the top level `value` property, so we start with that, grouping by the ID of each product's supplier:
 
-```text
+```jq
 .value
 | group_by(.SupplierID)
 ```
 
 Then all we need to do is to reshape the resulting array, via `map`, to product an object for each supplier, with a list of products:
 
-```text
+```jq
 .value
 | group_by(.SupplierID)
 | map(
@@ -135,7 +135,7 @@ You can examine how this works yourself [courtesy of jq play](https://jqplay.org
 
 Note: If we wanted to create the same shape as the OData output, with each product name as a value for a `ProductName` property, this would just need a small change:
 
-```text
+```jq
 .value
 | group_by(.SupplierID)
 | map(
@@ -148,12 +148,12 @@ Note: If we wanted to create the same shape as the OData output, with each produ
 
 This works because of the shortcut syntax available for `jq`'s [object construction](https://stedolan.github.io/jq/manual/#ObjectConstruction:{}) (`{...}`) which is simply to use the name of the property (and you don't even need quotes):
 
-```text
+```jq
 {ProductName}
 ```
 
 is the same as:
 
-```text
+```jq
 {"ProductName": .ProductName}
 ```

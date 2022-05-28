@@ -20,7 +20,7 @@ In practising a little `jq`, I thought I'd use it to find out the most common ci
 
 This is the invocation I ended up with:
 
-```text
+```jq
 .value
 | group_by(.City)
 | map([length, first.City])
@@ -43,7 +43,7 @@ Here's a brief breakdown of the invocation I ended up with:
 
 For those of you wondering, I deliberately chose to reverse the list before picking out the first element, so the element would be at the top and therefore visible in `ijq`'s output window:
 
-```text
+```jq
 | sort_by(.[0])
 | reverse
 | first[1]
@@ -51,7 +51,7 @@ For those of you wondering, I deliberately chose to reverse the list before pick
 
 But I could have just as well done this:
 
-```text
+```jq
 | sort_by(.[0])
 | last[1]
 ```
