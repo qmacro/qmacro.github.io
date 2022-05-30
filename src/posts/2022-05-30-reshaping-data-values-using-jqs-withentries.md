@@ -307,6 +307,8 @@ Let's have a look what passing the above structure into `from_entries` produces:
 | from_entries
 ```
 
+It's this:
+
 ```json
 {
   "operating-system": [
