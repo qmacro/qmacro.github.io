@@ -3,14 +3,14 @@ title: Upcoming Talks
 layout: talks.njk
 ---
 
-<a name="odata-basics-3-system-query-options"></a>
-## Back to basics: OData - the Open Data Protocol - Part 3 - System query options
+<a name="odata-basics-4-all-things-filter"></a>
+## Back to basics: OData - the Open Data Protocol - Part 4 - All things $filtr
 
-When: Fri 27 May at 0800 BST (UTC+1)
+When: Fri 17 Jun at 0800 BST (UTC+1)
 
-[Live Stream / Recording](https://youtu.be/Bln2A0_OauY)
+[Live Stream / Recording](https://youtu.be/R9JyaPYtWKs)
 
-Join us for more on OData, where we look at system query options and lots more. Everyone welcome, especially beginners, and no question is too simple! (🔴 Live stream)
+Join us for more on OData, where we look in detail at the $filter system query option. (🔴 Live stream)
 
 ---
 
@@ -40,6 +40,16 @@ An overview of what the SAP Business Technology Platform (BTP) really is beneath
 
 Here is a list of some of my recent talks.
 
+<a name="odata-basics-3-system-query-options"></a>
+## Back to basics: OData - the Open Data Protocol - Part 3 - System query options
+
+When: Fri 27 May at 0800 BST (UTC+1)
+
+[Live Stream / Recording](https://youtu.be/Bln2A0_OauY)
+
+Join us for more on OData, where we look at system query options and lots more. Everyone welcome, especially beginners, and no question is too simple! (🔴 Live stream)
+
+---
 <a name="odata-basics-2-basic-operations"></a>
 ## Back to basics: OData - the Open Data Protocol - Part 2 - Basic operations
 
