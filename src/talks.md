@@ -4,7 +4,7 @@ layout: talks.njk
 ---
 
 <a name="odata-basics-4-all-things-filter"></a>
-## Back to basics: OData - the Open Data Protocol - Part 4 - All things $filtr
+## Back to basics: OData - the Open Data Protocol - Part 4 - All things $filter
 
 When: Fri 17 Jun at 0800 BST (UTC+1)
 
