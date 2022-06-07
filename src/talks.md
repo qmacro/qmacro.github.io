@@ -36,6 +36,17 @@ An overview of what the SAP Business Technology Platform (BTP) really is beneath
 
 ---
 
+<a name="exploring-odata-v4-with-cap"></a>
+## Exploring OData V4 with the SAP Cloud Application Programming Model (CAP)
+
+When: Sat 24 Sep in Kontich, Belgium
+
+[Event info](https://groups.community.sap.com/t5/sap-insidetrack/sap-inside-track-belgium/ec-p/5203#M3)
+
+In this session we'll explore what CAP has to offer in terms of support for OData V4. For background content on this topic you may wish to watch the replays of the [Back to basics: OData](https://www.youtube.com/playlist?list=PL6RpkC85SLQDYLiN1BobWXvvnhaGErkwj) series on the Hands-on SAP Dev show.
+
+---
+
 # Past talks
 
 Here is a list of some of my recent talks.
