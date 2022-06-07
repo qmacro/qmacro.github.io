@@ -1,5 +1,5 @@
 ---
-title: Upcoming Talks
+title: Talks
 layout: talks.njk
 ---
 
