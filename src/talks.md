@@ -3,17 +3,6 @@ title: Upcoming Talks
 layout: talks.njk
 ---
 
-<a name="odata-basics-4-all-things-filter"></a>
-## Back to basics: OData - the Open Data Protocol - Part 4 - All things $filter
-
-When: Fri 17 Jun at 0800 BST (UTC+1)
-
-[Live Stream / Recording](https://youtu.be/R9JyaPYtWKs)
-
-Join us for more on OData, where we look in detail at the $filter system query option. (🔴 Live stream)
-
----
-
 <a name="accessing-sap-btp-resources-with-apis-and-the-cli"></a>
 ## Accessing SAP BTP resources with APIs and the CLI
 
@@ -22,6 +11,17 @@ When: Thu 09 Jun in 2850 Boom, BE
 [Event info](https://www.flexso.com/en/events/sapdeveloperday)
 
 A brief but technically heavy exploration of how to explore and manage resources on the SAP Business Technology platform with command line tools and APIs, both of which are key to being able to move fully to the cloud from a devops and automation perspective.
+
+---
+
+<a name="odata-basics-4-all-things-filter"></a>
+## Back to basics: OData - the Open Data Protocol - Part 4 - All things $filter
+
+When: Fri 17 Jun at 0800 BST (UTC+1)
+
+[Live Stream / Recording](https://youtu.be/R9JyaPYtWKs)
+
+Join us for more on OData, where we look in detail at the $filter system query option. (🔴 Live stream)
 
 ---
 
