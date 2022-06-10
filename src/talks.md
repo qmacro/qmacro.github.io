@@ -3,17 +3,6 @@ title: Talks
 layout: talks.njk
 ---
 
-<a name="accessing-sap-btp-resources-with-apis-and-the-cli"></a>
-## Accessing SAP BTP resources with APIs and the CLI
-
-When: Thu 09 Jun in 2850 Boom, BE
-
-[Event info](https://www.flexso.com/en/events/sapdeveloperday)
-
-A brief but technically heavy exploration of how to explore and manage resources on the SAP Business Technology platform with command line tools and APIs, both of which are key to being able to move fully to the cloud from a devops and automation perspective.
-
----
-
 <a name="odata-basics-4-all-things-filter"></a>
 ## Back to basics: OData - the Open Data Protocol - Part 4 - All things $filter
 
@@ -50,6 +39,17 @@ In this session we'll explore what CAP has to offer in terms of support for ODat
 # Past talks
 
 Here is a list of some of my recent talks.
+
+<a name="accessing-sap-btp-resources-with-apis-and-the-cli"></a>
+## Accessing SAP BTP resources with APIs and the CLI
+
+When: Thu 09 Jun in 2850 Boom, BE
+
+[Event info](https://www.flexso.com/en/events/sapdeveloperday)
+
+A brief but technically heavy exploration of how to explore and manage resources on the SAP Business Technology platform with command line tools and APIs, both of which are key to being able to move fully to the cloud from a devops and automation perspective.
+
+---
 
 <a name="odata-basics-3-system-query-options"></a>
 ## Back to basics: OData - the Open Data Protocol - Part 3 - System query options
