@@ -3,14 +3,14 @@ title: Talks
 layout: talks.njk
 ---
 
-<a name="odata-basics-4-all-things-filter"></a>
-## Back to basics: OData - the Open Data Protocol - Part 4 - All things $filter
+<a name="odata-basics-5-actions-and-functions"></a>
+## Back to basics: OData - the Open Data Protocol - Part 5 - Actions & functions
 
-When: Fri 17 Jun at 0800 BST (UTC+1)
+When: Fri 24 Jun at 0800 BST (UTC+1)
 
-[Live Stream / Recording](https://youtu.be/R9JyaPYtWKs)
+[Live Stream / Recording](https://youtu.be/tmwglig2mbw)
 
-Join us for more on OData, where we look in detail at the $filter system query option. (🔴 Live stream)
+Join us for more on OData, where we look at a different side of the protocol, in the form of actions and functions, which are somewhat orthogonal to the core RESTful principles but fascinating and important nonetheless. So much to learn! Everyone welcome, especially beginners, and no question is too simple! (🔴 Live stream)
 
 ---
 
@@ -39,6 +39,17 @@ In this session we'll explore what CAP has to offer in terms of support for ODat
 # Past talks
 
 Here is a list of some of my recent talks.
+
+<a name="odata-basics-4-all-things-filter"></a>
+## Back to basics: OData - the Open Data Protocol - Part 4 - All things $filter
+
+When: Fri 17 Jun at 0800 BST (UTC+1)
+
+[Live Stream / Recording](https://youtu.be/R9JyaPYtWKs)
+
+Join us for more on OData, where we look in detail at the $filter system query option. (🔴 Live stream)
+
+---
 
 <a name="accessing-sap-btp-resources-with-apis-and-the-cli"></a>
 ## Accessing SAP BTP resources with APIs and the CLI
