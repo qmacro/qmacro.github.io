@@ -3,9 +3,6 @@ title: Talks
 layout: talks.njk
 ---
 
-<a name="odata-basics-5-actions-and-functions"></a>
-## Back to basics: OData - the Open Data Protocol - Part 5 - Actions & functions
-
 <a name="first-steps-towards-automatic-your-sap-btp-cloud-based-systems-and-resources"></a>
 ## First steps towards automating your SAP BTP cloud based systems and resources
 
@@ -16,6 +13,9 @@ When: Mon 20 Jun in Manchester
 An overview of what the SAP Business Technology Platform (BTP) really is beneath the surface, what it's constructed from, and how to navigate and understand it using the Cockpit. Then, going a little deeper, a quick tour of CLI tools and APIs for the BTP resources that can be used to build automations that work for you.
 
 ---
+
+<a name="odata-basics-5-actions-and-functions"></a>
+## Back to basics: OData - the Open Data Protocol - Part 5 - Actions & functions
 
 When: Fri 24 Jun at 0800 BST (UTC+1)
 
