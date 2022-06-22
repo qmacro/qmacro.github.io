@@ -3,17 +3,6 @@ title: Talks
 layout: talks.njk
 ---
 
-<a name="first-steps-towards-automatic-your-sap-btp-cloud-based-systems-and-resources"></a>
-## First steps towards automating your SAP BTP cloud based systems and resources
-
-When: Mon 20 Jun in Manchester
-
-[Event info](https://www.epiuselabs.com/epi-use-labs-uk-ireland-user-group-event-2022)
-
-An overview of what the SAP Business Technology Platform (BTP) really is beneath the surface, what it's constructed from, and how to navigate and understand it using the Cockpit. Then, going a little deeper, a quick tour of CLI tools and APIs for the BTP resources that can be used to build automations that work for you.
-
----
-
 <a name="odata-basics-5-actions-and-functions"></a>
 ## Back to basics: OData - the Open Data Protocol - Part 5 - Actions & functions
 
@@ -39,6 +28,17 @@ In this session we'll explore what CAP has to offer in terms of support for ODat
 # Past talks
 
 Here is a list of some of my recent talks.
+
+<a name="first-steps-towards-automatic-your-sap-btp-cloud-based-systems-and-resources"></a>
+## First steps towards automating your SAP BTP cloud based systems and resources
+
+When: Mon 20 Jun in Manchester
+
+[Event info](https://www.epiuselabs.com/epi-use-labs-uk-ireland-user-group-event-2022)
+
+An overview of what the SAP Business Technology Platform (BTP) really is beneath the surface, what it's constructed from, and how to navigate and understand it using the Cockpit. Then, going a little deeper, a quick tour of CLI tools and APIs for the BTP resources that can be used to build automations that work for you.
+
+---
 
 <a name="odata-basics-4-all-things-filter"></a>
 ## Back to basics: OData - the Open Data Protocol - Part 4 - All things $filter
