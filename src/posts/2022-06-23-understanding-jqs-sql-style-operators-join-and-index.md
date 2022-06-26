@@ -4,9 +4,9 @@ title: Understanding jq's SQL style operators JOIN and INDEX
 tags:
   - jq
 ---
-In this post I explore a couple of new (to me) operators in jq's arsenal: `JOIN` and `INDEX`, based on an answer to a question ([JQ: How to join arrays by key?](https://stackoverflow.com/q/72723706/384366) that I came across on Stack Overflow.
+In this post I explore a couple of new (to me) operators in jq's arsenal: `JOIN` and `INDEX`, based on an answer to a question that I came across on Stack Overflow.
 
-The [answer](https://stackoverflow.com/a/72725480/384366) was in response to a question about how to merge two arrays of related information. I found it interesting and it also introduced me to a couple of operators in `jq` that I'd hitherto not come across. There's a section in the manual titled [SQL-Style Operators](https://stedolan.github.io/jq/manual/#SQL-StyleOperators) that describe them.
+The [answer](https://stackoverflow.com/a/72725480/384366) was in response to a question ([JQ: How to join arrays by key?](https://stackoverflow.com/q/72723706/384366)) about how to merge two arrays of related information. I found it interesting and it also introduced me to a couple of operators in `jq` that I'd hitherto not come across. There's a section in the manual titled [SQL-Style Operators](https://stedolan.github.io/jq/manual/#SQL-StyleOperators) that describe them.
 
 I could have sworn I'd never seen this section before, so had instead looked to see if they were defined in the [builtin.jq](https://github.com/stedolan/jq/blob/a9f97e9e61a910a374a5d768244e8ad63f407d3e/src/builtin.jq) file, where `jq` functions, filters and operators are defined ... in `jq`. I did come across them there, and their definitions helped me understand them too. I thought I'd explore them in this blog post, "out loud", as it were.
 
@@ -368,8 +368,8 @@ Then there's `.weights[]` specified for the "stream", from which values for the 
 
 ## Wrapping up
 
-Again, I've probably used too many words in my exploration, but perhaps it will help you in your understanding as you explore this area too. 
+Again, I've probably used too many words in my exploration, but perhaps it will help you in your understanding as you explore this area too.
 
-This exploration was inspired by the great [answer](https://stackoverflow.com/a/72725480/384366) by Stack Overflow user [pmf](https://stackoverflow.com/users/2158479/pmf). 
+This exploration was inspired by the great [answer](https://stackoverflow.com/a/72725480/384366) by Stack Overflow user [pmf](https://stackoverflow.com/users/2158479/pmf).
 
 If you're looking for another angle, and another example, there's [another great answer](https://stackoverflow.com/a/71107203/384366) from the same user, to a related question [Understanding jq JOIN()](https://stackoverflow.com/q/71106595/384366).
