@@ -366,6 +366,25 @@ The expression contains a call to `JOIN/4`, and the first parameter (the "index"
 
 Then there's `.weights[]` specified for the "stream", from which values for the "index expression" `.name` are used to look up data in the index. Finally, `add` is specified as what to use as the "join expression". What's produced is a stream of values which are then enclosed in an array (`[...]`). This array is then returned as the value of a `weights` property inside an object that's constructed just to hold that property.
 
+This entire `jq` filter, when applied to the test data, produces the following:
+
+```json
+{
+  "weights": [
+    {
+      "name": "apple",
+      "weight": 200,
+      "category": "fruit"
+    },
+    {
+      "name": "tomato",
+      "weight": 100,
+      "category": "vegetable"
+    }
+  ]
+}
+```
+
 ## Wrapping up
 
 Again, I've probably used too many words in my exploration, but perhaps it will help you in your understanding as you explore this area too.
