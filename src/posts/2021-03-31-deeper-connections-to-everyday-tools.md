@@ -24,15 +24,15 @@ What was profound was that the lack of relationship I had with the stuff I just 
 
 I'd been thinking about tools I use often, since [noticing how worn my hand milk frother was recently](https://twitter.com/qmacro/status/1374655713331544065).
 
-<img src="/content/images/2021/03/milkfrother.jpeg" alt="Worn milk frother" width="200" height="138"/>
+<img src="/images/2021/03/milkfrother.jpeg" alt="Worn milk frother" width="200" height="138"/>
 
 I've had that milk frother for about 10 years. I've had a moka pot for about that long too - originally one from Bialetti, which I eventually replaced with one from IKEA (which is surprisingly excellent).
 
-<img src="/content/images/2021/03/mokapot.png" alt="IKEA RÅDIG moka pot" width="147" height="155"/>
+<img src="/images/2021/03/mokapot.png" alt="IKEA RÅDIG moka pot" width="147" height="155"/>
 
 And I've had the La Pavoni Professional Lusso for almost 2 years.
 
-<img src="/content/images/2021/03/lapavoni.jpeg" alt="La Pavoni and espresso cup" width="300" height="400"/>
+<img src="/images/2021/03/lapavoni.jpeg" alt="La Pavoni and espresso cup" width="300" height="400"/>
 
 Give or take, I've used each of these items **every single day** since I've had them. Often more than once per day. (In case you're wondering, I make M's latte with the moka pot and froth the milk manually, as that's how she prefers it, and I make my espresso with the La Pavoni).
 
