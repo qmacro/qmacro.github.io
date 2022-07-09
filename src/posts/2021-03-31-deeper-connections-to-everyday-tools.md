@@ -44,7 +44,7 @@ There's something special about tools like this. The bond, the attachment, the r
 
 I like the command line. Give me a terminal over a GUI any day. The command line is a rich and powerful environment because of the expressive nature and the closeness you feel to the things you're trying to do (or manipulate).
 
-That power comes from the combination of two things, the shell, and the commands available to you in your path (for more on the shell, see [Waiting for jobs, and the concept of the shell](https://qmacro.org/autodidactics/2020/12/28/waiting-for-jobs/)).
+That power comes from the combination of two things, the shell, and the commands available to you in your path (for more on the shell, see [Waiting for jobs, and the concept of the shell](/blog/posts/2020/12/28/waiting-for-jobs-and-the-concept-of-the-shell/)).
 
 Without thinking too hard, here's a list of commands, of tools, that I use in the context of the shell, every single day:
 
