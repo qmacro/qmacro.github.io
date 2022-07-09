@@ -14,7 +14,7 @@ Something mildly profound emerged from the combination two recent activities:
 * eBay sales of items I've not used in a while
 * maintenance of my La Pavoni coffee machine
 
-The [successful maintenance](https://qmacro.org/2021/03/27/la-pavoni-maintenance-successful/) of that beautifully designed manual lever espresso machine did take a while, but during it I guess I formed a deeper relationship with the device, built upon the existing connection I had already from the constant enjoyment & challenge of getting everything aligned to pull a decent shot.
+The [successful maintenance](/blog/posts/2021/03/27/la-pavoni-maintenance-successful/) of that beautifully designed manual lever espresso machine did take a while, but during it I guess I formed a deeper relationship with the device, built upon the existing connection I had already from the constant enjoyment & challenge of getting everything aligned to pull a decent shot.
 
 And the items I sold (SONOS speakers, an old Macbook Pro) are items I've not really had any relationship with at all. Yes, I used the speakers, but not every day, and since SONOS's [meltdown](https://www.fastcompany.com/90454672/this-is-disgusting-angry-sonos-customers-are-calling-for-a-boycott) last year an active distancing and dislike has grown between me and the devices.
 
