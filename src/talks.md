@@ -3,10 +3,76 @@ title: Talks
 layout: talks.njk
 ---
 
+# Upcoming talks
+
+<a name="how-to-build-event-mesh-driven-architecture"></a>
+
+## How to build event mesh driven architecture
+
+When: Wed 23 Nov 2022 at 1400 GMT
+
+A talk and live demo showing the features of the SAP Event Mesh service on SAP Business Technology Platform.
+
+---
+
+<a name="hands-on-with-btp-cli-and-apis"></a>
+
+## Hands-on with the btp CLI and APIs
+
+When: Mon 28 Nov 2022
+
+[Event Info](https://eu.eventscloud.com/ehome/200234652)
+
+The SAP Business Technology Platform is an essential part of your SAP enterprise landscape. If you work in Basis, DevOps or development, then knowing how to view and manage resources on SAP BTP from the command line and via APIs is essential, not only for your own use, but for automation. In this session you'll get a feel for the command line tool for SAP BTP – the btp CLI – and also some of the APIs for managing SAP BTP resources. You can bring your own laptop and play along, or attend and just watch. If you're intending to play along, be sure to set up everything in the prerequisites described for a related SAP CodeJam: <https://github.com/SAP-samples/cloud-btp-cli-api-codejam/blob/main/prerequisites.md>
+
+---
+
+# Past talks
+
+Here is a list of some of my recent talks.
+
+<a name="odata-v4-and-cap"></a>
+
+## OData V4 and SAP Cloud Application Proramming Model
+
+When: Sat 24 Sep 2022 at 1400 CEST
+
+[Event Info](sitbe.fiddle.be)
+
+In this session we'll look at what the SAP Cloud Application Programming Model (CAP) has to offer for OData V4 ([talk content](https://github.com/qmacro/odata-v4-and-cap/)).
+
+---
+
+<a name="sap-btp-codejam-mechelen-23-sep-2022"></a>
+
+## SAP CodeJam BTP: Hands-on with the btp CLI and APIs (Mechelen, Belgium)
+
+When: Fri 23 Sep 2022 (all day)
+
+[Event Info](https://groups.community.sap.com/t5/sap-codejam/sap-codejam-btp-hands-on-with-the-btp-cli-and-apis-mechelen/ec-p/8141#M11)
+
+The inaugural SAP CodeJam BTP event is on the Core Service APIs for SAP BTP and also the command line interface tool for SAP BTP, otherwise known as the btp CLI.
+
+---
+
+<a name="odata-basics-6-wrapping-up"></a>
+
+## Back to basics: OData - the Open Data Protocol - Part 6 - Wrapping up
+
+When: Fri 15 Jul 2022 at 0800 BST (UTC+1)
+
+[Live Stream / Recording](https://youtu.be/PhA_VS4-lUw)
+
+Join us for this final episode on our introduction to OData series. In this wrap up we'll cover annotations, accessing on-prem OData services, and more. Everyone welcome, especially beginners!
+(🔴 Live stream)
+
+---
+
 <a name="odata-basics-5-actions-and-functions"></a>
+
 ## Back to basics: OData - the Open Data Protocol - Part 5 - Actions & functions
 
-When: Fri 24 Jun at 0800 BST (UTC+1)
+When: Fri 24 Jun 2022 at 0800 BST (UTC+1)
 
 [Live Stream / Recording](https://youtu.be/tmwglig2mbw)
 
@@ -15,9 +81,10 @@ Join us for more on OData, where we look at a different side of the protocol, in
 ---
 
 <a name="exploring-odata-v4-with-cap"></a>
+
 ## Exploring OData V4 with the SAP Cloud Application Programming Model (CAP)
 
-When: Sat 24 Sep in Kontich, Belgium
+When: Sat 24 Sep 2022 in Kontich, Belgium
 
 [Event info](https://groups.community.sap.com/t5/sap-insidetrack/sap-inside-track-belgium/ec-p/5203#M3)
 
@@ -25,14 +92,11 @@ In this session we'll explore what CAP has to offer in terms of support for ODat
 
 ---
 
-# Past talks
-
-Here is a list of some of my recent talks.
-
 <a name="first-steps-towards-automatic-your-sap-btp-cloud-based-systems-and-resources"></a>
+
 ## First steps towards automating your SAP BTP cloud based systems and resources
 
-When: Mon 20 Jun in Manchester
+When: Mon 20 Jun 2022 in Manchester
 
 [Event info](https://www.epiuselabs.com/epi-use-labs-uk-ireland-user-group-event-2022)
 
@@ -41,9 +105,10 @@ An overview of what the SAP Business Technology Platform (BTP) really is beneath
 ---
 
 <a name="odata-basics-4-all-things-filter"></a>
+
 ## Back to basics: OData - the Open Data Protocol - Part 4 - All things $filter
 
-When: Fri 17 Jun at 0800 BST (UTC+1)
+When: Fri 17 Jun 2022 at 0800 BST (UTC+1)
 
 [Live Stream / Recording](https://youtu.be/R9JyaPYtWKs)
 
@@ -52,9 +117,10 @@ Join us for more on OData, where we look in detail at the $filter system query o
 ---
 
 <a name="accessing-sap-btp-resources-with-apis-and-the-cli"></a>
+
 ## Accessing SAP BTP resources with APIs and the CLI
 
-When: Thu 09 Jun in 2850 Boom, BE
+When: Thu 09 Jun 2022 in 2850 Boom, BE
 
 [Event info](https://www.flexso.com/en/events/sapdeveloperday)
 
@@ -63,9 +129,10 @@ A brief but technically heavy exploration of how to explore and manage resources
 ---
 
 <a name="odata-basics-3-system-query-options"></a>
+
 ## Back to basics: OData - the Open Data Protocol - Part 3 - System query options
 
-When: Fri 27 May at 0800 BST (UTC+1)
+When: Fri 27 May 2022 at 0800 BST (UTC+1)
 
 [Live Stream / Recording](https://youtu.be/Bln2A0_OauY)
 
@@ -73,6 +140,7 @@ Join us for more on OData, where we look at system query options and lots more. 
 
 ---
 <a name="odata-basics-2-basic-operations"></a>
+
 ## Back to basics: OData - the Open Data Protocol - Part 2 - Basic operations
 
 When: Fri 20 May at 0800 BST (UTC+1)
@@ -84,9 +152,10 @@ Join us for more on OData, where we look at basic operations. Everyone welcome, 
 ---
 
 <a name="odata-basics-1-introduction"></a>
+
 ## Back to basics: OData - the Open Data Protocol
 
-When: Fri 13 May at 0800 BST (UTC+1)
+When: Fri 13 May 2022 at 0800 BST (UTC+1)
 
 [Live Stream / Recording](https://youtu.be/O3OU2rSUqs0)
 
@@ -95,9 +164,10 @@ Join us in this first episode of a new series where we explore fundamental build
 ---
 
 <a name="wrapping-up-our-adventures-with-the-sap-service-manager-on-sap-business-technology-platform"></a>
+
 ## Wrapping up our adventures with the SAP Service Manager on SAP Business Technology Platform
 
-When: Fri 06 May at 0800 BST (UTC+1)
+When: Fri 06 May 2022 at 0800 BST (UTC+1)
 
 [Live Stream / Recording](https://www.youtube.com/watch?v=5_Ns0ihQPD4)
 
@@ -106,6 +176,7 @@ A third and final episode in this mini-series where we journey together to explo
 ---
 
 <a name="setting-up-my-own-cloud-foundry"></a>
+
 ## Setting up my own Cloud Foundry
 
 When: Wed 20 Apr 2022 at 0900 BST (UTC+1) / 1800 AEDT (UTC+10) [⏰](https://www.timeanddate.com/worldclock/converter.html?iso=20220420T080000&p1=302&p2=240)
@@ -118,7 +189,7 @@ While exploring service brokers and service consumption on SAP Business Technolo
 
 In essence, I wanted my own Cloud Foundry environment instance, that I controlled and administered. That way I would be able to explore the SAP Service Manager, and service catalogues and marketplaces in general, in more detail.
 
-### Related content:
+### Related content
 
 * [Exploring service brokers and service consumption on SAP Business Technology Platform](https://blogs.sap.com/2022/03/08/exploring-service-brokers-and-cf-on-sap-business-technology-platform/) (blog post)
 * [Setting up my own Cloud Foundry](https://qmacro.org/blog/posts/2022/03/14/setting-up-my-own-cloud-foundry/) (blog post)
@@ -126,6 +197,7 @@ In essence, I wanted my own Cloud Foundry environment instance, that I controlle
 ---
 
 <a name="level-up-your-sap-btp-resource-management-skills-with-command-line-tools-and-apis"></a>
+
 ## Level up Your SAP BTP Resource Management Skills with Command Line Tools and APIs
 
 When: Tue 12 Apr 2022 at 1145 BST (UTC+1) / 1245 SAST (UTC+2) [⏰](https://www.timeanddate.com/worldclock/converter.html?iso=20220412T104500&p1=302&p2=111)
@@ -138,6 +210,7 @@ You'll come away with an understanding of what tools are available, what they're
 ---
 
 <a name="introducing-abap-on-exercism-practice-and-improve-your-abap-skills-online"></a>
+
 ## Introducing ABAP on Exercism - practice and improve your ABAP skills online
 
 When: Fri 01 Apr 2022 at 0800 BST (UTC+1)
