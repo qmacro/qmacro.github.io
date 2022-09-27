@@ -9,7 +9,7 @@ layout: talks.njk
 
 ## How to build event mesh driven architecture
 
-When: Wed 23 Nov 2022 at 1400 GMT
+When: Wed 23 Nov 2022 1400-1500 GMT (UTC+0)
 
 A talk and live demo showing the features of the SAP Event Mesh service on SAP Business Technology Platform.
 
@@ -19,7 +19,7 @@ A talk and live demo showing the features of the SAP Event Mesh service on SAP B
 
 ## Hands-on with the btp CLI and APIs
 
-When: Mon 28 Nov 2022
+When: Mon 28 Nov 2022 1135-1305 GMT (UTC+0)
 
 [Event Info](https://eu.eventscloud.com/ehome/200234652)
 
@@ -35,7 +35,7 @@ Here is a list of some of my recent talks.
 
 ## OData V4 and SAP Cloud Application Proramming Model
 
-When: Sat 24 Sep 2022 at 1400 CEST
+When: Sat 24 Sep 2022 1400-1445 CEST
 
 [Event Info](sitbe.fiddle.be)
 
@@ -59,7 +59,7 @@ The inaugural SAP CodeJam BTP event is on the Core Service APIs for SAP BTP and 
 
 ## Back to basics: OData - the Open Data Protocol - Part 6 - Wrapping up
 
-When: Fri 15 Jul 2022 at 0800 BST (UTC+1)
+When: Fri 15 Jul 2022 0800-0900 BST (UTC+1)
 
 [Live Stream / Recording](https://youtu.be/PhA_VS4-lUw)
 
@@ -72,7 +72,7 @@ Join us for this final episode on our introduction to OData series. In this wrap
 
 ## Back to basics: OData - the Open Data Protocol - Part 5 - Actions & functions
 
-When: Fri 24 Jun 2022 at 0800 BST (UTC+1)
+When: Fri 24 Jun 2022 0800-0900 BST (UTC+1)
 
 [Live Stream / Recording](https://youtu.be/tmwglig2mbw)
 
@@ -108,7 +108,7 @@ An overview of what the SAP Business Technology Platform (BTP) really is beneath
 
 ## Back to basics: OData - the Open Data Protocol - Part 4 - All things $filter
 
-When: Fri 17 Jun 2022 at 0800 BST (UTC+1)
+When: Fri 17 Jun 2022 0800-0900 BST (UTC+1)
 
 [Live Stream / Recording](https://youtu.be/R9JyaPYtWKs)
 
@@ -132,7 +132,7 @@ A brief but technically heavy exploration of how to explore and manage resources
 
 ## Back to basics: OData - the Open Data Protocol - Part 3 - System query options
 
-When: Fri 27 May 2022 at 0800 BST (UTC+1)
+When: Fri 27 May 2022 0800-0900 BST (UTC+1)
 
 [Live Stream / Recording](https://youtu.be/Bln2A0_OauY)
 
@@ -143,7 +143,7 @@ Join us for more on OData, where we look at system query options and lots more. 
 
 ## Back to basics: OData - the Open Data Protocol - Part 2 - Basic operations
 
-When: Fri 20 May at 0800 BST (UTC+1)
+When: Fri 20 May 0800-0900 BST (UTC+1)
 
 [Live Stream / Recording](https://youtu.be/f9w61GxMztY)
 
@@ -155,7 +155,7 @@ Join us for more on OData, where we look at basic operations. Everyone welcome, 
 
 ## Back to basics: OData - the Open Data Protocol
 
-When: Fri 13 May 2022 at 0800 BST (UTC+1)
+When: Fri 13 May 2022 0800-0900 BST (UTC+1)
 
 [Live Stream / Recording](https://youtu.be/O3OU2rSUqs0)
 
@@ -167,7 +167,7 @@ Join us in this first episode of a new series where we explore fundamental build
 
 ## Wrapping up our adventures with the SAP Service Manager on SAP Business Technology Platform
 
-When: Fri 06 May 2022 at 0800 BST (UTC+1)
+When: Fri 06 May 2022 0800-0900 BST (UTC+1)
 
 [Live Stream / Recording](https://www.youtube.com/watch?v=5_Ns0ihQPD4)
 
@@ -213,7 +213,7 @@ You'll come away with an understanding of what tools are available, what they're
 
 ## Introducing ABAP on Exercism - practice and improve your ABAP skills online
 
-When: Fri 01 Apr 2022 at 0800 BST (UTC+1)
+When: Fri 01 Apr 2022 0800-0900 BST (UTC+1)
 
 [General info](https://twitter.com/qmacro/status/1506911556029853697) | [Recording](https://www.youtube.com/watch?v=F2zBmjqM8xo)
 
