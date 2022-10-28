@@ -66,7 +66,7 @@ To keep the data compact for this blog post, I decided to analyse just the lates
 So I start my analysis like this:
 
 ```bash
-< /tmp/untappd.json jq '
+< checkins.json jq '
 .[-20:]
 | map({beer_name, brewery_name, brewery_country})
 '
@@ -77,7 +77,7 @@ Note the use of a negative index on the [array slice](https://stedolan.github.io
 This gives us a much smaller data set to think about, but which has enough variation to have the analysis also make sense:
 
 ```bash
-< /tmp/untappd.json jq '
+< checkins.json jq '
 .[-20:]
 | map({beer_name, brewery_name, brewery_country})
 '
@@ -88,7 +88,7 @@ This gives us a much smaller data set to think about, but which has enough varia
 Well the first thing I want to do is arrange the checkin objects by brewery country. Using [group_by](https://stedolan.github.io/jq/manual/#group_by(path_expression)) produces a set of subarrays, like this:
 
 ```bash
-< /tmp/untappd.json jq '
+< checkins.json jq '
 .[-20:]
 | map({beer_name, brewery_name, brewery_country})
 | group_by(.brewery_country)
@@ -219,7 +219,7 @@ This results in a set of subarrays, one for each brewery country, as we'd expect
 Each of the subarrays has a length equal to the count of checkins for that country, clearly. So I can use this and gather the data into a key/value structure that I can then use further down the line with the [entries](https://stedolan.github.io/jq/manual/#to_entries,from_entries,with_entries) family of functions.
 
 ```bash
-< /tmp/untappd.json jq '
+< checkins.json jq '
 .[-20:]
 | map({beer_name, brewery_name, brewery_country})
 | group_by(.brewery_country)
@@ -262,7 +262,7 @@ This has the effect of turning the subarrays into objects:
 I could have mapped the subarrays slightly differently, like this:
 
 ```bash
-< /tmp/untappd.json jq '
+< checkins.json jq '
 .[-20:]
 | map({beer_name, brewery_name, brewery_country})
 | group_by(.brewery_country)
@@ -302,7 +302,7 @@ The problem with this result is that it's now harder to sort by the count, becau
 It's now time to sort, and I want the most popular brewery country at the top, so I'll also need to reverse the sorted output:
 
 ```bash
-< /tmp/untappd.json jq '
+< checkins.json jq '
 .[-20:]
 | map({beer_name, brewery_name, brewery_country})
 | group_by(.brewery_country)
@@ -348,7 +348,7 @@ This produces what we're expecting:
 Now I have the core data computed and organised as required, I can neaten it up using the `from_entries` function, which expects `key` and `value` property names:
 
 ```bash
-< /tmp/untappd.json jq '
+< checkins.json jq '
 .[-20:]
 | map({beer_name, brewery_name, brewery_country})
 | group_by(.brewery_country)
@@ -379,7 +379,7 @@ That'll do nicely.
 Now I'm happy with the result, I can remove the first two parts of the filter (which were there just for a quick experiment) so that the results reflect my entire history checkin:
 
 ```bash
-< /tmp/untappd.json jq '
+< checkins.json jq '
 group_by(.brewery_country)
 | map({key: first.brewery_country, value: length})
 | sort_by(.value)
