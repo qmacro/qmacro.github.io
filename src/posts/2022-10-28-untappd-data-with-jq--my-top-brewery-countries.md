@@ -8,6 +8,8 @@ tags:
 ---
 In this short post I explore my Untappd checkin data with `jq`, because it's a nice data set to practise my limited filtering fu upon, and also to get my blogging flowing again. 
 
+![My profile on Untappd](/images/2022/10/untappd-profile.png)
+
 I'm an [Untappd supporter](https://untappd.com/user/qmacro) and an early adopter, joining in early November 12 years ago in 2010. Recently Untappd [celebrated 12 years of operation and 10 million users](https://twitter.com/untappd/status/1584908973135859717). It got me thinking back to my [very first checkin](https://untappd.com/user/qmacro/checkin/11215/) (it was a Leffe Brune, in case you're wondering) and then I remembered that as an Untappd supporter I could get access to my entire checkin history, in JSON.
 
 ## The Untappd checkin data
