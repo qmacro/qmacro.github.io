@@ -61,7 +61,7 @@ Noting that my first checkin was to a beer from Belgium (see the value for the `
 
 ### Reducing the data set
 
-To keep the data compact for this blog post, I decided to analyse just the latest 20 checkins, rather than he entire [four thousand plus](https://untappd.com/user/qmacro). And for the purposes of experimentation and illustration, I only really need to see the beer name, brewery name and brewery country. 
+To keep the data compact for this blog post, I decided to analyse just the latest 20 checkins, rather than the entire [four thousand plus](https://untappd.com/user/qmacro). And for the purposes of experimentation and illustration, I only really need to see the beer name, brewery name and brewery country. 
 
 So I start my analysis like this:
 
