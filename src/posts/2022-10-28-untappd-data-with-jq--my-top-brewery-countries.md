@@ -72,15 +72,113 @@ So I start my analysis like this:
 '
 ```
 
-Note the use of a negative index on the [array slice](https://stedolan.github.io/jq/manual/#Array/StringSlice:.[10:15]) here - which causes the slice to start from counting backwards from the end of the array. Note also that I'm invoking `jq` and passing in the data in a slightly different way than I have done before (such as in [Summing and grouping values with jq](/blog/posts/2022/06/16/summing-and-grouping-values-with-jq/)). Instead of specifying a filename (`jq filter filename`) I'm using redirection to pass the contents of the `filename` to `jq`'s STDIN: `< filename jq filter`.
+> Note the use of a negative index on the [array slice](https://stedolan.github.io/jq/manual/#Array/StringSlice:.[10:15]) here - which causes the slice to start from counting backwards from the end of the array. Note also that I'm invoking `jq` and passing in the data in a slightly different way than I have done before (such as in [Summing and grouping values with jq](/blog/posts/2022/06/16/summing-and-grouping-values-with-jq/)). Instead of specifying a filename (`jq filter filename`) I'm using redirection to pass the contents of the `filename` to `jq`'s STDIN: `< filename jq filter`.
 
 This gives us a much smaller data set to think about, but which has enough variation to have the analysis also make sense:
 
-```bash
-< checkins.json jq '
-.[-20:]
-| map({beer_name, brewery_name, brewery_country})
-'
+```json
+[
+  {
+    "beer_name": "Kentucky Breakfast Stout (KBS)",
+    "brewery_name": "Founders Brewing Co.",
+    "brewery_country": "United States"
+  },
+  {
+    "beer_name": "Gueuze Tilquin – Draft Version",
+    "brewery_name": "Gueuzerie Tilquin",
+    "brewery_country": "Belgium"
+  },
+  {
+    "beer_name": "Zwanze 2022 - Poivre De Gorilles",
+    "brewery_name": "Brasserie Cantillon",
+    "brewery_country": "Belgium"
+  },
+  {
+    "beer_name": "Moeder Imperiale",
+    "brewery_name": "La Source Beer Co.",
+    "brewery_country": "Belgium"
+  },
+  {
+    "beer_name": "Supersonic",
+    "brewery_name": "LERVIG",
+    "brewery_country": "Norway"
+  },
+  {
+    "beer_name": "Illuminati",
+    "brewery_name": "Leelanau Brewing Company",
+    "brewery_country": "United States"
+  },
+  {
+    "beer_name": "Out of Vogue",
+    "brewery_name": "Burning Sky Brewery",
+    "brewery_country": "England"
+  },
+  {
+    "beer_name": "SDIPA Strata",
+    "brewery_name": "Vault City Brewing",
+    "brewery_country": "Scotland"
+  },
+  {
+    "beer_name": "Petrus Dubbel",
+    "brewery_name": "Brouwerij De Brabandere",
+    "brewery_country": "Belgium"
+  },
+  {
+    "beer_name": "Outlaw",
+    "brewery_name": "Distant Hills",
+    "brewery_country": "England"
+  },
+  {
+    "beer_name": "North X Neon Raptor Imperial Stout + Cacao + Peanut + Banana",
+    "brewery_name": "North Brewing Co.",
+    "brewery_country": "England"
+  },
+  {
+    "beer_name": "Sweet Temptation",
+    "brewery_name": "Vocation Brewery",
+    "brewery_country": "England"
+  },
+  {
+    "beer_name": "Turns",
+    "brewery_name": "Siren Craft Brew",
+    "brewery_country": "England"
+  },
+  {
+    "beer_name": "Abt 12",
+    "brewery_name": "Brouwerij St.Bernardus",
+    "brewery_country": "Belgium"
+  },
+  {
+    "beer_name": "Interference Is Temporary",
+    "brewery_name": "Cloudwater Brew Co.",
+    "brewery_country": "England"
+  },
+  {
+    "beer_name": "Liquid Art",
+    "brewery_name": "Prizm Brewing Co.",
+    "brewery_country": "France"
+  },
+  {
+    "beer_name": "Have You Got Cask Or Is It All Craft?",
+    "brewery_name": "DEYA Brewing Company",
+    "brewery_country": "England"
+  },
+  {
+    "beer_name": "DIVINE FAITH // DIPA (2022)",
+    "brewery_name": "Northern Monk",
+    "brewery_country": "England"
+  },
+  {
+    "beer_name": "Silver King",
+    "brewery_name": "Ossett Brewery",
+    "brewery_country": "England"
+  },
+  {
+    "beer_name": "HEATHEN // HAZY IPA",
+    "brewery_name": "Northern Monk",
+    "brewery_country": "England"
+  }
+]
 ```
 
 ## Grouping by brewery country
