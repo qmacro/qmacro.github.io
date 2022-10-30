@@ -8,6 +8,8 @@ tags:
 ---
 I've been exploring my Untappd data a bit more since [analysing my top brewery countries](/blog/posts/2022/10/28/untappd-data-with-jq-my-top-brewery-countries/), this time to see if my average ratings indicated anything about my preferred beer types. Here's what I've done so far, in part 1 of this little series.
 
+[![a 5 star rating to a checkin of Dogfishhead's 90 Minute Imperial IPA](/images/2022/10/dogfishhead-checkin.png)](https://untappd.com/user/qmacro/checkin/658678850)
+
 Near the start of the previous post [Untappd data with jq - my top brewery countries](https://qmacro.org/blog/posts/2022/10/28/untappd-data-with-jq-my-top-brewery-countries/) there's an example of a checkin object; here are some of the properties:
 
 ```json 
