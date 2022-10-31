@@ -16,7 +16,7 @@ Sometimes, only when absolutely necessary, some slides will have more detail on 
 
 A slide deck is not the talk content. A slide deck is there to aid the talk, to enhance it, to provide a bit of context (or light relief) for those attending. They're there to support what's being said, to underpin the message. 
 
-That's why, sometimes, I don't use slides at all. I just show stuff on my computer, fumble around and wave my arms about wildly. Anything to get the point across, to help explain what I'm trying to say, to be more effective in landing the concepts that I'm attempting to explain.
+That's why, sometimes, I don't use slides at all. I just show stuff on my computer, fumble around and wave my arms about wildly. Anything to get the point across, to help explain what I'm trying to say, to be more effective in landing the concepts that I'm attempting to convey.
 
 I often am modifying (I was going to say "improving" but that is up for debate) the content of my talk right up to the day, the hour of when I'm going to give it. It's all about being as up to date as possible, and maintaining the balance between spontaneity and the solid core of a story. Naturally, I'll adjust any supporting slides as I make such modifications. 
 
