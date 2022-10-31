@@ -230,13 +230,15 @@ That "major type" thing is something I'll likely use again, so it's worth consid
 The function is very simple and just encapsulates what we've done already, which is then replaced with a call to that function:
 
 ```jq
-def major_type: split(" -") | first;
+def category: split(" -") | first;
 
-map(.beer_type|major_type) | unique | length, .
+map(.beer_type|category) | unique | length, .
 ```
+
+I wasn't fond of the name "major_type" for the function, so I've come up with the name "category" instead.
 
 ## What's next
 
-That's the end of part 1. It looks like I have a manageable set of major beer types to use as a basis for this analysis. I've also got the feeling that the `jq` that I'll end up writing might be more than a few lines' worth, so I'm glad I've made the switch away from a "one-liner" to a file based filter.
+That's the end of part 1. It looks like I have a manageable set of major beer types (categories) to use as a basis for this analysis. I've also got the feeling that the `jq` that I'll end up writing might be more than a few lines' worth, so I'm glad I've made the switch away from a "one-liner" to a file based filter.
 
 In part 2 I'll look at collecting my ratings across all the checkins, and averaging them by major type.
