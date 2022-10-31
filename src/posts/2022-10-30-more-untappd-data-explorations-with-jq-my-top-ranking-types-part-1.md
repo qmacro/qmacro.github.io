@@ -241,4 +241,4 @@ I wasn't fond of the name "major_type" for the function, so I've come up with th
 
 That's the end of part 1. It looks like I have a manageable set of major beer types (categories) to use as a basis for this analysis. I've also got the feeling that the `jq` that I'll end up writing might be more than a few lines' worth, so I'm glad I've made the switch away from a "one-liner" to a file based filter.
 
-In part 2 I'll look at collecting my ratings across all the checkins, and averaging them by major type.
+In [part 2](/blog/posts/2022/10/31/more-untappd-data-explorations-with-jq-my-top-ranking-beer-types-(part-2)/) I look at collecting my ratings across all the checkins, ready for averaging them by category.
