@@ -2,6 +2,7 @@
 layout: post
 title: More Untappd data explorations with jq - my top ranking beer types (part 1)
 tags:
+  - jq-series-top-beer-types
   - untappd
   - jq
   - beer
