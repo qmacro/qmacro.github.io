@@ -1,6 +1,8 @@
 ---
 layout: post
 title: Removing the knob on a La Pavoni steam valve
+tags:
+  - coffee
 ---
 
 _This post documents how I went about removing the knob from the shaft of the steam valve on my La Pavoni lever coffee machine._
