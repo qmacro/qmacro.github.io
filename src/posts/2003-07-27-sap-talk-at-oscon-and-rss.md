@@ -13,7 +13,7 @@ When you look at RSS from 10000 feet, it’s pretty obvious why it lends itself 
 
 Here are a couple of recent articles on RSS and extensibility:
 
-[Extending RSS](https://www.xml.com/pub/a/2003/07/23/extendingrss.html)
-[Why Choose RSS 1.0?](https://www.xml.com/pub/a/2003/07/23/rssone.html)
+* [Extending RSS](https://www.xml.com/pub/a/2003/07/23/extendingrss.html)
+* [Why Choose RSS 1.0?](https://www.xml.com/pub/a/2003/07/23/rssone.html)
 
 [Originally published on SAP Community](https://blogs.sap.com/2003/07/27/sap-talk-at-oscon-and-rss/)
