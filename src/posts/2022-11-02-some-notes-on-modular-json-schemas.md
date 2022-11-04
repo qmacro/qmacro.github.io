@@ -453,3 +453,7 @@ I think the possibilities of managing schemas in a modular way are definitely th
 ![Chevrolet Caprice Classic Coupe](/images/2022/11/tdx13.jpg)
 
 Here's a pic of my 1973 Chevrolet Caprice Classic Coupe which I had in the 1990's. Long gone, never forgotten.
+
+## Further reading
+
+* [Structuring a complex schema](https://json-schema.org/understanding-json-schema/structuring.html)
