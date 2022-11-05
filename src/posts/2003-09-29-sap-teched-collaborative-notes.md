@@ -1,6 +1,6 @@
 ---
 layout: post
-title: SAP TechEd: Collaborative notes
+title: SAP TechEd - Collaborative notes
 date: 2003-09-29
 tags:
   - sapcommunity
