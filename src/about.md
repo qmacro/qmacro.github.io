@@ -55,3 +55,9 @@ Follow me on [Twitter](//twitter.com/qmacro), and find all the latest content vi
 ## Bio and photos
 
 A short bio can be found on the [Developer Advocates](https://developers.sap.com/developer-advocates.html) page, and there are a couple of photos ([with jacket](../images/DJA-with-jacket.jpg) and [without jacket](../images/DJA-without-jacket.jpg)) available too.
+
+<a name="currentcontent"></a>
+## My current content
+
+I emit content in various places, and I have a [dynamic profile page](https://github.com/qmacro) that shows the latest items from each area.
+
