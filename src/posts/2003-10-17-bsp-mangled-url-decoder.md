@@ -1,6 +1,6 @@
 ---
 layout: post
-title: BSP: Mangled URL Decoder
+title: BSP - Mangled URL Decoder
 date: 2003-10-17
 tags:
   - sapcommunity
