@@ -127,7 +127,7 @@ map(. + { postdate: .body|date })
 Of course, I could combine the two parts if I didn't want the `postdate` property to be an explicit fixture in my downstream processing. Something like this:
 
 ```jq
-| sort_by(.body | date)
+sort_by(.body | date)
 ```
 
 ## Wrapping up
