@@ -33,7 +33,7 @@ Here is a list of some of my recent talks.
 
 <a name="odata-v4-and-cap"></a>
 
-## OData V4 and SAP Cloud Application Proramming Model
+## OData V4 and SAP Cloud Application Programming Model
 
 When: Sat 24 Sep 2022 1400-1445 CEST
 
