@@ -5,19 +5,6 @@ layout: talks.njk
 
 # Upcoming talks
 
-<a name="building-event-driven-architectures-with-SAP-Event-Mesh"></a>
-
-## Building event driven architectures with SAP Event Mesh
-
-When: Wed 23 Nov 2022 1400-1500 GMT (UTC+0)
-
-[Talk Content](https://github.com/qmacro/event-mesh-talk)
-
-A talk and live demo showing the core concepts and features of the SAP Event Mesh service on SAP Business Technology Platform.
-
-
----
-
 <a name="exploring-the-btp-service-metadata-project-part-1"></a>
 
 ## Exploring the BTP Service Metadata project - Part 1
@@ -46,6 +33,18 @@ The SAP Business Technology Platform is an essential part of your SAP enterprise
 # Past talks
 
 Here is a list of some of my recent talks.
+
+<a name="building-event-driven-architectures-with-SAP-Event-Mesh"></a>
+
+## Building event driven architectures with SAP Event Mesh
+
+When: Wed 23 Nov 2022 1400-1500 GMT (UTC+0)
+
+[Event Info](https://vnsg.nl/iMIS/VNSGWeb/Events/Event/Event_Dashboard.aspx?EventKey=BTP02311&WebsiteKey=a75e9823-bbf7-4e7d-aef9-ece556c213cc) | [Talk Content](https://github.com/qmacro/event-mesh-talk)
+
+A talk and live demo showing the core concepts and features of the SAP Event Mesh service on SAP Business Technology Platform.
+
+---
 
 <a name="odata-v4-and-cap"></a>
 
