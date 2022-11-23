@@ -34,7 +34,7 @@ The SAP Business Technology Platform is an essential part of your SAP enterprise
 
 Here is a list of some of my recent talks.
 
-<a name="building-event-driven-architectures-with-SAP-Event-Mesh"></a>
+<a name="building-event-driven-architectures-with-sap-event-mesh"></a>
 
 ## Building event driven architectures with SAP Event Mesh
 
