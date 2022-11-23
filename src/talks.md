@@ -5,9 +5,9 @@ layout: talks.njk
 
 # Upcoming talks
 
-<a name="how-to-build-event-mesh-driven-architecture"></a>
+<a name="building-event-driven-architectures-with-SAP-Event-Mesh"></a>
 
-## How to build event mesh driven architecture
+## Building event driven architectures with SAP Event Mesh
 
 When: Wed 23 Nov 2022 1400-1500 GMT (UTC+0)
 
