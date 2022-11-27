@@ -5,20 +5,7 @@ layout: talks.njk
 
 # Upcoming talks
 
-<a name="exploring-the-btp-service-metadata-project-part-1"></a>
-
-## Exploring the BTP Service Metadata project - Part 1
-
-When: Fri 25 Nov 0800-0900 GMT (UTC+0)
-
-[Live Stream / Recording](https://youtu.be/6gHzgUfV_SA)
-
-Following the announcement at SAP TechEd last week, we start taking a look into the metadata supplied in the BTP Service Metadata project.
-(🔴 Live stream)
-
----
-
-<a name="hands-on-with-btp-cli-and-apis"></a>
+<a name="hands-on-with-the-btp-cli-and-apis"></a>
 
 ## Hands-on with the btp CLI and APIs
 
@@ -33,6 +20,19 @@ The SAP Business Technology Platform is an essential part of your SAP enterprise
 # Past talks
 
 Here is a list of some of my recent talks.
+
+<a name="exploring-the-btp-service-metadata-project-part-1"></a>
+
+## Exploring the BTP Service Metadata project - Part 1
+
+When: Fri 25 Nov 0800-0900 GMT (UTC+0)
+
+[Live Stream / Recording](https://youtu.be/6gHzgUfV_SA)
+
+Following the announcement at SAP TechEd last week, we start taking a look into the metadata supplied in the BTP Service Metadata project.
+(🔴 Live stream)
+
+---
 
 <a name="building-event-driven-architectures-with-sap-event-mesh"></a>
 
