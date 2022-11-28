@@ -5,6 +5,23 @@ layout: talks.njk
 
 # Upcoming talks
 
+<a name="exploring-the-btp-service-metadata-project-part-2"></a>
+
+## Exploring the BTP Service Metadata project - Part 2
+
+When: Fri 02 Dev 0800-0900 GMT (UTC+0)
+
+[Live Stream / Recording](https://youtu.be/6gHzgUfV_SA)
+
+Last week we started to take a look at the metadata in the BTP Service Metadata project. This time we dive a little deeper with the individual resource metadata files and more jq filter goodness. Join us, everyone welcome!
+(🔴 Live stream)
+
+---
+
+# Past talks
+
+Here is a list of some of my recent talks.
+
 <a name="hands-on-with-the-btp-cli-and-apis"></a>
 
 ## Hands-on with the btp CLI and APIs
@@ -16,10 +33,6 @@ When: Mon 28 Nov 2022 1135-1305 GMT (UTC+0)
 The SAP Business Technology Platform is an essential part of your SAP enterprise landscape. If you work in Basis, DevOps or development, then knowing how to view and manage resources on SAP BTP from the command line and via APIs is essential, not only for your own use, but for automation. In this session you'll get a feel for the command line tool for SAP BTP – the btp CLI – and also some of the APIs for managing SAP BTP resources. You can bring your own laptop and play along, or attend and just watch. If you're intending to play along, be sure to set up everything in the prerequisites described for a related SAP CodeJam: <https://github.com/SAP-samples/cloud-btp-cli-api-codejam/blob/main/prerequisites.md>
 
 ---
-
-# Past talks
-
-Here is a list of some of my recent talks.
 
 <a name="exploring-the-btp-service-metadata-project-part-1"></a>
 
