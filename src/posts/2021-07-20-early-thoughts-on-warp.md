@@ -45,6 +45,6 @@ And that's fresh thinking and energy going into what I think is one of the most 
 
 Here's a picture of Warp, from the very interesting [How Warp works](https://blog.warp.dev/how-warp-works/) article I mentioned earlier.
 
-![A picture of Warp](https://blog.warp.dev/content/images/2021/07/pasted-image-0-2.png }})
+![A picture of Warp](/images/2021/07/warp.png)
 
 Make it so!
