@@ -14227,6 +14227,37 @@ weblog where I rant. And rant. And rant.</p>
   
     
     <entry>
+      <title>The meaning of LIFETIME_RC</title>
+      <link href="https://qmacro.org/blog/posts/2004/10/12/the-meaning-of-lifetime_rc/"/>
+      <updated>2004-10-12T00:00:00Z</updated>
+      <id>https://qmacro.org/blog/posts/2004/10/12/the-meaning-of-lifetime_rc/</id>
+      <content type="html">
+        <![CDATA[
+      <p>Last week, during some preparation for my talk at TechEd on Thursday this week, I’d been wondering about something in the ICF that hadn’t seemed quite right. Interface <code>IF_HTTP_EXTENSION</code>, which is what every ICF handler must implement (in the form of a single method <code>HANDLE_REQUEST</code>) has a couple of attributes, <code>FLOW_RC</code> and <code>LIFETIME_RC</code>. <code>FLOW_RC</code> is for controlling the flow of handler dispatching for a request. <code>LIFETIME_RC</code> is for controlling the lifetime of handlers for a sequence of requests. To quote the <a href="https://help.sap.com/docs/SAP_NETWEAVER_AS_ABAP_751_IP/753088fc00704d0a80e7fbd6803c8adb/48d60603553b3e49e10000000a421937.html?locale=en-US&amp;version=7.51.6">documentation at help.sap.com</a> on the latter:</p>
+<blockquote>
+<p>HTTP request handlers can control the lifetime of their instances if they are operating in stateful mode … If the attribute <code>IF_HTTP_EXTENSION~LIFETIME_RC</code> is set to one of the following values, the HTTP request handler can specify whether the handler should be reinitiated for every request in a session, or whether the handler should be retained and reused for subsequent HTTP requests.</p>
+</blockquote>
+<p>The default action is for the handler instance created to handle the request to be kept, so that instance-level data is retained (think of an incrementing counter value that keeps going up every new request). This is the equivalent of setting <code>LIFETIME_RC</code> to the value of the constant <code>CO_LIFETIME_KEEP</code>. But if <code>LIFETIME_RC</code> is set to the value of constant <code>CO_LIFETIME_DESTROY</code>:</p>
+<blockquote>
+<p>The current instance of the HTTP request handler is terminated after the request is processed. If stateful mode is active, a new instance of the HTTP request handler is created. This means that local data belonging to the instance is lost.</p>
+</blockquote>
+<p>(This of course only makes sense in the context of stateful sessions, which you can create using the <code>SET_SESSION_STATEFUL</code> method (of <code>IF_HTTP_SERVER</code>) – one effect of which causes a context id cookie to be constructed and set in the next HTTP response.)</p>
+<p>Ok, so with the phrasing of the help text (such as “…can control the lifetime…“) and the implication of the “DESTROY” part of the constant name, I did a little experiment to try and control the lifetime, by setting the <code>LIFETIME_RC</code> attribute so that the handler instance would be destroyed after it exited. Did it work as expected?</p>
+<p>No.</p>
+<p>Hmm. What’s going on? Well, it seems that with <code>LIFETIME_RC</code>, it’s either all or nothing. If you set your session to be stateful and specify that the handler instance should be kept (or let it default to that anyway), then you can’t, later in the session, suddenly decide to have the session destroyed.</p>
+<p>Looking under the hood, we see this is confirmed in the ICF layer’s code. The whole process of handling a request is triggered via PBO modules in <code>SAPMHTTP</code>, and via the <code>HTTP_DISPATCH_REQUEST</code> coordinator, we come to the <code>EXECUTE_REQUEST</code> (or <code>EXECUTE_REQUEST_FROM_MEMORY</code> which I’ve seen in 6.40) method of the <code>CL_HTTP_SERVER</code> class.</p>
+<p>When a request comes in, the appropriate handler is instantiated, and the <code>HANDLE_REQUEST</code> method called. Once this method returns, a decision based on <code>LIFETIME_RC</code> is made as to whether to save the instantiated handler object in an internal table, ready for a new request. Unless <code>LIFETIME_RC</code> is set to destroy, the object is saved, providing we’re dealing with a stateful session:</p>
+<pre class="language-abap"><code class="language-abap"><span class="token keyword">if</span> server<span class="token token-operator punctuation">-></span>stateful <span class="token operator">=</span> <span class="token number">1</span> <span class="token keyword">and</span> <span class="token keyword">extension</span>->lifetime_rc <span class="token operator">=</span> if_http_extension<span class="token token-operator punctuation">=></span>co_lifetime_keep <span class="token keyword">and</span> ext_inst_idx <span class="token operator">=</span> -<span class="token number">1</span><span class="token punctuation">.</span> <span class="token operator">*</span> <span class="token keyword">add</span> <span class="token keyword">extension</span> <span class="token keyword">to</span> <span class="token keyword">list</span> <span class="token keyword">of</span> instantiated extensions <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span></code></pre>
+<p>There’s no facility for removing existing table entries though. And this is the key to understanding why manipulating the <code>LIFETIME_RC</code> attribute won’t always do … what you think it should do.</p>
+<p>I bet you’re glad you know that now … share and enjoy 🙂</p>
+<p><a href="https://blogs.sap.com/2004/10/12/the-meaning-of-lifetimerc/">Originally published on SAP Community</a></p>
+
+    ]]>
+      </content>
+    </entry>
+  
+    
+    <entry>
       <title>SAP TechEd first day - notes from Munich</title>
       <link href="https://qmacro.org/blog/posts/2004/10/12/sap-teched-first-day-notes-from-munich/"/>
       <updated>2004-10-12T00:00:00Z</updated>
