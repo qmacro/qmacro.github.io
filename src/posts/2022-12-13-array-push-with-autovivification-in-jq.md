@@ -21,7 +21,7 @@ The structure I had in mind is this (in pseudo-JSON):
 }
 ```
 
-Thing is, I need to create the contents of the object at `directories` as I go along, i.e. at first, `a` and `b` don't exist. 
+Thing is, I need to create the contents of the object at `dirs` as I go along. In other words, `a` and `b` don't necessarily exist at first.
 
 The first time I need to create a new entry like this, it needs to be an array, with the entry as the first and only value:
 
@@ -87,6 +87,6 @@ produces this:
 }
 ```
 
-The `b` array is effectively autovivified when the first item (`file3`) needs to be appended.
+The `b` array is effectively autovivified when the first item (`file3`) needs to be pushed.
 
 Like I say, I may go off in another direction for this puzzle, but wanted to make a note of this `apush` idea.
