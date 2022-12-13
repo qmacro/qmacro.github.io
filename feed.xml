@@ -5,13 +5,44 @@
   <link href="https://qmacro.org/feed.xml" rel="self"/>
   <link href="https://qmacro.org/"/>
   
-    <updated>2022-11-08T00:00:00Z</updated>
+    <updated>2022-12-13T00:00:00Z</updated>
   
   <id>https://qmacro.org</id>
   <author>
     <name>DJ Adams</name>
     <email>qmacro@gmail.com</email>
   </author>
+  
+    
+    <entry>
+      <title>Array push with autovivification in jq</title>
+      <link href="https://qmacro.org/blog/posts/2022/12/13/array-push-with-autovivification-in-jq/"/>
+      <updated>2022-12-13T00:00:00Z</updated>
+      <id>https://qmacro.org/blog/posts/2022/12/13/array-push-with-autovivification-in-jq/</id>
+      <content type="html">
+        <![CDATA[
+      <p>I wanted to make a note to self about this. I'm using Advent of Code for an opportunity to practise and learn more about <code>jq</code>, and in <a href="https://adventofcode.com/2022/day/7">Day 7: No Space Left On Device</a> I think I need a way of appending values to arrays, which are themselves values of properties that I create on the fly. This may not turn out to be useful in the end, but I wanted to explore it (I was thinking I could store the list of files in a given directory like this).</p>
+<p>The structure I had in mind is this (in pseudo-JSON):</p>
+<pre class="language-text"><code class="language-text">{<br>  "dirs": {<br>    "a": [<fileinfo>, <fileinfo>, ...],<br>    "b": [<fileinfo>, <fileinfo>, ...],<br>    ...<br>  },<br>  ...<br>}</code></pre>
+<p>Thing is, I need to create the contents of the object at <code>directories</code> as I go along, i.e. at first, <code>a</code> and <code>b</code> don't exist.</p>
+<p>The first time I need to create a new entry like this, it needs to be an array, with the entry as the first and only value:</p>
+<pre class="language-text"><code class="language-text">{<br>  "dirs": {<br>    "a": [<fileinfo>]<br>  },<br>  ...<br>}</code></pre>
+<p>But subsequently I need to just append the entry to the existing array:</p>
+<pre class="language-text"><code class="language-text">{<br>  "dirs": {<br>    "a": [<fileinfo>, <fileinfo>]<br>  },<br>  ...<br>}</code></pre>
+<p>The concept of autovivification came to mind; I first learned about this word and concept in my Perl days, and it's never left me (in fact a lot of of how I think in terms of complex data structures I learned back then).</p>
+<p>Effectively I want to be able to push a new item, but make sure that the array exists first and create it if it doesn't. Investigating this led me to the family of path related functions <code>path(path_expression)</code>, <code>del(path_expression)</code>, <code>getpath(PATHS)</code>, <code>setpath(PATHS; VALUE)</code> and <code>delpaths(PATHS)</code>.</p>
+<p>Here's what I came up with, as a sort of &quot;autovivification-push&quot; (where the semantics of push are more from JavaScript's <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/push">array.prototype.push()</a>:</p>
+<pre class="language-jq"><code class="language-jq"><span class="token keyword">def</span> <span class="token function">apush</span><span class="token punctuation">(</span><span class="token variable">$pexp</span><span class="token punctuation">;</span><span class="token variable">$item</span><span class="token punctuation">)</span><span class="token punctuation">:</span><br>  <span class="token c-style-function function">setpath</span><span class="token punctuation">(</span><span class="token variable">$pexp</span><span class="token punctuation">;</span><span class="token punctuation">(</span><span class="token c-style-function function">getpath</span><span class="token punctuation">(</span><span class="token variable">$pexp</span><span class="token punctuation">)</span> <span class="token operator">//</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token punctuation">[</span><span class="token variable">$item</span><span class="token punctuation">]</span><span class="token punctuation">)</span><br><span class="token punctuation">;</span></code></pre>
+<p>Given that, then the following:</p>
+<pre class="language-jq"><code class="language-jq"><span class="token punctuation">{</span><br>  <span class="token property-literal property">dirs</span><span class="token punctuation">:</span> <span class="token punctuation">{</span><br>    <span class="token property-literal property">a</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"file1"</span><span class="token punctuation">]</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span><br><span class="token operator pipe">|</span> <span class="token c-style-function function">apush</span><span class="token punctuation">(</span><span class="token c-style-function function">path</span><span class="token punctuation">(</span><span class="token punctuation">.</span>dirs<span class="token punctuation">.</span>a<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token string">"file2"</span><span class="token punctuation">)</span><br><span class="token operator pipe">|</span> <span class="token c-style-function function">apush</span><span class="token punctuation">(</span><span class="token c-style-function function">path</span><span class="token punctuation">(</span><span class="token punctuation">.</span>dirs<span class="token punctuation">.</span>b<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token string">"another-file"</span><span class="token punctuation">)</span><br><span class="token operator pipe">|</span> <span class="token c-style-function function">apush</span><span class="token punctuation">(</span><span class="token c-style-function function">path</span><span class="token punctuation">(</span><span class="token punctuation">.</span>dirs<span class="token punctuation">.</span>b<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token string">"and-yet-another"</span><span class="token punctuation">)</span></code></pre>
+<p>produces this:</p>
+<pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"dirs"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token property">"a"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>      <span class="token string">"file1"</span><span class="token punctuation">,</span><br>      <span class="token string">"file2"</span><br>    <span class="token punctuation">]</span><span class="token punctuation">,</span><br>    <span class="token property">"b"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>      <span class="token string">"another-file"</span><span class="token punctuation">,</span><br>      <span class="token string">"and-yet-another"</span><br>    <span class="token punctuation">]</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span></code></pre>
+<p>The <code>b</code> array is effectively autovivified when the first item (<code>another-file</code>) needs to be appended.</p>
+<p>Like I say, I may go off in another direction for this puzzle, but wanted to make a note of this <code>apush</code> idea.</p>
+
+    ]]>
+      </content>
+    </entry>
   
     
     <entry>
