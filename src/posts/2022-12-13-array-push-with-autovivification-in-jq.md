@@ -13,8 +13,8 @@ The structure I had in mind is this (in pseudo-JSON):
 ```text
 {
   "dirs": {
-    "a": [<fileinfo>, <fileinfo>, ...],
-    "b": [<fileinfo>, <fileinfo>, ...],
+    "a": [file1, file2, ...],
+    "b": [file3, ...]
     ...
   },
   ...
@@ -28,18 +28,18 @@ The first time I need to create a new entry like this, it needs to be an array, 
 ```text
 {
   "dirs": {
-    "a": [<fileinfo>]
+    "a": [file1]
   },
   ...
 }
 ```
 
-But subsequently I need to just append the entry to the existing array:
+But subsequently I need to just append entries (such as `file2` here) to the existing array:
 
 ```text
 {
   "dirs": {
-    "a": [<fileinfo>, <fileinfo>]
+    "a": [file1, file2]
   },
   ...
 }
@@ -66,8 +66,8 @@ Given that, then the following:
   }
 }
 | apush(path(.dirs.a);"file2")
-| apush(path(.dirs.b);"another-file")
-| apush(path(.dirs.b);"and-yet-another")
+| apush(path(.dirs.b);"file3")
+| apush(path(.dirs.b);"file4")
 ```
 
 produces this:
@@ -80,8 +80,8 @@ produces this:
       "file2"
     ],
     "b": [
-      "another-file",
-      "and-yet-another"
+      "file3",
+      "file4"
     ]
   }
 }
