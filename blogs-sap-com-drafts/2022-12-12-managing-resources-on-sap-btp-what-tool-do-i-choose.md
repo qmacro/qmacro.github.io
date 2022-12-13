@@ -38,7 +38,7 @@ I tend to think about these tools, from a use perspective, in a sort of inverted
 
   Being of this nature, they're at the opposite end of the spectrum to the SAP BTP Cockpit, for example, from a usability perspective. Not for the faint-hearted or occasional user, quite the opposite.The APIs lend themselves to being embedded in more permanent (less ad hoc) custom automation scenarios; regardless of your choice of infrastructure / DevOps language (be that Python, Go, or something else) you can create custom tools that suit your exact needs by employing the APIs using your language's standard HTTP libraries.
 
-* The BTP Setup Automator shines for scenarios where you need automation as a core feature, are wanting to set up more shareable and extendable resource setup scenarios (think of the BTP Setup Automator as an "open source version of SAP BTP Boosters).
+* The BTP Setup Automator shines for scenarios where you need automation as a core feature, are wanting to set up more shareable and extendable resource setup scenarios (think of the BTP Setup Automator as an open source version of SAP BTP Boosters).
 
   Moreover, it's for the non-programmers, in that the definitions are declarative, in JSON (with a comfortable assistive aspect thanks to a JSON Schema sourced from its sibling the BTP Service Metadata project).
 
