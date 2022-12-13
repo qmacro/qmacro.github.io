@@ -87,6 +87,6 @@ produces this:
 }
 ```
 
-The `b` array is effectively autovivified when the first item (`another-file`) needs to be appended.
+The `b` array is effectively autovivified when the first item (`file3`) needs to be appended.
 
 Like I say, I may go off in another direction for this puzzle, but wanted to make a note of this `apush` idea.
