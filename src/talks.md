@@ -5,6 +5,35 @@ layout: talks.njk
 
 # Upcoming talks
 
+<a name="an-introduction-to-the-lightweight-and-flexible-command-line-json-processor-jq"></a>
+
+## An introduction to the lightweight and flexible command-line JSON processor jq
+
+When: Fri 16 Dev 0800-0900 GMT (UTC+0)
+
+[Live Stream / Recording](https://youtu.be/AFr-27GnKbY)
+
+By popular request, we wrap up this year with an introduction to jq, which we've used already with the BTP Setup Automator, the btp CLI and more. If you haven't explored jq and thought about adding it to your toolbox, now would be a good time to do so!
+(🔴 Live stream)
+
+---
+
+# Past talks
+
+Here is a list of some of my recent talks.
+
+<a name="exploring-the-btp-service-metadata-project-part-3"></a>
+
+## Exploring the BTP Service Metadata project - Part 3
+
+When: Fri 09 Dev 0800-0900 GMT (UTC+0)
+
+[Live Stream / Recording](https://youtu.be/Jq-QcqLRrC8)
+
+In the final part in this mini series, we explore the BTP Service Metadata with JavaScript!
+(🔴 Live stream)
+
+---
 <a name="exploring-the-btp-service-metadata-project-part-2"></a>
 
 ## Exploring the BTP Service Metadata project - Part 2
@@ -17,11 +46,6 @@ Last week we started to take a look at the metadata in the BTP Service Metadata 
 (🔴 Live stream)
 
 ---
-
-# Past talks
-
-Here is a list of some of my recent talks.
-
 <a name="hands-on-with-the-btp-cli-and-apis"></a>
 
 ## Hands-on with the btp CLI and APIs
