@@ -8,6 +8,8 @@ tags:
 ---
 I wanted to make a note to self about this. I'm using Advent of Code for an opportunity to practise and learn more about `jq`, and in [Day 7: No Space Left On Device](https://adventofcode.com/2022/day/7) I think I need a way of appending values to arrays, which are themselves values of properties that I create on the fly. This may not turn out to be useful in the end, but I wanted to explore it (I was thinking I could store the list of files in a given directory like this).
 
+> See the update at the end of this post for a much neater approach. 
+
 The structure I had in mind is this (in pseudo-JSON):
 
 ```text
@@ -90,3 +92,20 @@ produces this:
 The `b` array is effectively autovivified when the first item (`file3`) needs to be pushed.
 
 Like I say, I may go off in another direction for this puzzle, but wanted to make a note of this `apush` idea.
+
+## Update
+
+Holy bananas batman. [Matthias Wadman](https://fosstodon.org/@wader) just [replied to me on Mastodon](https://fosstodon.org/@wader/109517582015244200) with a much neater alternative, one that I should have realised sooner:
+
+```jq
+{
+  dirs: {
+    a: ["file1"]
+  }
+}
+| .dirs.a += ["file2"]
+| .dirs.b += ["file3"]
+| .dirs.b += ["file4"]
+```
+
+This results in the same JSON as above. This is a much more precise approach, that also, now I see it, is clearly more idiomatic. I had seen the `+=` operator in the manual (in the [Arithmetic update-assignment](https://stedolan.github.io/jq/manual/#Arithmeticupdate-assignment:+=,-=,*=,/=,%=,//=) section) but looking at the description, I had applied only a narrow part of my brain and not seen that it might be usable beyond arithmetic operations! Of course! Thanks Matthias.
