@@ -95,7 +95,7 @@ Like I say, I may go off in another direction for this puzzle, but wanted to mak
 
 ## Update
 
-Holy bananas batman. [Matthias Wadman](https://fosstodon.org/@wader) just [replied to me on Mastodon](https://fosstodon.org/@wader/109517582015244200) with a much neater alternative, one that I should have realised sooner:
+Holy bananas batman. [Mattias Wadman](https://fosstodon.org/@wader) just [replied to me on Mastodon](https://fosstodon.org/@wader/109517582015244200) with a much neater alternative, one that I should have realised sooner:
 
 ```jq
 {
@@ -108,4 +108,4 @@ Holy bananas batman. [Matthias Wadman](https://fosstodon.org/@wader) just [repli
 | .dirs.b += ["file4"]
 ```
 
-This results in the same JSON as above. This is a much more precise approach, that also, now I see it, is clearly more idiomatic. I had seen the `+=` operator in the manual (in the [Arithmetic update-assignment](https://stedolan.github.io/jq/manual/#Arithmeticupdate-assignment:+=,-=,*=,/=,%=,//=) section) but looking at the description, I had applied only a narrow part of my brain and not seen that it might be usable beyond arithmetic operations! Of course! Thanks Matthias.
+This results in the same JSON as above. This is a much more precise approach, that also, now I see it, is clearly more idiomatic. I had seen the `+=` operator in the manual (in the [Arithmetic update-assignment](https://stedolan.github.io/jq/manual/#Arithmeticupdate-assignment:+=,-=,*=,/=,%=,//=) section) but looking at the description, I had applied only a narrow part of my brain and not seen that it might be usable beyond arithmetic operations! Of course! Thanks Mattias.
