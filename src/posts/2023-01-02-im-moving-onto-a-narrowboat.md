@@ -61,9 +61,9 @@ Here's my narrowboat design (open the picture in a new browser window for a larg
 
 My research and enquiries had me land at [The Fitout Pontoon](https://www.thefitoutpontoon.co.uk/). And after a great initial phone call, I decided to go with them for the design, an independent step before committing to the next step. I worked with them to finalise a design and specification that I could then take to whatever boat builder I chose. 
 
-In the end, because my experience with them in design phase was so positive, I decided to engage them for the entire journey. They would take the design, and deliver the narrowboat according to the specifications. 
+In the end, because my experience with them in design phase was so positive, I decided to engage them for the entire journey. They would take the design, and deliver the narrowboat according to the specifications. One of the deciding factors was that I got on really well with the proprietor and chief designer Mark, who lives aboard his own narrowboat with his wife and child, and has a huge wealth of experience, knowledge and well-based opinions on everything I could think of, and also on plenty of things I didn't even know that I didn't know. 
 
-I'd already heard great things about them and had followed the excellent Chris Mears and his experiences with them on his YouTube channel [In Slow Time](https://www.youtube.com/@chrismears-inslowtime), specifically in these two playlists:
+I'd also already heard great things about them and had followed Chris Mears and his experiences with them on his YouTube channel [In Slow Time](https://www.youtube.com/@chrismears-inslowtime), specifically in these two playlists:
 
 * [Narrowboat Shell Build](https://www.youtube.com/playlist?list=PLIbde5c3EVgCgS8jI0g4bdhH7VqHGpL4k)
 * [Narrowboat Fit Out](https://www.youtube.com/playlist?list=PLIbde5c3EVgBdAMdzIyGRcfSaM3_v5ZzH)
