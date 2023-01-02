@@ -72,7 +72,7 @@ That distinction afforded by the pair of playlists is an important one. Building
 
 ## Where things are right now
 
-The steelwork is done. During the construction, which was at JSR Boats' facility near Northampton, I got a chance to visit and document the progress in photos. In addition, Mark, from The Fitout Pontoon, kept me updated with further photos too.
+The steelwork is done. During the construction, which was at JSR Boats' facility near Northampton, I got a chance to visit and document the progress in photos. In addition, Mark kept me updated with further photos too.
 
 Before I bring this first post to an end, I'll share some of those early pictures. 
 
