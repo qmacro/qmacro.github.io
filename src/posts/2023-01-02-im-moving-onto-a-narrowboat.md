@@ -74,7 +74,7 @@ That distinction afforded by the pair of playlists is an important one. Building
 
 The steelwork is done. During the construction, which was at JSR Boats' facility near Northampton, I got a chance to visit and document the progress in photos. In addition, Mark kept me updated with further photos too.
 
-Before I bring this first post to an end, I'll share some of those early pictures. 
+Before I bring this first post to an end, I'll share some of those early pictures, from a couple of months ago in November 2022.
 
 In this one I'm standing at the stern, and you can just see the beautiful "swim" near the bottom of the narrowboat (where the boat tapers to a narrower point), along which the water will flow and out the rear of which will be the propeller shaft and propeller. 
 
