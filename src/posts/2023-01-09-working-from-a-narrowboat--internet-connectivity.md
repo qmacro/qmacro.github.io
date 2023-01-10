@@ -92,7 +92,7 @@ So I went for this 5G version, meaning that the only component in the solution t
 
 I'm currently living in a rented cottage, and have been "soak testing" this very setup for the past 6 months. It's been my only connection to the Internet. It's been great, and I'm more than happy with it. 
 
-I've been consistently getting anywhere between 10Mbps and 25Mbps down and up. Yes, many of my friends and colleagues are using FTTP these days and revelling in three-figure Mbps readings. But honestly, the speeds I'm getting work fine. More than fine. I've been live streaming on our [Hands-on SAP Dev](https://www.youtube.com/playlist?list=PL6RpkC85SLQABOpzhd7WI-hMpy99PxUo0) show, I've been in more Teams and Zoom based video conferences than you can shake a stick at, I watch YouTube and Amazon Prime movies in the evening on my Google TV dongle, and stream music from YouTube Music during the day too. 
+I've been consistently getting anywhere between 10Mbps and 25Mbps (both down and up). Yes, many of my friends and colleagues are using FTTP these days and revelling in three-figure Mbps readings. But honestly, the speeds I'm getting work fine. More than fine. I've been live streaming on our [Hands-on SAP Dev](https://www.youtube.com/playlist?list=PL6RpkC85SLQABOpzhd7WI-hMpy99PxUo0) show, I've been in more Teams and Zoom based video conferences than you can shake a stick at, I watch YouTube and Amazon Prime movies in the evening on my Google TV dongle, and stream music from YouTube Music during the day too. 
 
 When I've prepared an item for our [SAP Developer News](https://www.youtube.com/playlist?list=PL6RpkC85SLQAVBSQXN9522_1jNvPavBgg) show, where we first upload everything to a central server before editing everything together, I've had no problems either. 
 
