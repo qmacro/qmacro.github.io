@@ -94,8 +94,6 @@ In fact, the build has progressed beyond this, but I'll save more pictures and d
 
 If there's something you'd like to know, tell me in the comments and I'll try to answer it next time. 
 
+---
 
-
-
-
-
+Next post in this series: [Working from a narrowboat - Internet connectivity](/blog/posts/2023/01/09/working-from-a-narrowboat-internet-connectivity/).

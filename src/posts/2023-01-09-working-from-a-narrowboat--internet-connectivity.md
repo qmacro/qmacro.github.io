@@ -9,6 +9,11 @@ tags:
   - connectivity
   - raspberrypi
 ---
+
+Previous post in this series: [I'm moving onto a narrowboat](/blog/posts/2023/01/02/i'm-moving-onto-a-narrowboat/).
+
+---
+
 Since publishing the first post about my plans to live on and work from a narrowboat (see [I'm moving onto a narrowboat](/blog/posts/2023/01/02/i'm-moving-onto-a-narrowboat/)), I've had some lovely comments and some great questions, thank you. One which came up a lot both on Twitter, from folks like [Maffi](https://twitter.com/OfMaffi/status/1610428180908888065), [Joel](https://twitter.com/JBY35/status/1609984376799956994) and [Sacha](https://twitter.com/sufw/status/1609909407562993666), and elsewhere, is: How do I get Internet connectivity? I'll try to answer that question in this post. 
 
 I work as a Developer Advocate for SAP, and am in the very fortunate position to work remotely. I've worked remotely (i.e. from home) for many, many years, for different companies; in fact, on reflection, my working life has been a balance of two extremes: the constant weekly travel of a contractor / consultant (there was a "peak" period of 7 years where I flew at least twice a week, and sometimes four times a week, every week, to different clients), and the calm and travel-free context of working from home. 
