@@ -31,6 +31,7 @@ There are formatters for other languages that work this way now (and I'm sure th
 
 Having experimented with the `shfmt` options, I ended up choosing a few that would help me stay close to the style guide:
 
+|Option|Meaning|
 |-|-|
 |`-i 2`|indent with two spaces|
 |`-bn`|binary ops like && and \| may start a line|
