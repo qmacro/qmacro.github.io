@@ -131,3 +131,6 @@ In this one you can also see how the device is secured to the pole, and how the 
 
 ![The antenna setup, this time from behind, showing how the Poynting device is mounted to the pole](/images/2023/01/bright-arrow-xpol-4g-1.jpg)
 
+---
+
+Next post in this series: [Living on a narrowboat - embracing constraints](/blog/posts/2023/01/16/living-on-a-narrowboat-embracing-constraints/).
