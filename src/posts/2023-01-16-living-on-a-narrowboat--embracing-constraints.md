@@ -12,7 +12,7 @@ Previous post in this series: [Working from a narrowboat - Internet connectivity
 
 ---
 
-It's no secret that a narrowboat is smaller than the vast majority of land-based homes (or offices for that matter). In the first post in this series, [I'm moving onto a narrowboat](/blog/posts/2023/01/02/i'm-moving-onto-a-narrowboat/), I outlined some of the basic dimension (57 feet long and 6 feet 10 inches wide) and shared a diagram of the narrowboat layout:
+It's no secret that a narrowboat is smaller than the vast majority of land-based homes (or offices for that matter). In the first post in this series, [I'm moving onto a narrowboat](/blog/posts/2023/01/02/i'm-moving-onto-a-narrowboat/), I outlined some of the basic dimensions (57 feet long and 6 feet 10 inches wide) and shared a diagram of the narrowboat layout:
 
 ![My narrowboat design, showing the entire boat length and layout details](/images/2023/01/narrowboat-design.png)
 
