@@ -53,7 +53,7 @@ Here is a list of some of my recent talks.
 
 When: Tue 17 Jan 0900-1100 GMT (UTC)
 
-[Content](https://github.com/SAP-samples/cloud-btp-cli-api-codejam/blob/cei/CEI.md)
+[Talk Content](https://github.com/SAP-samples/cloud-btp-cli-api-codejam/blob/cei/CEI.md)
 
 A mini (2 hour) workshop forming part of a Customer Engagement Initiative (CEI) on the btp CLI.
 
