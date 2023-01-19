@@ -5,11 +5,104 @@ layout: talks.njk
 
 # Upcoming talks
 
+
+<a name="wrapping-up-oauth-2.0-with-the-authorization-code-grant-type"></a>
+
+## Wrapping up OAuth 2.0 with the Authorization Code grant type
+
+When: Fri 20 Jan 0800-0900 GMT (UTC+0)
+
+[Live Stream / Recording](https://youtu.be/Hw2cKy39xQM)
+
+We're coming to the end of our journey of OAuth 2.0 discovery, and we'll finish off with a deep dive into the Authorization Code grant type, the classic three legged flow. Join us as we learn-by-doing together, all welcome!
+(🔴 Live stream)
+
+---
+
+<a name="service-integration-with-cap-utrecht-nl"></a>
+
+## Service Integration with SAP Cloud Application Programming Model (Utrecht, NL)
+
+When: Fri 10 Feb 1300-1900 CET (UTC+1)
+
+[Event Info](https://groups.community.sap.com/t5/sap-codejam/sap-codejam-cap-service-integration-with-sap-cloud-application/ec-p/216773#M54)
+
+This SAP CodeJam event is on the topic of the SAP Cloud Application Programming Model (Node.js), and specifically about service integration. It introduces participants to service integration and event-based data federation; we look at pre-built integration packages, connectivity, destinations, data replication and more. 
+
+---
+
+<a name="hands-on-with-the-btp-cli-and-apis-heilbronn-de"></a>
+
+## Hands-on with the btp CLI and APIs (Heilbronn, DE)
+
+When: Fri 24 Feb 0900-1500 CET (UTC+1)
+
+[Event Info](https://groups.community.sap.com/t5/sap-codejam/sap-codejam-btp-hands-on-with-the-btp-cli-and-apis-heilbronn-de/ec-p/130512#M52)
+
+This SAP CodeJam BTP event is on the Core Service APIs for SAP BTP and also the command line interface tool for SAP BTP, otherwise known as the btp CLI.
+
+---
+
+# Past talks
+
+Here is a list of some of my recent talks.
+
+<a name="customer-engagement-initiative-on-the-btp-cli"></a>
+
+## Customer Engagement Initiative on the btp CLI
+
+When: Tue 17 Jan 0900-1100 GMT (UTC)
+
+[Content](https://github.com/SAP-samples/cloud-btp-cli-api-codejam/blob/cei/CEI.md)
+
+A mini (2 hour) workshop forming part of a Customer Engagement Initiative (CEI) on the btp CLI.
+
+---
+
+<a name="more-oauth-2.0"></a>
+
+## More OAuth 2.0
+
+When: Fri 13 Jan 0800-0900 GMT (UTC+0)
+
+[Live Stream / Recording](https://youtu.be/lkK9DLvmje0)
+
+Following on from the [previous episode](https://youtu.be/1F2nQFdY4cs) we continue with our introduction to OAuth 2.0, looking at further grant types. Join us, all welcome!
+(🔴 Live stream)
+
+---
+
+<a name="more-oauth-2.0"></a>
+
+## More OAuth 2.0
+
+When: Fri 13 Jan 0800-0900 GMT (UTC+0)
+
+[Live Stream / Recording](https://youtu.be/lkK9DLvmje0)
+
+Following on from the [previous episode](https://youtu.be/1F2nQFdY4cs) we continue with our introduction to OAuth 2.0, looking at further grant types. Join us, all welcome!
+(🔴 Live stream)
+
+---
+
+<a name="getting-started-with-oauth-2.0"></a>
+
+## Getting started with OAuth 2.0
+
+When: Fri 06 Jan 0800-0900 GMT (UTC+0)
+
+[Live Stream / Recording](https://youtu.be/1F2nQFdY4cs)
+
+We'll start the new year with a gentle introduction to OAuth 2.0, by working together to understand what's required and prepare for & make a call to an API in the "Core Services for SAP BTP" API package. We'll take things nice and slow, learning-by-doing and digging into as much detail as we need. Join us, all welcome!
+(🔴 Live stream)
+
+---
+
 <a name="an-introduction-to-the-lightweight-and-flexible-command-line-json-processor-jq"></a>
 
 ## An introduction to the lightweight and flexible command-line JSON processor jq
 
-When: Fri 16 Dev 0800-0900 GMT (UTC+0)
+When: Fri 16 Dec 0800-0900 GMT (UTC+0)
 
 [Live Stream / Recording](https://youtu.be/AFr-27GnKbY)
 
@@ -18,15 +111,11 @@ By popular request, we wrap up this year with an introduction to jq, which we've
 
 ---
 
-# Past talks
-
-Here is a list of some of my recent talks.
-
 <a name="exploring-the-btp-service-metadata-project-part-3"></a>
 
 ## Exploring the BTP Service Metadata project - Part 3
 
-When: Fri 09 Dev 0800-0900 GMT (UTC+0)
+When: Fri 09 Dec 0800-0900 GMT (UTC+0)
 
 [Live Stream / Recording](https://youtu.be/Jq-QcqLRrC8)
 
@@ -38,7 +127,7 @@ In the final part in this mini series, we explore the BTP Service Metadata with 
 
 ## Exploring the BTP Service Metadata project - Part 2
 
-When: Fri 02 Dev 0800-0900 GMT (UTC+0)
+When: Fri 02 Dec 0800-0900 GMT (UTC+0)
 
 [Live Stream / Recording](https://youtu.be/6gHzgUfV_SA)
 
@@ -46,6 +135,7 @@ Last week we started to take a look at the metadata in the BTP Service Metadata 
 (🔴 Live stream)
 
 ---
+
 <a name="hands-on-with-the-btp-cli-and-apis"></a>
 
 ## Hands-on with the btp CLI and APIs
