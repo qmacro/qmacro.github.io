@@ -43,7 +43,7 @@ We had a late breakfast at the INNOV8iON office, and in picking up sandwiches, t
 
 I'd run an SAP CodeJam at [INNOV8iON](https://innov8ion.nl) before, so I knew that all the host duties would be well taken care of by the lovely folks there, and I was right.
 
-## Getting started
+### Getting started
 
 We were soon underway.
 
@@ -54,7 +54,7 @@ There was a warm welcome for me and all the participants, with a nice introducti
 
 ![The participants getting together](/images/2023/02/Getting-Together.jpg)
 
-## The exercises and exercise recaps
+### The exercises and exercise recaps
 
 Over the next 6 or so hours, we worked through the exercises, with the participants using their own laptops, with a [development environment](https://github.com/SAP-samples/cap-service-integration-codejam/tree/main/exercises/01-set-up-workspace) that was (for this particular SAP CodeJam) either a Dev Space in SAP Business Application Studio or VS Code with a dev container.
 
@@ -67,7 +67,7 @@ _Picture courtesy of Wim Snoep_
 This way we stayed on track together throughout the entire event, and everyone also had a chance to allow what they'd just worked through to bed down more firmly in the brain, before moving on.
 
 
-## A break for dinner
+### A break for dinner
 
 After getting about two thirds of the way through the exercises, we took a well-earned break for some delicious food and drink, provided by our hosts, and took a chance to get to know each other better and talk about what we'd learned so far.
 
@@ -75,7 +75,7 @@ After getting about two thirds of the way through the exercises, we took a well-
 
 After that, we got back to it, completing the core part of the SAP CodeJam content (exercises 1 through 11), leaving the last bonus exercise for the participants to complete at home. This bonus exercise covers some CAP-based OData annotations for SAP Fiori elements; not directly part of the core topic, but certainly related and useful to have as reference.
 
-## HANA Cafe NL podcast
+### HANA Cafe NL podcast
 
 After the main event had finished, I had the opportunity to join Wim and another participant Julian to record an episode of the [HANA Cafe NL](https://saphanacafenl.podbean.com) podcast, with Twan van den Broek. We talked about the day and it was a lot of fun, not to mention fascinating to see Twan's rather professional podcast recording equipment!
 
