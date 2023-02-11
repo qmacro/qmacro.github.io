@@ -7,7 +7,7 @@ tags:
   - cap
   - utrecht
 ---
-Yesterday I ran an SAP CodeJam in Utrecht, NL on Service Integration with the SAP Cloud Application Programming Model (CAP), and I think it's fair to say it was a great success.
+Yesterday I ran an SAP CodeJam in Utrecht, in The Netherlands, on "Service Integration with the SAP Cloud Application Programming Model" (CAP), and I think it's fair to say it was a great success.
 
 ## More SAP CodeJams in 2023
 
@@ -23,7 +23,7 @@ So, how did [yesterday's SAP CodeJam on Service Integration with SAP Cloud Appli
 
 ### My journey there
 
-I've flown enough work air miles in past few decades to last more than a lifetime, so I take the opportunity to travel by train whenever I can these days. It's not just better for the planet, it's better for my mental wellbeing too, and it's so much easier to work and relax.
+I've flown enough work air miles in the past few decades to last more than a lifetime, so I take the opportunity to travel by train whenever I can these days. It's not just better for the planet, it's better for my mental wellbeing too, and it's so much easier to work and relax.
 
 So I took a first train from Manchester Piccadilly to London Euston, arriving in time to spend a pleasant hour's walk around my old stomping ground (I studied at University College London and lived and worked in London for years after too).
 
@@ -50,7 +50,7 @@ We were soon underway.
 ![DJ and the initial welcome slide](/images/2023/02/Welcome-Slide.jpg)
 
 
-There was a warm welcome for me and all the participants, with a nice introduction from Wim as the participants arrived and started to get to know each other.
+There was a warm welcome for me and all the participants, with a nice introduction from Wim as folks arrived and started to get to know each other.
 
 ![The participants getting together](/images/2023/02/Getting-Together.jpg)
 
@@ -58,7 +58,7 @@ There was a warm welcome for me and all the participants, with a nice introducti
 
 Over the next 6 or so hours, we worked through the exercises, with the participants using their own laptops, with a [development environment](https://github.com/SAP-samples/cap-service-integration-codejam/tree/main/exercises/01-set-up-workspace) that was (for this particular SAP CodeJam) either a Dev Space in SAP Business Application Studio or VS Code with a dev container.
 
-After each exercise we got together for a 5 minute recap to work through some open ended questions relating to what we'd just done, and to discuss anything that came up, in that exercise.
+After each exercise we stepped away from the keyboards and got together for a 5 minute recap to work through some open ended questions relating to what we'd just done, and to discuss anything that came up, in that exercise.
 
 ![Exercise recap time](/images/2023/02/Exercise-Recap.jpg)
 
@@ -77,12 +77,12 @@ After that, we got back to it, completing the core part of the SAP CodeJam conte
 
 ## HANA Cafe NL podcast
 
-After the main event had finished, I had the opportunity to join Wim and another participant Julian on a recording of an episode of the [HANA Cafe NL](https://saphanacafenl.podbean.com) podcast, with Twan van den Broek. We talked about the day and it was a lot of fun, not to mention fascinating to see Twan's rather professional podcast recording equipment!
+After the main event had finished, I had the opportunity to join Wim and another participant Julian to record an episode of the [HANA Cafe NL](https://saphanacafenl.podbean.com) podcast, with Twan van den Broek. We talked about the day and it was a lot of fun, not to mention fascinating to see Twan's rather professional podcast recording equipment!
 
 ![Recording the podcast episode](/images/2023/02/Podcast-Recording.jpg)
 
 ## Wrapping up
 
-All in all it was a great day, made successful by the hosts at INNOV8iON and especially by all the participants who embraced the spirit of the SAP CodeJam event, getting to know each other while working through the learning material together.
+All in all it was a great day, made successful by the hosts at INNOV8iON and especially by all the participants who embraced the SAP CodeJam spirit, getting to know each other while working through the learning material together.
 
 During a couple of the post-exercise recap sessions, we even had bonus information shared with the group by some of the participants. Now that's what I call collaborative learning!
