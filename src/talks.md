@@ -5,6 +5,60 @@ layout: talks.njk
 
 # Upcoming talks
 
+<a name="the-role-of-sap-cloud-sdk-in-sap-cloud-application-programming-model-service-integration"></a>
+
+## The role of SAP Cloud SDK in SAP Cloud Application Programming Model service integration
+
+When: Fri 17 Feb 0800-0900 GMT (UTC+0)
+
+[Live Stream / Recording](https://youtube.com/live/ulTfUkAJ8gA)
+
+Continuing on from last week's back to basics episode, we now take the next steps in integrating an external API (the API_BUSINESS_PARTNER API we found on SAP API Business Hub) into an SAP Cloud Application Programming Model service. This week we look at the role of SAP Cloud SDK and also at cds env. Join us, everyone welcome, especially beginners!
+(🔴 Live stream)
+
+---
+
+<a name="hands-on-with-the-btp-cli-and-apis-heilbronn-de"></a>
+
+## Hands-on with the btp CLI and APIs (Heilbronn, DE)
+
+When: Fri 24 Feb 0900-1500 CET (UTC+1)
+
+[Event Info](https://groups.community.sap.com/t5/sap-codejam/sap-codejam-btp-hands-on-with-the-btp-cli-and-apis-heilbronn-de/ec-p/130512#M52)
+
+This SAP CodeJam BTP event is on the Core Service APIs for SAP BTP and also the command line interface tool for SAP BTP, otherwise known as the btp CLI.
+
+---
+
+# Past talks
+
+Here is a list of some of my recent talks.
+
+<a name="integrating-an-external-api-into-an-sap-cloud-application-programming-model-service"></a>
+
+## Integrating an external API into an SAP Cloud Application Programming Model service
+
+When: Fri 03 Feb 0800-0900 GMT (UTC+0)
+
+[Live Stream / Recording](https://www.youtube.com/live/T_rjax3VY2E)
+
+We're coming to the end of our journey of OAuth 2.0 discovery, and we'll finish off with a deep dive into the Authorization Code grant type, the classic three legged flow. Join us as we learn-by-doing together, all welcome!
+(🔴 Live stream)
+
+---
+
+<a name="exploring-api-specifications-on-the-sap-api-business-hub"></a>
+
+## Exploring API specifications on the SAP API Business Hub
+
+When: Fri 27 Jan 0800-0900 GMT (UTC+0)
+
+[Live Stream / Recording](https://www.youtube.com/live/tW0-96gGQAs)
+
+We're coming to the end of our journey of OAuth 2.0 discovery, and we'll finish off with a deep dive into the Authorization Code grant type, the classic three legged flow. Join us as we learn-by-doing together, all welcome!
+(🔴 Live stream)
+
+---
 
 <a name="wrapping-up-oauth-2.0-with-the-authorization-code-grant-type"></a>
 
@@ -26,26 +80,11 @@ We're coming to the end of our journey of OAuth 2.0 discovery, and we'll finish 
 When: Fri 10 Feb 1300-1900 CET (UTC+1)
 
 [Event Info](https://groups.community.sap.com/t5/sap-codejam/sap-codejam-cap-service-integration-with-sap-cloud-application/ec-p/216773#M54)
+| [Writeup](https://qmacro.org/blog/posts/2023/02/11/sap-codejam-on-service-integration-with-cap-in-utrecht/)
 
 This SAP CodeJam event is on the topic of the SAP Cloud Application Programming Model (Node.js), and specifically about service integration. It introduces participants to service integration and event-based data federation; we look at pre-built integration packages, connectivity, destinations, data replication and more. 
 
 ---
-
-<a name="hands-on-with-the-btp-cli-and-apis-heilbronn-de"></a>
-
-## Hands-on with the btp CLI and APIs (Heilbronn, DE)
-
-When: Fri 24 Feb 0900-1500 CET (UTC+1)
-
-[Event Info](https://groups.community.sap.com/t5/sap-codejam/sap-codejam-btp-hands-on-with-the-btp-cli-and-apis-heilbronn-de/ec-p/130512#M52)
-
-This SAP CodeJam BTP event is on the Core Service APIs for SAP BTP and also the command line interface tool for SAP BTP, otherwise known as the btp CLI.
-
----
-
-# Past talks
-
-Here is a list of some of my recent talks.
 
 <a name="customer-engagement-initiative-on-the-btp-cli"></a>
 
@@ -361,3 +400,13 @@ When: Fri 01 Apr 2022 0800-0900 BST (UTC+1)
 [General Info](https://twitter.com/qmacro/status/1506911556029853697) | [Recording](https://www.youtube.com/watch?v=F2zBmjqM8xo)
 
 Exercism is a website for coding exercises and mentorship to help folks gain true fluency in their chosen programming languages. It's open-source and not-for-profit. And there's now an ABAP language track! Join us in this special live stream where we talk to the folks behind this new track and understand more about how Exercism works and what the ABAP track looks like.
+
+---
+
+<a name="taking-the-next-steps-in-functional-programming"></a>
+
+## Taking the next steps in functional programming
+
+When: 01 Feb 2020 0505-0535 GMT (UTC+0) / 1035-1105 IST (UTC+05:30)
+
+[Recording](https://youtu.be/q05PMGYvgm0)
