@@ -1,7 +1,7 @@
 ---
 layout: post
 title: SAPUI5 - the future direction of SAP UI development?
-date: 2012-08-07
+date: 2012-05-07
 tags:
   - bluefinsolutions
 ---
