@@ -5,16 +5,33 @@ layout: talks.njk
 
 # Upcoming talks
 
-<a name="the-role-of-sap-cloud-sdk-in-sap-cloud-application-programming-model-service-integration"></a>
 
-## The role of SAP Cloud SDK in SAP Cloud Application Programming Model service integration
+<a name="extending-and-relating-entities-in-sap-cloud-application-programming-model"></a>
 
-When: Fri 17 Feb 0800-0900 GMT (UTC+0)
+## Extending and relating entities in SAP Cloud Application Programming Model
 
-[Live Stream / Recording](https://youtube.com/live/ulTfUkAJ8gA)
+When: Fri 03 Mar 0800-0900 GMT (UTC+0)
 
-Continuing on from last week's back to basics episode, we now take the next steps in integrating an external API (the API_BUSINESS_PARTNER API we found on SAP API Business Hub) into an SAP Cloud Application Programming Model service. This week we look at the role of SAP Cloud SDK and also at cds env. Join us, everyone welcome, especially beginners!
+[Live Stream / Recording](https://youtube.com/live/xolmwO02y1M)
+
+In the previous back-to-basics episode we used a very basic relationship to join a remote service to a local service. In this episode we'll put down the sledgehammer and use something more precise to build better relationships between entities.
 (🔴 Live stream)
+
+---
+
+# Past talks
+
+Here is a list of some of my recent talks.
+
+<a name="if-i-can-do-it-anyone-can"></a>
+
+## If I can do it, anyone can ...
+
+When: Tue 28 Feb 0600-0630 GMT (UTC+0) / 1700-1730 AEDT (UTC+11)
+
+[Event Info](https://www.linkedin.com/feed/update/urn:li:activity:7036143191527489537/)
+
+Keynote at Bourne Developer Conference 2023.
 
 ---
 
@@ -30,9 +47,18 @@ This SAP CodeJam BTP event is on the Core Service APIs for SAP BTP and also the 
 
 ---
 
-# Past talks
+<a name="the-role-of-sap-cloud-sdk-in-sap-cloud-application-programming-model-service-integration"></a>
 
-Here is a list of some of my recent talks.
+## The role of SAP Cloud SDK in SAP Cloud Application Programming Model service integration
+
+When: Fri 17 Feb 0800-0900 GMT (UTC+0)
+
+[Live Stream / Recording](https://youtube.com/live/ulTfUkAJ8gA)
+
+Continuing on from the previous back-to-basics episode, we now look at the role of SAP Cloud SDK and also at cds env, in the external service integration scenario we're putting together.
+(🔴 Live stream)
+
+---
 
 <a name="integrating-an-external-api-into-an-sap-cloud-application-programming-model-service"></a>
 
@@ -42,7 +68,7 @@ When: Fri 03 Feb 0800-0900 GMT (UTC+0)
 
 [Live Stream / Recording](https://www.youtube.com/live/T_rjax3VY2E)
 
-We're coming to the end of our journey of OAuth 2.0 discovery, and we'll finish off with a deep dive into the Authorization Code grant type, the classic three legged flow. Join us as we learn-by-doing together, all welcome!
+Continuing on from last week's back to basics episode, we look at how we can integrate an external API (the API_BUSINESS_PARTNER API we found on SAP API Business Hub) into an SAP Cloud Application Programming Model service.
 (🔴 Live stream)
 
 ---
@@ -55,7 +81,7 @@ When: Fri 27 Jan 0800-0900 GMT (UTC+0)
 
 [Live Stream / Recording](https://www.youtube.com/live/tW0-96gGQAs)
 
-We're coming to the end of our journey of OAuth 2.0 discovery, and we'll finish off with a deep dive into the Authorization Code grant type, the classic three legged flow. Join us as we learn-by-doing together, all welcome!
+Let's get back to basics and understand & explore API specifications on the SAP API Business Hub.
 (🔴 Live stream)
 
 ---
