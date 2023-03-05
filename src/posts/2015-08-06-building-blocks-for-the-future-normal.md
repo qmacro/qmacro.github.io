@@ -30,7 +30,7 @@ What does that mean? Well, the mechanics are fundamentally different. [Outside-i
 
 Understanding anything fully starts with the foundations. Understanding the future normal of SAP starts with Fiori and UI5, at least, looking at it through the eyes of your business process owners and users.
 
-And it just so happens that we have an upcoming event tuned to exactly that [S/4HANA: Understanding the future normal](http://web.archive.org/web/20180227042457/http://www.bluefinsolutions.com/Events/S-4HANA-Understanding-the-future-normal/) :-) It's free, there's breakfast and coffee, and there are still some spaces left. So see you there
+And it just so happens that we have an upcoming event tuned to exactly that [S/4HANA: Understanding the future normal](http://web.archive.org/web/20180227042457/http://www.bluefinsolutions.com/Events/S-4HANA-Understanding-the-future-normal/) :-) It's free, there's breakfast and coffee, and there are still some spaces left. So see you there!
 
 ---
 
