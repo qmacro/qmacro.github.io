@@ -19,7 +19,7 @@ I have a wonderful son Joseph, of whom I'm **very** proud.
 <a name="writing-and-talks"></a>
 ## Writing and Talks
 
-I've written two books for O'Reilly ([Programming Jabber](http://shop.oreilly.com/product/9780596002022.do) and [Google Pocket Guide](http://shop.oreilly.com/product/9780596005504.do)), conceived, edited and co-written a book on UI5 ([30 Days of UI5](https://www.amazon.co.uk/30-Days-UI5-Celebrating-milestone-ebook/dp/B017MOJEWG)) and am a co-author of the SAP Press book [Practical Workflow for SAP (3rd Ed.)](https://www.amazon.co.uk/Practical-Workflow-Revised-Rickayzen-Hardcover/dp/B011DCBNZO).
+I've written two books for O'Reilly ([Programming Jabber](http://shop.oreilly.com/product/9780596002022.do) and [Google Pocket Guide](https://books.google.co.uk/books/about/Google_Pocket_Guide.html?id=cT9BrWQxTMcC&redir_esc=y)), conceived, edited and co-written a book on UI5 ([30 Days of UI5](https://www.amazon.co.uk/30-Days-UI5-Celebrating-milestone-ebook/dp/B017MOJEWG)) and am a co-author of the SAP Press book [Practical Workflow for SAP (3rd Ed.)](https://www.amazon.co.uk/Practical-Workflow-Revised-Rickayzen-Hardcover/dp/B011DCBNZO).
 
 My latest book, also for SAP Press, is [SAP Fiori and SAPUI5: Debugging the User Interface](https://www.sap-press.com/sap-fiori-and-sapui5-debugging-the-user-interface_4305/).
 
