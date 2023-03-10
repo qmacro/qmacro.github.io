@@ -44,7 +44,7 @@ Moreover, I had been active in the community in the decade leading up to the bir
 
 In the early days of my career, I was working as an employee of a small SAP consultancy and travelling around, spending most of my evenings in hotel rooms. 
 
-In early 1995 I created the first SAP community. Back then, the Web wasn't what it is today; most Internet based communities were based around either Usenet (newsgroups) or mailing lists. Mailing list software was the norm for handling community discussions and interactivity, and I used [Majordomo](https://en.wikipedia.org/wiki/Majordomo_(software)) for the community I created, which was called "merlin", and was mainly for technical discussions and Q&A activities around both SAP R/2 and SAP R/3. 
+In early 1995 I created the first online SAP community. Back then, the Web wasn't what it is today; most Internet based communities were based around either Usenet (newsgroups) or mailing lists. Mailing list software was the norm for handling community discussions and interactivity, and I used [Majordomo](https://en.wikipedia.org/wiki/Majordomo_(software)) for the community I created, which was called "merlin", and was mainly for technical discussions and Q&A activities around both SAP R/2 and SAP R/3. 
 
 I spent pretty much every evening at the desk in my hotel room on my Sanyo NB 17 laptop (with a whopping 1MB of RAM and a 2400 baud modem), administering this community of like-minded folks who wanted to connect and exchange ideas and questions. 
 
