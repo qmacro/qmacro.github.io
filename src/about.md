@@ -5,6 +5,7 @@ name: DJ Adams
 image: '/images/DJA-head.png'
 ---
 
+<a name="main"></a>
 I'm a [Developer Advocate at SAP](https://developers.sap.com/developer-advocates.html). I've been hacking on SAP enterprise software for more than three decades, and am still enjoying it. I created the first SAP community in 1995, and in 2003 I co-created what is now known today as [SAP Community](https://community.sap.com).
 
 I've contributed to the [SAP](http://community.sap.com), [Perl](http://search.cpan.org/~qmacro/), [XMPP (Jabber)](http://xmpp.org) and [Google](http://gtugs.org) developer communities and was made an [SAP Mentor](http://www.sap.com/uk/community/resources/influencer-programs.html) in recognition of my contributions to the [SAP Developer Network (now "SAP Community")](http://community.sap.com).
@@ -58,7 +59,7 @@ Here's a short bio, which can also be found on the [Developer Advocates](https:/
 
 > DJ focuses on integration and extension topics on the SAP Business Technology Platform. He runs a regular live stream show "Hands-on SAP Dev" on the SAP Developers YouTube channel and enjoys sharing his curiosity on many SAP development topics. He read Classics at university, has worked on SAP systems since 1987, created the first SAP community in 1995, co-created what is known today as the SAP Community, and is a lifelong learner.
 
-There are a couple of photos ([with jacket](../images/DJA-with-jacket.jpg) and [without jacket](../images/DJA-without-jacket.jpg)) available too.
+There are a couple of photos ([with jacket](../images/DJA-with-jacket.jpg) and [without jacket](../images/DJA-without-jacket.jpg)) available too, if you're looking for something more formal than my normal <a href="#main">floating head</a>.
 
 <a name="currentcontent"></a>
 ## My current content
