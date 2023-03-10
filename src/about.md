@@ -54,7 +54,11 @@ Follow me on [Twitter](//twitter.com/qmacro), and find all the latest content vi
 <a name="bio"></a>
 ## Bio and photos
 
-A short bio can be found on the [Developer Advocates](https://developers.sap.com/developer-advocates.html) page, and there are a couple of photos ([with jacket](../images/DJA-with-jacket.jpg) and [without jacket](../images/DJA-without-jacket.jpg)) available too.
+Here's a short bio, which can also be found on the [Developer Advocates](https://developers.sap.com/developer-advocates.html) page:
+
+> DJ focuses on integration and extension topics on the SAP Business Technology Platform. He runs a regular live stream show "Hands-on SAP Dev" on the SAP Developers YouTube channel and enjoys sharing his curiosity on many SAP development topics. He read Classics at university, has worked on SAP systems since 1987, created the first SAP community in 1995, co-created what is known today as the SAP Community, and is a lifelong learner.
+
+There are a couple of photos ([with jacket](../images/DJA-with-jacket.jpg) and [without jacket](../images/DJA-without-jacket.jpg)) available too.
 
 <a name="currentcontent"></a>
 ## My current content
