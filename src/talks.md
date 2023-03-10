@@ -5,6 +5,57 @@ layout: talks.njk
 
 # Upcoming talks
 
+<a name="hands-on-with-the-btp-cli-and-apis-isernhagen-de"></a>
+
+## Hands-on with the btp CLI and APIs (Isernhagen, DE)
+
+When: Thu 13 Apr 0900-1500 CET (UTC+1)
+
+[Event Info](https://www.btpcon.org/schedule-list/)
+
+This SAP CodeJam BTP event is on the Core Service APIs for SAP BTP and also the command line interface tool for SAP BTP, otherwise known as the btp CLI. The event is designed to run on the day before [BTPCON 2023](https://www.btpcon.org/).
+
+---
+
+<a name="level-up-your-json-fu-with-jq"></a>
+
+## Level up your JSON fu with jq
+
+When: Thu 14 Apr
+
+[Event Info](https://www.btpcon.org/)
+
+If you peel back the layers of SAP Business Technology Platform, there's a lot of JSON. It's important to feel comfortable with it, to be able to parse, filter, extract, reformulate and otherwise deal with that JSON like a boss. In this session you'll become acquainted with jq, the lightweight and flexible command-line JSON processor that also happens to be a fully formed language.
+
+---
+
+<a name="service-integration-with-cap-brescia-it"></a>
+
+## Service Integration with SAP Cloud Application Programming Model (Brescia, IT)
+
+When: Fri 19 May 0900-1500 CET (UTC+1)
+
+[Event Info](https://groups.community.sap.com/t5/sap-codejam/eb-p/codejam-events)
+
+This SAP CodeJam event is on the topic of the SAP Cloud Application Programming Model (Node.js), and specifically about service integration. It will introduce you to how to find, import and integrate external service definitions into your project, service mocking, remote service access, how destinations and the SAP Cloud SDK are used, and more.
+
+---
+
+<a name="service-integration-with-cap-guetersloh-de"></a>
+
+## Service Integration with SAP Cloud Application Programming Model (Gütersloh, DE)
+
+When: Fri 16 Jun 0930-1530 CET (UTC+1)
+
+[Event Info](https://groups.community.sap.com/t5/sap-codejam/service-integration-with-sap-cloud-application-programming-model/ec-p/223935#M103)
+
+This SAP CodeJam event is on the topic of the SAP Cloud Application Programming Model (Node.js), and specifically about service integration. It will introduce you to how to find, import and integrate external service definitions into your project, service mocking, remote service access, how destinations and the SAP Cloud SDK are used, and more.
+
+---
+
+# Past talks
+
+Here is a list of some of my recent talks.
 
 <a name="extending-and-relating-entities-in-sap-cloud-application-programming-model"></a>
 
@@ -18,11 +69,6 @@ In the previous back-to-basics episode we used a very basic relationship to join
 (🔴 Live stream)
 
 ---
-
-# Past talks
-
-Here is a list of some of my recent talks.
-
 <a name="if-i-can-do-it-anyone-can"></a>
 
 ## If I can do it, anyone can ...
