@@ -190,7 +190,7 @@ curl
 
 This produces the following:
 
-```
+```text
 HTTP/1.1 405 Method Not Allowed
 X-Powered-By: Express
 x-correlation-id: 3a80f986-2acd-4663-8116-d9b39d532f31
@@ -553,7 +553,7 @@ Consider that, in the context of a term that is described by a record type, we h
 
 In the `Capabilities` vocabulary, the `DeleteRestrictions` term is described by the `DeleteRestrictionsType` type, which contains a number of properties, one of which is `Deletable`. This property is written in CDS annotation terms in a dotted notation, followed by a colon, and then the value
 
-```
+```text
 Capabilities.DeleteRestrictions.Deletable: false
 ```
 
@@ -642,7 +642,7 @@ Or it can contain more complex values such as objects; this is how JSON represen
 
 For an example of a collection value type, we'll turn to the SAP [UI vocabulary](https://github.com/SAP/odata-vocabularies/blob/main/vocabularies/UI.md), and specifically the `SelectionFields` term, which has the following description: "Properties that might be relevant for filtering a collection of entities of this type". The term is described as having this type:
 
-```
+```text
 [PropertyPath]
 ```
 
@@ -961,7 +961,7 @@ It can't be compressed further; if we were to specify the following:
 
 then the compiler would emit this:
 
-```
+```text
 [WARNING] In annotation translation: found complex type, but expected type 'Collection(UI.DataFieldAbstract)', target: Northwind.Categories, annotation: UI.Identification
 ```
 
@@ -1045,7 +1045,7 @@ For the `TypeName` and `TypeNamePlural` properties of the `HeaderInfoType` type 
 
 And the string values are both references to internationalized string data, using the standard UI5 and CDS syntax for this:
 
-```
+```text
 {modelname>property}
 ```
 
