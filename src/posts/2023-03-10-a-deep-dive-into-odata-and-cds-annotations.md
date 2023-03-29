@@ -605,7 +605,7 @@ If you're wondering about the lack of `@(...)` in this example, rest assured, we
 
 **Collection example: vocabulary `Capabilities`, term `DeleteRestrictions`**
 
-The last value type, collection, is used to express an array of values. Those values themselves can be primitive, or they can be records, which in turn contain further values. This is the same concept that can be found in data structures when programming or using declarative modeling in notations such as JSON. For example, an collection, or an array can contain a list of scalars:
+The last value type, collection, is used to express an array of values. Those values themselves can be primitive, or they can be records, which in turn contain further values. This is the same concept that can be found in data structures when programming or using declarative modeling in notations such as JSON. For example, a collection, or an array can contain a list of scalars:
 
 ```json
 [ 1, 2, 3 ]
