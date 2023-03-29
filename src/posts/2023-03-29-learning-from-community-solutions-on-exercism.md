@@ -12,7 +12,7 @@ As well as the direct benefit of practice, I've learned and been reminded of asp
 
 I'll start with some simple observations.
 
-## Shopping list exercise
+## Shopping List exercise
 
 Even in the basic learning exercise [Shopping List](https://exercism.org/tracks/jq/exercises/shopping) there are subtle points worth talking about.
 
@@ -81,15 +81,15 @@ That being said, jq is fundamentally stream oriented, which can be seen in [glen
 )
 ```
 
-Note the use of the [array value iterator](https://stedolan.github.io/jq/manual/#Array/ObjectValueIterator:.[]) on the `ingredients` property, and the lack of `map` (and `first`). 
+Note the use of the [array / object value iterator](https://stedolan.github.io/jq/manual/#Array/ObjectValueIterator:.[]) on the `ingredients` property, and the lack of `map` (and `first`). 
 
 Expressing `.ingredients[]` explodes into a stream of values (one for each of the array elements) which are each passed downstream (to `select` and beyond). The `select` then only allows the journey to continue for the element(s) that satisfy the condition, which means that the data coming through the last pipe is not an array but an object\*.
 
 \*theoretically there could be more than one object, but in this case there is just one.
 
-## Assembly line exercise
+## Assembly Line exercise
 
-[Assembly line](https://exercism.org/tracks/jq/exercises/assembly-line) is another learning exercise, where I decided to eschew an `if ... elif ... else ... end` structure and instead encode the computation for task 1 (production rate per hour) using an array as a sort of lookup table:
+[Assembly Line](https://exercism.org/tracks/jq/exercises/assembly-line) is another learning exercise, where I decided to eschew an `if ... elif ... else ... end` structure and instead encode the computation for task 1 (production rate per hour) using an array as a sort of lookup table:
 
 ```jq
 def production_rate_per_hour:
@@ -113,5 +113,114 @@ def production_rate_per_hour:
 (The subtraction of 1 from `.` is because this lookup table was constructed without a dummy value of 0 for the theoretical 0 speed, as I did in my version.)
 
 A useful reminder which helps me strive for better avoidance of all that is unnecessary.
+
+## High Score Board exercise
+
+In reviewing my solutions for this post, I came upon what I'd written for the last task in the [High Score Board](https://exercism.org/tracks/jq/exercises/high-score-board) exercise, which was to find the total score, as illustrated thus:
+
+```jq
+{
+  "Dave Thomas": 44,
+  "Freyja Ćirić": 539,
+  "José Valim": 265
+}
+| total_score
+# => 848
+```
+
+I'd written the following:
+
+```jq
+def total_score:
+  [.[]] | add + 0;
+```
+
+As I mentioned earlier in this post, `.[]` is the [array / object value iterator](https://stedolan.github.io/jq/manual/#Array/ObjectValueIterator:.[]) and whereas when I mentioned it before, it was used to iterate over array values, i.e. the elements of the `ingredients` array. 
+
+Now here it's being used to iterate over the values in an object. Not the keys, the values, i.e. `44`, `539` and `265`. When I looked at it, I was reminded of the jq manual section on [map and map_values](https://stedolan.github.io/jq/manual/#map(x),map_values(x)) which says: 
+
+> `map(x)` is equivalent to `[.[] | x]`. In fact, this is how it's defined. Similarly, `map_values(x)` is defined as `.[] |= x`.
+
+Also as I mentioned earlier, this iterator will create a stream of values, rather than an array. In other words, this:
+
+```jq
+{
+  "Dave Thomas": 44,
+  "Freyja Ćirić": 539,
+  "José Valim": 265
+}
+| .[]
+```
+
+produces:
+
+```text
+44
+539
+265
+```
+
+So in order to be able to use `add`, which takes an array as input, I therefore also had to wrap this in an [array constructor](https://stedolan.github.io/jq/manual/#Arrayconstruction:[]) i.e. inside square brackets `[ ]`. 
+
+Anyway, forgetting this `.[]` was acting as an object value iterator, I then thought "hmm, this is more or less th equivalent of `map`", given what the manual stated, so I replaced `[.[]]` with `map(.)`, like this:
+
+```jq
+{
+  "Dave Thomas": 44,
+  "Freyja Ćirić": 539,
+  "José Valim": 265
+}
+| map(.)
+```
+
+This gave me what I needed:
+
+```json
+[
+  44,
+  539,
+  265
+]
+```
+
+But the interesting thing was that this is `map` being applied to an object, not an array, and I'm guessing it does the right thing in a sort of [DWIM](https://en.wikipedia.org/wiki/DWIM) way (which I first came across in Perl). Even more interestingly, this use of `map` on an object, which produces an array of the values in that object, contrasts nicely with `map`'s sibling `map_values`, which doesn't do that, perhaps confusingly.
+
+In fact, I used `map_values` in addressing the previous task in this exercise, to apply Monday bonus points, which I did like this:
+
+```jq
+def apply_monday_bonus:
+  map_values(. + 100);
+```
+
+What `map_values` does is return the object but offer you the values to manipulate as each property is iterated over. So this:
+
+```jq
+{
+  "Dave Thomas": 44,
+  "Freyja Ćirić": 539,
+  "José Valim": 265
+}
+| map_values(. + 100)
+```
+
+produces this:
+
+```json
+{
+  "Dave Thomas": 144,
+  "Freyja Ćirić": 639,
+  "José Valim": 365
+}
+```
+
+and not this:
+
+```json
+[
+  144,
+  639,
+  365
+]
+```
 
 [TO BE CONTINUED]
