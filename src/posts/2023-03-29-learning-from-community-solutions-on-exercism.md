@@ -87,5 +87,31 @@ Expressing `.ingredients[]` explodes into a stream of values (one for each of th
 
 \*theoretically there could be more than one object, but in this case there is just one.
 
+## Assembly line exercise
+
+[Assembly line](https://exercism.org/tracks/jq/exercises/assembly-line) is another learning exercise, where I decided to eschew an `if ... elif ... else ... end` structure and instead encode the computation for task 1 (production rate per hour) using an array as a sort of lookup table:
+
+```jq
+def production_rate_per_hour:
+  . as $speed
+  | (221 * $speed)
+    * 
+    ([0, 100, 100, 100, 100, 90, 90, 90, 90, 80, 77][$speed] / 100)
+;
+```
+
+I prefer the way this looks, over a multi-condition `if` structure, but there's a further improvement possible that I picked up, again from [glennj's solution](https://exercism.org/tracks/jq/exercises/assembly-line/solutions/glennj), which was the avoidance of the [symbolic binding](https://stedolan.github.io/jq/manual/#Variable/SymbolicBindingOperator:...as$identifier|...) of the input to `$speed` (the `. as $speed` part).
+
+I'd done this because I knew I would need to refer to it both in the basic speed calculation (multiplying it by 221) and using it to index into the lookup table (`[$speed]`). But glennj reminded me that I could just as easily have used `.` directly:
+
+```jq
+def production_rate_per_hour:
+  . * 221 * [1,1,1,1,0.9,0.9,0.9,0.9,0.8,0.77][. - 1]
+;
+```
+
+(The subtraction of 1 from `.` is because this lookup table was constructed without a dummy value of 0 for the theoretical 0 speed, as I did in my version.)
+
+A useful reminder which helps me strive for better avoidance of all that is unnecessary.
 
 [TO BE CONTINUED]
