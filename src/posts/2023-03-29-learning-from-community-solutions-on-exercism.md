@@ -69,7 +69,7 @@ The third task in this exercise was to identify the amount of sugar, which I det
 )
 ```
 
-The value of the `ingredients` property is an array, and using `map` like this produces another array, albeit with a single element (the object that represents the sugar ingredient). So I then used `first` to grab that element and navigated to the `quantity` property). All fine. Having used `map` in various languages, and learned to think about arrays and how functions such as `map`, `filter` and `reduce` (see [FOFP Fundamentals of functional programming](/blog/posts/2016/05/03/fofp-fundamentals-of-functional-programming/)) this felt natural to me.
+The value of the `ingredients` property is an array, and using `map` like this produces another array, albeit with a single element (the object that represents the sugar ingredient). So I then used `first` to grab that element, and navigated to the `quantity` property). All fine. Having used `map` in various languages, and learned to think about arrays and how functions such as `map`, `filter` and `reduce` work (see [FOFP Fundamentals of functional programming](/blog/posts/2016/05/03/fofp-fundamentals-of-functional-programming/)) this felt natural to me.
 
 That being said, jq is fundamentally stream oriented, which can be seen in [glennj's solution](https://exercism.org/tracks/jq/exercises/shopping/solutions/glennj):
 
@@ -81,15 +81,17 @@ That being said, jq is fundamentally stream oriented, which can be seen in [glen
 )
 ```
 
-Note the use of the [array / object value iterator](https://stedolan.github.io/jq/manual/#Array/ObjectValueIterator:.[]) on the `ingredients` property, and the lack of `map` (and `first`). 
+Note the use of the [array / object value iterator](https://stedolan.github.io/jq/manual/#Array/ObjectValueIterator:.[]) on the `ingredients` property (`[]`), and the lack of `map` (and `first`). 
 
-Expressing `.ingredients[]` explodes into a stream of values (one for each of the array elements) which are each passed downstream (to `select` and beyond). The `select` then only allows the journey to continue for the element(s) that satisfy the condition, which means that the data coming through the last pipe is not an array but an object\*.
+Expressing `.ingredients[]` (as opposed to `.ingredients`) explodes into a stream of values (one for every array element) which are each passed downstream (to `select` and beyond). The `select` then only allows the journey to continue for the element(s) that satisfy the condition, which means that the data coming through the last pipe is not an array but an object\*.
 
-\*theoretically there could be more than one object, but in this case there is just one.
+\*theoretically there could be more than one object coming through, but in this case there is just one.
+
+Streaming in jq is an important aspect and can be a powerful mechanism to use.
 
 ## Assembly Line exercise
 
-[Assembly Line](https://exercism.org/tracks/jq/exercises/assembly-line) is another learning exercise, where I decided to eschew an `if ... elif ... else ... end` structure and instead encode the computation for task 1 (production rate per hour) using an array as a sort of lookup table:
+[Assembly Line](https://exercism.org/tracks/jq/exercises/assembly-line) is another learning exercise, where I decided to avoid an `if ... elif ... else ... end` structure and instead encode the computation for task 1 (calculation of the production rate per hour) using an array as a kind of lookup table:
 
 ```jq
 def production_rate_per_hour:
@@ -100,9 +102,9 @@ def production_rate_per_hour:
 ;
 ```
 
-I prefer the way this looks, over a multi-condition `if` structure, but there's a further improvement possible that I picked up, again from [glennj's solution](https://exercism.org/tracks/jq/exercises/assembly-line/solutions/glennj), which was the avoidance of the [symbolic binding](https://stedolan.github.io/jq/manual/#Variable/SymbolicBindingOperator:...as$identifier|...) of the input to `$speed` (the `. as $speed` part).
+I prefer the way this looks, over a multi-condition `if` structure, but there's a further improvement possible that I picked up, again from glennj [in his solution](https://exercism.org/tracks/jq/exercises/assembly-line/solutions/glennj), which was the avoidance of the [symbolic binding](https://stedolan.github.io/jq/manual/#Variable/SymbolicBindingOperator:...as$identifier|...) of the input to `$speed` (the `. as $speed` part).
 
-I'd done this because I knew I would need to refer to it both in the basic speed calculation (multiplying it by 221) and using it to index into the lookup table (`[$speed]`). But glennj reminded me that I could just as easily have used `.` directly:
+I'd used a symbolic binding because I knew I would need to refer to it both in the basic speed calculation (multiplying it by 221) and using it to index into the lookup table (`[$speed]`). But glennj reminded me that I could just as easily have used `.` directly:
 
 ```jq
 def production_rate_per_hour:
@@ -110,7 +112,7 @@ def production_rate_per_hour:
 ;
 ```
 
-(The subtraction of 1 from `.` is because this lookup table was constructed without a dummy value of 0 for the theoretical 0 speed, as I did in my version.)
+Note that tHE subtraction of 1 from `.` here is because this lookup table was constructed without a dummy value of 0 for the theoretical 0 speed.
 
 A useful reminder which helps me strive for better avoidance of all that is unnecessary.
 
@@ -135,9 +137,9 @@ def total_score:
   [.[]] | add + 0;
 ```
 
-As I mentioned earlier in this post, `.[]` is the [array / object value iterator](https://stedolan.github.io/jq/manual/#Array/ObjectValueIterator:.[]) and whereas when I mentioned it before, it was used to iterate over array values, i.e. the elements of the `ingredients` array. 
+As I mentioned earlier in this post, `.[]` is the [array / object value iterator](https://stedolan.github.io/jq/manual/#Array/ObjectValueIterator:.[]). When I mentioned it back then, it was used to iterate over array values, i.e. the elements of the `ingredients` array. 
 
-Now here it's being used to iterate over the values in an object. Not the keys, the values, i.e. `44`, `539` and `265`. When I looked at it, I was reminded of the jq manual section on [map and map_values](https://stedolan.github.io/jq/manual/#map(x),map_values(x)) which says: 
+Now here it's being used to iterate over the values in an object. Not the keys, but the values, i.e. `44`, `539` and `265`. When I looked at it, I was reminded of the jq manual section on [map and map_values](https://stedolan.github.io/jq/manual/#map(x),map_values(x)) which says: 
 
 > `map(x)` is equivalent to `[.[] | x]`. In fact, this is how it's defined. Similarly, `map_values(x)` is defined as `.[] |= x`.
 
@@ -160,9 +162,30 @@ produces:
 265
 ```
 
-So in order to be able to use `add`, which takes an array as input, I therefore also had to wrap this in an [array constructor](https://stedolan.github.io/jq/manual/#Arrayconstruction:[]) i.e. inside square brackets `[ ]`. 
+Note the lack of any semblance of an array - these are all single JSON values.
 
-Anyway, forgetting this `.[]` was acting as an object value iterator, I then thought "hmm, this is more or less th equivalent of `map`", given what the manual stated, so I replaced `[.[]]` with `map(.)`, like this:
+So in order to be able to use `add`, which takes an array as input, I therefore also had to wrap this in an [array constructor](https://stedolan.github.io/jq/manual/#Arrayconstruction:[]) i.e. inside square brackets `[ ]`:
+
+```jq
+{
+  "Dave Thomas": 44,
+  "Freyja Ćirić": 539,
+  "José Valim": 265
+}
+| [.[]]
+```
+
+which gave me:
+
+```json
+[
+  44,
+  539,
+  265
+]
+```
+
+Anyway, forgetting this `.[]` was acting as an object value iterator, I then thought "hmm, this is more or less the equivalent of `map`", given what the manual stated ... so I replaced `[.[]]` with `map(.)`, like this:
 
 ```jq
 {
@@ -173,7 +196,7 @@ Anyway, forgetting this `.[]` was acting as an object value iterator, I then tho
 | map(.)
 ```
 
-This gave me what I needed:
+This also gave me an array:
 
 ```json
 [
@@ -183,7 +206,7 @@ This gave me what I needed:
 ]
 ```
 
-But the interesting thing was that this is `map` being applied to an object, not an array, and I'm guessing it does the right thing in a sort of [DWIM](https://en.wikipedia.org/wiki/DWIM) way (which I first came across in Perl). Even more interestingly, this use of `map` on an object, which produces an array of the values in that object, contrasts nicely with `map`'s sibling `map_values`, which doesn't do that, perhaps confusingly.
+But the interesting thing was that this is `map` being applied to an object, not an array, and I'm guessing it does the right thing in a sort of [DWIM](https://en.wikipedia.org/wiki/DWIM) way (which I first came across in Perl). Even more interestingly, this use of `map` on an object, which produces an array of the values in that object, contrasts nicely with `map`'s sibling `map_values`, which, perhaps confusingly, doesn't do that.
 
 In fact, I used `map_values` in addressing the previous task in this exercise, to apply Monday bonus points, which I did like this:
 
@@ -223,4 +246,23 @@ and not this:
 ]
 ```
 
+To complete the picture on this observation, I thought I'd mention the `+ 0` part in the solution:
+
+```jq
+def total_score:
+  [.[]] | add + 0;
+```
+
+If you supply an empty array to `add`, it will produce `null`:
+
+```jq
+[] | add
+# => null
+```
+
+According to the [addition](https://stedolan.github.io/jq/manual/#Addition:+) section of the jq manual:
+
+> null can be added to any value, and returns the other value unchanged.
+
 [TO BE CONTINUED]
+
