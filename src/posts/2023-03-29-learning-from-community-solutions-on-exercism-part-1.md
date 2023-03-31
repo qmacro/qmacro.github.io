@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Learning from community solutions on Exercism
+title: Learning from community solutions on Exercism - part 1
 date: 2023-03-29
 tags:
   - jq
@@ -10,8 +10,14 @@ There's a relatively new [jq track on Exercism](https://exercism.org/tracks/jq),
 
 As well as the direct benefit of practice, I've learned and been reminded of aspects of jq while looking through the community solutions. So I thought I'd write some of them up here, because writing will also help me remember.
 
-I'll start with some simple observations.
+I'll start with some simple observations:
 
+- in the [Shopping List exercise](#shopping-list-exercise) I contrast array and stream based thinking
+- in the [Assembly Line exercise](#assembly-line-exercise) I remember how to avoid unnecessary symbolic bindings
+- in the [High Score Board exercise](#high-score-board-exercise) I dwell on `map`, `map_values` and the array/object iterator
+- in the [Vehicle Purchase exercise](#vehicle-purchase-exercise) I fall into a rabbit hole about array element containment checks
+
+<a name="shopping-list-exercise"></a>
 ## Shopping List exercise
 
 Even in the basic learning exercise [Shopping List](https://exercism.org/tracks/jq/exercises/shopping) there are subtle points worth talking about.
@@ -89,6 +95,7 @@ Expressing `.ingredients[]` (as opposed to `.ingredients`) explodes into a strea
 
 Streaming in jq is an important aspect and can be a powerful mechanism to use.
 
+<a name="assembly-line-exercise"></a>
 ## Assembly Line exercise
 
 [Assembly Line](https://exercism.org/tracks/jq/exercises/assembly-line) is another learning exercise, where I decided to avoid an `if ... elif ... else ... end` structure and instead encode the computation for task 1 (calculation of the production rate per hour) using an array as a kind of lookup table:
@@ -116,6 +123,7 @@ Note that tHE subtraction of 1 from `.` here is because this lookup table was co
 
 A useful reminder which helps me strive for better avoidance of all that is unnecessary.
 
+<a name="high-score-board-exercise"></a>
 ## High Score Board exercise
 
 In reviewing my solutions for this post, I came upon what I'd written for the last task in the [High Score Board](https://exercism.org/tracks/jq/exercises/high-score-board) exercise, which was to find the total score, as illustrated thus:
@@ -264,5 +272,156 @@ According to the [addition](https://stedolan.github.io/jq/manual/#Addition:+) se
 
 > null can be added to any value, and returns the other value unchanged.
 
-[TO BE CONTINUED]
+<a name="vehicle-purchase-exercise"></a>
+## Vehicle Purchase exercise
 
+The [Vehicle Purchase](https://exercism.org/tracks/jq/exercises/vehicle-purchase) exercise is another learning one and was quite straightforward. My solution for the first task ("Determine if you will need a drivers licence") looked like this:
+
+```jq
+def needs_license:
+  . == "car" or . == "truck";
+```
+
+While this is fine because there are only two possible values for which we want to return true, the way I expressed this bothered me slightly. 
+
+In JavaScript, for example, I would have used an array to contain the values, and then used [includes](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes) like this:
+
+```javascript
+needs_license = x => ["car", "truck"].includes(x)
+// needs_license("car") => true
+// needs_license("train") => false
+```
+
+So after submitting my solution, I looked at what others had done. Quite a few used the same approach, as me, but there was [a solution from IsaacG](https://exercism.org/tracks/jq/exercises/vehicle-purchase/solutions/IsaacG) that looked more appealing.
+
+### Considering the inside filter
+
+```jq
+def needs_license:
+  [.] | inside(["car", "truck"]);
+```
+
+This `inside` filter looked to me like the JavaScript approach above. But my goodness, did it open up a rabbit hole of investigations!
+
+Looking at it, one would think that this would do the job. I started looking at the definition of [inside](https://stedolan.github.io/jq/manual/#inside) in the jq manual, and found that it was "essentially an inversed version of `contains`". Before looking at the definition of `contains`, I took a quick look at some of the examples, and saw this one, which made me scratch my head:
+
+```text
+jq 'inside(["foobar", "foobaz", "blarp"])'
+Input:	["baz", "bar"]
+Output:	true
+```
+
+This is not an element-wise check, it's a (sub)string based comparison, even when working with arrays.
+
+I looked at [contains](https://stedolan.github.io/jq/manual/#contains(element)) and the examples and description had me more convinced that actually the use of `inside` in the solution to this sort of task may not be ideal. 
+
+There's a sentence in the description of `contains` which looks fairly innocuous, but in fact masks a major gotcha (emphasis mine):
+
+> [With `A | contains(B)` ...] an array B is contained in an array A if all elements in B **are contained in** any element in A. 
+
+### Digression: inside as inverse of contains
+
+Before continuing, let's just understand what does "inside is an inversed version of contains" mean? Well, we can look at the [source for `inside` in `builtin.jq`](https://github.com/stedolan/jq/blob/a9f97e9e61a910a374a5d768244e8ad63f407d3e/src/builtin.jq#L211):
+
+```jq
+def inside(xs): . as $x | xs | contains($x);
+```
+
+We can see that this is effectively just switching around the two arguments - here, `xs` is the absolute list of elements, and `.` (which is bound to `$x`) is what we want to look for.
+
+### What's the issue?
+
+OK, digression over. Clearly, given the relationship between `inside` and `contains`, the gotcha also applies to `inside`.
+
+To help me focus in on the significance of "if [...] elements [...] are contained in any element [...]" in the above description, I defined the two licensable vehicles as being "cart" (with a "t") and "truck" instead of "car" and "truck":
+
+```jq
+def licensable_vehicles: ["cart", "truck"];
+```
+
+I then recreated the function above to look like this\*:
+
+```jq
+def needs_license_inside: [.] | inside(licensable_vehicles);
+```
+
+I then tested it with three vehicles, which gave me an unexpected result:
+
+```jq
+["bus", "cart", "car"] | map(needs_license_inside)
+# => [false, true, true]
+```
+
+The `inside` function returns `true` for "car" ... because the string **is contained in** one of the elements ("cart"). We can even unpick the inverse, to get closer to the source of the problem:
+
+```jq
+licensable_vehicles | contains(["car"])
+# => true
+```
+
+Yikes! 
+
+### Some alternatives
+
+Rather than bemoan the slightly vague documentation combined with my misaligned expectations, I thought I'd look into how one might go about testing membership, if `inside` (or `contains`) is not the way.
+
+#### Using any(condition)
+
+The [any](https://stedolan.github.io/jq/manual/#any,any(condition),any(generator;condition)) filter has different forms (I guess known as `any/0`, `any/1` and `any/2`). 
+We can use the `any/1` form with a condition, like this:
+
+```jq
+def needs_license_any: . as $v | licensable_vehicles | any(.==$v);
+```
+
+This will give us what we're looking for:
+
+```jq
+["bus", "cart", "car"] | map(needs_license_any)
+# => [false, true, false]
+```
+
+By the way, I had first created this version of the function as follows, and passed the vehicles under tests via a parameter:
+
+```jq
+def needs_license_any($v): licensable_vehicles | any(.==$v);
+["bus", "cart", "car"] | map(needs_license_any(.))
+# => [false, true, false]
+```
+
+But inspired by the [builtin definition of inside](https://github.com/stedolan/jq/blob/a9f97e9e61a910a374a5d768244e8ad63f407d3e/src/builtin.jq#L211) I felt OK in using a symbolic binding (`. as $v`) after all, despite what I mentioned earlier in the section on the [Assembly Line exercise](#assembly-line-exercise).
+
+#### Using index
+
+In the jq manual, [index](https://stedolan.github.io/jq/manual/#index(s),rindex(s)) is described in a vague way, and the examples are quite minimal, which might give the impression it relates to strings and substrings. But I'm learning that the limited examples can be deceiving, and the functions and filters have subtle depths and for the most part just work the way you might assume they might, in different circumstances. 
+
+Here, `index` will work for us in that it can return either an array index (for a given element, if it exists) or null (if it doesn't). A simple start with `index` might look like this:
+
+```jq
+def needs_license_index: . as $v | licensable_vehicles | index($v);
+```
+
+However, this doesn't quite give us what we want:
+
+```jq
+["bus", "cart", "car"] | map(needs_license_index)
+# => [null, 0, null]
+```
+
+But [and](https://stedolan.github.io/jq/manual/#and/or/not)ing values such as these with `true` does the trick, of course:
+
+
+```jq
+def needs_license_index: 
+  . as $v | licensable_vehicles | index($v) and true;
+["bus", "cart", "car"] | map(needs_license_index)
+# => [false, true, false]
+```
+
+Note that in jq:
+
+> false and null are considered "false values", and anything else is a "true value"
+
+which is why `0 and true` evaluates to `true`. 
+
+I'm sure there are more options, but I'll leave it there for now. What is your goto approach for checking for elements in arrays? Let me know in the comments.
