@@ -361,6 +361,7 @@ licensable_vehicles | contains(["car"])
 
 Yikes! 
 
+<a name="some-alternatives"></a>
 ### Some alternatives
 
 Rather than bemoan the slightly vague documentation combined with my misaligned expectations, I thought I'd look into how one might go about testing membership, if `inside` (or `contains`) is not the way.
