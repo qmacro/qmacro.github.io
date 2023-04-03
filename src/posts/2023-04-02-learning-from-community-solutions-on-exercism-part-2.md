@@ -237,13 +237,13 @@ def needs_license:
 Look at what that gives us (I've added some blank lines to better distinguish things):
 
 ```text
-["DEBUG:","truck"] <- From the 1st debug, value going
-                      into the generator.
+["DEBUG:","truck"] From the 1st debug, value going
+                   into the generator.
 
-["DEBUG:",false]   <- From the 2nd debug, these two values
-["DEBUG:",true]    <- are emitted from the generator.
+["DEBUG:",false]   From the 2nd debug, these two values
+["DEBUG:",true]    are emitted from the generator.
 
-true               <- the final result produced by the call
+true               the final result produced by the call
 ```
 
 <a name="the-if-then-else-end-based-function"></a>
@@ -307,7 +307,7 @@ def needs_license:
 
 First, passing a vehicle that's not in the list, such as with `"boat" | needs_license`, emits this:
 
-```json
+```text
 ["DEBUG:","boat"]
 ["DEBUG:",false]
 ["DEBUG:",false]
