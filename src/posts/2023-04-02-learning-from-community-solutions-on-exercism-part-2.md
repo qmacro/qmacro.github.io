@@ -314,7 +314,7 @@ First, passing a vehicle that's not in the list, such as with `"boat" | needs_li
 false
 ```
 
-The value `"boat"` goes in, two `false` values are emitted from the generator, they both get turned into nothing (with `else empty`) and then nothingness this is converted into `false` with the `// false`. 
+The value `"boat"` goes in, two `false` values are emitted from the generator, they both get turned into nothing (with `else empty`) and then this nothingness is converted into `false` with the `// false`. 
 
 Now how about a vehicle that is in the list: `"car" | needs_license` emits this:
 
