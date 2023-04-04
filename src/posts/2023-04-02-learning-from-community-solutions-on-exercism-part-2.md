@@ -236,7 +236,7 @@ def needs_license:
 
 Look at what that gives us (I've added some blank lines to better distinguish things):
 
-```text
+```json
 ["DEBUG:","truck"] From the 1st debug, value going
                    into the generator.
 
@@ -307,7 +307,7 @@ def needs_license:
 
 First, passing a vehicle that's not in the list, such as with `"boat" | needs_license`, emits this:
 
-```text
+```json
 ["DEBUG:","boat"]
 ["DEBUG:",false]
 ["DEBUG:",false]
