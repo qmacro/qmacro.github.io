@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Living on a narrowboat - the heart of the home
+title: Living on a narrowboat - the stove as the heart of the home
 date: 2023-04-07
 tags:
   - life
