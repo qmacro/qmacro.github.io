@@ -82,6 +82,7 @@ During the steelwork, Mark from the Fitout Pontoon contacted the team and got th
 
 ![The space for the water tank in the bow](/images/2023/01/bow.png)
 
+<a name="electricity-and-fuel-for-the-engine-and-for-the-stove"></a>
 ## Electricity and fuel for the engine and for the stove
 
 It's clear that a narrowboat life means an off grid life, for the most part. I say for the most part, as some folks live on their narrowboats which are permanently moored, and are thus also able to be permanently connected to "shoreline power" (i.e. a 230 volt AC supply). 
