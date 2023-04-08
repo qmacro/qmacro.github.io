@@ -88,4 +88,8 @@ This picture from [The Fitout Pontoon's page on oil fired heating](https://www.t
 
 ## Conclusion
 
-So while I would have been happy with the Morsø Squirrel 1412, I'm even happier with the prospect of the Fat Penguin (Tall Order) stove. It's on order, and delivery is due some time in June. I'm looking forward to seeing it installed and on board soon!
+So while I would have been happy with the Morsø Squirrel 1412, I'm even happier with the prospect of the Fat Penguin (Tall Order) stove. It's on order, and delivery is due some time in June. It's this one, although I'm getting it in grey, not red:
+
+![The stove I'm getting](/images/2023/01/fat-penguin-tall-order-stove.png)
+
+I'm looking forward to seeing it installed and on board soon!
