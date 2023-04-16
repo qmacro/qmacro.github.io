@@ -43,6 +43,7 @@ I was very grateful to get a speaking slot, for which I thank Sascha and the BTP
 In today's world of the cloud, which everyone knows is just Linux boxes glued together with JSON and shell scripts, having the power to handle JSON like a boss is super important. Even if you're not fully in the cloud, JSON abounds too - in representations of resources pulled and pushed with APIs, events and more.
 
 ![giving my talk at BTPcon](/images/2023/04/dj-jq-talk.jpg)
+_Image courtesy of Enno Wulff_
 
 My talk consisted of me waving my arms about a lot, rambling, and working through example JSON scenarios and slicing through the JSON precisely with `jq`.
 
@@ -51,6 +52,7 @@ I wrote the talk in the form of a document which more or less reflects what I sa
 My talk also consisted of me wearing flip-flops which seemed to amuse some folks :-) I'd left my outdoor shoes (and socks) outside while the conference proceeded, but during my talk it proceeded to rain heavily, soaking everything! Luckily, SAP Community member Enno (who was also one of BTPcon's co-organisers) was giving out SAP Inside Track Hannover swag, which included socks, which I gratefully accepted!
 
 ![putting on dry socks](/images/2023/04/dj-socks.jpg)
+_Image courtesy of Enno Wulff_
 
 ## Wrapping up
 
