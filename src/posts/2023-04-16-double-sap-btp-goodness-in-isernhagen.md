@@ -49,7 +49,7 @@ My talk consisted of me waving my arms about a lot, rambling, and working throug
 
 I wrote the talk in the form of a document which more or less reflects what I said, and along with that document I've made the samples JSON files available, plus a Docker container description that you can use to build a container image which containing those files, with `jq` and `ijq` with which you can use to try out all the examples and follow along at home. Head over to the [qmacro/level-up-your-json-fu-with-jq](https://github.com/qmacro/level-up-your-json-fu-with-jq) repo for everything I talked about and showed.
 
-My talk also consisted of me wearing flip-flops which seemed to amuse some folks :-) I'd left my outdoor shoes (and socks) outside while the conference proceeded, but during my talk it proceeded to rain heavily, soaking everything! Luckily, SAP Community member Enno (who was also one of BTPcon's co-organisers) was giving out SAP Inside Track Hannover swag, which included socks, which I gratefully accepted!
+My talk also consisted of me wearing flip-flops which seemed to amuse some folks :-) I'd left my outdoor shoes (and socks) outside while the conference proceeded, but during my talk it started to rain heavily, soaking everything! Luckily, SAP Community member Enno (who was also one of BTPcon's co-organisers) was giving out SAP Inside Track Hannover swag, which included socks, which I gratefully accepted!
 
 ![putting on dry socks](/images/2023/04/dj-socks.jpg)
 _Image courtesy of Enno Wulff_
