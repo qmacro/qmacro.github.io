@@ -3,31 +3,7 @@ title: Talks
 layout: talks.njk
 ---
 
-# Upcoming talks
-
-<a name="hands-on-with-the-btp-cli-and-apis-isernhagen-de"></a>
-
-## Hands-on with the btp CLI and APIs (Isernhagen, DE)
-
-When: Thu 13 Apr 0900-1500 CET (UTC+1)
-
-[Event Info](https://www.btpcon.org/schedule-list/)
-
-This SAP CodeJam BTP event is on the Core Service APIs for SAP BTP and also the command line interface tool for SAP BTP, otherwise known as the btp CLI. The event is designed to run on the day before [BTPCON 2023](https://www.btpcon.org/).
-
----
-
-<a name="level-up-your-json-fu-with-jq"></a>
-
-## Level up your JSON fu with jq
-
-When: Thu 14 Apr
-
-[Event Info](https://www.btpcon.org/)
-
-If you peel back the layers of SAP Business Technology Platform, there's a lot of JSON. It's important to feel comfortable with it, to be able to parse, filter, extract, reformulate and otherwise deal with that JSON like a boss. In this session you'll become acquainted with jq, the lightweight and flexible command-line JSON processor that also happens to be a fully formed language.
-
----
+# Upcoming talks & workshops
 
 <a name="service-integration-with-cap-brescia-it"></a>
 
@@ -53,9 +29,36 @@ This SAP CodeJam event is on the topic of the SAP Cloud Application Programming 
 
 ---
 
-# Past talks
+# Past talks & workshops
 
-Here is a list of some of my recent talks.
+Here is a list of some of my recent talks and workshops.
+
+<a name="hands-on-with-the-btp-cli-and-apis-isernhagen-de"></a>
+
+## Hands-on with the btp CLI and APIs (Isernhagen, DE)
+
+When: Thu 13 Apr 0900-1500 CET (UTC+1)
+
+[Event Info](https://www.btpcon.org/schedule-list/)
+| [Writeup](https://qmacro.org/blog/posts/2023/04/16/double-sap-btp-goodness-in-isernhagen/)
+
+This SAP CodeJam BTP event is on the Core Service APIs for SAP BTP and also the command line interface tool for SAP BTP, otherwise known as the btp CLI. The event is designed to run on the day before [BTPCON 2023](https://www.btpcon.org/).
+
+---
+
+<a name="level-up-your-json-fu-with-jq"></a>
+
+## Level up your JSON fu with jq
+
+When: Thu 14 Apr
+
+[Event Info](https://www.btpcon.org/)
+| [Talk Content](https://github.com/qmacro/level-up-your-json-fu-with-jq)
+| [Writeup](https://qmacro.org/blog/posts/2023/04/16/double-sap-btp-goodness-in-isernhagen/)
+
+If you peel back the layers of SAP Business Technology Platform, there's a lot of JSON. It's important to feel comfortable with it, to be able to parse, filter, extract, reformulate and otherwise deal with that JSON like a boss. In this session you'll become acquainted with jq, the lightweight and flexible command-line JSON processor that also happens to be a fully formed language.
+
+---
 
 <a name="extending-and-relating-entities-in-sap-cloud-application-programming-model"></a>
 
