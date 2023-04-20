@@ -8,7 +8,7 @@ tags:
 
 _More on Markdown linting, this time in the context of GitHub Actions._
 
-Yesterday I [wrote up some initial notes on my foray into Markdown linting](https://qmacro.org/2021/05/13/notes-on-markdown-linting-1/). Today I continue my journey of learning and discovery by attempting to get the Markdown linting working in a GitHub Action workflow, so I can have the checks done on pull requests.
+Yesterday I [wrote up some initial notes on my foray into Markdown linting](/blog/posts/2021/05/13/notes-on-markdown-linting-part-1/). Today I continue my journey of learning and discovery by attempting to get the Markdown linting working in a GitHub Action workflow, so I can have the checks done on pull requests.
 
 Beyond creating the workflow definition itself, there are only a few parts to getting Markdown content linted in the context of a pull request:
 
@@ -19,7 +19,7 @@ Beyond creating the workflow definition itself, there are only a few parts to ge
 
 ## Creating the workflow definition
 
-Since being able to quickly look at previous examples of GitHub Actions workflow definitions using my [workflow browser](https://qmacro.org/2021/04/24/github-actions-workflow-browser/), it was quite easy to create a simple workflow definition. Here's what the start looks like:
+Since being able to quickly look at previous examples of GitHub Actions workflow definitions using my [workflow browser](/blog/posts/2021/04/24/github-actions-workflow-browser/), it was quite easy to create a simple workflow definition. Here's what the start looks like:
 
 ```yaml
 name: Markdown checks
@@ -92,7 +92,7 @@ If we stare at the output earlier, we see this:
 ```text
 docs/b.md:5 MD022/blanks-around-headings/blanks-around-headers Headings should be surrounded by blank lines [Expected: 1; Actual: 0; Below] [Context: "### Something Else"]
 docs/b.md:6 MD032/blanks-around-lists Lists should be surrounded by blank lines [Context: "- one"]
-docs/b.md:10:10 MD011/no-reversed-links Reversed link syntax [(reversed)[https://qmacro.org]]
+docs/b.md:10:10 MD011/no-reversed-links Reversed link syntax [(reversed)[]]
 ```
 
 Applying the regular expression, we can see that it will indeed pick out the values as desired. Taking the last message line as an example, we get:
@@ -132,7 +132,7 @@ There is actually a GitHub Action, [xt0rted/markdownlint-problem-matcher](https:
 
 ## Installing the tool and custom rules packages
 
-Next, it's time to install the actual `markdownlint` tool, along with the custom rule package I mentioned in [part 1](https://qmacro.org/2021/05/13/notes-on-markdown-linting-1/). While I installed `markdownlint` on my macOS machine with `brew`, it seems fine here to install it with `npm`, along with the rule too:
+Next, it's time to install the actual `markdownlint` tool, along with the custom rule package I mentioned in [part 1](/blog/posts/2021/05/13/notes-on-markdown-linting-1/). While I installed `markdownlint` on my macOS machine with `brew`, it seems fine here to install it with `npm`, along with the rule too:
 
 ```yaml
     - run: |

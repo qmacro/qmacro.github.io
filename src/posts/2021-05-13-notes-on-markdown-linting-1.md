@@ -10,7 +10,7 @@ _Here's what I found out when I started to look into linting Markdown content._
 
 Thanks to some great direction and enlightenment from my colleague [Tobias](https://github.com/shegox), I found myself getting my brain around Markdown linting. Of course, not what it is, but what the current possibilities are and how they might apply to my situation. I thought I'd write some notes on what I found (mostly for my future self).
 
-(See also [Notes on Markdown linting - part 2](https://qmacro.org/2021/05/14/notes-on-markdown-linting-part-2/) where I learn how to get Markdown linting working in GitHub Actions).
+(See also [Notes on Markdown linting - part 2](/blog/posts/2021/05/14/notes-on-markdown-linting-part-2/) where I learn how to get Markdown linting working in GitHub Actions).
 
 ## Which linter?
 
@@ -135,4 +135,4 @@ Yes! Works nicely. Although like I say, I'm not sure why anyone would *want* to 
 
 I think I'd like to be able to run these custom rules in Vim too, but I'll leave that for another time. I'm satisfied at least at this stage to be able to lint my Markdown files at all. And the next thing is actually to be able to use `markdownlint` in a GitHub Actions workflow.
 
-Update: [I've written that up in part 2](https://qmacro.org/2021/05/14/notes-on-markdown-linting-part-2/).
+Update: [I've written that up in part 2](/blog/posts/2021/05/14/notes-on-markdown-linting-part-2/).
