@@ -132,7 +132,7 @@ There is actually a GitHub Action, [xt0rted/markdownlint-problem-matcher](https:
 
 ## Installing the tool and custom rules packages
 
-Next, it's time to install the actual `markdownlint` tool, along with the custom rule package I mentioned in [part 1](/blog/posts/2021/05/13/notes-on-markdown-linting-1/). While I installed `markdownlint` on my macOS machine with `brew`, it seems fine here to install it with `npm`, along with the rule too:
+Next, it's time to install the actual `markdownlint` tool, along with the custom rule package I mentioned in [part 1](/blog/posts/2021/05/13/notes-on-markdown-linting-part-1/). While I installed `markdownlint` on my macOS machine with `brew`, it seems fine here to install it with `npm`, along with the rule too:
 
 ```yaml
     - run: |
