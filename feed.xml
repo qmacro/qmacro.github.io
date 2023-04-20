@@ -5376,7 +5376,7 @@ linuxserver/freshrss           latest    09ffc08f14fe   4 weeks ago   120MB
       <content type="html">
         <![CDATA[
       <p><em>More on Markdown linting, this time in the context of GitHub Actions.</em></p>
-<p>Yesterday I <a href="https://qmacro.org/2021/05/13/notes-on-markdown-linting-1/">wrote up some initial notes on my foray into Markdown linting</a>. Today I continue my journey of learning and discovery by attempting to get the Markdown linting working in a GitHub Action workflow, so I can have the checks done on pull requests.</p>
+<p>Yesterday I <a href="/blog/posts/2021/05/13/notes-on-markdown-linting-part-1/">wrote up some initial notes on my foray into Markdown linting</a>. Today I continue my journey of learning and discovery by attempting to get the Markdown linting working in a GitHub Action workflow, so I can have the checks done on pull requests.</p>
 <p>Beyond creating the workflow definition itself, there are only a few parts to getting Markdown content linted in the context of a pull request:</p>
 <ul>
 <li>getting the content of the pull request, to be able to perform linting upon it</li>
@@ -5385,7 +5385,7 @@ linuxserver/freshrss           latest    09ffc08f14fe   4 weeks ago   120MB
 <li>performing the linting</li>
 </ul>
 <h2>Creating the workflow definition</h2>
-<p>Since being able to quickly look at previous examples of GitHub Actions workflow definitions using my <a href="https://qmacro.org/2021/04/24/github-actions-workflow-browser/">workflow browser</a>, it was quite easy to create a simple workflow definition. Here's what the start looks like:</p>
+<p>Since being able to quickly look at previous examples of GitHub Actions workflow definitions using my <a href="/blog/posts/2021/04/24/github-actions-workflow-browser/">workflow browser</a>, it was quite easy to create a simple workflow definition. Here's what the start looks like:</p>
 <pre class="language-yaml"><code class="language-yaml"><span class="token key atrule">name</span><span class="token punctuation">:</span> Markdown checks<br><br><span class="token key atrule">on</span><span class="token punctuation">:</span><br>  <span class="token key atrule">pull_request</span><span class="token punctuation">:</span><br>    <span class="token key atrule">branches</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>main<span class="token punctuation">,</span> master<span class="token punctuation">]</span><br><br><span class="token key atrule">jobs</span><span class="token punctuation">:</span><br>  <span class="token key atrule">lint-markdown</span><span class="token punctuation">:</span><br>    <span class="token key atrule">runs-on</span><span class="token punctuation">:</span> ubuntu<span class="token punctuation">-</span><span class="token number">20.04</span><br><br>    <span class="token key atrule">steps</span><span class="token punctuation">:</span><br><br>    <span class="token punctuation">...</span></code></pre>
 <blockquote>
 <p>I've moved from specifying <code>ubuntu-latest</code> to <code>ubuntu-nn.nn</code> for a more stable (or perhaps &quot;predictable&quot;) runner experience.</p>
@@ -5407,7 +5407,7 @@ linuxserver/freshrss           latest    09ffc08f14fe   4 weeks ago   120MB
 <p>The regular expression actually appears slightly more complex than it is, because the backslashes that are used to introduce the metacharacters <code>\d</code> (digit), <code>\s</code> (whitespace) and <code>\w</code> (alphanumeric) are escaped with backslashes in the JSON string value (so e.g. <code>\d</code> becomes <code>\\d</code>). This is so they don't get interpreted as escape characters themselves.</p>
 </blockquote>
 <p>If we stare at the output earlier, we see this:</p>
-<pre class="language-text"><code class="language-text">docs/b.md:5 MD022/blanks-around-headings/blanks-around-headers Headings should be surrounded by blank lines [Expected: 1; Actual: 0; Below] [Context: "### Something Else"]<br>docs/b.md:6 MD032/blanks-around-lists Lists should be surrounded by blank lines [Context: "- one"]<br>docs/b.md:10:10 MD011/no-reversed-links Reversed link syntax [(reversed)[https://qmacro.org]]</code></pre>
+<pre class="language-text"><code class="language-text">docs/b.md:5 MD022/blanks-around-headings/blanks-around-headers Headings should be surrounded by blank lines [Expected: 1; Actual: 0; Below] [Context: "### Something Else"]<br>docs/b.md:6 MD032/blanks-around-lists Lists should be surrounded by blank lines [Context: "- one"]<br>docs/b.md:10:10 MD011/no-reversed-links Reversed link syntax [(reversed)[]]</code></pre>
 <p>Applying the regular expression, we can see that it will indeed pick out the values as desired. Taking the last message line as an example, we get:</p>
 <table>
 <thead>
@@ -5486,7 +5486,7 @@ linuxserver/freshrss           latest    09ffc08f14fe   4 weeks ago   120MB
 <pre class="language-yaml"><code class="language-yaml">    <span class="token punctuation">-</span> <span class="token key atrule">run</span><span class="token punctuation">:</span> <span class="token string">"echo ::add-matcher::.qmacro/workflows/markdownlint/problem-matcher.json"</span></code></pre>
 <p>There is actually a GitHub Action, <a href="https://github.com/xt0rted/markdownlint-problem-matcher">xt0rted/markdownlint-problem-matcher</a> that does this for you, but I'm still in two minds as to whether to use a &quot;black box&quot; action or something direct for things like this. Only time will tell.</p>
 <h2>Installing the tool and custom rules packages</h2>
-<p>Next, it's time to install the actual <code>markdownlint</code> tool, along with the custom rule package I mentioned in <a href="https://qmacro.org/2021/05/13/notes-on-markdown-linting-1/">part 1</a>. While I installed <code>markdownlint</code> on my macOS machine with <code>brew</code>, it seems fine here to install it with <code>npm</code>, along with the rule too:</p>
+<p>Next, it's time to install the actual <code>markdownlint</code> tool, along with the custom rule package I mentioned in <a href="/blog/posts/2021/05/13/notes-on-markdown-linting-1/">part 1</a>. While I installed <code>markdownlint</code> on my macOS machine with <code>brew</code>, it seems fine here to install it with <code>npm</code>, along with the rule too:</p>
 <pre class="language-yaml"><code class="language-yaml">    <span class="token punctuation">-</span> <span class="token key atrule">run</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string"><br>        npm install \<br>          --no-package-lock \<br>          --no-save \<br>          markdownlint-cli markdownlint-rule-titlecase</span></code></pre>
 <p>Using the <code>--no-package-lock</code> and <code>--no-save</code> options makes for a slightly cleaner environment, given what we're doing here (i.e. we are only really interested in NPM metadata for this current job's execution).</p>
 <h2>Performing the linting</h2>
@@ -5517,7 +5517,7 @@ linuxserver/freshrss           latest    09ffc08f14fe   4 weeks ago   120MB
         <![CDATA[
       <p><em>Here's what I found out when I started to look into linting Markdown content.</em></p>
 <p>Thanks to some great direction and enlightenment from my colleague <a href="https://github.com/shegox">Tobias</a>, I found myself getting my brain around Markdown linting. Of course, not what it is, but what the current possibilities are and how they might apply to my situation. I thought I'd write some notes on what I found (mostly for my future self).</p>
-<p>(See also <a href="https://qmacro.org/2021/05/14/notes-on-markdown-linting-part-2/">Notes on Markdown linting - part 2</a> where I learn how to get Markdown linting working in GitHub Actions).</p>
+<p>(See also <a href="/blog/posts/2021/05/14/notes-on-markdown-linting-part-2/">Notes on Markdown linting - part 2</a> where I learn how to get Markdown linting working in GitHub Actions).</p>
 <h2>Which linter?</h2>
 <p>The Node.js-based <a href="https://github.com/DavidAnson/markdownlint">DavidAnson/markdownlint</a> is the linter of choice. I'll refer to it as <code>markdownlint</code> in this post.</p>
 <p>There's a related project <a href="https://github.com/markdownlint/markdownlint">markdownlint/markdownlint</a> which seems to be another, very similar linter written in Ruby. I'll refer to this as <code>mdl</code> as that's what the executable is called.</p>
@@ -5574,7 +5574,7 @@ _posts/2021-05-13-notes-on-markdown-linting.markdown:75:1 titlecase-rule Titleca
 </code></pre>
 <p>Yes! Works nicely. Although like I say, I'm not sure why anyone would <em>want</em> to use such a rule ... I may write one that complains if you <em>do</em> use title case. But I digress.</p>
 <p>I think I'd like to be able to run these custom rules in Vim too, but I'll leave that for another time. I'm satisfied at least at this stage to be able to lint my Markdown files at all. And the next thing is actually to be able to use <code>markdownlint</code> in a GitHub Actions workflow.</p>
-<p>Update: <a href="https://qmacro.org/2021/05/14/notes-on-markdown-linting-part-2/">I've written that up in part 2</a>.</p>
+<p>Update: <a href="/blog/posts/2021/05/14/notes-on-markdown-linting-part-2/">I've written that up in part 2</a>.</p>
 
     ]]>
       </content>
