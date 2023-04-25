@@ -7,6 +7,9 @@ tags:
   - narrowboat
   - fullyrestful
 ---
+Previous post in this series: [Living on a narrowboat - embracing constraints](/blog/posts/2023/01/16/living-on-a-narrowboat-embracing-constraints/).
+
+---
 In [Living on a narrowboat - embracing constraints](/blog/posts/2023/01/16/living-on-a-narrowboat-embracing-constraints/) I briefly mentioned the stove I'm getting. This post is about choosing a stove in general, and how I came to my decision and the factors I considered.
 
 For keeping the cabin warm, some modern boats might rely mainly on a radiator circuit. Some even have underfloor heating. Some have an electric heater and fan combination that pushes warm air into the cabin, a little bit like in a car. And of course some (I would suggest the majority) have a standalone stove of some sort. 

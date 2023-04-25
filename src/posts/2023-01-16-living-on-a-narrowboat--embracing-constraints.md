@@ -132,3 +132,6 @@ Age and life experience has made me realise that one of the most precious commod
 In fact, through that very increased and pronounced contrast, I'm hoping that I will come to value and enjoy time as an end in itself. On the canal, things move slowly. Very slowly. And I think that is reflected in how time will continue to be available in the same quantities as ever, despite everything else being less available, less copious, and far more immediately finite. 
 
 A possible net result of this can be a greater awareness and appreciation for the small things, for the simple things. And that's something I would cherish.
+
+---
+Next post in this series: [Living on a narrowboat - the stove as the heart of the home](/blog/posts/2023/04/07/living-on-a-narrowboat-the-stove-as-the-heart-of-the-home/).
