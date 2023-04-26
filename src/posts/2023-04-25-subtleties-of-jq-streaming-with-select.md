@@ -68,14 +68,14 @@ false
 How do we visually parse this? Well, it's two "pairs" of booleans, one pair for each of the input values `42`, `"hello"` and `true`, where the pair represent the result of comparing the type of each value twice, with `"number"` and with `"string"`, in order. Splitting these pairs up with whitespace and adding some explanation, we get:
 
 ```text
-true     <-- is number \   42
-false    <-- is string /
+true     :-- is number \   42
+false    :-- is string /
 
-false    <-- is number \ "hello"
-true     <-- is string /
+false    :-- is number \ "hello"
+true     :-- is string /
 
-false    <-- is number \  true
-false    <-- is string /
+false    :-- is number \  true
+false    :-- is string /
 ```
 
 Then, reminding ourselves that the definition of `select` is:
@@ -89,14 +89,14 @@ then the values that stream through to `select` are either emitted (`.`) if the 
 This results in the following behaviour:
 
 ```text
-true     <-- is number \   42    / emitted       --> 42
-false    <-- is string /         \ not emitted
+true     :-- is number \   42    / emitted       --:   42
+false    :-- is string /         \ not emitted
 
-false    <-- is number \ "hello" / not emitted
-true     <-- is string /         \ emitted       --> "hello"
+false    :-- is number \ "hello" / not emitted
+true     :-- is string /         \ emitted       --: "hello"
 
-false    <-- is number \  true   / not emitted
-false    <-- is string /         \ not emitted
+false    :-- is number \  true   / not emitted
+false    :-- is string /         \ not emitted
 ```
 
 and thus:
@@ -123,18 +123,17 @@ then our result would be different, and probably not what we were expecting:
 But knowing what's going on allows us to understand why. There are now three values each being tested not twice but three times:
 
 ```text
-true     <-- is number \         / emitted       --> 42
-false    <-- is string |   42    | not emitted
-true     <-- is number /         \ emitted       --> 42
+true     :-- is number \         / emitted       --:   42
+false    :-- is string |   42    | not emitted
+true     :-- is number /         \ emitted       --:   42
 
-false    <-- is number \         / not emitted
-true     <-- is string | "hello" | emitted       --> "hello"
-false    <-- is number /         \ not emitted
+false    :-- is number \         / not emitted
+true     :-- is string | "hello" | emitted       --: "hello"
+false    :-- is number /         \ not emitted
 
-false    <-- is number \         / not emitted
-false    <-- is string |  true   | not emitted
-false    <-- is number /         \ not emitted
+false    :-- is number \         / not emitted
+false    :-- is string |  true   | not emitted
+false    :-- is number /         \ not emitted
 ```
 
 While the superficial operation of this jq expression is sort of obvious, why it works is less so. At least to me. And in case it wasn't obvious to you either, I hope this has helped!
-
