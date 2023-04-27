@@ -65,7 +65,7 @@ false
 false
 ```
 
-How do we visually parse this? Well, it's two "pairs" of booleans, one pair for each of the input values `42`, `"hello"` and `true`, where the pair represent the result of comparing the type of each value twice, with `"number"` and with `"string"`, in order. Splitting these pairs up with whitespace and adding some explanation, we get:
+How do we visually parse this? Well, it's two "pairs" of booleans, one pair for each of the input values `42`, `"hello"` and `true`, where each pair represents the result of comparing the type of the input value twice, with `"number"` and with `"string"`, in order. Splitting these pairs up with whitespace and adding some explanation, we get:
 
 ```text
 true     :-- is number \   42
