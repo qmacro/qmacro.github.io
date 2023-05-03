@@ -5,6 +5,19 @@ layout: talks.njk
 
 # Upcoming talks & workshops
 
+<a name="understanding-and-exploring-managed-associations-in-the-sap-cloud-application-programming-model"></a>
+
+## Understanding and exploring managed associations in the SAP Cloud Application Programming Model
+
+When: Fri 05 May 0800-0900 GMT (UTC+0)
+
+[Live Stream / Recording](https://www.youtube.com/live/rds3CcROf9g)
+
+In order to properly relate the entities in our CAP service, let's get together to explore and understand managed associations in CDS, to see what they are, how they work, and what we can do with them. Everyone welcome, especially beginners!
+(🔴 Live stream)
+
+---
+
 <a name="service-integration-with-cap-brescia-it"></a>
 
 ## Service Integration with SAP Cloud Application Programming Model (Brescia, IT)
@@ -32,6 +45,19 @@ This SAP CodeJam event is on the topic of the SAP Cloud Application Programming 
 # Past talks & workshops
 
 Here is a list of some of my recent talks and workshops.
+
+<a name="adding-data-for-our-sap-cloud-application-programming-model-service"></a>
+
+## Adding data for our SAP Cloud Application Programming Model service
+
+When: Fri 28 Apr 0800-0900 GMT (UTC+0)
+
+[Live Stream / Recording](https://www.youtube.com/live/N8B5395qA0M)
+
+We start out where we left off last time with our extended & related entities and take some steps to retrieve data and make it available for our two main entities. Everyone welcome, especially beginners to CAP!
+(🔴 Live stream)
+
+---
 
 <a name="hands-on-with-the-btp-cli-and-apis-isernhagen-de"></a>
 
