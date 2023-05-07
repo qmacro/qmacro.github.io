@@ -96,3 +96,6 @@ So while I would have been happy with the Morsø Squirrel 1412, I'm even happier
 ![The stove I'm getting](/images/2023/01/fat-penguin-tall-order-stove.png)
 
 I'm looking forward to seeing it installed and on board soon!
+
+---
+Next post in this series: [Living on a narrowboat - layout details of the stern](/blog/posts/2023/05/07/living-on-a-narrowboat-layout-details-of-the-stern/).

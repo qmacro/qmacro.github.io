@@ -50,6 +50,7 @@ It's from [Chilli Penguin Stoves](https://chillipenguin.co.uk/) not too far away
 
 This is in addition to the gas oven and grill I'll have in the galley below the two burner hob.
 
+<a name="gas"></a>
 ## Gas
 
 The hob, oven and grill all run on gas. So where's that from? If you look closely at the stern in the narrowboat design diagram, you'll see a couple of areas numbered 04. These are the stern gas lockers, and you can get a better idea of what they look like from these pictures. 
