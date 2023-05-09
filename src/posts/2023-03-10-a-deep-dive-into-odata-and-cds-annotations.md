@@ -995,6 +995,7 @@ annotate CatalogService.Books with @(
         SelectionFields: [ title ]
     }
 );
+```
 
 but the annotation itself could be also be compressed like this:
 
