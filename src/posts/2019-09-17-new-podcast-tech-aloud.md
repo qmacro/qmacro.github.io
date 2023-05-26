@@ -5,7 +5,7 @@ title: New podcast - Tech Aloud
 
 _I've created a new podcast called "Tech Aloud", where I read out loud tech articles and blog posts, so you can consume them while on the go._
 
-[![Tech Aloud logo]( {{ "/images/2019/09/tech-aloud.jpeg)](https://anchor.fm/tech-aloud" | url }})
+[![Tech Aloud logo](/images/2019/09/tech-aloud.jpeg)](https://anchor.fm/tech-aloud)
 
 There's such a rich seam of material out there to read and learn from that it's more or less impossible to keep up. Technical articles and blog posts are published day in day out, and I can only find time to read so many. I'd been thinking that if I could find a podcast where articles and blog posts are simply read out, aloud, I could digest a little more via audio while on the move, when travelling or even just going for a walk.
 
