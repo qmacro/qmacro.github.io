@@ -129,7 +129,7 @@ jq -n '
 '
 ```
 
-This has the same effect (because [it's just syntactic sugar for the version with `to_entries` and `from_entries`](https://github.com/jqlang/jq/blob/a9f97e9e61a910a374a5d768244e8ad63f407d3e/src/builtin.jq#L43):
+This has the same effect (because [it's just syntactic sugar for the version with `to_entries` and `from_entries`](https://github.com/jqlang/jq/blob/a9f97e9e61a910a374a5d768244e8ad63f407d3e/src/builtin.jq#L43)):
 
 ```json
 {
