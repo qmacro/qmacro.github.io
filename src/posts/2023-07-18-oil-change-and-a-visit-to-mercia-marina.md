@@ -4,6 +4,8 @@ title: Oil change and a visit to Mercia Marina
 date: 2023-07-18
 tags:
   - narrowboatdiary
+  - narrowboat
+  - fullyrestful
 ---
 Today was the day for the first service on the [Barrus Shire](https://www.barrus.co.uk/divisions/marine/diesel/shire/our-products/) 50 engine and gearbox.
 
