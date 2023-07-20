@@ -92,7 +92,3 @@ Here's my collection, showing one of the guides ([Four Counties & the Welsh Cana
 Of course, because canal navigation is on a fairly small scale, given the travel speed and the distances planned for any given journey, it's often the case that one can walk or run ahead to see what's coming. I have used some of my morning runs to do this; here's an example of [a run from Shardlow, where I was moored, to Weston Lock, and back](https://www.strava.com/activities/9453248632), to see what both Weston Lock and Aston Lock were like, and to check the canal stretch along the way:
 
 ![A run along the Trent & Mersey canal](/images/2023/07/canal-run-strava.png)
-
-## Wrapping up
-
-And that's it. I'm sure there are other resources, and other ways of working out routes, but this combination is what I use right now.
