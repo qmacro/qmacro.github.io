@@ -9,30 +9,6 @@ layout: talks.njk
 
 (Information on recent [past talks & workshops](#past) is also available).
 
-<a name="recap-conf-podium-discussion"></a>
-
-## Chair of podium discussion at reCAP conference
-
-When: Fri 07 Jul 1200-1245 CEST (UTC+2)
-
-[Event Info](https://recap-conf.dev/)
-
-To discuss community questions, I will be facilitating a community driven podium discussion with expert community guests to address topics like: CAP vs. RAP, CAP on alternative platforms, CAP and UI5.
-
----
-
-<a name="service-integration-with-cap-st-leon-rot-de"></a>
-
-## Service Integration with SAP Cloud Application Programming Model (St Leon-Rot, DE)
-
-When: Sat 08 Jul 0930-1530 CEST (UTC+2)
-
-[Event Info](https://groups.community.sap.com/t5/sap-codejam/service-integration-with-sap-cloud-application-programming-model/ev-p/256584)
-
-This SAP CodeJam event is on the topic of the SAP Cloud Application Programming Model (Node.js), and specifically about service integration. It will introduce you to how to find, import and integrate external service definitions into your project, service mocking, remote service access, how destinations and the SAP Cloud SDK are used, and more.
-
----
-
 <a name="codejam-cap-hana-cloud-full-stack-apps-budapest"></a>
 
 ## Combine SAP Cloud Application Programming Model with SAP HANA Cloud to create full-stack apps (Budapest, HU)
@@ -62,6 +38,31 @@ This SAP CodeJam event is on the topic of the SAP Cloud Application Programming 
 # Past talks & workshops
 
 Here are some of my talks and workshops from the recent past.
+
+<a name="recap-conf-podium-discussion"></a>
+
+## Chair of podium discussion at reCAP conference
+
+When: Fri 07 Jul 1200-1245 CEST (UTC+2)
+
+[Event Info](https://recap-conf.dev/)
+| [Session Recording](https://broadcast.sap.com/replay/23707_reCAP2023)
+
+To discuss community questions, I will be facilitating a community driven podium discussion with expert community guests to address topics like: CAP and RAP, CAP on alternative platforms, and more.
+
+---
+
+<a name="service-integration-with-cap-st-leon-rot-de"></a>
+
+## Service Integration with SAP Cloud Application Programming Model (St Leon-Rot, DE)
+
+When: Sat 08 Jul 0930-1530 CEST (UTC+2)
+
+[Event Info](https://groups.community.sap.com/t5/sap-codejam/service-integration-with-sap-cloud-application-programming-model/ev-p/256584)
+
+This SAP CodeJam event is on the topic of the SAP Cloud Application Programming Model (Node.js), and specifically about service integration. It will introduce you to how to find, import and integrate external service definitions into your project, service mocking, remote service access, how destinations and the SAP Cloud SDK are used, and more.
+
+---
 
 <a name="service-integration-with-cap-gütersloh-de"></a>
 
