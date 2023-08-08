@@ -1,6 +1,6 @@
 ---
 layout: post
-title: OData query operations and URL encoding the system query options
+title: OData query operations and URL encoding the system query options with curl
 date: 2023-08-08
 tags:
   - odata
