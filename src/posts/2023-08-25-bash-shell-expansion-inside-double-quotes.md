@@ -96,7 +96,8 @@ everythinggit status
 One thing to note for those of you working with OData, is that the OData system query options are all prefixed with the dollar sign. For example, there's `$top`, `$skip`, `$expand` and so on. So if you were to use `curl` to request a URL like this:
 
 ```shell
-curl --url "https://services.odata.org/V4/Northwind/Northwind.svc/Products?$top=2"
+curl \
+  --url "https://services.odata.org/V4/Northwind/Northwind.svc/Products?$top=2"
 ```
 
 then you'd get rather more product entities than you expected. Instead of receiving just the first two, you'd get all of them. Why? Because through shell parameter expansion, the `$top` part was expanded into the value of the `top` parameter, which is (most likely to be) empty, making the actual URL passed to `curl` this:
