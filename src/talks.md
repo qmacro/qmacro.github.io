@@ -1,13 +1,136 @@
 ---
-title: Talks
+title: Talks and workshops
 layout: talks.njk
 ---
 
+<a name="upcoming"></a>
+
 # Upcoming talks & workshops
 
-<a name="understanding-and-exploring-managed-associations-in-the-sap-cloud-application-programming-model"></a>
+(Information on recent [past talks & workshops](#past) is also available).
 
-## Understanding and exploring managed associations in the SAP Cloud Application Programming Model
+<a name="codejam-cap-hana-cloud-full-stack-apps-budapest"></a>
+
+## Combine SAP Cloud Application Programming Model with SAP HANA Cloud to create full-stack apps (Budapest, HU)
+
+When: Thu 31 Aug 0930-1530 CEST (UTC+2)
+
+[Event Info](https://groups.community.sap.com/t5/sap-codejam/combine-sap-cloud-application-programming-model-with-sap-hana/ev-p/260759)
+
+This SAP CodeJam event is about combining the SAP Cloud Application Programming Model with SAP HANA Cloud to create full-stack applications. In this CodeJam we will learn how to deploy and configure an instance of the SAP HANA Cloud trial, develop a multi-target application using SAP Business Application Studio and the SAP Cloud Application Programming Model, and create a service layer and SAP Fiori UI that also includes SAP HANA native artifacts such as calculation views.
+
+---
+
+<a name="service-integration-with-cap-dortmund-de"></a>
+
+## Service Integration with SAP Cloud Application Programming Model (Dortmund, DE)
+
+When: Fri 08 Sep 0930-1530 CEST (UTC+2)
+
+[Event Info](https://groups.community.sap.com/t5/sap-codejam/service-integration-with-sap-cloud-application-programming-model/ev-p/260775)
+
+This SAP CodeJam event is on the topic of the SAP Cloud Application Programming Model (Node.js), and specifically about service integration. It will introduce you to how to find, import and integrate external service definitions into your project, service mocking, remote service access, how destinations and the SAP Cloud SDK are used, and more.
+
+---
+
+<a name="past"></a>
+
+# Past talks & workshops
+
+Here are some of my talks and workshops from the recent past.
+
+<a name="recap-conf-podium-discussion"></a>
+
+## Chair of podium discussion at reCAP conference
+
+When: Fri 07 Jul 1200-1245 CEST (UTC+2)
+
+[Event Info](https://recap-conf.dev/)
+| [Session Recording](https://broadcast.sap.com/replay/23707_reCAP2023)
+
+To discuss community questions, I will be facilitating a community driven podium discussion with expert community guests to address topics like: CAP and RAP, CAP on alternative platforms, and more.
+
+---
+
+<a name="service-integration-with-cap-st-leon-rot-de"></a>
+
+## Service Integration with SAP Cloud Application Programming Model (St Leon-Rot, DE)
+
+When: Sat 08 Jul 0930-1530 CEST (UTC+2)
+
+[Event Info](https://groups.community.sap.com/t5/sap-codejam/service-integration-with-sap-cloud-application-programming-model/ev-p/256584)
+
+This SAP CodeJam event is on the topic of the SAP Cloud Application Programming Model (Node.js), and specifically about service integration. It will introduce you to how to find, import and integrate external service definitions into your project, service mocking, remote service access, how destinations and the SAP Cloud SDK are used, and more.
+
+---
+
+<a name="service-integration-with-cap-gütersloh-de"></a>
+
+## Service Integration with SAP Cloud Application Programming Model (Gütersloh, DE)
+
+When: Fri 16 Jun 0930-1530 CEST (UTC+2)
+
+[Event Info](https://groups.community.sap.com/t5/sap-codejam/service-integration-with-sap-cloud-application-programming-model/ev-p/223935)
+
+This SAP CodeJam event is on the topic of the SAP Cloud Application Programming Model (Node.js), and specifically about service integration. It will introduce you to how to find, import and integrate external service definitions into your project, service mocking, remote service access, how destinations and the SAP Cloud SDK are used, and more.
+
+---
+
+<a name="exploring-and-understanding-managed-associations-in-cap-part-4"></a>
+
+## Exploring and understanding managed associations in CAP - part 4
+
+When: Fri 02 Jun 0800-0900 GMT (UTC+0)
+
+[Live Stream / Recording](https://www.youtube.com/live/EtNv5VX4yxk)
+
+In the last part of this mini-series, we work through the construction of the link entity for a many-to-many relationship between our entities. As always, diving into and discussing the details at every turn. Everyone welcome, especially beginners!
+(🔴 Live stream)
+
+---
+
+<a name="exploring-and-understanding-managed-associations-in-cap-part-3"></a>
+
+## Exploring and understanding managed associations in CAP - part 3
+
+When: Fri 26 May 0800-0900 GMT (UTC+0)
+
+[Live Stream / Recording](https://www.youtube.com/live/_Yc8NG5-1uY)
+
+We continue from where we left off in Part 2, moving through the to-one association to a to-many association. As always, diving into and discussing the details at every turn. Everyone welcome, especially beginners!
+(🔴 Live stream)
+
+---
+
+<a name="service-integration-with-cap-brescia-it"></a>
+
+## Service Integration with SAP Cloud Application Programming Model (Brescia, IT)
+
+When: Fri 19 May 0900-1500 CEST (UTC+2)
+
+[Event Info](https://groups.community.sap.com/t5/sap-codejam/eb-p/codejam-events)
+| [Writeup](/blog/posts/2023/05/20/sap-codejam-on-service-integration-with-cap-in-brescia/)
+
+This SAP CodeJam event is on the topic of the SAP Cloud Application Programming Model (Node.js), and specifically about service integration. It will introduce you to how to find, import and integrate external service definitions into your project, service mocking, remote service access, how destinations and the SAP Cloud SDK are used, and more.
+
+---
+
+<a name="exploring-and-understanding-managed-associations-in-cap-part-2"></a>
+
+## Exploring and understanding managed associations in CAP - part 2
+
+When: Fri 12 May 0800-0900 GMT (UTC+0)
+
+[Live Stream / Recording](https://www.youtube.com/live/n72qmk58wSs)
+
+We continue from where we left off in Part 1, digging into to-one managed associations and starting to explore to-many managed associations. As always, poring over the details at every turn. Everyone welcome, especially beginners!
+(🔴 Live stream)
+
+---
+
+<a name="exploring-and-understanding-managed-associations-in-cap-part-1"></a>
+
+## Exploring and understanding managed associations in CAP - part 1
 
 When: Fri 05 May 0800-0900 GMT (UTC+0)
 
@@ -17,34 +140,6 @@ In order to properly relate the entities in our CAP service, let's get together 
 (🔴 Live stream)
 
 ---
-
-<a name="service-integration-with-cap-brescia-it"></a>
-
-## Service Integration with SAP Cloud Application Programming Model (Brescia, IT)
-
-When: Fri 19 May 0900-1500 CET (UTC+1)
-
-[Event Info](https://groups.community.sap.com/t5/sap-codejam/eb-p/codejam-events)
-
-This SAP CodeJam event is on the topic of the SAP Cloud Application Programming Model (Node.js), and specifically about service integration. It will introduce you to how to find, import and integrate external service definitions into your project, service mocking, remote service access, how destinations and the SAP Cloud SDK are used, and more.
-
----
-
-<a name="service-integration-with-cap-guetersloh-de"></a>
-
-## Service Integration with SAP Cloud Application Programming Model (Gütersloh, DE)
-
-When: Fri 16 Jun 0930-1530 CET (UTC+1)
-
-[Event Info](https://groups.community.sap.com/t5/sap-codejam/service-integration-with-sap-cloud-application-programming-model/ec-p/223935#M103)
-
-This SAP CodeJam event is on the topic of the SAP Cloud Application Programming Model (Node.js), and specifically about service integration. It will introduce you to how to find, import and integrate external service definitions into your project, service mocking, remote service access, how destinations and the SAP Cloud SDK are used, and more.
-
----
-
-# Past talks & workshops
-
-Here is a list of some of my recent talks and workshops.
 
 <a name="adding-data-for-our-sap-cloud-application-programming-model-service"></a>
 
@@ -66,7 +161,7 @@ We start out where we left off last time with our extended & related entities an
 When: Thu 13 Apr 0900-1500 CET (UTC+1)
 
 [Event Info](https://www.btpcon.org/schedule-list/)
-| [Writeup](https://qmacro.org/blog/posts/2023/04/16/double-sap-btp-goodness-in-isernhagen/)
+| [Writeup](/blog/posts/2023/04/16/double-sap-btp-goodness-in-isernhagen/)
 
 This SAP CodeJam BTP event is on the Core Service APIs for SAP BTP and also the command line interface tool for SAP BTP, otherwise known as the btp CLI. The event is designed to run on the day before [BTPCON 2023](https://www.btpcon.org/).
 
@@ -80,7 +175,6 @@ When: Thu 14 Apr
 
 [Event Info](https://www.btpcon.org/)
 | [Talk Content](https://github.com/qmacro/level-up-your-json-fu-with-jq)
-| [Writeup](https://qmacro.org/blog/posts/2023/04/16/double-sap-btp-goodness-in-isernhagen/)
 
 If you peel back the layers of SAP Business Technology Platform, there's a lot of JSON. It's important to feel comfortable with it, to be able to parse, filter, extract, reformulate and otherwise deal with that JSON like a boss. In this session you'll become acquainted with jq, the lightweight and flexible command-line JSON processor that also happens to be a fully formed language.
 
@@ -117,6 +211,7 @@ Keynote at Bourne Developer Conference 2023.
 When: Fri 24 Feb 0900-1500 CET (UTC+1)
 
 [Event Info](https://groups.community.sap.com/t5/sap-codejam/sap-codejam-btp-hands-on-with-the-btp-cli-and-apis-heilbronn-de/ec-p/130512#M52)
+| [Writeup](/blog/posts/2023/03/01/sap-codejam-on-the-btp-cli-and-apis-in-heilbronn/)
 
 This SAP CodeJam BTP event is on the Core Service APIs for SAP BTP and also the command line interface tool for SAP BTP, otherwise known as the btp CLI.
 
@@ -181,7 +276,7 @@ We're coming to the end of our journey of OAuth 2.0 discovery, and we'll finish 
 When: Fri 10 Feb 1300-1900 CET (UTC+1)
 
 [Event Info](https://groups.community.sap.com/t5/sap-codejam/sap-codejam-cap-service-integration-with-sap-cloud-application/ec-p/216773#M54)
-| [Writeup](https://qmacro.org/blog/posts/2023/02/11/sap-codejam-on-service-integration-with-cap-in-utrecht/)
+| [Writeup](/blog/posts/2023/02/11/sap-codejam-on-service-integration-with-cap-in-utrecht/)
 
 This SAP CodeJam event is on the topic of the SAP Cloud Application Programming Model (Node.js), and specifically about service integration. It introduces participants to service integration and event-based data federation; we look at pre-built integration packages, connectivity, destinations, data replication and more. 
 
