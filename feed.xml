@@ -5,13 +5,71 @@
   <link href="https://qmacro.org/feed.xml" rel="self"/>
   <link href="https://qmacro.org/"/>
   
-    <updated>2023-08-08T00:00:00Z</updated>
+    <updated>2023-08-25T00:00:00Z</updated>
   
   <id>https://qmacro.org</id>
   <author>
     <name>DJ Adams</name>
     <email>qmacro@gmail.com</email>
   </author>
+  
+    <entry>
+      <title>Bash shell expansion inside double quotes</title>
+      <link href="https://qmacro.org/blog/posts/2023/08/25/bash-shell-expansion-inside-double-quotes/"/>
+      <updated>2023-08-25T00:00:00Z</updated>
+      <id>https://qmacro.org/blog/posts/2023/08/25/bash-shell-expansion-inside-double-quotes/</id>
+      <content type="html">
+        <![CDATA[
+      <p>Some folks in this month's SAP Developer Challenge on APIs have fallen foul of a Bash feature, a feature which is one of a family of features relating to &quot;expansion&quot; of information. In this short post I dig into what that feature is, and how to ensure you don't trip yourseves up with it.</p>
+<h2>Special characters</h2>
+<p>In <a href="https://groups.community.sap.com/t5/application-development/sap-developer-challenge-apis-task-10-request-an-oauth-access/m-p/282016">SAP Developer Challenge - APIs - Task 10 - Request an OAuth access token</a>, my good friend and colleague Daniel stumbled into a problem while conveying OAuth client ID and secret values in a call to <code>curl</code>. It would have been something like this:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">curl</span> <span class="token string">'&lt;oauth-authorization-server>'</span> <span class="token punctuation">\</span><br>-u <span class="token string">"&lt;clientid>:&lt;clientsecret>"</span> <span class="token punctuation">\</span> <br>-d <span class="token string">"grant_type=&lt;grant-type>"</span><br>-d <span class="token string">"..."</span></code></pre>
+<p>With many services on the SAP Business Technology Platform, client ID and secret values contain special characters, notably here they contain exclamation marks. Here's an example:</p>
+<ul>
+<li>client ID: <code>sb-ut-f86082c9-7fbf-4e1e-8310-f5d018dab542-clone!b254751|cis-central!b14</code></li>
+<li>client secret: <code>dfad81fe-a33d-4252-b612-d49cd9fd3a42$dE1F7W2F3-TrF9kIrkdQaliGqTKR_aCVcv-oaM7ZZ9x=</code></li>
+</ul>
+<p>They also contain dollar signs.</p>
+<h2>Bash expansions</h2>
+<p>Bash is a venerable and extremely capable shell, and supports a number of so-called <a href="https://www.gnu.org/software/bash/manual/html_node/Shell-Expansions.html">Shell Expansions</a>, where values are substituted for tokens on the command line. This is before those values are then interpreted as part of whatever command is to be executed. These expansions are initiated by special characters, two of which are the dollar sign <code>$</code> and exclamation mark <code>!</code>.</p>
+<h3>Shell parameter expansion</h3>
+<p>The <code>$</code> character introduces <a href="https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html">shell parameter expansion</a>, and in the very simplest of cases will substitute the value of a variable identified with the <code>$</code> character, replacing the parameter or symbol itself. For example, if we have a variable <code>ans</code> with the value <code>42</code>, then:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token builtin class-name">echo</span> <span class="token string">"The answer is <span class="token variable">$ans</span>"</span></code></pre>
+<p>will emit:</p>
+<pre class="language-text"><code class="language-text">The answer is 42</code></pre>
+<h3>History expansion</h3>
+<p>The <code>!</code> character introduces <a href="https://www.gnu.org/software/bash/manual/html_node/History-Interaction.html">history expansion</a>. In the Bash shell, commands are remembered in a history, and can be recalled with the <code>history</code> builtin. Here's an example of the output from <code>history</code>:</p>
+<pre class="language-text"><code class="language-text">1977  date<br>1978  git status<br>1979  git add .gitignore<br>1980  git commit -m 'do not track cache files'</code></pre>
+<p>If I wanted to rerun the <code>git status</code> command, I could invoke it like this:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token operator">!</span><span class="token number">1978</span></code></pre>
+<p>That might not seem earth shatteringly exciting, but for longer more complex combinations of commands, it can be very useful. Remember also that some shells emit the current history number in the prompt, making it quick and easy to refer to a previous command. And in the older days of slower connections, especially serial terminal connections, the transmission of every character counted!</p>
+<h2>Quotes</h2>
+<p>Shell parameter and history expansion happen inside double quotes. So if I try:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token builtin class-name">echo</span> <span class="token string">"everything!abc"</span></code></pre>
+<p>Then I see this:</p>
+<pre class="language-text"><code class="language-text">-bash: !abc: event not found</code></pre>
+<p>The word &quot;event&quot; here refers to a line selected from the history. And as <code>abc</code> isn't in my history as a reference, the error message makes sense.</p>
+<p>But if I were to try:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token builtin class-name">echo</span> <span class="token string">"everything!1978"</span></code></pre>
+<p>I would see:</p>
+<pre class="language-text"><code class="language-text">everythinggit status</code></pre>
+<h2>A note on working with OData</h2>
+<p>One thing to note for those of you working with OData, is that the OData system query options are all prefixed with the dollar sign. For example, there's <code>$top</code>, <code>$skip</code>, <code>$expand</code> and so on. So if you were to use <code>curl</code> to request a URL like this:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token function">curl</span> --url <span class="token string">"https://services.odata.org/V4/Northwind/Northwind.svc/Products?<span class="token variable">$top</span>=2"</span></code></pre>
+<p>then you'd get rather more product entities than you expected. Instead of receiving just the first two, you'd get all of them. Why? Because through shell parameter expansion, the <code>$top</code> part was expanded into the value of the <code>top</code> parameter, which is (most likely to be) empty, making the actual URL passed to <code>curl</code> this:</p>
+<pre class="language-url"><code class="language-url"><span class="token scheme">https<span class="token scheme-delimiter">:</span></span><span class="token authority"><span class="token authority-delimiter">//</span><span class="token host">services.odata.org</span></span><span class="token path"><span class="token path-separator">/</span>V4<span class="token path-separator">/</span>Northwind<span class="token path-separator">/</span>Northwind.svc<span class="token path-separator">/</span>Products</span><span class="token query"><span class="token query-delimiter">?</span>=2</span>"</code></pre>
+<p>Nicely, perhaps through <a href="https://en.wikipedia.org/wiki/Robustness_principle">Postel's Law</a>, the Northwind service quietly ignores the random <code>=2</code> which is thus sent as the query string part of the URL, and returns the entire products entity set.</p>
+<h2>What to do</h2>
+<p>These expansions work within double quotes in Bash. They explicitly and deliberately are not active within single quotes. There is in fact a lot more to know about the <a href="https://stackoverflow.com/questions/6697753/difference-between-single-and-double-quotes-in-bash">difference between single and double quotes in Bash</a>, but all you need to remember for now is that you should only use double quotes when you know you want something magic to happen (such as expansions). If you can get away with using single quotes, then that is often the better way, where the data within remains &quot;passive&quot;.</p>
+<p>Here are those two examples from earlier, but expressed in single quotes. First, using an exclamation mark which in double quotes would invoke history expansion:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> <span class="token builtin class-name">echo</span> <span class="token string">'everything!abc'</span><br>everything<span class="token operator">!</span>abc</code></pre>
+<p>Now using a dollar sign, which in double quotes would invoke parameter expansion:</p>
+<pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> <span class="token builtin class-name">echo</span> <span class="token string">'The answer is $ans'</span><br>The answer is <span class="token variable">$ans</span></code></pre>
+<p>The shell is a wonderful environment, but can be arcane and odd around some edges. But how is that different to the univese in general, right?</p>
+
+    ]]>
+      </content>
+    </entry>
   
     <entry>
       <title>OData query operations and URL encoding the system query options with curl</title>
