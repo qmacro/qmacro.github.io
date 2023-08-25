@@ -6,7 +6,7 @@ tags:
   - bash
   - command-line
 ---
-Some folks in this month's SAP Developer Challenge on APIs have fallen foul of a Bash feature, a feature which is one of a family of features relating to "expansion" of information. In this short post I dig into what that feature is, and how to ensure you don't trip yourseves up with it.
+In the context of this month's [SAP Developer Challenge on APIs](https://blogs.sap.com/2023/08/01/sap-developer-challenge-apis/), some participants working through [today's task](https://groups.community.sap.com/t5/application-development/sap-developer-challenge-apis-task-10-request-an-oauth-access/m-p/282016) have tripped up on a Bash feature, a feature which is one of a family of features relating to "expansion" of information. In this short post I dig into what that feature is, and how to ensure you don't trip yourseves up with it.
 
 ## Special characters
 
