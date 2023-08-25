@@ -113,14 +113,14 @@ These expansions work within double quotes in Bash. They explicitly and delibera
 
 Here are those two examples from earlier, but expressed in single quotes. First, using an exclamation mark which in double quotes would invoke history expansion:
 
-```console
+```shell
 ; echo 'everything!abc'
 everything!abc
 ```
 
 Now using a dollar sign, which in double quotes would invoke parameter expansion:
 
-```console
+```shell
 ; echo 'The answer is $ans'
 The answer is $ans
 ```
