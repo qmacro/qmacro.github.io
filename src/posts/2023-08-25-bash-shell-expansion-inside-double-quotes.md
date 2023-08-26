@@ -93,17 +93,17 @@ everythinggit status
 
 ## A note on working with OData
 
-One thing to note for those of you working with OData, is that the OData system query options are all prefixed with the dollar sign. For example, there's `$top`, `$skip`, `$expand` and so on. So if you were to use `curl` to request a URL like this:
+One thing to note for those of you working with OData, is that the OData system query options are all prefixed with the dollar sign. For example, there's `$top`, `$skip`, `$expand` and so on. So if you were to use `curl` to request a URL like this (elided for brevity):
 
 ```shell
 curl \
-  --url "https://services.odata.org/V4/Northwind/Northwind.svc/Products?$top=2"
+  --url "https://.../Northwind.svc/Products?$top=2"
 ```
 
 then you'd get rather more product entities than you expected. Instead of receiving just the first two, you'd get all of them. Why? Because through shell parameter expansion, the `$top` part was expanded into the value of the `top` parameter, which is (most likely to be) empty, making the actual URL passed to `curl` this:
 
 ```url
-https://services.odata.org/V4/Northwind/Northwind.svc/Products?=2"
+https://.../Northwind.svc/Products?=2"
 ```
 
 Nicely, perhaps through [Postel's Law](https://en.wikipedia.org/wiki/Robustness_principle), the Northwind service quietly ignores the random `=2` which is thus sent as the query string part of the URL, and returns the entire products entity set.
