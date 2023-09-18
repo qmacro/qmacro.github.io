@@ -9,8 +9,9 @@ tags:
 ---
 Devtoberfest 2023 kicked off today, with a wealth of live sessions. Read on to find out why I think Devtoberfest is a great way for developers to get themselves ready for SAP TechEd.
 
+![Devtoberfest](/images/2023/09/devtoberfest.gif)
+
 The [Developer Advocates at SAP](https://developers.sap.com/developer-advocates.html) have been busy over the past few weeks putting together the content for our now much anticipated annual event - [Devtoberfest](https://groups.community.sap.com/t5/devtoberfest/gh-p/Devtoberfest). If you don't know what Devtoberfest is, let me explain:
-<br>
 
 - it's a month long open celebration of what makes us developers: coding and collaboration
 - it's deliberately scheduled to take place in the run up to SAP TechEd
@@ -23,9 +24,8 @@ Learning is something we should be doing regularly. It doesn't matter whether th
 Anyway. Sometimes one learns best alone. And other times, it's great to learn together. And that's what Devtoberfest is all about.
 
 So over the next four weeks, I want to encourage you to make time for yourself as a developer, make time to learn, make time for Devtoberfest. Check out the many, many sessions we have for you over on the [Devtoberfest events calendar](https://groups.community.sap.com/t5/devtoberfest/eb-p/devtoberfest-events), focused on five main topics, each of which has a colour code, and each of which falls on the same day each week:
-<br>
 
-* 🟢 Monday: BAP & CAP
+* 🟢 Monday: ABAP & CAP
 * 🟣 Tuesday: SAP Build / Low-Code and No-Code
 * 🔴 Wednesday: Integration
 * 🔵 Thursday: Data, Analytics & AI
