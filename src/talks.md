@@ -3,11 +3,11 @@ title: Talks and workshops
 layout: talks.njk
 ---
 
-<a name="upcoming"></a>
+<a name="past"></a>
 
-# Upcoming talks & workshops
+# Past talks & workshops
 
-(Information on recent [past talks & workshops](#past) is also available).
+Here are some of my talks and workshops from the recent past.
 
 <a name="codejam-cap-hana-cloud-full-stack-apps-budapest"></a>
 
@@ -32,12 +32,6 @@ When: Fri 08 Sep 0930-1530 CEST (UTC+2)
 This SAP CodeJam event is on the topic of the SAP Cloud Application Programming Model (Node.js), and specifically about service integration. It will introduce you to how to find, import and integrate external service definitions into your project, service mocking, remote service access, how destinations and the SAP Cloud SDK are used, and more.
 
 ---
-
-<a name="past"></a>
-
-# Past talks & workshops
-
-Here are some of my talks and workshops from the recent past.
 
 <a name="recap-conf-podium-discussion"></a>
 
