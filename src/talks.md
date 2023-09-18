@@ -9,18 +9,6 @@ layout: talks.njk
 
 Here are some of my talks and workshops from the recent past.
 
-<a name="codejam-cap-hana-cloud-full-stack-apps-budapest"></a>
-
-## Combine SAP Cloud Application Programming Model with SAP HANA Cloud to create full-stack apps (Budapest, HU)
-
-When: Thu 31 Aug 0930-1530 CEST (UTC+2)
-
-[Event Info](https://groups.community.sap.com/t5/sap-codejam/combine-sap-cloud-application-programming-model-with-sap-hana/ev-p/260759)
-
-This SAP CodeJam event is about combining the SAP Cloud Application Programming Model with SAP HANA Cloud to create full-stack applications. In this CodeJam we will learn how to deploy and configure an instance of the SAP HANA Cloud trial, develop a multi-target application using SAP Business Application Studio and the SAP Cloud Application Programming Model, and create a service layer and SAP Fiori UI that also includes SAP HANA native artifacts such as calculation views.
-
----
-
 <a name="service-integration-with-cap-dortmund-de"></a>
 
 ## Service Integration with SAP Cloud Application Programming Model (Dortmund, DE)
@@ -30,6 +18,18 @@ When: Fri 08 Sep 0930-1530 CEST (UTC+2)
 [Event Info](https://groups.community.sap.com/t5/sap-codejam/service-integration-with-sap-cloud-application-programming-model/ev-p/260775)
 
 This SAP CodeJam event is on the topic of the SAP Cloud Application Programming Model (Node.js), and specifically about service integration. It will introduce you to how to find, import and integrate external service definitions into your project, service mocking, remote service access, how destinations and the SAP Cloud SDK are used, and more.
+
+---
+
+<a name="codejam-cap-hana-cloud-full-stack-apps-budapest"></a>
+
+## Combine SAP Cloud Application Programming Model with SAP HANA Cloud to create full-stack apps (Budapest, HU)
+
+When: Thu 31 Aug 0930-1530 CEST (UTC+2)
+
+[Event Info](https://groups.community.sap.com/t5/sap-codejam/combine-sap-cloud-application-programming-model-with-sap-hana/ev-p/260759)
+
+This SAP CodeJam event is about combining the SAP Cloud Application Programming Model with SAP HANA Cloud to create full-stack applications. In this CodeJam we will learn how to deploy and configure an instance of the SAP HANA Cloud trial, develop a multi-target application using SAP Business Application Studio and the SAP Cloud Application Programming Model, and create a service layer and SAP Fiori UI that also includes SAP HANA native artifacts such as calculation views.
 
 ---
 
