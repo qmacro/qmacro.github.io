@@ -28,7 +28,7 @@ So over the next four weeks, I want to encourage you to make time for yourself a
 * 🟢 Monday: ABAP & CAP
 * 🟣 Tuesday: SAP Build / Low-Code and No-Code
 * 🔴 Wednesday: Integration
-* 🔵 Thursday: Data, Analytics & AI
+* 🔵 Thursday: [Data & Analytics](https://blogs.sap.com/2023/09/12/data-analytics-sessions-at-devtoberfest-2023/) & [AI](https://blogs.sap.com/2023/09/18/ai-sessions-at-devtoberfest-2023/)
 * 🟠 Friday: Frontend
 
 It won't surprise you to realise that these core topics are also the backbone of any great SAP TechEd event too. And that's no coincidence. We want you to be prepared for SAP TechEd by being up to date, with your learning neurons revitalised and ready for more action, and hungry for more knowledge.
