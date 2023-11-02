@@ -6,7 +6,11 @@ tags:
   - sapteched
   - nodejs
 ---
-If you're at [SAP TechEd 2023 in Bengaluru, India](https://www.sap.com/india/events/teched.html) you may have seen a little Easter Egg in the form of some Node.js code. If you've seen it and are curious about it, and want to execute it but don't know how, there are plenty of ways you can do it on the Web. You don't need to install Node.js on your machine if you don't want to.
+If you're at [SAP TechEd 2023 in Bengaluru, India](https://www.sap.com/india/events/teched.html) you may have seen a little Easter Egg in the form of some Node.js code.
+
+![The Easter Egg poster](/images/2023/11/easter-egg-poster.png)
+
+If you've seen it and are curious about it, and want to execute it but don't know how, there are plenty of ways you can do it on the Web. You don't need to install Node.js on your machine if you don't want to.
 
 It's important to realise that while Node.js is JavaScript, it comes with more libraries and features relating to the runtime context that it provides. Think of it as "JavaScript++". So you can't run the Easter Egg code in, say, the Chrome Developer Tools console, for example.
 
@@ -22,4 +26,4 @@ And of course, it almost goes without saying that you can run it in a Dev Space 
 
 ![Easter Egg in SAP BAS](/images/2023/11/easter-egg-in-bas.png)
 
-So what are you waiting for? Stare at the code, try and work out what it's doing, what it emits, and if you get stuck, run it in one of these Web-based environments and see where it leads you.
+So what are you waiting for? [Stare at the code](https://qmacro.org/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#initialrecognition), try and work out what it's doing, what it emits, and if you get stuck, run it in one of these Web-based environments and see where it leads you. And have fun!
