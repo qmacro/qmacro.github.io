@@ -16,11 +16,11 @@ It's important to realise that while Node.js is JavaScript, it comes with more l
 
 But you can run it on the Web. Here are a few places where this is possible:
 
-* [replit](https://replit.com/) lets you "build software collaboratively with the power of AI, on any device, without spending a second on setup".
+[replit](https://replit.com/) lets you "build software collaboratively with the power of AI, on any device, without spending a second on setup".
 
-* [CodeSandbox](https://codesandbox.io/) "keeps you in flow by giving you cloud development environments that resume in 1 second".
+[CodeSandbox](https://codesandbox.io/) "keeps you in flow by giving you cloud development environments that resume in 1 second".
 
-* [RunKit](https://runkit.com/) "is a node playground in your browser". 
+[RunKit](https://runkit.com/) "is a node playground in your browser". 
 
 And of course, it almost goes without saying that you can run it in a Dev Space in the [SAP Business Application Studio](https://www.sap.com/india/products/technology-platform/business-application-studio.html). 
 
