@@ -1,9 +1,10 @@
 ---
 layout: post
 title: Let's learn to "Code at Home"
+permalink: /blog/posts/2020/03/24/code-at-home/
 ---
 
-_This post provides information on the simple Code at Home initiative - what it is and what you need to join in. The canonical URL for this post is [bit.ly/code-at-home](https://bit.ly/code-at-home)_.
+_This post provides information on the simple Code at Home initiative - what it is and what you need to join in._
 
 - Episodes on Mondays and Fridays at 15:30 UK time.
 - Last episode in this first series will be Ep.20 on Mon 18 May.
@@ -19,7 +20,7 @@ It's super important for us to stay at home right now, but that doesn't mean tha
 
 First, a bit about who I am.
 
-<image src="https://qmacro.org/content/images/DJA-head-small.jpg" align="right" />
+<image src="https://qmacro.org/images/DJA-head-small.jpg" align="right" />
 
 My name's DJ Adams and I live in Woodhouses, Failsworth, in Manchester. I am proud to work for SAP as a [developer advocate](https://community.sap.com/influencers/?program=devadvocates), and I feel supported by them in this endeavour. I have a short bio page here: [qmacro.org/about](https://qmacro.org/about). I've been involved with teaching kids to code for a good while now, and you can read more about that [down below](#moreinfo).
 
@@ -96,6 +97,6 @@ Head on over to the channel on YouTube, get set up for the first one and be read
 
 If you have any questions, please reach out to me on Twitter (my handle is [@qmacro](https://twitter.com/qmacro)) where I'd be more than happy to try and answer them.
 
-Also, bookmark this blog post (or you can use the short link [bit.ly/code-at-home](https://bit.ly/code-at-home)), to be able to come back to it at a later date, in case there are updates I have added, with extra information, a change in schedule, things like that.
+Also, bookmark this blog post to be able to come back to it at a later date, in case there are updates I have added, with extra information, a change in schedule, things like that.
 
 Please also wish me luck - while I've taught kids to code in many contexts, and I've live streamed in my professional life, I've never combined the two. I want this to be helpful in these trying times, and for that I will need your help too.Thanks!
