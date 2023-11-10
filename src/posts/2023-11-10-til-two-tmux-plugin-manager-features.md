@@ -116,4 +116,6 @@ TMUX environment reloaded.
 Done, press ESCAPE to continue.
 ```
 
+> The removal of this plugin was just to illustrate the mechanism; I've just been looking into this plugin and I'll be using it as it's great - especially the extremely comprehensive [README](https://github.com/christoomey/vim-tmux-navigator/blob/master/README.md)!
+
 That's neat. I'll be embracing TPM from now on.
