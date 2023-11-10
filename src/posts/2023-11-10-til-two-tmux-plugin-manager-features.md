@@ -8,7 +8,7 @@ tags:
 ---
 I'm revisiting my working environment setup and configuration, which comprises, at its core, Bash, (Neo)vim and Tmux. This is essentially my IDE, or, to use a term I learned from [TJ DeVries](https://github.com/tjdevries), my [Personalised Development Environment](https://www.youtube.com/watch?v=QMVIJhC9Veg) (PDE).
 
-Anyway, while I've used Tmux for a long time, I've never really used a plugin manager, so this week I took a look at [Tmux Plugin Manager](https://github.com/tmux-plugins/tpm). It worked really nicely out of the box, but there were a couple of things I wanted to sort out for my particular setup.
+Anyway, while I've used Tmux for a long time, I've never really used a plugin manager, so this week I took a look at [Tmux Plugin Manager](https://github.com/tmux-plugins/tpm) (TPM). It worked really nicely out of the box, but there were a couple of things I wanted to sort out for my particular setup.
 
 The short video [Tmux has forever changed the way I write code](https://www.youtube.com/watch?v=DzNmUNvnB04) has a nice overview of Tmux configuration, including the use of plugins with TPM, which I'll use here as an example. The relevant configuration in `tmux.conf` looks like this, defining three plugins (well, two plus TPM itself):
 
