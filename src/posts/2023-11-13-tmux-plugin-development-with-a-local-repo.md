@@ -83,4 +83,4 @@ Done, press ESCAPE to continue.
 
 Excellent!
 
-This is also nicely summarised in [How to use local filesystem remotes with git](https://thehorrors.org.uk/snippets/git-local-filesystem-remotes/) which I found helpful.
+Using local filesystem based remotes is also nicely summarised in [How to use local filesystem remotes with git](https://thehorrors.org.uk/snippets/git-local-filesystem-remotes/) which I found helpful.
