@@ -84,3 +84,5 @@ Done, press ESCAPE to continue.
 Excellent!
 
 Using local filesystem based remotes is also nicely summarised in [How to use local filesystem remotes with git](https://thehorrors.org.uk/snippets/git-local-filesystem-remotes/) which I found helpful.
+
+Note: You can also just clone the repo from the directory it's in, but it feels nicer and more organised to bridge this via a "real" git remote connection. Thanks to my son Joseph for pointing this out :-)
