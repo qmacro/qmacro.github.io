@@ -28,7 +28,7 @@ The attraction of the federated nature of Identica is here again, and much stron
 
 For me, Twitter's API story has been complex and beset with change. At heart I'm a tinkerer, a builder, a hacker (in the proper sense of the word), a developer. So an API to a platform I use is an important aspect that makes that platform more attractive to me. Perhaps worse than a platform that has no API to begin with is a platform that had a great API ... which then eventually is made unavailable for most folks.
 
-That's what's happened with Twitter. That not only kills off any cool integrations and hacks, but it also suppresses any thoughts or interest in building more stuff too. As a developer, I feel that my content and interaction on the platform is no longer wanted. I'm fine with that, it's not my platform. But also, it also means I don't have to stay.
+That's what's happened with Twitter. That not only kills off any cool integrations and hacks, but it also suppresses any thoughts or interest in building more stuff too. As a developer, I feel that my content and interaction on the platform is no longer wanted. I'm fine with that, it's not my platform. But it also means I don't have to stay.
 
 > One example of a very simple integration that I use already on Mastodon is a mechanism I use to toot notes on, and the URLs for, articles I read and find interesting. Here are a couple of examples, [on a post about an e-reader setup](https://hachyderm.io/@qmacro/111222914866332574) and [on tools and how we maintain them](https://hachyderm.io/@qmacro/111573647402350578).
 >
