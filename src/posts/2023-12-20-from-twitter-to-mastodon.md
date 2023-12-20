@@ -8,13 +8,13 @@ tags:
   - microblogging
   - fediverse
 ---
-I'm moving off X (Twitter) at the end of this year. I've been thinking about doing it for a while, and while it's fairly arbitrary, I decided that the end of 2023 would be the end of my activities on that platform. 
+I'm moving off X (Twitter) at the end of this year. I've been thinking about doing it for some time, and while it's fairly arbitrary, I decided that the end of 2023 would be the end of my activities on that platform. 
 
 There are a few reasons why, and some folks may be wondering. So here are those reasons, briefly.
 
 ## Centralised vs federated
 
-I have been around a good while, taking my first nervous but excited steps onto the Internet back in the days of dial-up, via Compulink Internet Exchange (aka [CIX](https://en.wikipedia.org/wiki/CIX_(website)), a very early Internet Service Provider in the UK). I enjoyed access to email, newsgroups (on Usenet) and various resources made available via Gopher and Wais. Those were the days (late 1980s / early 1990s) before the Web, and so I've also seen the Web from its infancy, in all its various guises as it's transitioned to where we are now, which consists of -- for many folks -- a small number of central services owned by very large organisations.
+I have been around a long time, taking my first nervous but excited steps onto the Internet back in the days of dial-up, via Compulink Internet Exchange (aka [CIX](https://en.wikipedia.org/wiki/CIX_(website)), a very early Internet Service Provider in the UK). I enjoyed access to email, newsgroups (on Usenet) and various resources made available via Gopher and Wais. Those were the days (late 1980s / early 1990s) before the Web, and so I've also seen the Web from its infancy, in all its various guises as it's transitioned to where we are now, which consists of -- for many folks -- a small number of central services owned by very large organisations.
 
 Back in the day, we ran our own websites, maintained and posted on own weblogs, grew ad hoc federation via simple webrings, [linkback](https://en.wikipedia.org/wiki/Linkback) mechanisms, RSS (and latterly Atom) feeds and more. They were happier, simpler times, bursting with potential, and times where we had more ownership, control & responsibility for our own content and how it connected to other content.
 
