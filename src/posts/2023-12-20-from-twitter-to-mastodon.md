@@ -30,7 +30,7 @@ For me, Twitter's API story has been complex and beset with change. At heart I'm
 
 That's what's happened with Twitter. That not only kills off any cool integrations and hacks, but it also suppresses any thoughts or interest in building more stuff too. As a developer, I feel that my content and interaction on the platform is no longer wanted. I'm fine with that, it's not my platform. But it also means I don't have to stay.
 
-> One example of a very simple integration that I use already on Mastodon is a mechanism I use to toot notes on, and the URLs for, articles I read and find interesting. Here are a couple of examples, [on a post about an e-reader setup](https://hachyderm.io/@qmacro/111222914866332574) and [on tools and how we maintain them](https://hachyderm.io/@qmacro/111573647402350578).
+> One example of a very simple integration that I use already on Mastodon is a mechanism that toots notes on, and the URLs for, articles I read and find interesting. Here are a couple of examples, [on a post about an e-reader setup](https://hachyderm.io/@qmacro/111222914866332574) and [on tools and how we maintain them](https://hachyderm.io/@qmacro/111573647402350578).
 >
 > I used to have that running on Twitter, but because of the suppression of innovation and the removal of access to the API, that doesn't work any more on that platform. If you're interested in seeing this simple mechanism, see [the GitHub Actions workflows in my URL notes repository](https://github.com/qmacro-org/url-notes/tree/main/.github/workflows).
 
