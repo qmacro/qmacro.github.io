@@ -52,3 +52,5 @@ Perhaps that's an unavoidable side effect of Twitter being a single, gigantic, c
 ## Summary
 
 So there you have it. I wasn't sure what I was going to write in this post; I just opened up my editor and started typing. And it seems that on the whole, the reasons for moving are largely positive rather than negative. I think that's a good basis for the decision.
+
+By the way, if you're interested in getting started with Mastodon, I can recommend [Fedi.Tips](https://fedi.tips/), "_an unofficial guide to Mastodon and the Fediverse_".
