@@ -6,6 +6,7 @@ tags:
   - twitter
   - mastodon
   - microblogging
+  - fediverse
 ---
 I'm moving off X (Twitter) at the end of this year. I've been thinking about doing it for a while, and while it's fairly arbitrary, I decided that the end of 2023 would be the end of my activities on that platform. 
 
