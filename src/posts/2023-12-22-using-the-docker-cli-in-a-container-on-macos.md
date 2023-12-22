@@ -51,7 +51,7 @@ Here's what this solution looks like.
 |     |        |                                  |     |
 |     |        v                                  |     |
 |     |     +-----socat-+       +-------dev-+     |     |
-|     |     |      3275 |<------|           |     |     |
+|     |     |      3275 |-------|           |     |     |
 |     |     |           |       |           |     |     |
 |     |     |   socat   |       | tmux/bash |     |     |
 |     |     |           |       |           |     |     |
