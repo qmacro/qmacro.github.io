@@ -221,13 +221,13 @@ This message shows that your installation appears to be working ...
 Not only that, but this `hello-world` experiment also lets me confirm one more thing - that containers created don't automatically somehow run in the "devnet" network, and indeed they don't (it wouldn't make sense if they did, but it's always nice to check):
 
 ```shell
-{% raw %}
 ; docker container ls \
   --all \
-  --format '{{.Names}} ({{.Image}}) {{.Status}}'
-dev (newdev) Up 20 minutes
-socat (alpine/socat) Up 20 minutes
-priceless_cori (hello-world) Exited (0) 3 minutes ago
+  --format json \
+  | jq -r '"\(.Names) (\(.Image))"'
+dev (newdev)
+socat (alpine/socat)
+priceless_cori (hello-world)
 ; docker inspect dev socat priceless_cori \
   | jq 'map({(.Config.Image):.NetworkSettings.Networks|keys})|add'
 {
@@ -241,7 +241,6 @@ priceless_cori (hello-world) Exited (0) 3 minutes ago
     "bridge"
   ]
 }
-{% endraw %}
 ```
 
 ## Compose all the things
