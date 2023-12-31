@@ -31,7 +31,7 @@ note 19466
 
 Once you’ve got these set up, it’s time to install Greasemonkey. Visit the Greasemonkey homepage and follow the link to install it (you might have to add the Greasemonkey site to the list of sites allowed to install software). You’ll have to restart Firefox to have this extension take effect.
 
-Now it’s time to install the Greasemonkey script that I wrote, `OssNoteFix`. Go to `http://www.pipetree.com/~dj/2005/05/OssNoteFix/ossnotefix.user.js` (no longer available, see below instead). Because of the ending (.user.js), Greasemonkey recognises it and gives you the option of installing it: Tools-\>Install User Script (see thescreenshot.)
+Now it’s time to install the Greasemonkey script that I wrote, `OssNoteFix`. Go to `http://www.pipetree.com/~dj/2005/05/OssNoteFix/ossnotefix.user.js` (no longer available, see below instead). Because of the ending (.user.js), Greasemonkey recognises it and gives you the option of installing it: Tools-\>Install User Script.
 
 Once you’ve got it installed, visit an OSS note page:
 
@@ -49,9 +49,7 @@ Hurrah!
 
 ## Watch the Screencast
 
-I put together a screencast which demonstrates the creation of the OSS note bookmark, a visit to an OSS note page before OssNoteFix, the installation of the OssNoteFix user script, and the visit to an OSS note page after the installation. I’d already set up the SSO before I started recording, as that would have taken too long (and would be too boring to watch!) (Top tip: the screencast is at 800×600, so hit F11 to get fullscreen mode in your browser. Also, it’s a 3 Meg file, so please be patient while it comes down the pipe!).
-
-(Screencast no longer available)
+I put together [a screencast](/images/2005/05/ossnotefix.gif) which demonstrates the creation of the OSS note bookmark, a visit to an OSS note page before OssNoteFix, the installation of the OssNoteFix user script, and the visit to an OSS note page after the installation. I’d already set up the SSO before I started recording, as that would have taken too long (and would be too boring to watch!) (Top tip: the screencast is at 800×600, so hit F11 to get fullscreen mode in your browser. Also, it’s a 3 Meg file, so please be patient while it comes down the pipe!).
 
 ## Caveat Emptor
 
