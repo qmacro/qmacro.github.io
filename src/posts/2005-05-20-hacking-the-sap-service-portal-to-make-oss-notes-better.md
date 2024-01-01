@@ -17,7 +17,7 @@ The other day I decided to stop going on about how painful using OSS notes on th
 
 ## Enter Greasemonkey
 
-Greasemonkey, to quote Mark Pilgrim in his very useful "Dive Into Greasemonkey" online book, "is a Firefox extension that allows you to write scripts that alter the web pages you visit. You can use it to make a web site more readable or more usable. You can fix rendering bugs that the site owner can’t be bothered to fix themselves". The extension doesn’t do anything to web pages by itself, it’s the scripts that manipulate the pages once they’re loaded into the browser. (And yes, it’s for Firefox, a modern, standards-compliant browser. If you’re still using Internet Explorer, shame on you.)
+Greasemonkey, to quote [Mark Pilgrim](https://web.archive.org/web/20060314091206/http://www.diveintomark.org/) in his very useful "[Dive Into Greasemonkey](https://web.archive.org/web/20060315035242/http://diveintogreasemonkey.org/)" online book, "is a Firefox extension that allows you to write scripts that alter the web pages you visit. You can use it to make a web site more readable or more usable. You can fix rendering bugs that the site owner can’t be bothered to fix themselves". The extension doesn’t do anything to web pages by itself, it’s the scripts that manipulate the pages once they’re loaded into the browser. (And yes, it’s for Firefox, a modern, standards-compliant browser. If you’re still using Internet Explorer, shame on you.)
 
 ## Laying The Groundwork
 
