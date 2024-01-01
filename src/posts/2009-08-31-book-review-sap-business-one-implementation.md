@@ -1,7 +1,8 @@
 ---
 layout: post
-title: 'Book review: "SAP Business ONE Implementation"'
+title: Book review  - SAP Business ONE Implementation
 tags:
+- sapcommunity
 - businessone
 - review
 - sap
@@ -17,5 +18,3 @@ I certainly haven’t been disappointed. “SAP Business ONE Implementation” i
 The book has fewer than 300 pages. A book that addresses the areas that this book does could easily be twice that size. But that’s where this book does well. It’s an approachable, undaunting and really rather good introduction to running your business with SAP Business ONE. The writing style is very easygoing, and informative without being patronising. There are plenty of examples, and all the screenshots you’d need. It doesn’t try to be a reference book. It does try to be a sort of hybrid guide to solving the business *and* technical challenges of running a small or medium sized company using SAP software, and I would say that it succeeds.
 
 If you’re a small business owner considering stepping up and taking control of your business with SAP Business ONE, if you’ve already got SAP Business ONE and want to explore more application features at a high level, or if even if (like me) you’re an SAP hacker wanting to learn about what SAP Business ONE can do, then you could do a lot worse than grab a copy of this book.
-
-
