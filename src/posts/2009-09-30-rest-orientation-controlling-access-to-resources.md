@@ -51,7 +51,7 @@ You can also specify, in the Service Data tab, a value for the SAP Authorisation
 
 The value specified here is checked against authorisation object S_ICF, in the ICF_VALUE field, along with 'SERVICE' in the ICF_FIELD field.
 
-```text
+```swift
 [O] S_ICF
  |
  +-- ICF_FIELD
@@ -86,7 +86,7 @@ Why re-invent an authorisation concept, when we have such a good one as standard
 
 So we'll create an authorisation object, YRESTAUTH, with two fields - one for the method, and one for the (relative) resource. This is what it looks like:
 
-```text
+```swift
 [O] YRESTAUTH
  |
  +-- YMETHOD HTTP method
@@ -107,7 +107,7 @@ As you can see, we have the main coffeeshop handler, and before that in the stac
 
 Y_AUTH is a handler class just like any other HTTP handler class, and implements interface IF_HTTP_EXTENSION. It starts out with a few data definitions, and identifies the resource specified in the request:
 
-```text
+```swift
 method IF_HTTP_EXTENSION~HANDLE_REQUEST.
   data:
       l_method     type string
@@ -125,7 +125,7 @@ method IF_HTTP_EXTENSION~HANDLE_REQUEST.
 
 Then it performs the Level 2 access check - is the user authorised generally for the resource?
 
-```text
+```swift
 * Level 2 check - general access to that resource?
   authority-check object 'YRESTAUTH'
     id 'YMETHOD'   dummy
@@ -140,7 +140,7 @@ If the authority check failed for that resource generally, we return a status 40
 
 However, if the authority check succeeds, and we pass Level 2, it's time to check the specific combination of HTTP method and resource - the verb and the noun. We do this with a call to a simple method is_method_allowed() which takes the resource and method from the request, and returns a boolean, saying whether or not the method is allowed, plus a list of the methods that are actually allowed. Remember, in the HTTP response, we must return an Allow: header listing those methods if we're going to send a 405.
 
-```text
+```swift
 * Level 3 check - method-specific access to that resource?
   l_method =  server->request->get_header_field( '~request_method' ).
   translate l_method to upper case.
@@ -164,7 +164,7 @@ So we send a 405 with an Allow: header if the user doesn't have authorisation fo
 
 Finally, if we've successfully passed the Levels 2 and 3 checks, we can let go and have the ICF invoke the main handler for this ICF node - Y_DISP_COFFEESHOP. In order to make sure this happens, we tell the ICF, through the flow control variable IF_HTTP_EXTENSION~FLOW_RC, that while our execution has been OK, we still need to have a further handler executed to satisfy the request completely:
 
-```text
+```swift
 * Otherwise, we're golden, but make sure another handler executes
   else.
     if_http_extension~flow_rc = if_http_extension~co_flow_ok_others_mand.
