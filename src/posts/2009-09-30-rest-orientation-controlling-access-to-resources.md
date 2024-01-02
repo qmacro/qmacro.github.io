@@ -21,7 +21,7 @@ As an example, here's a few of the channel-related resources that are relevant i
 
 |Resource|Description|Method|Action|
 |-|-|-|-|
-|/qmacro/coffeeshop/|Homepage|GET|Returns the Coffeeshop ‘homepage'|
+|/qmacro/coffeeshop/|Homepage|GET|Returns the Coffeeshop 'homepage'|
 |/qmacro/coffeeshop/channel/|Channel container|GET|Return list of channels|
 |POST|Create new channel|
 |/qmacro/coffeeshop/channel/123/|Channel|GET|Return information about the channel|
@@ -43,13 +43,13 @@ When you define a node in the ICF tree, you can specify access control relating 
 
 (image lost in early SAP community platform migration)
 
-This is great first step. It means that we can control, on a high level, who gets access generally, and who doesn't. Let's call this ‘Level 1 access'.
+This is great first step. It means that we can control, on a high level, who gets access generally, and who doesn't. Let's call this 'Level 1 access'.
 
-You can also specify, in the Service Data tab, a value for the SAP Authorisation field (‘SAP Authoriz.'):
+You can also specify, in the Service Data tab, a value for the SAP Authorisation field ('SAP Authoriz.'):
 
 (image lost in early SAP community platform migration)
 
-The value specified here is checked against authorisation object S_ICF, in the ICF_VALUE field, along with ‘SERVICE' in the ICF_FIELD field.
+The value specified here is checked against authorisation object S_ICF, in the ICF_VALUE field, along with 'SERVICE' in the ICF_FIELD field.
 
 ```text
 [O] S_ICF
@@ -58,9 +58,9 @@ The value specified here is checked against authorisation object S_ICF, in the I
  +-- ICF_VALUE
 ```
 
-This is clearly a ‘service orientated' approach, and is at best a very blunt mechanism with which to control access.
+This is clearly a 'service orientated' approach, and is at best a very blunt mechanism with which to control access.
 
-As well as being blunt, it is also unfortunately violent. If the user that's been authenticated does have an authorisation with appropriate values for this authorisation object, then the authorisation check passes, and nothing more is said. But if the authenticated user doesn't have authorisation, the ICF returns HTTP status code ‘500', which implies an Internal Server Error. Extreme, and semantically incorrect — there hasn't been an error, the user just doesn't have authorisation. So, violent, and rather brutal. Then again, service orientation was never about elegance :-).
+As well as being blunt, it is also unfortunately violent. If the user that's been authenticated does have an authorisation with appropriate values for this authorisation object, then the authorisation check passes, and nothing more is said. But if the authenticated user doesn't have authorisation, the ICF returns HTTP status code '500', which implies an Internal Server Error. Extreme, and semantically incorrect — there hasn't been an error, the user just doesn't have authorisation. So, violent, and rather brutal. Then again, service orientation was never about elegance :-).
 
 ## What's our approach, then?
 
@@ -131,7 +131,7 @@ Then it performs the Level 2 access check – is the user authorised generally f
     id 'YMETHOD'   dummy
     id 'YRESOURCE' field l_resource_c.
   if sy-subrc <> 0.
-    server->response->set_status( code = ‘403' reason = ‘FORBIDDEN – NO AUTH FOR RESOURCE' ).
+    server->response->set_status( code = '403' reason = 'FORBIDDEN – NO AUTH FOR RESOURCE' ).
     exit.
   endif.
 ```
@@ -155,9 +155,9 @@ However, if the authority check succeeds, and we pass Level 2, it's time to chec
 * If not allowed, need to send back a response
   if l_is_allowed eq abap_false.
 
-    concatenate lines of lt_allowed into l_allowed separated by ‘,'.
-    server->response->set_status( code = ‘405' reason = ‘METHOD NOT ALLOWED FOR RESOURCE' ).
-    server->response->set_header_field( name = ‘Allow' value = l_allowed ).
+    concatenate lines of lt_allowed into l_allowed separated by ','.
+    server->response->set_status( code = '405' reason = 'METHOD NOT ALLOWED FOR RESOURCE' ).
+    server->response->set_header_field( name = 'Allow' value = l_allowed ).
 ```
 
 So we send a 405 with an Allow: header if the user doesn't have authorisation for that specific combination of HTTP method and resource. (The is_method_allowed() works by taking a given list of HTTP methods, and authority-checking each one in combination with the resource, noting which were allowed, and which weren't.)
@@ -184,7 +184,7 @@ In the first call, the wrong password is specified in authentication, so the sta
 
 In the second call, the user is authenticated ok, but doesn't have access generally to the /qmacro/coffeeshop/ resource, hence the 403 status. This is Level 2.
 
-In the third call, we're trying to make a POST request to a specific channel resource. While we might have GET access to this resource, we don't specifically have POST access, so the status in the HTTP response is 405. In addition, a header like this: “Allow: GET” would have been returned in the response. This is Level 3.
+In the third call, we're trying to make a POST request to a specific channel resource. While we might have GET access to this resource, we don't specifically have POST access, so the status in the HTTP response is 405. In addition, a header like this: "Allow: GET" would have been returned in the response. This is Level 3.
 
 I hope this shows that when implementing a REST approach to integration, you can control access to your resources in a very granular way, and respond in a symantically appropriate way, using HTTP as designed – as an application protocol.
 
