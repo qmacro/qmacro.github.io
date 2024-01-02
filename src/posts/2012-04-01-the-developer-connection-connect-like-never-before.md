@@ -28,4 +28,4 @@ First, there’s the amazing community called the [SAP Community Network](http:/
 
 Whatever the reason, it’s a great sign that the future looks exciting for SAP development as a whole. Connections, collaboration and cooperation is returning. The Developer Connection is here again.
 
-
+[Reposted on SAP Community](https://blogs.sap.com/2012/04/01/the-developer-connection-connect-like-never-before/)
