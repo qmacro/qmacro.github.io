@@ -1,6 +1,6 @@
 ---
 layout: post
-title: REST-orientation - Controlling access to resources
+title: REST orientation - Controlling access to resources
 date: 2009-09-30
 tags:
   - sapcommunity
