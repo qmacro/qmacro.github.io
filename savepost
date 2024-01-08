@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+die() {
+
+    >&2 echo "$*" && exit 1
+
+}
+
+gettitle() {
+
+    local url="$1"
+    curl -s -L "$url" \
+        | grep -P -o '(?<=<title>).+(?= \| SAP Blogs)' \
+        | sed 's/:/ -/g'
+
+}
+
+main() {
+
+    local url="$1"
+    local title="$(gettitle "$url")"
+    
+    IFS=/ read -r -a urlparts <<< "$url"
+
+    local yyyy="${urlparts[3]}"
+    local mm="${urlparts[4]}"
+    local dd="${urlparts[5]}"
+    local slug="${urlparts[6]}"
+
+    local filename="$(dirname "$0")/src/posts/$yyyy-$mm-$dd-$slug.md"
+
+    local content=$(cat)
+
+    cat << EOTEMPLATE > "$filename"
+---
+layout: post
+title: $title
+date: $yyyy-$mm-$dd
+tags:
+  - sapcommunity
+---
+$content
+
+[Originally published on SAP Community]($url)
+EOTEMPLATE
+
+    echo "$filename"
+    exec nvim -c ":normal 7j" "$filename"
+
+}
+
+[[ $1 =~ ^https://blogs.sap.com ]] || die "Specify blogs.sap.com URL"
+main "$1"
