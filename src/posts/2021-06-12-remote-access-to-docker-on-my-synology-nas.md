@@ -168,12 +168,14 @@ SSH and its implementation, on client and server, is extremely accomplished, whi
 
 Basically, setting the `PATH` to include `/usr/local/bin`, via this support for user environments, was exactly what I needed. What's more, I was not having to "hack" anything on the NAS (such as copying or symbolic-linking `docker` to another place so that it would be accessible) that I might regret later.
 
-First, though, I needed to turn on user environment support on the SSH daemon service on the NAS. For this, I uncommented `PermitUserEnvironment` in `/etc/ssh/sshd_config` and set the value to `yes`, with this result:
+First, though, I needed to turn on user environment support on the SSH daemon service on the NAS. For this, I uncommented `PermitUserEnvironment` in `/etc/ssh/sshd_config` and set the value to `PATH`, with this result:
 
 ```
 administrator@ds1621plus:~$ sudo grep PermitUserEnvironment /etc/ssh/sshd_config
-PermitUserEnvironment yes
+PermitUserEnvironment PATH
 ```
+
+> I'd originally set this value to `all` but since learned that you can restrict the setting to the environment variable(s) that you want, i.e. `PATH` in this case.
 
 I then restarted the NAS; I could have messed around finding a neater way just to restart the SSH daemon, but I'd read about some other gotchas doing this, and I was the only one using the NAS at the time, so I went for it.
 
