@@ -1,6 +1,6 @@
 ---
 layout: post
-title: a simple jq REPL with tmux, bash, vim and entr
+title: A simple jq REPL with tmux, bash, vim and entr
 date: 2024-01-09
 tags:
   - jq
