@@ -378,7 +378,7 @@ Here's an example of the creation of a Dev Space (choosing the "Full Stack Cloud
 
 ![Starting a new Dev Space for CAP development](/images/2024/01/bas-clone-repo.gif)
 
-Interestingly, since autumn last year, the underlying tech for Dev Spaces in BAS has been [Code - OSS](https://github.com/microsoft/vscode), the open source flavour of VS Code. This is why the three approaches (VS Code locally, GitHub Codespaces remotely, and now here with a BAS Dev Space) all look the same. That's because effectively they are the same, underneath, from an IDE perspective.
+Interestingly, [since autumn last year](https://blogs.sap.com/2022/11/15/sap-business-application-studio-now-powered-by-code-oss/), the underlying tech for Dev Spaces in BAS has been [Code - OSS](https://github.com/microsoft/vscode), the open source flavour of VS Code. This is why the three approaches (VS Code locally, GitHub Codespaces remotely, and now here with a BAS Dev Space) all look the same. That's because effectively they are the same, underneath, from an IDE perspective.
 
 So here again is another way to develop CAP apps in what is effectively a container. The actual underlying mechanism may be slightly different, but the effect is the same, in that you don't have to install anything locally on your host machine.
 
