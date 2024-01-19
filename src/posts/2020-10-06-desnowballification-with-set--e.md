@@ -11,6 +11,7 @@ There comes a time when you move from just hacking lines of shell script togethe
 
 In a similar way to the `-w` flag for Perl scripts, or even perhaps the [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode) turned on in JavaScript files with `'use strict'`, there are flags that you can use for Bash scripts. A few weeks ago I read [Writing Robust Bash Shell Scripts](https://www.davidpashley.com/articles/writing-robust-shell-scripts/) by David Pashley, and it taught me about a couple of flags:
 
+|Short form|Long form|Description|
 |-|-|-|
 |`set -e`|`set -o errexit`|exit when a command fails|
 |`set -u`|`set -o nounset`|exit when an undeclared variable is used|
