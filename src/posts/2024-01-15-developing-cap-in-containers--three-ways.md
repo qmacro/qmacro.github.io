@@ -399,6 +399,10 @@ Visually it's almost the same too, except for the fact that the after the remote
 
 \* The generated name of the Codespace is "redesigned potato".
 
+Of course, you can also start the connection from within VS Code, i.e. reach out to the remote container (Codespace) using the extension. Here's a quick demo of that in action:
+
+![Initiating a connection to a GitHub Codespace from VS Code](/images/2024/01/vscode-connect-to-codespace.gif)
+
 ## Wrapping up
 
 All in all, the possibilities of container based development are, in my humble opinion, pretty excellent. I am also keeping a close eye on the [containers.dev initiative](https://containers.dev/) plus various related projects, such as [DevPod](https://devpod.sh/), which I learned about in the [Open Source Dev Containers with DevPod](https://www.youtube.com/watch?v=rvu2b0PiTR4) live stream episode on Bret Fisher's YouTube channel.
