@@ -61,9 +61,9 @@ Perhaps a (massively simplified) diagram would help?
 +------------------------------------------------------+
 | DJ Adams                                             |
 |                                                      |
-| 15 Jan Developing CAP in containers - three ways  <---- post
-| 09 Jan Battlestation 2024                         <---- post
-| 09 Jan A simple jq repl with tmux, bash, ...      <---- post
+| 15 Jan Developing CAP in containers - three ways  ---- post
+| 09 Jan Battlestation 2024                         ---- post
+| 09 Jan A simple jq repl with tmux, bash, ...      ---- post
 |                                                      |
 | ...                                                  |
 |                                                      |
