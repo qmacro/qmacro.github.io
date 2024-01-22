@@ -50,7 +50,7 @@ To take this blog as an example, the Web log (_blog_) itself, containing all _po
 
 There's a clue in the path info part of each of these URLs.
 
-In addition, the machine readable format of this blog, which can be used in "Feed Readers" to subscribe to the blog, and automatically receive new posts, is in Atom format and is available at <http://localhost:8000/feed.xml>.
+In addition, the machine readable format of this blog, which can be used in "Feed Readers" to subscribe to the blog, and automatically receive new posts, is in Atom format and is available at <https://qmacro.org/feed.xml>.
 
 Perhaps a (massively simplified) diagram would help?
 
