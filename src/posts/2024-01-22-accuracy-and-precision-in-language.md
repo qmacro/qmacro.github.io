@@ -32,9 +32,9 @@ So it is driven by this passion that I cast my eye with an attention to detail o
 
 When the Web was growing up, a large part of the social infrastructure that emerged was a vast and loose collection of Web sites where folks published their thoughts. Updates. Articles. Short and long form prose.
 
-In doing this, they were logging their thoughts as time went by. For any given person doing this, you could go to read what they had to say, and it was usually presented in reverse chronological order. Moreover, you could subscribe to what they had to say via RSS (and latterly Atom) feeds, to have their updates come to you and presented in a reader.
+In doing this, they were logging their thoughts as time went by. For any given person doing this, you could go to read what they had to say, and it was usually presented in reverse chronological order. Moreover, you could subscribe to what they had to say via RSS (and latterly Atom) feeds, to have their updates come to you and presented in a so-called feed reader.
 
-These Web sites where folks logged their thoughts became known as _Web logs_. Then _Web logs_ soon became _Weblog_ in a sort of (but not quite) portmanteau. Shortly after, _Weblog_ was often shortened to _'blog_, with a leading apostrophe to indicate letters had been omitted.
+These Web sites where folks logged their thoughts became known as _Web logs_. Then _Web log_ soon became _Weblog_ in a sort of (but not quite) portmanteau. Shortly after, _Weblog_ was often shortened to _'blog_, with a leading apostrophe to indicate letters had been omitted.
 
 And over time, just as it happened to _telephone_ -\> _'phone_ -\> _phone_ in the past, for example, even the leading apostrophe was dropped, resulting in just _blog_.
 
@@ -48,9 +48,9 @@ To take this blog as an example, the Web log (_blog_) itself, containing all _po
 * <https://qmacro.org/blog/posts/2024/01/09/battlestation-2024/>
 * <https://qmacro.org/blog/posts/2024/01/09/a-simple-jq-repl-with-tmux-bash-vim-and-entr/>
 
-There's a clue in the path info part of each of these URLs.
+There's a clue in the path section of each of these URLs.
 
-In addition, the machine readable format of this blog, which can be used in "Feed Readers" to subscribe to the blog, and automatically receive new posts, is in Atom format and is available at <https://qmacro.org/feed.xml>.
+In addition, the machine readable format of this blog, which can be used in feed readers to subscribe to the blog and automatically receive new posts, is in Atom format and is available at <https://qmacro.org/feed.xml>.
 
 Perhaps a (massively simplified) diagram would help?
 
