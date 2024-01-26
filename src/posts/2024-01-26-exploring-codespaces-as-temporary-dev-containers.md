@@ -250,7 +250,7 @@ Nice - looks like it's time to explore! I can issue a `gh codespace stop` (and `
 
 ## Further reading
 
-You may also be interested in [Developing CAP in containers - three ways](blog/posts/2024/01/15/developing-cap-in-containers-three-ways/) and also the general [containers tag](/tags/containers). And of course, you should visit [containers.dev](https://containers.dev) for much more on this area.
+You may also be interested in [Developing CAP in containers - three ways](/blog/posts/2024/01/15/developing-cap-in-containers-three-ways/) and also the general [containers tag](/tags/containers). And of course, you should visit [containers.dev](https://containers.dev) for much more on this area.
 
 ---
 
