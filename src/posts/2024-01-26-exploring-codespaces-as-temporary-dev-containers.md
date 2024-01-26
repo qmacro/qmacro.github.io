@@ -55,7 +55,7 @@ LEARN MORE
 Codespaces seem to be primarily repo specific (although it looks like they can be org-wide too), so in order to be able to create a new codespace in this experiment I first created a new repo, adding a README as I think I saw somewhere that you can't create a codespace based on a completely empty repo (which sort of makes sense):
 
 ```shell
-gh repo create --add-readme --public codespacetest
+; gh repo create --add-readme --public codespacetest
 ✓ Created repository qmacro/codespacetest on GitHub
 ```
 
