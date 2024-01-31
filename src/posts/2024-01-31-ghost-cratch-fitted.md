@@ -54,7 +54,7 @@ All these advantages stem from the fact that such a modern tubular frame is supe
 
 ## The fitting
 
-A week after I'd agreed the details with Gary, the team turned up to fit the steel frame first. Here's what it looked like:
+A week after I'd agreed the details with Gary, a two-man team of JP and Ray turned up to fit the steel frame first. Here's what it looked like:
 
 ![the steel frame fitted](/images/2024/01/steel-frame-fitted.jpg)
 
