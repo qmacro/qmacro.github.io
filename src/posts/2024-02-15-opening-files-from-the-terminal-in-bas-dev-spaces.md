@@ -30,6 +30,8 @@ So while there isn't a `code` command, you can use `basctl --open` to get someth
 
 (I've asked internally about this behaviour, and will update this blog post with anything I find out.)
 
+(Update 05 Mar 2024: It turns out this was unintended behaviour, which my question internally highlighted, and the behaviour has now been fixed - see [pull request 299 in the app-studio-toolkit repo](https://github.com/SAP/app-studio-toolkit/pull/299). The fix will reach production environments by the middle of this month.)
+
 The nice thing about what `basctl` offers perhaps is the ability to invoke framework commands, via an additional `--command` option, like this: `basctl --command workbench.action.openSettings`.
 
 The question also asked about my use of `tree`, and noted its lack of availability in BAS dev spaces. This is simple to address, if not entirely straightforward. I got `tree` working in my dev space, as you can see:
