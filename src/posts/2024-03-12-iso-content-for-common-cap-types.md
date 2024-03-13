@@ -8,7 +8,6 @@ tags:
 ---
 There's an NPM package that provides default content based on the ISO specifications for CAP common types for countries, languages, currencies and timezones. In this post I explore what that package is and how it works. The post is quite long, mostly because I fell down a rabbit hole and was stuck there for quite a while. Hopefully though it's something you might enjoy. Happy exploring!
 
-<a name="background"></a>
 # Background
 
 Earlier this month in [part 7](https://www.youtube.com/watch?v=kgycosxv9aQ) of our [back to basics Hands-on SAP Dev live stream series on CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQBHPdfHQ0Ry2TMdsT-muECx), we added a new element `countryOfBirth` to the `Authors` entity definition, so that our simple `services.cds` looked like this:
@@ -58,7 +57,7 @@ As a result of referring to the `Country` type in `@sap/cds/common`, we saw this
   [...]/node_modules/@sap/cds/common.cds
 ```
 
-> See the [Appendix - loading @sap/cds/common](#appendix) for an explanation of why `[...]` has been used as a path prefix indicator here.
+> See the "Appendix - loading @sap/cds/common" section for an explanation of why `[...]` has been used as a path prefix indicator here.
 
 ## New entity sets
 
@@ -296,7 +295,7 @@ extend my.bookshop.Books with {
 
 * The first `using` directive just imports the definitions from the existing `db/data-model.cds` file, i.e. the `Books` entity in the `my.bookshop` namespace. With this first `using` directive we can then refer to the `my.bookshop.Books` entity, as we do with the `extend` directive shortly.
 * The second `using` directive is to bring in the definition of the [Country reuse type](https://cap.cloud.sap/docs/cds/common#type-country) from `@sap/cds/common`. This is so we can use this `Country` type to describe the new element we're adding to the `my.bookshop.Books` entity.
-* Then in the `extend` directive we can simply add the new `publishedIn` element and define it as having the `Country` type. We already know about how this type is defined from the [background](#background) section earlier.
+* Then in the `extend` directive we can simply add the new `publishedIn` element and define it as having the `Country` type. We already know about how this type is defined from the background section earlier.
 
 As the CAP server is still running in "watch" mode, things restart and now we see something like this:
 
@@ -491,7 +490,6 @@ extend my.bookshop.Books with {
 }
 ```
 
-<a name="explosion"></a>
 As the CAP server is still running in "watch" mode, it restarts, and 💥 what an explosion of log output!
 
 ```text
@@ -840,7 +838,7 @@ We can see the three groups of files for `sap.common.Countries`:
 * the single core localized data file `sap-common-Countries_texts.csv` - where the filename is not specific to an explicit locale - containing values for the `locale`, `code`, `name` and `descr` field. The language specific content is English by default.
 * the multiple language-specific localized data files `sap-common-Countries_texts_<locale-identifier>.csv` containing the same data as the core localized file but with the texts translated into the language indicated by the locale-identifier in the file name.
 
-You'll likely remember seeing a list of all these CSV files in the [explosion of output](#explosion) from the running CAP server earlier.
+You'll likely remember seeing a list of all these CSV files in the explosion of output from the running CAP server earlier.
 
 And what's the outcome of this?
 
@@ -951,7 +949,6 @@ And there's still so much more to discover. Until next time!
 
 ---
 
-<a name="appendix"></a>
 # Appendix - loading @sap/cds/common
 
 In the Background section earlier, the output of `cds watch` showed this line:
