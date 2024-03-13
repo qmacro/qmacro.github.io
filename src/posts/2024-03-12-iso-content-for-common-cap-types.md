@@ -739,7 +739,7 @@ node_modules/@sap/cds-common-content/
 |-- LICENSE
 |-- README.md
 |-- db/
-|   |-- index.cds  <--------------------+
+|   |-- index.cds  [--------------------+
 |   `-- data/                           |
 |-- index.cds  -- using from './db'; ---+
 `-- package.json
