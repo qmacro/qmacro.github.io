@@ -8,6 +8,8 @@ tags:
 ---
 There's an NPM package that provides default content based on the ISO specifications for CAP common types for countries, languages, currencies and timezones. In this post I explore what that package is and how it works. The post is quite long, mostly because I fell down a rabbit hole and was stuck there for quite a while. Hopefully though it's something you might enjoy. Happy exploring!
 
+Update 15 Mar 2024: In this morning's Hands-on SAP Dev live stream we added this feature to our test project, so you can [see this whole thing in action](https://www.youtube.com/live/8BMASRcs0Hg?si=OvCZdO8McwwWBL5R&t=2567).
+
 <a name="background"></a>
 # Background
 
@@ -739,7 +741,7 @@ node_modules/@sap/cds-common-content/
 |-- LICENSE
 |-- README.md
 |-- db/
-|   |-- index.cds  [--------------------+
+|   |-- index.cds  &lt;--------------------+
 |   `-- data/                           |
 |-- index.cds  -- using from './db'; ---+
 `-- package.json
