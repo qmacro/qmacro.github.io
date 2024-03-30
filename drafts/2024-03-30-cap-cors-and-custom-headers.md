@@ -80,7 +80,11 @@ OK, all set.
 
 CORS, or [Cross Origin Resource Sharing](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS), "is an HTTP-header based mechanism that allows a server to indicate any origins (domain, scheme, or port) other than its own from which a browser should permit loading resources". You come across it in the browser when wanting to consume resources from a different server to the one, the "origin", that the consuming code came from.
 
-There's a [section on CORS](https://cap.cloud.sap/docs/node.js/best-practices#cross-origin-resource-sharing-cors) in the [Node.js Best Practices](https://cap.cloud.sap/docs/node.js/best-practices) part of [Capire](https://cap.cloud.sap/docs/). In there, it merely says: "If not running in production, CAP's default server allows all origins. For production, you can add CORS to your server as follows ...". That tantalisingly short paragraph got me hooked. What does that mean? How does that work? I knew that finding out the answers to these questions would help me with providing what my colleague was asking for.
+There's a [section on CORS](https://cap.cloud.sap/docs/node.js/best-practices#cross-origin-resource-sharing-cors) in the [Node.js Best Practices](https://cap.cloud.sap/docs/node.js/best-practices) part of [Capire](https://cap.cloud.sap/docs/). In there, it merely says:
+
+"If not running in production, CAP's default server allows all origins. For production, you can add CORS to your server as follows ..."
+
+That tantalisingly short paragraph got me hooked. What does that mean? How does that work? I knew that finding out the answers to these questions would help me with providing what my colleague was asking for.
 
 There are three parts to the paragraph:
 
@@ -272,18 +276,40 @@ The standard facilities will return, as appropriate, one or both of these header
 
 My colleague's request for CORS support would have normally been fulfilled by this. The method of the remote request being made from his web app origin was GET. This falls into the "simple request" category. But the remote requests will also include a custom header `CommunityID`.
 
-If you worked through the tasks in last August's [Developer Challenge on APIs](https://community.sap.com/t5/technology-blogs-by-sap/sap-developer-challenge-apis/ba-p/13573168), you may remember this header. The hash facility described in [Task 0 - Learn to share your task results](https://community.sap.com/t5/application-development-discussions/sap-developer-challenge-apis-task-0-learn-to-share-your-task-results/m-p/276058#M2319) requires the caller to supply their SAP Community ID in the form of a header in the HTTP request, like this:
+If you worked through the tasks in last August's [Developer Challenge on APIs](https://community.sap.com/t5/technology-blogs-by-sap/sap-developer-challenge-apis/ba-p/13573168), you may remember this header. The hash facility described in [Task 0 - Learn to share your task results](https://community.sap.com/t5/application-development-discussions/sap-developer-challenge-apis-task-0-learn-to-share-your-task-results/m-p/276058#M2319) requires you to supply your SAP Community ID in the form of a header in the HTTP request, like this:
 
 ```text
 CommunityID: qmacro
 ```
 
-This hash facility is the service that my colleague was wanting to call remotely from his web app. And the requirement for this custom header when calling the service[<sup>5</sup>](#footnotes) meant that such requests were not considered "simple".
+This hash facility is the service that my colleague was wanting to call remotely from his web app. And the requirement for this custom header when calling the service[<sup>5</sup>](#footnotes) meant that such requests are not considered "simple".
 
-This in turn meant that a preflight request would be made. Not only that, but the custom header would be supplied in such preflight requests in an `Access-Control-Request-Headers` header too, in a similar way to how any "unusual" HTTP methods would be supplied in an `Access-Control-Request-Method` header.
+This in turn meant that a preflight request would be made. Not only that, but the custom header would be supplied in such preflight requests in an `Access-Control-Request-Headers` header too, in a similar way to how any "unusual" HTTP methods would be supplied in an `Access-Control-Request-Method` header. And the browser will expect, in the response to that preflight request, that the custom header is included in an `Access-Control-Allow-Headers` header in the HTTP response.
 
 But while the built-in CORS handling of the default CAP server provides preflight response support for such `Access-Control-Request-Method` headers, it doesn't provide support for `Access-Control-Request-Headers` headers.
 
+> We can debate whether this should be standard in the default CAP server, i.e. how much CORS support we should expect out of the box, but here I saw it as an opportunity to learn how I might extend the support myself.
+
+### Custom server.js
+
+The [Boostrapping Servers](https://cap.cloud.sap/docs/node.js/cds-server) section of Capire includes information about being able to supply your own [custom server](https://cap.cloud.sap/docs/node.js/cds-server#custom-server-js) logic, like this:
+
+```javascript
+const cds = require('@sap/cds')
+// react on bootstrapping events...
+cds.on('bootstrap', ...)
+```
+
+This is particularly relevant when we revisit that [section on CORS](https://cap.cloud.sap/docs/node.js/best-practices#cross-origin-resource-sharing-cors) mentioned earlier, where it says "... For production, you can add CORS to your server as follows". And the code example given is shown in the context of a `bootstrap` event for which custom server implementations are often used - i.e. to hook into part of the CAP server startup to add custom logic:
+
+```javascript
+const ORIGINS = { 'https://example.com': 1 }
+cds.on('bootstrap', async app => {
+    app.use((req, res, next) => {
+        ...
+    })
+})
+```
 
 
 ---
