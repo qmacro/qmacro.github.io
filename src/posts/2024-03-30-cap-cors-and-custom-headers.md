@@ -64,11 +64,11 @@ Let's also install the runtime locally with `npm install` (as we'll want to look
 > User-Agent: curl/7.88.1
 > Accept: */*
 >
-< HTTP/1.1 200 OK
-< X-Powered-By: Express
-< Content-Type: text/plain; charset=utf-8
-< Content-Length: 13
-<
+&lt; HTTP/1.1 200 OK
+&lt; X-Powered-By: Express
+&lt; Content-Type: text/plain; charset=utf-8
+&lt; Content-Length: 13
+&lt;
 Hello, World!
 ```
 
@@ -103,10 +103,10 @@ So what sort of support are we looking for anyway? CORS support comes in the for
 But there are no CORS headers in the response to the basic service test above:
 
 ```text
-< HTTP/1.1 200 OK
-< X-Powered-By: Express
-< Content-Type: text/plain; charset=utf-8
-< Content-Length: 13
+&lt; HTTP/1.1 200 OK
+&lt; X-Powered-By: Express
+&lt; Content-Type: text/plain; charset=utf-8
+&lt; Content-Length: 13
 ```
 
 That's because the HTTP request didn't include any [headers in the request that make use of the CORS features](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#the_http_request_headers). The basics can be triggered by including an `Origin` HTTP header in the request (this is done automatically by the browser in such cross origin resource retrieval circumstances).
@@ -126,19 +126,19 @@ Let's do that and see what we get from the CAP server. The important thing for t
 > Accept: */*
 > Origin: https://qmacro.org
 >
-< HTTP/1.1 200 OK
-< X-Powered-By: Express
-< access-control-allow-origin: https://qmacro.org
-< Content-Type: text/plain; charset=utf-8
-< Content-Length: 13
-<
+&lt; HTTP/1.1 200 OK
+&lt; X-Powered-By: Express
+&lt; access-control-allow-origin: https://qmacro.org
+&lt; Content-Type: text/plain; charset=utf-8
+&lt; Content-Length: 13
+&lt;
 Hello, World!
 ```
 
 Check out that extra header in the response, shown in the verbose output:
 
 ```text
-< access-control-allow-origin: https://qmacro.org
+&lt; access-control-allow-origin: https://qmacro.org
 ```
 
 From a CORS perspective, this response header tells the browser to allow that origin to access the resource being returned.
@@ -202,10 +202,10 @@ This is the preflight request. Note the `Access-Control-Request-Method` header w
 Unless the remote server responds appropriately to such a preflight request, the browser will not allow the actual request to be made. What is an appropriate response here to this preflight request? Something like this:
 
 ```text
-< HTTP/1.1 200 OK
-< X-Powered-By: Express
-< access-control-allow-origin: https://qmacro.org
-< access-control-allow-methods: GET,PUT
+&lt; HTTP/1.1 200 OK
+&lt; X-Powered-By: Express
+&lt; access-control-allow-origin: https://qmacro.org
+&lt; access-control-allow-methods: GET,PUT
 ```
 
 In other words, a response that tells the browser "yes, `PUT` requests from this origin are allowed".
@@ -226,11 +226,11 @@ For testing, we can actually construct a preflight request, using curl's `--requ
 > Accept: */*
 > Origin: https://qmacro.org
 >
-< HTTP/1.1 200 OK
-< X-Powered-By: Express
-< access-control-allow-origin: https://qmacro.org
-< access-control-allow-methods: GET,HEAD,PUT,PATCH,POST,DELETE
-< Content-Length: 0
+&lt; HTTP/1.1 200 OK
+&lt; X-Powered-By: Express
+&lt; access-control-allow-origin: https://qmacro.org
+&lt; access-control-allow-methods: GET,HEAD,PUT,PATCH,POST,DELETE
+&lt; Content-Length: 0
 ```
 
 > Note that I didn't actually need to specify an `Access-Control-Request-Method` header in this preflight request; the CORS support in the default CAP server will just supply an equivalent `Allow` response header covering the main methods.
@@ -393,12 +393,12 @@ Here's the corresponding HTTP request and response details from that verbose out
 > Access-Control-Request-Headers: communityid
 > origin: https://testing-42p9ebmu.preview.eu10.apps.build.cloud.sap
 >
-< HTTP/1.1 200 OK
-< X-Powered-By: Express
-< access-control-allow-headers: communityid
-< access-control-allow-origin: https://testing-42p9ebmu.eu10.apps.build.cloud.sap
-< access-control-allow-methods: GET,HEAD,PUT,PATCH,POST,DELETE
-< Content-Length: 0
+&lt; HTTP/1.1 200 OK
+&lt; X-Powered-By: Express
+&lt; access-control-allow-headers: communityid
+&lt; access-control-allow-origin: https://testing-42p9ebmu.eu10.apps.build.cloud.sap
+&lt; access-control-allow-methods: GET,HEAD,PUT,PATCH,POST,DELETE
+&lt; Content-Length: 0
 ```
 
 Excellent - we now have the `communityid` header value "flipped" and returned in the CORS preflight response.
