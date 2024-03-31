@@ -56,7 +56,7 @@ module.exports = (s) =>
 
 Let's also install the runtime locally with `npm install` (as we'll want to look into one of the files there later), and start the server up with `cds watch`. Now we can perform a basic test, asking for verbose output[<sup>3</sup>](#footnotes), to see what we get:
 
-```shell
+```text
 # /home/user/work/scratch/corstest
 ; curl --verbose --url localhost:4004/rest/corstest/go
 > GET /rest/corstest/go HTTP/1.1
@@ -115,7 +115,7 @@ That's because the HTTP request didn't include any [headers in the request that 
 
 Let's do that and see what we get from the CAP server. The important thing for this test is to specify a value for the `Origin` HTTP header that is different to the CAP server. Let's use `qmacro.org`:
 
-```shell
+```text
 ; curl \
     --verbose \
     --header 'Origin: https://qmacro.org' \
@@ -214,7 +214,7 @@ And that is exactly what the default server's CORS handling mechanism is doing i
 
 For testing, we can actually construct a preflight request, using curl's `--request` option to be able to specify the HTTP method to use, so that we can see a preflight request/response for real. Here goes:
 
-```shell
+```text
 ; curl \
     --verbose \
     --request OPTIONS \
