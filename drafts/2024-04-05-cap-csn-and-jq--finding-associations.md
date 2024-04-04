@@ -150,12 +150,14 @@ def is_association: .value.type == "cds.Association";
 
 .definitions
 | to_entries
-| map(select(is_entity)
-| {
-    (.key):
-    .value.elements
-    | with_entries(select(is_association))
-  })
+| map(
+    select(is_entity)
+    | {
+        (.key):
+        .value.elements
+        | with_entries(select(is_association))
+      }
+  )
 ```
 
 And here's how I use it:
@@ -231,12 +233,13 @@ def associations: select(.value.type == "cds.Association");
 
 .definitions
 | to_entries
-| map(entities
-| {
-    (.key):
-    .value.elements
-    | with_entries(associations)
-  })
+| map(
+    entities
+    | {
+       (.key):
+       .value.elements | with_entries(associations)
+      }
+  )
 ```
 
 Which do you prefer?
