@@ -221,6 +221,26 @@ Here are some notes:
 
 And that's about it! Score one more for the wonderful utility of jq, in today's world of JSON.
 
+## Alternative approach
+
+While I like the `is_entity` and `is_association` definitions, one could make the main code even more succinct like this:
+
+```jq
+def entities: select(.value.kind == "entity");
+def associations: select(.value.type == "cds.Association");
+
+.definitions
+| to_entries
+| map(entities
+| {
+    (.key):
+    .value.elements
+    | with_entries(associations)
+  })
+```
+
+Which do you prefer?
+
 ---
 
 <a name="footnotes"></a>
