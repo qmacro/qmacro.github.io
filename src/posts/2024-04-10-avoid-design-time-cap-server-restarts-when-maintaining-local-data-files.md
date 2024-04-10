@@ -75,7 +75,7 @@ The CAP server uses [node-watch](https://github.com/yuanchuan/node-watch) behind
 
 ## Normal behaviour
 
-If I were to create or maintain the contents of a file called `data.json` in the project root, for example, like this:
+Sometimes when marshalling data for an OData CREATE operation, for example, I'll use a file to store the JSON payload for such an operation. If I were to create or maintain the contents of a file called `data.json` in the project root, for example, like this:
 
 ```shell
 touch data.json
