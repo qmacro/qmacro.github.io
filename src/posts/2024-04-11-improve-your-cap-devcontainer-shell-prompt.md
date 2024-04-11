@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Improve your CAP devcontainer shell prompt
+title: Improve your CAP dev container shell prompt
 date: 2024-04-11
 tags:
   - cap
@@ -16,7 +16,7 @@ FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:0-${VARIANT}
 
 ## The long prompt
 
-and includes a non-root user `node` which has a nice default Bash shell prompt that looks like this:
+It includes a non-root user `node` which has a nice default Bash shell prompt that looks like this:
 
 ```text
 node ➜ /workspaces/capb2b (compositions) $ _
