@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Easily add an explicit cds.requires.db to your package.json
+title: Easily add an explicit cds.requires.db to your CAP project's package.json
 date: 2024-04-14
 tags:
   - cap
