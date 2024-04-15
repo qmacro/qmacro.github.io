@@ -149,3 +149,7 @@ In order to replace the contents of `package.json` in one go you'll need to do s
 I may find myself using this approach more often, especially as the [`cds deploy --to sqlite` no longer modifies `package.json`](https://cap.cloud.sap/docs/releases/archive/2023/jun23#important-changes-3), which was also a change made in the same CAP release.
 
 Good to know!
+
+---
+
+You may want to read [Using @cap-js/sqlite in CF for your CAP services](/blog/posts/2024/04/15/using-@cap-jssqlite-in-cf-for-your-cap-services/) which is closely related to this, too, as well as [Running non-production CAP services in CF](/blog/posts/2024/04/15/running-non-production-cap-services-in-cf/).

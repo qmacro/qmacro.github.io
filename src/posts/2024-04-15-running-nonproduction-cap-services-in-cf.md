@@ -153,6 +153,7 @@ NODE_ENV: testing
 ...
 ```
 
+<a name="--no-start"></a>
 ## Mitigating the crash from the start
 
 Of course, having to deal with an initial crash before sorting things out is a little cumbersome.
@@ -172,3 +173,8 @@ cds init --add tiny-sample non-prod-test \
 The effect is that the CAP service is deployed and running in non-production mode from the outset. There may be better ways to achieve this, but that's how I do it.
 
 Good to know!
+
+---
+
+You may want to read [Using @cap-js/sqlite in CF for your CAP services](/blog/posts/2024/04/15/using-@cap-jssqlite-in-cf-for-your-cap-services/) which is closely related to this, too, as well as [Easily add an explicit cds.requires.db to your CAP project's package.json](/blog/posts/2024/04/14/easily-add-an-explicit-cds.requires.db-to-your-cap-project's-package.json/).
+
