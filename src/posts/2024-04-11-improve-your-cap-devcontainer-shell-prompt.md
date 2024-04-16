@@ -96,4 +96,6 @@ export PS1=${PS1/\$ /\\n$ }
 
 Now each new shell has the nice new prompt. This change has been [added to the container image definition in the series' repo](https://github.com/qmacro/capb2b/commit/0654e1afbf76f9256e6ff565c94c920189e72136).
 
+Update 16 Apr: Thanks to tech-wombat for pointing out in the [comments to the video](https://studio.youtube.com/video/BwL_2qAPYsc/comments) that this last update to the container image definition broke the build. It was down to the fact that the default Dockerfile [shell](https://docs.docker.com/reference/dockerfile/#shell) (`/bin/sh`) was choking on the Bash flavoured substitutions in this line. I decided to [separate it out and also make sure to escape the escape char too](https://github.com/qmacro/capb2b/commit/b20125199d787f25961ae6f54138bbfc82799931)!
+
 Good to know!
