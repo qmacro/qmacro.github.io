@@ -64,3 +64,18 @@ I then copied that binary to the dev space by dragging it into the Explorer wind
 
 Job done!
 
+---
+
+Update 22 Apr 2024: A colleague kindly let me know that following our use of `tree` on Hands-on SAP Dev and in this post, they've added the command so it's available in Dev Spaces now. Thanks team! 
+
+```shell
+user: user $ hostname
+workspaces-ws-bkmjx-deployment-7c95494642-ptsqw
+user: user $ tree
+.
+|-- node_modules -> /extbin/generators/lib/node_modules
+|-- projects
+`-- tmp -> /tmp/usertemp/tmp
+
+3 directories, 1 file
+```
