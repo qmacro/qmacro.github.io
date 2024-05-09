@@ -60,3 +60,22 @@ Here's a simple demo of this approach in action.
 ![entr invoking curl on listening change](/images/2024/05/entr-curl-listening.gif)
 
 A bit of a nerdy hack, perhaps, but still ... good to know!
+
+## Post script
+
+There's another CAP server lifecycle event I can use to clean up (remove) the `listening` file; sometimes I want to do that, sometimes I don't. When I do, I just use the `shutdown` event, and chain another `on()` like this:
+
+```javascript
+const fs = require('node:fs/promises')
+require('@sap/cds')
+    .on('listening', async () => await fs.writeFile('listening', ''))
+    .on('shutdown', async () => await fs.unlink('listening'))
+```
+
+The  side effect is that when the `shutdown` event happens and the `listening` file is removed, the running `entr` process terminates like this:
+
+```log
+entr: cannot open 'listening': No such file or directory
+```
+
+This termination is actually often what I want anyway. YMMV.
