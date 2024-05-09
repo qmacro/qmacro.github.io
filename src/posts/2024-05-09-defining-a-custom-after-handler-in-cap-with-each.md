@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Defining a custom after handler in CAP with 'each'
+title: Defining a custom 'after' handler in CAP with 'each'
 date: 2024-05-09
 tags:
   - cap
