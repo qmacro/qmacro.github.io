@@ -18,7 +18,7 @@ By default, the data is passed to your handler function as the first argument[<s
 
 > In the case of where the service is exposed via the OData protocol, for example, note that this is true for both OData QUERY operations, where you'd expect an entity set, and OData READ operations too, where you only expect a single entity. In other words, even when only a single record is requested, the record is supplied as the first argument to your handler as a single object ... within an array.
 
-To illustrate, let's first create a fresh test CAP project, initiated it with the "tiny-sample" facet to give us a super simple service exposing two book records[<sup>2</sup>](#footnotes):
+To illustrate, let's first create a fresh test CAP project, initiated with the "tiny-sample" facet to give us a super simple service exposing two book records[<sup>2</sup>](#footnotes):
 
 ```shell
 cds init --add tiny-sample eachtest && cd $_
