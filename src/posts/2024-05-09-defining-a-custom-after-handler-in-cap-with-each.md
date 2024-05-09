@@ -6,7 +6,9 @@ tags:
   - cap
   - javascript
 ---
-Adding [custom logic](https://cap.cloud.sap/docs/get-started/in-a-nutshell#adding-custom-logic) to your CAP services is easy, and you can register event handlers with the [`before`, `on` and `after` methods](https://cap.cloud.sap/docs/node.js/core-services#srv-on-before-after).
+TL;DR: There's special behaviour if you use the `each` parameter name when defining an `after` handler, but the way this works and the way you should invoke it has changed.
+
+Adding [custom logic](https://cap.cloud.sap/docs/get-started/in-a-nutshell#adding-custom-logic) to your CAP services is easy, and you can register event handlers with the [`before`, `on` and `after` methods](https://cap.cloud.sap/docs/node.js/core-services#srv-on-before-after). 
 
 ## Handlers registered with the 'after' method
 
