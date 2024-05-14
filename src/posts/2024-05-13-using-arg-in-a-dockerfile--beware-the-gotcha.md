@@ -76,7 +76,7 @@ Not only is the value for `CAPVER` empty when we reference it in the `RUN` instr
 
 The cause is the rather subtle relationship between `ARG` and `FROM`, the explanation for which is brief and a little hidden in the main [Dockerfile reference](https://docs.docker.com/reference/dockerfile/). I certainly missed it when I went straight to the [reference for `ARG`](https://docs.docker.com/reference/dockerfile/#arg), as it's not mentioned, and only explained at the end of the [reference for `FROM`](https://docs.docker.com/reference/dockerfile/#from) which is earlier on the page.
 
-The key section is here: [Understand how ARG and FROM react](https://docs.docker.com/reference/dockerfile/#understand-how-arg-and-from-interact), and includes this key line:
+The key section is here: [Understand how ARG and FROM react](https://docs.docker.com/reference/dockerfile/#understand-how-arg-and-from-interact), and includes this line:
 
 > "_An `ARG` declared before a `FROM` is outside of a build stage, so it can't be used in any instruction after a `FROM`._"
 
