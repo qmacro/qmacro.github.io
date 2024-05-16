@@ -131,3 +131,9 @@ VERSION_ID="11"
 Perhaps I should have read the entire reference document for all the Dockerfile instructions first. Then I would have at least read about this relationship, and I may also have remembered it too. But for those of you like me who jump directly to consult the reference documentation on the thing they're trying to use, perhaps this will help.
 
 Happy building!
+
+---
+
+## Update
+
+This post has generated [quite a bit of interesting discussion over on HN](https://news.ycombinator.com/item?id=40352426).
