@@ -6,7 +6,7 @@ image: '/images/DJA-head.png'
 ---
 
 <a name="main"></a>
-I'm a [Developer Advocate at SAP](https://developers.sap.com/developer-advocates.html). I've been hacking on SAP enterprise software for more than three decades, and am still enjoying it. I created the first SAP community in 1995, and in 2003 I co-created what is now known today as [SAP Community](https://community.sap.com).
+I'm a [Developer Advocate at SAP](https://developers.sap.com/developer-advocates.html). I've been hacking on SAP enterprise software for more than three decades, and am still enjoying it. I created the first online SAP community in 1995, and in 2003 I co-created what is now known today as [SAP Community](https://community.sap.com).
 
 I've been a member of SAP's [Mentors Advisory Board](http://web.archive.org/web/20170910073813/https://blogs.sap.com/2016/03/08/introducing-the-new-sap-mentors-advisory-board-2016-2018/), and also a member of SAP's Developer Advisory Board.
 
@@ -61,7 +61,7 @@ Follow me on [Mastodon](//hachyderm.io/@qmacro) and [LinkedIn](https://www.linke
 
 Here's a short bio, which can also be found on the [Developer Advocates](https://developers.sap.com/developer-advocates.html) page:
 
-> DJ focuses on integration and extension topics on the SAP Business Technology Platform. He runs a regular live stream show "Hands-on SAP Dev" on the SAP Developers YouTube channel and enjoys sharing his curiosity on many SAP development topics. He read Classics at university, has worked on SAP systems since 1987, created the first SAP community in 1995, co-created what is known today as the SAP Community, and is a lifelong learner.
+> DJ focuses on integration and extension topics on the SAP Business Technology Platform. He runs a regular live stream show "Hands-on SAP Dev" on the SAP Developers YouTube channel and enjoys sharing his curiosity on many SAP development topics. He read Classics at university, has worked on SAP systems since 1987, created the first online SAP community in 1995, co-created what is known today as the SAP Community, and is a lifelong learner.
 
 There are a couple of photos ([with jacket](../images/DJA-with-jacket.jpg) and [without jacket](../images/DJA-without-jacket.jpg)) available too, if you're looking for something more formal than my normal <a href="#main">floating head</a>.
 
