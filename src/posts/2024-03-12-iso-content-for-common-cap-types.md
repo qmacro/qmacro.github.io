@@ -15,7 +15,7 @@ Update 15 Mar 2024: In this morning's Hands-on SAP Dev live stream we added this
 
 Earlier this month in [part 7](https://www.youtube.com/watch?v=kgycosxv9aQ) of our [back to basics Hands-on SAP Dev live stream series on CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQBHPdfHQ0Ry2TMdsT-muECx), we added a new element `countryOfBirth` to the `Authors` entity definition, so that our simple `services.cds` looked like this:
 
-```text
+```cds
 using { cuid, Country } from '@sap/cds/common';
 
 service bookshop {
@@ -31,7 +31,7 @@ service bookshop {
 
 This resulted in the generation of lots of DDL for a persistence layer, based on the definition of that `Country` type, which, in `@sap/cds/common`, looks like this (and I've also included here the definitions that are used to describe that type):
 
-```text
+```cds
 type Country : Association to sap.common.Countries;
 
 context sap.common {
@@ -135,7 +135,7 @@ npm add @sap/cds-common-content
 
 and then add a `using` directive in your CDS, such as:
 
-```text
+```cds
 using from '@sap/cds-common-content';
 ```
 
@@ -188,7 +188,7 @@ Learn about next steps at https://cap.cloud.sap
 
 The persistence layer definitions in `db/data-model.cds` look like this:
 
-```text
+```cds
 namespace my.bookshop;
 
 entity Books {
@@ -200,7 +200,7 @@ entity Books {
 
 and the service layer definitions in `srv/cat-service.cds` look like this:
 
-```text
+```cds
 using my.bookshop as my from '../db/data-model';
 
 service CatalogService {
@@ -287,7 +287,7 @@ First, let's add an element to the `Books` entity definition to show where a boo
 
 In a new file, let's call it `db/publicationinfo.cds`, let's add this:
 
-```text
+```cds
 using from './data-model';
 using { Country } from '@sap/cds/common';
 
@@ -390,7 +390,7 @@ which returns this entity set response:
 > 
 > Here, specifically, it comes from the combination of the `Country` type used to describe the `publishedIn` element:
 >
-> ```text
+> ```cds
 > extend my.bookshop.Books with {
 >     publishedIn: Country;
 > }
@@ -398,7 +398,7 @@ which returns this entity set response:
 >
 > and the very definition of `Country` which is a [managed "to-one" association](https://cap.cloud.sap/docs/guides/domain-modeling#managed-1-associations) as we have already seen:
 >
-> ```text
+> ```cds
 > type Country : Association to sap.common.Countries;
 > ```
 >
@@ -483,7 +483,7 @@ So now, to actually make use of this package and what it brings, we have to add 
 
 Let's add that to the `db/publicationinfo.cds` file, like this:
 
-```text
+```cds
 using from './data-model';
 using { Country } from '@sap/cds/common';
 using from '@sap/cds-common-content';
@@ -586,7 +586,7 @@ Let's take a bit of time to figure out how this is all working, and why we now h
 
 We added a single line to the CDS model:
 
-```text
+```cds
 using from '@sap/cds-common-content';
 ```
 
@@ -686,7 +686,7 @@ which are now also being brought in to construct the model?
 
 Well, given the "cds-common-content" that appears in the path of these files, we can be pretty certain that they're related to this single line we just added:
 
-```text
+```cds
 using from '@sap/cds-common-content';
 ```
 
@@ -727,7 +727,7 @@ node_modules/@sap/cds-common-content/index.cds
 
 to also be loaded and its CDS contents added into the overall model construction. So what's in this file? This:
 
-```text
+```cds
 using from './db';
 ```
 
@@ -749,7 +749,7 @@ node_modules/@sap/cds-common-content/
 
 So what's in `./db/index.cds`? This:
 
-```text
+```cds
 using sap.common.Languages from '@sap/cds/common';
 using sap.common.Countries from '@sap/cds/common';
 using sap.common.Currencies from '@sap/cds/common';

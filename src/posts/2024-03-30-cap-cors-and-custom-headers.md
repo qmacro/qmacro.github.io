@@ -40,7 +40,7 @@ Learn about next steps at https://cap.cloud.sap
 
 Now, just the simplest test REST style service. In `services.cds`[<sup>2</sup>](#footnotes):
 
-```text
+```cds
 @protocol: 'rest'
 service corstest {
     function go() returns String;

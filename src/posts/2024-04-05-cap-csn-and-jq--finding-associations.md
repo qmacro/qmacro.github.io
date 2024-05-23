@@ -14,7 +14,7 @@ In [CAP](https://cap.cloud.sap), SAP's Cloud Application Programming Model, [mod
 
 Here's a simple example, in a file called `services.cds` taken from the current [Hands-on SAP Dev live stream series on back to basics with CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQBHPdfHQ0Ry2TMdsT-muECx):
 
-```text
+```cds
 aspect cuid { key ID: UUID }
 
 service bookshop {
