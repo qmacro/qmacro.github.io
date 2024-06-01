@@ -36,7 +36,7 @@ ls services.cds \
 
 Here's what the session looks like:
 
-![demo](/images/2024/06/csndiff.mp4)
+[![demo](/images/2024/06/csndiff.gif)](/images/2024/06/csndiff.mp4)
 
 I'd love to hear about any investigations you've done into CSN too!
 
@@ -44,5 +44,4 @@ I'd love to hear about any investigations you've done into CSN too!
 ## Footnotes
 
 1) I'm tempted to write "CDL" for "CDS model" because that's the human-oriented language that the CDS model is actually written in - Core Definition Language. What we call "CDS" is actually "CDL". But that's a discussion for another time.
-
 2) For more on the YAML representation of CSN, see [Simple script for previewing CDS models in CSN - cdsray](https://qmacro.org/blog/posts/2024/04/17/simple-script-for-previewing-cds-models-in-csn-cdsray/)
