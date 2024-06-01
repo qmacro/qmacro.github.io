@@ -20,7 +20,7 @@ CSN has a couple of regular representations - JSON and YAML[<sup>2</sup>](#footn
 
 I wrote a small script [`csndiff`](https://github.com/qmacro/dotfiles/blob/main/scripts/csndiff) that:
 
-- expects, via STDIN, a CDN definition (in JSON)
+- expects, via STDIN, a CSN definition (in JSON)
 - compares it to any previous version of that CSN definition that it has\*
 - emits that comparison as a JSON diff thanks to `jd`
 - saves this latest CSN definition as the previous version for the next comparison
