@@ -19,7 +19,9 @@ If, while serving a call to your provided CAP service, you want to construct som
 
 A friend asked me the other day how to make a request across the entities in his CDS model, equivalent to how he'd do it in OData, which would be like this:
 
-<https://qmacro.cfapps.eu10.hana.ondemand.com/northbreeze/Categories?$expand=Products>
+```txt
+/Categories?$expand=Products
+```
 
 In other words, how to retrieve Categories plus all the related Products for each one.
 
@@ -150,7 +152,9 @@ So far, it's just a different way of expressing the column(s) that I want.
 
 Now I'll nest another projection function in there, to achieve what my friend wants - the equivalent of the OData `$expand` system query option, as in the example from earlier (modified here to restrict the elements to just `CategoryName` and `ProductName`):
 
-<https://qmacro.cfapps.eu10.hana.ondemand.com/northbreeze/Categories?$select=CategoryName&$expand=Products($select=ProductName)>
+```txt
+/Categories?$select=CategoryName&$expand=Products($select=ProductName)
+```
 
 Here goes:
 
