@@ -36,7 +36,7 @@ The `showgithubcontent` script was initially a function inside of the `workflowb
 
 Here's the script in its entirety, [as it stands right now](https://github.com/qmacro/dotfiles/blob/master/scripts/workflowbrowser):
 
-```
+```shell
 #!/usr/bin/env bash
 
 # Find and browse GitHub Actions workflow definitions.
@@ -87,7 +87,7 @@ The `main` function calls the `workflows` function a couple of times, because I 
 
 In learning more about Bash I've found it's helpful to know the terms for various aspects, so I'm going to point out one here. I'm calling the `workflows` function twice, like this:
 
-```
+```shell
   cat \
     <(workflows org qmacro-org) \
     <(workflows user qmacro)
@@ -101,7 +101,7 @@ I'll dig into the `workflows` function shortly, but for now, we need to know wha
 
 The output from `workflows` are records representing workflow definitions, in the form of lines with tab-separated fields, like this:
 
-```
+```text
 qmacro-org/test/dump.yml	qmacro-org	test	.github/workflows/dump.yml
 qmacro/showntell/main.yml	qmacro	showntell	.github/workflows/main.yml
 qmacro/qmacro/build.yml	qmacro	qmacro	.github/workflows/build.yml
@@ -135,9 +135,7 @@ The final part of the `main` function takes the line emitted from `fzf` and outp
 
 The `workflows` function is basically a wrapper around a call to the [GitHub Search API](https://docs.github.com/en/rest/reference/search). This is an API that I haven't used before now, and it's pretty powerful. There are different endpoints representing different search approaches. What worked for me, to find workflow definitions, was to use the [Search code](https://docs.github.com/en/rest/reference/search#search-code) endpoint with `/search/code`.
 
-This endpoint takes the search criteria in the form of a query string parameter `q`, and it was very easy to use the GUI based search to try out different search parameters to figure out what I needed to specify. Here's an example:
-
-<https://github.com/search?q=org%3Aqmacro-org+path%3A.github%2Fworkflows%2F>
+This endpoint takes the search criteria in the form of a query string parameter `q`, and it was very easy to use the GUI based search to try out different search parameters to figure out what I needed to specify. [Here's an example](https://github.com/search?q=org%3Aqmacro-org+path%3A.github%2Fworkflows%2F).
 
 One thing that tripped me up at first was the wrong type of request was being made first of all. I supplied the search criteria value in the `q` query string parameter correctly, like this (as you can see in the function):
 
@@ -255,7 +253,7 @@ As I mentioned earlier, this was originally just another function inside the `wo
 
 Here's the script in its entirety:
 
-```
+```shell
 #!/usr/bin/env bash
 
 # Takes owner, repo and path and shows content of that resource from GitHub.
@@ -288,7 +286,7 @@ The last two parameters are specific to the `bat` tool, which is a posh version 
 
 The reason we need the first three parameters is because they're required in the call we need to the [GitHub Contents API](https://docs.github.com/en/rest/reference/repos#get-repository-content). With this endpoint:
 
-```
+```text
 /repos/{owner}/{repo}/contents/{path}
 ```
 
@@ -300,7 +298,7 @@ Let's have a look what this gives us, in a sample call, for the following values
 * repo: "showntell"
 * path: ".github/workflows/main.yml"
 
-```
+```shell
 $ gh api /repos/qmacro/showntell/contents/.github/workflows/main.yml
 
 {
@@ -333,7 +331,7 @@ That'a about it for the two scripts. I've found them to be useful and have had f
 
 And talking of that, here's the reason I split out the `showgithubcontent` function into a separate script. It's because I wanted to be able to browse the workflow definitions, but then if I selected one, I wanted to be taken into an editor with that definition's contents. And with a proper shell (like Bash, or most other Unix shells) this is simple:
 
-```
+```shell
 $ workflowbrowser | xargs showgithubcontent | vim --not-a-term -
 ```
 

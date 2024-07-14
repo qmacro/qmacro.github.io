@@ -198,13 +198,9 @@ In this case, you could have two Sorters: One for the beerType, with a Grouper f
         }).placeAt("content");
 ```
 
-I've put a complete example together for this, and it's in the [sapui5bin Github repo](https://blogs.sap.com/?p=79248) here:
+I've put [a complete example](https://github.com/qmacro/sapui5bin/blob/master/SortingAndGrouping/TwoProperties.html) together for this, and it's in the [sapui5bin Github repo](https://blogs.sap.com/?p=79248).
 
-<https://github.com/qmacro/sapui5bin/blob/master/SortingAndGrouping/TwoProperties.html>
-
-And while we're on the subject of code examples, there's a complete example for the main theme of this post here:
-
-<https://github.com/qmacro/sapui5bin/blob/master/SortingAndGrouping/SingleProperty.html>
+And while we're on the subject of code examples, there's a [complete example for the main theme of this post](https://github.com/qmacro/sapui5bin/blob/master/SortingAndGrouping/SingleProperty.html) too.
 
 Share & enjoy!
 

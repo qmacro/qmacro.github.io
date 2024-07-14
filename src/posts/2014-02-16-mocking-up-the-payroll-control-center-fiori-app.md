@@ -63,9 +63,7 @@ This is a Fiori UI, so the controls used are from the sap.m library.
 
 ### Code
 
-I have of course made the code available, in the [sapui5bin](https://github.com/qmacro/sapui5bin) repo on Github:
-
-<https://github.com/qmacro/sapui5bin/blob/master/SinglePageExamples/PayrollControlCenterMockup.html>
+I have of course made the [code available](https://github.com/qmacro/sapui5bin/blob/master/SinglePageExamples/PayrollControlCenterMockup.html) in the [sapui5bin](https://github.com/qmacro/sapui5bin) repo on Github.
 
 Share and enjoy!
 

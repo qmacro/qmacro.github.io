@@ -20,11 +20,7 @@ Basically it involves using the `-c` option when creating a new window or pane, 
 
 I initially got this info from a [gist](https://gist.github.com/william8th/faf23d311fc842be698a1d80737d9631) by [William Heng](https://gist.github.com/william8th) but [this Stack Exchange answer](https://unix.stackexchange.com/a/12091/87597) by Chris Johnsen has some great background which is worth reading too.
 
-The change I made to my `tmux` configuration is in this commit:
-
-<https://github.com/qmacro/dotfiles/pull/2/commits/2664669d5922e640b232f185e2045e412852f47c>
-
-and looks like this:
+The change I made to my `tmux` configuration is in [this commit](https://github.com/qmacro/dotfiles/pull/2/commits/2664669d5922e640b232f185e2045e412852f47c) and looks like this:
 
 ```
 bind c new-window -c "#{pane_current_path}"

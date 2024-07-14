@@ -66,9 +66,7 @@ During this test drive period, there are some awesome folks from the SAP Build C
 
 ![create a question](/images/2024/03/create-a-question.png)
 
-If you want to jump straight to the question form, with the "SAP Build Code" managed tag already assigned (which is basically where this menu item will take you), you can use this URL:
-
-<https://community.sap.com/t5/forums/postpage/choose-node/true/product-id/73555000100800004372/board-id/technology-questions>
+If you want to jump straight to the question form, with the "SAP Build Code" managed tag already assigned (which is basically where this menu item will take you), you can use [this URL](https://community.sap.com/t5/forums/postpage/choose-node/true/product-id/73555000100800004372/board-id/technology-questions).
 
 ![new question](/images/2024/03/new-question.png)
 

@@ -19,6 +19,4 @@ _Dad, we love you and miss you terribly. Life won't be the same without your sha
 
 In his last weeks, dad was cared for by some amazing people, initially at [Dr Kershaw's Hospice](https://www.drkershawshospice.org.uk/) and then at Park Hills Nursing Home. We cannot thank the staff at these two places enough - it takes a special kind of person to look after folks like they do.
 
-Instead of flowers, we would please ask you to consider donating to the Dr Kershaw's Hospice charity - you can do this via the Just Giving page we have set up:
-
-<https://www.justgiving.com/fundraising/davidedwardadams>
+Instead of flowers, we would please ask you to consider donating to the Dr Kershaw's Hospice charity - you can do this via the [Just Giving page](https://www.justgiving.com/fundraising/davidedwardadams) we have set up.
