@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Max value in JS - different ways
+title: Highest value in JS - different ways
 date: 2024-07-23
 tags:
   - javascript
