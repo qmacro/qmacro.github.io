@@ -75,6 +75,14 @@ nums.toSorted((a, b) => a - b).reverse()[0] // -> 100
 
 But it's still looking a bit "busy".
 
+There is another approach here, in that we can adjust the compare function so that it will cause the sort function to produce the values in the order we want:
+
+```javascript
+nums.toSorted((a, b) => b - a)[0] // -> 100
+```
+
+So that's an improvement. But I think we can do better.
+
 ### Using reduce
 
 It's no secret that [one of my favourite functions is reduce](https://www.google.com/search?q=site%3Aqmacro.org+reduce). It's such a powerful and fundamental function and has a beauty all of its own. And there's [a reduce function available on the Array prototype in JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce).
