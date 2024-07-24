@@ -7,7 +7,7 @@ tags:
 ---
 FunFunFunction Video: [Reduce advanced - Part 4 of Functional Programming in JavaScript](https://www.youtube.com/watch?v=1DMolJ2FrNY&index=4&list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84)
 
-(This post is part of the [F3C](/f3c/) series)
+(This post is part of the [F3C](/blog/posts/2016/10/02/f3c-a-funfunfunction-companion-series/) series)
 
 Reduce is powerful, much more than its siblings. You can use it not only to sum values (the classic "hello world" example for `reduce`), but also to build up a complex end result that may look nothing like what you started with, i.e. the list you are calling `reduce` upon. It's a mistake to think of `reduce` in terms of what that word means in English; you're not necessarily making something smaller than what you started with, you can make pretty much anything, of any size[^n].
 

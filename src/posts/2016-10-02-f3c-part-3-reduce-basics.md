@@ -7,7 +7,7 @@ tags:
 ---
 FunFunFunction Video: [Reduce basics - Part 4 of Functional Programming in JavaScript](https://www.youtube.com/watch?v=Wl98eZpkp-c&list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84&index=3)
 
-(This post is part of the [F3C](/f3c/) series)
+(This post is part of the [F3C](/blog/posts/2016/10/02/f3c-a-funfunfunction-companion-series/) series)
 
 Higher-order functions `map`, `filter` and `reject` perform list transformations, where each time, the end result is still a list. `find` is a related function which is designed to return just a single element. 
 

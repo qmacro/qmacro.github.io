@@ -7,7 +7,7 @@ tags:
 ---
 FunFunFunction Video: [Closures - Part 5 of Functional Programming in JavaScript](https://www.youtube.com/watch?v=CQqwU2Ixu-U&list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84&index=5)
 
-(This post is part of the [F3C](/f3c/) series)
+(This post is part of the [F3C](/blog/posts/2016/10/02/f3c-a-funfunfunction-companion-series/) series)
 
 Functions have a signature (the parameters) and the body. The body is defined in a block, traditionally in curly braces[^n]. This block defines a scope, directly relating to the body of the function. In other words, it's function scope. 
 

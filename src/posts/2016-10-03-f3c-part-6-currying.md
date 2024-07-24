@@ -7,7 +7,7 @@ tags:
 ---
 FunFunFunction Video: [Currying - Part 6 of Functional Programming in JavaScript](https://www.youtube.com/watch?v=iZLP4qOwY8I&index=6&list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84)
 
-(This post is part of the [F3C](/f3c/) series)
+(This post is part of the [F3C](/blog/posts/2016/10/02/f3c-a-funfunfunction-companion-series/) series)
 
 The "what" part of currying is quite straightforward. The "why" takes a little more time to understand, but once you do, it's a big "aha" moment.
 

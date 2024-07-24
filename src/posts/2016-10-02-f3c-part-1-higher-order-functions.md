@@ -7,7 +7,7 @@ tags:
 ---
 FunFunFunction Video: [Higher Order Functions - Part 1 of Functional Programming in JavaScript](https://www.youtube.com/watch?v=BMUiFMZr7vk&list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84&index=1)
 
-(This post is part of the [F3C](/f3c/) series)
+(This post is part of the [F3C](/blog/posts/2016/10/02/f3c-a-funfunfunction-companion-series/) series)
 
 Functional programming makes you a better programmer because you're going to be writing less code. Less code because you're able to reuse more, and also because you're not having to write 'mechanics'. You're writing more *what* you want, rather than *how* to get it. There are fewer bugs too, not only simply because there's less code, but that code is easier to reason about.
 

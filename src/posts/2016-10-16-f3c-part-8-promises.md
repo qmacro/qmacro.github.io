@@ -7,7 +7,7 @@ tags:
 ---
 FunFunFunction Video: [Promises - Part 8 of Functional Programming in JavaScript](https://www.youtube.com/watch?v=2d7s3spWAzo&index=8&list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84)
 
-(This post is part of the [F3C](/f3c/) series)
+(This post is part of the [F3C](/blog/posts/2016/10/02/f3c-a-funfunfunction-companion-series/) series)
 
 This video episode was recorded over a year ago. Since that time, a native implementation of Promises is available in my scratchpad of choice, (the developer tools console of) Google Chrome. So there's no requirement for us to use `babelify/polyfill` or other similar techniques, we can just go ahead and say:
 

@@ -7,7 +7,7 @@ tags:
 ---
 FunFunFunction Videos: [Functors - FunFunFunction #10](https://www.youtube.com/watch?v=YLIH8TKbAh4&index=9&list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84) and [Functors: I was WRONG! - FunFunFunction #11](https://www.youtube.com/watch?v=DisD9ftUyCk&list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84&index=10) (yes, the sequence numbers are a bit mixed up, don't worry though)
 
-(This post is part of the [F3C](/f3c/) series)
+(This post is part of the [F3C](/blog/posts/2016/10/02/f3c-a-funfunfunction-companion-series/) series)
 
 There are two videos in the series. In the first, MPJ explores what functors are, and based on material in the blogosphere, makes some statements that aren't quite accurate. So he follows up with a second video correcting those statements, which I think was an excellent way to fix things. There's a lot to be said for learning by watching other people learn.
 
