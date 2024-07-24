@@ -3,6 +3,7 @@ layout: post
 title: F3C Part 6 - Currying
 tags:
   - language-ramblings
+  - f3c
 ---
 FunFunFunction Video: [Currying - Part 6 of Functional Programming in JavaScript](https://www.youtube.com/watch?v=iZLP4qOwY8I&index=6&list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84)
 

@@ -3,6 +3,7 @@ layout: post
 title: F3C Part 3 - Reduce basics
 tags:
   - language-ramblings
+  - f3c
 ---
 FunFunFunction Video: [Reduce basics - Part 4 of Functional Programming in JavaScript](https://www.youtube.com/watch?v=Wl98eZpkp-c&list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84&index=3)
 
