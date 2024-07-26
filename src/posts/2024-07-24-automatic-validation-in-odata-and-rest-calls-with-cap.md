@@ -248,6 +248,7 @@ What does this mean for us? Well, trying any of the "incorrect" requests that we
 
 (The reference to property `"0"` is based on the fact that in JavaScript, "everything is an object").
 
+<a name="opentypes"></a>
 ### Open types
 
 This isn't as bad as it seems!
