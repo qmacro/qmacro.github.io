@@ -10,6 +10,8 @@ A quick hack to work around the current issue with `lazydocker` and SSH-based re
 
 I've used the excellent [lazydocker](https://github.com/jesseduffield/lazydocker) before, but only occasionally, reverting to the `docker` CLI for most of my monitoring work. I thought I'd start using it again and learn more about it. While I can (and have) run `lazydocker` [as a Docker container](https://github.com/jesseduffield/lazydocker?tab=readme-ov-file#docker) I wanted to run it locally in the Linux container of my Chromebook and connect remotely to my Docker engines running on various machines.
 
+> If you are going to run `lazydocker` [as a Docker container](https://github.com/jesseduffield/lazydocker?tab=readme-ov-file#docker) then I recommend you build the image yourself (the `Dockerfile` is in the repo) as the [image on DockerHub](https://hub.docker.com/r/lazyteam/lazydocker) is rather out of date.
+
 I manage these remote engines via [Docker contexts](https://docs.docker.com/engine/manage-resources/contexts/). Running `docker context ls` here shows me this:
 
 ```log
