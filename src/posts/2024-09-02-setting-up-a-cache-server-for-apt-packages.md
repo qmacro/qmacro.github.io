@@ -485,6 +485,10 @@ Pretty excellent!
 
 So there you have it - the results of my investigations into and early use of `apt-cacher-ng` as one component in a setup to reduce my Internet bandwidth usage. Running this on the "cacher" LXC container on my Proxmox host is great, and thanks to Tailscale, I can use it from anywhere. 
 
+## Update
+
+There are some very useful and interesting comments on this topic [over on the Lobsters entry for this post][18].
+
 [1]: /tags/narrowboat/
 [2]: /blog/posts/2023/01/09/working-from-a-narrowboat-internet-connectivity/
 [3]: /tags/docker/
@@ -502,4 +506,4 @@ So there you have it - the results of my investigations into and early use of `a
 [15]: https://www.unix-ag.uni-kl.de/~bloch/acng/html/howtos.html#ssluse
 [16]: https://docs.docker.com/engine/install/debian/
 [17]: https://gist.github.com/qmacro/6f44f73384b9fef39737bfcfd160bcf8#file-lxc-container-setup-L74-L75
-
+[18]: https://lobste.rs/s/u6vco1/setting_up_cache_server_for_apt_packages
