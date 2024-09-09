@@ -59,7 +59,7 @@ Follow me on [Mastodon](//hachyderm.io/@qmacro) and [LinkedIn](https://www.linke
 <a name="bio"></a>
 ## Bio and photos
 
-Here's a short bio, which can also be found on the [Developer Advocates](https://developers.sap.com/developer-advocates.html) page:
+Here's a short bio (and there's a slightly longer alternative on the [Developer Advocates](https://developers.sap.com/developer-advocates.html) page):
 
 > Developer Advocate at SAP. O'Reilly and SAP Press author. SAP community pioneer and original SAP Community co-creator. Learner. Coffee drinker. Runner. "Bulldog of logic". Opinions my own, and there are many of them.
 
