@@ -61,12 +61,6 @@ Follow me on [Mastodon](//hachyderm.io/@qmacro) and [LinkedIn](https://www.linke
 
 Here's a short bio, which can also be found on the [Developer Advocates](https://developers.sap.com/developer-advocates.html) page:
 
-> DJ focuses on integration and extension topics on the SAP Business Technology Platform. He runs a regular live stream show "Hands-on SAP Dev" on the SAP Developers YouTube channel and enjoys sharing his curiosity on many SAP development topics. He read Classics at university, has worked on SAP systems since 1987, created the first online SAP community in 1995, co-created what is known today as the SAP Community, and is a lifelong learner.
+> Developer Advocate at SAP. O'Reilly and SAP Press author. SAP community pioneer and original SAP Community co-creator. Learner. Coffee drinker. Runner. "Bulldog of logic". Opinions my own, and there are many of them.
 
 There are a couple of photos ([with jacket](../images/DJA-with-jacket.jpg) and [without jacket](../images/DJA-without-jacket.jpg)) available too, if you're looking for something more formal than my normal <a href="#main">floating head</a>.
-
-<a name="currentcontent"></a>
-## My current content
-
-I emit content in various places, and I have a [dynamic profile page](https://github.com/qmacro) that shows the latest items from each area.
-
