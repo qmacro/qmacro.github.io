@@ -82,7 +82,7 @@ I can get the SSH-based host value `ssh://dj@docker` which I can then set in `DO
 Putting this all together I have now an alias `lado` defined thus:
 
 ```shell
-alias lado='DOCKER_HOST="$(docker context inspect --format {% raw %}'{{.Endpoints.docker.Host}}{% endraw %}') lazydocker'
+alias lado="DOCKER_HOST=$(docker context inspect --format {% raw %}'{{.Endpoints.docker.Host}}'{% endraw %}) lazydocker"
 ```
 
 which sets the appropriate value, from the current context, in `DOCKER_HOST`, and invokes `lazydocker`.
