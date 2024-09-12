@@ -6,7 +6,7 @@ tags:
   - debian
   - cacheing
   - homeops
-  - proxbox
+  - proxmox
   - chromebox
   - asus
   - narrowboat
