@@ -14,7 +14,7 @@ I'm not a great fan of slides, but am not against them either. I use them someti
 
 Sometimes, only when absolutely necessary, some slides will have more detail on them. 
 
-A slide deck is not the talk content. A slide deck is there to aid the talk, to enhance it, to provide a bit of context (or light relief) for those attending. They're there to support what's being said, to underpin the message. 
+A slide deck is not the talk content. A slide deck is there to aid the talk, to enhance it, to provide a bit of context (or light relief) for those attending. The slides are there to support what's being said, to underpin the message. 
 
 That's why, sometimes, I don't use slides at all. I just show stuff on my computer, fumble around and wave my arms about wildly. Anything to get the point across, to help explain what I'm trying to say, to be more effective in landing the concepts that I'm attempting to convey.
 
