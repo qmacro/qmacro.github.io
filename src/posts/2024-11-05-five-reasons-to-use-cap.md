@@ -54,7 +54,22 @@ That in turn means you can focus your efforts on the important stuff - defining 
 
 ## 2 Domain modelling is a first class citizen
 
-Talking of data models and how they're defined - well this is where CAP shines, and is a major reason to adopt it. It shines not only from a technical perspective, but perhaps more subtly and more importantly from a philosophical perspective.
+Talking of data models and how they're defined - well this is where CAP shines, and is a major reason to use CAP. It shines not only from a technical perspective, but perhaps more subtly and more importantly from a philosophical perspective.
+
+### Project roles
+
+When I started out in my computing career, there were operators (who looked after the mainframes at data centres which I guess were the "private clouds" for organisations), key users, systems analysts and programmers (that last role was also subdivided into systems programmers and application programmers[<sup>2</sup>](#footnotes), but again, that's a story for a different time). I think over the years we've in part lost our way a little in terms of those roles and the interplay between them.
+
+### Domain driven design
+
+CAP reinvigorates those roles and celebrates the combination of people with different skills that are all important to building the right thing, and building it right. I'm talking of course about [Domain Driven Design][7] (DDD) and how CAP supports and [promotes][8] it.
+
+The initialism CDS, and the acronym CAP, are sometimes interchangeable. That speaks volumes about how important domain modelling is, and the role of the domain expert. Why? Well, perhaps it's worth taking a moment to unpack these terms, for a bit of insight.
+
+* CAP is the short form for the actual framework itself, of course.
+* CDS, which stands for Core Data Services, is in fact a collection of what I like to consider domain specific languages (DSLs), little languages that serve a single, focused purpose. CDS is also used to refer to the overall domain model, and is the extension for the files where the model is defined.
+* Within the context of CDS modelling, there's a human centric and a machine centric version of the modelling language itself. CDL is the human readable and writeable Definition Language which is both rich in expressiveness, and frugal in mechanics and complexity, providing the perfect common language for domain experts to collaborate with developers on the domain model. Accompanying CDL is CSN[<sup>3</sup>](#footnotes) which is the Schema Notation, the machine-readable version of the domain model.
+* Further languages include CQL and CQN, a similar pairing but focused on defining and representing data queries (a Query Language and the Query Notation respectively).
 
 While CAP promotes DDD, it does so in a way that doesn't overly burden the domain expert with technical concepts. Quite the opposite, in fact. A key superpower available to the team of domain expert and developer, when iterating on exploring, defining and building out the domain model of the problem or task at hand, is that simplicity is baked in, and at different levels.
 
