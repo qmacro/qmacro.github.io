@@ -98,6 +98,8 @@ Many of these details are realised via (defined as) annotations, but the point i
 
 I have been lucky enough to see the various ages of SAP software, starting with SAP R/2 (mainframe, assembler based) in the mid-to-late 1980's at the start of my computing career. Throughout the decades there have been trends that have come (and sometimes gone), platforms that came to prominence for runtime adoption (mainframe -> Unix -> *aaS), and languages, frameworks and protocols that have found favour with developers[<sup>4</sup>](#footnotes).
 
+### A theme through the ages
+
 What's remained almost constant through these ages in the SAP software universe is the theme of abstraction. From how the spool subsystem (to take a simple example) or the [TP monitor][13] (to take a larger component[<sup>5</sup>](#footnotes)) was abstracted in the R/2 era, and how the dispatching and handling of tasks over single or even multiple physical machines was abstracted in the R/3 era, SAP software, and ultimately developers, have benefitted from abstraction.
 
 ### Abstraction in CAP
@@ -150,13 +152,19 @@ I'm merely scratching the surface of this theme with the features and facilities
 
 How could I not include one of the most appealing -- but non-technical -- aspects of CAP? The sense of community plays an important part in many software projects, especially frameworks such as CAP, which are used by a broad and diverse set of developers. And there is the activity within the CAP team itself, with a regular cadence of releases. 
 
+### CAP team activity
+
 Let me talk about the CAP team activity first. CAP is a very actively developed framework, as you can see from the [release schedule][23], which includes a new major version every year, and other releases every month. Each one is lovingly detailed in release notes that form part of the excellent CAP documentation, affectionately known as [Capire][30].
 
 Talking of yearly, there's the annual CAP conference, [re>≡CAP][24], which takes place in the summer, and has so far been held in St Leon Rot, Germany. This is a one-day conference where developers can hear from, meet with and chat to fellow developers, including those of the CAP team internally at SAP too. By the way, all the talks are recorded for viewing on demand.
 
+### Other events
+
 There are regular [SAP CodeJams][24] throughout the year, a good number of which are on the topic of CAP. And if you can't get to one of the events, you can at least still enjoy the content, which is [available on GitHub][26].
 
 Extending the community content a little, there are active channels on the [SAP Mentors & Friends][27] Slack workspace, and there's a regular posse that hangs out on Fridays during the [Hands-on SAP Dev][28] live stream show.
+
+### Melting pot
 
 And on GitHub, the [cap-js][29] organisation is the collaborative melting pot of projects, documentation and extensions & plugins that sit between the internal and external CAP development groups.
 
