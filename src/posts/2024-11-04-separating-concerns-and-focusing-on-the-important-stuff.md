@@ -26,6 +26,7 @@ If the domain being modelled is what's important, what's *not* of primary import
 
 and more.
 
+<a name="using-aspects"></a>
 ## Using aspects
 
 How do aspects help here? The classic bookshop domain model has a perfect example:
