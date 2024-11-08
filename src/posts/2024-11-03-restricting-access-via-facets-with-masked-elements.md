@@ -38,7 +38,9 @@ service CatalogService {
 }
 ```
 
-In this `Products` projection example, the `created` element is explicitly excluded, rather than being "clobbered", and a new element `since` is declared instead, referencing `created.at`. In case you're wondering, `created` is an element from the `ManagedObject` aspect shown earlier in the CDL section:
+In this `Products` projection example, the `created` element is explicitly excluded, rather than being "clobbered", and a new element `since` is declared instead, referencing `created.at`.
+
+In case you're wondering, `created` is an element from the `ManagedObject` aspect shown earlier in the CDL section:
 
 ```cds
 aspect ManagedObject {
