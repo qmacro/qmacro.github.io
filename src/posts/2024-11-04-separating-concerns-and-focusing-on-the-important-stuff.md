@@ -151,7 +151,7 @@ The magic of CAP's convention over configuration and how the CDS compiler pulls 
 
 ## Easy refactoring
 
-The relaxed nature of iterating on the eventual CDS model with CDL means that it's simple and also zero cost to refactor; it's easy to work towards separated concerns and a stronger focus on what's relevant at any given time.
+The relaxed nature of iterating on the eventual CDS model with CDL means that it's simple and also near zero cost to refactor; it's easy to work towards separated concerns and a stronger focus on what's relevant at any given time.
 
 We see an example of this around 43 mins in, where Daniel moved the still-remaining "noisy" access control annotation that sat alongside the definition of the `TravelService` (visible above, specifically the `@(restrict: [ ... ])` annotation) into a separate file `srv/access-control.cds`, like this:
 
