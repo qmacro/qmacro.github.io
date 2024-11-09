@@ -42,7 +42,7 @@ entity Invoices : BusinessObject {
 
 Nothing untoward here, and of course we can appreciate the [use of aspects][4] with the `:` shortcut syntax.
 
-With the arrival of the middle layer team and their requirement to have the core layer `BusinessObject` have another element relating to their `User` entity definition which looked like this, in their `middle.cds` file:
+Now the middle layer team arrives with their requirement to have the core layer `BusinessObject` have another element relating to their `User` entity definition which looked like this, in their `middle.cds` file:
 
 ```cds
 entity Users {
