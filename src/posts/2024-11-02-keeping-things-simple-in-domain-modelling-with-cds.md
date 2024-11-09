@@ -53,7 +53,7 @@ entity Books : managed {
 
 While that seems appealing, it's only appealing to the modelling expert, certainly not the domain expert.
 
-Moreover, and perhaps more subtly too, the introduction and use of this structured type brings about extra work: now, one must explicitly ensure that the value of each of the currency elements `price.currency`, `totalprice.currency` and `totalprice.currency` is the same!
+Moreover, and perhaps more subtly too, the introduction and use of this structured type brings about extra work: now, one must explicitly ensure that the value of each of the currency elements `price.currency`, `totalprice.currency` and `netprice.currency` is the same!
 
 Embracing the [KISS principle][2] and simply having a single `currency` element at the same level swings the pendulum back in the right direction -- towards the domain expert -- and also removes the currency matching burden that was introduced by the use of the structured type:
 
