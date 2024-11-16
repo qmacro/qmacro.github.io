@@ -6,6 +6,9 @@ tags:
   - cap
   - talk
 ---
+
+_This is now available in audio format on the [Tech Aloud podcast][34]: [Five reasons to use CAP - DJ Adams - 07 Nov 2024][35]._
+
 The SAP Cloud Application Programming Model (CAP) is an incredible feat of design and engineering. Not only that, but with respect to the core philosophy for SAP's ERP systems -- how they are to remain maintainable and upgradeable ("keep the core clean"), and how customers, partners and individual developers can add value by extending the business application functionality delivered as standard -- CAP is the goto, key strategic framework, along with its sibling the RESTful Application Programming Model (RAP), that has emerged triumphant, celebrated and dare I say "blessed" by SAP as what we should be using to work with and enhance what is delivered with SAP S/4HANA and more.
 
 Moreover, CAP is not "just for us mere mortals" (otherwise known as "externals") - it's becoming the goto framework for product teams inside SAP too. And who doesn't want to grow skills in a framework with which future standard functionality is being delivered?
@@ -128,7 +131,7 @@ It's hard to overemphasise how useful the [CDS language server][18] is for domai
 
 ### Test data
 
-What about data? While it's all very well having facilities to easily and rapidly build the right model, the right set of services and have those services made available via, say, OData, immediately, it's another thing to also conjure up sample data and have that served as part of the given OData service. It couldn't be simpler: the CAP server pick up CSV or JSON data files and prime the service with data therein, at startup.
+What about data? While it's all very well having facilities to easily and rapidly build the right model, the right set of services and have those services made available via, say, OData, immediately, it's another thing to also conjure up sample data and have that served as part of the given OData service. It couldn't be simpler: the CAP server picks up CSV or JSON data files and primes the service with data therein, at startup.
 
 Through the constant delight of convention over configuration, you don't even have to specify where those files are - there are standard locations (for sample data and for initial data) and if you create files in the expected place, the magic happens automatically. What's more, if you're unable or unwilling to generate your own test data, you can get the CLI to do that for you, and it will not only follow the same rules but generate data that complies with the types and constraints in the model, and that is aware of the relationships (and necessary foreign key identifiers) so that Things Just Work(tm).
 
@@ -224,3 +227,5 @@ But I've run out of time and space, so I'll stop here. I hope this has resonated
 [31]: https://community.sap.com/t5/technology-blogs-by-sap/what-s-new-in-sap-cloud-application-programming-model-sap-teched-2023/ba-p/13576447
 [32]: https://www.sap.com/events/teched/virtual/flow/sap/te24/catalog/page/catalog/session/1723584532995001g7Xm
 [33]: https://cap.cloud.sap/docs/get-started/hello-world
+[34]: https://qmacro.org/blog/posts/2019/09/17/new-podcast-tech-aloud/
+[35]: https://creators.spotify.com/pod/show/tech-aloud/episodes/Five-reasons-to-use-CAP---DJ-Adams---07-Nov-2024-e2r2lth
