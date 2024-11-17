@@ -16,7 +16,8 @@ Here's an example sequence[<sup>2</sup>](#footnotes):
 
 I noticed that after creating a sequence, the sequence detail could be saved in a URL fragment with the "Copy Link" button, which was a nice touch. The [sequence above][5] is represented in the ToneMatrix player URL like this:
 
-<https://tonematrix.audiotool.com/#0.0.0.0.0.0.0.52i.pb4.dh7.0.0.0.0.0.0>
+[https://tonematrix.audiotool.com/
+#0.0.0.0.0.0.0.52i.pb4.dh7.0.0.0.0.0.0](https://tonematrix.audiotool.com/#0.0.0.0.0.0.0.52i.pb4.dh7.0.0.0.0.0.0)
 
 Anyway, rather than create a random sequence, I decided to try to encode the podcast name "Tech Aloud" as the source to the sequence. This was based on the idea that if I could create a sequence and have that encoded in the URL, I could generate an encoding for a sequence based on some values of my own, and then combine that with the base URL to have the matrix pre-loaded with exactly that sequence.
 
@@ -101,7 +102,8 @@ genfrag('Tech Aloud ☕️') // '2k.35.33.38.10.21.3c.3f.3l.34.10.9gl.1vgf'
 
 Plugging this into a ToneMatrix URL gives this:
 
-<https://tonematrix.audiotool.com/#2k.35.33.38.10.21.3c.3f.3l.34.10.9gl.1vgf>
+[https://tonematrix.audiotool.com/
+#2k.35.33.38.10.21.3c.3f.3l.34.10.9gl.1vgf](https://tonematrix.audiotool.com/#2k.35.33.38.10.21.3c.3f.3l.34.10.9gl.1vgf)
 
 which turns out to be a very pleasant sequence[<sup>3</sup>](#footnotes):
 
