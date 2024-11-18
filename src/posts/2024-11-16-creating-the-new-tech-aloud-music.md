@@ -6,7 +6,7 @@ tags:
   - techaloud
   - javascript
 ---
-Today I revived my [Tech Aloud][1] podcast[<sup>1</sup>](#footnotes). Since the last time I published an episode, the infrastructure has changed, in that the Anchor FM platform I was using has been subsumed into Spotify. While in the longer term I want to move to my own podcast platform (perhaps [Castopod][3]), I wanted to get a new episode out, specifically a recording of my recent long-form blog post [Five reasons to use CAP][4].
+Today I revived my [Tech Aloud][1] podcast[<sup>1</sup>](#footnotes). Since the last time I published an episode, the infrastructure has changed, in that the Anchor FM platform I was using has been subsumed into Spotify. While in the longer term I want to move to my own podcast platform (perhaps [Castopod][3]), I wanted to get a new episode out, specifically a recording of my recent long-form blog post [Five reasons to use CAP][9].
 
 Unfortunately, the simple recording tools in Anchor FM didn't exist any more. These tools included audio snippets to add as intro / outro material to episodes, which was nice. But without those, I had to find something new. So I decided to create my own, using a pentatonic step sequencer called [ToneMatrix][4], by Audiotool. The Web-based tool is a mesmerising experience and for folks like me interested in sequencers and the peace of order and structure, it's lovely to experiment with.
 
@@ -129,3 +129,4 @@ So that's what I'm using now as my intro and outro music for the Tech Aloud podc
 [6]: https://en.wikipedia.org/wiki/Glider_(Conway%27s_Game_of_Life)
 [7]: https://tonematrix.audiotool.com/bin/tonematrix/model.js
 [8]: /images/2019/09/tech-aloud.jpeg
+[9]: /blog/posts/2024/11/07/five-reasons-to-use-cap/
