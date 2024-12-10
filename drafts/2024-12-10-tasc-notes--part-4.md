@@ -14,7 +14,11 @@ For all resources related to this series, see the post [The Art and Science of C
 
 Started this episode with a [review of the previous episode][1] (where we collectively decided to make my episode notes into published blog posts like this one).
 
+## Functional programming concepts
+
 Daniel brought up a slide deck from one of my talks on Functional Programming, [Functional programming introduction: What, why, how?][2] and the person in the photo on slide four is of course [John McCarthy][3] (well done VJ), father of Lisp. In this context we also touched on [currying][4] (which incidentally is named after [Haskell Curry][6], after whom the pure FP language [Haskell][7] is also named) and [partial application][5], and then on the concept of a [closure][8] - a beautiful technique for implementing lexically scoped name bindings in a language that has support for first class functions (such as JavaScript!).
+
+## Everything is a service
 
 Daniel then turned to the [Getting Started][9] area of Capire, and in particular the [Services][11] section of the [Best Practices][10] topic, where he turns around "When all you have is a hammer, every (thing) is a nail" into "Everything (in CAP) is a service".
 
@@ -22,7 +26,7 @@ In contrast to the "hammer and nail" adage, this axiom is something positive her
 
 In digging into this, and thinking about lower level facilities abstracted upwards as services, and binding in the related idea ([captured in Part 2][12]) that "everything is an event", Daniel made this statement:
 
-> The sum of all your event handlers registered with the service ... is your implementation.
+> "The sum of all your event handlers registered with the service ... is your implementation."
 
 That goes for both local and remote events as well as local and remote services, plus built-in services ... such as a database service, as illustrated in the [Extensible Framework][13] section:
 
@@ -38,17 +42,170 @@ This thinking, this approach, is inspired by Smalltalk's concept of "messaging",
 
 Daniel goes on to explain Smalltalk's [#doesNotUnderstand][15] mechanism which can be effectively turned into a proxy for other services. This idiom is also present in other languages, for example Ruby, in the form of the [method_missing][16] method[<sup>1</sup>](#footnotes).
 
-At around 27 mins in, Daniel opens the REPL, and explains how the set of built-in REPL commands (that begin with a period, such as `.help`), can be extended, and that's what we have in the REPL (started with `cds repl`):
+## The REPL
 
-* `.inspect`
-* `.run`
+At around 27 mins in, Daniel opens the REPL, and explains how the set of built-in REPL commands (that begin with a period):
 
-In highlighting that the `cds` object is also available, Daniel takes the opportunity to show how the `cds` object, as a front-door facade to everything in the runtime that you might need, is implemented, in `cds/lib/index.js`. Not only are [super] getters involved, but also the general "lazy loading" effect of said getters is used to great effect - a more rapid startup of the server.
+```log
+Type ".help" for more information.
+> .help
+.break    Sometimes you get stuck, this gets you out
+.clear    Alias for .break
+.editor   Enter editor mode
+.exit     Exit the REPL
+.help     Print this help message
+.load     Load JS from a file into the REPL session
+.save     Save all evaluated commands in this REPL session to a file
+```
 
-Here's a simple example of that lazy loading:
+can be extended, with the REPL started with `cds repl` we also have `.inspect` and `.run`:
+
+```log
+Welcome to cds repl v 8.5.1
+> .help
+.break     Sometimes you get stuck, this gets you out
+.clear     Alias for .break
+.editor    Enter editor mode
+.exit      Exit the REPL
+.help      Print this help message
+.inspect   Sets options for util.inspect, e.g. `.inspect .depth=1`.
+.load      Load JS from a file into the REPL session
+.run       Runs a cds server from a given CAP project folder, or module name like @capire/bookshop.
+.save      Save all evaluated commands in this REPL session to a file
+```
+
+We'll come back to `.inspect` and `.run` later.
+
+## Lazy loading of the cds facade's many features
+
+In highlighting that the `cds` object is also available, Daniel takes the opportunity to show how the `cds` object, as a front-door facade to everything in the runtime that you might need, is implemented, in `@sap/cds/lib/index.js`. Not only are [super] getters involved, but also the general "lazy loading" effect of said getters is used to great effect - a more rapid startup of the server.
+
+Here's a [simple example][25] of that lazy loading, based on a simple object definition that looks like this:
+
+```javascript
+const thing = {
+    name: "Life",
+    get number() { console.log("in getter"); return 42; }
+} 
+```
+
+Look at the results of each of the REPL's eager evaluations:
+
+* the object itself is shown as `{ name: 'Life', number: [Getter]}`
+* the value of the `name` property is immediately available (`Life`)
+* the value of `number` is not yet available (we are just shown `[Getter]`)
+* `number`'s value is only resolved when explicitly requested - only then does it cause the function to be executed
+
+As the [MDN docu for `get` states][26]: "The get syntax binds an object property to a function _that will be called when that property is looked up_. It can also be used in classes" (emphasis mine):
 
 ![lazy loading with getter][24]
 
+I mentioned in passing this was like a [thunk][27], which is similar, in that it is a mechanism "primarily used to delay a calculation until its result is needed", the concept of which goes back to ALGOL 60.
+
+## More on the REPL
+
+Daniel demonstrated the getter-powered lazy loading effect with the `cds` object, in that after requesting the `env` property, which is lazily defined in `@sap/cds/lib/index.js`[<sup>2</sup>](#footnotes) like this:
+
+```javascript
+get env() { return super.env = require('./env/cds-env').for('cds',this.root) }
+```
+
+causes the inspected `cds` object to "grow" with the just-evaluated `env` property. Which is where the `cds repl`'s `.inspect` command comes in, as it allows you to limit the depth to which nested objects will be displayed. Incidentally, if you take a look at the source code for the `.inspect` command, you'll see a strong FP influence with the use of [head and tail][28], the yin-yang pair of building blocks of [recursion and list machinery][29]. And while you're looking at that source code (in `@sap/cds-dk/bin/repl.js`), note that the default inspect depth ... is also a [Schnapszahl][30]:
+
+```javascript
+inspect.defaultOptions.depth = 11
+```
+
+Daniel then moved on to demonstrate the other additional command, `.run`, which uses `cds.test()` behind the scenes. It is "cap-monorepo-aware" in that one can reference services in subdirectories, like this:
+
+```log
+.run cap/samples/bookshop
+```
+
+and this will start a CAP server up pretty much in the same way as we're used to with `cds watch` for example.
+
+> If you want to follow along with this exploration, see the [Appendix - setting up a test environment](#appendix1).
+
+What's more, though, is that it will also automatically expose REPL-global values representing important aspects of your service and the services upon which it relies:
+
+```log
+from cds.entities: {
+    Books,
+    Authors,
+    Genres,
+}
+from cds.services: {
+    db,
+    AdminService,
+    CatalogService,
+    UserService,
+}
+
+Simply type e.g. Books or db in the prompt to use the respective objects.
+```
+
+These values can be combined, as Daniel showed, like this:
+
+```log
+> CatalogService.read(Books)
+Query {
+  SELECT: { from: { ref: [ 'sap.capire.bookshop.Books' ] } }
+}
+```
+
+This example produces a query, which is a first class citizen (taking direction again from FP, just in this case we're dealing with queries, not functions) that can be stored:
+
+```log
+> q = CatalogService.read(Books)
+Query {
+  SELECT: { from: { ref: [ 'sap.capire.bookshop.Books' ] } }
+}
+```
+
+modified:
+
+```log
+> q.where({ID:201})
+Query {
+  SELECT: {
+    from: { ref: [ 'sap.capire.bookshop.Books' ] },
+    where: [ { ref: [ 'ID' ] }, '=', { val: 201 } ]
+  }
+}
+```
+
+and (eventually) executed, via `await`, which executes `cds.run`:
+
+```log
+> await q
+[
+  {
+    createdAt: '2024-12-10T17:26:39.236Z',
+    createdBy: 'anonymous',
+    modifiedAt: '2024-12-10T17:26:39.236Z',
+    modifiedBy: 'anonymous',
+    ID: 201,
+    title: 'Wuthering Heights',
+    descr: `Wuthering Heights, Emily Brontë's only novel, was published in 1847 under the pseudonym "Ellis Bell". It was written between October 1845 and June 1846. Wuthering Heights and Anne Brontë's Agnes Grey were accepted by publisher Thomas Newby before the success of their sister Charlotte's novel Jane Eyre. After Emily's death, Charlotte edited the manuscript of Wuthering Heights and arranged for the edited version to be published as a posthumous second edition in 1850.`,
+    author_ID: 101,
+    genre_ID: 11,
+    stock: 12,
+    price: 11.11,
+    currency_code: 'GBP'
+  }
+]
+```
+
+But - HOW DOES THAT EVEN WORK?!
+
+
+
+
+
+
+
+
+---
 
 <a name="footnotes"></a>
 ## Footnotes
@@ -85,6 +242,126 @@ Type ".help" for more information.
 
 Note also that the word "lambda", used here specifically and syntactically in Lisp as the symbol for an anonymous function, has become the de facto term for anonymous functions in general - for example, Python [uses the term][21], and AWS has a Functions-as-a-Service (FaaS) offering called [Lambda][22].
 
+&nbsp;
+
+2. This is with `@sap/cds` version 8.5.1 at the time of writing.
+
+---
+
+<a name="appendix1"></a>
+## Appendix - setting up a test environment
+
+If you want to set up a test environment exactly like the one used for this post, specifically the REPL illustrations, then you can. I do most things in containers, and I have different container images representing CAP Node.js at different versions. For the illustration in this blog post I am using CDS 8.5.1 with Node.js major version 22.
+
+First, download the CAP image builder, build the base image and an 8.5.1 specific version:
+
+```shell
+git clone https://github.com/qmacro/cap-con-img && cd cap-con-img
+./buildbase && ./buildver 8.5.1
+```
+
+Now start up a temporary container based on that image:
+
+```shell
+docker run --rm -it cap-8.5.1 bash
+```
+
+This will give you a Bash shell prompt:
+
+```shell
+node ➜ ~
+$
+```
+
+Now, in that shell, you can clone the [cloud-cap-samples][31] repo to enjoy the structured set of services:
+
+```shell
+git clone https://github.com/SAP-samples/cloud-cap-samples \
+  && cd cloud-cap-samples
+```
+
+After installing the dependencies:
+
+```shell
+npm install
+```
+
+you can start the REPL:
+
+```shell
+cds repl
+```
+
+which will give you the prompt you're looking for:
+
+```log
+Welcome to cds repl v 8.5.1
+>
+```
+
+where you can start to experiment with:
+
+```shell
+.run bookshop
+```
+
+which will produce something like this:
+
+```log
+[cds] - loaded model from 5 file(s):
+
+  bookshop/srv/user-service.cds
+  bookshop/srv/cat-service.cds
+  bookshop/srv/admin-service.cds
+  bookshop/db/schema.cds
+  node_modules/@sap/cds/common.cds
+
+[cds] - connect to db > sqlite { url: ':memory:' }
+  > init from bookshop/db/init.js
+  > init from bookshop/db/data/sap.capire.bookshop-Genres.csv
+  > init from bookshop/db/data/sap.capire.bookshop-Books.texts.csv
+  > init from bookshop/db/data/sap.capire.bookshop-Books.csv
+  > init from bookshop/db/data/sap.capire.bookshop-Authors.csv
+/> successfully deployed to in-memory database.
+
+[cds] - using auth strategy {
+  kind: 'mocked',
+  impl: 'node_modules/@sap/cds/lib/srv/middlewares/auth/basic-auth'
+}
+
+[cds] - using new OData adapter
+[cds] - serving AdminService { impl: 'bookshop/srv/admin-service.js', path: '/admin' }
+[cds] - serving CatalogService { impl: 'bookshop/srv/cat-service.js', path: '/browse' }
+[cds] - serving UserService { impl: 'bookshop/srv/user-service.js', path: '/user' }
+
+[cds] - server listening on { url: 'http://localhost:46025' }
+[cds] - launched at 12/10/2024, 5:26:38 PM, version: 8.5.0, in: 887.147ms
+[cds] - [ terminate with ^C ]
+
+------------------------------------------------------------
+Following are made available as repl globals:
+
+from cds.entities: {
+  Books,
+  Authors,
+  Genres,
+}
+from cds.services: {
+  db,
+  AdminService,
+  CatalogService,
+  UserService,
+}
+
+Simply type e.g. Books or db in the prompt to use the respective objects.
+
+>
+```
+
+whereupon you're ready to explore as we do in this post.
+
+
+
 
 [1]: /blog/posts/2024/11/29/tasc-notes-part-3/
 [2]: https://docs.google.com/presentation/d/1VWGEutu0o541a81GPCHG-pQ6IhX8TXC9WwM90JPtIwc/edit
@@ -110,6 +387,14 @@ Note also that the word "lambda", used here specifically and syntactically in Li
 [22]: https://aws.amazon.com/lambda/
 [23]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/super
 [24]: /images/2024/12/lazy-loading-with-getter.gif
+[25]: https://asciinema.org/a/694256
+[26]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get
+[27]: https://en.wikipedia.org/wiki/Thunk
+[28]: https://qmacro.org/blog/posts/2015/10/19/my-journey-to-clojure/
+[29]: https://qmacro.org/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/
+[30]: /blog/posts/2024/11/22/tasc-notes-part-2/
+[31]: /blog/posts/2024/11/29/tasc-notes-part-3/#cloudcapsamples
+
 [98]: https://www.youtube.com/watch?v=kwxvyiC-6FI
 [99]: /blog/posts/2024/12/06/the-art-and-science-of-cap/
 
