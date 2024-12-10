@@ -30,6 +30,7 @@ Talking about AI (✅) Daniel drew the distinction between different generative 
 
 One of the subtle differences between ABAP CDS and CAP CDS is that the former is "view oriented", while the latter is "entity oriented".
 
+<a name="cloudcapsamples"></a>
 Daniel explored the [cloud-cap-samples][11] repo on GitHub which is a great example of how to structure a set of multiple related services together
 
 ![samples][19]
