@@ -8,19 +8,20 @@ tags:
   - cds
   - handsonsapdev
 ---
-These are the raw, unedited notes I took summarising [The Art and Science of CAP part 4][98], one episode in a mini series with Daniel Hutzel to explore the philosophy, the background, the technology history and layers that support and inform the SAP Cloud Application Programming Model.
+These are somewhat more detailed notes than normal that summarise [The Art and Science of CAP part 4][98], one episode in a mini series with Daniel Hutzel to explore the philosophy, the background, the technology history and layers that support and inform the SAP Cloud Application Programming Model.
 
 For all resources related to this series, see the post [The Art and Science of CAP][99].
 
-Started this episode with a [review of the previous episode][1] (where we collectively decided to make my episode notes into published blog posts like this one).
+This episode started with a [review of the previous episode][1] (where we collectively decided to make my episode notes into published blog posts like this one).
 
 ## Functional programming concepts
 
-Daniel brought up a slide deck from one of my talks on Functional Programming, [Functional programming introduction: What, why, how?][2] and the person in the photo on slide four is of course [John McCarthy][3] (well done VJ), father of Lisp. In this context we also touched on [currying][4] (which incidentally is named after [Haskell Curry][6], after whom the pure FP language [Haskell][7] is also named) and [partial application][5], and then on the concept of a [closure][8] - a beautiful technique for implementing lexically scoped name bindings in a language that has support for first class functions (such as JavaScript!).
+At around [13:18][101] Daniel brought up a slide deck from one of my talks on Functional Programming, [Functional programming introduction: What, why, how?][2] and the person in the photo on slide four is of course [John McCarthy][3] (well done VJ), father of Lisp. In this context we also touched on [currying][4] (which incidentally is named after [Haskell Curry][6], after whom the pure FP language [Haskell][7] is also named) and [partial application][5], and then on the concept of a [closure][8] - a beautiful technique for implementing lexically scoped name bindings in a language that has support for first class functions (such as JavaScript!).
 
+<a name="everything-is-a-service"></a>
 ## Everything is a service
 
-Daniel then turned to the [Getting Started][9] area of Capire, and in particular the [Services][11] section of the [Best Practices][10] topic, where he turns around "When all you have is a hammer, every (thing) is a nail" into "Everything (in CAP) is a service".
+At around [17:40][102] Daniel then turned to the [Getting Started][9] area of Capire, and in particular the [Services][11] section of the [Best Practices][10] topic, where he turns around "When all you have is a hammer, every (thing) is a nail" into "Everything (in CAP) is a service".
 
 In contrast to the "hammer and nail" adage, this axiom is something positive here, something which follows the pattern of uniformity and the elevation of abstraction, in that via CAP's adoption of [Hexagonal Architecture][12] the heavy lifting done by the adapters is hidden and of little importance to the application or service developer ... except that (as we see later) that developer can interact with and extend the database connection mechanism as easily and as readily as with their own domain services.
 
@@ -40,11 +41,11 @@ and also the [Calesi][14] services. And this approach allows us as developers ..
 
 This thinking, this approach, is inspired by Smalltalk's concept of "messaging", in that objects send and receive messages, and of course the receipt of a message is ... an event (upon which event-handling code - which we can think of as an indirect method - is executed).
 
-Daniel goes on to explain Smalltalk's [#doesNotUnderstand][15] mechanism which can be effectively turned into a proxy for other services. This idiom is also present in other languages, for example Ruby, in the form of the [method_missing][16] method[<sup>1</sup>](#footnotes).
+Daniel goes on to explain Smalltalk's [#doesNotUnderstand][15] mechanism which can be effectively turned into a proxy for other services. This idiom is also present in other languages, for example Ruby, in the form of the [method_missing][16] method[<sup>1</sup>](#footnote-1).
 
 ## The REPL
 
-At around 27 mins in, Daniel opens the REPL, and explains how the set of built-in REPL commands (that begin with a period):
+At around [27:00][103] Daniel opens the REPL, and explains how the set of built-in REPL commands (that begin with a period):
 
 ```log
 Type ".help" for more information.
@@ -74,7 +75,7 @@ Welcome to cds repl v 8.5.1
 .save      Save all evaluated commands in this REPL session to a file
 ```
 
-We'll come back to `.inspect` and `.run` later.
+We'll come back to `.inspect` and `.run` [later](#more-on-the-repl).
 
 ## Lazy loading of the cds facade's many features
 
@@ -102,21 +103,28 @@ As the [MDN docu for `get` states][26]: "The get syntax binds an object property
 
 I mentioned in passing this was like a [thunk][27], which is similar, in that it is a mechanism "primarily used to delay a calculation until its result is needed", the concept of which goes back to ALGOL 60.
 
+<a name="more-on-the-repl"></a>
 ## More on the REPL
 
-Daniel demonstrated the getter-powered lazy loading effect with the `cds` object, in that after requesting the `env` property, which is lazily defined in `@sap/cds/lib/index.js`[<sup>2</sup>](#footnotes) like this:
+Daniel demonstrated the getter-powered lazy loading effect with the `cds` object, by requesting the `env` property, which is lazily defined in `@sap/cds/lib/index.js`[<sup>2</sup>](#footnote-2) like this:
 
 ```javascript
 get env() { return super.env = require('./env/cds-env').for('cds',this.root) }
 ```
 
-causes the inspected `cds` object to "grow" with the just-evaluated `env` property. Which is where the `cds repl`'s `.inspect` command comes in, as it allows you to limit the depth to which nested objects will be displayed. Incidentally, if you take a look at the source code for the `.inspect` command, you'll see a strong FP influence with the use of [head and tail][28], the yin-yang pair of building blocks of [recursion and list machinery][29]. And while you're looking at that source code (in `@sap/cds-dk/bin/repl.js`), note that the default inspect depth ... is also a [Schnapszahl][30]:
+This caused the inspected `cds` object to "grow" with the just-evaluated `env` property.
+
+### The .inspect command
+
+And at [31:32][104] this is where the `cds repl`'s `.inspect` command comes in, as it allows you to limit the depth to which nested objects will be displayed. Incidentally, if you take a look at the source code for the `.inspect` command, you'll see a strong FP influence with the use of [head and tail][28], the yin-yang pair of building blocks of [recursion and list machinery][29]. And while you're looking at that source code (in `@sap/cds-dk/bin/repl.js`), note that the default inspect depth ... is also a [Schnapszahl][30]:
 
 ```javascript
 inspect.defaultOptions.depth = 11
 ```
 
-Daniel then moved on to demonstrate the other additional command, `.run`, which uses `cds.test()` behind the scenes. It is "cap-monorepo-aware" in that one can reference services in subdirectories, like this:
+### The .run command
+
+A minute later at [32:32][105] Daniel then moved on to demonstrate the other additional command, `.run`, which uses `cds.test()` behind the scenes. It is "cap-monorepo-aware" in that one can reference services in subdirectories, like this:
 
 ```log
 .run cap/samples/bookshop
@@ -126,6 +134,7 @@ and this will start a CAP server up pretty much in the same way as we're used to
 
 > If you want to follow along with this exploration, see the [Appendix - setting up a test environment](#appendix1).
 
+<a name="repl-global-values"></a>
 What's more, though, is that it will also automatically expose REPL-global values representing important aspects of your service and the services upon which it relies:
 
 ```log
@@ -196,13 +205,31 @@ and (eventually) executed, via `await`, which executes `cds.run`:
 ]
 ```
 
-But - HOW DOES THAT EVEN WORK?!
+But - `await q` - how did that even work?! Perhaps a topic for another post? Let me know.
 
+### Interacting with the database service
 
+At around [37:27][106], going back to the "everything is a service" axiom, Daniel demonstrated that the database connection is indeed a service, and can be extended and manipulated just like any other service, as discussed before. How? By injecting a handler, like this:
 
+```javascript
+cds.db.before('*', console.log)
+```
 
+This is very similar to the example in the [earlier part of this post](#everything-is-a-service); what's interesting here is the use of the raw reference to `console.log`. Why does that work, and why is it interesting?
 
+It's interesting because it is another neat example of how JavaScript elevates functions to the same level as other values, values that can be stored and even passed as arguments into, or received as output from, other functions. It works because what's expected in this parameter position to a `before` call is indeed a function; the previous example looks like this:
 
+```javascript
+cds.db .before ('*', req => {
+  console.log (req.event, req.target.name)
+})
+```
+
+and the actual call to `console.log` was inside the body of a lambda[<sup>1</sup>](#footnote-1), an anonymous function definition, defined here using the ES6 fat arrow syntax[<sup>3</sup>](#footnote-3): `req => { console.log (req.event, req.target.name) }`. Same type of value - a function.
+
+As a brief aside, note that the first example here was `cds.db.before()`, typed manually and in a hurry into the REPL, which differs from `cds.db .before()` [in the example from the documentation shown earlier](#everything-is-a-service) only in syntatic (or is that perhaps "literate"?) whitespace that Daniel likes to sprinkle on his code to make it read more like a human language. Different again is this: `db.before()`, possible because of the [REPL-global](#repl-global-values) names set up by the `.run` command we saw earlier.
+
+_Got up to 38:38_.
 
 
 ---
@@ -210,6 +237,7 @@ But - HOW DOES THAT EVEN WORK?!
 <a name="footnotes"></a>
 ## Footnotes
 
+<a name="footnote-1"></a>
 1. This Ruby idiom is a form of metaprogramming, which was popularised with Lisp ... which brings us back to McCarthy. Moreover, as Sinclair Target mentioned in his great article [How Lisp Became God's Own Programming Language][17] (which is also [available in audio format as an episode on my Tech Aloud podcast][18]), "Ruby is also a Lisp", expounded upon by Eric Kidd in his post [Why Ruby is an acceptable LISP][19].
 
 Eric's post incidentally also shows how functions can be first class citizens, and even goes on to give a great example of a closure - the accumulator function, which in turn is from the appendix of Paul Graham's [Revenge of the Nerds][20] post. Here's the original accumulator function definition (named `foo` here) in Lisp:
@@ -242,9 +270,11 @@ Type ".help" for more information.
 
 Note also that the word "lambda", used here specifically and syntactically in Lisp as the symbol for an anonymous function, has become the de facto term for anonymous functions in general - for example, Python [uses the term][21], and AWS has a Functions-as-a-Service (FaaS) offering called [Lambda][22].
 
-&nbsp;
-
+<a name="footnote-2"></a>
 2. This is with `@sap/cds` version 8.5.1 at the time of writing.
+
+<a name="footnote-3"></a>
+3. Properly called [Arrow function expressions][32].
 
 ---
 
@@ -394,8 +424,14 @@ whereupon you're ready to explore as we do in this post.
 [29]: https://qmacro.org/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/
 [30]: /blog/posts/2024/11/22/tasc-notes-part-2/
 [31]: /blog/posts/2024/11/29/tasc-notes-part-3/#cloudcapsamples
+[32]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions
 
 [98]: https://www.youtube.com/watch?v=kwxvyiC-6FI
 [99]: /blog/posts/2024/12/06/the-art-and-science-of-cap/
 
-
+[101]: https://www.youtube.com/live/kwxvyiC-6FI?t=780
+[102]: https://www.youtube.com/live/kwxvyiC-6FI?t=1060
+[103]: https://www.youtube.com/live/kwxvyiC-6FI?t=1620
+[104]: https://www.youtube.com/live/kwxvyiC-6FI?t=1892
+[105]: https://www.youtube.com/live/kwxvyiC-6FI?t=1952
+[106]: https://www.youtube.com/live/kwxvyiC-6FI?t=2246
