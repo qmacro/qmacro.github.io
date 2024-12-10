@@ -10,6 +10,8 @@ tags:
 ---
 These are the raw, unedited notes I took to summarise [The Art and Science of CAP part 2][1], one episode in a mini series with Daniel Hutzel to explore the philosophy, the background, the technology history and layers that support and inform the SAP Cloud Application Programming Model. 
 
+For all resources related to this series, see the post [The Art and Science of CAP][99].
+
 ---
 
 Capire docu overhaul, with a reworked "Getting Started" section, with times for completion in the classic capire [Schnapszahl][3] style (1-11 mins, 4-44 mins, etc).
@@ -38,3 +40,4 @@ The "C" in CDL ... stands for Conceptual!
 [2]: https://cap.cloud.sap/docs/assets/key-concepts.drawio.FB4Z2Ypd.svg
 [3]: https://de.wikipedia.org/wiki/Schnapszahl
 [4]: https://pages.github.tools.sap/cap/docs/cds/aspects
+[99]: /blog/posts/2024/12/06/the-art-and-science-of-cap/

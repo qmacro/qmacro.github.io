@@ -10,6 +10,8 @@ tags:
 ---
 These are the raw, unedited notes I took to summarise [The Art and Science of CAP part 3][1], one episode in a mini series with Daniel Hutzel to explore the philosophy, the background, the technology history and layers that support and inform the SAP Cloud Application Programming Model. 
 
+For all resources related to this series, see the post [The Art and Science of CAP][99].
+
 ---
 
 Talked about the [Nullish Coalescing Assignment][2] (`??=`) in JavaScript which was used in Daniel's most recent addition to the REPL code, and moved on to mentioning what the cache technique has been called in the past, from the (wonderful) Perl community: the "[Orcish Manoevre][3]" (Orcish ~= Or-Cache), coined by one of the authors of Effective Perl Programming, [Joseph Hall][27] (the other author was [Randal L. Schwartz][21]).
@@ -55,8 +57,6 @@ Daniel started to address Marian's question on nested projections (like a sub-se
 
 * In the sample code for the [New Plugin for RFC][22] section, did we miss an opportunity to combine history with the beloved [Schnapszahlen][28] - we could have used SAP system ID C11 instead of SYS, as C11 was the classic system ID example in early R/3 documentation.
 
-
-
 [1]: https://www.youtube.com/watch?v=oujZD2xEUBM&list=PL6RpkC85SLQAe45xlhIfhTYB9G0mdRVjI&index=3
 [2]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_assignment
 [3]: https://www.nntp.perl.org/group/perl.beginners/2001/05/msg1250.html
@@ -85,3 +85,4 @@ Daniel started to address Marian's question on nested projections (like a sub-se
 [26]: https://en.wikipedia.org/wiki/BBN_LISP
 [27]: https://en.wikipedia.org/wiki/Joseph_N._Hall
 [28]: https://de.wikipedia.org/wiki/Schnapszahl
+[99]: /blog/posts/2024/12/06/the-art-and-science-of-cap/
