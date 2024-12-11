@@ -209,7 +209,7 @@ But - `await q` - how did that even work?! Perhaps a topic for another post? Let
 
 ### Interacting with the database service
 
-At around [37:27][106], going back to the "everything is a service" axiom, Daniel demonstrated that the database connection is indeed a service, and can be extended and manipulated just like any other service, as discussed before. How? By injecting a handler, like this:
+At around [37:10][106], going back to the "everything is a service" axiom, Daniel demonstrated that the database connection is indeed a service, and can be extended and manipulated just like any other service, as discussed before. How? By injecting a handler, like this:
 
 ```javascript
 cds.db.before('*', console.log)
@@ -229,8 +229,19 @@ and the actual call to `console.log` was inside the body of a lambda[<sup>1</sup
 
 As a brief aside, note that the first example here was `cds.db.before()`, typed manually and in a hurry into the REPL, which differs from `cds.db .before()` [in the example from the documentation shown earlier](#everything-is-a-service) only in syntatic (or is that perhaps "literate"?) whitespace that Daniel likes to sprinkle on his code to make it read more like a human language. Different again is this: `db.before()`, possible because of the [REPL-global](#repl-global-values) names set up by the `.run` command we saw earlier.
 
-_Got up to 38:38_.
+## The core of the CAP framework
 
+At around [38:38][107] Daniel use `.inspect` to look at the handlers - the _event_ handlers - for the `db` service: 
+
+![db event handlers][33]
+
+which show the logging function just registered, plus framework handlers for standard persistence layer operations.
+
+This then led to the uncovering of the effective core of the framework, in `@sap/cds/lib/srv.Service.js` (which I and I'm sure some of you may recognise, having debugged through this when working with our own handlers and when & how they're called):
+
+![framework core][34]
+
+_Got to 43:19_
 
 ---
 
@@ -425,6 +436,8 @@ whereupon you're ready to explore as we do in this post.
 [30]: /blog/posts/2024/11/22/tasc-notes-part-2/
 [31]: /blog/posts/2024/11/29/tasc-notes-part-3/#cloudcapsamples
 [32]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions
+[33]: /images/2024/12/db-handlers.png
+[34]: /images/2024/12/framework-core.png
 
 [98]: https://www.youtube.com/watch?v=kwxvyiC-6FI
 [99]: /blog/posts/2024/12/06/the-art-and-science-of-cap/
@@ -434,4 +447,5 @@ whereupon you're ready to explore as we do in this post.
 [103]: https://www.youtube.com/live/kwxvyiC-6FI?t=1620
 [104]: https://www.youtube.com/live/kwxvyiC-6FI?t=1892
 [105]: https://www.youtube.com/live/kwxvyiC-6FI?t=1952
-[106]: https://www.youtube.com/live/kwxvyiC-6FI?t=2246
+[106]: https://www.youtube.com/live/kwxvyiC-6FI?t=2230
+[107]: https://www.youtube.com/live/kwxvyiC-6FI?t=2318
