@@ -416,7 +416,7 @@ If you're curious, this is the sort of information that is stored, for running C
 }
 ```
 
-This section was written to `~/cds-services.json` by the second CAP server where the "Reviews" services was started up. Note the `provides` property pointing to the CAP server URL[<sup>6</sup>](#footnote-6). And it's read by the first CAP server looking for (design time) service binding information for that service.
+This section was written to `~/.cds-services.json` by the second CAP server where the "Reviews" services was started up. Note the `provides` property pointing to the CAP server URL[<sup>6</sup>](#footnote-6). And it's read by the first CAP server looking for (design time) service binding information for that service.
 
 ### Service integration CodeJam
 
