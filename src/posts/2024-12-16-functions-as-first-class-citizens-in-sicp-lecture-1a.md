@@ -17,9 +17,33 @@ And do you know what? While to some the idea of first class citizenship for func
 
 ![Abelson showing a first class function construct][5]
 
+Here's a simple rendering of what he's drawn:
+
+```text
+                           +-----------+
+                           | to find   |
+                     36 -->|   sqrt    |--> 6
+                           |   of x    |
+y -> average(y,x/y)        +-----------+
+      |                         ^
+      |     +-------------+     |
+      +---->| fixed-point |-----+
+            +-------------+
+```
+
+His commentary on this goes as follows:
+
+> "This fixed point box is such that if I input to it the function that takes Y to the average of Y and X/Y, then what should come out of that fixed point box is a method for finding square roots.
+>
+> So in these boxes we're building, we're not only building boxes that you input numbers and output numbers, we're going to be building boxes that, in effect, compute methods, like finding square roots. And might take as their input functions, like Y goes to the average of Y and X/Y.
+>
+> The reason we want to do that, the reason this is a procedure, will end up being a procedure, as we'll see, whose value is another procedure, the reason we want to do that is because procedures are going to be our ways of talking about imperative knowledge."
+
+Boom. _That's_ how fundamental this idea is.
+
 [1]: /blog/posts/2024/12/10/tasc-notes-part-4/
 [2]: https://web.mit.edu/6.001/6.037/sicp.pdf
 [3]: https://www.youtube.com/playlist?list=PLE18841CABEA24090
-[4]: https://youtu.be/-J_xL4IGhJA?t=1040
-[5]: /images/2024/12/abelson-first-class-function.png
+[4]: https://youtu.be/-J_xL4IGhJA?t=1000
+[5]: /images/2024/12/abelson-first-class-functions.png
 
