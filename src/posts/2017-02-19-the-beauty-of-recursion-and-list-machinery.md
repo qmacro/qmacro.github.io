@@ -10,7 +10,11 @@ This post explores one particular pattern that is inherent in how recursion is o
 
 # <a name="initialrecognition"></a>Initial recognition
 
-Erik Meijer, whom I'll mention properly in a moment, uses a phrase "if you stare long enough at it ...". This really appeals to me, because it expresses the act of focus and concentration in a wonderfully casual way. I've stared at this stuff long enough for it to become something tangible, something recognisable, and hopefully there's useful content here for you to stare at too.
+Erik Meijer, whom I'll mention properly in a moment, uses a phrase:
+
+> "If you stare long enough at it ...".
+
+This really appeals to me, because it expresses the act of focus and concentration in a wonderfully casual way. I've stared at this stuff long enough for it to become something tangible, something recognisable, and hopefully there's useful content here for you to stare at too.
 
 ## Introduction via Haskell
 
