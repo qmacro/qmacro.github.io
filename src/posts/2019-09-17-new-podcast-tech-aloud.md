@@ -16,6 +16,7 @@ I couldn't find such a podcast, so I decided to start one myself. It's called "[
 * [Apple Podcasts](https://podcasts.apple.com/gb/podcast/tech-aloud/id1480329467)
 * [Google Music podcasts](https://music.youtube.com/playlist?list=PLS4df8pDO4n87B5fbh0GI4v_UGfmhcKDh)
 
+<a name="rss"></a>
 If you want to add it to your own podcast listening workflow, the RSS feed URL is: <https://anchor.fm/s/e5dc36c/podcast/rss>.
 
 You can learn more about this new podcast by listening to the first episode "[Welcome to Tech Aloud](https://anchor.fm/tech-aloud/episodes/Welcome-to-Tech-Aloud-e5ddsh)". I've also written a post on the SAP Community about this podcast, which provides a bit more context: "[Tech Aloud podcast - an introduction](https://blogs.sap.com/2019/09/18/tech-aloud-podcast-an-introduction/)". Moreover, I'm encouraging folks to submit content suggestions during the SAP TechEd Barcelona week in this post: "[Submit suggestions for Tech Aloud during SAP TechEd Barcelona](https://blogs.sap.com/2019/10/04/submit-suggestions-for-tech-aloud-during-sap-teched-barcelona/)".
