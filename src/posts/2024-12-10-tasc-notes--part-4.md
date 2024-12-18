@@ -16,7 +16,9 @@ This episode started with a [review of the previous episode][1] (where we collec
 
 ## Functional programming concepts
 
-At around [13:18][101] Daniel brought up a slide deck from one of my talks on Functional Programming, [Functional programming introduction: What, why, how?][2] and the person in the photo on slide four is of course [John McCarthy][3] (well done VJ), father of Lisp. In this context we also touched on [currying][4] (which incidentally is named after [Haskell Curry][6], after whom the pure FP language [Haskell][7] is also named) and [partial application][5], and then on the concept of a [closure][8] - a beautiful technique for implementing lexically scoped name bindings in a language that has support for first class functions (such as JavaScript!).
+At around [13:18][101] Daniel brought up a slide deck from one of my talks on Functional Programming, [Functional programming introduction: What, why, how?][2] and the person in the photo on slide four is of course [John McCarthy][3] (well done VJ), father of Lisp.
+
+In this context we also touched on [currying][4] (which incidentally is named after [Haskell Curry][6], after whom the pure FP language [Haskell][7] is also named) and [partial application][5], and then on the concept of a [closure][8] - a beautiful technique for implementing lexically scoped name bindings in a language that has support for first class functions (such as JavaScript!).
 
 <a name="everything-is-a-service"></a>
 ## Everything is a service
@@ -462,6 +464,8 @@ Type ".help" for more information.
 
 Note also that the word "lambda", used here specifically and syntactically in Lisp as the symbol for an anonymous function, has become the de facto term for anonymous functions in general - for example, Python [uses the term][21], and AWS has a Functions-as-a-Service (FaaS) offering called [Lambda][22].
 
+For an indication of how fundamental the concept of first class functions is (along with the closely related "higher order" function style), see [Functions as first class citizens in SICP Lecture 1A][45].
+
 <a name="footnote-2"></a>
 2. Examples in this post are based on CAP Node.js version 8.5.1 (Nov 2024) rather than the 8.6.0 version that Daniel had, which is currently not available externally at the time of writing.
 
@@ -638,6 +642,7 @@ whereupon you're ready to explore as we do in this post.
 [42]: https://raw.githubusercontent.com/SAP-samples/cloud-cap-samples/main/etc/samples.drawio.svg
 [43]: https://github.com/SAP-samples/cap-service-integration-codejam/
 [44]: /blog/posts/2003/11/13/food-for-thought-ldbs-and-abap-objects/
+[45]: /blog/posts/2024/12/16/functions-as-first-class-citizens-in-sicp-lecture-1a/
 
 [98]: https://www.youtube.com/watch?v=kwxvyiC-6FI
 [99]: /blog/posts/2024/12/06/the-art-and-science-of-cap/

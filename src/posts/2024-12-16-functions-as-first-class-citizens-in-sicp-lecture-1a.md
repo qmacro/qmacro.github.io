@@ -31,6 +31,8 @@ y -> average(y,x/y)        +-----------+
             +-------------+
 ```
 
+Note that the `fixed-point` box here represents a ["higher order" function][6].
+
 His commentary on this goes as follows:
 
 > "This fixed point box is such that if I input to it the function that takes Y to the average of Y and X/Y, then what should come out of that fixed point box is a method for finding square roots.
@@ -46,4 +48,4 @@ Boom. _That's_ how fundamental this idea is.
 [3]: https://www.youtube.com/playlist?list=PLE18841CABEA24090
 [4]: https://youtu.be/-J_xL4IGhJA?t=1000
 [5]: /images/2024/12/abelson-first-class-functions.png
-
+[6]: https://en.wikipedia.org/wiki/Higher-order_function
