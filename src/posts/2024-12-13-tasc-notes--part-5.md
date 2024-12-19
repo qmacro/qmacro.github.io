@@ -765,7 +765,7 @@ uucp:P0CHBwE/mB51k:66:10:UNIX-to-UNIX Copy:/usr/spool/uucp:/usr/lib/uucp/uucico
 srb:c8UdIntIZCUIA:68:10:Steve Bourne,2015825829:/usr/staff/srb:
 ```
 
-(and yes, my favourite shell `bash`, a successor to the shell that Steve Bourne created which was called the Bourne shell (`sh`), in that "bash" stands for the play on words "Bourne (born) again shell".)
+(and yes, my favourite shell `bash` is named after a successor to the shell that Steve Bourne created which was called the Bourne shell (`sh`), in that "bash" stands for the play on words "Bourne (born) again shell".)
 
 <a name="footnote-8"></a>
 8. It still slightly disturbs me (in a fun way) that the event identifier here (`some event`) contains whitespace :-)
