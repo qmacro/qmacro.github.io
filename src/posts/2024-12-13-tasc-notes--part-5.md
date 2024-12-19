@@ -642,7 +642,7 @@ Note that this rule, this interceptor stack processing, is for requests. Not mes
 
 > This was a conscious decision by the CAP developers, in that it makes more sense when handling asynchronous messages to have all handlers have a chance to fire. Especially because the asynchronous context also implies there's nothing to _return_, nothing to send back, anyway (unlike when handling an incoming request, for which a response is expected, synchronously).
 
-Let's prove this to ourselves now, by creating a third service `c`, and defining the same handlers -- one for the `before` phase and two for the `on` phase -- except this time we'll ensure that the chain is not broken by the first `on` phase handler, by receiving and using the `next` function reference passed to it (we'll practice using the REPL's multiline editor facility):
+Let's prove this to ourselves now, by creating a third service `c`, and defining the same handlers -- one for the `before` phase and two for the `on` phase -- except this time we'll ensure that the chain is not broken by the first `on` phase handler, by receiving and using the `next` function reference passed to it (we'll practise using the REPL's multiline editor facility):
 
 ```log
 > .editor
