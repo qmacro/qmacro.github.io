@@ -337,7 +337,7 @@ And this caused me to [stare][22] a little bit more at the examples, such as thi
 SELECT.from`foo.bar[where x<11 order by car]{ a, b, a + b}`
 ```
 
-also underlines the _abstract_ nature of CQL: have you noticed that we have been constructing CQN objects -- query objects -- with no relation (no pun intended) to real metadata? The query objects produced make little sense in that there _is no_ `foo.bar`, there _is no_ `x` or `car`[<sup>5</sup>](#footnote-5), and so on.
+This underlines the _abstract_ nature of CQL: have you noticed that we have been constructing CQN objects -- query objects -- with no relation (no pun intended) to real metadata? The query objects produced make little sense in that there _is no_ `foo.bar`, there _is no_ `x` or `car`[<sup>5</sup>](#footnote-5), and so on.
 
 But that is irrelevant when working at the abstract level of the CQL/CQN DSL pairing, because it's only when the query object is sent to a database service that it gets translated into something "real". And that is something quite beautiful.
 
@@ -410,7 +410,7 @@ Like a dating service for domain entities.
 <a name="local-and-remote-services"></a>
 ## Local and remote services
 
-At around [28:21][104], given this mashup, Daniel walks us through how these services interact with each other at run time, specifically _design time_ with `cds watch`[<sup>6</sup>](#footnote-6).
+At around [28:21][104], given this mashup, Daniel walks us through how these services interact with each other specifically at _design time_ with `cds watch`[<sup>6</sup>](#footnote-6).
 
 This is a great reminder of what we covered in the previous part, which you can find summarised in the [Tight loops, design time affordances and service integration][30] section of the previous episode's notes. Here, `ReviewsService` and `OrdersService` are mocked at first because that CAP server is the only one running (locally, on 4004):
 
@@ -613,7 +613,7 @@ Service {
 }
 ```
 
-... we _do not_ see that handler's output when transmitting another event to `b` with `send`:
+... we _do not_ see that handler's output when transmitting another event (a request) to `b` with `send`:
 
 ```log
 > await b.send('xxxxx',{car:11})
@@ -623,7 +623,7 @@ xxxxx { car: 11 } (on)
 
 However.
 
-We _do_ see that handler's output when transmitting an event to `b` with `emit`:
+We _do_ see that handler's output when transmitting an event (a message) to `b` with `emit`:
 
 ```log
 > await b.emit('xxxxx',{cdr:11})
