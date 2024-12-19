@@ -423,7 +423,7 @@ but when these two services are started locally too, in separate CAP servers on 
 <a name="messaging-and-grow-as-you-go"></a>
 ## Messaging and "grow as you go"
 
-Once the services in this "bookstore" constellation were all up and running, and Daniel had resolved the authorisation issue with a small but precise golden hammer, specificially and temporarily commenting out this `reject` in `@sap/cds/libx/_runtime/common/generic/auth/restrict.js` (don't do this at home, kids!):
+Once the services in this "bookstore" constellation were all up and running, and Daniel had resolved the authorisation issue with a small but precise golden hammer, specificially and temporarily commenting out this `reject`, in `restrict.js` within the `libx/_runtime/common/generic/auth/` section of `@sap/cds` (don't do this at home, kids!):
 
 ```javascript
   const restrictedCount = await _getRestrictedCount(req, this.model, resolvedApplicables)
@@ -737,7 +737,7 @@ Until next time - and I hope these notes are useful - let me know in the comment
 1. I know this seems obvious, but sometimes it's helpful to stare at the obvious for a while, in a "kata" style of memory reinforcement.
 
 <a name="footnote-2"></a>
-2. Which is Suppliers, Products and Categories, with relationships between them (if you want to peruse such a service, there's one available at <https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze>).
+2. Which is Suppliers, Products and Categories, with relationships between them (if you want to peruse such a service, there's one available [here][46]).
 
 <a name="footnote-3"></a>
 3. You can paste multiple lines into the REPL, or edit multiple lines yourself, using the `.editor` REPL command (see the [Commands and special keys][16] section of the Node.js REPL documentation). You can also use [template literals][17] (`` `...` ``) for multiline strings.
@@ -882,6 +882,7 @@ Welcome to cds repl v 8.5.1
 [43]: https://cap.cloud.sap/docs/node.js/events#cds-request
 [44]: /blog/posts/2024/12/10/tasc-notes-part-4/#everything-is-a-service
 [45]: https://cap.cloud.sap/docs/
+[46]: https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze
 
 [101]: https://www.youtube.com/live/BpTDnYxoNXI?t=1050
 [102]: https://www.youtube.com/live/BpTDnYxoNXI?t=1302
