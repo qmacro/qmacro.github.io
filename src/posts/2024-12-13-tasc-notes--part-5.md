@@ -866,7 +866,7 @@ Welcome to cds repl v 8.5.1
 [27]: https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookstore/index.cds
 [28]: https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookstore/srv/mashup.cds
 [29]: https://github.com/SAP-samples/cloud-cap-samples/blob/main/bookstore/package.json
-[30]: /blog/posts/2024-12-10/tasc-notes-part-4#tight-loops-design-time-affordances-and-service-integration
+[30]: /blog/posts/2024/12/10/tasc-notes-part-4#tight-loops-design-time-affordances-and-service-integration
 [31]: /images/2024/12/mocking.png
 [32]: /images/2024/12/connect.png
 [33]: https://cap.cloud.sap/docs/about/#jumpstart-grow-as-you-go
