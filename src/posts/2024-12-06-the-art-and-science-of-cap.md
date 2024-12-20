@@ -21,7 +21,7 @@ Part|Broadcast|Live Stream / Recording|Notes & Links|Community
 3|29 Nov 2024|[oujZD2xEUBM][3]|[TASC Notes - Part 3][13]|[Link][43]
 4|06 Dec 2024|[kwxvyiC-6FI][4]|[TASC Notes - Part 4][14]|[Link][44]
 5|13 Dec 2024|[BpTDnYxoNXI][5]|[TASC Notes - Part 5][15]|[Link][45]
-6|20 Dec 2024 🎄|[cZCOQpxC118][6] 🔴|Pending|[Link][46]
+6|20 Dec 2024|[cZCOQpxC118][6]|Pending|[Link][46]
 
 
 [1]: https://www.youtube.com/watch?v=XMchiFnDJ6E
