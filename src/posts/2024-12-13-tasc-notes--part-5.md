@@ -17,7 +17,7 @@ This episode started with a review of the previous episode (part 4), based on th
 <a name="new-cds-repl-options"></a>
 ## New cds REPL options
 
-At around [17:30][101] Daniel introduces some of his very recent development work, adding features to the cds REPL, which we'll hopefully see in the next CAP release:
+At around [17:30][101] Daniel introduces some of his very recent development work, adding features to the cds REPL, which we'll hopefully see in the next CAP release (update: we do indeed - see the [`cds repl` enhancements][47] of the [December 2024 release notes][48]!):
 
 ```text
 -r | --run <project>
@@ -883,6 +883,8 @@ Welcome to cds repl v 8.5.1
 [44]: /blog/posts/2024/12/10/tasc-notes-part-4/#everything-is-a-service
 [45]: https://cap.cloud.sap/docs/
 [46]: https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze
+[47]: https://cap.cloud.sap/docs/releases/dec24#cds-repl-enhancements
+[48]: https://cap.cloud.sap/docs/releases/dec24
 
 [101]: https://www.youtube.com/live/BpTDnYxoNXI?t=1050
 [102]: https://www.youtube.com/live/BpTDnYxoNXI?t=1302
