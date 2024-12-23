@@ -218,7 +218,7 @@ And here it is being constructed:
 ```
 
 <a name="executing-queries"></a>
-### Executing Queries
+### Executing queries
 
 Note that what's produced here is a query object (in CQN) but not something that is immediately `await`-able (see [the notes from part 4][18]).
 
