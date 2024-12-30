@@ -13,17 +13,13 @@ There are two videos in the series. In the first, MPJ explores what functors are
 
 There's quite a bit to take in from these two videos on functors, so here's my summary of functor essentials:
 
-- a functor is a type -- for us, an object or container -- that has a `map` method[^n] 
-
+- a functor is a type -- for us, an object or container -- that has a `map` method[<sup>1</sup>](#footnote-1) 
 - this container can contain elements of any type
-
-- the `map` method tranforms the elements, by applying the supplied function to each of them[^n]
-
+- the `map` method tranforms the elements, by applying the supplied function to each of them[<sup>2</sup>](#footnote-2)
 - while the elements are transformed, the structure of the container remains intact
-
 - the result is a new functor
 
-As MPJ points out, the most common functor in our context is JavaScript's `Array`. Here it is in action[^n]:
+As MPJ points out, the most common functor in our context is JavaScript's `Array`. Here it is in action[<sup>3</sup>](#footnote-3):
 
 ```javascript
 ["the", "quick", "brown", "fox", "jumps", "over", "the", "lazy", "dog"]
@@ -52,7 +48,15 @@ const names =
 
 One thing I was slightly unsure of in correcting the brackets was replacing the curly braces (the ones that wrapped the object literal in the `resolve` call) with square brackets. At one level it is fine - the curly braces were simply not syntactically correct. But I felt as though adding the "container" syntax I was "helping" the Promise be a functor. Moreover, in one of the articles on JavaScript Promises that I read, I picked up the sentiment that doing exactly this was deemed bad practice. Anyway, I'm sure things will become clearer here as I explore further. 
 
-[^n]: (although it doesn't have to be called that, I guess - the method name could be different, but have the same effect)
-[^n]: "lifting" the function into the container
-[^n]: I'm deliberately using small, generic variable names, as that's what functional programming suggests to me - making things simple and generic means I don't want to inadvertently attach "contextual baggage" with variable names that mean something only in one context
+<a name="footnotes"></a>
+## Footnotes
+
+<a name="footnote-1"></a>
+1. Although it doesn't have to be called that, I guess - the method name could be different, but have the same effect.
+
+<a name="footnote-2"></a>
+2."Lifting" the function into the container.
+
+<a name="footnote-3"></a>
+3. I'm deliberately using small, generic variable names, as that's what functional programming suggests to me - making things simple and generic means I don't want to inadvertently attach "contextual baggage" with variable names that mean something only in one context.
 
