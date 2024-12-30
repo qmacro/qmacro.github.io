@@ -25,7 +25,7 @@ Part|Broadcast|Live Stream / Recording|Blog Post
 [2]: https://www.youtube.com/watch?v=aTEsSdP43a4
 [3]: https://www.youtube.com/watch?v=hi7NXlMl3iU
 
-[11]: /blog/posts/2024/10/05/cap-plugins-deconstructed-part-1-understanding-how-the-mechanism-works/
+[11]: /blog/posts/2024/10/05/cap-node.js-plugins-part-1-how-things-work/
 [31]: https://community.sap.com/t5/technology-blogs-by-sap/hands-on-sap-dev-with-qmacro-onwards-and-upwards/ba-p/13396497
 [32]: https://www.youtube.com/playlist?list=PL6RpkC85SLQDwzbi9eVuMStRlpVMBqidQ
 [33]: https://www.sap.com/events/teched/virtual/flow/sap/te24/catalog/page/catalog/session/1723584532995001g7Xm
