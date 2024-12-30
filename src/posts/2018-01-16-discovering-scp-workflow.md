@@ -4,6 +4,7 @@ title: Discovering SCP Workflow
 tags:
 - workflow
 - scp
+- seriespost
 ---
 
 The SAP Cloud Platform Workflow service is a key component in the next generation of enterprise solutions - allowing us to coordinate processes and activities across cloud and on-premise systems. It's a relatively young service, and I thought it would be worth digging into it a little bit to learn more.
