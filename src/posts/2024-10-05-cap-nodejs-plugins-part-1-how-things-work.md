@@ -1,6 +1,6 @@
 ---
 layout: post
-title: CAP plugins deconstructed - part 1 - understanding how the mechanism works
+title: CAP Node.js plugins - part 1 - how things work
 date: 2024-10-05
 tags:
   - cap
@@ -11,14 +11,9 @@ tags:
 ---
 In this first of a three part series of blog posts, we explore the [CDS Plugin](https://cap.cloud.sap/docs/node.js/cds-plugins) mechanism in CAP to find out how it works, so we are well prepared to write our own plugin.
 
-## Background
+For information on the series and links to all resources, see [CAP Node.js Plugins](/blog/posts/2024/12/30/cap-node.js-plugins/).
 
-This series of blog posts accompanies [my session](https://www.sap.com/events/teched/virtual/flow/sap/te24/catalog/page/catalog/session/1723584532995001g7Xm) in the Developer Keynote at [SAP TechEd Virtual](https://www.sap.com/events/teched/virtual/flow/sap/te24/catalog/page/catalog) this year. In particular, the content I presented in that session is reflected in this first blog post, and there are two subsequent posts with follow-on content:
-* [Part 1 - understanding how the mechanism works](/blog/posts/2024/10/05/cap-plugins-deconstructed-part-1-understanding-how-the-mechanism-works/) (this post)
-* Part 2 - discovering service details with introspection
-* Part 3 - writing our own plugin
-
-> The examples in this series are based on CAP Node.js at release 8.3.0 ([September 2024](https://cap.cloud.sap/docs/releases/sep24)).
+> The examples in this post are based on CAP Node.js at release 8.3.0 ([September 2024](https://cap.cloud.sap/docs/releases/sep24)).
 
 ## Setting the scene
 
