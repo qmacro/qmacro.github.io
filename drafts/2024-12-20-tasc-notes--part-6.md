@@ -354,11 +354,13 @@ Given this opportunity, Daniel used the `options` to provide enough information,
 }
 ```
 
-for the remote connection to be made[<sup>2</sup>](#footnote-2).
+for the remote connection to be made[<sup>2</sup>](#footnote-2) (and in case you're wondering, `odata` is a synonym for `odata-v4`).
 
-> In case you're wondering, `odata` is a synonym for `odata-v4`.
+Of course, hard-coding service binding information like this is very useful, but only for design time and when iterating on the build of your service constellation. Information like this, especially credentials (beyond merely a URL) should be stored securely and separate to the code context. This is what `VCAP_SERVICES` in Cloud Foundry is for, as an example, and more generally what the SAP BTP's [Destination Service][16] offers.
 
-_In fact, calling this a "remote connection" is a little bit misleading, in that it's "just a connection", and the agnostic nature of CAP, specifically here embodied in this `cds.connect.to` method, means that the fact that it's remote is only because the `options.credentials.url` value points to a remote address, and at this stage, that's just for us humans to consider; the machinery doesn't really care (although it will need to use extra libraries to make the connection)._
+**A note on the word "remote" 👉** Calling this a "remote connection" is a little bit misleading, in that it's "just a connection", and the agnostic nature of CAP, specifically here embodied in this `cds.connect.to` method, means that the fact that it's remote is only because the `options.credentials.url` value points to a remote address, and at this stage, that's just for us humans to consider; the machinery doesn't really care (although it will need to use extra libraries to make the connection).
+
+OK, back to Daniel's REPL session:
 
 ```log
 > cats = await cds.connect.to('CatalogService',{kind:'odata',credentials:{url:'http://localhost:4004/browse'}})
@@ -512,7 +514,9 @@ RemoteService {
 }
 ```
 
-> I deliberately used the phrase "successfully set up" and not "successfully established" because at this point ... no actual connection has been made to the remote service.
+> I deliberately used the phrase "successfully set up" and not "successfully established" because at this point no actual connection has been made to the remote service.
+>
+> Nor would that make much sense anyway, in that the protocols supported are all "connection-less" (in that, for example, HTTP is a connection-less protocol). This point can be driven home by stopping the remote service at this point, then restarting it, and it makes no difference to this existing `RemoteService` object and whether it can still reach the remote endpoints (it can).
 
 ### CAP's open source philosophy
 
@@ -522,7 +526,7 @@ In wrapping up this section, Daniel explains at [30:26][106] his philosophy on t
 * [SQLite][25]
 * [Express][26]
 
-### Using the remote service
+### Sending queries to the remote service
 
 And to demonstrate the remote service connection, Daniel performed a query.
 
@@ -591,7 +595,11 @@ cats.kind                  cats.middlewares           cats.name                 
 cats.requestTimeout
 ```
 
-Indeed, Daniel invokes `cats.get`:
+#### The remote service class and methods
+
+But what _is_ a `RemoteService`, essentially?
+
+Well, Capire's [Remote Services][30] topic tells us that the `cds.RemoteService` class extends `cds.Service`. Knowing what we know about the Art and Science of CAP so far, and thinking logically, this makes a lot of sense. And Capire tells us a lot about the [Class: cds.Service][31] which will help us dig into what Daniel invokes, at this point:
 
 ```log
 > cats.get`Books`
@@ -600,27 +608,54 @@ cds.ql {
 }
 ```
 
-TODO WHAT IS GET XXX
+At this point, we can determine that:
+
+* we have an instance of `cds.RemoteService` in `cats`
+* this in turn is based on `cds.Service`
+* which has all those properties and methods that we see above
+* one of which is `get`
+
+plus:
+
+* the generic name in Capire for the service instance examples here in this large section on the [cds.Service class][31] is `srv`
+
+With this in mind, we can then examine the [REST-style API][32] section in this Capire topic which tells us that
+
+`srv.get(path, ...)`
+
+is a REST-style convenience method that is the equivalent[<sup>4</sup>](#footnote-4) of (syntactic sugar for)
+
+`srv.send('GET', path, ...)`
+
+In essence, both ``cats.get`Books` `` and `cats.send('GET', 'Books')` result in a promise that needs to be `await`-ed, thus (note the debug output from the `remote` module here too):
+
+```log
+> await cats.get`Books`
+[remote] - GET http://localhost:4004/browse/Books { headers: { accept: 'application/json,text/plain' } }
+[
+  {
+    createdAt: '2024-12-31T15:09:44.103Z',
+    modifiedAt: '2024-12-31T15:09:44.103Z',
+    ID: 201,
+    title: 'Wuthering Heights',
+    descr: `Wuthering Heights, Emily Brontë's only novel, was published ...`,
+    author: 'Emily Brontë',
+    genre_ID: 11,
+    stock: 12,
+    price: 11.11,
+    currency_code: 'GBP',
+    'image@odata.mediaContentType': null
+  },
+  ...
+]
+```
+
+TODO show that we can do `cats.get('Books', 201)` as well (i.e. provide 2nd arg 201).
+
+TODO why can't get get the entities from the remote service, e.g. via `cats.entities`? Because we don't have the model imported? (a la CodeJam). In other words, why can't we do `cats.get(Books, 201)`? 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+---
 
 <a name="footnotes"></a>
 ## Footnotes
@@ -640,7 +675,9 @@ I cover this in great detail in the [Service Integration with SAP Cloud Applicat
 <a name="footnote-3"></a>
 3. Did you notice _what_ locations? They're the project-local location plus the locations ... of the automatically-loaded plugins! This relationship is explained further in [CAP Node.js plugins - part 1 - how things work][20].
 
- 
+<a name="footnote-4"></a>
+4. If you're curious about ``cats.get`Books` `` vs ``cats.get(`Books`)``, you might find the MDN documentation on [Tagged templates][33] useful.
+
 
 [1]: /blog/posts/2024/12/06/the-art-and-science-of-cap/
 [2]: https://www.youtube.com/watch?v=cZCOQpxC118
@@ -670,6 +707,12 @@ I cover this in great detail in the [Service Integration with SAP Cloud Applicat
 [26]: https://expressjs.com/
 [27]: https://cap.cloud.sap/docs/node.js/cds-connect#cds-connect-to-name-options-8594-service
 [28]: https://cap.cloud.sap/docs/node.js/cds-connect
+[29]: https://cap.cloud.sap/docs/about/best-practices#hexagonal-architecture
+[30]: https://cap.cloud.sap/docs/node.js/remote-services
+[31]: https://cap.cloud.sap/docs/node.js/core-services#cds-service
+[32]: https://cap.cloud.sap/docs/node.js/core-services#rest-style-api
+[33]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates
+
 
 [101]: https://www.youtube.com/live/cZCOQpxC118?t=1313
 [102]: https://www.youtube.com/live/cZCOQpxC118?t=1369
