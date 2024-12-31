@@ -41,6 +41,7 @@ Moving onto the [Best Practices][13] section, the "models fuel runtimes" diagram
 
 ![fuelling services][20]
 
+<a name="DWIM"></a>
 (what Daniel describes here is related to the [DWIM][14] ("Do What I Mean") approach, the name for which was first coined by Warren Teitelman in [BBN Lisp][26], but popularised more recently in the Perl language and community.)
 
 Daniel also quoted [Brad J Cox][15] (inventor of Objective C), specifically his description of inheritance, as "the art of describing something unknown in how it defers from something known" -> "a zebra is a horse with stripes".
