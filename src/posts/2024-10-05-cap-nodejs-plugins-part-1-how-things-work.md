@@ -15,6 +15,7 @@ For information on the series and links to all resources, see [CAP Node.js Plugi
 
 > The examples in this post are based on CAP Node.js at release 8.3.0 ([September 2024](https://cap.cloud.sap/docs/releases/sep24)).
 
+<a name="setting-the-scene"></a>
 ## Setting the scene
 
 To set the scene, imagine a simple service scenario, where we've got two entities:
@@ -57,6 +58,7 @@ Starting the CAP server with `cds watch` gives us what we expect, there's some d
 [cds] - server listening on { url: 'http://localhost:4004' }
 ```
 
+<a name="debug-and-digging-in"></a>
 ## Debug and digging in
 
 Often when I'm trying to deconstruct and understand something, I turn to the `DEBUG` environment variable. It give me a ton of info to start staring at.
@@ -79,6 +81,7 @@ This is interesting! What is this telling us? Well ...
 * The _filename_ in each of these plugins is `cds-plugin.js`, and we can recall this from [the plugin documentation](https://cap.cloud.sap/docs/node.js/cds-plugins#add-a-cds-plugin-js). That's what we'll need to start with too for our own plugin.
 * Right now, the implementation (in `cds-plugin.js`) for each of these plugins is found in the global `@sap/cds-dk` location (`../../usr/local/share/ ... /node_modules/@sap/cds-dk/...`). Rather than dig around trying to look at the detail there, it would be easier to be able to look in a project-local `node_modules/` directory hierarchy here.
 
+<a name="local-installation-and-identifying-the-plugin-mechanism"></a>
 ## Local install and identifying the plugin mechanism
 
 So let's install the project dependencies now, with `npm install`, which emits something like this:
@@ -107,6 +110,7 @@ node_modules/.bin/cds-serve:  // Ensure loading plugins before calling cds.env!
 
 Cool. There's a comment in `node_modules/@sap/cds/bin/serve.js` (and that `cds-serve` is just a symlink to that same file) ... but that DEBUG output statement in `plugins.js` seems like the right place. Let's have a look ... at the CAP server source code - let's dive in!
 
+<a name="diving-into-the-cap-server-source-code"></a>
 ## Diving into the CAP server source code
 
 Taking a look inside `node_modules/@sapcds/lib/plugins.js` we can see all sorts of stuff, but I'm drawn to this `fetch` function:
@@ -164,6 +168,7 @@ OK, so we're definitely onto something.
 
 But what are these sources `cds.home` and `cds.root`?
 
+<a name="embracing-the-repl"></a>
 ## Embracing the REPL
 
 Well, to find out, I'm going to use one of the perhaps lesser known and more mysterious superpowers - the [REPL](https://cap.cloud.sap/docs/tools/cds-cli#cds-repl).
@@ -185,6 +190,7 @@ Welcome to cds repl v 8.3.0
 
 So we can see that `cds.home` is `/workspaces/project/node_modules/@sap/cds`, i.e. the root part of the libraries, installed as project-local packages, that make up the CAP framework, and that `cds.root` is `/workspaces/project` which is the root part of our CAP project directory structure.
 
+<a name="examining-the-surface-area-for-plugin-discovery"></a>
 ## Examining the surface area for plugin discovery
 
 So we now know that it's looking for plugin implementations in the collection of packages made up of the `dependencies` and `devDependencies` of this project's `package.json` and also of `@sap/cds`'s `package.json`.
@@ -236,6 +242,7 @@ And guess what? These are _exactly_ those two listed when we ran `DEBUG=plugins 
 [cds] - loaded plugins in: 35.172ms
 ```
 
+<a name="creating-our-own-plugin-package"></a>
 ## Creating our own plugin package
 
 Now we know what we need -- a package with a `cds-plugin.js` file -- let's create one.
@@ -288,6 +295,7 @@ And now that our plugin package exists in that workspace context, we can just ad
 }
 ```
 
+<a name="getting-the-plugin-to-announce-itself"></a>
 # Getting the plugin to announce itself
 
 OK, before bringing this first part to an end, we could at least get the plugin to announce itself. Right now the new plugin package exists and is wired up, but there's still no sign of it in the output when we run `DEBUG=plugins cds watch`:
