@@ -30,7 +30,7 @@ Then I needed to emulate the `bw list items --search` command that Christian use
 
 I did this by creating a script `bw-list-items-search` which looks like this:
 
-```
+```shell
 #!/usr/bin/env bash
 
 # Emulates 'bw list items --search $1'
@@ -89,7 +89,7 @@ Here's an example of where more than one result is found:
 
 Now I could turn my attention to the main script. Here it is in its entirety; I'll describe it section by section.
 
-```
+```shell
 #!/usr/bin/env bash
 
 set -e
@@ -149,7 +149,7 @@ The value for `selection` is determined from a combination of `jq` and `fzf`, wh
 
 This is the invocation:
 
-```
+```shell
 jq -r '.[] | "\(.name)\t\(.login)"' <<< "$logins" \
     | fzf --reverse --with-nth=1 --delimiter="\t" --select-1 --exit-0
 ```
@@ -196,7 +196,7 @@ It's worth noting that the value of `.name` is a scalar, e.g. "bar", but the val
 
 but this gets turned into a string. If "bar" is selected, then the value in `selection` will be:
 
-```
+```text
 bar     {"username":"baruser","password":"sekrit!"}
 ```
 
@@ -204,7 +204,7 @@ where the whitespace between the name "bar" and the rest of the line is a tab ch
 
 So given the two values (for "bar" and "baz") above which would have been extracted for the search string "ba", the following would be produced by the `jq` invocation:
 
-```
+```text
 bar     {"username":"baruser","password":"sekrit!"}
 baz     {"username":"bazuser","password":"hunter2"}
 ```
@@ -231,7 +231,7 @@ Once we're done with determining the selection, we check to see that there is ac
 
 It's worth highlighting that while `fzf` only *presents* the names in the selection list, it will *return* the entire line that was selected, which is what we want. In other words, given the selection in the screenshot above, if the name "E45 S4HANA 2020 Sandbox" is chosen, then `fzf` will emit this to STDOUT:
 
-```
+```text
 E45 S4HANA 2020 Sandbox {"username":"e45user","password":"sappass"}
 ```
 
@@ -250,13 +250,13 @@ The `$'...'` way of quoting a string allows us to use special characters such as
 
 So if the value of `selection` is:
 
-```
+```text
 E45 S4HANA 2020 Sandbox {"username":"e45user","password":"sappass"}
 ```
 
 then this expression will yield:
 
-```
+```text
 E45 S4HANA 2020 Sandbox
 ```
 
@@ -271,7 +271,7 @@ This pattern, then, is "anything, up to and including a tab character".
 
 Given the same value as above, this expression will yield:
 
-```
+```json
 {"username":"e45user","password":"sappass"}
 ```
 
@@ -279,7 +279,7 @@ Given the same value as above, this expression will yield:
 
 This is very similar to Christian's original script, except that we can use a "here string" again to pass the value of the `login` variable to `jq` each time. Given what we know from the `main` function, this value will be something like this:
 
-```
+```json
 {"username":"e45user","password":"sappass"}
 ```
 
