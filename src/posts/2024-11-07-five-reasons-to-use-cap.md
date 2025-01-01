@@ -143,9 +143,12 @@ What of the CAP server itself? In design time mode, in a similar way to how the 
 
 Perhaps one of the lesser known superpowers that are granted by the design time tools to developers is the REPL. But its relative obscurity is more than matched by its power and utility. Anyone who has used a REPL in another language or development environment (they're especially prominent in LISPs, such as [Clojure][21], but also available and very useful in more mainstream languages such as Python) will understand the godlike power granted to whoever is able to wield it. And with CAP's REPL (which is based on the Node.js REPL[<sup>6</sup>](#footnotes) plus a layer of CAP server goodness) we see that in action. 
 
+<a name="adding-custom-logic"></a>
 ### Adding custom logic
 
-This next feature fits very squarely into the convention over configuration theme, and is where and how custom logic is plugged in to the fully-formed CRUD+Q serving infrastructure that is already a key part of your set of core services. And that, in a similar way to how initial data files are found and deployed, is by creating the logic in files that follow certain naming and location standards. Briefly, if for example you have part of your overall CDS model definition in a file called `myservice.cds`, then creating a companion file `myservice.js`[<sup>7</sup>](#footnotes) is all you need to do to have your custom handlers take effect. Talking of custom handlers, one useful mantra to remember when thinking about implementing systems with CAP is "everything is an event".
+This next feature fits very squarely into the convention over configuration theme, and is where and how custom logic is plugged in to the fully-formed CRUD+Q serving infrastructure that is already a key part of your set of core services. And that, in a similar way to how initial data files are found and deployed, is by creating the logic in files that follow certain naming and location standards. Briefly, if for example you have part of your overall CDS model definition in a file called `myservice.cds`, then creating a companion file `myservice.js`[<sup>7</sup>](#footnotes) is all you need to do to have your custom handlers take effect. Talking of custom handlers, one useful mantra to remember when thinking about implementing systems with CAP is:
+
+_"Everything is an event"_.
 
 This uniform view of the universe is liberating, especially when combined with how the framework allows you to define handlers for events regardless of what the nature of those events are - be they standard OData operations, OData action or function calls, plain incoming HTTP requests, or asynchronous events from a message queue somewhere.
 
