@@ -271,7 +271,7 @@ get then() {
 }
 ```
 
-It's worth dwelling on yet another [DWIM][11] feature in CAP - that this thenable executes the query, by default, on the primary database connection (or on a service to which it has been bound). "_Do what I mean!_"
+It's worth dwelling on yet another [DWIM][11] feature in CAP - that this thenable executes the query, by default, on the primary database connection (or on a service to which it has been bound). _"Do what I mean!"_
  
 ## Connecting to remote services from within the REPL
 
@@ -475,7 +475,7 @@ Briefly, what we can discern from it is that there are log records from the `cds
 
 It's always worth taking a few seconds to stare at output like this. Even when it doesn't directly help the diagnosis, it will almost always add value, context and understanding.
 
-### The culprit 
+### The 'uncaughtException' culprit 
 
 Through some brute-force searching through the codebase, Daniel eventually finds the problem - the [Winston logger][21], which [emits an uncaught exception][22]. The Winston logger is used by the [SAP Cloud SDK][23], which we know (if you don't, see [footnote 2](#footnote-2)) is used by the CAP server for remote connections.
 
@@ -526,11 +526,11 @@ In wrapping up this section, Daniel explains at [30:26][106] his philosophy on t
 * [SQLite][25]
 * [Express][26]
 
-### Sending queries to the remote service
+## Sending queries to the remote service
 
 And to demonstrate the remote service connection, Daniel performed a query.
 
-But before I show that, I wanted to pause and dwell on what Capire has to say here that is relevant for our understanding. In the [cds.connect.to (name, options?) -> service][27] section of the [cds.connect()][28] topic, we see that what's returned from this `cds.connect.to` call is "_a Promise resolving to a corresponding Service instance_". Moreover, "_[s]ervice instances are cached in `cds.services` ... [and a]s services constructed by `cds.serve` are registered with `cds.services` as well, a connect finds and returns them as local service connections_".
+But before I show that, I wanted to pause and dwell on what Capire has to say here that is relevant for our understanding. In the [cds.connect.to (name, options?) -> service][27] section of the [cds.connect()][28] topic, we see that what's returned from this `cds.connect.to` call is "_a Promise resolving to a corresponding Service instance_". Moreover, "_[s]ervice instances are cached in `cds.services` ... [and a]s services constructed by `cds.serve` are registered with `cds.services` as well, a connect finds and returns them **as local service connections**_" (emphasis mine).
 
 This underlines the [hexagonal architecture][29] approach, as well as helping join the dots, the first of which is that this `RemoteService` object now shows up in `cds.services`:
 
@@ -595,11 +595,13 @@ cats.kind                  cats.middlewares           cats.name                 
 cats.requestTimeout
 ```
 
-#### The remote service class and methods
+### Properties of a remote service
 
 But what _is_ a `RemoteService`, essentially?
 
-Well, Capire's [Remote Services][30] topic tells us that the `cds.RemoteService` class extends `cds.Service`. Knowing what we know about the Art and Science of CAP so far, and thinking logically, this makes a lot of sense. And Capire tells us a lot about the [Class: cds.Service][31] which will help us dig into what Daniel invokes, at this point:
+Well, Capire's [Remote Services][30] topic tells us that the `cds.RemoteService` class extends `cds.Service`. Knowing what we know about the Art and Science of CAP so far, and thinking logically, this makes a lot of sense.
+
+And Capire tells us a lot about the [Class: cds.Service][31] which will help us dig into what Daniel invokes, at this point:
 
 ```log
 > cats.get`Books`
@@ -619,15 +621,23 @@ plus:
 
 * the generic name in Capire for the service instance examples here in this large section on the [cds.Service class][31] is `srv`
 
-With this in mind, we can then examine the [REST-style API][32] section in this Capire topic which tells us that
+### API styles for service consumption
+
+With this in mind, and thinking about what Daniel invoked:
+
+```log
+> cats.get`Books`
+```
+
+we can then examine the [REST-style API][32] section in this Capire topic which tells us that
 
 `srv.get(path, ...)`
 
-is a REST-style convenience method that is the equivalent[<sup>4</sup>](#footnote-4) of (syntactic sugar for)
+is a REST-style convenience method that is the equivalent of (syntactic sugar for)
 
 `srv.send('GET', path, ...)`
 
-In essence, both ``cats.get`Books` `` and `cats.send('GET', 'Books')` result in a promise that needs to be `await`-ed, thus (note the debug output from the `remote` module here too):
+In essence, `cats.send('GET', 'Books')`, ``cats.get`Books` `` and even ``cats.get(`Books`)``[<sup>4</sup>](#footnote-4) each result in a promise that needs to be `await`-ed, thus (note the debug output from the `remote` module here too):
 
 ```log
 > await cats.get`Books`
@@ -650,10 +660,19 @@ In essence, both ``cats.get`Books` `` and `cats.send('GET', 'Books')` result in 
 ]
 ```
 
-TODO show that we can do `cats.get('Books', 201)` as well (i.e. provide 2nd arg 201).
+Interestingly, directly following the [REST-style API][32] section in Capire, the [CRUD-style API][34] alternative is described, which sports convenience methods along the lines of the Create / Read / Update / Delete (CRUD) model. And Daniel shows a nice example of that style next, with:
 
-TODO why can't get get the entities from the remote service, e.g. via `cats.entities`? Because we don't have the model imported? (a la CodeJam). In other words, why can't we do `cats.get(Books, 201)`? 
-
+```log
+> await cats.read `ID,title,genre.name as genre` .from `Books`
+[remote] - GET http://localhost:4004/browse/Books?$select=ID,title,genre%2Fname { headers: { accept: 'application/json,text/plain' } }
+[
+  { ID: 201, title: 'Wuthering Heights', genre_name: 'Drama' },
+  { ID: 207, title: 'Jane Eyre', genre_name: 'Drama' },
+  { ID: 251, title: 'The Raven', genre_name: 'Mystery' },
+  { ID: 252, title: 'Eleonora', genre_name: 'Romance' },
+  { ID: 271, title: 'Catweazle', genre_name: 'Fantasy' }
+]
+```
 
 ---
 
@@ -712,6 +731,7 @@ I cover this in great detail in the [Service Integration with SAP Cloud Applicat
 [31]: https://cap.cloud.sap/docs/node.js/core-services#cds-service
 [32]: https://cap.cloud.sap/docs/node.js/core-services#rest-style-api
 [33]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates
+[34]: https://cap.cloud.sap/docs/node.js/core-services#crud-style-api
 
 
 [101]: https://www.youtube.com/live/cZCOQpxC118?t=1313
