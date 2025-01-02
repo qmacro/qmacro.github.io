@@ -22,7 +22,7 @@ Part|Broadcast|Live Stream / Recording|Notes & Links|Community
 3|29 Nov 2024|[oujZD2xEUBM][3]|[TASC Notes - Part 3][13]|[Link][43]
 4|06 Dec 2024|[kwxvyiC-6FI][4]|[TASC Notes - Part 4][14]|[Link][44]
 5|13 Dec 2024|[BpTDnYxoNXI][5]|[TASC Notes - Part 5][15]|[Link][45]
-6|20 Dec 2024|[cZCOQpxC118][6]|Pending|[Link][46]
+6|20 Dec 2024|[cZCOQpxC118][6]|[TASC Notes - Part 6][16]|[Link][46]
 
 
 [1]: https://www.youtube.com/watch?v=XMchiFnDJ6E
@@ -36,6 +36,7 @@ Part|Broadcast|Live Stream / Recording|Notes & Links|Community
 [13]: /blog/posts/2024/11/29/tasc-notes-part-3/
 [14]: /blog/posts/2024/12/10/tasc-notes-part-4/
 [15]: /blog/posts/2024/12/13/tasc-notes-part-5/
+[15]: /blog/posts/2024/12/20/tasc-notes-part-6/
 [10]: https://www.youtube.com/playlist?list=PL6RpkC85SLQAe45xlhIfhTYB9G0mdRVjI
 [31]: https://community.sap.com/t5/technology-blogs-by-sap/hands-on-sap-dev-with-qmacro-onwards-and-upwards/ba-p/13396497
 [32]: https://developers.sap.com/devtoberfest.html
