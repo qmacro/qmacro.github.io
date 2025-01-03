@@ -36,7 +36,7 @@ Part|Broadcast|Live Stream / Recording|Notes & Links|Community
 [13]: /blog/posts/2024/11/29/tasc-notes-part-3/
 [14]: /blog/posts/2024/12/10/tasc-notes-part-4/
 [15]: /blog/posts/2024/12/13/tasc-notes-part-5/
-[15]: /blog/posts/2024/12/20/tasc-notes-part-6/
+[16]: /blog/posts/2024/12/20/tasc-notes-part-6/
 [10]: https://www.youtube.com/playlist?list=PL6RpkC85SLQAe45xlhIfhTYB9G0mdRVjI
 [31]: https://community.sap.com/t5/technology-blogs-by-sap/hands-on-sap-dev-with-qmacro-onwards-and-upwards/ba-p/13396497
 [32]: https://developers.sap.com/devtoberfest.html
