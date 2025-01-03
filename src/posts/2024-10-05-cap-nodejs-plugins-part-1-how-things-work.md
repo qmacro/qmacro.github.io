@@ -173,7 +173,7 @@ But what are these sources `cds.home` and `cds.root`?
 
 Well, to find out, I'm going to use one of the perhaps lesser known and more mysterious superpowers - the [REPL](https://cap.cloud.sap/docs/tools/cds-cli#cds-repl).
 
-> The concept of a REPL, which stands for [Read Evaluate Print Loop](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop) is an old one, dating back to the 1960's, especially (but not only) in the world of Lisp. This is yet another example of where the [Art & Science of CAP](https://www.youtube.com/watch?v=XMchiFnDJ6E) has venerable ancestry.
+> The concept of a REPL, which stands for [Read Evaluate Print Loop](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop) is an old one, dating back to the 1960's, especially (but not only) in the world of Lisp. This is yet another example of where the [Art & Science of CAP](/blog/posts/2024/12/06/the-art-and-science-of-cap/) has venerable ancestry.
 
 Wanting to know more about `cds.home` and `cds.root` is a perfect opportunity to try out the REPL, in a nice and gentle way. And we'll be making heavy use of the REPL in part 2 of this series, so it's worth becoming acquainted with it now.
 
