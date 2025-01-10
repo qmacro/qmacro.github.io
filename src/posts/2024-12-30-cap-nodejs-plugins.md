@@ -18,7 +18,7 @@ The content of the first episode (Part 1) was originally presented in a session 
 Part|Broadcast|Live Stream / Recording|Blog Post|Community
 -|-|-|-|-
 1|03 Jan 2025|[9Ajazy9Pidg][1]|[How things work][11] - understanding how the plugin mechanism works|[Link][21]
-2|10 Jan 2025|[aTEsSdP43a4][2]|[Using the REPL][12] - discovering and exploring service details with introspection (pending)|[Link][22]
+2|10 Jan 2025|[aTEsSdP43a4][2]|[Using the REPL][12] - discovering and exploring service details with introspection|[Link][22]
 3|17 Jan 2025|[hi7NXlMl3iU][3]|Writing our own - using the knowledge we've gained to write our own plugin (pending)|[Link][23]
 
 [1]: https://www.youtube.com/watch?v=9Ajazy9Pidg
