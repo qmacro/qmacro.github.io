@@ -90,7 +90,7 @@ This is because of some recent activity which has seen [Canonical take over LXD 
 
 While the URL <https://images.linuxcontainers.org> still responds, and indeed returns a list of images, they are for Incus (a forked LXD project) and LXC, not LXD. The [timeline](https://discuss.linuxcontainers.org/t/important-notice-for-lxd-users-image-server/18479#timeline-3) of the phasing out of support culminated in all LXD users losing access to images on that server at the beginning of May this year.
 
-This is why `lxc remote list images:` returns an empty list.
+This is why `lxc image list images:` returns an empty list.
 
 ## New source for LXD images
 
