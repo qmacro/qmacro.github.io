@@ -146,6 +146,7 @@ At this point we can start [querying](https://cap.cloud.sap/docs/node.js/cds-ql)
 
 But instead of querying the data, what we really want to do in this session is explore the service structure, bearing in mind that, usually, a service contains one or more entities, and those entities contain one or more elements (fields).
 
+<a name="new-repl-options"></a>
 > Instead of using `cds.test()` there are features introduced to the cds REPL in the December 2024 release which makes this more comfortable; use either of these approaches:
 > * `cds repl --run .` in the project directory (`cds r -r .` is the short version) 
 > * `.run .` at the REPL prompt
