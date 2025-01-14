@@ -292,7 +292,11 @@ Anyway, let's keep going. In CAP, [everything is a service][6], which explains w
 <a name="digging-deeper-into-the-bookshop-service"></a>
 ## Digging deeper into the Bookshop service
 
-To make it more convenient for us to work with, let's get a handle on that service object using a [destructuring assignment][11] like this: `{ Bookshop } = cds.services`.
+To make it more convenient for us to work with, let's get a handle on that service object using a [destructuring assignment][11] like this:
+
+```shell
+> { Bookshop } = cds.services
+```
 
 Let's have a look at what's available in this service object, with `Object.keys(Bookshop)`:
 
