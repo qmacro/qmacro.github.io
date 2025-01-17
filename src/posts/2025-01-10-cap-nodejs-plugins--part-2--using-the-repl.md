@@ -428,7 +428,7 @@ These are the elements (fields) of our `Book` entity. And look - there's our cus
 Let's define a function `loudElements` that we can use when mapping over the entities to return a list of entities and any corresponding elements that have been annotated with `@loud`:
 
 ```javascript
-loudElements = en => ({
+const loudElements = en => ({
     name: en.name,
     entity: en,
     elements: [...en.elements].filter(el => el['@loud']).map(el => el.name)
