@@ -19,7 +19,7 @@ Part|Broadcast|Live Stream / Recording|Blog Post|Community
 -|-|-|-|-
 1|03 Jan 2025|[9Ajazy9Pidg][1]|[How things work][11] - understanding how the plugin mechanism works|[Link][21]
 2|10 Jan 2025|[aTEsSdP43a4][2]|[Using the REPL][12] - discovering and exploring service details with introspection|[Link][22]
-3|17 Jan 2025|[hi7NXlMl3iU][3]|Writing our own - using the knowledge we've gained to write our own plugin (pending)|[Link][23]
+3|17 Jan 2025|[hi7NXlMl3iU][3]|[Writing our own][13] - using the knowledge we've gained to write our own plugin|[Link][23]
 
 [1]: https://www.youtube.com/watch?v=9Ajazy9Pidg
 [2]: https://www.youtube.com/watch?v=aTEsSdP43a4
@@ -27,6 +27,7 @@ Part|Broadcast|Live Stream / Recording|Blog Post|Community
 
 [11]: /blog/posts/2024/10/05/cap-node.js-plugins-part-1-how-things-work/
 [12]: /blog/posts/2025/01/10/cap-node.js-plugins-part-2-using-the-repl/
+[13]: /blog/posts/2025/01/17/cap-node.js-plugins-part-3-writing-our-own/
 
 [21]: https://community.sap.com/t5/sap-community/cap-node-js-plugins-1-of-3-how-things-work/ev-p/13922285
 [22]: https://community.sap.com/t5/sap-community/cap-node-js-plugins-2-of-3-using-the-repl/ev-p/13973724
