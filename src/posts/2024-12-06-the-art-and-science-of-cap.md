@@ -23,6 +23,7 @@ Part|Broadcast|Live Stream / Recording|Notes & Links|Community
 4|06 Dec 2024|[kwxvyiC-6FI][4]|[TASC Notes - Part 4][14]|[Link][44]
 5|13 Dec 2024|[BpTDnYxoNXI][5]|[TASC Notes - Part 5][15]|[Link][45]
 6|20 Dec 2024|[cZCOQpxC118][6]|[TASC Notes - Part 6][16]|[Link][46]
+7|07 Feb 2025|[r_mxsBZSgEo][7]|(pending)|[Link][47]
 
 
 [1]: https://www.youtube.com/watch?v=XMchiFnDJ6E
@@ -31,6 +32,7 @@ Part|Broadcast|Live Stream / Recording|Notes & Links|Community
 [4]: https://www.youtube.com/watch?v=kwxvyiC-6FI
 [5]: https://www.youtube.com/watch?v=BpTDnYxoNXI
 [6]: https://www.youtube.com/watch?v=cZCOQpxC118
+[7]: https://www.youtube.com/watch?v=r_mxsBZSgEo
 [11]: /blog/posts/2024/09/30/tasc-notes-part-1/
 [12]: /blog/posts/2024/11/22/tasc-notes-part-2/
 [13]: /blog/posts/2024/11/29/tasc-notes-part-3/
@@ -46,3 +48,4 @@ Part|Broadcast|Live Stream / Recording|Notes & Links|Community
 [44]: https://community.sap.com/t5/sap-community/the-art-and-science-of-cap-part-4-with-daniel-hutzel/ec-p/13951774
 [45]: https://community.sap.com/t5/sap-community/the-art-and-science-of-cap-part-5-with-daniel-hutzel/ec-p/13957381
 [46]: https://community.sap.com/t5/sap-community/the-art-and-science-of-cap-part-6-with-daniel-hutzel-holiday-season-edition/ec-p/13963130
+[47]: https://community.sap.com/t5/sap-community/the-art-and-science-of-cap-part-7-with-daniel-hutzel/ec-p/13998160
