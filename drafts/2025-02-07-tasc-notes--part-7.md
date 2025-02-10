@@ -124,7 +124,37 @@ Hu?
 Boom!
 
  
-// GOT TO 38:40
+## Reflection in the cds REPL
+
+Directly after this, at around [38:40][21], Daniel jumps into the cds REPL to demonstrate how much of this is also reflected in CDS model construction. He almost immediately reaches for the relatively new `.inspect` cds REPL command (which we saw both in a [previous episode of this series][22] and also in [part 2 of the mini-series on CAP Node.js plugins][23]), which in turn reveals a whole series of `LinkedDefinitions`.
+
+These `LinkedDefinitions` are iterables, and if you want to know more about how to embrace them, for example using destructuring assignments or the `for ... of` and `for ... in` statements see the [Digging deeper into the Bookshop service][24] section of the notes to part 2 of this series.
+
+## Reflection in CDS modelling
+
+Launching from the fundamental prototype approach which we've explored now, Daniel connects the dots for us by revisiting some common[<sup>3</supp>](#footnote-3) aspects (`managed` and `cuid`) to show how the prototype approach brings the ultimate in aspect-based flexibility.
+
+In particular, he relates a situation where the `managed` aspect wasn't quite enough for what was required - the project design required the ability to store a comment on what was changed, in addition to actually tracking that it was changed. 
+
+And guess what? In _exactly the same way_ as `moo` was added to `Foo` as a late injected aspect earlier, despite the lack of actual "ownership" of `Foo`:
+
+```javascript
+Foo.prototype.moo = function(){ return "Not a cow" }
+```
+
+... the new element `XXX` was added to the `managed` aspect, again, despite the lack of actual "ownership" of that aspect or its wider context (`@sap/cds/common`):
+
+```cds
+extend managed with {
+  boo : String;
+}
+```
+
+This is art and science coming full circle in a beautiful parallel, and was well worth revisiting since Daniel talked about it earlier in the series, and which I subsequently blogged about in [Flattening the hierarachy with mixins][26].
+
+This time around though, we are better informed to grok how CDS modelling reflects the fundamental building blocks of the computer science upon which it is built, and the obvious relationship bursts forth from the editor.
+
+// GOT TO 46:08
 
 
 
@@ -140,6 +170,9 @@ Boom!
 
 <a name="footnote-2"></a>
 2. Martin's post [Anemic Domain Model][19] is from 2003 and rather cutting but definitely worth a read, as is the [Wikipedia article on the same topic][20].
+
+<a name="footnote-3"></a>
+3. Literally (as many of us use them in our own projects) and technically (as they're supplied in `@sap/cds/common`) - see [Common Types and Aspects][25] in Capire.
 
 
 [1]: https://www.youtube.com/watch?v=r_mxsBZSgEo
@@ -162,3 +195,9 @@ Boom!
 [18]: https://deviq.com/domain-driven-design/anemic-model
 [19]: https://martinfowler.com/bliki/AnemicDomainModel.html
 [20]: https://en.wikipedia.org/wiki/Anemic_domain_model
+[21]: https://www.youtube.com/watch?v=r_mxsBZSgEo?t=2320
+[22]: /blog/posts/2024/12/10/tasc-notes-part-4/#the-repl
+[23]: /blog/posts/2025/01/10/cap-node.js-plugins-part-2-using-the-repl/#exploring-the-cds-facade
+[24]: /blog/posts/2025/01/10/cap-node.js-plugins-part-2-using-the-repl/#digging-deeper-into-the-bookshop-service
+[25]: https://cap.cloud.sap/docs/cds/common
+[26]: /blog/posts/2024/11/08/flattening-the-hierarchy-with-mixins/
