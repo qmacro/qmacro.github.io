@@ -110,7 +110,7 @@ And through the syntactic sugar and class machinery here, we see that `bar` even
 Not a cow
 ```
 
-Finally, to underline how fundamental the prototype mechanic is here, Daniel creates another "instance" of `Foo`, but not how you'd expect:
+Finally, to underline how fundamental the prototype mechanic is here, Daniel creates another "instance" of `Foo` (`car`), but not how you'd expect:
 
 ```text
 > car = { __proto__: foo }
@@ -142,7 +142,7 @@ And guess what? In _exactly the same way_ as `moo` was added to `Foo` as a late 
 Foo.prototype.moo = function(){ return "Not a cow" }
 ```
 
-... the new element `XXX` was added to the `managed` aspect, again, despite the lack of actual "ownership" of that aspect or its wider context (`@sap/cds/common`):
+... the new element `boo` was added to the `managed` aspect, again, despite the lack of actual "ownership" of that aspect or its wider context (`@sap/cds/common`):
 
 ```cds
 extend managed with {
