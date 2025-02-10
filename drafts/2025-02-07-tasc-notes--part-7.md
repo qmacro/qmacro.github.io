@@ -26,31 +26,37 @@ During this review, at around [18:25][4], it was almost inevitable that we revis
 
 We talked about code generation, and how and why appears in the [Bad Practices][6] topic in Capire. This time Daniel reminded us of today's popular context of serverless and functions-as-a-service where codebase size and startup times are critical. Moreover, an approach that CAP also takes here is what one could only describe as at the opposite end of code generation and the [staleness][7] that inevitably accompanies that - dynamic interpretation of the models at run time.
 
-Talking of staleness and "glue code" (technical non-domain code), another key philosophy driving CAP's design and realisation here is the idea that application developers should ... develop the application, and not the technical aspects of bringing that application to bear. In other words, tenant isolation, database management, security, protocol-level service integration and so on. In fact, the entire idea of CAP's [Calesi Pattern][8] (CAP-level service integration) fits squarely into the space that this philosophical approach is carving out for us - the provision of CAP client libraries for BTP platform services that are designed to drastically reduce boilerplate and purely technical code.
+Talking of staleness and "glue code" (technical non-domain code), another key philosophy driving CAP's design and realisation here is the idea that application developers should concentrate on developing the application. They should not be working on technical aspects of bringing that application to bear - tenant isolation, database management, security, protocol-level service integration and so on.
 
-Another aspect of why [keeping the code inside the framework][9] is important is eloquently expressed by Daniel: as builders of enterprise applications, we not only have to ensure our code scales, but also our teams and the output from those teams. Taking care of the important non-domain-specific aspects of building such enterprise applications not only removes the tedium but also the chance for error and the possibilities for varying and ultimately chaotically different approaches across different teams (think about how SAP-delivered UI5 based Fiori apps have standard layouts, and why Fiori elements came about).
+In fact, the entire idea of CAP's [Calesi Pattern][8] (CAP-level service integration) fits squarely into the space that this philosophical approach is carving out for us - the provision of CAP client libraries for BTP platform services that are designed to drastically reduce boilerplate and purely technical code.
+
+Another aspect of why [keeping the code inside the framework][9] is important is eloquently expressed by Daniel: as builders of enterprise applications, we not only have to ensure our code scales, but also our teams and the output from those teams. Taking care of the important non-domain-specific aspects of building such enterprise applications not only removes the tedium but also the chance for error and the possibilities for varying and ultimately chaotically different approaches across different teams (think about how SAP-delivered UI5 based Fiori apps have standard layouts, and why Fiori elements came into being).
 
 ## Revisiting some of CAP's solid science foundations
 
-At around [25:17][10] Daniel shared some slides that he'd compiled for a recent meeting at the [Hasso Plattner Institute][11] on CAP.
+At around [25:17][10] Daniel shared some slides that he'd compiled for a recent presentation on CAP at the [Hasso Plattner Institute][11].
 
-> I couldn't help notice Daniel's pedigree; I mean, many of us already know Smalltalk runs through his veins, and perhaps knew, or at least suspected, that he has had enough experience (read: battle scars) with Java and JEE to ensure that CAP exudes good practices and eschews bad ones ... in the right way ;-)
+> In the "about me" slide that Daniel shared, I couldn't help notice Daniel's pedigree; I mean, many of us already know Smalltalk runs through his veins, and perhaps knew, or at least suspected, that he has had enough experience[<sup>1</sup>](#footnote-1) with Java and JEE to ensure that CAP exudes good practices and eschews bad ones ... in the right way ;-)
 >
-> And I was delighted to learn that he also has been touched by NeXTSTEP - an object-oriented OS that also happened to sport a graphical desktop manager that is one of my favourites (and which lives on in the form of Window Maker. Of course, I'm assuming you realise that NeXTSTEP was created for the machines upon which the Web was invented - it was on a NeXTcube that Tim Berners-Lee wrote the first versions of client and server software.
+> And I was delighted to learn that he also has been touched by NeXTSTEP - an object-oriented OS that also happened to sport a graphical desktop manager that is one of my favourites (and which lives on in the form of [Window Maker][27]). I'm already assuming that you realise that NeXTSTEP was created for the machines upon which the Web was invented - it was on a NeXTcube that Tim Berners-Lee wrote the first versions of the client and server software.
 > ![A NeXTcube][12]
 >
 > _([Photo courtesy of Wikimedia Commons][13])_
 
-Daniel jumps from Smalltalk to Lisp (the latter influenced the former) which is the "hero language" of functional programming, one of the key science pillars of CAP. It's hard to sum up decades of computing and computer science here, but I can sleep easy knowing that the good parts are in CAP and those parts that were ultimately discovered to be not so good ... are not. In the abstract-all-the-things mania of the 90's we had CASE and UML (and the corresponding code generation machinery that went with that) and by and large this has now been shown, over and over again, to be a noble but ultimate wrong direction.
+Daniel jumps from Smalltalk to Lisp (the latter influenced the former) which is the "hero language" of functional programming, one of the key science pillars of CAP. It's hard to sum up decades of computing and computer science here, but I can sleep easy knowing that the good parts are in CAP; and those parts that were ultimately discovered to be not so good ... are not.
 
-Ironically, or at least in stark contrast, we have functional programming and the simplicity of treating data as data (passive), which in turn allows us to think about immutability. And things that cannot move ... cannot break. Not only that, but we can process large quantities of data with simple pipelines, such as [MapReduce][14], which is a scalable and relatively efficient way of analysing data in a chain of steps that are each horizontally scalable (and yes, the name comes from two classic functions `map` and `reduce`[<sup>1</sup>](#footnote-1) that are building blocks in many functional programming approaches.
+In the abstract-all-the-things mania of the 90's we had CASE and UML (and the corresponding code generation machinery that went with that) and by and large this has now been shown, over and over again, to be a noble but essentially wrong direction.
 
-Core functional programming tenets such as immutability and also the related concept of pure functions (those that are side-effect free, a quality that allows mechanisms such as function chains (such as ones used in MapReduce) are consequently found in CAP too:
+Ironically, or at least in stark contrast, we have functional programming and the simplicity of treating data as data (passive), which in turn allows us to think about immutability. And things that cannot move ... cannot break.
+
+Not only that, but we can process large quantities of data with simple pipelines, such as [MapReduce][14], which is a scalable and relatively efficient way of analysing data in a chain of steps that are each horizontally scalable (and yes, the name comes from two classic functions `map` and `reduce`[<sup>2</sup>](#footnote-1) that are building blocks in many functional programming approaches.
+
+Core functional programming tenets such as immutability and the related concept of pure functions, i.e. those that are side-effect free, a quality that allows mechanisms such as function chains (such as ones used in MapReduce) are consequently found in CAP too:
 
 * [Services][16] are stateless
-* [Data][17] is passive and in varying shapes
+* [Data][17] is passive
 
-On the topic of passive data, Daniel relates the story of an esteemed colleague extolling the virtues of _non-anemic_ objects, while Daniel himself takes the opposite approach. While the [anemic][18] term is an established one, it comes from a pejorative view, held not least by luminaries such as Martin Fowler [<sup>2</sup>](#footnote-2), and I suggest we use a different, more positive term for what we're striving for here. "Pure objects", anyone?
+On the topic of passive data, Daniel relates the story of an esteemed colleague extolling the virtues of _non-anemic_ objects, while Daniel himself takes the opposite approach. While the adjective [anemic][18] is an established one, it is a pejorative description based on a viewpoint held not least by luminaries such as Martin Fowler [<sup>3</sup>](#footnote-2), and I suggest we use a different, more positive term for what we're striving for here. "Pure objects", anyone?
 
 Anemic, or pure objects, are almost a prerequisite for late binding and aspect oriented techniques.
 
@@ -67,7 +73,7 @@ class { bar = 11; boo(){ return "Hu?" } }
 Foo { bar: 11 }
 ```
 
-The `boo` "method" is also available on `foo`:
+The `boo` "method" is available on `foo`:
 
 ```text
 > foo.boo()
@@ -132,7 +138,7 @@ These `LinkedDefinitions` are iterables, and if you want to know more about how 
 
 ## Reflection in CDS modelling
 
-Launching from the fundamental prototype approach which we've explored now, Daniel connects the dots for us by revisiting some common[<sup>3</supp>](#footnote-3) aspects (`managed` and `cuid`) to show how the prototype approach brings the ultimate in aspect-based flexibility.
+Launching from the fundamental prototype approach which we've explored now, Daniel connects the dots for us by revisiting some common[<sup>4</supp>](#footnote-3) aspects (`managed` and `cuid`) to show how the prototype approach brings the ultimate in aspect-based flexibility.
 
 In particular, he relates a situation where the `managed` aspect wasn't quite enough for what was required - the project design required the ability to store a comment on what was changed, in addition to actually tracking that it was changed. 
 
@@ -166,13 +172,16 @@ This time around though, we are better informed to grok how CDS modelling reflec
 ## Footnotes
 
 <a name="footnote-1"></a>
-1. For more on `reduce` and how it is such a fundamental building block, see [reduce - the ur-function][15].
+1. Battle scars.
 
 <a name="footnote-2"></a>
-2. Martin's post [Anemic Domain Model][19] is from 2003 and rather cutting but definitely worth a read, as is the [Wikipedia article on the same topic][20].
+2. For more on `reduce` and how it is such a fundamental building block, see [reduce - the ur-function][15].
 
 <a name="footnote-3"></a>
-3. Literally (as many of us use them in our own projects) and technically (as they're supplied in `@sap/cds/common`) - see [Common Types and Aspects][25] in Capire.
+3. Martin's post [Anemic Domain Model][19] is from 2003 and rather cutting but definitely worth a read, as is the [Wikipedia article on the same topic][20].
+
+<a name="footnote-4"></a>
+4. Literally (as many of us use them in our own projects) and technically (as they're supplied in `@sap/cds/common`) - see [Common Types and Aspects][25] in Capire.
 
 
 [1]: https://www.youtube.com/watch?v=r_mxsBZSgEo
@@ -201,3 +210,4 @@ This time around though, we are better informed to grok how CDS modelling reflec
 [24]: /blog/posts/2025/01/10/cap-node.js-plugins-part-2-using-the-repl/#digging-deeper-into-the-bookshop-service
 [25]: https://cap.cloud.sap/docs/cds/common
 [26]: /blog/posts/2024/11/08/flattening-the-hierarchy-with-mixins/
+[27]: https://www.windowmaker.org/
