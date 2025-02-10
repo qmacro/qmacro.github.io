@@ -58,6 +58,76 @@ Anemic, or pure objects, are almost a prerequisite for late binding and aspect o
 
 Riffing on that last point, championing the prototype based inheritance model over the class based one, Daniel opens up one of our (now) favourite developer tools - the cds REPL - to give an example, which I'll try to summarise here.
 
+First, a "class" `Foo` is defined, and an "instance" created:
+
+```text
+> Foo = class { bar = 11; boo(){ return "Hu?" } }
+class { bar = 11; boo(){ return "Hu?" } }
+> foo = new Foo
+Foo { bar: 11 }
+```
+
+The `boo` "method" is also available on `foo`:
+
+```text
+> foo.boo()
+Hu?
+```
+
+Note that so far I've used double quotes around "class", "instance" and "method" here.
+
+Next we can create `Bar` as an child "class" of `Foo`:
+
+```text
+> Bar = class extends Foo {}
+class extends Foo {}
+```
+
+At this point "instances" of `Bar` have both the `bar` property and the `boo` "method" available:
+
+```text
+> bar = new Bar
+Bar { bar: 11 }
+> bar.boo()
+Hu?
+```
+
+And here's what's really going to wake you up: THERE IS NO CLASS. Moreover, `bar` is not an in  stance either (in the sense that we might understand or expect from the Java world, for example).
+
+It's _prototypes_ all the way down.
+
+The best thing is that we can employ aspect oriented approaches here, in that even if we're not the owner of `Foo`, we can _add an aspect_, a new behaviour to it, in a totally "late" way:
+
+```text
+> Foo.prototype.moo = function(){ return "Not a cow" }
+function(){ return "Not a cow" }
+```
+
+And through the syntactic sugar and class machinery here, we see that `bar` even now has access to this new behaviour:
+
+```text
+> bar.moo()
+Not a cow
+```
+
+Finally, to underline how fundamental the prototype mechanic is here, Daniel creates another "instance" of `Foo`, but not how you'd expect:
+
+```text
+> car = { __proto__: foo }
+Foo {}
+> car.bar
+11
+> car.boo()
+Hu?
+```
+
+Boom!
+
+ 
+// GOT TO 38:40
+
+
+
 
 
 ---
