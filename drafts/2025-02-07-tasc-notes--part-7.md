@@ -284,9 +284,48 @@ made up from:
 * the entity name `Books`
 * the element `changes`
 
-The eagle-eyed amongst you will also have of course spotted `sap.capire.bookshop.Authors.changes` in that definition list too, as `Authors` was also adorned with the `managed` aspect:
+The eagle-eyed amongst you will also have of course spotted the `Authors` equivalent in that definition list too, as `Authors` was also adorned with the `managed` aspect:
 
 ![definitions][37]
+
+In generating this entity, the compiler also adds an element to point back, and because this work is at compile time, and individually specific to each primary entity (`Books` and `Authors` here) it can be specific and precise. This is what the YAML representation of the CSN based on the model looks like, for the `changes` element relating to the `Books` entity:
+
+```yaml
+sap.capire.bookshop.Books.changes:
+  kind: entity
+  elements:
+    up_:
+      key: true
+      type: cds.Association
+      cardinality: {min: 1, max: 1}
+      target: sap.capire.bookshop.Books
+      keys: [{ref: [ID]}]
+      notNull: true
+    ID: {key: true, type: cds.UUID}
+    timestamp: {type: cds.Timestamp}
+    user: {type: cds.String}
+    comment: {type: cds.String}
+```
+
+This is a lovely example of the truth, the reality, underpinning the general idea that with aspect oriented programming: "you can extend everything that you can get access to, whether it i
+s your definition or somebody else's definition or even your framework's definition". And that extension will be applied to the appropriate usages of that definition.
+
+Daniel goes further to emphasise that while this (deliberately simple) example was in the same `schema.cds` file, the definitions and extensions can be stored in separate files, used in CDS plugins, and so on. In fact, this is exactly how the [Change Tracking Plugin][38] works.
+
+Note that this was a named aspect (the name is `ChangeList`) but the same modelling outcome could have been effected using an anonymous aspect, like this:
+
+```cds
+extend managed with {
+    changes : Composition of many {
+    key ID    : UUID;
+    timestamp : Timestamp;
+    user      : String;
+    comment   : String;
+  };
+}
+```
+
+
 
 
 ---
@@ -344,3 +383,4 @@ The eagle-eyed amongst you will also have of course spotted `sap.capire.bookshop
 [35]: https://www.youtube.com/watch?v=r_mxsBZSgEo?t=2973
 [36]: https://cap.cloud.sap/docs/tools/cds-editors#preview-cds-sources
 [37]: /images/2025/02/definitions.png
+[38]: https://github.com/cap-js/change-tracking
