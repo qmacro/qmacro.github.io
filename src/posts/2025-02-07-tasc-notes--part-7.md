@@ -24,21 +24,23 @@ During this review, at around [18:25][4], it was almost inevitable that we revis
 
 ## A quick review of some bad practices and what CAP brings
 
-We talked about code generation, and how and why appears in the [Bad Practices][6] topic in Capire. This time Daniel reminded us of today's popular context of serverless and functions-as-a-service where codebase size and startup times are critical. Moreover, an approach that CAP also takes here is what one could only describe as at the opposite end of code generation and the [staleness][7] that inevitably accompanies that - dynamic interpretation of the models at run time.
+We talked about code generation, and how and why it appears in the [Bad Practices][6] topic in Capire. This time Daniel reminded us of today's popular context of serverless and functions-as-a-service where codebase size and startup times - two areas where code generation cause more problems than they solve - are critical. Moreover, an approach that CAP also takes here is what one could only describe as at the opposite end of code generation and the [staleness][7] that inevitably accompanies that - dynamic interpretation of the models at run time.
 
 Talking of staleness and "glue code" (technical non-domain code), another key philosophy driving CAP's design and realisation here is the idea that application developers should concentrate on developing the application. They should not be working on technical aspects of bringing that application to bear - tenant isolation, database management, security, protocol-level service integration and so on.
 
 In fact, the entire idea of CAP's [Calesi Pattern][8] (CAP-level service integration) fits squarely into the space that this philosophical approach is carving out for us - the provision of CAP client libraries for BTP platform services that are designed to drastically reduce boilerplate and purely technical code.
 
-Another aspect of why [keeping the code inside the framework][9] is important is eloquently expressed by Daniel: as builders of enterprise applications, we not only have to ensure our code scales, but also our teams and the output from those teams. Taking care of the important non-domain-specific aspects of building such enterprise applications not only removes the tedium but also the chance for error and the possibilities for varying and ultimately chaotically different approaches across different teams (think about how SAP-delivered UI5 based Fiori apps have standard layouts, and why Fiori elements came into being).
+Another aspect of why [keeping the code inside the framework][9] is important is eloquently expressed by Daniel: as builders of enterprise applications, we have to ensure that our code scales, and that our teams and the output from those teams can scale too.
+
+Taking care of the important non-domain-specific aspects of building such enterprise applications not only removes the tedium but also reduces the chance for error and minimises the possibilities for varying and ultimately chaotically different approaches across different teams (think about how SAP-delivered UI5 based Fiori apps have standard layouts and MVC patterns, and why Fiori elements came into being).
 
 ## Revisiting some of CAP's solid science foundations
 
-At around [25:17][10] Daniel shared some slides that he'd compiled for a recent presentation on CAP at the [Hasso Plattner Institute][11].
+At around [25:20][10] Daniel shared a biography slide from a deck that he'd compiled for a recent presentation on CAP at the [Hasso Plattner Institute][11].
 
-> In the "about me" slide that Daniel shared, I couldn't help notice Daniel's pedigree; I mean, many of us already know Smalltalk runs through his veins, and perhaps knew, or at least suspected, that he has had enough experience[<sup>1</sup>](#footnote-1) with Java and JEE to ensure that CAP exudes good practices and eschews bad ones ... in the right way ;-)
+> I couldn't help notice Daniel's pedigree from that biography slide; I mean, many of us already know Smalltalk runs through his veins, and perhaps knew, or at least suspected, that he has had enough experience[<sup>1</sup>](#footnote-1) with Java and JEE to ensure that CAP exudes good practices and eschews bad ones ... in the right way ;-)
 >
-> And I was delighted to learn that he also has been touched by NeXTSTEP - an object-oriented OS that also happened to sport a graphical desktop manager that is one of my favourites (and which lives on in the form of [Window Maker][27]). I'm already assuming that you realise that NeXTSTEP was created for the machines upon which the Web was invented - it was on a NeXTcube that Tim Berners-Lee wrote the first versions of the client and server software.
+> And I was delighted to learn that he also has been touched by NeXTSTEP - an object-oriented OS that also happened to sport a graphical desktop manager that is one of my favourites (and which lives on in the form of [Window Maker][27]). I'm already assuming that you realise that NeXTSTEP was created for the machines upon which the Web was invented - it was on a NeXTcube that Tim Berners-Lee wrote the first versions of Web client and server software.
 > ![A NeXTcube][12]
 >
 > _([Photo courtesy of Wikimedia Commons][13])_
@@ -49,9 +51,9 @@ In the abstract-all-the-things mania of the 90's we had CASE and UML (and the co
 
 Ironically, or at least in stark contrast, we have functional programming and the simplicity of treating data as data (passive), which in turn allows us to think about immutability. And things that cannot move ... cannot break.
 
-Not only that, but we can process large quantities of data with simple pipelines, such as [MapReduce][14], which is a scalable and relatively efficient way of analysing data in a chain of steps that are each horizontally scalable (and yes, the name comes from two classic functions `map` and `reduce`[<sup>2</sup>](#footnote-1) that are building blocks in many functional programming approaches.
+Not only that, but such qualities allow us to think about processing large quantities of data with simple pipelines, such as [MapReduce][14], which is a scalable and relatively efficient way of analysing data in a chain of steps that are each horizontally scalable (and yes, the name comes from two classic functions `map` and `reduce`[<sup>2</sup>](#footnote-1) that are building blocks in many functional programming approaches).
 
-Core functional programming tenets such as immutability and the related concept of pure functions, i.e. those that are side-effect free, a quality that allows mechanisms such as function chains (such as ones used in MapReduce) are consequently found in CAP too:
+Core functional programming tenets such as immutability and the related concept of pure functions, i.e. those that are side-effect free, principles that allows mechanisms such as function chains (such as ones used in MapReduce) are consequently found in CAP too:
 
 * [Services][16] are stateless
 * [Data][17] is passive
@@ -80,7 +82,7 @@ The `boo` "method" is available on `foo`:
 Hu?
 ```
 
-Note that so far I've used double quotes around "class", "instance" and "method" here.
+> Note that so far I've used double quotes around "class", "instance" and "method" here.
 
 Next we can create `Bar` as an child "class" of `Foo`:
 
@@ -98,11 +100,11 @@ Bar { bar: 11 }
 Hu?
 ```
 
-And here's what's really going to wake you up: THERE IS NO CLASS. Moreover, `bar` is not an in  stance either (in the sense that we might understand or expect from the Java world, for example).
+And here's what's really going to wake you up: THERE IS NO CLASS. Moreover, `bar` is not an instance either (in the sense that we might understand or expect from the Java world, for example).
 
 It's _prototypes_ all the way down.
 
-The best thing is that we can employ aspect oriented approaches here, in that even if we're not the owner of `Foo`, we can _add an aspect_, a new behaviour to it, in a totally "late" way:
+What's great is that we can employ aspect oriented approaches here, in that even if we're not the owner of `Foo`, we can _add an aspect_, a new behaviour to it, in a totally "late" way:
 
 ```text
 > Foo.prototype.moo = function(){ return "Not a cow" }
@@ -116,7 +118,7 @@ And through the syntactic sugar and class machinery here, we see that `bar` even
 Not a cow
 ```
 
-Finally, to underline how fundamental the prototype mechanic is here, Daniel creates another "instance" of `Foo` (`car`), but not how you'd expect:
+Finally, to underline how fundamental the prototype mechanic is here, Daniel creates another "instance" of `Foo` (`car`), but perhaps not how you'd expect:
 
 ```text
 > car = { __proto__: foo }
@@ -132,15 +134,15 @@ Boom!
  
 ## Reflection in the cds REPL
 
-Directly after this, at around [38:40][21], Daniel jumps into the cds REPL to demonstrate how much of this is also reflected in CDS model construction. He almost immediately reaches for the relatively new `.inspect` cds REPL command (which we saw both in a [previous episode of this series][22] and also in [part 2 of the mini-series on CAP Node.js plugins][23]), which in turn reveals a whole series of `LinkedDefinitions`.
+Directly after this, at around [38:56][21], Daniel jumps into the cds REPL to demonstrate how much of this is also reflected in CDS model construction. He almost immediately reaches for the relatively new `.inspect` cds REPL command (which we saw both in a [previous episode of this series][22] and also in [part 2 of the mini-series on CAP Node.js plugins][23]), which in turn reveals a whole series of `LinkedDefinitions`.
 
-These `LinkedDefinitions` are iterables, and if you want to know more about how to embrace them, for example using destructuring assignments or the `for ... of` and `for ... in` statements see the [Digging deeper into the Bookshop service][24] section of the notes to part 2 of this series.
+These `LinkedDefinitions` are [iterables][41], and if you want to know more about how to embrace them, for example using destructuring assignments or the `for ... of` and `for ... in` statements see the [Digging deeper into the Bookshop service][24] section of the notes to part 2 of this series.
 
 ## Reflection in CDS modelling
 
 Launching from the fundamental prototype approach which we've explored now, Daniel connects the dots for us by revisiting some common[<sup>4</supp>](#footnote-3) aspects (`managed` and `cuid`) to show how the prototype approach brings the ultimate in aspect-based flexibility.
 
-In particular, he relates a situation where the `managed` aspect wasn't quite enough for what was required - the project design required the ability to store a comment on what was changed, in addition to actually tracking that it was changed. 
+In particular, he relates a project situation where the `managed` aspect wasn't quite enough for what was required - the domain model design required the ability to store a comment on what was changed, in addition to actually tracking that it was changed. 
 
 And guess what? In _exactly the same way_ as `moo` was added to `Foo` as a late injected aspect earlier, despite the lack of actual "ownership" of `Foo`:
 
@@ -148,7 +150,7 @@ And guess what? In _exactly the same way_ as `moo` was added to `Foo` as a late 
 Foo.prototype.moo = function(){ return "Not a cow" }
 ```
 
-... the new element `boo` was added to the `managed` aspect, again, despite the lack of actual "ownership" of that aspect or its wider context (`@sap/cds/common`):
+... the project was able to realise that design by adding the new element (let's use `boo` to keep things simple and show the parallel) to the `managed` aspect, again, despite the lack of actual "ownership" of that aspect or its wider context (`@sap/cds/common`):
 
 ```cds
 extend managed with {
@@ -242,7 +244,7 @@ And how could that ever work, when you factor [time][33] into the equation? Who 
 
 As my sister Katie is fond of saying: _How about "no"?_.
 
-And not only that, but you'll still have the ugliness of what I feel are the CDS model relationship equivalents of impure functions, that have "side effects", relationships pointing to somewhere outside their scope. I am minded to think about the myriad patch cables that connect different modules on a modular synth, much like the one shown in this classic photo by [Jim Gardner][29], courtesy of Jim and [Wikipedia][30]:
+If we were to doggedly persist with such an approach, we would still have the ugliness of what I feel are the CDS model relationship equivalents of impure functions, that have "side effects", relationships pointing to somewhere outside their scope. I am minded to think about the myriad patch cables that connect different modules on a modular synth, much like the one shown in this classic photo by [Jim Gardner][29], courtesy of Jim and [Wikipedia][30]:
 
 ![Steve Porcaro of Toto with a modular synthesizer in 1982][31].
 
@@ -278,7 +280,7 @@ Behind the scenes there's still an entity, in the shape of the aspect defined he
 sap.capire.bookshop.Books.changes
 ```
 
-made up from:
+which has a name made up from:
 
 * the namespace `sap.capire.bookshop`
 * the entity name `Books`
@@ -288,7 +290,7 @@ The eagle-eyed amongst you will also have of course spotted the `Authors` equiva
 
 ![definitions][37]
 
-In generating this entity, the compiler also adds an element to point back, and because this work is at compile time, and individually specific to each primary entity (`Books` and `Authors` here) it can be specific and precise. This is what the YAML representation of the CSN based on the model looks like, for the `changes` element relating to the `Books` entity:
+In generating this entity, the compiler also includes an element to point back, and because this work is at compile time, and individually specific to each primary entity (`Books` and `Authors` here) it can be specific and precise. This is what the YAML representation of the CSN based on the model looks like, for the `changes` element relating to the `Books` entity:
 
 ```yaml
 sap.capire.bookshop.Books.changes:
@@ -307,8 +309,7 @@ sap.capire.bookshop.Books.changes:
     comment: {type: cds.String}
 ```
 
-This is a lovely example of the truth, the reality, underpinning the general idea that with aspect oriented programming: "you can extend everything that you can get access to, whether it i
-s your definition or somebody else's definition or even your framework's definition". And that extension will be applied to the appropriate usages of that definition.
+This is a lovely example of the truth, the reality, underpinning the general idea that with aspect oriented programming: "you can extend everything that you can get access to, whether it is your definition or somebody else's definition or even your framework's definition". And that extension will be applied to the appropriate usages of that definition.
 
 Daniel goes further to emphasise that while this (deliberately simple) example was in the same `schema.cds` file, the definitions and extensions can be stored in separate files, used in CDS plugins, and so on. In fact, this is exactly how the [Change Tracking Plugin][38] works.
 
@@ -325,8 +326,52 @@ extend managed with {
 }
 ```
 
+## Wrapping up with relational algebra
 
+CAP's query language, [CQL][39], is based upon and extends SQL in two important directions:
 
+* nested projections
+* path expressions (along associations)
+
+From a science perspective, Daniel and the team were keen to validate the idea and realisation of CDS models, and CQL in particular. To this end, behold:
+
+```cds
+using { sap.capire.bookshop.Books } from './schema';
+using { sap.capire.bookshop.Authors } from './schema';
+
+@singleton
+entity Schema {
+  key ID   : Integer; // just to make it a valid DDL
+  Books    : Association to many Books on 1=1;
+  Authors  : Association to many Authors on 1=1;
+}
+```
+
+> In case you're scratching your head over `@singleton`, Daniel has some advice: "Don't try to look it up, I just invented it" :-)
+
+Consider these queries:
+
+```text
+> await cds.ql `SELECT from Schema:Books`
+[]
+```
+
+then:
+
+```text
+> await INSERT({ID:1}).into(Schema)
+```
+
+so:
+
+```text
+> await cds.ql `SELECT from Schema:Books`
+[ <some results> ]
+```
+
+Your task (homework), should you choose to accept it, is to think about this, read up on the [Relational Model][40], and maybe even try the queries out yourself. 
+
+Until next time!
 
 ---
 
@@ -349,13 +394,13 @@ extend managed with {
 [1]: https://www.youtube.com/watch?v=r_mxsBZSgEo
 [2]: /blog/posts/2024/12/06/the-art-and-science-of-cap/
 [3]: /blog/posts/2024/12/20/tasc-notes-part-6/
-[4]: https://www.youtube.com/watch?v=r_mxsBZSgEo?t=1105
+[4]: https://www.youtube.com/watch?v=r_mxsBZSgEo&t=1105
 [5]: /blog/posts/2024/11/08/flattening-the-hierarchy-with-mixins/
 [6]: https://cap.cloud.sap/docs/about/bad-practices
 [7]: https://cap.cloud.sap/docs/about/bad-practices#tons-of-glue-code
 [8]: https://cap.cloud.sap/docs/about/best-practices#the-calesi-pattern
 [9]: /blog/posts/2024/11/07/five-reasons-to-use-cap/#1-the-code-is-in-the-framework-not-outside-of-it
-[10]: https://www.youtube.com/watch?v=r_mxsBZSgEo?t=1617
+[10]: https://www.youtube.com/watch?v=r_mxsBZSgEo&t=1520
 [11]: https://hpi.de/en/
 [12]: /images/2025/02/NeXTcube.jpg
 [13]: https://commons.wikimedia.org/wiki/File:NEXT_Cube-IMG_7154.jpg
@@ -366,7 +411,7 @@ extend managed with {
 [18]: https://deviq.com/domain-driven-design/anemic-model
 [19]: https://martinfowler.com/bliki/AnemicDomainModel.html
 [20]: https://en.wikipedia.org/wiki/Anemic_domain_model
-[21]: https://www.youtube.com/watch?v=r_mxsBZSgEo?t=2320
+[21]: https://www.youtube.com/watch?v=r_mxsBZSgEo&t=2336
 [22]: /blog/posts/2024/12/10/tasc-notes-part-4/#the-repl
 [23]: /blog/posts/2025/01/10/cap-node.js-plugins-part-2-using-the-repl/#exploring-the-cds-facade
 [24]: /blog/posts/2025/01/10/cap-node.js-plugins-part-2-using-the-repl/#digging-deeper-into-the-bookshop-service
@@ -380,7 +425,10 @@ extend managed with {
 [32]: https://en.wikipedia.org/wiki/Rosanna_shuffle
 [33]: https://www.youtube.com/watch?v=ScEPu1cs4l0
 [34]: https://en.wikipedia.org/wiki/Remain_in_Light
-[35]: https://www.youtube.com/watch?v=r_mxsBZSgEo?t=2973
+[35]: https://www.youtube.com/watch?v=r_mxsBZSgEo&t=2973
 [36]: https://cap.cloud.sap/docs/tools/cds-editors#preview-cds-sources
 [37]: /images/2025/02/definitions.png
 [38]: https://github.com/cap-js/change-tracking
+[39]: https://cap.cloud.sap/docs/cds/cql
+[40]: https://en.wikipedia.org/wiki/Relational_model
+[41]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol
