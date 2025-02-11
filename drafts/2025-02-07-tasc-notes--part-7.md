@@ -160,10 +160,133 @@ This is art and science coming full circle in a beautiful parallel, and was well
 
 This time around though, we are better informed to grok how CDS modelling reflects the fundamental building blocks of the computer science upon which it is built, and the obvious relationship bursts forth from the editor.
 
-// GOT TO 46:08
+## Extensible means extensible
 
+Following this completed circle, Daniel then expands on the extension by showing that effectively anything is possible, by specifying that the element in the extension should actually be a relationship to a complex object. On the way, we are taught how to think in flexible rather than rigid terms, using CDL features that we actually already know.
 
+The starting scenario is that the "bookshop" service has a couple of entities `Books` and `Authors`, each of which are extended via the `managed` aspect:
 
+```cds
+entity Books : managed {
+  descr  : localized String(1111);
+  author : Association to Authors @mandatory;
+  ...
+}
+
+entity Authors : managed {
+  key ID : Integer;
+  name   : String(111) @mandatory;
+  ...
+}
+```
+
+With this addition of an element via the extension to the `managed` aspect:
+
+```cds
+extend managed with {
+  boo : String;
+}
+```
+
+each of `Books` and `Authors` would have this `boo` element too.
+
+### The wrong way
+
+But what happens when that element should be something more complex, like a change list:
+
+```cds
+entity ChangeList : {
+  key ID    : UUID;
+  timestamp : Timestamp;
+  user      : String;
+  comment   : String;
+}
+```
+
+That looks reasonable, so let's modify the additional element to relate to this. Something like:
+
+```cds
+extend managed with {
+  changes : Composition of many ChangeList on changes.book = $self;
+}
+```
+
+The problem with this is it's both brittle and inflexible as we now also need to add an element in the `ChangeList` entity to be a back pointer:
+
+```cds
+entity ChangeList : {
+  Book      : Association to Books;
+  key ID    : UUID;
+  timestamp : Timestamp;
+  user      : String;
+  comment   : String;
+}
+```
+
+Oops - and also one for `Authors`:
+
+```cds
+entity ChangeList : {
+  Book      : Association to Books;
+  Authors   : Association to Authors;
+  key ID    : UUID;
+  timestamp : Timestamp;
+  user      : String;
+  comment   : String;
+}
+```
+
+Where will this end? Well, not only is it brittle and inflexible ... it's also wrong, because this aspect extension is now inextricably tied up with references to random entities to which the aspect itself has been applied.
+
+And how could that ever work, when you factor [time][33] into the equation? Who knows what future entities you might have and want to extend with the `managed` aspect? And let's not even think about trying to address this with [polymorphic associations][28]. And not even coming up with a generic `parent : <sometype>` is going to work either.
+
+As my sister Katie is fond of saying: _How about "no"?_.
+
+And not only that, but you'll still have the ugliness of what I feel are the CDS model relationship equivalents of impure functions, that have "side effects", relationships pointing to somewhere outside their scope. I am minded to think about the myriad patch cables that connect different modules on a modular synth, much like the one shown in this classic photo by [Jim Gardner][29], courtesy of Jim and [Wikipedia][30]:
+
+![Steve Porcaro of Toto with a modular synthesizer in 1982][31].
+
+_(Yes, that's Steve Porcaro of Toto, keyboard playing brother of Jeff Porcaro, creator of possibly the coolest drum pattern ever, the [Rosanna shuffle][32])_.
+
+### The right way
+
+Staying in the early 80's for a second (Rosanna was from Toto's 1982 album "Toto IV"), we can be mindful of the exhortation taken from the title of Talking Heads' classic studio album from 1980, and "[Remain in Light][34]", i.e. adhere to the concept of aspects, rather than tie ourselves up with what is nearer to classes (objects) and relationships. 
+
+Reframing the complex object requirement in aspect terms:
+
+```cds
+aspect ChangeList : {
+  key ID    : UUID;
+  timestamp : Timestamp;
+  user      : String;
+  comment   : String;
+}
+```
+
+means that we just need a simpler managed relationship:
+
+```cds
+extend managed with {
+  changes : Composition of many ChangeList;
+```
+
+and, in Daniel's words (at around [49:33][35]) - "we're done".
+
+Behind the scenes there's still an entity, in the shape of the aspect defined here, but that entity is added by the compiler, as Daniel shows when he pulls back the curtain (via the [Preview CDS sources][36] feature in the VS Code extension) to reveal an entity (a "definition") named:
+
+```text
+sap.capire.bookshop.Books.changes
+```
+
+made up from:
+
+* the namespace `sap.capire.bookshop`
+* the entity name `Books`
+* the element `changes`
+
+The eagle-eyed amongst you will also have of course spotted `sap.capire.bookshop.Authors.changes` in that definition list too, as `Authors` was also adorned with the `managed` aspect:
+
+![definitions][37]
 
 
 ---
@@ -211,3 +334,13 @@ This time around though, we are better informed to grok how CDS modelling reflec
 [25]: https://cap.cloud.sap/docs/cds/common
 [26]: /blog/posts/2024/11/08/flattening-the-hierarchy-with-mixins/
 [27]: https://www.windowmaker.org/
+[28]: https://en.wikipedia.org/wiki/Polymorphic_association
+[29]: https://www.flickr.com/photos/jamesthephotographer/120916737/
+[30]: https://commons.wikimedia.org/w/index.php?curid=1737148
+[31]: /images/2025/02/modular-synth.jpg
+[32]: https://en.wikipedia.org/wiki/Rosanna_shuffle
+[33]: https://www.youtube.com/watch?v=ScEPu1cs4l0
+[34]: https://en.wikipedia.org/wiki/Remain_in_Light
+[35]: https://www.youtube.com/watch?v=r_mxsBZSgEo?t=2973
+[36]: https://cap.cloud.sap/docs/tools/cds-editors#preview-cds-sources
+[37]: /images/2025/02/definitions.png
