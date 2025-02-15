@@ -1,0 +1,77 @@
+2009-09-21-a-new-rest-handler-dispatcher-for-the-icf
+A new REST handler / dispatcher for the ICF
+application-developmentblog-board
+2009-09-21
+https://community.sap.com/t5/application-development-blog-posts/a-new-rest-handler-dispatcher-for-the-icf/ba-p/12872642
+<DIV><BR />
+<BR />
+One of the best underlying mechanisms to be introduced into the Basis / NetWeaver stack in the past few years is the Internet Communication Framework (ICF), which is a collection of configuration, interfaces, classes and a core set of processes that allow us to build HTTP applications directly inside SAP.<BR />
+<BR />
+If you're not directly familiar with the ICF, allow me to paraphrase a part of Tim O'Reilly's <A class="jive-link-external-small" href="http://www.oreillynet.com/pub/a/oreilly/tim/articles/paradigmshift_0504.html" target="_blank" rel="nofollow noopener noreferrer">Open Source Paradigm Shift</A>, where he gets audiences to realise that they all use Linux, by asking them whether they've used Google, and so on. If you've used WebDynpro, BSPs, the embedded ITS, SOAP, Web Services, or any number of other similar services, you've used the ICF, the layer that sits underneath and powers these subsystems.<BR />
+<BR />
+One of my <A class="jive-link-external-small" href="http://www.pipetree.com/qmacro/blog/tag/rest/" target="_blank" rel="nofollow noopener noreferrer">passions</A> is <A class="jive-link-external-small" href="http://en.wikipedia.org/wiki/Representational_State_Transfer" target="_blank" rel="nofollow noopener noreferrer">REpresentational State Transfer</A> (REST), the architectural approach to the development of web services in the Resource Orientated Architecture (ROA) style, using HTTP for what it is - an application protocol. While the ICF lends itself very well to programming HTTP applications in general, I have found myself wanting to be able to develop web applications and services that not only follow the REST style, but also in a way that is more aligned with other web programming environments I work with.<BR />
+<BR />
+An example of one of these environments is the one used in Google's <A class="jive-link-external-small" href="http://code.google.com/appengine/" target="_blank" rel="nofollow noopener noreferrer">App Engine</A>. App Engine is a cloud-based service that offers the ability to build and host web applications on Google's infrastructure. In the Python flavour of Google's App Engine, the <A class="jive-link-external-small" href="http://pythonpaste.org/webob/" target="_blank" rel="nofollow noopener noreferrer">WebOb</A> library, an interface for HTTP requests and responses, is used as part of App Engine's <A class="jive-link-external-small" href="http://code.google.com/appengine/docs/python/tools/webapp/" target="_blank" rel="nofollow noopener noreferrer">web application framework</A>.<BR />
+<BR />
+Generally (and in an oversimplified way!), in the WebOb-style programming paradigm, you define a set of patterns matching various URLs in your application's "url space" (usually the root), and for each of the patterns, specify a handler class that is to be invoked to handle a request for the URL matched. When a match is found, the handler method invoked corresponds to the HTTP method in the request, and any subpattern values captured in the match are passed in the invocation.<BR />
+<BR />
+So for instance, if the incoming request were:<BR />
+<PRE><CODE>GET /channel/100234/subscriber/91/</CODE></PRE><BR />
+and there was a pattern/handler class pair defined thus:<BR />
+<PRE><CODE>'^/channel/([^/]+)/subscriber/([^/]+)/$', ChannelSubscriber</CODE></PRE><BR />
+then the URL would be matched, an object of class ChannelSubscriber instantiated, the method GET of that class invoked, and the values '100234' and '91' passed in the invocation. The GET method would read the HTTP request, prepare the HTTP response, and hand off when done.<BR />
+<BR />
+For a real-world example, see <A class="jive-link-external-small" href="http://github.com/qmacro/coffeeshop/blob/master/coffeeshop.py" target="_blank" rel="nofollow noopener noreferrer">coffeeshop.py</A> (part of my <A class="jive-link-external-small" href="http://wiki.github.com/qmacro/coffeeshop" target="_blank" rel="nofollow noopener noreferrer">REST-orientated, HTTP-based publish/subscribe (pubsub) mechanism</A>), in particular from <A class="jive-link-external-small" href="http://github.com/qmacro/coffeeshop/blob/master/coffeeshop.py#L524" target="_blank" rel="nofollow noopener noreferrer">line 524 onward</A>. You can see how this model follows the paradigm described above.<BR />
+<PRE><CODE>def main():<BR />
+&nbsp; application = webapp.WSGIApplication([<BR />
+&nbsp;&nbsp;&nbsp; (r'/',&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MainPageHandler),<BR />
+&nbsp;&nbsp;&nbsp; (r'/channel/submissionform/?',&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ChannelSubmissionformHandler),<BR />
+&nbsp;&nbsp;&nbsp; (r'/channel/(.+?)/subscriber/(.+?)/', ChannelSubscriberHandler),<BR />
+&nbsp;&nbsp;&nbsp; (r'/message/',&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MessageHandler),<BR />
+&nbsp;&nbsp;&nbsp; (r'/distributor/(.+?)',&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DistributorWorker),<BR />
+&nbsp;&nbsp;&nbsp; [...]<BR />
+&nbsp; ], debug=True)<BR />
+&nbsp; wsgiref.handlers.CGIHandler().run(application)</CODE></PRE><BR />
+</DIV><BR />
+<DIV><BR />
+<BR />
+This model is absolutely great in helping you think about your application in REST terms. What it does is help you focus on a couple of the core entities in any proper web application or service -- the <STRONG>nouns</STRONG> and the <STRONG>verbs</STRONG>. In other words, the <EM>URLs</EM>, and the HTTP <EM>methods</EM>. The framework allows you to control and handle incoming requests in a URL-and-method orientated fashion, and leaves you to concentrate on actually fulfilling the requests and forming the responses.<BR />
+<BR />
+So where does this bring us? Well, while I'm a huge fan of the ICF, it does have a few shortcomings from a REST point of view, so I built a new generic handler / dispatcher class that I can use at any given node in the ICF tree, in the same style as WebOb. Put simply, it allows me to write an ICF node handler as simple as <A class="jive-link-external-small" href="http://gist.github.com/189000" target="_blank" rel="nofollow noopener noreferrer">this</A>:<BR />
+<PRE><CODE>method IF_HTTP_EXTENSION~HANDLE_REQUEST.</CODE></PRE><BR />
+<PRE><CODE>&nbsp; handler( p = '^/$'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; h = 'Y_COF_H_MAINPAGE' ).<BR />
+&nbsp; handler( p = '^/channel/submissionform$'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; h = 'Y_COF_H_CHANSUBMITFORM' ).<BR />
+&nbsp; handler( p = '^/channel/([^/]+)/subscriber/submissionform$' h = 'Y_COF_H_CHNSUBSUBMITFORM' ).<BR />
+&nbsp; handler( p = '^/channel/([^/]+)/subscriber/$'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; h = 'Y_COF_H_CHNSUBCNT' ).<BR />
+&nbsp; handler( p = '^/channel/([^/]+)/subscriber/([^/]+)/$'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; h = 'Y_COF_H_CHNSUB' ).</CODE></PRE><BR />
+<PRE><CODE>&nbsp; dispatch( server ).</CODE></PRE><BR />
+<PRE><CODE>endmethod.</CODE></PRE><BR />
+The handler / dispatcher consists of a generic class that implements interface IF_HTTP_EXTENSION (as all ICF handlers must), and provides a set of attributes and methods that allow you, in subclassing this generic class, to write handler code in the above style. Here's the method tab of Y_DISP_COFFEESHOP, to give you a feel for how it fits together:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2009/09/y_disp_coffeeshop_methodtab_97688.png" width="620" /><BR />
+<BR />
+The classes that are invoked (Y_COF_H_* in this example) all inherit from a generic request handler class which provides a set of attributes and methods that allow you to get down to the business of simply providing GET, POST, PUT and other methods to handle the actual HTTP requests.<BR />
+<BR />
+Here's an example of the method list of one of the request handler classes:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2009/09/y_cof_h_chnsub_97689.png" width="620" /><BR />
+<BR />
+One interesting advantage, arguably a side-effect of this approach, is that you can use nodes in the ICF tree to 'root' your various web applications and services more cleanly, and avoid the difficulties of having different handlers defined at different levels in the child hierarchy just to service various parts of your application's particular url space.<BR />
+<BR />
+I'd like to end this weblog post with a diagram that hopefully shows what I've been describing:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2009/09/diagram_97690.png" width="620" /><BR />
+<BR />
+If you're interested in learning more, or sharing code, please let me know. I'm using this for real in one of my projects, but it's still early days.<BR />
+<BR />
+</DIV><BR />
+For more information on the coffeeshop mechanism, checkout the videos in this playlist:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><A href="https://www.youtube.com/playlist?list=PLfctWmgNyOIcbRYRdPrbjN_ZM56Kc5YTL" target="_blank" rel="nofollow noopener noreferrer"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2009/09/Ehdcd1HWkAA60Zi-1.jpeg" height="219" width="419" /></A></P><BR />
+<BR />
+<DIV><BR />
+<BR />
+<STRONG><EM>Update 01/05/2012 I've re-added images to this post that were lost when SDN went through the migration to the new platform. This project is now called ADL - Alternative Dispatcher Layer and is on the SAP Code Exchange here: <A class="jive-link-external-small" href="https://cw.sdn.sap.com/cw/groups/adl" target="_blank" rel="noopener noreferrer">https://cw.sdn.sap.com/cw/groups/adl</A></EM></STRONG><BR />
+<BR />
+<EM><STRONG>Update 09/09/2020 Added a link to the coffeeshop playlist</STRONG></EM><BR />
+<BR />
+</DIV>

@@ -1,0 +1,145 @@
+2021-09-14-sap-tech-bytes-btp-cli-managing-configuration
+SAP Tech Bytes: btp CLI - managing configuration
+technology-blog-sap
+2021-09-14
+https://community.sap.com/t5/technology-blogs-by-sap/sap-tech-bytes-btp-cli-managing-configuration/ba-p/13496400
+<EM>Understand and manage the btp CLI client configuration.</EM><BR />
+<BR />
+<span class="lia-unicode-emoji" title=":police_car_light:">🚨</span> Update: See <A href="https://blogs.sap.com/2022/02/17/sap-tech-bytes-btp-cli-new-home-for-configuration/" target="_blank" rel="noopener noreferrer">SAP Tech Bytes: btp CLI - new home for configuration</A> for new information.<BR />
+<BR />
+This is a follow-on post from the previous one: <A href="https://blogs.sap.com/2021/09/07/sap-tech-bytes-btp-cli-logging-in/" target="_blank" rel="noopener noreferrer">SAP Tech Bytes: btp CLI - logging in</A> and starts where we left off there, with you logged in.<BR />
+<BR />
+When you connect and authenticate, the connection and login details are stored locally, as we noted from staring at the output from our initial invocation of <CODE>btp</CODE>.<BR />
+<PRE><CODE>Configuration:                     /home/user/.cache/.btp/config.json</CODE></PRE><BR />
+This is the default location that <CODE>btp</CODE> uses.<BR />
+<H2 id="app-studio-lifecycle" id="toc-hId-937233349">App Studio lifecycle</H2><BR />
+This post and the posts in the rest of this SAP Tech Bytes mini-series are based on running the btp CLI in the SAP Business Application Studio (App Studio). Certain directories in your App Studio dev space's work area are cleaned up when a dev space is stopped and restarted.<BR />
+<BR />
+One of those directories is the <CODE>/home/user/.cache/</CODE> directory.<BR />
+<BR />
+If we look at this in detail (with <CODE>ls -la | grep .cache</CODE>), it's fairly clear that it's ephemeral - here it's a symbolic link to a directory in <CODE>/tmp/</CODE>:<BR />
+<PRE><CODE>lrwxrwxrwx  1 root root    20 Sep  7 09:01 .cache -&gt; /tmp/usertemp/.cache</CODE></PRE><BR />
+In general, in most Unix-like environments, nothing in <CODE>/tmp/</CODE> is guaranteed to be there after a restart. Given that this is where <CODE>btp</CODE> stores configuration, what happens when our App Studio dev space is stopped and then restarted? Well, let's find out.<BR />
+<BR />
+First, let's make sure that we <EM>are</EM> still logged in, by invoking <CODE>btp</CODE> with no further parameters. If we're logged in, we should see something like this (i.e. <CODE>btp</CODE> shows us the details of our connection and identity):<BR />
+<PRE><CODE>SAP BTP command line interface (client v2.8.0)<BR />
+<BR />
+Usage: btp [OPTIONS] ACTION [GROUP/OBJECT] [PARAMS]<BR />
+<BR />
+CLI server URL:                    <A href="https://cpcli.cf.eu10.hana.ondemand.com" target="test_blank" rel="nofollow noopener noreferrer">https://cpcli.cf.eu10.hana.ondemand.com</A> (server v2.8.0)<BR />
+User:                              P0003480944 (sapdeveloper@example.com)<BR />
+Configuration:                     /home/user/.cache/.btp/config.json<BR />
+<BR />
+Current target:<BR />
+  Global account (subdomain: 82715b8dtrial-ga)<BR />
+  └─ Subaccount (ID: b8a33bf9-b155-4736-aadf-582dae8fd65a)<BR />
+<BR />
+Tips:<BR />
+  For information about the targeting mechanism, use 'btp --help target'.<BR />
+  To display general help, use 'btp --help'.<BR />
+<BR />
+OK</CODE></PRE><BR />
+Next, go back to the App Studio "Dev Space Manager", and stop the dev space you created for this btp CLI adventure (in <A href="https://blogs.sap.com/2021/09/01/sap-tech-bytes-btp-cli-installation/" target="_blank" rel="noopener noreferrer">SAP Tech Bytes: btp CLI - installation</A>). Once it's stopped, restart it and re-enter it.<BR />
+<BLOCKQUOTE>I find the quickest way to get back to the App Studio's "Dev Space Manager" is just to remove the hashpath from the URL; in this example, it would be by removing <CODE>#ws-kvhjc</CODE> from <CODE><A href="https://82715b8dtrial.eu10cf.trial.applicationstudio.cloud.sap/index.html#ws-kvhjc" target="test_blank" rel="nofollow noopener noreferrer">https://82715b8dtrial.eu10cf.trial.applicationstudio.cloud.sap/index.html#ws-kvhjc</A></CODE> (this is the dev space's ID).</BLOCKQUOTE><BR />
+<H2 id="starting-over" id="toc-hId-740719844">Starting over</H2><BR />
+Now, in a new terminal, first have a look in the <CODE>.cache/</CODE> directory (we can refer to this relative name as we'll be in our home directory <CODE>/home/user/</CODE> by default in a newly created terminal anyway):<BR />
+<PRE><CODE>ls --all --dereference --recursive .cache/</CODE></PRE><BR />
+<BLOCKQUOTE>the options given to <CODE>ls</CODE> here make sure we see hidden files (<CODE>--all</CODE>) (remember that <CODE>.btp</CODE> begins with a dot and is therefore hidden by default), that symbolic links are followed (<CODE>--dereference</CODE>) and that the list descends recursively (<CODE>--recursive</CODE>); normally I'd write this as <CODE>ls -aLR .cache/</CODE>.</BLOCKQUOTE><BR />
+You won't see the <CODE>.btp/</CODE> directory or anything in it, because it's not there any more (any content that is there will have been recreated when the dev space was restarted).<BR />
+<BR />
+Try <CODE>btp</CODE> again. This is the result:<BR />
+<PRE><CODE>Welcome to the SAP BTP command line interface (client v2.8.0)<BR />
+<BR />
+Usage: btp [OPTIONS] ACTION [GROUP/OBJECT] [PARAMS]<BR />
+<BR />
+CLI server URL:                    not set<BR />
+User:                              not set<BR />
+Configuration:                     /home/user/.cache/.btp/config.json<BR />
+<BR />
+You are currently not logged in.<BR />
+<BR />
+Tips:<BR />
+  To log in to a global account of SAP BTP, use 'btp login'. For help on login, use 'btp --help login'.<BR />
+  To display general help, use 'btp --help'.<BR />
+<BR />
+OK</CODE></PRE><BR />
+Uh-oh! But not surprising, given that the configuration is gone. Actually, there <EM>is</EM> some configuration now there, as <CODE>btp</CODE> will create a <CODE>config.json</CODE> file on invocation. Use the <CODE>ls</CODE> command again to see, and you should see (amongst the other content that was there) this:<BR />
+<PRE><CODE>.cache:<BR />
+.  ..  .btp<BR />
+<BR />
+.cache/.btp:<BR />
+.  ..  config.json</CODE></PRE><BR />
+What's in <CODE>config.json</CODE>? Basically, this:<BR />
+<DIV><BR />
+<PRE class="sourceCode json"><CODE class="sourceCode json"><SPAN id="cb7-1"><SPAN class="fu">{</SPAN></SPAN><BR />
+<SPAN id="cb7-2">  <SPAN class="dt">"ServerURL"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">""</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb7-3">  <SPAN class="dt">"SubDomain"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">""</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb7-4">  <SPAN class="dt">"UserName"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">""</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb7-5">  <SPAN class="dt">"RefreshToken"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">""</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb7-6">  <SPAN class="dt">"Directory"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">""</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb7-7">  <SPAN class="dt">"Subaccount"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">""</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb7-8">  <SPAN class="dt">"Version"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"2.8.0"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb7-9">  <SPAN class="dt">"Authentication"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="fu">{</SPAN></SPAN><BR />
+<SPAN id="cb7-10">    <SPAN class="dt">"User"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">""</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb7-11">    <SPAN class="dt">"Mail"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">""</SPAN></SPAN><BR />
+<SPAN id="cb7-12">  <SPAN class="fu">},</SPAN></SPAN><BR />
+<SPAN id="cb7-13">  <SPAN class="dt">"TrustedURLs"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="kw">null</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb7-14">  <SPAN class="dt">"Autocomplete"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="kw">null</SPAN></SPAN><BR />
+<SPAN id="cb7-15"><SPAN class="fu">}</SPAN></SPAN></CODE></PRE><BR />
+</DIV><BR />
+(although it is flat, unformatted - it wasn't prettified like that).<BR />
+<BR />
+So now we understand why <CODE>btp</CODE> shows nothing, and that we're not logged in any more.<BR />
+<H2 id="managing-our-configuration" id="toc-hId-544206339">Managing our configuration</H2><BR />
+We need to have the configuration stored in a different place, and used from there, so it persists. Personally, I'm a fan of the <A href="https://specifications.freedesktop.org/basedir-spec.latest.html" target="_blank" rel="nofollow noopener noreferrer">X Desktop Group (XDG) Base Directory Specification</A>, which defines environment variables that apps can heed. <CODE>XDG_CONFIG_HOME</CODE> is one of those, and "<EM>defines the base directory relative to which user-specific configuration files should be stored.</EM>". Moreover, it goes on to say: "<EM>If $XDG_CONFIG_HOME is either not set or empty, a default equal to $HOME/.config should be used.</EM>". That works as a nice default for me.<BR />
+<BR />
+The btp CLI allows you to <A href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/e57288d7f2aa4e59a8f70b08b82a933d.html" target="_blank" rel="noopener noreferrer">specify the location of the configuration file</A> either using the <CODE>--config</CODE> option, which you'll need to specify on each invocation of <CODE>btp</CODE>, or using the environment variable <CODE>SAPCP_CLIENTCONFIG</CODE>.<BR />
+<BR />
+Let's tell the btp CLI that we want our configuration in this location (relative to our home directory):<BR />
+<PRE><CODE>.config/btp/config.json</CODE></PRE><BR />
+Environment variables are best set when a shell session starts, so let's add the appropriate assignment to <CODE>SAPCP_CLIENTCONFIG</CODE> in the same file as we added the <CODE>bin/</CODE> directory to our path in the <A href="https://blogs.sap.com/2021/09/01/sap-tech-bytes-btp-cli-installation/" target="_blank" rel="noopener noreferrer">previous post</A>. This is the <CODE>.bashrc</CODE> file in our home directory.<BR />
+<BR />
+You can edit this file using App Studio of course. First, open your home directory as a folder in the explorer, using the "Open Folder" button like this:<BR />
+<FIGURE><IMG src="https://raw.githubusercontent.com/SAP-samples/sap-tech-bytes/2021-09-01-btp-cli/draftposts/images/open-home-in-explorer.png" alt="opening the home directory as a folder in Explorer" /><FIGCAPTION aria-hidden="true"></FIGCAPTION></FIGURE><BR />
+Then find and open the <CODE>.bashrc</CODE> file from the Explorer, and at the bottom, add content so it looks like this:<BR />
+<DIV><BR />
+<PRE class="sourceCode bash"><CODE class="sourceCode bash"><SPAN id="cb9-1"><SPAN class="bu">export</SPAN> <SPAN class="va">PATH</SPAN><SPAN class="op">=</SPAN><SPAN class="va">$PATH</SPAN>:<SPAN class="va">$HOME</SPAN>/bin</SPAN><BR />
+<SPAN id="cb9-2"><SPAN class="bu">export</SPAN> <SPAN class="va">SAPCP_CLIENTCONFIG</SPAN><SPAN class="op">=</SPAN><SPAN class="va">$HOME</SPAN>/.config/btp/config.json</SPAN></CODE></PRE><BR />
+</DIV><BR />
+Close any existing terminal session and start a new one (Terminal -&gt; New Terminal); this will cause the <CODE>.bashrc</CODE> file to be processed, and you can then check that the <CODE>SAPCP_CLIENTCONFIG</CODE> environment variable is indeed now set:<BR />
+<DIV><BR />
+<PRE class="sourceCode bash"><CODE class="sourceCode bash"><SPAN id="cb10-1"><SPAN class="bu">echo</SPAN> <SPAN class="va">$SAPCP_CLIENTCONFIG</SPAN></SPAN></CODE></PRE><BR />
+</DIV><BR />
+It should show you this:<BR />
+<PRE><CODE>/home/user/.config/btp/config.json</CODE></PRE><BR />
+Now it's time to log back in with the btp CLI. Follow the same login procedure as described in the previous post <A href="https://blogs.sap.com/2021/09/07/sap-tech-bytes-btp-cli-logging-in/" target="_blank" rel="noopener noreferrer">SAP Tech Bytes: btp CLI - logging in</A>. Use the <CODE>btp target</CODE> command to specify your trial subaccount too.<BR />
+<BR />
+Invoking <CODE>btp</CODE> on its own now should show familiar information:<BR />
+<PRE><CODE>SAP BTP command line interface (client v2.8.0)<BR />
+<BR />
+Usage: btp [OPTIONS] ACTION [GROUP/OBJECT] [PARAMS]<BR />
+<BR />
+CLI server URL:                    <A href="https://cpcli.cf.eu10.hana.ondemand.com" target="test_blank" rel="nofollow noopener noreferrer">https://cpcli.cf.eu10.hana.ondemand.com</A> (server v2.8.0)<BR />
+User:                              P0003480944 (sapdeveloper@example.com)<BR />
+Configuration:                     /home/user/.config/btp/config.json<BR />
+<BR />
+Current target:<BR />
+  Global account (subdomain: 82715b8dtrial-ga)<BR />
+  └─ Subaccount (ID: b8a33bf9-b155-4736-aadf-582dae8fd65a)<BR />
+<BR />
+Tips:<BR />
+  For information about the targeting mechanism, use 'btp --help target'.<BR />
+  To display general help, use 'btp --help'.<BR />
+<BR />
+OK</CODE></PRE><BR />
+But note the location of the configuration - it is honouring where we told the btp CLI to keep it, via <CODE>SAPCP_CLIENTCONFIG</CODE>. Great!<BR />
+<H2 id="final-checks" id="toc-hId-347692834">Final checks</H2><BR />
+Go through the process of restarting your dev space once more. When starting a new terminal after that, and invoking <CODE>btp</CODE>, you should see that your configuration has survived, and you're still logged in. Great!<BR />
+<BR />
+In the next post, we look at adding a whole ton of comfort to invoking commands with the btp CLI: <A href="https://blogs.sap.com/2021/09/21/sap-tech-bytes-btp-cli-autocompletion" target="_blank" rel="noopener noreferrer">SAP Tech Bytes: btp CLI – autocompletion</A>.<BR />
+<BR />
+<HR /><BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2021/02/screenshot-2021-02-22-at-11.00.25.png" /><BR />
+<BR />
+SAP Tech Bytes is an initiative to bring you bite-sized information on all manner of topics, in <A href="https://www.youtube.com/playlist?list=PL6RpkC85SLQC3HBShmlMaPu_nL--4f20z" target="_blank" rel="nofollow noopener noreferrer">video</A> and <A href="https://blogs.sap.com/tag/sap-tech-bytes/" target="_blank" rel="noopener noreferrer">written</A> format. Enjoy!

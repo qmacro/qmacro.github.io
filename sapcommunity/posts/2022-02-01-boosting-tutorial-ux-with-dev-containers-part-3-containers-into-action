@@ -1,0 +1,240 @@
+2022-02-01-boosting-tutorial-ux-with-dev-containers-part-3-containers-into-action
+Boosting tutorial UX with dev containers part 3 - containers into action
+technology-blog-sap
+2022-02-01
+https://community.sap.com/t5/technology-blogs-by-sap/boosting-tutorial-ux-with-dev-containers-part-3-containers-into-action/ba-p/13541051
+<EM>In this three-part series I outline and demonstrate an approach to help newcomers get started more quickly with our tutorials, by describing and providing an environment with all the prerequisite tools installed ready to go. This is part three, where I put the image definition and container configuration into action.</EM><BR />
+<BR />
+<span class="lia-unicode-emoji" title=":police_car_light:">🚨</span>We'll be covering this topic in a #HandsOnSAPDev live stream "<A href="https://youtu.be/AQ-6qxtAbxk" target="_blank" rel="nofollow noopener noreferrer">Let's explore dev containers with VS Code and Tutorial Navigator content</A>" on Fri 04 Feb at 0800 UK - pop by and say hi, everyone is always welcome:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><A href="https://youtu.be/AQ-6qxtAbxk" target="_blank" rel="nofollow noopener noreferrer"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/02/screenshot-2022-02-01-at-13.26.10.png" /></A></P><BR />
+See also the previous posts in this three-part series:<BR />
+<UL><BR />
+ 	<LI><A href="https://blogs.sap.com/2022/01/27/boosting-tutorial-ux-with-dev-containers-part-1-challenge-and-base-solution/" target="_blank" rel="noopener noreferrer">Boosting tutorial UX with dev containers part 1 – challenge and base solution</A></LI><BR />
+ 	<LI><A href="https://blogs.sap.com/2022/01/28/boosting-tutorial-ux-with-dev-containers-part-2-embedding-prerequisite-details/" target="_blank" rel="noopener noreferrer">Boosting tutorial UX with dev containers part 2 – embedding prerequisite details</A></LI><BR />
+</UL><BR />
+<H2 id="toc-hId-961092252">Reviewing what we have created</H2><BR />
+At the end of part 2 we had completed the definition of the image, in the form of the <STRONG>Dockerfile</STRONG> contents, which are as follows:<BR />
+<PRE><CODE>ARG VARIANT="16-buster"<BR />
+FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:${VARIANT}<BR />
+<BR />
+RUN wget -q -O - <A href="https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key" target="test_blank" rel="nofollow noopener noreferrer">https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key</A> | apt-key add - ; \<BR />
+echo "deb <A href="https://packages.cloudfoundry.org/debian" target="test_blank" rel="nofollow noopener noreferrer">https://packages.cloudfoundry.org/debian</A> stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list<BR />
+<BR />
+RUN apt-get update \<BR />
+&amp;&amp; apt-get -y install --no-install-recommends cf7-cli sqlite<BR />
+<BR />
+RUN su node -c "npm install -g @ui5/cli @sap/cds-dk yo"</CODE></PRE><BR />
+<H3 id="toc-hId-893661466">Finalising the configuration</H3><BR />
+We also had a basic <STRONG>devcontainer.json</STRONG> based configuration, to help VS Code know what to do - where to get the container from and what extensions to install.<BR />
+<BR />
+Before we continue, there are a couple more properties that we might want to add to this configuration.<BR />
+<BR />
+What we'll be building initially, in the actual tutorials (specifically in the <A href="https://developers.sap.com/group.btp-app-cap-create.html" target="_blank" rel="noopener noreferrer">Create a CAP Application and SAP Fiori UI</A> group) is a CAP application, in the first tutorial in this group: <A href="https://developers.sap.com/tutorials/btp-app-create-cap-application.html" target="_blank" rel="noopener noreferrer">Create a CAP-Based Application</A>.<BR />
+<BR />
+Those of you who have read ahead and browsed the tutorial, or who have built applications and services with CAP before will know that port 4004 is the default port that is used to listen for and respond to HTTP requests.<BR />
+<BR />
+One of the things we have to think about when using containers is that they're independent with respect to the host environment and have their own environment, in a very similar way to how virtual machines are independent of the host too.<BR />
+<BR />
+This means that if a service or application listens on a port inside a container, which will be the case here because our development will take place inside the container that we'll get VS Code to connect to, then by default only clients inside that container will be able to connect to that port. So there's a concept of port "publishing" or "forwarding", meaning that a port in a container can be accessed from outside the container.<BR />
+<BR />
+The upshot of this is that you'll be able to continue to use the browser on your local machine to connect with and send requests to the app or service that's running inside your container - in this case, via <A href="http://localhost:4004" target="test_blank" rel="nofollow noopener noreferrer">http://localhost:4004</A> for example.<BR />
+<BR />
+Docker refers to this concept as <A href="https://docs.docker.com/config/containers/container-networking/#published-ports" target="_blank" rel="nofollow noopener noreferrer">port publishing</A> while in the context of VS Code and dev containers, this is called <A href="https://code.visualstudio.com/docs/remote/containers#_always-forwarding-a-port" target="_blank" rel="nofollow noopener noreferrer">port forwarding</A> (a term that's common in other networking areas too).<BR />
+<BR />
+With the <STRONG>forwardPorts</STRONG> property in the devcontainer.json configuration file, we can specify which ports should be automatically forwarded, or published, from the container to the host. So we will use this to specify that port 4004 should be made available.<BR />
+<BR />
+Also if, like me, running commands as the "root" user makes you nervous, there's the <STRONG>remoteUser</STRONG> property with which you can specify a different user to be in the container. Traditionally this is either "user", or (in this sort of Node.js container environment) "node".<BR />
+<BR />
+Adding these two properties to the configuration, we end up with this as the final content for our devcontainer.json file:<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+  "name": "Tutorial dev container",<BR />
+  "build": {<BR />
+    "dockerfile": "Dockerfile",<BR />
+  },<BR />
+  "extensions": [<BR />
+    "sapse.vscode-cds",<BR />
+    "sapse.sap-ux-fiori-tools-extension-pack"<BR />
+  ],<BR />
+  "forwardPorts": [ 4004 ],<BR />
+  "remoteUser": "node"<BR />
+}</CODE></PRE><BR />
+&nbsp;<BR />
+<H2 id="toc-hId-568065242">Putting everything into action</H2><BR />
+We're just about ready to try things out!<BR />
+<H3 id="toc-hId-500634456">Creating a project working directory</H3><BR />
+First, there's a tiny bit more general setup required, described in the last tutorial of the <A href="https://developers.sap.com/group.btp-app-cap-prepare.html" target="_blank" rel="noopener noreferrer">Prepare Your Development Environment for CAP</A> group, which is to <A href="https://developers.sap.com/tutorials/btp-app-create-directory.html" target="_blank" rel="noopener noreferrer">create a directory for development</A>.<BR />
+<BR />
+This is not tools related, or related to the container directly, it's just about creating a directory to have somewhere to store the app that you're going to create, and to have a copy of a set of templates that will help you along the way.<BR />
+<BR />
+Basically all we need to do here is create a directory, and then (if we want to follow along closely with the tutorials) a subdirectory within that called "cpapp/". Let's do that now. Note that this is on your local machine, not in the container.<BR />
+<BR />
+I'll create the two directories inside a local "~/work/" directory that I already have - you can put yours where you want. I'll use the name "cap-tut/" for the higher level directory, and have "cpapp/" within that:<BR />
+<PRE><CODE># ~/work<BR />
+; <STRONG>mkdir -p cap-tut/cpapp</STRONG><BR />
+# ~/work<BR />
+; <STRONG>tree cap-tut/</STRONG><BR />
+cap-tut/<BR />
+└── cpapp<BR />
+<BR />
+1 directory, 0 files</CODE></PRE><BR />
+The "cpapp/" directory will be the focus of our development, and it's the directory we'll open up shortly in VS Code.<BR />
+<BR />
+The <A href="https://developers.sap.com/tutorials/btp-app-create-directory.html" target="_blank" rel="noopener noreferrer">Create a Directory for Development</A> tutorial also mentions cloning a <A href="https://github.com/SAP-samples/cloud-cap-risk-management" target="_blank" rel="nofollow noopener noreferrer">repository</A> to get some app templates that you can copy.<BR />
+<BR />
+Let's do that too:<BR />
+<PRE><CODE># ~/work<BR />
+; <STRONG>cd cap-tut/</STRONG><BR />
+# ~/work/cap-tut<BR />
+; <STRONG>git clone <A href="https://github.com/SAP-samples/cloud-cap-risk-management" target="test_blank" rel="nofollow noopener noreferrer">https://github.com/SAP-samples/cloud-cap-risk-management</A> tutorial</STRONG><BR />
+Cloning into 'tutorial'...<BR />
+remote: Enumerating objects: 3286, done.<BR />
+remote: Counting objects: 100% (3286/3286), done.<BR />
+remote: Compressing objects: 100% (1050/1050), done.<BR />
+remote: Total 3286 (delta 1870), reused 3235 (delta 1824), pack-reused 0<BR />
+Receiving objects: 100% (3286/3286), 11.16 MiB | 8.31 MiB/s, done.<BR />
+Resolving deltas: 100% (1870/1870), done.<BR />
+# ~/work/cap-tut<BR />
+; <STRONG>ls</STRONG><BR />
+./ ../ cpapp/ tutorial/<BR />
+<BR />
+</CODE></PRE><BR />
+It also mentions creating a new repository of your own on GitHub. We don't need that to test things out here, so we can leave that for now.<BR />
+<H3 id="toc-hId-304120951">Bringing in Dockerfile and devcontainer.json</H3><BR />
+What we will need to do, however, is bring in the Dockerfile and devcontainer.json file. We want to put them in a specially named directory within our "cpapp/" directory that we'll open up in VS Code, so that VS Code recognises that there's some remote container setup to do.<BR />
+<BR />
+The directory that we want to put our Dockerfile and devcontainer.json files in is ".devcontainer/" - this is what VS Code will recognise - and should be at the root of our app directory ("cpapp/"). Let's create that now too:<BR />
+<PRE><CODE># ~/work<BR />
+; <STRONG>cd cap-tut/cpapp/</STRONG><BR />
+# ~/work/cap-tut/cpapp<BR />
+; <STRONG>mkdir .devcontainer</STRONG></CODE></PRE><BR />
+Finally, the Dockerfile and devcontainer.json file should go into that new ".devcontainer/" directory.<BR />
+<BR />
+Here's what it looks like when it's all ready:<BR />
+<PRE><CODE># ~/work/cap-tut/cpapp<BR />
+; <STRONG>tree -a</STRONG><BR />
+.<BR />
+└── .devcontainer<BR />
+    ├── Dockerfile<BR />
+    └── devcontainer.json<BR />
+<BR />
+1 directory, 2 files</CODE></PRE><BR />
+<H3 id="toc-hId-107607446">Starting up VS Code</H3><BR />
+Taking our cue from the first part of the first tutorial in the <A href="https://developers.sap.com/group.btp-app-cap-create.html" target="_blank" rel="noopener noreferrer">Create a CAP Application and SAP Fiori UI</A> group, i.e. the <A href="https://developers.sap.com/tutorials/btp-app-create-cap-application.html" target="_blank" rel="noopener noreferrer">Create a CAP Application</A> tutorial, it's now time to open up the "cpapp/" directory in VS Code and get started.<BR />
+<BR />
+As I'm still in the "cpapp/" directory from just before, I can use the following command (which is also shown in the tutorial):<BR />
+<PRE><CODE>; <STRONG>code .</STRONG></CODE></PRE><BR />
+This will start VS Code and the "." is of course a reference to the current directory, i.e. "cpapp/".<BR />
+<BR />
+Note that the tutorial mentions carrying out "cds init" - we don't need to do that here, and shouldn't, we'll be doing that within the container! The whole point is of course that if you've followed along, and haven't already installed the <a href="https://community.sap.com/t5/user/viewprofilepage/user-id/1387241">@Sisn</a>/cds-dk package globally, you wouldn't even be able to run "cds init" on your local machine anyway <span class="lia-unicode-emoji" title=":slightly_smiling_face:">🙂</span><BR />
+<BR />
+Let's see what happens. First, we get a nice shiny VS Code screen:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/01/screenshot-2022-01-27-at-16.02.44.png" /></P><BR />
+But hey, what's that message in the bottom right corner? Let's take a closer look:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/01/screenshot-2022-01-27-at-16.02.53.png" /></P><BR />
+Oooh!<BR />
+<BR />
+This has happened because VS Code has indeed recognised the ".devcontainer/" directory. Of course, the only sensible option for curious people like us is to press the <STRONG>Reopen in Container button</STRONG>, right?<BR />
+<BR />
+Doing that causes VS Code to reopen, but in doing so, VS Code has acted upon the contents of the <STRONG>devcontainer.json</STRONG> file which has caused a container to be created based on the image described by our Dockerfile that's referenced. It's also caused our specified extensions to be installed.<BR />
+<BR />
+During this process, you may have seen this message appear briefly in the bottom right corner:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/01/screenshot-2022-01-27-at-16.04.52.png" /></P><BR />
+If you'd have selected the link, you'd have been taken to the details of what was going on, details that look like this:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/01/screenshot-2022-01-27-at-16.05.28.png" /></P><BR />
+If you missed it, you can always get to the log&nbsp;via the Command Palette with the command <STRONG>Remote-Containers: Show Container log</STRONG> as well:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/01/screenshot-2022-01-27-at-16.09.58.png" /></P><BR />
+The eagle-eyed amongst you may be wondering about that (1) next to the "PORTS" heading in the screenshot of the dev container log.<BR />
+<BR />
+You will probably not be surprised that this is because there's an entry in the list of ports that are exposed, just like we requested with the forwardPorts property:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/01/screenshot-2022-01-27-at-16.17.25.png" /></P><BR />
+So at this stage we're all set.<BR />
+<H2 id="toc-hId--217988778">Starting the tutorial</H2><BR />
+At this stage, you are running VS Code on your local machine, the extensions specified are installed, and all the tools needed are in the container which VS Code has instantiated for you.<BR />
+<H3 id="toc-hId--285419564">Opening a terminal</H3><BR />
+What's more, opening up a terminal now in VS Code will open up a shell inside the container, with access to those tools.<BR />
+<BR />
+Let's do that now, selecting "bash" from this menu:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/01/screenshot-2022-01-27-at-16.15.04.png" /></P><BR />
+This gives us a lovely command line environment within which to work, and to carry out the commands specified in the <A href="https://developers.sap.com/tutorials/btp-app-create-cap-application.html" target="_blank" rel="noopener noreferrer">tutorial</A>:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/01/screenshot-2022-01-27-at-16.19.48.png" /></P><BR />
+The prompt here looks a little different to what we've seen in the previous tutorials in this series:<BR />
+<PRE><CODE>root ➜ / $</CODE></PRE><BR />
+But actually it's the same pattern:<BR />
+<PRE><CODE>[username] ➜ [current directory] $</CODE></PRE><BR />
+Remember that we specified that we wanted the user "node" (instead of "root") in our container, and that we're now in our app directory "cpapp/".<BR />
+<H3 id="toc-hId--481933069">Running cds and npm commands</H3><BR />
+Following the tutorial instructions, we're guided to initialise the CAP project with "cds init" and then install the Node.js packages that are listed in the package.json file that (amongst other files) the "cds init" process creates.<BR />
+<BR />
+Are you ready?<BR />
+<BR />
+Running "cds init" creates various files and directories (you'll see them appear in the Explorer on the left hand side), all of which should be familiar to you if you've developed CAP apps or services before:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/01/screenshot-2022-01-27-at-16.25.10.png" /></P><BR />
+Let's pause here for the briefest of moments, to reflect on something: We're running VS Code locally, on our host machine, and it's showing the sudden appearance of files and directories ... but those files and directories are not actually local, they're inside the dev container that VS Code has instantiated and connected to. In fact, everything now happens inside the container.<BR />
+<BR />
+OK, let's continue. We're now instructed to run "npm install", which does does what you expect.<BR />
+<H3 id="toc-hId--678446574">Starting up the skeleton CAP service</H3><BR />
+The final part of the tutorial we're going to do in testing out our container is to run "cds watch".<BR />
+<BR />
+Bear in mind at this point we have nothing in the app, neither schema definitions nor service definitions. This is therefore what we get:<BR />
+<PRE><CODE>node ➜ /workspaces/cpapp $ <STRONG>cds watch<BR />
+</STRONG><BR />
+cds serve all --with-mocks --in-memory? <BR />
+watching: cds,csn,csv,ts,mjs,cjs,js,json,properties,edmx,xml,env,css,gif,html,jpg,png,svg... <BR />
+live reload enabled for browsers <BR />
+_______________________<BR />
+<BR />
+<BR />
+No models found in db/,srv/,app/,schema,services.<BR />
+Waiting for some to arrive...</CODE></PRE><BR />
+Fair enough!<BR />
+<H3 id="toc-hId--950191448">Adding a schema and connecting to the service</H3><BR />
+At this stage the tutorial suggests copying <A href="https://github.com/SAP-samples/cloud-cap-risk-management/blob/5565059dc57b6d593492384e5187c7b517cc411b/templates/create-cap-application/db/schema.cds" target="_blank" rel="nofollow noopener noreferrer">a schema definition</A> from the templates directory of the repository (<A href="https://github.com/SAP-samples/cloud-cap-risk-management" target="_blank" rel="nofollow noopener noreferrer">SAP-samples/cloud-cap-risk-management</A>) that we cloned into the "tutorial/" directory.<BR />
+<BR />
+So let's do that, by creating a new file in the "db/" directory called <STRONG>schema.cds</STRONG>&nbsp;and pasting the following contents in there - you can copy/paste this content here as it's exactly that schema definition in the repository:<BR />
+<PRE><CODE>namespace sap.ui.riskmanagement;<BR />
+using { managed } from '@sap/cds/common';<BR />
+<BR />
+entity Risks : managed {<BR />
+&nbsp; key ID : UUID @(Core.Computed : true);<BR />
+&nbsp; title : String(100);<BR />
+&nbsp; prio : String(5);<BR />
+&nbsp; descr : String;&nbsp;<BR />
+&nbsp; miti : Association to Mitigations;<BR />
+&nbsp; impact : Integer;<BR />
+&nbsp; criticality : Integer;<BR />
+}<BR />
+<BR />
+entity Mitigations : managed {<BR />
+&nbsp; key ID : UUID @(Core.Computed : true);<BR />
+&nbsp; description : String;<BR />
+&nbsp; owner : String;<BR />
+&nbsp; timeline : String;<BR />
+&nbsp; risks : Association to many Risks on risks.miti = $self;<BR />
+}</CODE></PRE><BR />
+Once you've pasted it in, unless you've disabled automatic save, VS Code will save the contents of your new schema.cds file (do it manually if it doesn't).<BR />
+<BR />
+By the way, notice at this point that the CDS content saved in schema.cds is automatically colour-coded, and that's thanks to the <A href="https://marketplace.visualstudio.com/items?itemName=SAPSE.vscode-cds" target="_blank" rel="nofollow noopener noreferrer">SAP CDS Language Support</A> extension that has been installed according to our devcontainer.json configuration.<BR />
+<BR />
+Then, through the magic of the still-running "cds watch" process, our fledgling service comes to life!<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/01/screenshot-2022-01-27-at-16.43.10.png" /></P><BR />
+What's more, VS Code helpfully points out that we now have a service listening on port 4004:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/01/screenshot-2022-01-27-at-16.47.17.png" /></P><BR />
+So what are we going to do here? <STRONG>Open in Browser</STRONG> of course!<BR />
+<BR />
+As you do that, remember that this is a link from VS Code running locally, to your browser also running locally on your machine, but it's connecting to the CAP based service running inside the container. This would be a good time to stop again and think about what this means for a second.<BR />
+<BR />
+Once you've finished pondering <A href="https://en.wikipedia.org/wiki/Life,_the_Universe_and_Everything" target="_blank" rel="nofollow noopener noreferrer">life, the universe and everything</A> related to development containers and <A href="https://en.wikipedia.org/wiki/Turtles_all_the_way_down" target="_blank" rel="nofollow noopener noreferrer">turtles</A>, you can turn to what your browser is displaying, which will look something like this:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/01/screenshot-2022-01-27-at-16.50.25.png" /></P><BR />
+Yes, that URL is indeed a "localhost" URL, but there's nothing listening to 4004 on your local machine - the connection is being forwarded to the container.<BR />
+<BR />
+And yes, that's the CAP service inside your container sending that response. It's not a very exciting response right now as there's hardly any data or service definition to work with. But it's there, it's alive, and it's ready for the next part of your tutorial based learning!<BR />
+<H2 id="toc-hId--853301946">Wrapping up</H2><BR />
+I'll leave it to you to continue with the tutorial and the group - it's a great set of learning resources!<BR />
+<BR />
+What I hope you take away from this series is that with the power of containers, we can improve the developer experience in many contexts - this tutorial prerequisites based learning contexts is just the start. But it's a start that's simple enough for us to build on and give us further ideas, right?<BR />
+<BR />
+There are of course many questions I've deliberately left unanswered for now. How do we make this accessible to more than just me? How best can we distribute images, or image definitions, and dev container configuration? What if I don't want to use VS Code? (That's an easy one - I use dev containers for many things, and I don't use VS Code).<BR />
+<BR />
+Perhaps more fundamentally, however, is this question, and I'd love to hear from you in the comments below: Does this resonate with you? Can you see yourself using dev containers to make your life easier? Would you enjoy tutorial prerequisite specific container configuration?<BR />
+<BR />
+Please share your thoughts, and if you've got this far in the series, thank you for reading!

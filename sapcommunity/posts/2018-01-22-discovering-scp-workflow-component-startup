@@ -1,0 +1,330 @@
+2018-01-22-discovering-scp-workflow-component-startup
+Discovering SCP Workflow - Component Startup
+technology-blog-members
+2018-01-22
+https://community.sap.com/t5/technology-blogs-by-members/discovering-scp-workflow-component-startup/ba-p/13362876
+Previous post in this series:&nbsp;<A href="https://blogs.sap.com/2018/01/20/discovering-scp-workflow-user-tasks/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow – User Tasks</A>.<BR />
+<BR />
+This post is part of a series, a guide to which can be found here:&nbsp;<A href="https://qmacro.org/blog/posts/2018/01/16/discovering-scp-workflow/" target="_blank" rel="nofollow noopener noreferrer">Discovering SCP Workflow</A>.<BR />
+<BR />
+In this post we'll look into how a task UI starts up, where it gets the right data to display, and how it interacts with the My Inbox "host" app.<BR />
+<BR />
+If you've followed the series so far, you'll know we're at the point now where we're in the My Inbox app, the user task currently selected is from the beer recommendation workflow definition, and we understand how the host app (My Inbox) knows how to get the user task rendered in the detail view of the classic master-detail layout.<BR />
+<BR />
+To refresh our memories, it's via the URI associated with the workflow's task (via the Task Collection entityset) in the GUI_Link property:<BR />
+<PRE><CODE>sapui5://html5apps<BR />
+  /untappdrecommendationapproval<BR />
+  /qmacro.UntappdRecommendationApproval</CODE></PRE><BR />
+In the previous post we also saw how the task UI component is instantiated:<BR />
+<BR />
+fnGetDetailsForSelectedTask -&gt; fnParseComponentParameters -&gt; fnRenderComponent<BR />
+<BR />
+Here's a snapshot at what's going on in this sequence, where the task UI component is about to be created (you can see the sequence in reverse order in the Call Stack on the right hand side):<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-21-at-12.56.21.png" /><BR />
+<BR />
+For the reader (like me) who always wants to see the detail, the value of oComponentParameters.ComponentName in the createComponent call on lines 319-322 is "qmacro.UntappdRecommendationApproval". No surprises there, but it's always nice to have assumptions confirmed. And yes, this is happening in the host app's S3 (detail) controller.<BR />
+<H3 id="toc-hId-1034801257">Task UI component data</H3><BR />
+There's a second property in the the map passed in the createComponent call there, and that is componentData (on line 321).<BR />
+<BR />
+The componentData property is not uncommon when instantiating UI5 components in general - it's the normal way to pass data at startup time. And that's exactly what's happening here. The host app, My Inbox, has all the details of the task instance to be displayed, and needs to pass these to the component that it has worked out it needs to instantiate for that purpose.<BR />
+<BR />
+Let's take a look at what's contained in oCompData, which is the variable containing the data that's passed in the componentData property:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-21-at-13.09.33.png" /><BR />
+<BR />
+Lots of interesting stuff! Generally, it falls into a couple of categories:<BR />
+<UL><BR />
+ 	<LI>links to the "inbox" (ie the host app)</LI><BR />
+ 	<LI>references to the task specific data</LI><BR />
+</UL><BR />
+<H4 id="toc-hId-967370471">The inbox API</H4><BR />
+There's the inboxAPI property in the startupParameters map - this consists of various functions that you might guess are related to interacting with the host app. And you'd be right. Maintaining action buttons (for example to allow the user to accept or reject a task) is a key facility. These buttons are to appear at the bottom of the task UI, but are not part of it - they live within the footer of the host app's detail view - take a look again at the My Inbox, this time with the workflow log being displayed:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-21-at-13.22.05.png" /><BR />
+<BR />
+Effectively, the task UI is rendered within the host app, and is represented by the red outline here. The Continue button is in the footer, not in any part of the task UI itself.<BR />
+<H4 id="toc-hId-770856966">Task information</H4><BR />
+The other category relates to the data specific to the task. In the startupParameters map there's the taskModel property. If you were to invoke some introspection goodness upon this property, you'd see it was a JSON model:<BR />
+<PRE><CODE>&gt; oCompData.startupParameters.taskModel.getMetadata()<BR />
+&lt; Metadata {<BR />
+    _sClassName: "sap.ui.model.json.JSONModel",<BR />
+    _oClass: ƒ,<BR />
+    _oParent: Metadata, <BR />
+    _bAbstract: false, <BR />
+    _bFinal: false,&nbsp;…}</CODE></PRE><BR />
+Can you resist looking to see what's in it? I can't. Let's do it:<BR />
+<PRE><CODE>&gt; oCompData.startupParameters.taskModel.getData()<BR />
+&gt; {<BR />
+    CreatedBy: "P481810",<BR />
+    CreatedOn: Sat Jan 20 2018 09:34:02 GMT+0000 (GMT) {},<BR />
+    InstanceID: "0cdb90a1-fdc5-11e7-bb2a-00163e504470",<BR />
+    Status: "READY",<BR />
+    TaskDefinitionID: "usertask1",<BR />
+    TaskDefinitionName: "Untappd Beer Recommendations", <BR />
+    TaskTitle: "Recommended beers similar to Subluminal"<BR />
+    [...]<BR />
+  }</CODE></PRE><BR />
+Gosh, that seems like exactly what the task UI will need!<BR />
+<H3 id="toc-hId-445260742">Bootstrapping the task UI</H3><BR />
+There are already a couple of nice posts on writing a task UI:<BR />
+<UL><BR />
+ 	<LI><A href="https://blogs.sap.com/2017/11/06/getting-started-with-sap-cloud-platform-workflow-how-to-build-a-simple-approval-ui/" target="_blank" rel="noopener noreferrer">Getting started with SAP Cloud Platform Workflow – How to build a simple approval UI</A> by&nbsp;<SPAN class="mention-scrubbed">christian.loos</SPAN></LI><BR />
+ 	<LI><A href="https://blogs.sap.com/2017/10/12/part-1c-working-with-task-apis-in-your-custom-html5-application/" target="_blank" rel="noopener noreferrer">Part 1C: Working with Task APIs in your Custom HTML5 application</A>&nbsp;by&nbsp;<SPAN class="mention-scrubbed">archana.shukla</SPAN></LI><BR />
+</UL><BR />
+While I don't want to repeat what has already been covered, I think it's worth looking at how a task UI component starts up, within the context of the dive into the component data that we've just taken.<BR />
+<BR />
+I'll cover the majority of the UntappdRecommendationApproval app in the next post. Here, we'll focus on what goes on in the Component.js, specifically in the init function.<BR />
+<BR />
+Let's lay that function out so we can get a good look at what's going on:<BR />
+<PRE class="language-javascript"><CODE>init: function() {<BR />
+	// call the base component's init function<BR />
+	UIComponent.prototype.init.apply(this, arguments);<BR />
+<BR />
+	// enable routing<BR />
+	this.getRouter().initialize();<BR />
+<BR />
+	// set the device model<BR />
+	this.setModel(models.createDeviceModel(), "device");<BR />
+	<BR />
+	// app-wide helper model<BR />
+	this.setModel(models.createAppModel(), "app");<BR />
+<BR />
+	// get task data<BR />
+	var startupParameters = this.getComponentData().startupParameters;<BR />
+	var taskModel = startupParameters.taskModel;<BR />
+	var taskData = taskModel.getData();<BR />
+	var taskId = taskData.InstanceID;<BR />
+<BR />
+	// initialize model<BR />
+	var contextModel = new sap.ui.model.json.JSONModel("/bpmworkflowruntime/rest/v1/task-instances/" + taskId + "/context");<BR />
+	this.setModel(contextModel);<BR />
+<BR />
+	// Ensure we have access to the Inbox API before continuing<BR />
+	// (we don't except when running within the My Inbox context, ie<BR />
+	// when running "for real", rather than in test mode).<BR />
+	if (startupParameters.inboxAPI) {<BR />
+<BR />
+		// get the task description<BR />
+		var appModel = this.getModel("app");<BR />
+		startupParameters.inboxAPI.getDescription("NA", taskId)<BR />
+			.done(function(data){<BR />
+              	appModel.setProperty("/taskDescription", data.Description);<BR />
+			})<BR />
+			.fail(function(errorText){<BR />
+              	jQuery.sap.require("sap.m.MessageBox");<BR />
+              	sap.m.MessageBox.error(errorText, { title: "Error"});<BR />
+      		});<BR />
+<BR />
+		//add actions<BR />
+		startupParameters.inboxAPI.addAction({<BR />
+			type: "Accept",<BR />
+			label: "Continue"<BR />
+		}, function(button) {<BR />
+			this._completeTask(taskId, true);<BR />
+		}, this);<BR />
+<BR />
+	}<BR />
+},</CODE></PRE><BR />
+Where possible, I've followed the pattern shown by Christian and Archana, in getting access to the taskModel and other details.<BR />
+<BR />
+Let's take it bit by bit.<BR />
+<BR />
+The first part is fairly standard. This is what we do:<BR />
+<UL><BR />
+ 	<LI>call the component's superclass's init function</LI><BR />
+ 	<LI>initialise the router mechanism</LI><BR />
+ 	<LI>create a device model and set it on the component</LI><BR />
+</UL><BR />
+Nothing surprising there, and also nothing related specifically to the fact that this is a task UI app.<BR />
+<BR />
+Next:<BR />
+<UL><BR />
+ 	<LI>I decided to create an app-wide helper model which is a common pattern in UI5 apps; so far I'm only storing one particular property in it (in the next bit), but hey ho</LI><BR />
+</UL><BR />
+Then, it's time to go to town on the task specific stuff:<BR />
+<UL><BR />
+ 	<LI>getComponentData is the standard way to access data associated with a component when it was instantiated. So here we're retrieving the oCompData passed via the componentData property&nbsp;in the call to createComponent that we saw earlier</LI><BR />
+ 	<LI>from there we can grab the taskModel and get the data</LI><BR />
+ 	<LI>within that data there's the InstanceID property, which, in the example above, has a value of "0cdb90a1-fdc5-11e7-bb2a-00163e504470" and which we store in a local variable taskId</LI><BR />
+</UL><BR />
+What do we do with the ID of this instance? Well, invoke the services of the Workflow API, of course!<BR />
+<BR />
+What are we invoking, specifically? Let's have a look. First, substituting the instance ID value for the taskId variable, the relative URL in the JSON model instantiation is:<BR />
+<PRE><CODE>/bpmworkflowruntime/rest<BR />
+  /v1/task-instances/0cdb90a1-fdc5-11e7-bb2a-00163e504470<BR />
+  /context</CODE></PRE><BR />
+We already can guess that the "bpmworkflowruntime" is a reference to a route pointing to the Workflow Runtime destination in our SCP Connectivity Service, as we discussed in a previous post <A href="https://blogs.sap.com/2018/01/14/discovering-scp-workflow-instance-initiation/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Instance Initiation</A>:<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+  "path": "/bpmworkflowruntime",<BR />
+  "target": {<BR />
+    "type": "destination",<BR />
+    "name": "bpmworkflowruntime",<BR />
+    "entryPath": "/workflow-service"<BR />
+  },<BR />
+  "description": "Workflow Service Runtime" <BR />
+}</CODE></PRE><BR />
+This destination represents the Workflow API, so let's have a look at what we're requesting here:<BR />
+<UL><BR />
+ 	<LI>the specification of a URL when creating a new instance of a JSON model causes a GET request to be made to that URL</LI><BR />
+ 	<LI>Looking at the <A href="https://api.sap.com/shell/discover/contentpackage/SAPCPWorkflowAPIs/api/SAP_CP_Workflow" target="_blank" rel="noopener noreferrer">Workflow API documentation</A>, we see that a request to an endpoint like this:<BR />
+<PRE><CODE>/v1/task-instances/&lt;instance ID&gt;/context</CODE></PRE><BR />
+retrieves the context of a user task. Exactly what we're after!</LI><BR />
+</UL><BR />
+At this point we have all the context data in our domain model ready to bind to the controls in our task UI's view (which we'll look at next time).<BR />
+<BR />
+<EM>Note: If you're wondering why we're not using the "improved" reference "workflowservice" that we considered in <A href="https://blogs.sap.com/2018/01/14/discovering-scp-workflow-instance-initiation/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Instance Initiation</A>, you can find out the reason in the next post.</EM><BR />
+<H3 id="toc-hId-248747237">Access to the inbox API</H3><BR />
+We're almost done. But there's something that follows the creation of our context model that we need to examine, and that is the access to the inbox API.<BR />
+<BR />
+The thing is, the wonderful handoff from the host My Inbox app to the recipient task UI app happens only when actually running in the My Inbox context. When you're developing your task UI app and want to test the UI out, you don't have that luxury.<BR />
+<BR />
+This isn't ideal - the time it takes to save, deploy to SCP and re-test in the context of the Portal service based Fiori Launchpad, to find that I still had some UI tweaking to do, was too much. I wanted at least to be able to test the UI part (the part surrounded by the red box in the screenshot earlier) from the comfort of the testing harness available with the SAP Web IDE.<BR />
+<H4 id="toc-hId-181316451">For real</H4><BR />
+So in the second half of the component's init function, there's a condition that checks to see if the inboxAPI property is available within the startupParameters retrieved from the component data.<BR />
+<BR />
+If it is, we're going to assume that we're running for real inside the context of My Inbox, and everything is normal:<BR />
+<UL><BR />
+ 	<LI>we grab the task description via the inbox API's getDescription function and save it in the app model we created just before (this is bound to a control in the main UI - we'll see that in the next post)</LI><BR />
+ 	<LI>we add an action button - in particular a "Continue" with the type "Accept", which, if pressed, calls some standard code that you've probably seen in the other posts mentioned earlier to complete the task by patching the task instance data via the Workflow API (I haven't yet bothered to modify this part from the sample apps in those posts)</LI><BR />
+</UL><BR />
+If you're wondering why I set the type of the button to "Accept", it's because I peeked into the inbox API documentation for the addAction function, i.e. I looked at the source code, which of course as we can now guess is in the controller for the S3 view in My Inbox:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-21-at-18.38.50.png" /><BR />
+<BR />
+Check out lines 2558 onwards - it's there you'll see how the type, action and label properties are used. Basically here it results in the "Continue" button being marked appropriately - in this case, highlighted in green as you saw in earlier screenshots. It relates directly to the <A href="https://sapui5.hana.ondemand.com/#/api/sap.m.ButtonType" target="_blank" rel="nofollow noopener noreferrer">Button Type enumeration</A> in UI5, values in which are used for the type property of the classic Button control in the sap.m library.<BR />
+<H4 id="toc-hId--15197054">Testing only</H4><BR />
+When you're testing a task UI app directly, you're not, by definition, within the context of the My Inbox app and therefore don't have access to the inbox API. Hence the condition - if we don't have access to it, we don't try to set the buttons on the host app. Simple.<BR />
+<BR />
+But there's more. Testing directly also means there's no selected workflow instance, or more accurately task instance, to work with. What's a poor developer to do? Well, one thing you can do is fake the context, by providing the task instance ID in the URL of your test harness. Let's see that in action, taking a slight detour as a way of revision on the Workflow API and Postman. You may want have to hand a post from earlier on in this series for this: "<A href="https://blogs.sap.com/2018/01/16/discovering-scp-workflow-using-postman/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Using Postman</A>".<BR />
+<BR />
+I'm in the SAP Web IDE, and want to test my task UI. I actually have a couple of workflow instances running (the ones you can see the tasks for in the My Inbox screenshots). Let's pick the first one, relating to the checkin for Subluminal.<BR />
+<BR />
+Let's use Postman to see the workflow instances:<BR />
+<BR />
+Request:<BR />
+<PRE><CODE>GET&nbsp;<SPAN class="resolvedVariable">{{workflowservice}}</SPAN>/v1/workflow-instances<BR />
+</CODE></PRE><BR />
+Response:<BR />
+<PRE class="language-javascript"><CODE>[<BR />
+    {<BR />
+        "id": "0cb89f49-fdc5-11e7-bb2a-00163e504470",<BR />
+        "definitionId": "untappdrecommendation",<BR />
+        "definitionVersion": "22",<BR />
+        "subject": "Untappd Recommendation",<BR />
+        "status": "RUNNING",<BR />
+        "businessKey": "",<BR />
+        "startedAt": "2018-01-20T09:34:02.193Z",<BR />
+        "startedBy": "P481810",<BR />
+        "completedAt": null<BR />
+    },<BR />
+    {<BR />
+        "id": "08c963ad-fdc5-11e7-bb2a-00163e504470",<BR />
+        "definitionId": "untappdrecommendation",<BR />
+        "definitionVersion": "22",<BR />
+        "subject": "Untappd Recommendation",<BR />
+        "status": "RUNNING",<BR />
+        "businessKey": "",<BR />
+        "startedAt": "2018-01-20T09:33:55.590Z",<BR />
+        "startedBy": "P481810",<BR />
+        "completedAt": null<BR />
+    }<BR />
+]</CODE></PRE><BR />
+There's some JavaScript in the Test panel for this request that takes the value of the "id" property of the first instance returned, saving it to the environment variable "instanceId":<BR />
+<PRE class="language-javascript"><CODE>var data = JSON.parse(responseBody);<BR />
+postman.setEnvironmentVariable("instanceId", data[0].id);</CODE></PRE><BR />
+In this case, the value 0cb89f49-fdc5-11e7-bb2a-00163e504470 ends up in there.<BR />
+<BR />
+So we can now check the execution log for that first instance, all the while assuming (hoping) that it's the one related to the Subliminal checkin (if it's not, then it's the other one, no big deal):<BR />
+<BR />
+Request:<BR />
+<PRE><CODE>GET&nbsp;<SPAN class="resolvedVariable">{{workflowservice}}</SPAN>/v1/workflow-instances/<SPAN class="resolvedVariable">{{instanceId}}</SPAN>/execution-logs</CODE></PRE><BR />
+Response:<BR />
+<PRE class="language-javascript"><CODE>[<BR />
+    {<BR />
+        "id": "799",<BR />
+        "type": "WORKFLOW_STARTED",<BR />
+        "timestamp": "2018-01-20T09:34:02.292Z",<BR />
+        "referenceInstanceId": "0cb89f49-fdc5-11e7-bb2a-00163e504470",<BR />
+        "userId": "P481810"<BR />
+    },<BR />
+    {<BR />
+        "id": "800",<BR />
+        "type": "USERTASK_CREATED",<BR />
+        "timestamp": "2018-01-20T09:34:02.447Z",<BR />
+        "referenceInstanceId": "d6a6ef04-4519-4c89-b8d8-8306d0a37128",<BR />
+        "activityId": "usertask1",<BR />
+        "subject": "Recommended beers similar to Subluminal",<BR />
+        "recipientUsers": [<BR />
+            "P481810"<BR />
+        ],<BR />
+        "recipientGroups": [],<BR />
+        "initiatorId": "P481810",<BR />
+        "taskId": "0cdb90a1-fdc5-11e7-bb2a-00163e504470"<BR />
+    }<BR />
+]</CODE></PRE><BR />
+From the value in the "subject" property, we can indeed see that it is the one we're looking for.<BR />
+<BR />
+But wait, we have something else in this response that's going to be rather valuable to us too. In the "USERTASK_CREATED" execution log item we can see the value of the task ID of the user task instance - it's 0cdb90a1-fdc5-11e7-bb2a-00163e504470 (don't confuse this with the workflow instance ID which starts 0cb8...). Let's double check, with a further call to another Workflow API endpoint to view the task instances for a given workflow instance:<BR />
+<PRE><CODE>GET&nbsp;<SPAN class="resolvedVariable">{{workflowservice}}</SPAN>/v1/task-instances?workflowInstanceId=<SPAN class="resolvedVariable">{{instanceId}}</SPAN></CODE></PRE><BR />
+<PRE class="language-javascript"><CODE>[<BR />
+    {<BR />
+        "activityId": "usertask1",<BR />
+        "claimedAt": null,<BR />
+        "completedAt": null,<BR />
+        "createdAt": "2018-01-20T09:34:02.420Z",<BR />
+        "description": "You recently checked in Subluminal by Buxton Brewery. Here are some beer recommendations for your wishlist, based on this checkin.",<BR />
+        "id": "0cdb90a1-fdc5-11e7-bb2a-00163e504470",<BR />
+        "processor": null,<BR />
+        "recipientUsers": [<BR />
+            "P481810"<BR />
+        ],<BR />
+        "recipientGroups": [],<BR />
+        "status": "READY",<BR />
+        "subject": "Recommended beers similar to Subluminal",<BR />
+        "workflowDefinitionId": "untappdrecommendation",<BR />
+        "workflowInstanceId": "0cb89f49-fdc5-11e7-bb2a-00163e504470",<BR />
+        "priority": "MEDIUM",<BR />
+        "dueDate": null,<BR />
+        "createdBy": "P481810"<BR />
+    }<BR />
+]</CODE></PRE><BR />
+Yup, that's it, for sure. Note, as we're here, the description property - that's the one we pick up the value for ("You recently checked in Subliminal ...") in the init function earlier with the call to startupParameters.inboxAPI.getDescription.<BR />
+<BR />
+So we can be sure that the instance ID that we would normally receive through the handoff from the My Inbox app to the task UI component is&nbsp;0cdb90a1-fdc5-11e7-bb2a-00163e504470, and that's the value (for "taskId") that we need to complete the Workflow API endpoint URL earlier when instantiating the context model:<BR />
+<PRE class="language-javascript"><CODE>var contextModel = new sap.ui.model.json.JSONModel("/bpmworkflowruntime/rest/v1/task-instances/" + taskId + "/context");</CODE></PRE><BR />
+How do we put this ID in the URL of our test harness? By extending the runtime container for our task UI component (i.e. the index.html file) and extending the SAP Web IDE run configuration to add a URL parameter.<BR />
+<BR />
+First, the runtime container extension. In a normal, simple index.html, you'd see the placing of a simple Component Container control inside a Shell control. All we have to do is add some component data values for the settings property in the Component Container instantiation thus:<BR />
+<PRE class="language-javascript"><CODE>sap.ui.getCore().attachInit(function() {<BR />
+	new sap.m.Shell({<BR />
+		app: new sap.ui.core.ComponentContainer({<BR />
+			height : "100%",<BR />
+			name : "qmacro.UntappdRecommendationApproval",<BR />
+			settings : {<BR />
+				componentData : {<BR />
+					startupParameters : {<BR />
+						taskModel : new sap.ui.model.json.JSONModel({<BR />
+							InstanceID : jQuery.sap.getUriParameters().get("InstanceID")<BR />
+						})<BR />
+					}<BR />
+				}<BR />
+			}<BR />
+		})<BR />
+	}).placeAt("content");<BR />
+});</CODE></PRE><BR />
+Here, we're creating a simple JSON model and assigning it to the taskModel startup parameter. In this JSON model we have a single property, with the value being whatever is specified in the URL query parameter "InstanceID".<BR />
+<BR />
+Now the URL parameter - how do we specify the instance ID? By specifying a URL Parameter in the appropriate run configuration:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-21-at-19.08.24.png" /><BR />
+<BR />
+When we run the task UI app in isolation, testing from within the Web IDE, we get what we're looking for - the task UI, without the My Inbox context. Definitely useful enough for building and testing the actual UI:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-21-at-19.23.33.png" /><BR />
+<BR />
+So we've reached a good point to end this post upon. We now understand what happens when the task UI component starts up, and where the data and context comes from. We also know how to build and test a UI without having to include a whole SCP deployment on every iteration.<BR />
+<BR />
+In the next post we'll look at the actual task UI in a little more detail.<BR />
+<BR />
+Next post in this series: <A href="https://blogs.sap.com/2018/01/24/discovering-scp-workflow-recommendation-ui/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Recommendation UI</A>.

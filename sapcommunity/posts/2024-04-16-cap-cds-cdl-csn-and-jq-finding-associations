@@ -1,0 +1,169 @@
+2024-04-16-cap-cds-cdl-csn-and-jq-finding-associations
+CAP, CDS, CDL, CSN and jq - finding associations
+application-developmentblog-board
+2024-04-16
+https://community.sap.com/t5/application-development-blog-posts/cap-cds-cdl-csn-and-jq-finding-associations/ba-p/13671633
+<P>In CAP, relationships between entities can be expressed with associations. In digging into how these are represented internally, I found jq yet again to be invaluable in parsing out info from the internal representation of the definitions. Here's what I did.</P><P>In<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/" target="_blank" rel="noopener nofollow noreferrer">CAP</A>, SAP's Cloud Application Programming Model,<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/guides/domain-modeling" target="_blank" rel="noopener nofollow noreferrer">models are defined</A><SPAN>&nbsp;</SPAN>declaratively in a human readable format known as CDL, which stands for Core Definition Language<A href="https://qmacro.org/blog/posts/2024/04/05/cap-cds-cdl-csn-and-jq-finding-associations/#footnotes" target="_blank" rel="noopener nofollow noreferrer">1</A>.</P><H2 id="toc-hId-992497672">CDL example</H2><P>Here's a simple example, in a file called<SPAN>&nbsp;</SPAN>services.cds<SPAN>&nbsp;</SPAN>taken from the current<SPAN>&nbsp;</SPAN><A href="https://www.youtube.com/playlist?list=PL6RpkC85SLQBHPdfHQ0Ry2TMdsT-muECx" target="_blank" rel="noopener nofollow noreferrer">Hands-on SAP Dev live stream series on back to basics with CAP Node.js</A>:</P><PRE>aspect cuid { key ID: UUID }
+
+service bookshop {
+  entity Books : cuid {
+    title: String;
+    author: Association to Authors;
+  }
+  entity Authors : cuid {
+    name: String;
+    books: Association to many Books on books.author = $self;
+  }
+}</PRE><BLOCKQUOTE><P>Yes, there's a<SPAN>&nbsp;</SPAN>cuid<SPAN>&nbsp;</SPAN>aspect in<SPAN>&nbsp;</SPAN>@sap/cds/common<SPAN>&nbsp;</SPAN>but I didn't want the entire contents of that package being expressed in the output that follows, as it would make it more difficult to see the essential parts in this short example.</P></BLOCKQUOTE><P>There's a "to-one" relationship between<SPAN>&nbsp;</SPAN>Books<SPAN>&nbsp;</SPAN>and<SPAN>&nbsp;</SPAN>Authors, and a "to-many" relationship in the back link beween<SPAN>&nbsp;</SPAN>Authors<SPAN>&nbsp;</SPAN>and<SPAN>&nbsp;</SPAN>Books.</P><BLOCKQUOTE><P>For those non-CAP folks wondering where the foreign key field is in the first relationship, it's constructed automatically as the<SPAN>&nbsp;</SPAN>Books:author<SPAN>&nbsp;</SPAN>association is a<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/guides/domain-modeling#managed-1-associations" target="_blank" rel="noopener nofollow noreferrer">managed</A><SPAN>&nbsp;</SPAN>one.</P></BLOCKQUOTE><H2 id="toc-hId-795984167">CSN equivalent</H2><P>There's an internal JSON-based representation of such definitions, which lends itself more readily to machine processing. This representation is called<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/cds/csn" target="_blank" rel="noopener nofollow noreferrer">Core Schema Notation</A>, or CSN. We can see the CSN for the CDL source above, like this:</P><PRE>cds compile --to csn services.cds</PRE><BLOCKQUOTE><P>The default target format is in fact<SPAN>&nbsp;</SPAN>csn<SPAN>&nbsp;</SPAN>so<SPAN>&nbsp;</SPAN>--to csn<SPAN>&nbsp;</SPAN>is unnecessary, but it's nice to express it explicitly here.</P></BLOCKQUOTE><P>What we get is this:</P><PRE>{
+  "definitions": {
+    "cuid": {
+      "kind": "aspect",
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        }
+      }
+    },
+    "bookshop": {
+      "kind": "service"
+    },
+    "bookshop.Books": {
+      "kind": "entity",
+      "includes": [
+        "cuid"
+      ],
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "title": {
+          "type": "cds.String"
+        },
+        "author": {
+          "type": "cds.Association",
+          "target": "bookshop.Authors",
+          "keys": [
+            {
+              "ref": [
+                "ID"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "bookshop.Authors": {
+      "kind": "entity",
+      "includes": [
+        "cuid"
+      ],
+      "elements": {
+        "ID": {
+          "key": true,
+          "type": "cds.UUID"
+        },
+        "name": {
+          "type": "cds.String"
+        },
+        "books": {
+          "type": "cds.Association",
+          "cardinality": {
+            "max": "*"
+          },
+          "target": "bookshop.Books",
+          "on": [
+            {
+              "ref": [
+                "books",
+                "author",
+                "ID"
+              ]
+            },
+            "=",
+            {
+              "ref": [
+                "ID"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "meta": {
+    "creator": "CDS Compiler v4.6.2",
+    "flavor": "inferred"
+  },
+  "$version": "2.0"
+}</PRE><H2 id="toc-hId-599470662">Picking out detail with jq</H2><P>I'm just interested to see how the associations are represented, so wanted to narrow this CSN down to just elements that are of type<SPAN>&nbsp;</SPAN>cds.Association. Being a relatively involved JSON dataset, this was a job for one of my favourite languages, jq.</P><P>Here's what I came up with, in a file called<SPAN>&nbsp;</SPAN>associations:</P><PRE>#!/usr/bin/env -S jq -f
+
+# Lists entities and shows any elements that are associations
+
+def is_entity: .value.kind == "entity";
+def is_association: .value.type == "cds.Association";
+
+.definitions
+| to_entries
+| map(
+    select(is_entity)
+    | {
+        (.key):
+        .value.elements
+        | with_entries(select(is_association))
+      }
+  )</PRE><P>And here's how I use it:</P><PRE>cds compile --to csn services.cds | ./associations</PRE><P>The output is:</P><PRE>[
+  {
+    "bookshop.Books": {
+      "author": {
+        "type": "cds.Association",
+        "target": "bookshop.Authors",
+        "keys": [
+          {
+            "ref": [
+              "ID"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "bookshop.Authors": {
+      "books": {
+        "type": "cds.Association",
+        "cardinality": {
+          "max": "*"
+        },
+        "target": "bookshop.Books",
+        "on": [
+          {
+            "ref": [
+              "books",
+              "author",
+              "ID"
+            ]
+          },
+          "=",
+          {
+            "ref": [
+              "ID"
+            ]
+          }
+        ]
+      }
+    }
+  }
+]</PRE><P>Here are some notes:</P><UL><LI>I encapsulated the kind / type determination in helper predicate functions (is_entity<SPAN>&nbsp;</SPAN>and<SPAN>&nbsp;</SPAN>is_association), mostly to keep the main code more succinct</LI><LI>I love how the<SPAN>&nbsp;</SPAN><A href="https://jqlang.github.io/jq/manual/#to_entries-from_entries-with_entries" target="_blank" rel="noopener nofollow noreferrer">to_entries,from_entries,with_entries(f)</A><SPAN>&nbsp;</SPAN>family of functions<A href="https://qmacro.org/blog/posts/2024/04/05/cap-cds-cdl-csn-and-jq-finding-associations/#footnotes" target="_blank" rel="noopener nofollow noreferrer">2</A><SPAN>&nbsp;</SPAN>help out by normalising JSON objects that have dynamic values for property keys</LI><LI>By using the<SPAN>&nbsp;</SPAN>select(is_entity)<SPAN>&nbsp;</SPAN>in the context of such normalisation, I can easily pick out the "enclosing" object that contains the condition I'm looking for</LI><LI>In contrast to the use of<SPAN>&nbsp;</SPAN>to_entries<SPAN>&nbsp;</SPAN>at the outer (entity) level, I used<SPAN>&nbsp;</SPAN>with_entries<SPAN>&nbsp;</SPAN>to achieve the<SPAN>&nbsp;</SPAN>to_entries | map(...) | from_entries<SPAN>&nbsp;</SPAN>pattern that is so useful</LI></UL><P>And that's about it! Score one more for the wonderful utility of jq, in today's world of JSON.</P><H2 id="toc-hId-402957157">Alternative approach</H2><P>While I like the<SPAN>&nbsp;</SPAN>is_entity<SPAN>&nbsp;</SPAN>and<SPAN>&nbsp;</SPAN>is_association<SPAN>&nbsp;</SPAN>definitions, one could make the main code even more succinct like this:</P><PRE>def entities: select(.value.kind == "entity");
+def associations: select(.value.type == "cds.Association");
+
+.definitions
+| to_entries
+| map(
+    entities
+    | {
+       (.key):
+       .value.elements | with_entries(associations)
+      }
+  )</PRE><P>Which do you prefer?</P><HR /><P><STRONG>Footnotes</STRONG></P><P>1: The human readable language we used to define models is commonly referred to as CDS.<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs" target="_blank" rel="noopener nofollow noreferrer">Capire</A>, the CAP documentation resource, is more precise, calling it CDL, classing CDL, CSN and other CAP little languages such as CQL and CQN as all being under the general CDS umbrella term. As you can see from the bottom of the CSN output, even the compiler refers to it as CDS!</P><P>2: For more on this family of functions, see<SPAN>&nbsp;</SPAN><A href="https://qmacro.org/blog/posts/2022/05/30/reshaping-data-values-using-jq's-with_entries/" target="_blank" rel="noopener nofollow noreferrer">Reshaping data values using jq's with_entries</A><SPAN>&nbsp;</SPAN>and<SPAN>&nbsp;</SPAN><A href="https://qmacro.org/blog/posts/2024/02/28/quick-conversion-of-multiple-values-using-with_entries-in-jq/" target="_blank" rel="noopener nofollow noreferrer">Quick conversion of multiple values using with_entries in jq</A>.</P><P>&nbsp;</P><HR /><P><A href="https://qmacro.org/blog/posts/2024/04/05/cap-cds-cdl-csn-and-jq-finding-associations/" target="_blank" rel="nofollow noopener noreferrer">Originally published on qmacro.org</A></P>

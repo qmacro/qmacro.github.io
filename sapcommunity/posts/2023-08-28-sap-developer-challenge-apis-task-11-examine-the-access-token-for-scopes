@@ -1,0 +1,87 @@
+2023-08-28-sap-developer-challenge-apis-task-11-examine-the-access-token-for-scopes
+SAP Developer Challenge - APIs - Task 11 - Examine the access token for scopes contained
+application-developmentforum-board
+2023-08-28
+https://community.sap.com/t5/application-development-discussions/sap-developer-challenge-apis-task-11-examine-the-access-token-for-scopes/td-p/282366
+<P>(Check out the <A href="https://blogs.sap.com/2023/08/01/sap-developer-challenge-apis/" target="_blank" rel="noopener noreferrer">SAP Developer Challenge - APIs</A> blog post for everything you need to know about the challenge to which this task relates!)</P><P>You're almost ready to call the API endpoint to examine the details of the directory you created back in <A href="https://groups.community.sap.com/t5/application-development/sap-developer-challenge-apis-task-7-create-a-new-directory-in-an/td-p/280341" target="_blank" rel="noopener noreferrer">Task 7</A>. But as we're going deliberately slowly and surely, let's take some time in this task to <A href="https://qmacro.org/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#initialrecognition" target="_blank" rel="noopener nofollow noreferrer">stare at</A> the access token itself for a few minutes, to see what we can discover.</P><H2 id="toc-hId-1652031975">Background</H2><P>In <A href="https://groups.community.sap.com/t5/application-development/sap-developer-challenge-apis-task-10-request-an-oauth-access/m-p/281933" target="_blank" rel="noopener noreferrer">the previous task</A> you obtained an access token, by completing the flow described by the OAuth Resource Owner Password Credentials grant type. The access token was made available to you in a JSON object which contained not only the access token itself, but other values. Here's that example from the previous task, with the expires_in property added back in:</P><DIV class=""><PRE><SPAN><SPAN class="">{</SPAN></SPAN>
+<SPAN>  <SPAN class="">"access_token"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"eyJhbGciOiJSUzI1NiIs..."</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>  <SPAN class="">"token_type"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"bearer..."</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>  <SPAN class="">"id_token"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"eyJhbGciOiJSUzI1NiIs..."</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>  <SPAN class="">"refresh_token"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"e72b61a9a9304dde963e..."</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>  <SPAN class="">"expires_in"</SPAN><SPAN class="">:</SPAN> <SPAN class="">43199</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>  <SPAN class="">"scope"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"cis-central!b14.glob..."</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>  <SPAN class="">"jti"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"579fea14a1cf47d7ab9e..."</SPAN></SPAN>
+<SPAN><SPAN class="">}</SPAN></SPAN></PRE></DIV><P>One of the values also provided is scope, which contains a whitespace separated list of scopes. If you were to parse the value, you'd see the list. Here's one way to do that (truncating the list to the first 10 scope items), assuming the JSON object representing the token data is in a file called tokendata.json:</P><PRE>jq '.scope|split(" ")[:10]' tokendata.json</PRE><P>This would produce:</P><DIV class=""><PRE><SPAN><SPAN class="">[</SPAN></SPAN>
+<SPAN>  <SPAN class="">"cis-central!b14.global-account.subaccount.update"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>  <SPAN class="">"cis-central!b14.global-account.update"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>  <SPAN class="">"user_attributes"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>  <SPAN class="">"cis-central!b14.global-account.subaccount.delete"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>  <SPAN class="">"cis-central!b14.global-account.subaccount.read"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>  <SPAN class="">"cis-central!b14.job.read"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>  <SPAN class="">"cis-central!b14.catalog.product.update"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>  <SPAN class="">"cis-central!b14.catalog.product.delete"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>  <SPAN class="">"cis-central!b14.global-account.account-directory.create"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>  <SPAN class="">"cis-central!b14.directory.entitlement.update"</SPAN></SPAN>
+<SPAN><SPAN class="">]</SPAN></SPAN></PRE></DIV><P>This metadata, data about the access token, essentially, is useful to us to have. But what's more interesting is how this scope information is conveyed in the actual call to the API endpoint.</P><P>It's specifically the value of the access_token property from the JSON object that is sent in the Authorization header of the HTTP request made, as you learned about in <A href="https://groups.community.sap.com/t5/application-development/sap-developer-challenge-apis-task-9-create-a-service-key-for-api/td-p/281337" target="_blank" rel="noopener noreferrer">Task 9</A>. The other values in the JSON object (the id_token, refresh_token, expires_in values, and so on) don't go anywhere, they're just for us, the consumer, to use in managing our use of that access token (including knowing when it will expire and requesting a refresh).</P><P>So the scope information for this access token appears to be conveyed in a property (scope) that doesn't get sent to the resource server. How does the server then know whether to respond with the requested information or not?</P><P>To answer this question, we're going to go on a bit of a digression in this task.</P><P>So.</P><P>Have you ever wondered about the value of the access token itself? It's a very large, opaque string. In fact, how long is it?</P><PRE>jq -r '"\(.access_token|length) bytes"' tokendata.json</PRE><P>Pretty long!</P><PRE>3912 bytes</PRE><P>Surely there must be a reason for something so large?</P><H3 id="toc-hId--1096638491">The anatomy of the access token</H3><P>Yes. It's actually a <A href="https://en.wikipedia.org/wiki/JSON_Web_Token" target="_blank" rel="noopener nofollow noreferrer">JSON Web Token</A>, or JWT (often pronounced "jot"). A JWT contains structured data, which is fascinating to peek at. And that's what you're going to do in this task.</P><P>First of all, it's worth knowing that the content of a JWT is organized into different sections, including:</P><UL><LI>Header</LI><LI>Payload</LI><LI>Signature</LI></UL><P>The Header contains a small amount of data about the JWT itself, and consists of values for a series of <A href="https://datatracker.ietf.org/doc/html/rfc7515#section-4.1" target="_blank" rel="noopener nofollow noreferrer">well-defined (in RFC7515) parameters</A>, the names of which are all three characters in length (to keep things short). Examples are "alg" which identifies the algorithm used to secure the data, "jku", the value of which is a URL that points to a JSON Web Key Set used in the digital signature, and "typ" which conveys the type of content it is.</P><P>The Payload section of the JWT is where the data that's most interesting to us lives, or rather most interesting to the server that will handle our requests. It's where the scopes (that we saw earlier) are stored, amongst many other details.</P><P>The Signature is essentially a signed checksum of the entire contents.</P><P>So the answer to the question above is that the server knows how to respond to requests because there's enough information passed inside the access token (being in the form of a JWT), including a list of scopes that the token conveys for the consumer, for it to decide.</P><H2 id="toc-hId-842685349">Your task</H2><P>Your task is to examine the contents of the access token, by treating it for what it is, i.e. a JWT. You should take information from the Header, and information from the Payload, and combine it into a value that you should send to the hash service, and then put the resulting hash into a reply to this thread, as always, and as described in <A href="https://groups.community.sap.com/t5/application-development/sap-developer-challenge-apis-task-0-learn-to-share-your-task/m-p/276058" target="_blank" rel="noopener noreferrer">Task 0</A>.</P><P>What specifically is that information?</P><UL><LI>from the Header, you should take the value of the "alg" and "typ" parameters</LI><LI>from the Payload, you should count the number of scopes conveyed</LI></UL><P>You should then combine those three pieces of information like this, using colons as separators:</P><PRE>&lt;value-of-alg&gt;:&lt;value-of-typ&gt;:&lt;number-of-scopes&gt;</PRE><P>Let's look at the partial contents of an imaginary (but typical) JWT in this context, to illustrate. This illustration assumes that the access token JSON data (such as you retrieved in the previous task, <A href="https://groups.community.sap.com/t5/application-development/sap-developer-challenge-apis-task-10-request-an-oauth-access/m-p/281933" target="_blank" rel="noopener noreferrer">Task 10</A>) is in a file called tokendata.json. This illustration is also based on using the jwt-cli package, and the command line tool it provides, as described in the "Hints and tips" section below.</P><P>So, to pick out the value of the access token (from the access_token property in the JSON object in tokendata.json), and then to treat that access token value for what it is, i.e. a JWT, and ask for the JWT to be expanded into its component parts, you'd do something like this (note the --output=json option to produce nicely machine-parseable output!):</P><PRE>jq -r .access_token tokendata.json | jwt --output=json</PRE><P>What is emitted is something like this (heavily redacted, for brevity, and with some values elided while others are replaced, for the illustration):</P><DIV class=""><PRE><SPAN><SPAN class="">{</SPAN></SPAN>
+<SPAN>  <SPAN class="">"header"</SPAN><SPAN class="">:</SPAN> <SPAN class="">{</SPAN></SPAN>
+<SPAN>    <SPAN class="">"alg"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"ABCDE"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>    <SPAN class="">"jku"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"https://c2d7b642trial-ga.authentication.eu10.hana.ondemand.com/token_keys"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>    <SPAN class="">"kid"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"default-jwt-key-1281344942"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>    <SPAN class="">"typ"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"XYZ"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>    <SPAN class="">"jid"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"iaVmTleRBCIVnVE7veQ9opMtlHnk+3DvKWWsjpsm542="</SPAN></SPAN>
+<SPAN>  <SPAN class="">},</SPAN></SPAN>
+<SPAN>  <SPAN class="">"payload"</SPAN><SPAN class="">:</SPAN> <SPAN class="">{</SPAN></SPAN>
+<SPAN>    <SPAN class="">"jti"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"579fea14a1cf47d7ab9e5bf4c9d15d42"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>    <SPAN class="">"ext_attr"</SPAN><SPAN class="">:</SPAN> <SPAN class="">{</SPAN></SPAN>
+<SPAN>      <SPAN class="">"enhancer"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"XSUAA"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>      <SPAN class="">"globalaccountid"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"7da58aab-6c60-4492-a95b-b1ed3139e242"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>      <SPAN class="">"zdn"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"c2d7b642-ga"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>      <SPAN class="">"serviceinstanceid"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"f118abbb-b387-41b1-970f-bf4f0309c142"</SPAN></SPAN>
+<SPAN>    <SPAN class="">},</SPAN></SPAN>
+<SPAN>    <SPAN class="">"xs.system.attributes"</SPAN><SPAN class="">:</SPAN> <SPAN class="">{</SPAN></SPAN>
+<SPAN>      <SPAN class="">"xs.rolecollections"</SPAN><SPAN class="">:</SPAN> <SPAN class="">[</SPAN></SPAN>
+<SPAN>        <SPAN class="">"Global Account Administrator"</SPAN></SPAN>
+<SPAN>      <SPAN class="">]</SPAN></SPAN>
+<SPAN>    <SPAN class="">},</SPAN></SPAN>
+<SPAN>    <SPAN class="">"given_name"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"DJ"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>    <SPAN class="">"xs.user.attributes"</SPAN><SPAN class="">:</SPAN> <SPAN class="">{},</SPAN></SPAN>
+<SPAN>    <SPAN class="">"family_name"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"Adams"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>    <SPAN class="">"sub"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"965a393a-dc96-422f-87ac-9f3d8bb25142"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>    <SPAN class="">"scope"</SPAN><SPAN class="">:</SPAN> <SPAN class="">[</SPAN></SPAN>
+<SPAN>      <SPAN class="">"cis-central!b14.global-account.subaccount.update"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>      <SPAN class="">"cis-central!b14.global-account.update"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>      <SPAN class="">"...another 39 scopes..."</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>      <SPAN class="">"cis-central!b14.global-account.subaccount.create"</SPAN></SPAN>
+<SPAN>    <SPAN class="">]</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>    <SPAN class="">"client_id"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"sb-ut-f86082c9-7fbf-4e1e-8310-f5d018dab542-clone!b254742|cis-central!b14"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>    <SPAN class="">"cid"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"sb-ut-f86082c9-7fbf-4e1e-8310-f5d018dab542-clone!b254742|cis-central!b14"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>    <SPAN class="">"azp"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"sb-ut-f86082c9-7fbf-4e1e-8310-f5d018dab542-clone!b254742|cis-central!b14"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>    <SPAN class="">"grant_type"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"password"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>    <SPAN class="">"user_id"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"965a393a-dc96-422f-87ac-9f3d8bb25142"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>    <SPAN class="">"origin"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"sap.default"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>    <SPAN class="">"iat"</SPAN><SPAN class="">:</SPAN> <SPAN class="">1692693022</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>    <SPAN class="">"exp"</SPAN><SPAN class="">:</SPAN> <SPAN class="">1692736222</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>    <SPAN class="">"..."</SPAN><SPAN class="">:</SPAN> <SPAN class="">"..."</SPAN></SPAN>
+<SPAN>  <SPAN class="">},</SPAN></SPAN>
+<SPAN>  <SPAN class="">"signature"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"ZVe_aqyLAyXwToCvG..."</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN>  <SPAN class="">"input"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"eyJhbGciOiJSUzI1NiIsI..."</SPAN></SPAN>
+<SPAN><SPAN class="">}</SPAN></SPAN></PRE></DIV><P>So the three values in the result you should construct, thus:</P><PRE>&lt;value-of-alg&gt;:&lt;value-of-typ&gt;:&lt;number-of-scopes&gt;</PRE><P>should be, in order:</P><UL><LI>&lt;value-of-alg&gt;: the value of the .header.alg property</LI><LI>&lt;value-of-typ&gt;: the value of the .header.typ property</LI><LI>&lt;number-of-scopes&gt;: the length of the array that is the value of the .payload.scope property</LI></UL><P>For example:</P><PRE>ABCDE:XYZ:42</PRE><H2 id="toc-hId--1709471612">Hints and tips</H2><P>There are many tools and libraries with which JWT tokens can be parsed, even <A href="https://jwt.io/" target="_blank" rel="noopener nofollow noreferrer">online facilities</A> ... though you should think twice before sending authorization data to third party websites - it's better to use a tool that you have locally.</P><P>For tools to use locally, you might wish to check out the NPM package <A href="https://www.npmjs.com/package/jwt-cli" target="_blank" rel="noopener nofollow noreferrer">jwt-cli</A> which, if you install it globally, will give you a command line tool called jwt.</P><P>It's one of my standard globally-installed NPM-based tools, which you can see here, via:</P><PRE>npm list --global</PRE><P>This emits:</P><PRE>/home/user/.npm-global/lib
++-- @sap/cds-dk@7.0.2
++-- @sap/generator-fiori@1.9.4
++-- @sapui5/generator-sapui5-templates@1.71.6
++-- @ui5/cli@3.1.1
++-- bash-language-server@4.9.1
++-- docsify-cli@4.4.4
++-- eslint@8.39.0
++-- fx@28.0.0
++-- http-server@14.1.1
++-- httpie@1.1.2
++-- jwt-cli@2.0.0
++-- lodash@4.17.21
++-- lorem-ipsum@2.0.8
++-- markdownlint-cli@0.34.0
++-- prettier@2.8.8
++-- ramda@0.29.0
++-- url-decode-encode-cli@2.1.0
++-- yarn@1.22.19
+`-- yo@4.3.1</PRE><P>With the jwt tool, you can decode such JWT access tokens. And with jwt's --output=json option, it's even better!</P><H2 id="toc-hId-33338723">For discussion</H2><P>The expires_in property, that accompanies the access token returned, has an interesting value. It's 1 second less than 12 hours. Do you think that's deliberate? Calculated?</P>

@@ -1,0 +1,357 @@
+2022-03-08-exploring-service-brokers-and-service-consumption-on-sap-business
+Exploring service brokers and service consumption on SAP Business Technology Platform
+technology-blog-sap
+2022-03-08
+https://community.sap.com/t5/technology-blogs-by-sap/exploring-service-brokers-and-service-consumption-on-sap-business/ba-p/13524313
+<EM>In this post we look briefly at the Open Service Broker API, and how service brokers are used to facilitate access to services on runtimes on the SAP Business Technology Platform.</EM><BR />
+<BR />
+The advent of the SAP Service Manager (SM) brought about the ability to connect multiple platforms and multiple service brokers together on the SAP Business Technology Platform (SAP BTP). Services exposed by brokers on different platforms can be instantiated wherever you need them.<BR />
+<BR />
+To explore this a little bit, I thought I'd share an experiment, which doesn't use SM directly, but at least helps us think about service brokers, services, the Open Service Broker API (OSBAPI) and related topics. That way we are more prepared to understand SM and what it brings.<BR />
+<H2 id="toc-hId-959337344">The experiment</H2><BR />
+The experiment is to make a service available in a Cloud Foundry (CF) space on my SAP BTP trial account. That service is a PostgreSQL database, facilitated by the <A href="https://www.elephantsql.com/" target="_blank" rel="nofollow noopener noreferrer">ElephantSQL</A> PostgreSQL-as-a-Service offering, which has a free plan. The reason for choosing this service was because there's a lovely repository on GitHub, <A href="https://github.com/JamesClonk/elephantsql-broker" target="_blank" rel="nofollow noopener noreferrer">elephantsql-broker</A>, from <A href="https://jamesclonk.io/" target="_blank" rel="nofollow noopener noreferrer">James Clonk</A>, which makes this service available via the OSBAPI, which is the standard API for service brokers and SM.<BR />
+<BR />
+The <A href="https://github.com/JamesClonk/elephantsql-broker" target="_blank" rel="nofollow noopener noreferrer">elephantsql-broker</A> repository takes you through the steps of deploying the service broker to a CF space, and then registering it to that space. What I want to show you in this post is running the service broker in a container locally on your machine, making the API available to the outside world, and then registering it to a CF space.<BR />
+<BR />
+Briefly, here's what we're going to do:<BR />
+<OL><BR />
+ 	<LI>clone the repository locally</LI><BR />
+ 	<LI>get an API key for the service</LI><BR />
+ 	<LI>build the Docker image with the service broker</LI><BR />
+ 	<LI>test an instance of the image (a container)</LI><BR />
+ 	<LI>start a new instance of the image, supplying the API key and other info</LI><BR />
+ 	<LI>expose the port, that the service broker is listening on, to the outside world</LI><BR />
+ 	<LI>register that service broker in a CF space</LI><BR />
+ 	<LI>view the service offering available, with the plans available</LI><BR />
+ 	<LI>create a service with a specific plan</LI><BR />
+ 	<LI>create a service key for that service instance</LI><BR />
+ 	<LI>clean up afterwards</LI><BR />
+</OL><BR />
+Of course, all the time, we'll be making observations as to what's going on.<BR />
+<H2 id="toc-hId-762823839">A note on PostgreSQL availability</H2><BR />
+SAP BTP offers a hyperscaler option based PostgreSQL service, which you should definitely consider for non-experimental requirements. It provides a way to directly consume the PostgreSQL service provided by infrastructure providers.<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/03/screenshot-2022-03-08-at-12.47.03.png" /></P><BR />
+The whole point of this particular exploration, however, is to understand how services can be used across platforms and environments, and how you can make your own services available to your apps on SAP BTP, via the OSBAPI. And as a side effect of this, you gain a better understanding of the context in which SM operates.<BR />
+<H2 id="toc-hId-566310334">The repository</H2><BR />
+All the detailed instructions you need are in this fork of the original elephantsql-broker repository, in a new branch called "docker":<BR />
+<BR />
+<A href="https://github.com/qmacro/elephantsql-broker/tree/docker" target="_blank" rel="nofollow noopener noreferrer">https://github.com/qmacro/elephantsql-broker/tree/docker</A><BR />
+<H2 id="toc-hId-369796829">The assumptions and prerequisites</H2><BR />
+This is all done on my local machine, which runs macOS natively, but on which I've also installed <A href="https://docs.docker.com/desktop/" target="_blank" rel="nofollow noopener noreferrer">Docker Desktop</A>. You are of course free to use an alternative container engine (such as <A href="https://podman.io/" target="_blank" rel="nofollow noopener noreferrer">Podman</A>) if that works better for you. You are on your own in terms of using Podman though - I have no experience there!<BR />
+<BR />
+You'll also need access to a subaccount on SAP BTP - you may find this tutorial helpful: <A href="https://developers.sap.com/tutorials/btp-cockpit-setup.html" target="_blank" rel="noopener noreferrer">Get an SAP BTP Account for Tutorials</A>. I'll be using my trial subaccount.<BR />
+<BR />
+You'll need the <A href="https://docs.cloudfoundry.org/cf-cli/install-go-cli.html" target="_blank" rel="nofollow noopener noreferrer">cf command line client</A>. I have recently moved from version 6 to version 7 recently; I only mention this because my sample output in this post will be mostly from cf version 7, where the options for 'cf marketplace' are different.<BR />
+<BR />
+You'll also need <A href="https://ngrok.com/" target="_blank" rel="nofollow noopener noreferrer">ngrok</A> to make a service available to the outside world (this is an amazingly useful piece of software for experimentation, learning and development in general).<BR />
+<BR />
+Finally, you'll probably want to have <A href="https://curl.se/" target="_blank" rel="nofollow noopener noreferrer">curl</A> installed too. But who doesn't already have that? <span class="lia-unicode-emoji" title=":slightly_smiling_face:">🙂</span><BR />
+<BR />
+Even if you don't want to follow along yourself, you may enjoy reading through the steps anyway, to get a better understanding. I'll try to explain what's going on along the way.<BR />
+<H2 id="toc-hId-173283324">The steps</H2><BR />
+OK, it's time to get down to it. A lot of the detailed instructions are in the repository, so where appropriate, I'll point you to the right places there. I'm going to use my <CODE>/tmp/</CODE> directory as the working directory into which I'll clone the repository.<BR />
+<H3 id="toc-hId-105852538">Clone the repository</H3><BR />
+With the following command, clone the repository:<BR />
+<PRE><CODE>git clone <A href="https://github.com/qmacro/elephantsql-broker.git" target="test_blank" rel="nofollow noopener noreferrer">https://github.com/qmacro/elephantsql-broker.git</A></CODE></PRE><BR />
+The output should look something like this<BR />
+<PRE><CODE>Cloning into 'elephantsql-broker'...<BR />
+remote: Enumerating objects: 564, done.<BR />
+remote: Counting objects: 100% (7/7), done.<BR />
+remote: Compressing objects: 100% (7/7), done.<BR />
+remote: Total 564 (delta 0), reused 3 (delta 0), pack-reused 557<BR />
+Receiving objects: 100% (564/564), 6.31 MiB | 10.50 MiB/s, done.<BR />
+Resolving deltas: 100% (221/221), done.</CODE></PRE><BR />
+Once inside the cloned repository (with <CODE>cd elephantsql-broker/</CODE>), you should then check out what branches are available remotely:<BR />
+<PRE><CODE>git branch -rv</CODE></PRE><BR />
+This should show information similar to this:<BR />
+<PRE><CODE>origin/HEAD -&gt; origin/master<BR />
+origin/docker c50c145 add info on how to run broker in a container<BR />
+origin/master 9cfc107 refactor makefile<BR />
+origin/recordings ed2e832 add animated recordings</CODE></PRE><BR />
+It's the <CODE>docker</CODE> branch where I've added instructions for this, so check that branch out:<BR />
+<PRE><CODE>git checkout docker</CODE></PRE><BR />
+and you should see something like this:<BR />
+<PRE><CODE>Branch 'docker' set up to track remote branch 'docker' from 'origin'.<BR />
+Switched to a new branch 'docker'</CODE></PRE><BR />
+Now you have the <A href="https://github.com/qmacro/elephantsql-broker/blob/docker/Dockerfile" target="_blank" rel="nofollow noopener noreferrer">Dockerfile</A> which you'll need, shortly, as well as a local copy of the <A href="https://github.com/qmacro/elephantsql-broker/blob/docker/docker.md" target="_blank" rel="nofollow noopener noreferrer">instructions</A>.<BR />
+<H3 id="toc-hId--90660967">Get an API key</H3><BR />
+Now it's time to register for the PostgreSQL platform service and <A href="https://customer.elephantsql.com/apikeys" target="_blank" rel="nofollow noopener noreferrer">get a free API key</A>. The link is provided in the main README, in the <A href="https://github.com/qmacro/elephantsql-broker/blob/docker/README.md#deploy-service-broker-to-cloud-foundry" target="_blank" rel="nofollow noopener noreferrer">Deploy service broker to Cloud Foundry</A> section (but don't worry, you're not going to deploy the service broker to CF,&nbsp; you're going to run it in a container).<BR />
+<BR />
+<EM>As a quick reminder - be a good net citizen and don't abuse the free tier of this service, or any service for that matter. I've just used it briefly to instantiate then remove a database for this experiment.</EM><BR />
+<BR />
+Here's what my API key looks like (it starts <CODE>e15dad</CODE>), in the API Access area of my settings:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/03/screenshot-2022-03-08-at-13.05.43.png" /></P><BR />
+<BR />
+<H3 id="toc-hId--287174472">Build the Docker image</H3><BR />
+Next we can build the Docker image, which contains the service broker for ElephantSQL, written in Go. The <A href="https://github.com/qmacro/elephantsql-broker/blob/docker/Dockerfile" target="_blank" rel="nofollow noopener noreferrer">Dockerfile</A> is based on the simple example from the <A href="https://hub.docker.com/_/golang" target="_blank" rel="nofollow noopener noreferrer">Golang official image in Docker Hub</A>, and looks like this:<BR />
+<PRE><CODE>FROM golang:1.17<BR />
+<BR />
+WORKDIR /usr/src/app<BR />
+<BR />
+COPY go.mod go.sum ./<BR />
+RUN go mod download &amp;&amp; go mod verify<BR />
+<BR />
+COPY . .<BR />
+RUN go build -v -o /usr/local/bin/ ./...<BR />
+<BR />
+ENV TZ="Europe/London"<BR />
+ENV BROKER_USERNAME="((username))"<BR />
+ENV BROKER_PASSWORD="((password))"<BR />
+ENV BROKER_API_URL="https://customer.elephantsql.com/api"<BR />
+ENV BROKER_API_KEY="((api_key))"<BR />
+ENV BROKER_API_DEFAULT_REGION="google-compute-engine::europe-west2"<BR />
+<BR />
+CMD ["elephantsql-broker"]<BR />
+</CODE></PRE><BR />
+The detail for this step can be found in the <A href="https://github.com/qmacro/elephantsql-broker/blob/docker/docker.md#build-the-image" target="_blank" rel="nofollow noopener noreferrer">Build the image</A> section of the repository, but is essentially this:<BR />
+<PRE><CODE>docker build -t elephantsql-broker .</CODE></PRE><BR />
+The image created will, when instantiated (i.e. when a container is created from it), will execute the broker, which will begin listening for incoming OSBAPI calls on port 8080 by default.<BR />
+<H3 id="toc-hId--483687977">Start a test container</H3><BR />
+Let's just kick the tyres at this stage. The service broker has a simple health check API endpoint, which we can call to see if things are generally OK. Let's start a container up, taking "<A href="http://c2.com/xp/DoTheSimplestThingThatCouldPossiblyWork.html" target="_blank" rel="nofollow noopener noreferrer">the simplest thing that could possibly work</A>" approach:<BR />
+<PRE><CODE>docker run --rm --detach --name broker elephantsql-broker</CODE></PRE><BR />
+As output, we get a long GUID like this:<BR />
+<PRE><CODE>67f36459a6a4290ad76165a6c78154ceb4df3663260f09d8c36c9b09f0ed5bcd</CODE></PRE><BR />
+and are returned to the prompt. This is because we used the <CODE>--detach</CODE> option to get the container to execute in the background. In case you're wondering, the <CODE>--rm</CODE> option tells Docker to remove the container once it is stopped, to keep things clean, and the <CODE>--name</CODE> option lets us choose a name for the container.<BR />
+<BR />
+There's nothing much to see, but we can do a couple of things. One is to check the logs, like this:<BR />
+<PRE><CODE>docker logs broker</CODE></PRE><BR />
+We see something like this:<BR />
+<PRE><CODE>level=info msg="port: 8080"<BR />
+level=info msg="log level: info"<BR />
+level=info msg="broker username: ((username))"<BR />
+level=info msg="api url: https://customer.elephantsql.com/api"<BR />
+level=info msg="api default region: google-compute-engine::europe-west2"</CODE></PRE><BR />
+So something is happening! Let's try to access the health check API endpoint. But - what hostname do we use? Is it <CODE>localhost</CODE>? Well, where we are right now, on my laptop's macOS operating system level, let's try it:<BR />
+<PRE><CODE>curl localhost:8080/health</CODE></PRE><BR />
+But this returns a message like this:<BR />
+<PRE><CODE>curl: (7) Failed to connect to localhost port 8080: Connection refused</CODE></PRE><BR />
+That's because the broker is listening to port 8080 but only inside the container. Let's jump into the container and try it there. First, we can jump in by starting a Bash shell in the container:<BR />
+<PRE><CODE>docker exec -it broker bash</CODE></PRE><BR />
+We're placed in a shell, inside the container (we can sort of tell we're in the container because (a) we're suddenly the <CODE>root</CODE> user and (b) the hostname is a generated ID):<BR />
+<PRE><CODE>root@6c53fdeb3134:/usr/src/app#</CODE></PRE><BR />
+Now if we run that same <CODE>curl</CODE> invocation here (yes, <CODE>curl</CODE> is everywhere!), we get a result:<BR />
+<PRE><CODE>{<BR />
+  "status": "ok"<BR />
+}</CODE></PRE><BR />
+That's good. Let's exit the shell (with <CODE>exit</CODE> or Ctrl-D) and then stop the container (and it will be automatically cleaned up because of the <CODE>--rm</CODE> earlier):<BR />
+<PRE><CODE>docker stop broker</CODE></PRE><BR />
+<H3 id="toc-hId--680201482">Start a new container with the requisite settings</H3><BR />
+Now that we know things look reasonable, let's start up a new container, supplying what we need:<BR />
+<PRE><CODE>docker run \<BR />
+  --rm \<BR />
+  --detach \<BR />
+  --publish 8080:8080 \<BR />
+  --env BROKER_USERNAME=brokerusername \<BR />
+  --env BROKER_PASSWORD=brokerpassword \<BR />
+  --env BROKER_API_KEY=your-api-key \<BR />
+  elephantsql-broker</CODE></PRE><BR />
+This is detailed in the <A href="https://github.com/qmacro/elephantsql-broker/blob/docker/docker.md#create-a-container-from-the-image" target="_blank" rel="nofollow noopener noreferrer">Create a container from the image</A> section of the repository.<BR />
+<BR />
+The publishing of port 8080 outside the container to the host OS (with the <CODE>--publish</CODE> option) means we can check the health from the macOS level now; running this in my local shell:<BR />
+<PRE><CODE>curl localhost:8080/health</CODE></PRE><BR />
+now returns:<BR />
+<PRE><CODE>{<BR />
+  "status": "ok"<BR />
+}</CODE></PRE><BR />
+What's more, we've supplied the authentication details that will be needed to register and make OSBAPI calls to the broker from my CF space on SAP BTP, and also the API key for the ElephantSQL service.<BR />
+<H3 id="toc-hId--951946356">Make the broker available to the outside world</H3><BR />
+We first could only access the broker when inside the container it was running in. Now we can access the broker from the host where the Docker engine is running (i.e. my laptop). But we need the broker available for access from my CF space on SAP BTP.<BR />
+<BR />
+Let's use the excellent <CODE>ngrok</CODE> to do this; it's covered in detail in the <A href="https://github.com/qmacro/elephantsql-broker/blob/docker/docker.md#make-the-service-broker-available-beyond-your-local-machine" target="_blank" rel="nofollow noopener noreferrer">Make the service broker available beyond your local machine</A> section of the repository, but briefly involves telling <CODE>ngrok</CODE> to create a secure tunnel that will carry traffic to port 8080 on the local host. Note that with great power comes with great responsibility; take care to use <CODE>ngrok</CODE> sensibly here.<BR />
+<BR />
+Invoking this:<BR />
+<PRE><CODE>ngrok http 8080</CODE></PRE><BR />
+will result in that tunnel being created, giving both HTTP and HTTPS forwarding URLs, as shown in this example monitor display:<BR />
+<PRE><CODE>ngrok by @inconshreveable<BR />
+<BR />
+Session Status online<BR />
+Session Expires 1 hour, 59 minutes<BR />
+Version 2.3.40<BR />
+Region United States (us)<BR />
+Web Interface <A href="http://127.0.0.1:4040" target="test_blank" rel="nofollow noopener noreferrer">http://127.0.0.1:4040</A><BR />
+Forwarding <A href="http://0c01-86-150-217-67.ngrok.io" target="test_blank" rel="nofollow noopener noreferrer">http://0c01-86-150-217-67.ngrok.io</A> -&gt; <A href="http://localhost:8080" target="test_blank" rel="nofollow noopener noreferrer">http://localhost:8080</A><BR />
+Forwarding <A href="https://0c01-86-150-217-67.ngrok.io" target="test_blank" rel="nofollow noopener noreferrer">https://0c01-86-150-217-67.ngrok.io</A> -&gt; <A href="http://localhost:8080" target="test_blank" rel="nofollow noopener noreferrer">http://localhost:8080</A><BR />
+<BR />
+Connections ttl opn rt1 rt5 p50 p90<BR />
+0 0 0.00 0.00 0.00 0.00</CODE></PRE><BR />
+This means that the broker is now also available (protected with the username and password specified earlier) at <CODE><A href="https://0c01-86-150-217-67.ngrok.io" target="test_blank" rel="nofollow noopener noreferrer">https://0c01-86-150-217-67.ngrok.io</A></CODE>, which is also accessible from CF on SAP BTP.<BR />
+<H3 id="toc-hId--1148459861">Register the service broker in CF</H3><BR />
+The trial and free tier accounts on SAP BTP give us access to different runtimes, including Kyma / Kubernetes and Cloud Foundry. Both of these platforms have a concept of a service catalogue, or marketplace, where developers can check to see what services and plans are available for consumption.<BR />
+<BR />
+As guests on any given Cloud Foundry environment instance on SAP BTP, we don't have full administrative access to the entire environment, but we do have access at organisational and space level. In this context, it's possible for us as individuals to manage service brokers at the space level.<BR />
+<BR />
+If you enter <CODE>cf help</CODE> in a shell, you get a summary of the different commands, grouped into different areas. For example, there's the "Space management" area with the <CODE>create-space</CODE>, <CODE>set-space-role</CODE> and other commands, and there's the "Application lifecycle" area with <CODE>apps</CODE>, <CODE>push</CODE>, <CODE>logs</CODE>, <CODE>restart</CODE> and so on.<BR />
+<BR />
+But if you enter <CODE>cf help -a</CODE> you get a whole boatload more, including this group of commands:<BR />
+<PRE><CODE>SERVICE ADMIN:<BR />
+service-auth-tokens List service auth tokens<BR />
+create-service-auth-token Create a service auth token<BR />
+update-service-auth-token Update a service auth token<BR />
+delete-service-auth-token Delete a service auth token<BR />
+<BR />
+service-brokers List service brokers<BR />
+create-service-broker Create a service broker<BR />
+update-service-broker Update a service broker<BR />
+delete-service-broker Delete a service broker<BR />
+rename-service-broker Rename a service broker<BR />
+<BR />
+migrate-service-instances Migrate service instances from one service plan to another<BR />
+purge-service-offering Recursively remove a service and child objects from Cloud Foundry database without making requests to a service broker<BR />
+purge-service-instance Recursively remove a service instance and child objects from Cloud Foundry database without making requests to a service broker<BR />
+<BR />
+service-access List service access settings<BR />
+enable-service-access Enable access to a service or service plan for one or all orgs<BR />
+disable-service-access Disable access to a service or service plan for one or all orgs</CODE></PRE><BR />
+Gosh!<BR />
+<BR />
+We'll now explore just a subset of those commands, relating to service brokers.<BR />
+<BR />
+What do we need to do to register our new broker? Let's have a look, with <CODE>cf create-service-broker --help</CODE>, which shows us this:<BR />
+<PRE><CODE>NAME:<BR />
+create-service-broker - Create a service broker<BR />
+<BR />
+USAGE:<BR />
+cf create-service-broker SERVICE_BROKER USERNAME PASSWORD URL [--space-scoped]<BR />
+<BR />
+ALIAS:<BR />
+csb<BR />
+<BR />
+OPTIONS:<BR />
+--space-scoped Make the broker's service plans only visible within the targeted space<BR />
+<BR />
+SEE ALSO:<BR />
+enable-service-access, service-brokers, target</CODE></PRE><BR />
+Because we don't have administrative access to the entire CF environment instance, we'll need to use the <CODE>--space-scoped</CODE> option. But that's OK, this is just an experiment to understand the different pieces. Let's try:<BR />
+<PRE><CODE>cf create-service-broker \<BR />
+  elephantsql \<BR />
+  brokerusername \<BR />
+  brokerpassword \<BR />
+  <A href="https://0c01-86-150-217-67.ngrok.io" target="test_blank" rel="nofollow noopener noreferrer">https://0c01-86-150-217-67.ngrok.io</A> \<BR />
+  --space-scoped</CODE></PRE><BR />
+This results in the following message:<BR />
+<PRE><CODE>Creating service broker elephantsql in org 1cbb5e7etrial / space dev ...<BR />
+OK</CODE></PRE><BR />
+Moreover, we can now see the broker in the list, using <CODE>cf service-brokers</CODE>:<BR />
+<PRE><CODE>Getting service brokers ...<BR />
+<BR />
+name        url<BR />
+elephantsql <A href="https://0c01-86-150-217-67.ngrok.io" target="test_blank" rel="nofollow noopener noreferrer">https://0c01-86-150-217-67.ngrok.io</A><BR />
+</CODE></PRE><BR />
+But wait, there's more to see! In the <CODE>ngrok</CODE> monitor, each request is listed, and we see one (it's the first one) suddenly appear, and it looks like this:<BR />
+<PRE><CODE>GET /v2/catalog</CODE></PRE><BR />
+What's that? Well, if we look at the <A href="https://github.com/openservicebrokerapi/servicebroker" target="_blank" rel="nofollow noopener noreferrer">Open Service Broker API reference</A>, we see in the <A href="https://github.com/openservicebrokerapi/servicebroker/blob/master/spec.md" target="_blank" rel="nofollow noopener noreferrer">specification</A>, specifically in the <A href="https://github.com/openservicebrokerapi/servicebroker/blob/master/spec.md#catalog-management" target="_blank" rel="nofollow noopener noreferrer">Catalog Management</A> section, that:<BR />
+<BR />
+<EM>"The first endpoint that a Platform will interact with on the Service Broker is the service catalog (<CODE>/v2/catalog</CODE>). This endpoint returns a list of all services available on the Service Broker. Platforms query this endpoint from all Service Brokers in order to present an aggregated user-facing catalog."&nbsp;</EM><BR />
+<BR />
+So the process of registering the broker caused a request for the catalog to be made - makes sense!<BR />
+<BR />
+We can make our own call of course, to see what's returned, like this:<BR />
+<PRE><CODE>curl <A href="http://brokerusername:brokerpassword@localhost:8080/v2/catalog" target="test_blank" rel="nofollow noopener noreferrer">http://brokerusername:brokerpassword@localhost:8080/v2/catalog</A></CODE></PRE><BR />
+It's a JSON object describing the service and plans available. If you're interested in where this comes from, take a look at the <A href="https://github.com/qmacro/elephantsql-broker/blob/docker/catalog.yml" target="_blank" rel="nofollow noopener noreferrer">catalog.yml</A> file in the repository.<BR />
+<BR />
+Let's continue with the consumption, and keep an eye on the OSBAPI calls made to the broker.<BR />
+<H3 id="toc-hId--1344973366">View the service offerings available</H3><BR />
+Many of us are already famililar with the <CODE>cf marketplace</CODE> command. This provides a list of available service offerings. Running it in my trial subaccount CF space returns a lot of information! There are many, many services available to me, each with their own plans, and surfaced through various brokers. Here's a list, where I've removed the "description" column to save space.<BR />
+<BR />
+Let's stare at it for a minute:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/03/screenshot-2022-03-08-at-17.29.25.png" /></P><BR />
+What do we see? Well, there are a myriad services each with different plans. For example, the "hana-cloud-trial" service has three plans available: "hana", "relational-data-lake" and "hana-cloud-connection".<BR />
+<BR />
+But what we also see is that each service is provided by a broker, shown in the rightmost column. All but one of these brokers follow a similar naming convention:<BR />
+<PRE><CODE>sm-&lt;broker-name&gt;-&lt;guid&gt;</CODE></PRE><BR />
+For example, the "hana-cloud-trial" service offering is made available by this service broker:<BR />
+<PRE><CODE>sm-hana-cloud-trial-1ce8c293-a0f4-40b1-a52e-a70f7ac4a749</CODE></PRE><BR />
+Can you guess what the <CODE>sm-</CODE> prefix represents? These are all service brokers managed by, effectively proxied by, the SAP Service Manager.<BR />
+<BR />
+But take a look at the last entry in the list - it's our "elephantsql" service, with the three service plans "turtle", "spider" and "cat" that we have in the <A href="https://github.com/qmacro/elephantsql-broker/blob/docker/catalog.yml" target="_blank" rel="nofollow noopener noreferrer">catalog.yml</A> file. And through what mechanism is it available to us? Via our very own <CODE>elephantsql</CODE> service broker that we've registered to this CF space just now. In fact, the detail in this output to <CODE>cf marketplace</CODE> was gathered in the previous step, in the HTTP GET request to <CODE>/v2/catalog</CODE>.<BR />
+<BR />
+Note that when we called <CODE>cf marketplace</CODE>, the <CODE>ngrok</CODE> monitor showed no further request. So this catalog information is cached.<BR />
+<BR />
+Before we move on, let's explore the <CODE>-e</CODE> option of <CODE>cf marketplace</CODE>, which lets us see the plan details for a particular service offering:<BR />
+<PRE><CODE>cf marketplace -e elephantsql</CODE></PRE><BR />
+This produces a nicely formatted table like this:<BR />
+<PRE><CODE>Getting service plan information for service offering elephantsql in org 1cbb5e7etrial / space dev ...<BR />
+<BR />
+broker: elephantsql<BR />
+plan    description                          free or paid  costs              available<BR />
+turtle  Tiny Turtle - shared instance (free) free          USD 0.00/Monthly   yes<BR />
+spider  Simple Spider - shared instance      paid          USD 5.00/Monthly   yes<BR />
+cat     Crazy Cat - shared instance          paid          USD 10.00/Monthly  yes<BR />
+</CODE></PRE><BR />
+<H3 id="toc-hId--1541486871">Create a service instance</H3><BR />
+Let's create an instance of our "elephantsql" service. The "turtle" plan is free, so let's go for that. All we're going to do is create a PostgreSQL database instance, and then destroy it, anyway.<BR />
+<BR />
+We've surfaced our service availability to the <CODE>cf</CODE> level, so we can use normal <CODE>cf</CODE> commands to create a service instance here. The <CODE>create-service</CODE> command requires three parameters: the name of the service, the name of the plan, and what to call the service instance once created. As usual, I'll follow my basic pattern of naming the service instance based on a combination of the service and plan name:<BR />
+<PRE><CODE>cf create-service elephantsql turtle elephantsql-turtle</CODE></PRE><BR />
+And lo, an instance is created!<BR />
+<PRE><CODE>Creating service instance elephantsql-turtle in org 1cbb5e7etrial / space dev ...<BR />
+OK</CODE></PRE><BR />
+But what's happened behind the scenes?<BR />
+<BR />
+Well first of all, the <CODE>ngrok</CODE> monitor tells us that another call was made to the service broker:<BR />
+<PRE><CODE>PUT /v2/service_instances/fac57b37-f51e-499c-8aae-cf18fa105806</CODE></PRE><BR />
+This is another OSBAPI call, this time a <A href="https://github.com/openservicebrokerapi/servicebroker/blob/master/spec.md#provisioning" target="_blank" rel="nofollow noopener noreferrer">provisioning</A> call to request the creation of an instance of whatever service the broker is making available.<BR />
+<BR />
+Moreover, we can see the result of the instance creation request - we can see the instance in the ElephantSQL console:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/03/screenshot-2022-03-08-at-17.49.36.png" /></P><BR />
+<BR />
+<H3 id="toc-hId--1738000376">Create a service key</H3><BR />
+Let's go one stage further and create a service key. As we know, this is information that can be bound to an app to supply credentials that are required to operate or interact with the specific service instance.<BR />
+<BR />
+With the <CODE>cf create-service-key</CODE> command, we can do this, and it gives us what we want:<BR />
+<PRE><CODE>cf create-service-key elephantsql-turtle elephantsql-turtle-sk</CODE></PRE><BR />
+This gives us a service key:<BR />
+<PRE><CODE>Creating service key elephantsql-turtle-sk for service instance elephantsql-turtle ...<BR />
+OK<BR />
+</CODE></PRE><BR />
+And guess what? This meant another OSBAPI call made from CF to the service broker; this time to <A href="https://github.com/openservicebrokerapi/servicebroker/blob/master/spec.md#request-creating-a-service-binding" target="_blank" rel="nofollow noopener noreferrer">create a service binding</A>:<BR />
+<PRE><CODE>PUT /v2/service_instances/fac57b37-f51e-499c-8aae-cf18fa105806/service_bindings/4b96c749-6fa2-43ae-a089-db8df149eaf9</CODE></PRE><BR />
+We can ask for the contents of the service key with<BR />
+<PRE><CODE>cf service-key elephantsql-turtle elephantsql-turtle-sk</CODE></PRE><BR />
+This gives us the content in JSON format:<BR />
+<PRE><CODE>{<BR />
+  "apikey": "ed0808bb-2cf6-4219-bfb0-9024...",<BR />
+  "database": "qezrugwo",<BR />
+  "database_uri": "postgres://qezrugwo:UTGenw...@rogue.db.elephantsql.com/qezrugwo",<BR />
+  "host": "rogue.db.elephantsql.com",<BR />
+  "hostname": "",<BR />
+  "password": "UTGenw...",<BR />
+  "port": 0,<BR />
+  "scheme": "postgres",<BR />
+  "uri": "postgres://qezrugwo:UTGenw...@rogue.db.elephantsql.com/qezrugwo",<BR />
+  "url": "postgres://qezrugwo:UTGenw...@rogue.db.elephantsql.com/qezrugwo",<BR />
+  "username": "qezrugwo"<BR />
+}</CODE></PRE><BR />
+This information ties up with what we see in the console too.<BR />
+<H3 id="toc-hId--1934513881">Delete the service key and instance</H3><BR />
+We're almost at the end of our journey of exploration. Let's clean up, and also observe what happens when we do.<BR />
+<BR />
+First, we need to remove the service key:<BR />
+<PRE><CODE>cf delete-service-key elephantsql-turtle elephantsql-turtle-sk</CODE></PRE><BR />
+After prompting, this does what we ask:<BR />
+<PRE><CODE>Really delete the service key elephantsql-turtle-sk?&gt; y<BR />
+Deleting key elephantsql-turtle-sk for service instance elephantsql-turtle ...<BR />
+OK</CODE></PRE><BR />
+And as we can now guess, this operation is achieved with yet another OSBAPI call to the service broker, as evidenced in the <CODE>ngrok</CODE> monitor:<BR />
+<PRE><CODE>DELETE /v2/service_instances/fac57b37-f51e-499c-8aae-cf18fa105806/service_bindings/4b96c749-6fa2-43ae-a089-db8df149eaf9</CODE></PRE><BR />
+Finally, let's delete the service instance itself:<BR />
+<PRE><CODE>cf delete-service elephantsql-turtle</CODE></PRE><BR />
+Again, the prompt and then the confirmation:<BR />
+<PRE><CODE>Really delete the service elephantsql-turtle?&gt; y<BR />
+Deleting service elephantsql-turtle in org 1cbb5e7etrial / space dev ...<BR />
+OK</CODE></PRE><BR />
+And as we can again guess, the beauty and balance of the use of the OSBAPI is shown again in the <CODE>ngrok</CODE> monitor:<BR />
+<PRE><CODE>DELETE /v2/service_instances/fac57b37-f51e-499c-8aae-cf18fa105806</CODE></PRE><BR />
+(Observe the whole time here that the OSBAPI design respects HTTP as a protocol and uses the methods appropriately; GET to request, PUT to create, DELETE to remove, and so on).<BR />
+<H2 id="toc-hId--1837624379">Wrapping up</H2><BR />
+This has been a long post, longer than I expected, but I hope it's been a helpful story, an exploratory journey, that's helped you understand some of the fascinating jigsaw puzzle pieces that is multi-cloud, multi-environment and the SAP Business Technology Platform in general.<BR />
+<BR />
+We've glimpsed how services are made available, got a feel for what service brokers are and how they fit in, and seen first hand some of the Open Service Broker API calls being made in response to regular <CODE>cf</CODE> requests to manage service instances and keys.<BR />
+<BR />
+I want to leave you with one question to ponder. With so many services available, and running in different places, on different platforms and environments, how do we make these services available to as many apps, on as many platforms as possible, without creating a tangled mess of multiple connections running between each platform and service broker?<BR />
+<BR />
+Here's a clue to the answer: it might be SAP Service Manager <span class="lia-unicode-emoji" title=":slightly_smiling_face:">🙂</span><BR />
+<BR />
+<HR /><BR />
+<BR />
+A quick note for my SAP colleagues: The page <A href="https://github.com/qmacro/elephantsql-broker/blob/docker/docker.md" target="_blank" rel="nofollow noopener noreferrer">Running the broker in a Docker container</A>&nbsp;and the corresponding <A href="https://github.com/qmacro/elephantsql-broker/blob/docker/Dockerfile" target="_blank" rel="nofollow noopener noreferrer">Dockerfile</A> were added to a new branch (<A href="https://github.com/qmacro/elephantsql-broker/tree/docker" target="_blank" rel="nofollow noopener noreferrer">docker</A>) of a fork of the original upstream <A href="https://github.com/JamesClonk/elephantsql-broker" target="_blank" rel="nofollow noopener noreferrer">elephantsql-broker repository</A>, in the context of a spare time open source contribution. If you're interested in open source, spare time contributions or third party contributions, and how I went about this one, drop me a line.

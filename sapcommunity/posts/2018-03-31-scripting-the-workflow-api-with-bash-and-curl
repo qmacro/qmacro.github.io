@@ -1,0 +1,160 @@
+2018-03-31-scripting-the-workflow-api-with-bash-and-curl
+Scripting the Workflow API with bash and curl
+technology-blog-sap
+2018-03-31
+https://community.sap.com/t5/technology-blogs-by-sap/scripting-the-workflow-api-with-bash-and-curl/ba-p/13364396
+I've written about the SAP Cloud Platform (SCP) Workflow service before, including a 10-part series called <A href="http://pipetree.com/qmacro/blog/2018/01/16/discovering-scp-workflow/" target="_blank" rel="nofollow noopener noreferrer">Discovering SCP Workflow</A> that is possibly more than you wanted to read, but hey.<BR />
+<BR />
+The fact that the Workflow service has an API shouldn't be a surprise to anyone. The fact that it's well designed, is informed by Representational State Transfer (REST) principles and <A href="https://help.sap.com/doc/72317aec52144df8bc04798fd232a585/Cloud/en-US/wfs-core-api-docu.html" target="_blank" rel="noopener noreferrer">nicely documented</A>&nbsp;may come as a pleasant surprise to some. (I'm a fan of REST as an approach to integration - see&nbsp;<A href="https://blogs.sap.com/2004/06/24/forget-soap-build-real-web-services-with-the-icf/" target="_blank" rel="noopener noreferrer">Forget SOAP – build real web services with the ICF</A>&nbsp;from 2004 for some background).<BR />
+<BR />
+In hacking around with the Workflow service to create the series of blog posts, and in preparation for my ASUG Webinar I'm giving next week (Wed 04 Apr - see&nbsp;<A href="https://www.asug.com/events/biti-introduction-to-sap-cloud-platform-workflow" target="_blank" rel="nofollow noopener noreferrer">BITI: Introduction to SAP Cloud Platform Workflow</A> for how to sign up), I found myself repeatedly creating multiple instances of workflow definitions, more than I needed, and wanted a convenient way to tidy things up. You can use the rather excellent <A href="https://blogs.sap.com/2018/01/08/discovering-scp-workflow-the-monitor/" target="_blank" rel="noopener noreferrer">Workflow Monitor</A> app to terminate instances but you can only terminate them one at a time, and are prompted for confirmation on each one (which is a good thing on the whole).<BR />
+<H3 id="toc-hId-1034856096">Using the API to cancel instances</H3><BR />
+So I decided to learn more about the Workflow API by using it to clean up redundant running workflow instances, specifically by setting their status to "CANCELED" so they disappear from view. (Yes, I'm still struggling to look at the odd spelling of that word too, but I'm trying to embrace that foreign English version that seems to be the standard in these parts).<BR />
+<BR />
+The relevant section of the API documentation for what I needed is <A href="https://help.sap.com/doc/72317aec52144df8bc04798fd232a585/Cloud/en-US/wfs-core-api-docu.html#api-WorkflowInstances-v1WorkflowInstancesWorkflowInstanceIdPatch" target="_blank" rel="noopener noreferrer">here</A>,&nbsp;describing the PATCH method on /v1/workflow-instances/{workflowInstanceId} resources, with a payload that looks like this:<BR />
+<PRE class="language-javascript"><CODE>{ "status" : "CANCELED" }</CODE></PRE><BR />
+I wondered if I could write a simple script that would help me clean up instances of the workflow definition I was working with (the "untappdrecommendation" one, relating to the subject of the Discovering SCP Workflow series). By the way, I'm creating multiple instances of the workflow definition through another script on the Google Apps platform, relating to my beer checkins, which is the subject of the Discovering SCP Workflow series.<BR />
+<BR />
+I'd been looking into the nuances of the CSRF token in&nbsp;<A href="https://blogs.sap.com/2018/01/14/discovering-scp-workflow-instance-initiation/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow – Instance Initiation</A>&nbsp;and had found a sweet spot on the command line with the venerable <A href="https://curl.haxx.se/" target="_blank" rel="nofollow noopener noreferrer">curl</A> - the Swiss Army Knife of command line tools for HTTP and more. Of course, that command line was in the cloud, in the form of my personal <A href="https://cloud.google.com/shell/docs/" target="_blank" rel="nofollow noopener noreferrer">Cloud Shell</A> courtesy of the Google Cloud Platform (read more about my thoughts on and use of the Google Cloud Shell in&nbsp;<A href="https://blogs.sap.com/2018/03/26/monday-morning-thoughts-cloud-native/" target="_blank" rel="noopener noreferrer">Monday morning thoughts: Cloud Native</A>).<BR />
+<H3 id="toc-hId-838342591">Writing a shell script</H3><BR />
+So I wrote a shell script, in particular a <A href="https://en.wikipedia.org/wiki/Bash_(Unix_shell)" target="_blank" rel="nofollow noopener noreferrer">bash</A> flavoured one, that did the trick. Before I dive into it, I wanted to relate to you a little story.<BR />
+<BR />
+One of my heroes is <A href="https://en.wikipedia.org/wiki/Randal_L._Schwartz" target="_blank" rel="nofollow noopener noreferrer">Randal Schwartz</A>, who was partially responsible for how I successfully managed to branch out from the SAP ecosphere in the '90s and discover Open Source, first through the wonderful* language Perl. He <A href="http://www.stonehenge.com/merlyn/columns.html" target="_blank" rel="nofollow noopener noreferrer">wrote columns in various magazines</A>, each one describing and explaining a Perl script that he'd written. I used to spend my lunchtime with a sandwich and a cup of tea, pouring over these columns and learning how he wrote Perl, and by osmosis, learning Perl myself. <A href="http://pipetree.com/qmacro/blog/2003/07/12/thanks-randal-2/" target="_blank" rel="nofollow noopener noreferrer">Thanks, Randal</A>.<BR />
+<BR />
+*yes, you may think differently, but I'll fight you in a dark corner over it if necessary!<BR />
+<BR />
+With that in mind, I'll present this short script in the style of one of Randal's columns, in his honour. There are some caveats before I start though - the presentation of this script is in the "warts and all" style, as though I'd just finished making a batch of slightly uneven <A href="https://www.bbcgoodfood.com/recipes/5569/welsh-cakes" target="_blank" rel="nofollow noopener noreferrer">Welsh cakes</A>, and you came by the house and I invited you in to the kitchen for a cup of tea and one of the cakes. There's still a mess on the worktops and some flour on the floor, but they're definitely edible and taste nice with the tea.<BR />
+<BR />
+First, here's the script in its entirety.<BR />
+<PRE class="language-markup"><CODE>  1 #!/bin/bash                                                                                                       <BR />
+  2                                                                                                                   <BR />
+  3 # Cancel all running instances of a given workflow definition                                                     <BR />
+  4 # USE WITH CAUTION!                                                                                               <BR />
+  5                                                                                                                   <BR />
+  6 USER=p481810                                                                                                      <BR />
+  7 COOKIES=cookiejar-${USER}.dat                                                                                     <BR />
+  8 INSTANCEDATA=instances.dat                                                                                        <BR />
+  9 TOKENDATA=headers.dat                                                                                             <BR />
+ 10 DEFINITIONID=$1                                                                                                   <BR />
+ 11 WFS_API_ROOT=https://bpmworkflowruntimewfs-${USER}trial.hanatrial.ondemand.com/workflow-service/rest              <BR />
+ 12 STATUSPAYLOAD={\"status\":\"CANCELED\"}                                                                           <BR />
+ 13                                                                                                                   <BR />
+ 14 # Abort if no definition ID has been specified                                                                    <BR />
+ 15 [ -z "$DEFINITIONID" ] &amp;&amp; echo Specify a definition ID &amp;&amp; exit 1                                                  <BR />
+ 16                                                                                                                   <BR />
+ 17 echo WARNING: This will cancel ALL instances for workflow definition \"${DEFINITIONID}\"                          <BR />
+ 18 echo Please enter password for $USER                                                                              <BR />
+ 19 read -s PASS                                                                                                      <BR />
+ 20                                                                                                                   <BR />
+ 21 rm -f $INSTANCEDATA                                                                                               <BR />
+ 22 rm -f $TOKENDATA                                                                                                  <BR />
+ 23                                                                                                                   <BR />
+ 24                                                                                                                   <BR />
+ 25 # Retrieve the RUNNING instances for the given workflow definition                                                <BR />
+ 26 curl \                                                                                                            <BR />
+ 27   --user $USER:$PASS \                                                                                            <BR />
+ 28   --output $INSTANCEDATA \                                                                                        <BR />
+ 29   --silent \                                                                                                      <BR />
+ 30   "$WFS_API_ROOT/v1/workflow-instances?definitionId=${DEFINITIONID}&amp;status=RUNNING"                               <BR />
+ 31                                                                                                                   <BR />
+ 32                                                                                                                   <BR />
+ 33 # Retrieve CSRF token                                                                                             <BR />
+ 34 curl \                                                                                                            <BR />
+ 35   --user $USER:$PASS \                                                                                            <BR />
+ 36   --header "X-CSRF-Token: Fetch" \                                                                                <BR />
+ 37   --cookie-jar $COOKIES \                                                                                         <BR />
+ 38   --verbose \                                                                                                     <BR />
+ 39   "$WFS_API_ROOT/v1/xsrf-token" 2&gt; $TOKENDATA                                                                     <BR />
+ 40                                                                                                                   <BR />
+ 41 TOKEN=`grep '&lt; X-CSRF-Token' $TOKENDATA | awk '{print $3}'`                                                       <BR />
+ 42                                                                                                                   <BR />
+ 43                                                                                                                   <BR />
+ 44 # Process each instance ID - send PATCH with cancel status                                                        <BR />
+ 45 for INSTANCEID in `jq --raw-output '.[] .id' $INSTANCEDATA`; do                                                   <BR />
+ 46   echo Canceling $INSTANCEID                                                                                      <BR />
+ 47   curl \                                                                                                          <BR />
+ 48     --user $USER:$PASS \                                                                                          <BR />
+ 49     --request PATCH \                                                                                             <BR />
+ 50     --header "X-CSRF-Token: $TOKEN" \                                                                             <BR />
+ 51     --header "Content-Type: application/json" \                                                                   <BR />
+ 52     --cookie $COOKIES \                                                                                           <BR />
+ 53     --data $STATUSPAYLOAD \                                                                                       <BR />
+ 54     "$WFS_API_ROOT/v1/workflow-instances/${INSTANCEID}"                                                           <BR />
+ 55   sleep 0.5                                                                                                       <BR />
+ 56                                                                                                                   <BR />
+ 57 done  </CODE></PRE><BR />
+<H3 id="toc-hId-641829086">A tour of the script</H3><BR />
+After the <A href="https://en.wikipedia.org/wiki/Shebang_(Unix)" target="_blank" rel="nofollow noopener noreferrer">shebang</A>&nbsp;on Line 1 and some comments on Lines 3-4, we start with some general variables in Lines 6-12 that we'll use throughout the script:<BR />
+<UL><BR />
+ 	<LI>I've hardcoded my username relating to my personal SCP trial (this is my pre-SAP ID as that's where I have all the related workflow definitions).</LI><BR />
+ 	<LI>the COOKIES variable points to a user-specific file where I'll be asking curl to store cookies returned in responses, and to use them in subsequent requests. This is to address <A href="https://blogs.sap.com/2018/01/14/discovering-scp-workflow-instance-initiation/" target="_blank" rel="noopener noreferrer">the context required when using CSRF tokens</A>.</LI><BR />
+ 	<LI>via the INSTANCEDATA variable, I use a file called instances.dat to store the output of a request to the Workflow API to retrieve a list of the running instances of my workflow definition.</LI><BR />
+ 	<LI>TOKENDATA points to a third file used to capture the header output of a curl request to Fetch the CSRF token.</LI><BR />
+ 	<LI>There's a single parameter that needs to be supplied on the command line when invoking this script, and that's the ID of the workflow definition. This ID is captured (via $1) in the DEFINITIONID variable.</LI><BR />
+ 	<LI>The Workflow API pattern means there's a "root" URL, and each of the API facilities are relative to that root. This root is specific to my user ID, and held in the WFS_API_ROOT variable (for some reason I'd decided I wanted to use underscores in that name, ah well).</LI><BR />
+ 	<LI>When calling PATCH on the individual workflow instances we want to cancel, we send a payload. This payload is of type application/json, and stored in the STATUSPAYLOAD variable for later use.</LI><BR />
+</UL><BR />
+Line 15 just check that a workflow definition ID has actually been supplied, and aborts if it hasn't. It doesn't do any checking to see if that definition actually exists, we'll find out soon enough anyway.<BR />
+<BR />
+Then, in Lines 17-19, we're off. After giving a warning, we ask for the password, and bash's builtin <A href="http://wiki.bash-hackers.org/commands/builtin/read" target="_blank" rel="nofollow noopener noreferrer">read</A> allows us to read it from the terminal - securely (invisibly) with the '-s' option - into the PASS variable.<BR />
+<BR />
+Lines 21-22 clean up before we start, removing any trace of previous instance details or CSRF tokens.<BR />
+<BR />
+The first thing we have to do is retrieve the list of running instances for the given workflow definition. This is done in Lines 26-30 with a single curl command (note that the backslash at the end of the lines here and elsewhere allow the continuation of a command on separate lines - i.e. the entire curl command spans lines all these lines). We supply credentials, ask for the output to be written to the INSTANCEDATA file and ask curl to be quiet about any download progress statistics. The actual Workflow API resource we're making a request to (relative to the Workflow API root) is:<BR />
+<BR />
+/v1/workflow-instances<BR />
+<BR />
+and we're qualifying that request by a couple of query parameters, one to restrict the request to instances for the given workflow definition, and the other to restrict it to instances in the "RUNNING" state.<BR />
+<BR />
+In case you hadn't guessed, the default method used by curl is GET.<BR />
+<BR />
+Lines 34-39 make another curl request to fetch a CSRF token. We're going to be making non-read-only requests next, which means that we need a token. The curl command follows the same approach as the previous one, but this time includes the "X-CSRF-Token: Fetch" header, and specifies the COOKIES file to store cookies in that come back in the response. These will define the important context in which the token is valid. Instead of asking curl to be silent like last time, this time we're asking it to be verbose, which means that details of the request and the response, including the crucial HTTP headers, are shown.<BR />
+<BR />
+The request headers are shown prefixed by a "&gt;" sign, and the response headers are prefixed with a "&lt;" sign. Those signs help us to think about (and see) the headers and tell at a glance whether they're outgoing ("&gt;") or incoming ("&lt;").<BR />
+<BR />
+The relative Workflow API resource requested in this call is:<BR />
+<BR />
+/v1/xsrf-token<BR />
+<BR />
+Line 41 is where we pull out the "incoming" response header X-CSRF-Token, in which the requested CSRF token is supplied in response to the Fetch request. First we pull the header line out with grep, then use awk to grab the third item in the line, positionally and (by default) separated by whitespace. The header line will look like this:<BR />
+<PRE><CODE>&lt; X-CSRF-Token: F1F2B62E97BB0CF95AB126AE732E3E15</CODE></PRE><BR />
+This token (F1F2 ...) is stored in the TOKEN variable.<BR />
+<BR />
+Then in Lines 44-57 comes the final but crucial flourish. We process the instances, calling PATCH and cancelling them one by one.<BR />
+<BR />
+How do we know which instances there are to process? Well, the response to the original /v1/workflow-instances request is stored in the file pointed to by the INSTANCEDATA variable. This is typically what the response will look like:<BR />
+<PRE class="language-javascript"><CODE>[{"id":"6f23fba7-34c9-11e8-b586-00163e5a9e8b","definitionId":"untappdrecommendation","definitionVersion":"37","subject<BR />
+":"Untappd Recommendation","status":"RUNNING","businessKey":"2506750","startedAt":"2018-03-31T09:53:59.251Z","startedB<BR />
+y":"P481810","completedAt":null},{"id":"6e9b1c8b-34c9-11e8-b586-00163e5a9e8b","definitionId":"untappdrecommendation","<BR />
+definitionVersion":"37","subject":"Untappd Recommendation","status":"RUNNING","businessKey":"2544284","startedAt":"201<BR />
+8-03-31T09:53:58.354Z","startedBy":"P481810","completedAt":null}]</CODE></PRE><BR />
+If you look closely, you'll see that this particular example contains two instances. The response may contain more, or might even contain none (in which case there are no instances to process and we're done!).<BR />
+<BR />
+Assuming we're processing the INSTANCEDATA above, we want to get a list of instance IDs so they look like this:<BR />
+<BR />
+6f23fba7-34c9-11e8-b586-00163e5a9e8b<BR />
+6e9b1c8b-34c9-11e8-b586-00163e5a9e8b<BR />
+<BR />
+How should we go about this? Well,&nbsp;we can use the powerful '<A href="https://stedolan.github.io/jq/" target="_blank" rel="nofollow noopener noreferrer">jq</A>', which is described as "a lightweight and flexible command-line JSON processor". I recorded a short video last year on this command -&nbsp;<A href="https://www.youtube.com/watch?v=yI5IQooQzW4" target="_blank" rel="nofollow noopener noreferrer">Using jq to parse out SCP destination info</A>.<BR />
+<BR />
+Line 44 is where we use jq, inside of backticks in a "for ... do ... done" construction. If you're wondering, if you put something in backticks, that something is executed and the result is what is actually represented and processed. So in Line 44, read it in your mind as follows:<BR />
+<BR />
+<EM>"For each of the instances that result from calling "jq --raw-output '.[] .id' $INSTANCEDATA", put the value each time into the INSTANCEID variable, and do the following ..."</EM><BR />
+<BR />
+So that jq invocation will turn the JSON above into the two lines of IDs (6f23... and 6e9b...).<BR />
+<BR />
+And for each instance ID in the INSTANCEID variable, we make a curl command, in Lines 46-53, to make a PATCH request to this relative Workflow API resource:<BR />
+<BR />
+/v1/workflow-instances/&lt;workflowInstanceId&gt;<BR />
+<BR />
+This time, as well as passing the credentials, we specify to curl that we want the PATCH method (rather than the default GET), we send the CSRF token that we've just fetched, specify the payload we're about to supply is of type "application/json", send the cookies that we will have received from the CSRF token fetch request, and supply the payload as we saw earlier, setting the status of the instance to "CANCELED".<BR />
+<BR />
+Of course, in Line 55, to play nicely with the Workflow API, we wait for 500ms between each of these calls, as there may be many.<BR />
+<BR />
+And that's about it!<BR />
+<BR />
+I recorded a quick screencast of this in action, to give you an idea of how it works in practice. Here it is: <A href="https://youtu.be/DIoyt5Q6JuI" target="_blank" rel="nofollow noopener noreferrer">Scripting the Workflow API with bash and curl</A>.<BR />
+<BR />
+Happy hacking!<BR />
+<BR />
+This blog post was brought to you by the <A href="https://twitter.com/qmacro/status/979974391588061184" target="_blank" rel="nofollow noopener noreferrer">Ashton canal</A>, the Propellerheads album <A href="https://open.spotify.com/album/4r7N5CAbYNbcdEFK7OKj5V" target="_blank" rel="nofollow noopener noreferrer">Decksandrumsandrockandroll</A> (a classic, by now, surely?) and Pact Coffee's&nbsp;<A href="https://www.pactcoffee.com/coffees/la-esperanza-pacamara" target="_blank" rel="nofollow noopener noreferrer">La Esperanza Pacamara</A>.

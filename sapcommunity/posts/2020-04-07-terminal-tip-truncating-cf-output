@@ -1,0 +1,52 @@
+2020-04-07-terminal-tip-truncating-cf-output
+Terminal Tip: truncating CF output
+technology-blog-sap
+2020-04-07
+https://community.sap.com/t5/technology-blogs-by-sap/terminal-tip-truncating-cf-output/ba-p/13457577
+(Find more terminal tips here: <A href="https://blogs.sap.com/tag/terminaltip/" target="_blank" rel="noopener noreferrer">https://blogs.sap.com/tag/terminaltip/</A>)<BR />
+<BR />
+I am a big fan of the terminal, and it's my preferred work environment for many reasons.<BR />
+<BR />
+I use the Cloud Foundry CLI <CODE>cf</CODE> frequently in my work on the SAP Cloud Platform but the output options are limited, and sometimes hard to read. One example is the output from <CODE>cf apps</CODE> or <CODE>cf services</CODE> (there are short versions of these two commands, <CODE>cf a</CODE> and <CODE>cf s</CODE> respectively).<BR />
+<BR />
+This screenshot shows some typical output from the <CODE>cf s</CODE> command:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2020/04/Screenshot-2020-04-07-at-09.05.18.png" /><BR />
+<BR />
+There's a lot of information and it wraps onto new lines. Most of the time my focus is on the names of the service instances, and perhaps the service &amp; plan combination they represent - the information towards the end of the line is less important to me. But it's still being output and making the entire results difficult to read.<BR />
+<BR />
+With the use of two venerable shell commands, we can fix that.<BR />
+<BR />
+<CODE><A href="https://en.wikipedia.org/wiki/Tput" target="_blank" rel="nofollow noopener noreferrer">tput</A></CODE> will give us information on the current terminal capabilities. Running <CODE>tput cols</CODE> returns the number of columns in the current terminal.<BR />
+<BR />
+<A href="https://en.wikipedia.org/wiki/Cut_(Unix)" target="_blank" rel="nofollow noopener noreferrer"><CODE>cut</CODE></A> will slice and dice data in many ways; I use it to pick out various fields from output lines, but it can also pick out ranges of characters too.<BR />
+<BR />
+A combination of these two commands, also making use of the <A href="http://www.tldp.org/LDP/abs/html/commandsub.html" target="_blank" rel="nofollow noopener noreferrer">command substitution</A> technique with <CODE>$(...)</CODE> (this is the newer &amp; better version of using <CODE>`...`</CODE>backticks) gives us the ability to truncate the output so that it's a lot more readable:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2020/04/Screenshot-2020-04-07-at-09.06.22.png" /><BR />
+<BR />
+Here's a breakdown of the command:<BR />
+<BR />
+<CODE>cf s | cut -c -$(tput cols)</CODE><BR />
+<BR />
+Read it like this:<BR />
+<OL><BR />
+ 	<LI>Run the <CODE>cf s</CODE> command</LI><BR />
+ 	<LI>Pipe the STDOUT of that into the STDIN of the <CODE>cut</CODE> command</LI><BR />
+ 	<LI>To the <CODE>cut</CODE> command execution, supply a value for the <CODE>-c</CODE> option which selects specific characters</LI><BR />
+ 	<LI>Which specific characters? Well, the range (x-y) that goes from 1 (implicit) to whatever the command <CODE>tput cols</CODE> outputs.</LI><BR />
+ 	<LI>In the case of my terminal shown in the screenshots, <CODE>tput cols</CODE> tells me there are 101 columns, so the effective value for the range given to <CODE>-c</CODE> is 1-101.</LI><BR />
+</OL><BR />
+We can make this useful combination into a handy function by defining a shell function, like this:<BR />
+<BR />
+<CODE>trunc () { cut -c -$(tput cols); }</CODE><BR />
+<BR />
+Now we can use <CODE>trunc</CODE> like this:<BR />
+<BR />
+<CODE>cf s | trunc</CODE><BR />
+<BR />
+which gives us the same thing. Lovely!<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2020/04/Screenshot-2020-04-07-at-09.07.14.png" /><BR />
+<BR />
+Share &amp; enjoy, and remember, <A href="https://twitter.com/search?q=%23TheFutureIsTerminal&amp;src=typed_query" target="_blank" rel="nofollow noopener noreferrer">#TheFutureIsTerminal</A>!

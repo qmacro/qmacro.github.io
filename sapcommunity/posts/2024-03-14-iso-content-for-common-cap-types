@@ -1,0 +1,434 @@
+2024-03-14-iso-content-for-common-cap-types
+ISO content for common CAP types
+application-developmentblog-board
+2024-03-14
+https://community.sap.com/t5/application-development-blog-posts/iso-content-for-common-cap-types/ba-p/13637780
+<P>There's an NPM package that provides default content based on the ISO specifications for CAP common types for countries, languages, currencies and timezones. In this post I explore what that package is and how it works. The post is quite long, mostly because I fell down a rabbit hole and was stuck there for quite a while. Hopefully though it's something you might enjoy. Happy exploring!</P><P><SPAN>Update 15 Mar 2024: In this morning's Hands-on SAP Dev live stream we added this feature to our test project, so you can&nbsp;</SPAN><A href="https://www.youtube.com/live/8BMASRcs0Hg?si=OvCZdO8McwwWBL5R&amp;t=2567" target="_blank" rel="nofollow noopener noreferrer">see this whole thing in action</A><SPAN>.</SPAN></P><H1 id="toc-hId-859900728">Background</H1><P>Earlier this month in<SPAN>&nbsp;</SPAN><A href="https://www.youtube.com/watch?v=kgycosxv9aQ" target="_blank" rel="noopener nofollow noreferrer">part 7</A><SPAN>&nbsp;</SPAN>of our<SPAN>&nbsp;</SPAN><A href="https://www.youtube.com/playlist?list=PL6RpkC85SLQBHPdfHQ0Ry2TMdsT-muECx" target="_blank" rel="noopener nofollow noreferrer">back to basics Hands-on SAP Dev live stream series on CAP Node.js</A>, we added a new element<SPAN>&nbsp;</SPAN>countryOfBirth<SPAN>&nbsp;</SPAN>to the<SPAN>&nbsp;</SPAN>Authors<SPAN>&nbsp;</SPAN>entity definition, so that our simple<SPAN>&nbsp;</SPAN>services.cds<SPAN>&nbsp;</SPAN>looked like this:</P><PRE>using { cuid, Country } from '@sap/cds/common';
+
+service bookshop {
+  entity Books : cuid {
+    title: String;
+  }
+  entity Authors : cuid {
+    name: String;
+    countryOfBirth: Country;
+  }
+}</PRE><P>This resulted in the generation of lots of DDL for a persistence layer, based on the definition of that<SPAN>&nbsp;</SPAN>Country<SPAN>&nbsp;</SPAN>type, which, in<SPAN>&nbsp;@</SPAN>sap/cds/common, looks like this (and I've also included here the definitions that are used to describe that type):</P><PRE>type Country : Association to sap.common.Countries;
+
+context sap.common {
+
+  entity Countries : CodeList {
+    key code : String(3) @(title : '{i18n&gt;CountryCode}');
+  }
+
+  aspect CodeList @(
+    cds.autoexpose,
+    cds.persistence.skip : 'if-unused'
+  ) {
+    name  : localized String(255)  @title : '{i18n&gt;Name}';
+    descr : localized String(1000) @title : '{i18n&gt;Description}';
+  }
+
+}</PRE><P>As a result of referring to the<SPAN>&nbsp;</SPAN>Country<SPAN>&nbsp;</SPAN>type in<SPAN>&nbsp;@</SPAN>sap/cds/common, we saw this in the output of<SPAN>&nbsp;</SPAN>cds watch:</P><PRE>[cds] - loaded model from 2 file(s):
+
+  services.cds
+  [...]/node_modules/@sap/cds/common.cds</PRE><BLOCKQUOTE><P data-unlink="true">See the<SPAN>&nbsp;"</SPAN>Appendix - loading @sap/cds/common"<SPAN>&nbsp;</SPAN>section for an explanation of why<SPAN>&nbsp;</SPAN>[...]<SPAN>&nbsp;</SPAN>has been used as a path prefix indicator here.</P></BLOCKQUOTE><H2 id="toc-hId-792469942">New entity sets</H2><P>Additionally, we saw that as well as entity sets for the<SPAN>&nbsp;</SPAN>Books<SPAN>&nbsp;</SPAN>and<SPAN>&nbsp;</SPAN>Authors<SPAN>&nbsp;</SPAN>entities, the OData service also contained two more entity sets, as we can see from the service document (which can be obtained with<SPAN>&nbsp;</SPAN>curl localhost:4004/odata/v4/bookshop | jq .):</P><PRE>{
+  "@odata.context": "$metadata",
+  "@odata.metadataEtag": "W/\"l+enQJd57takPctEB4NIbv/1U6KLaLMKeKijx7AfnOo=\"",
+  "value": [
+    {
+      "name": "Books",
+      "url": "Books"
+    },
+    {
+      "name": "Authors",
+      "url": "Authors"
+    },
+    {
+      "name": "Countries",
+      "url": "Countries"
+    },
+    {
+      "name": "Countries_texts",
+      "url": "Countries_texts"
+    }
+  ]
+}</PRE><P>as well as in the CAP server landing page:</P><P><span class="lia-inline-image-display-wrapper lia-image-align-inline" image-alt="qmacro_0-1710401480388.png" style="width: 400px;"><img src="https://community.sap.com/t5/image/serverpage/image-id/80429i1A377E58F331C927/image-size/medium?v=v2&amp;px=400" role="button" title="qmacro_0-1710401480388.png" alt="qmacro_0-1710401480388.png" /></span></P><BLOCKQUOTE><P>For those of you wondering why<SPAN>&nbsp;</SPAN>Countries_texts<SPAN>&nbsp;</SPAN>is not listed in the CAP server landing page, there's an interesting reason, but that's a story for another time.</P></BLOCKQUOTE><H2 id="toc-hId-595956437">What about the data?</H2><P>The response to an OData query operation on the<SPAN>&nbsp;</SPAN>Countries<SPAN>&nbsp;</SPAN>entity set looked, however, like this:</P><PRE>{
+  "@odata.context": "$metadata#Countries",
+  "value": []
+}</PRE><P>No data.</P><P>On the one hand, that's understandable, we haven't supplied any. But on the other hand (and like the discussion which took place at the time mentioned) it would be great to have that data. Not only for the<SPAN>&nbsp;</SPAN>Country<SPAN>&nbsp;</SPAN>type, but also for the other CAP<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/cds/common#code-types" target="_blank" rel="noopener nofollow noreferrer">common reuse types</A><SPAN>&nbsp;</SPAN>Currency, Language and Timezone.</P><P>After all, that data is standard, predictable and pretty much static. It's also something that we all take for granted in R/3 systems, for example, in these tables (and their related<SPAN>&nbsp;</SPAN>-T<SPAN>&nbsp;</SPAN>suffixed language-dependent siblings):</P><UL><LI>T005<SPAN>&nbsp;</SPAN>(countries)</LI><LI>TCUR<SPAN>&nbsp;</SPAN>(currencies)</LI><LI>T002<SPAN>&nbsp;</SPAN>(languages)</LI><LI>TTZZ<SPAN>&nbsp;</SPAN>(timezones)</LI></UL><P>In the out-of-the-box provisions from CAP, we don't have this data. But we do have the data in the form of a standard installable NPM package!</P><P>I'd totally forgotten about this, which is why I failed to mention it while we were discussing the question. So as a penance (not sure whether to me as the writer of this post, or to you as the reader, sorry) I'm writing up the details here now.</P><H1 id="toc-hId-270360213">NPM package <a href="https://community.sap.com/t5/user/viewprofilepage/user-id/1387241">@Sisn</a>/cds-common-content</H1><P data-unlink="true">The NPM package<SPAN> <a href="https://community.sap.com/t5/user/viewprofilepage/user-id/1387241">@Sisn</a>/cds</SPAN>-common-content&nbsp;<EM>"holds default content based on the ISO specification"</EM><SPAN>&nbsp;</SPAN>for these exact types. Bingo!</P><P>The simplest way to make use of this package is to add it to your project:</P><PRE>npm add @sap/cds-common-content</PRE><P>and then add a<SPAN>&nbsp;</SPAN>using<SPAN>&nbsp;</SPAN>directive in your CDS, such as:</P><PRE>using from '@sap/cds-common-content';</PRE><BLOCKQUOTE><P>I prefer the semantics of invoking<SPAN>&nbsp;</SPAN>npm add<SPAN>&nbsp;</SPAN>over<SPAN>&nbsp;</SPAN>npm install, but as<SPAN>&nbsp;</SPAN>add<SPAN>&nbsp;</SPAN>is just an alias for<SPAN>&nbsp;</SPAN>install, it's all the same under the<SPAN>&nbsp;</SPAN>npm<SPAN>&nbsp;</SPAN>hood anyway.</P></BLOCKQUOTE><P>This all seems quite straightforward. So let's now move away from the customised bookshop project from the live stream series and start with a super simple example project, where we'll see how easy it is to get the data to appear. And it will seem like magic! Then we'll dig in to how it actually works, which will help us understand that bit more about how CAP works. And that's always a bonus, right?</P><H2 id="toc-hId-202929427">Simple example</H2><P>So, moving away from the authors and books in the previous<SPAN>&nbsp;</SPAN>services.cds<SPAN>&nbsp;</SPAN>file, we'll start with a brand new CAP project for this simple example, so you can follow along too if you want.</P><H3 id="toc-hId-135498641">Initialising a new CAP project with tiny-sample</H3><P>While initialising the new project, we'll use the<SPAN>&nbsp;</SPAN>--add<SPAN>&nbsp;</SPAN>option to request the addition of the "tiny-sample" facet which gives us a super simple service exposing a single<SPAN>&nbsp;</SPAN>Books<SPAN>&nbsp;</SPAN>entity, complete with a couple of data records supplied in a CSV file.</P><P>Here's an example of doing that, with the use of the<SPAN>&nbsp;</SPAN>tree<SPAN>&nbsp;</SPAN>command at the end to show the contents of the new project directory (excluding the hidden files):</P><PRE># /home/user/work/scratch
+; cds init --add tiny-sample iso-data-test
+Creating new CAP project in ./iso-data-test
+
+Adding feature 'nodejs'...
+Adding feature 'tiny-sample'...
+
+Successfully created project. Continue with 'cd iso-data-test'.
+Find samples on https://github.com/SAP-samples/cloud-cap-samples
+Learn about next steps at https://cap.cloud.sap
+# /home/user/work/scratch
+; cd iso-data-test/
+# /home/user/work/scratch/iso-data-test
+; tree -F
+.
+|-- README.md
+|-- app/
+|-- db/
+|   |-- data/
+|   |   `-- my.bookshop-Books.csv
+|   `-- data-model.cds
+|-- package.json
+`-- srv/
+    `-- cat-service.cds
+
+5 directories, 5 files
+# /home/user/work/scratch/iso-data-test
+;</PRE><BLOCKQUOTE><P>The<SPAN>&nbsp;</SPAN>-F<SPAN>&nbsp;</SPAN>option tells<SPAN>&nbsp;</SPAN>tree<SPAN>&nbsp;</SPAN>to use standard symbols to signify special files, as I want to highlight directories with a trailing<SPAN>&nbsp;</SPAN>/. This<SPAN>&nbsp;</SPAN>-F<SPAN>&nbsp;</SPAN>works in a similar way to the same-named option with the<SPAN>&nbsp;</SPAN>ls<SPAN>&nbsp;</SPAN>command.</P></BLOCKQUOTE><P>The persistence layer definitions in<SPAN>&nbsp;</SPAN>db/data-model.cds<SPAN>&nbsp;</SPAN>look like this:</P><PRE>namespace my.bookshop;
+
+entity Books {
+  key ID : Integer;
+  title  : String;
+  stock  : Integer;
+}</PRE><P>and the service layer definitions in<SPAN>&nbsp;</SPAN>srv/cat-service.cds<SPAN>&nbsp;</SPAN>look like this:</P><PRE>using my.bookshop as my from '../db/data-model';
+
+service CatalogService {
+    @readonly entity Books as projection on my.Books;
+}</PRE><P>Nothing unexpected there, all nice and straightforward.</P><H3 id="toc-hId--61014864">Basic output from cds watch</H3><P>Starting the CAP server up at this point, we see (amongst other log lines):</P><PRE>[cds] - loaded model from 2 file(s):
+
+  srv/cat-service.cds
+  db/data-model.cds
+
+[cds] - connect to db &gt; sqlite { database: ':memory:' }
+  &gt; init from db/data/my.bookshop-Books.csv
+/&gt; successfully deployed to in-memory database.</PRE><P data-unlink="true">And the service document at<SPAN>&nbsp;</SPAN>http://localhost:4004/odata/v4/catalog<SPAN>&nbsp;</SPAN>looks like this:</P><PRE>{
+  "@odata.context": "$metadata",
+  "@odata.metadataEtag": "W/\"8PKoOs3VhYwQoFzBoQObhMsFJJa5jpD1GLFcWZG9r60=\"",
+  "value": [
+    {
+      "name": "Books",
+      "url": "Books"
+    }
+  ]
+}</PRE><P>So far so good.</P><P>We've covered this in the<SPAN>&nbsp;</SPAN><A href="https://www.youtube.com/playlist?list=PL6RpkC85SLQBHPdfHQ0Ry2TMdsT-muECx" target="_blank" rel="noopener nofollow noreferrer">back to basics series</A><SPAN>&nbsp;</SPAN>but it's worth re-iterating here too ... the reason why we see these two files specifically:</P><PRE>srv/cat-service.cds
+db/data-model.cds</PRE><P>listed in the sources for the CDS model being served (see the "loaded model from 2 file(s)" message in the log output above), is that they're in some specially named directories (db/<SPAN>&nbsp;</SPAN>and<SPAN>&nbsp;</SPAN>srv/) that form part of CAP's convention-over-configuration approach to doing the right thing by developers. On startup, the server will automatically look in certain "well-known" locations for CDS definitions. What are these "well-known" locations?</P><P>You can ask to see them like this:</P><PRE>cds env folders</PRE><P>which emits:</P><PRE>{ db: 'db/', srv: 'srv/', app: 'app/' }</PRE><P>In fact, there's another environment value which it's possible to query, and that is<SPAN>&nbsp;</SPAN>roots:</P><PRE>cds env roots</PRE><P>and the value returned:</P><PRE>[ 'db/', 'srv/', 'app/', 'schema', 'services' ]</PRE><P>contains these three directory names, plus two special filenames<SPAN>&nbsp;</SPAN>services<SPAN>&nbsp;</SPAN>and<SPAN>&nbsp;</SPAN>schema, which we can interpret as<SPAN>&nbsp;</SPAN>services.cds<SPAN>&nbsp;</SPAN>and<SPAN>&nbsp;</SPAN>schema.cds<SPAN>&nbsp;</SPAN>respectively.</P><P><span class="lia-unicode-emoji" title=":light_bulb:">💡</span>This is incidentally why, in the simple<SPAN>&nbsp;</SPAN><A href="https://github.com/qmacro/capb2b" target="_blank" rel="noopener nofollow noreferrer">capb2b</A><SPAN>&nbsp;</SPAN>project we're using for the early episodes in the back to basics series, simply<SPAN>&nbsp;</SPAN><A href="https://github.com/qmacro/capb2b/blob/aac1f7304e3d0884cfe837c3b0bbd4e6bf98a848/services.cds" target="_blank" rel="noopener nofollow noreferrer">putting all our content into a file called services.cds</A><SPAN>&nbsp;</SPAN>works!</P><H3 id="toc-hId--257528369">Adding an element with the Country type</H3><P>Now to start moving towards the use of the<SPAN>&nbsp;</SPAN>Country<SPAN>&nbsp;</SPAN>type.</P><P>First, let's add an element to the<SPAN>&nbsp;</SPAN>Books<SPAN>&nbsp;</SPAN>entity definition to show where a book was published. We'll do this (and other enhancements in this experiment) in a separate CDS file, to remind ourselves of how well thought out and capable the CDS language and compilation process is.</P><P>In a new file, let's call it<SPAN>&nbsp;</SPAN>db/publicationinfo.cds, let's add this:</P><PRE>using from './data-model';
+using { Country } from '@sap/cds/common';
+
+extend my.bookshop.Books with {
+    publishedIn: Country;
+}</PRE><UL><LI>The first<SPAN>&nbsp;</SPAN>using<SPAN>&nbsp;</SPAN>directive just imports the definitions from the existing<SPAN>&nbsp;</SPAN>db/data-model.cds<SPAN>&nbsp;</SPAN>file, i.e. the<SPAN>&nbsp;</SPAN>Books<SPAN>&nbsp;</SPAN>entity in the<SPAN>&nbsp;</SPAN>my.bookshop<SPAN>&nbsp;</SPAN>namespace. With this first<SPAN>&nbsp;</SPAN>using<SPAN>&nbsp;</SPAN>directive we can then refer to the<SPAN>&nbsp;</SPAN>my.bookshop.Books<SPAN>&nbsp;</SPAN>entity, as we do with the<SPAN>&nbsp;</SPAN>extend<SPAN>&nbsp;</SPAN>directive shortly.</LI><LI>The second<SPAN>&nbsp;</SPAN>using<SPAN>&nbsp;</SPAN>directive is to bring in the definition of the<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/cds/common#type-country" target="_blank" rel="noopener nofollow noreferrer">Country reuse type</A><SPAN>&nbsp;</SPAN>from <a href="https://community.sap.com/t5/user/viewprofilepage/user-id/1387241">@Sisn</a>/cds/common. This is so we can use this<SPAN>&nbsp;</SPAN>Country<SPAN>&nbsp;</SPAN>type to describe the new element we're adding to the<SPAN>&nbsp;</SPAN>my.bookshop.Books<SPAN>&nbsp;</SPAN>entity.</LI><LI>Then in the<SPAN>&nbsp;</SPAN>extend<SPAN>&nbsp;</SPAN>directive we can simply add the new<SPAN>&nbsp;</SPAN>publishedIn<SPAN>&nbsp;</SPAN>element and define it as having the<SPAN>&nbsp;</SPAN>Country<SPAN>&nbsp;</SPAN>type. We already know about how this type is defined from the background section earlier.</LI></UL><P>As the CAP server is still running in "watch" mode, things restart and now we see something like this:</P><PRE>[cds] - loaded model from 4 file(s):
+
+  srv/cat-service.cds
+  db/publicationinfo.cds
+  [...]/node_modules/@sap/cds/common.cds
+  db/data-model.cds
+
+[cds] - connect using bindings from: { registry: '~/.cds-services.json' }
+[cds] - connect to db &gt; sqlite { database: ':memory:' }
+  &gt; init from db/data/my.bookshop-Books.csv
+/&gt; successfully deployed to in-memory database.</PRE><P>The log output here shows us that there are two new files in the list from which the model has been loaded:</P><PRE>db/publicationinfo.cds
+[...]/node_modules/@sap/cds/common.cds</PRE><P>What's happened of course is that a new file,<SPAN>&nbsp;</SPAN>publicationinfo.cds, is discovered in the well-known<SPAN>&nbsp;</SPAN>db/<SPAN>&nbsp;</SPAN>directory. So that is loaded and added to the overall model compilation. And within that file, the<SPAN>&nbsp;</SPAN>using { Country } from '@sap/cds/common';<SPAN>&nbsp;</SPAN>directive causes the corresponding file from that (built-in) NPM package<SPAN>&nbsp;<a href="https://community.sap.com/t5/user/viewprofilepage/user-id/1387241">@Sisn</a>/cds</SPAN>/common<SPAN>&nbsp;</SPAN>to be loaded too. Nice!</P><P>And now the CAP server has restarted, serving the new enhanced overall model, we see with a request like this:</P><PRE>curl -s localhost:4004/odata/v4/catalog | jq .</PRE><P>that the OData service document now sports the<SPAN>&nbsp;</SPAN>Countries<SPAN>&nbsp;</SPAN>and<SPAN>&nbsp;</SPAN>Countries_texts<SPAN>&nbsp;</SPAN>entity sets too (because, briefly,<SPAN>&nbsp;</SPAN>sap.common.Countries<SPAN>&nbsp;</SPAN>is defined as an entity in<SPAN>&nbsp;</SPAN>[...]/node_modules/@sap/cds/common.cds<SPAN>&nbsp;</SPAN>and therefore is exposed as an entity set in the OData service):</P><PRE>{
+  "@odata.context": "$metadata",
+  "@odata.metadataEtag": "W/\"2n4HnZUJly4q6xyptJ6+4ZptvIICSUNdpk6NYX73bGY=\"",
+  "value": [
+    {
+      "name": "Books",
+      "url": "Books"
+    },
+    {
+      "name": "Countries",
+      "url": "Countries"
+    },
+    {
+      "name": "Countries_texts",
+      "url": "Countries_texts"
+    }
+  ]
+}</PRE><P>Again. So far, so good.</P><H3 id="toc-hId--454041874">Starting to look at the data</H3><P>We have some books data, courtesy of the two CSV records that came as part of the "tiny-sample" facet, which we can see with:</P><PRE>curl -s localhost:4004/odata/v4/catalog/Books | jq .</PRE><P>which returns this entity set response:</P><PRE>{
+  "@odata.context": "$metadata#Books",
+  "value": [
+    {
+      "ID": 1,
+      "title": "Wuthering Heights",
+      "stock": 100,
+      "publishedIn_code": null
+    },
+    {
+      "ID": 2,
+      "title": "Jane Eyre",
+      "stock": 500,
+      "publishedIn_code": null
+    }
+  ]
+}</PRE><BLOCKQUOTE><P>Those eagle-eyed amongst you might be wondering about the<SPAN>&nbsp;</SPAN>publishedIn_code<SPAN>&nbsp;</SPAN>property. That's one that's been auto-generated as a result of CAP's excellent<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/guides/domain-modeling#associations" target="_blank" rel="noopener nofollow noreferrer">managed associations</A><SPAN>&nbsp;</SPAN>constructs.</P><P>Here, specifically, it comes from the combination of the<SPAN>&nbsp;</SPAN>Country<SPAN>&nbsp;</SPAN>type used to describe the<SPAN>&nbsp;</SPAN>publishedIn<SPAN>&nbsp;</SPAN>element:</P><PRE>extend my.bookshop.Books with {
+    publishedIn: Country;
+}</PRE><P>and the very definition of<SPAN>&nbsp;</SPAN>Country<SPAN>&nbsp;</SPAN>which is a<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/guides/domain-modeling#managed-1-associations" target="_blank" rel="noopener nofollow noreferrer">managed "to-one" association</A><SPAN>&nbsp;</SPAN>as we have already seen:</P><PRE>type Country : Association to sap.common.Countries;</PRE><P>This results in, amongst other things, a foreign-key relationship being needed, and being realised via the construction of a property for this, made up of the names of the two elements in the relationship, i.e.</P><UL><LI>publishedIn<SPAN>&nbsp;</SPAN>(the new element in<SPAN>&nbsp;</SPAN>my.bookshop.Books)</LI><LI>code<SPAN>&nbsp;</SPAN>(the key element in<SPAN>&nbsp;</SPAN>sap.common.Countries)</LI></UL><P>joined with an<SPAN>&nbsp;</SPAN>_<SPAN>&nbsp;</SPAN>underscore character to become<SPAN>&nbsp;</SPAN>publishedIn_code.</P></BLOCKQUOTE><P>However, we don't yet have any country data. Requesting the equivalent entity set like this:</P><PRE>curl -s localhost:4004/odata/v4/catalog/Countries | jq .</PRE><P>returns a rather sad and empty looking entity set:</P><PRE>{
+  "@odata.context": "$metadata#Countries",
+  "value": []
+}</PRE><P>So ...<SPAN>&nbsp;</SPAN>@sapcds-common-content<SPAN>&nbsp;</SPAN>to the rescue!</P><H3 id="toc-hId--650555379">Using <a href="https://community.sap.com/t5/user/viewprofilepage/user-id/1387241">@Sisn</a>/cds-common-content</H3><P>Like we saw earlier, this can be brought into the project simply by adding it as a package. So let's do that now:</P><PRE>npm add @sap/cds-common-content</PRE><P>After seeing output like this:</P><PRE>added 115 packages, and audited 116 packages in 17s
+
+21 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities</PRE><P>we see that<SPAN>&nbsp;</SPAN>package.json<SPAN>&nbsp;</SPAN>now has the package listed in the<SPAN>&nbsp;</SPAN>dependencies<SPAN>&nbsp;</SPAN>section:</P><PRE>{
+  "name": "iso-data-test",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "&lt;Add your repository here&gt;",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@sap/cds": "^7",
+    "@sap/cds-common-content": "^1.4.0",
+    "express": "^4"
+  },
+  "devDependencies": {
+    "@cap-js/sqlite": "^1"
+  },
+  "scripts": {
+    "start": "cds-serve"
+  }
+}</PRE><P>and the rest of the dependencies have been installed too (through a more general NPM install side-effect) - we can see this with<SPAN>&nbsp;</SPAN>npm list; here's an example invocation:</P><PRE>; npm list
+iso-data-test@1.0.0 /home/user/work/scratch/iso-data-test
++-- @cap-js/sqlite@1.5.1
++-- @sap/cds-common-content@1.4.0
++-- @sap/cds@7.7.2
+`-- express@4.18.3</PRE><P>So now, to actually make use of this package and what it brings, we have to add a<SPAN>&nbsp;</SPAN>using<SPAN>&nbsp;</SPAN>directive, as we saw earlier.</P><P>Let's add that to the<SPAN>&nbsp;</SPAN>db/publicationinfo.cds<SPAN>&nbsp;</SPAN>file, like this:</P><PRE>using from './data-model';
+using { Country } from '@sap/cds/common';
+using from '@sap/cds-common-content';
+
+extend my.bookshop.Books with {
+    publishedIn: Country;
+}</PRE><P>As the CAP server is still running in "watch" mode, it restarts, and <span class="lia-unicode-emoji" title=":collision:">💥</span> what an explosion of log output!</P><PRE>[cds] - loaded model from 6 file(s):
+
+  srv/cat-service.cds
+  db/publicationinfo.cds
+  node_modules/@sap/cds-common-content/index.cds
+  db/data-model.cds
+  node_modules/@sap/cds-common-content/db/index.cds
+  node_modules/@sap/cds/common.cds
+
+[cds] - connect using bindings from: { registry: '~/.cds-services.json' }
+[cds] - connect to db &gt; sqlite { url: ':memory:' }
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_zh_TW.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_zh_CN.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_tr.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_th.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_sv.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_ru.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_ro.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_pt.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_pl.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_no.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_nl.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_ms.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_ko.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_ja.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_it.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_hu.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_fr.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_fi.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_es_MX.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_es.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_en.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_de.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_da.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_cs.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries_texts_ar.csv
+  &gt; init from node_modules/@sap/cds-common-content/db/data/sap-common-Countries.csv
+  &gt; init from db/data/my.bookshop-Books.csv
+/&gt; successfully deployed to in-memory database.</PRE><P>Wow! What's more, we now have country data in the<SPAN>&nbsp;</SPAN>Countries<SPAN>&nbsp;</SPAN>entity set:</P><PRE>curl -s 'localhost:4004/odata/v4/catalog/Countries?$top=5' \
+  | jq .</PRE><PRE>{
+  "@odata.context": "$metadata#Countries",
+  "value": [
+    {
+      "name": "Andorra",
+      "descr": "Andorra",
+      "code": "AD"
+    },
+    {
+      "name": "Utd Arab Emir.",
+      "descr": "United Arab Emirates",
+      "code": "AE"
+    },
+    {
+      "name": "Afghanistan",
+      "descr": "Afghanistan",
+      "code": "AF"
+    },
+    {
+      "name": "Antigua/Barbuda",
+      "descr": "Antigua and Barbuda",
+      "code": "AG"
+    },
+    {
+      "name": "Anguilla",
+      "descr": "Anguilla",
+      "code": "AI"
+    }
+  ]
+}</PRE><P>That's fab. But. What's going on? Where is this coming from? How does this work?</P><H3 id="toc-hId--922300253">Digging in to what's happening</H3><P>Let's take a bit of time to figure out how this is all working, and why we now have country data.</P><P>We added a single line to the CDS model:</P><PRE>using from '@sap/cds-common-content';</PRE><P>What did the addition of this line actually do to cause that explosion of change and the appearance of ISO country data?</P><P>Well, our first clue is the extra entries that now are appearing in the list of files from which the CDS model is constructed:</P><PRE>[cds] - loaded model from 6 file(s):
+
+  srv/cat-service.cds
+  db/publicationinfo.cds
+  node_modules/@sap/cds-common-content/index.cds
+  db/data-model.cds
+  node_modules/@sap/cds-common-content/db/index.cds
+  node_modules/@sap/cds/common.cds</PRE><P>Working through them, we first see our base files:</P><PRE>srv/cat-service.cds
+db/data-model.cds</PRE><P>We also see the two extra files that were picked up once we added the<SPAN>&nbsp;</SPAN>db/publicationinfo.cds<SPAN>&nbsp;</SPAN>file which itself summoned the<SPAN>&nbsp;<a href="https://community.sap.com/t5/user/viewprofilepage/user-id/1387241">@Sisn</a>/</SPAN>cds/common<SPAN>&nbsp;</SPAN>content:</P><PRE>db/publicationinfo.cds
+node_modules/@sap/cds/common.cds</PRE><BLOCKQUOTE><P>At this point I've stopped being deliberately vague (with<SPAN>&nbsp;</SPAN>[...]) about the specific location of the files in<SPAN>&nbsp;</SPAN>node_modules/, because it's worth highlighting here something that has changed. The<SPAN>&nbsp;</SPAN>npm add<SPAN>&nbsp;</SPAN>action just before caused the rest of the packages (defined in<SPAN>&nbsp;</SPAN>package.json) to be installed in the project. This means that there's now a project-local<SPAN>&nbsp;</SPAN>node_modules/<SPAN>&nbsp;</SPAN>directory containing everything that this project needs, including all the<SPAN>&nbsp;</SPAN>@sap<SPAN>&nbsp;</SPAN>prefixed NPM packages.</P><P>A quick<SPAN>&nbsp;</SPAN>tree -F -L 3<SPAN>&nbsp;</SPAN>shows the directory structure containing those resources (I've removed some of the output for brevity):</P><PRE>./
+|-- README.md
+|-- app/
+|-- db/
+|   |-- data/
+|   |   `-- my.bookshop-Books.csv
+|   |-- data-model.cds
+|   `-- publicationinfo.cds
+|-- node_modules/
+|   |-- @cap-js/
+|   |   |-- cds-types/
+|   |   |-- db-service/
+|   |   `-- sqlite/
+|   |-- @sap/
+|   |   |-- cds/
+|   |   |-- cds-common-content/
+|   |   |-- cds-compiler/
+|   |   |-- cds-fiori/
+|   |   `-- cds-foss/
+|   |-- ...
+|   `-- yaml/
+|       |-- LICENSE
+|       |-- README.md
+|       |-- bin.mjs*
+|       |-- browser/
+|       |-- dist/
+|       |-- package.json
+|       `-- util.js
+|-- package-lock.json
+|-- package.json
+`-- srv/
+    `-- cat-service.cds</PRE><P>So this means that the<SPAN>&nbsp;</SPAN>@sap/cds/common<SPAN>&nbsp;</SPAN>package is being loaded now from the project-local set of packages, i.e. in<SPAN>&nbsp;</SPAN>node_modules/<SPAN>&nbsp;</SPAN>relative to the project directory (i.e.<SPAN>&nbsp;</SPAN>./node_modules/) and not the global NPM package area any more.</P><P>This in turn means that the full (relative) path to this file now in the list is clean and short(er):</P><PRE>node_modules/@sap/cds/common.cds</PRE></BLOCKQUOTE><P>OK, so we know why these four of the six files are being loaded, and where from:</P><PRE>srv/cat-service.cds
+db/data-model.cds
+db/publicationinfo.cds
+node_modules/@sap/cds/common.cds</PRE><P>So what about the other two in the list:</P><PRE>node_modules/@sap/cds-common-content/index.cds
+node_modules/@sap/cds-common-content/db/index.cds</PRE><P>which are now also being brought in to construct the model?</P><P>Well, given the "cds-common-content" that appears in the path of these files, we can be pretty certain that they're related to this single line we just added:</P><PRE>using from '@sap/cds-common-content';</PRE><P>so what is actually happening here?</P><P>Well, if we look a bit deeper inside the<SPAN>&nbsp;<a href="https://community.sap.com/t5/user/viewprofilepage/user-id/1387241">@Sisn</a>/</SPAN>cds-common-content<SPAN>&nbsp;</SPAN>package, like this:</P><PRE>tree -F -L 2 node_modules/@sap/cds-common-content</PRE><P>there's a bit of a clue in the output, especially if we're familiar with CAP's<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/guides/extensibility/composition" target="_blank" rel="noopener nofollow noreferrer">Reuse and Compose</A><SPAN>&nbsp;</SPAN>concepts:</P><PRE>node_modules/@sap/cds-common-content/
+|-- CHANGELOG.md
+|-- LICENSE
+|-- README.md
+|-- db/
+|   |-- index.cds
+|   `-- data/
+|-- index.cds
+`-- package.json
+
+3 directories, 6 files</PRE><P>Look at those<SPAN>&nbsp;</SPAN>index.cds<SPAN>&nbsp;</SPAN>files. The<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/guides/extensibility/composition#index-cds" target="_blank" rel="noopener nofollow noreferrer">Using index.cds Entry Points</A><SPAN>&nbsp;</SPAN>section of the Reuse and Compose section of the Capire documentation says this, in the context of a<SPAN>&nbsp;</SPAN>using<SPAN>&nbsp;</SPAN>directive like we have here (i.e.<SPAN>&nbsp;</SPAN>using from '@sap/cds-common-content';):</P><P><EM>"The<SPAN>&nbsp;</SPAN>using from<SPAN>&nbsp;</SPAN>statements assume that the imported packages provide<SPAN>&nbsp;</SPAN>index.cds<SPAN>&nbsp;</SPAN>in their roots as<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/guides/extensibility/composition#entry-points" target="_blank" rel="noopener nofollow noreferrer">public entry points</A>, which they do."</EM></P><P>So, that means that the<SPAN>&nbsp;</SPAN>using<SPAN>&nbsp;</SPAN>directive will cause this file:</P><PRE>node_modules/@sap/cds-common-content/index.cds</PRE><P>to also be loaded and its CDS contents added into the overall model construction. So what's in this file? This:</P><PRE>using from './db';</PRE><P><span class="lia-unicode-emoji" title=":rabbit:">🐇</span><SPAN>&nbsp;</SPAN><A href="https://en.wikipedia.org/wiki/Alice%27s_Adventures_in_Wonderland" target="_blank" rel="noopener nofollow noreferrer">Curiouser and curiouser</A>!</P><P>So let's now follow<SPAN>&nbsp;</SPAN><EM>this</EM><SPAN>&nbsp;</SPAN>using<SPAN>&nbsp;</SPAN>directive, the resource reference within which should be interpreted as local to the containing<SPAN>&nbsp;</SPAN>index.cds<SPAN>&nbsp;</SPAN>file, i.e. we're now going to follow this path to<SPAN>&nbsp;</SPAN>./db/, which<SPAN>&nbsp;</SPAN><EM>also</EM><SPAN>&nbsp;</SPAN>contains an<SPAN>&nbsp;</SPAN>index.cds:</P><PRE>node_modules/@sap/cds-common-content/
+|-- CHANGELOG.md
+|-- LICENSE
+|-- README.md
+|-- db/
+|   |-- index.cds  &lt;--------------------+
+|   `-- data/                           |
+|-- index.cds  -- using from './db'; ---+
+`-- package.json</PRE><P>So what's in<SPAN>&nbsp;</SPAN>./db/index.cds? This:</P><PRE>using sap.common.Languages from '@sap/cds/common';
+using sap.common.Countries from '@sap/cds/common';
+using sap.common.Currencies from '@sap/cds/common';
+using sap.common.Timezones from '@sap/cds/common';</PRE><P>Ooh!</P><P>What is the effect of doing this? Well it has a direct effect and a sort of side-effect too.</P><P>The direct effect is that all four entity definitions referenced in this<SPAN>&nbsp;</SPAN>./db/index.cds<SPAN>&nbsp;</SPAN>file, that is to say these four:</P><UL><LI>sap.common.Languages</LI><LI>sap.common.Countries</LI><LI>sap.common.Currencies</LI><LI>sap.common.Timezones</LI></UL><P>are added to the overall model.</P><P>But the side-effect is that the<SPAN>&nbsp;</SPAN>./db/data/<SPAN>&nbsp;</SPAN>directory here also becomes a candidate location for the automatic<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/guides/databases#providing-initial-data" target="_blank" rel="noopener nofollow noreferrer">provision of initial data</A>!</P><P>And what's in that<SPAN>&nbsp;</SPAN>./db/data/<SPAN>&nbsp;</SPAN>directory? Let's have a look:</P><PRE>ls node_modules/@sap/cds-common-content/db/data/</PRE><P>Lots and lots of CSV files (I've cut the list down to just a few here):</P><PRE>./                                     sap-common-Languages_texts_cs.csv
+../                                    sap-common-Languages_texts_da.csv
+sap-common-Countries.csv               sap-common-Languages_texts_de.csv
+sap-common-Countries_texts.csv         sap-common-Languages_texts_en.csv
+sap-common-Countries_texts_ar.csv      sap-common-Languages_texts_es.csv
+sap-common-Countries_texts_zh_CN.csv   sap-common-Timezones_texts_cs.csv
+sap-common-Countries_texts_zh_TW.csv   sap-common-Timezones_texts_da.csv
+sap-common-Currencies.csv              sap-common-Timezones_texts_de.csv
+sap-common-Currencies_texts.csv        sap-common-Timezones_texts_el.csv
+sap-common-Currencies_texts_ar.csv     sap-common-Timezones_texts_en.csv
+...</PRE><P>And we know what happens with initial data, for those entities whose namespaced-names match up with CSV filenames in directories such as these - the data is automatically imported to become data for those entities!</P><P>Notice too that for each of the four entities, there is a single CSV file containing the core data, and multiple CSV files for the corresponding<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/guides/localized-data#declaring-localized-data" target="_blank" rel="noopener nofollow noreferrer">localized</A><SPAN>&nbsp;</SPAN>elements, in accompanying<SPAN>&nbsp;</SPAN>_texts*<SPAN>&nbsp;</SPAN>suffixed files.</P><P>Here's one example, for the<SPAN>&nbsp;</SPAN>sap.common.Countries<SPAN>&nbsp;</SPAN>entity. A neat list of the intial CSV data files for this entity can be retrieved with:</P><PRE>cd node_modules/@sap/cds-common-content/db/data/ \
+  &amp;&amp; ls -1 sap-common-Countries*.csv</PRE><P>which produces:</P><PRE>sap-common-Countries.csv
+sap-common-Countries_texts.csv
+sap-common-Countries_texts_ar.csv
+sap-common-Countries_texts_cs.csv
+sap-common-Countries_texts_da.csv
+sap-common-Countries_texts_de.csv
+sap-common-Countries_texts_en.csv
+sap-common-Countries_texts_es.csv
+sap-common-Countries_texts_es_MX.csv
+sap-common-Countries_texts_fi.csv
+sap-common-Countries_texts_fr.csv
+sap-common-Countries_texts_hu.csv
+sap-common-Countries_texts_it.csv
+sap-common-Countries_texts_ja.csv
+sap-common-Countries_texts_ko.csv
+sap-common-Countries_texts_ms.csv
+sap-common-Countries_texts_nl.csv
+sap-common-Countries_texts_no.csv
+sap-common-Countries_texts_pl.csv
+sap-common-Countries_texts_pt.csv
+sap-common-Countries_texts_ro.csv
+sap-common-Countries_texts_ru.csv
+sap-common-Countries_texts_sv.csv
+sap-common-Countries_texts_th.csv
+sap-common-Countries_texts_tr.csv
+sap-common-Countries_texts_zh_CN.csv
+sap-common-Countries_texts_zh_TW.csv</PRE><P>We can see the three groups of files for<SPAN>&nbsp;</SPAN>sap.common.Countries:</P><UL><LI>the single core data file<SPAN>&nbsp;</SPAN>sap-common-Countries.csv<SPAN>&nbsp;</SPAN>containing values for the<SPAN>&nbsp;</SPAN>code,<SPAN>&nbsp;</SPAN>name<SPAN>&nbsp;</SPAN>and<SPAN>&nbsp;</SPAN>descr<SPAN>&nbsp;</SPAN>fields (in English as default).</LI><LI>the single core localized data file<SPAN>&nbsp;</SPAN>sap-common-Countries_texts.csv<SPAN>&nbsp;</SPAN>- where the filename is not specific to an explicit locale - containing values for the<SPAN>&nbsp;</SPAN>locale,<SPAN>&nbsp;</SPAN>code,<SPAN>&nbsp;</SPAN>name<SPAN>&nbsp;</SPAN>and<SPAN>&nbsp;</SPAN>descr<SPAN>&nbsp;</SPAN>field. The language specific content is English by default.</LI><LI>the multiple language-specific localized data files<SPAN>&nbsp;</SPAN>sap-common-Countries_texts_&lt;locale-identifier&gt;.csv<SPAN>&nbsp;</SPAN>containing the same data as the core localized file but with the texts translated into the language indicated by the locale-identifier in the file name.</LI></UL><P data-unlink="true">You'll likely remember seeing a list of all these CSV files in the<SPAN>&nbsp;</SPAN>explosion of output<SPAN>&nbsp;</SPAN>from the running CAP server earlier.</P><P>And what's the outcome of this?</P><P>To find out, let's expand the core books data now to include values for the new<SPAN>&nbsp;</SPAN>publishedIn_code<SPAN>&nbsp;</SPAN>field at the persistence layer, so that the content of<SPAN>&nbsp;</SPAN>db/data/my.bookshop-Books.csv<SPAN>&nbsp;</SPAN>now looks like this:</P><PRE>ID;title;stock;publishedIn_code
+1;Wuthering Heights;100;DE
+2;Jane Eyre;500;HU</PRE><BLOCKQUOTE><P>Yes I know Wuthering Heights wasn't published in Germany, nor was Jane Eyre published in Hungary, but thank you for wondering about that.</P></BLOCKQUOTE><P>Now, NOT ONLY (μέν) can we follow navigation properties to see the publication countries for our books, like this (note the country names "Germany" and "Hungary"):</P><PRE>curl \
+    --silent \
+    --url 'localhost:4004/odata/v4/catalog/Books?$expand=publishedIn' \
+  | jq .</PRE><P>to get this:</P><PRE>{
+  "@odata.context": "$metadata#Books(publishedIn())",
+  "value": [
+    {
+      "ID": 1,
+      "title": "Wuthering Heights",
+      "stock": 100,
+      "publishedIn_code": "DE",
+      "publishedIn": {
+        "name": "Germany",
+        "descr": "Germany",
+        "code": "DE"
+      }
+    },
+    {
+      "ID": 2,
+      "title": "Jane Eyre",
+      "stock": 500,
+      "publishedIn_code": "HU",
+      "publishedIn": {
+        "name": "Hungary",
+        "descr": "Hungary",
+        "code": "HU"
+      }
+    }
+  ]
+}</PRE><P>BUT ALSO (δέ) we can ask for this information in our own language (locale)! Here's an example, requesting the same resource but with a different locale (French), via standard HTTP headers:</P><BLOCKQUOTE><P>I'm fond of the<SPAN>&nbsp;</SPAN><A href="http://www.jowillmott.co.uk/simpleguide/notes/%CE%BC%CE%AD%CE%BD%E2%80%A6%CE%B4%CE%AD..." target="_blank" rel="noopener nofollow noreferrer">strong particle pairing</A><SPAN>&nbsp;</SPAN>of μέν ... δέ which I first learned about as an important construct in Ancient Greek, and I find myself often using the (English) equivalent ("not only ... but also").</P></BLOCKQUOTE><PRE>curl \
+    --silent \
+    --header 'Accept-Language: fr' \
+    --url 'localhost:4004/odata/v4/catalog/Books?$expand=publishedIn' \
+  | jq .</PRE><P>The representation of the resource requested is now different, in that the names of the countries are now in French ("Allemagne" and "Hungarie"):</P><PRE>{
+  "@odata.context": "$metadata#Books(publishedIn())",
+  "value": [
+    {
+      "ID": 1,
+      "title": "Wuthering Heights",
+      "stock": 100,
+      "publishedIn_code": "DE",
+      "publishedIn": {
+        "name": "Allemagne",
+        "descr": "Allemagne",
+        "code": "DE"
+      }
+    },
+    {
+      "ID": 2,
+      "title": "Jane Eyre",
+      "stock": 500,
+      "publishedIn_code": "HU",
+      "publishedIn": {
+        "name": "Hongrie",
+        "descr": "Hongrie",
+        "code": "HU"
+      }
+    }
+  ]
+}</PRE><P>C'est vraiment magnifique!</P><P>Of course, one wouldn't often use an explicit<SPAN>&nbsp;</SPAN>Accept-Language<SPAN>&nbsp;</SPAN>header in an HTTP request, but think of what headers your browser sends by default when making requests, and think of what your French colleague's browser might send. Exactly!</P><H1 id="toc-hId--532007744">Wrapping up</H1><P>OK, I think I've reached a point where I can now safely escape this rabbit hole of discovery. The bottom line is that there is a standard NPM package available that provides actual ISO data for the four CAP reuse types. You've learned how to use it, and what it provides. Moreover, you've learned how it provides what it does, and what goes on behind the scenes. That, hopefully, has given you a tiny bit more insight into the wonders of CAP.</P><P>And there's still so much more to discover. Until next time!</P><HR /><H1 id="toc-hId--728521249">Appendix - loading <a href="https://community.sap.com/t5/user/viewprofilepage/user-id/1387241">@Sisn</a>/cds/common</H1><P>In the Background section earlier, the output of<SPAN>&nbsp;</SPAN>cds watch<SPAN>&nbsp;</SPAN>showed this line:</P><PRE>  [...]/node_modules/@sap/cds/common.cds</PRE><P>The reason I included a<SPAN>&nbsp;</SPAN>[...]<SPAN>&nbsp;</SPAN>"prefix" was to signify that there will be a different path shown depending on whether an<SPAN>&nbsp;</SPAN>npm install<SPAN>&nbsp;</SPAN>of the project dependencies (which include<SPAN> <a href="https://community.sap.com/t5/user/viewprofilepage/user-id/1387241">@Sisn</a>/cds</SPAN>) has been executed, or not.</P><P>If an<SPAN>&nbsp;</SPAN>npm install<SPAN>&nbsp;</SPAN>has been executed, then there will be a project-local<SPAN>&nbsp;</SPAN>node_modules/<SPAN>&nbsp;</SPAN>directory, and the<SPAN> <a href="https://community.sap.com/t5/user/viewprofilepage/user-id/1387241">@Sisn</a>/cds</SPAN>/common<SPAN>&nbsp;</SPAN>resource will have been loaded from within there, i.e.</P><PRE>./node_modules/@sap/cds/common.cds</PRE><P>If an<SPAN>&nbsp;</SPAN>npm install<SPAN>&nbsp;</SPAN>hasn't been executed, and we're running the CAP server from the NPM<SPAN>&nbsp;</SPAN><A href="https://github.com/qmacro/capb2b/blob/20f9cebefd63f9d897eeb47b53634fd7416653b5/.devcontainer/Dockerfile#L11" target="_blank" rel="noopener nofollow noreferrer">globally installed</A><SPAN> <a href="https://community.sap.com/t5/user/viewprofilepage/user-id/1387241">@Sisn</a>/cds</SPAN>-dk<SPAN>&nbsp;</SPAN>package, then it will have been loaded from that globally installed package location, and look something like this (depending on what your NPM global package management directory setup looks like):</P><PRE>../../usr/local/share/npm-global/lib/
+  node_modules/@sap/cds-dk/
+  node_modules/@sap/cds/common.cds</PRE><BLOCKQUOTE><P>This location value would typically be shown in a single line; I've split the value up over a few lines purely for readability.</P></BLOCKQUOTE><P>You can find out where your (normally globally installed)<SPAN> <a href="https://community.sap.com/t5/user/viewprofilepage/user-id/1387241">@Sisn</a>/cds</SPAN>-dk<SPAN>&nbsp;</SPAN>package is, using the<SPAN>&nbsp;</SPAN>cds env<SPAN>&nbsp;</SPAN>command:</P><PRE>cds env _home_cds-dk</PRE><P>In the context of this particular dev container in which I'm working, this is the value that is emitted:</P><PRE>'/usr/lib/node_modules/@sap/cds-dk/'</PRE><HR /><P>(<A href="https://qmacro.org/blog/posts/2024/03/12/iso-content-for-common-cap-types/" target="_self" rel="nofollow noopener noreferrer">Originally published on qmacro.org)</A></P>

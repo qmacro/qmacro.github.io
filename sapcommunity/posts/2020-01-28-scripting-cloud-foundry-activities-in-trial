@@ -1,0 +1,150 @@
+2020-01-28-scripting-cloud-foundry-activities-in-trial
+Scripting Cloud Foundry activities in trial
+technology-blog-sap
+2020-01-28
+https://community.sap.com/t5/technology-blogs-by-sap/scripting-cloud-foundry-activities-in-trial/ba-p/13438137
+<EM>In this post I share a simple script that I use to recreate my Business Rules environment in the Cloud Foundry environment of my SAP Cloud Platform trial account. Scripting and the CLI in general is very powerful in today's "new mainframe" era.</EM><BR />
+<BR />
+It's <A href="https://youtu.be/hpMiXp8WLvo?t=680" target="_blank" rel="nofollow noopener noreferrer">no secret</A> that I feel that we're in the era of the new mainframe (it never really went away) and the power of the command line and terminal based user interfaces are more relevant and powerful than ever (yes, <A href="https://twitter.com/search?q=%23TheFutureIsTerminal&amp;src=typed_query" target="_blank" rel="nofollow noopener noreferrer">#TheFutureIsTerminal</A>!).<BR />
+<BR />
+Scripting is a much misunderstood discipline, and is a whole universe of languages, techniques, and contexts. But it's worth putting yourself on the learning path here, because it can be incredibly useful even for small tasks.<BR />
+<BR />
+While preparing and researching for content for the recent episodes of my <A href="https://bit.ly/handsonsapdev" target="_blank" rel="nofollow noopener noreferrer">#HandsOnSAPDev live stream series</A>, particularly in the area of exploring the Business Rules service in the Cloud Foundry environment on the SAP Cloud Platform (see in particular the annotated links for episodes <A href="https://blogs.sap.com/2019/11/26/annotated-links-episode-44-of-hands-on-sap-dev-with-qmacro/" target="_blank" rel="noopener noreferrer">44</A> and <A href="https://blogs.sap.com/2020/01/02/annotated-links-episode-48-of-hands-on-sap-dev-with-qmacro/" target="_blank" rel="noopener noreferrer">48</A>), I decided to write a short script to help me recreate the Business Rules service and Editor facility ... I often clean out my environment, and sometimes even recreate my Cloud Foundry organisation and spaces, to clear cruft ready for the next live stream episode.<BR />
+<BR />
+It was so easy to write, I thought I'd share it, and perhaps encourage you to stare at it for a few minutes over a coffee to see how it works. It's very specific, and does what I want it to do (there's no smarts in there, but I have written it to be re-runnable).<BR />
+<BR />
+Here it is, warts and all:<BR />
+<PRE class="language-perl"><CODE>#!/bin/bash<BR />
+<BR />
+# Prerequisites:<BR />
+# - Cloud Foundry trial account on SAP Cloud Platform with <BR />
+#   entitlement for Business Rules service and application runtime<BR />
+# - Build tool 'mbt' installed globally<BR />
+# - cf CLI installed with the 'multiapps' plugin installed<BR />
+# - cf CLI already authenticated against the CF endpoint<BR />
+<BR />
+# Recommended:<BR />
+# - Role collection containing RuleRepositorySuperUser and<BR />
+#   RuleRuntimeSuperUser assigned tothe trial account user<BR />
+<BR />
+<BR />
+# Show current CF target<BR />
+echo Deploying to:<BR />
+cf target<BR />
+<BR />
+# Create an instance of the service, with the free 'lite' service plan, called businessrules<BR />
+# (reason for the name is because that's how it's referred to in the mta.yaml to come). If the<BR />
+# service instance 'businessrules' already exists it won't be re-created.<BR />
+cf create-service business-rules lite businessrules<BR />
+<BR />
+# Download the project containing the multi target application descriptor for the rules editor<BR />
+# (see <A href="https://bit.ly/handsonsapdev#ep44" target="test_blank" rel="nofollow noopener noreferrer">https://bit.ly/handsonsapdev#ep44</A> for background).<BR />
+rm -rf archive.zip editor/<BR />
+curl -o archive.zip -s <A href="https://raw.githubusercontent.com/SAP-samples/cloud-businessrules-samples/master/cf-apps/cf-businessruleseditor.zip" target="test_blank" rel="nofollow noopener noreferrer">https://raw.githubusercontent.com/SAP-samples/cloud-businessrules-samples/master/cf-apps/cf-businessruleseditor.zip</A><BR />
+unzip -q -d editor ./archive.zip<BR />
+<BR />
+# Kick off the build - this should produce an archive in mta_archives/ directory.<BR />
+cd editor/<BR />
+mbt build<BR />
+<BR />
+# Deploy the archive<BR />
+cf deploy mta_archives/businessruleseditor_0.0.1.mtar</CODE></PRE><BR />
+Here's a brief description of each of the sections:<BR />
+<BR />
+I use the 'cf target' command to show the current Cloud Foundry target that my cf CLI tools is pointing to.<BR />
+<BR />
+With the 'cf create-service' command I create an instance of the 'business-rules' service, using the 'lite' service plan. Note that if an instance with this name exists already, another won't be created.<BR />
+<BR />
+I grab the archive containing the mta.yaml file that describes the Business Rules Editor multi target application (it's <A href="https://github.com/SAP-samples/cloud-businessrules-samples/" target="_blank" rel="nofollow noopener noreferrer">available on GitHub</A>), and then unzip it into a new directory 'editor/'.<BR />
+<BR />
+Before deploying this Editor it needs to be built, so that's next - within the 'editor/' directory I use the <A href="https://sap.github.io/cloud-mta-build-tool/" target="_blank" rel="nofollow noopener noreferrer">SAP Cloud MTA Build Tool</A> 'mbt' to do this.<BR />
+<BR />
+The result of a successful build is that an 'mtar' archive file will be created in a new directory 'mta_archives/' - this archive file contains everything that should be pushed up to the Cloud Foundry environment, and I do this with the 'cf deploy' command.<BR />
+<BR />
+That's pretty much it - it works very well for me, doing 80% of what I need, for 20% of the effort (I spent around 15 mins writing it).<BR />
+<BR />
+In case you're interested, here's some sample output, so you can get a feel for how it runs.<BR />
+<PRE class="language-perl"><CODE>qmacro@penguin:~/local/projects/github.com/qmacro/handsonsapdev/episodes/ep51<BR />
+-&gt; ./rules.bash<BR />
+Deploying to:<BR />
+api endpoint:   <A href="https://api.cf.eu10.hana.ondemand.com" target="test_blank" rel="nofollow noopener noreferrer">https://api.cf.eu10.hana.ondemand.com</A><BR />
+api version:    2.144.0<BR />
+user:           dj.adams<BR />
+org:            I347491trial_qmacrosubdomain<BR />
+space:          dev<BR />
+Creating service instance businessrules in org I347491trial_qmacrosubdomain / space dev as dj.adams@sap.com...<BR />
+OK<BR />
+<BR />
+Service businessrules already exists<BR />
+[2020-01-28 12:09:52]  INFO Cloud MTA Build Tool version 1.0.8<BR />
+[2020-01-28 12:09:52]  INFO generating the "Makefile_20200128120952.mta" file...<BR />
+[2020-01-28 12:09:52]  INFO done<BR />
+[2020-01-28 12:09:52]  INFO executing the "make -f Makefile_20200128120952.mta p=cf mtar= strict=true mode=" command...<BR />
+[2020-01-28 12:09:52]  INFO validating the MTA project<BR />
+[2020-01-28 12:09:52]  INFO validating the MTA project<BR />
+[2020-01-28 12:09:52]  INFO building the "businessruleseditor_appRouter" module...<BR />
+[2020-01-28 12:09:52]  INFO executing the "npm install --production" command...<BR />
+.....npm WARN deprecated scmp@1.0.0: scmp v2 uses improved core crypto comparison since Node v6.6.0<BR />
+.....<BR />
+&gt; @sap/node-jwt@1.6.5 install /home/qmacro/local/projects/github.com/qmacro/handsonsapdev/episodes/ep51/editor/businessruleseditor_appRouter/node_modules/@sap/node-jwt<BR />
+&gt; node ./build.js<BR />
+<BR />
+`linux-x64-v8-6.8` exists; testing<BR />
+Binary is fine; exiting<BR />
+npm notice created a lockfile as package-lock.json. You should commit this file.<BR />
+npm WARN html5-apps-approuter@ No repository field.<BR />
+npm WARN html5-apps-approuter@ No license field.<BR />
+<BR />
+added 236 packages from 133 contributors and audited 407 packages in 10.319s<BR />
+found 5 high severity vulnerabilities<BR />
+  run `npm audit fix` to fix them, or `npm audit` for details<BR />
+[2020-01-28 12:10:03]  INFO the build results of the "businessruleseditor_appRouter" modulewill be packed and saved in the "/home/qmacro/local/projects/github.com/qmacro/handsonsapdev/episodes/ep51/editor/.editor_mta_build_tmp/businessruleseditor_appRouter" folder<BR />
+[2020-01-28 12:10:04]  INFO finished building the "businessruleseditor_appRouter" module<BR />
+[2020-01-28 12:10:04]  INFO generating the metadata...<BR />
+[2020-01-28 12:10:04]  INFO generating the MTA archive...<BR />
+[2020-01-28 12:10:05]  INFO the MTA archive generated at: /home/qmacro/local/projects/github.com/qmacro/handsonsapdev/episodes/ep51/editor/mta_archives/businessruleseditor_0.0.1.mtar<BR />
+[2020-01-28 12:10:05]  INFO cleaning temporary files...<BR />
+Deploying multi-target app archive mta_archives/businessruleseditor_0.0.1.mtar in org I347491trial_qmacrosubdomain / space dev as dj.adams@sap.com...<BR />
+<BR />
+Uploading 1 files...<BR />
+  /home/qmacro/local/projects/github.com/qmacro/handsonsapdev/episodes/ep51/editor/mta_archives/businessruleseditor_0.0.1.mtar<BR />
+OK<BR />
+Deploying in org "I347491trial_qmacrosubdomain" and space "dev"<BR />
+Detected MTA schema version: "3"<BR />
+Detected deployed MTA with ID "businessruleseditor" and version "0.0.1"<BR />
+Detected new MTA version: "0.0.1"<BR />
+Deployed MTA version: "0.0.1"<BR />
+kProcessing service "businessruleseditor_html5_repo_runtime"...<BR />
+Processing service "businessrules_uaa"...<BR />
+Updating service "businessrules_uaa"...<BR />
+Updating application "businessruleseditor_appRouter"...<BR />
+Application "businessruleseditor_appRouter" attributes are not modified and will not be updated<BR />
+Uploading application "businessruleseditor_appRouter"...<BR />
+Stopping application "businessruleseditor_appRouter"...<BR />
+Staging application "businessruleseditor_appRouter"...<BR />
+Application "businessruleseditor_appRouter" staged<BR />
+Starting application "businessruleseditor_appRouter"...<BR />
+Application "businessruleseditor_appRouter" started and available at "i347491trial-qmacrosubdomain-dev-businessruleseditor-approuter.cfapps.eu10.hana.ondemand.com"<BR />
+Deleting discontinued configuration entries for application "businessruleseditor_appRouter"...<BR />
+Skipping deletion of services, because the command line option "--delete-services" is not specified.<BR />
+Process finished.<BR />
+Use "cf dmol -i 25e31dd8-41c7-11ea-a559-eeee0a8615fb" to download the logs of the process.</CODE></PRE><BR />
+This results in what I'm looking for, which is the Business Rules Editor application and the service instances that support it - all described by the 'mta.yaml' file mentioned earlier.<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2020/01/Screenshot-2020-01-28-at-12.23.47.png" /><BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2020/01/Screenshot-2020-01-28-at-12.23.37.png" /><BR />
+<BR />
+What have you automated with simple scripts? Let us know in the comments below. And happy scripting!<BR />
+<BR />
+---<BR />
+<BR />
+For more thoughts on mainframes today, see the following posts:<BR />
+<BR />
+<A href="https://blogs.sap.com/2018/08/06/monday-morning-thoughts-mainframes-and-message-documentation/" target="_blank" rel="noopener noreferrer">Monday morning thoughts: mainframes and message documentation</A><BR />
+<BR />
+<A href="https://blogs.sap.com/2018/04/16/monday-morning-thoughts-upload-download-in-a-cloud-native-world/" target="_blank" rel="noopener noreferrer">Monday morning thoughts: upload / download in a cloud native world</A><BR />
+<BR />
+and a post from my <A href="https://qmacro.org/" target="_blank" rel="nofollow noopener noreferrer">personal blog</A> that I've been writing posts on for almost two decades:<BR />
+<BR />
+<A href="https://qmacro.org/2009/09/09/mainframes-and-the-cloud-everything-old-is-new-again/" target="_blank" rel="nofollow noopener noreferrer">Mainframes and the cloud - everything old is new again</A>

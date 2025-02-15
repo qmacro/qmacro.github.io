@@ -1,0 +1,95 @@
+2020-05-01-terminal-tip-a-cf-remote-monitor-script
+Terminal Tip: a CF remote monitor script
+technology-blog-sap
+2020-05-01
+https://community.sap.com/t5/technology-blogs-by-sap/terminal-tip-a-cf-remote-monitor-script/ba-p/13429781
+(Find more terminal tips here:&nbsp;<A href="https://blogs.sap.com/tag/terminaltip/" target="_blank" rel="noopener noreferrer">https://blogs.sap.com/tag/terminaltip/</A>)<BR />
+<BR />
+In the previous terminal tip (<A href="https://blogs.sap.com/2020/04/24/terminal-tip-remotely-monitor-a-cf-deployment/" target="_blank" rel="noopener noreferrer">remotely monitor a CF deployment</A>) we saw the building blocks of how we might go about finding and then remotely monitoring an ongoing multi-target application (MTA) operation.<BR />
+<BR />
+On today's <A href="https://bit.ly/handsonsapdev" target="_blank" rel="nofollow noopener noreferrer">#HandsOnSAPDev</A> live stream, <A href="https://bit.ly/handsonsapdev#ep66" target="_blank" rel="nofollow noopener noreferrer">Ep.66</A>, we wrote a script <CODE>mtaopsmon</CODE> that put these building blocks together (check out the section of <A href="https://youtu.be/mP1iWZgNmsE?t=895" target="_blank" rel="nofollow noopener noreferrer">the replay starting at around 14:55</A>). I thought it would be worth sharing that script here, and explaining it bit by bit.<BR />
+<BR />
+First, let's see the script in its entirety:<BR />
+<PRE class="language-bash"><CODE>#!/usr/bin/env bash<BR />
+<BR />
+getopsid () { cf mta-ops | sed '1,3d' | head -1 | awk '{print $1}'; }                                                                   <BR />
+<BR />
+echo -n Searching for MTA operation<BR />
+<BR />
+mtaopid=$(getopsid)<BR />
+<BR />
+while [[ -z ${mtaopsid} ]]<BR />
+do<BR />
+  echo -n .<BR />
+  sleep 1<BR />
+  mtaopsid=$(getopsid)<BR />
+done<BR />
+<BR />
+echo<BR />
+echo MTA operation found: ${mtaopsid}<BR />
+<BR />
+cf deploy -i ${mtaopsid} -a monitor</CODE></PRE><BR />
+Now let's take it a step at a time.<BR />
+<BR />
+<STRONG>Step 1 - Defining a function to get an MTA operation ID</STRONG><BR />
+<BR />
+The first line looks like this:<BR />
+<PRE class="language-bash"><CODE>getopsid () { cf mta-ops | sed '1,3d' | head -1 | awk '{print $1}'; }                                                                   </CODE></PRE><BR />
+Here we're defining a function <CODE>getopsid</CODE> that contains way to try and grab the ID of an MTA operation. This is deliberately over simplified but works for our purposes, and is a good start.<BR />
+<BR />
+If you consider what the output of <CODE>cf mta-ops</CODE> gives for when there's an operation (or more than one), it looks like this:<BR />
+<PRE class="language-plain"><CODE>Getting active multi-target app operations in org p200135114trial / space dev as qmacro+workflowcodejam@example.com...<BR />
+OK<BR />
+id                                     type     mta id                  status    started at                      started by<BR />
+acb3bcda-8b7b-11ea-bb72-eeee0a890182   DEPLOY   sample.onboarding.mta   RUNNING   2020-05-01T07:16:28.294Z[UTC]   qmacro+workflowcodejam@example.com</CODE></PRE><BR />
+There's a couple of descriptive lines ("Getting ..." and "OK"), followed by a column header line ("id ...") and then a line with the details of an operation, where the first column is the operation's ID ("acb3...").<BR />
+<BR />
+If you consider what the output looks like when there are no operations, it looks like this:<BR />
+<PRE class="language-plain"><CODE>Getting active multi-target app operations in org p200135114trial / space dev as qmacro+workflowcodejam@example.com...<BR />
+OK<BR />
+No multi-target app operations found</CODE></PRE><BR />
+Now we know what the two possible outputs look like, we can stare at the first line of our script and understand what <CODE>getopsid</CODE> does. It calls <CODE>cf mta-ops</CODE>, and pipes the output into <CODE>sed '1,3d</CODE>', which will simply delete the first three lines. Whatever then remains is either nothing (there are only three lines when there are no MTA operations) or a list of operation details:<BR />
+<PRE class="language-plain"><CODE>acb3bcda-8b7b-11ea-bb72-eeee0a890182   DEPLOY   sample.onboarding.mta   RUNNING   2020-05-01T07:16:28.294Z[UTC]   qmacro+workflowcodejam@example.com</CODE></PRE><BR />
+To keep things simple in this case, we're just going to take the first operation, in case there are more, and so we pipe the remaining line(s) into <CODE>head -1</CODE> which will just give us the first line.<BR />
+<BR />
+Finally, we pipe that line into <CODE>awk '{print $1}'</CODE> which will return just the first "field", i.e. the operation ID ("acb3...").<BR />
+<BR />
+So basically, calling this function <CODE>getopsid</CODE> will return either an operation ID, or nothing.<BR />
+<BR />
+<STRONG>Step 2 - Looping until we get an MTA operation ID</STRONG><BR />
+<BR />
+Here's the next part:<BR />
+<PRE class="language-bash"><CODE>echo -n Searching for MTA operation<BR />
+<BR />
+mtaopid=$(getopsid)<BR />
+<BR />
+while [[ -z ${mtaopsid} ]]<BR />
+do<BR />
+  echo -n .<BR />
+  sleep 1<BR />
+  mtaopsid=$(getopsid)<BR />
+done<BR />
+</CODE></PRE><BR />
+After printing out "Searching for MTA operation", without a newline (that's what the <CODE>-n</CODE> option to <CODE>echo</CODE> means), we call <CODE>getopsid</CODE> and assign whatever it returns to the <CODE>mtaopid</CODE> variable, which will therefore contain an ID, or nothing.<BR />
+<BR />
+Then we loop around, as long as the <CODE>-z ${mtaopsid}</CODE> condition is true, i.e. for as long as there's no value in the <CODE>mtaopsid</CODE> variable. Inside the loop, we print a "." character, sleep for a second, and then call the <CODE>getopsid</CODE> function again.<BR />
+<BR />
+This will run therefore until we get an MTA operation ID.<BR />
+<BR />
+<STRONG>Step 3 - Attaching to and monitoring the MTA operation</STRONG><BR />
+<BR />
+Once we have an MTA operation ID, we can use the technique we learned about in <A href="https://blogs.sap.com/2020/04/24/terminal-tip-remotely-monitor-a-cf-deployment/" target="_blank" rel="noopener noreferrer">the previous terminal tip</A> to attach to an ongoing operation, and call the 'monitor' action upon it:<BR />
+<PRE class="language-bash"><CODE>echo<BR />
+echo MTA operation found: ${mtaopsid}<BR />
+<BR />
+cf deploy -i ${mtaopsid} -a monitor</CODE></PRE><BR />
+And that's it!<BR />
+<BR />
+Here's an example of the script in action, showing a few lines from the log output. To take this screenshot, I started the <CODE>mtaopsmon</CODE> script up, then switched over to the SAP Web IDE to deploy the "sample.onboarding.mta" MTA that I'd previously built.<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2020/05/Screenshot-2020-05-01-at-09.58.19.png" /></P><BR />
+<STRONG><BR />
+Next steps</STRONG><BR />
+<BR />
+Of course, the function that gets the MTA operation ID is deliberately very simple at this stage (we wrote the script together during the live stream). Have a think about how you could improve that - what would happen (and what would we want to do) if there were multiple operations? Let me know your thoughts in the comments, and until next time ...<BR />
+<BR />
+Share &amp; enjoy, and remember,&nbsp;<A href="https://twitter.com/search?q=%23TheFutureIsTerminal&amp;src=typed_query" target="_blank" rel="nofollow noopener noreferrer">#TheFutureIsTerminal</A>!

@@ -1,0 +1,152 @@
+2018-01-08-discovering-scp-workflow-the-monitor
+Discovering SCP Workflow - The Monitor
+technology-blog-members
+2018-01-08
+https://community.sap.com/t5/technology-blogs-by-members/discovering-scp-workflow-the-monitor/ba-p/13386215
+Here are a few notes on the workflow monitor app that is part of the SAP Cloud Platform Workflow service.<BR />
+<BR />
+This post is part of a series, a guide to which can be found here: <A href="https://qmacro.org/blog/posts/2018/01/16/discovering-scp-workflow/" target="_blank" rel="nofollow noopener noreferrer">Discovering SCP Workflow.</A><BR />
+<BR />
+Once you've enabled the Workflow service (follow Christian Loos' two-part series "<A href="https://blogs.sap.com/2017/07/14/getting-started-with-the-workflow-service-in-the-free-trial-account-12/" target="_blank" rel="noopener noreferrer">Getting Started with the Workflow service in the free trial account</A>" here if you haven't), you'll have access to the My Inbox app. There's also a couple of tiles that actually lead to the same app - the monitor app - both with the title "Monitor Workflows":<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/inbox_home.jpg" /><BR />
+<BR />
+The data model supporting SAP Cloud Platform Workflow service has a concept of workflow definitions and workflow instances. If you guess at what they are, you're probably going to be correct: It's very similar to the relationship between classes and instances in object-oriented programming. The workflow is described in a definition (the flow of tasks from start to finish), and workflows are created and executed as instances of those definitions.<BR />
+<H3 id="toc-hId-1036761510">The "bpmworkflowmonitor" app</H3><BR />
+The monitor app, known more formally by its name "bpmworkflowmonitor", allows you to look at and interact with both workflow definitions and workflow instances. It does this in a rather lovely intertwined way, which I aspire to emulate in future UI5 apps for the Fiori Launchpad. Look at the Intent Navigation settings for each of the "Monitor Workflow - Workflow Definitions" and "Monitor Workflow - Workflow Instances" tiles; they are "bpmworkflowmonitor-DisplayDefinitions" and "bpmworkflowmonitor-DisplayInstances" respectively.<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-08-at-19.33.20.png" /><BR />
+<BR />
+&nbsp;<BR />
+<BR />
+Scroll a little bit further down in the App Configuration shown here and you'll see that for both apps, the App Resource Details are the same:<BR />
+<BR />
+SAPUI5 Component: com.sap.bpm.monitorworkflow<BR />
+HTML5 App Name: bpmworkflowmonitor<BR />
+ComponentURL: /<BR />
+<BR />
+While we're here, note that these apps are provided via subscription (that's what the "<A href="https://sapui5.hana.ondemand.com/test-resources/sap/m/demokit/iconExplorer/webapp/index.html#/?tab=grid&amp;search=cloud&amp;icon=download-from-cloud" target="_blank" rel="nofollow noopener noreferrer">download-from-cloud</A>" icon denotes), from an SAP-owned subaccount. It's like having a pointer, or symbolic link, to something, instead of that thing itself.<BR />
+<BR />
+This intertwining is evident in a few ways, notably the seamless jump between a workflow instance and its definition, for example. When viewing a workflow instance, the Definition ID ("untappdrecommendation") is shown as a link:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-08-at-19.39.54.png" /><BR />
+<BR />
+&nbsp;<BR />
+<BR />
+... which, when clicked, leads to the workflow definition:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-08-at-19.40.09.png" /><BR />
+<BR />
+&nbsp;<BR />
+<BR />
+Furthermore, the "Show Instances" button at the bottom of the detail for the workflow definition ...<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-08-at-19.43.24.png" /><BR />
+<BR />
+leads back to the workflow instances for that definition, via a filter on the master list as you can see in the earlier screenshot. Very nicely done.<BR />
+<BR />
+&nbsp;<BR />
+<H3 id="toc-hId-840248005">Execution Logs</H3><BR />
+In the display of a workflow instance, there's an execution log visible. A simple one might look like this:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-08-at-19.49.00.png" /><BR />
+<BR />
+This particular workflow definition is very simple, and this is reflected in the log. In the definition there's a start, an end, and a User Task, thus:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-08-at-19.51.33.png" /><BR />
+<BR />
+The "StartEvent1" is represented by the execution log item "P481810 started the workflow" and the User Task "Untappd Beer Recommendations" is represented by the execution log item "Task ... available". All well and good, but if you're like me, you would like to see how the data model as presented by the&nbsp;<A href="https://api.sap.com/shell/discover/contentpackage/SAPCPWorkflowAPIs/api/SAP_CP_Workflow" target="_blank" rel="noopener noreferrer">SAP Cloud Platform Workflow API</A>&nbsp;relates to this in a little more detail.<BR />
+<BR />
+The API exposes entities that are core to the Workflow service:<BR />
+<BR />
+Workflow Definitions<BR />
+Workflow Instances<BR />
+User Task Instances<BR />
+Messages<BR />
+<BR />
+and a couple of utility endpoints:<BR />
+<BR />
+XSRF Handling<BR />
+Data Export<BR />
+<BR />
+User Task instances are special, because they're involved in processing beyond the confines of the workflow flow itself. User tasks appear in the unified inbox (appearing as the My Inbox app in the Fiori Launchpad) and can have custom UIs to present the workflow instance's context and allow decisions or actions to be taken. User tasks also have recipients, as can be seen in the screenshot above.<BR />
+<H3 id="toc-hId-643734500">Extending the Execution Log display</H3><BR />
+Seeing details from the API entities beyond the user-facing information is helpful if you're on that journey of discovery. <A href="http://www.clivebanks.co.uk/THHGTTG/THHGTTGradio12.htm" target="_blank" rel="nofollow noopener noreferrer">Or so it seems to me</A>. So I took the "bpmworkflowmonitor" app and created my own version, gently extending that part of it that handles the display of the Execution Log to show more information that's fetched from the API. After all, it's the Workflow API that the monitor app uses at its core anyway!<BR />
+<BR />
+There are no extension points available in the code base, but then again, I don't think there was an expectation that fools like me would want to meddle with it.<BR />
+<BR />
+Perusing the "bpmworkflowmonitor" app codebase is educational and worth spending a few coffee breaks doing. You'll come across the part that handles the construction of the Execution Log display in the InstancesDetail.view.xml view definition. There's an innocuous looking Object Page Section that looks like this:<BR />
+<PRE><CODE>&lt;uxap:ObjectPageSection id="executionLogSection" title="{i18n&gt;INSTANCES_DETAIL_EXECUTION_LOG_HEADER}"&gt;<BR />
+ &lt;uxap:subSections&gt;<BR />
+ &lt;uxap:ObjectPageSubSection&gt;<BR />
+ &lt;uxap:blocks&gt;<BR />
+ &lt;core:Fragment fragmentName="com.sap.bpm.monitorworkflow.view.fragments.ExecutionLog" type="XML"/&gt;<BR />
+ &lt;/uxap:blocks&gt;<BR />
+ &lt;/uxap:ObjectPageSubSection&gt;<BR />
+ &lt;/uxap:subSections&gt;<BR />
+&lt;/uxap:ObjectPageSection</CODE></PRE><BR />
+This references a fragment that describes a Timeline control, where the content aggregation (the time line items) is bound to the execution log items for the particular workflow instance being displayed. The template for this aggregation binding is, not unexpectedly, a Timeline Item control, which offers the possibility of embedding a custom control for display of whatever is appropriate for each given item.<BR />
+<BR />
+And it's here that the "bpmworkflowmonitor" app sports a custom control, in the form of the ExecutionLogItem.js file in the controls directory:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-08-at-20.14.29.png" /><BR />
+<BR />
+Examining the code within this custom control, we come across the setEventType function which determines what appears within this custom control, and in turn, this appears in the bottom section of each of the timeline items. It is this code that determines, for example, that the "Recipients" and "Initiator" sections appeared at the bottom of the User Task execution log item earlier.<BR />
+<BR />
+The relevant code looks like this:<BR />
+<PRE><CODE>... <BR />
+} else if (sEventType === "USERTASK_CREATED") {<BR />
+  var oContainer = new VBox();<BR />
+  oContainer.addItem(this._createUserListControl());<BR />
+  oContainer.addItem(this._createOptionalLabelWithText(I18n.getText("EXECUTION_LOG_INITIATOR_LABEL"), "{wfilog&gt;initiatorId}"));<BR />
+  this.setContent(oContainer);<BR />
+}<BR />
+...<BR />
+</CODE></PRE><BR />
+What would be useful to me would be to see exactly what event type IDs each of the execution log items had, and for User Task items, what the task instance ID was (so I could go over to <A href="https://www.getpostman.com/" target="_blank" rel="nofollow noopener noreferrer">Postman</A> and dig into the details by interacting with the Workflow API directly ... but that's a story for another day, perhaps).<BR />
+<BR />
+So I <A href="https://gitlab.com/qmacro/bpmworkflowmonitor" target="_blank" rel="nofollow noopener noreferrer">extended</A>&nbsp;the setEventType function to add this bit at the end:<BR />
+<PRE><CODE>/**<BR />
+ * Add label showing event type if we can. Following the VBox-as-container pattern here.<BR />
+ * First, we'll create a VBox with a Label/Text showing the event type, optionally <BR />
+ * adding anothe Label/Text combo to show the task ID if appropriate. <BR />
+ * Then:<BR />
+ * - if there's no content, we'll set that new VBox as the content<BR />
+ * - if there's content but it's not a VBox, we'll set the new VBox as content,<BR />
+ * adding the existing content to it<BR />
+ * - otherwise it's a VBox so just add the new Label/Text to that<BR />
+ */<BR />
+var oTypeInfo = this._createOptionalLabelWithText(I18n.getText("EVENT_TYPE_LABEL"), "{wfilog&gt;type}"),<BR />
+ oTaskIdInfo = this._createOptionalLabelWithText(I18n.getText("TASK_ID_LABEL"), "{wfilog&gt;taskId}"),<BR />
+ oVBox = new VBox({ items : [ oTypeInfo ] }),<BR />
+ oContentControl = this.getContent();<BR />
+if (!oContentControl) {<BR />
+ this.setContent(oVBox);<BR />
+} else if (oContentControl.getMetadata().getName() === "sap.m.VBox") {<BR />
+ oContentControl.addItem(oTypeInfo);<BR />
+ oVBox = oContentControl;<BR />
+} else {<BR />
+ this.setContent(oVBox.addItem(oContentControl));<BR />
+}<BR />
+if (sEventType === "USERTASK_CREATED") {<BR />
+ oVBox.addItem(oTaskIdInfo);<BR />
+}</CODE></PRE><BR />
+I also added a couple of i18n resources. You can see the changes properly here in <A href="https://gitlab.com/qmacro/bpmworkflowmonitor/commit/64592ba1cf1d5cdbc44db9b77026835bd4a69c59" target="_blank" rel="nofollow noopener noreferrer">this commit</A>, specifically in the controls/ExecutionLogItem.js and i18n/i18n.properties files.<BR />
+<BR />
+Once I deployed my version to my SCP trial account, I registered it in my Fiori Launchpad, making it available as a new app "Workflow Monitor - Custom":<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-08-at-20.25.56.png" /><BR />
+<BR />
+and it gives me what I was looking for - extra detail in the Execution Log:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-08-at-20.27.58.png" /><BR />
+<BR />
+This data ties up exactly with what's available via the Workflow API (retrieved via Postman):<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-08-at-20.30.01.png" /><BR />
+<BR />
+With that, my journey of discovery related to the SAP Cloud Platform Workflow service is a little bit clearer. Hopefully this might help you on your journey too.<BR />
+<BR />
+Next post in this series:&nbsp;<A href="https://blogs.sap.com/2018/01/14/discovering-scp-workflow-instance-initiation/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow – Instance Initiation</A>.<BR />
+<BR />
+&nbsp;

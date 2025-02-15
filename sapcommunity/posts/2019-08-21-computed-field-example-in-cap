@@ -1,0 +1,224 @@
+2019-08-21-computed-field-example-in-cap
+Computed field example in CAP
+technology-blog-sap
+2019-08-21
+https://community.sap.com/t5/technology-blogs-by-sap/computed-field-example-in-cap/ba-p/13408603
+<EM>In this post, I show one way of using computed properties in CAP, using CDS and service events in Node.js.</EM><BR />
+<BR />
+Over in the <A href="https://answers.sap.com/tags/9f13aee1-834c-4105-8e43-ee442775e5ce" target="_blank" rel="noopener noreferrer">CAP section of the Community Q&amp;A</A>, <SPAN class="mention-scrubbed">pdominique-bio</SPAN> asked an interesting question that I thought I'd have a go at answering in the form of a short post. Here's the question: <A href="https://answers.sap.com/questions/12845830/counting-associated-entities-using-cds.html" target="_blank" rel="noopener noreferrer">Counting association entities using CDS</A> - go ahead and have a quick read of it, then come back here to find out one way of doing it.<BR />
+<BR />
+Given the bookshop sample data as a basis, how do we extend the service to include a property which indicates, for each author, how many books they have written?<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+<STRONG>Step 1 - the definitions</STRONG><BR />
+<BR />
+Here's the basic schema. It's very similar to the example that Pierre gives, but doesn't have the extra 'numberOfBooks' property at this level - I wanted to give myself an extra challenge by not defining it at the data model layer, but defining it only at the service definition layer. If we're going to have a computed property, we should avoid having it pollute the space at the persistence layer.<BR />
+<PRE class="language-javascript"><CODE>namespace my.bookshop;<BR />
+<BR />
+entity Books {<BR />
+	key ID : Integer;<BR />
+	title  : String;<BR />
+	stock  : Integer;<BR />
+	author : Association to Authors;<BR />
+}<BR />
+<BR />
+entity Authors {<BR />
+	key ID : Integer;<BR />
+	name   : String;<BR />
+	books  : Association to many Books on books.author = $self;<BR />
+}</CODE></PRE><BR />
+<EM>db/schema.cds</EM><BR />
+<BR />
+&nbsp;<BR />
+<BR />
+It's possible to add computed properties to an entity at the service definition level. Here's what the service definition looks like with a computed property for the requirement at hand:<BR />
+<PRE class="language-javascript"><CODE>using my.bookshop as my from '../db/schema';<BR />
+<BR />
+service CatalogService {<BR />
+<BR />
+	entity Books as projection on my.Books;<BR />
+	entity Authors as select from my.Authors {<BR />
+		*,<BR />
+		null as numberOfBooks: Integer<BR />
+	};<BR />
+<BR />
+}</CODE></PRE><BR />
+<EM>srv/service.cds</EM><BR />
+<BR />
+&nbsp;<BR />
+<BR />
+Notice the "as select from", as opposed to the simpler "as projection on". It allows us to specify properties, which is what we do in the block that follows:<BR />
+<UL><BR />
+ 	<LI>the "*" brings in all the existing properties from the my.Authors definition</LI><BR />
+ 	<LI>then we define a new property "numberOfBooks" as an Integer type</LI><BR />
+</UL><BR />
+&nbsp;<BR />
+<BR />
+Let's take a moment to have a look what that produces. Running this at the command line:<BR />
+<PRE class="language-javascript"><CODE>cds compile srv/service.cds --to sql</CODE></PRE><BR />
+... gives us the schema definition, which includes these two views that have been generated from the two entities defined at the service level:<BR />
+<PRE class="language-sql"><CODE>CREATE VIEW CatalogService_Authors AS SELECT<BR />
+  Authors_0.ID,<BR />
+  Authors_0.name,<BR />
+  NULL AS numberOfBooks<BR />
+FROM my_bookshop_Authors AS Authors_0;<BR />
+<BR />
+CREATE VIEW CatalogService_Books AS SELECT<BR />
+  Books_0.ID,<BR />
+  Books_0.title,<BR />
+  Books_0.stock,<BR />
+  Books_0.author_ID<BR />
+FROM my_bookshop_Books AS Books_0;</CODE></PRE><BR />
+Take note of the "numberOfBooks" property in the "CatalogService_Authors" view.<BR />
+<BR />
+While we're in the mood for looking at generated compilations, let's do the same, but this time see what the service definition will look like, in the form of Entity Data Model XML (EDMX) - which you and I know more comfortably as OData metadata.<BR />
+<BR />
+Running this at the command line:<BR />
+<PRE class="language-javascript"><CODE>cds compile srv/service.cds --to edmx</CODE></PRE><BR />
+... gives us this:<BR />
+<PRE class="language-markup"><CODE>&lt;?xml version="1.0" encoding="utf-8"?&gt;<BR />
+&lt;edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx"&gt;<BR />
+  &lt;edmx:Reference Uri="https://oasis-tcs.github.io/odata-vocabularies/vocabularies/Org.OData.Core.V1.xml"&gt;<BR />
+    &lt;edmx:Include Alias="Core" Namespace="Org.OData.Core.V1"/&gt;<BR />
+  &lt;/edmx:Reference&gt;<BR />
+  &lt;edmx:DataServices&gt;<BR />
+    &lt;Schema Namespace="CatalogService" xmlns="http://docs.oasis-open.org/odata/ns/edm"&gt;<BR />
+      &lt;EntityContainer Name="EntityContainer"&gt;<BR />
+        &lt;EntitySet Name="Authors" EntityType="CatalogService.Authors"&gt;<BR />
+          &lt;NavigationPropertyBinding Path="books" Target="Books"/&gt;<BR />
+        &lt;/EntitySet&gt;<BR />
+        &lt;EntitySet Name="Books" EntityType="CatalogService.Books"&gt;<BR />
+          &lt;NavigationPropertyBinding Path="author" Target="Authors"/&gt;<BR />
+        &lt;/EntitySet&gt;<BR />
+      &lt;/EntityContainer&gt;<BR />
+      &lt;EntityType Name="Authors"&gt;<BR />
+        &lt;Key&gt;<BR />
+          &lt;PropertyRef Name="ID"/&gt;<BR />
+        &lt;/Key&gt;<BR />
+        &lt;Property Name="ID" Type="Edm.Int32" Nullable="false"/&gt;<BR />
+        &lt;Property Name="name" Type="Edm.String"/&gt;<BR />
+        &lt;NavigationProperty Name="books" Type="Collection(CatalogService.Books)" Partner="author"/&gt;<BR />
+        &lt;Property Name="numberOfBooks" Type="Edm.Int32"/&gt;<BR />
+      &lt;/EntityType&gt;<BR />
+      &lt;EntityType Name="Books"&gt;<BR />
+        &lt;Key&gt;<BR />
+          &lt;PropertyRef Name="ID"/&gt;<BR />
+        &lt;/Key&gt;<BR />
+        &lt;Property Name="ID" Type="Edm.Int32" Nullable="false"/&gt;<BR />
+        &lt;Property Name="title" Type="Edm.String"/&gt;<BR />
+        &lt;Property Name="stock" Type="Edm.Int32"/&gt;<BR />
+        &lt;NavigationProperty Name="author" Type="CatalogService.Authors" Partner="books"&gt;<BR />
+          &lt;ReferentialConstraint Property="author_ID" ReferencedProperty="ID"/&gt;<BR />
+        &lt;/NavigationProperty&gt;<BR />
+        &lt;Property Name="author_ID" Type="Edm.Int32"/&gt;<BR />
+      &lt;/EntityType&gt;<BR />
+      &lt;Annotations Target="CatalogService.Authors/numberOfBooks"&gt;<BR />
+        &lt;Annotation Term="Core.Computed" Bool="true"/&gt;<BR />
+      &lt;/Annotations&gt;<BR />
+    &lt;/Schema&gt;<BR />
+  &lt;/edmx:DataServices&gt;<BR />
+&lt;/edmx:Edmx&gt;</CODE></PRE><BR />
+There's one thing in there that's of particular interest - the annotation of this new property. You can either stare at this XML until you see it, or just look at it as extracted from that sea of angle brackets:<BR />
+<PRE class="language-markup"><CODE>&lt;Annotations Target="CatalogService.Authors/numberOfBooks"&gt;<BR />
+  &lt;Annotation Term="Core.Computed" Bool="true"/&gt;<BR />
+&lt;/Annotations&gt;</CODE></PRE><BR />
+This has been automatically generated from that simple service definition earlier. Thanks, CAP!<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+<STRONG>Step 2 - the implementation</STRONG><BR />
+<BR />
+Implementing the logic to provide values for this computed property is next up. As you may know, we can <A href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/94c7b69cc4584a1a9dfd9cb2da295d5e.html" target="_blank" rel="noopener noreferrer">provide custom logic in the form of functions attached to specific events</A> in the request/response lifecycle as OData operations are processed, and in a very comfortable way, via the "<A href="https://en.wikipedia.org/wiki/Convention_over_configuration" target="_blank" rel="nofollow noopener noreferrer">convention over configuration</A>" approach of simply providing a JavaScript file of the same base name as the service definition file, in the same directory.<BR />
+<BR />
+The Node.js CAP runtime will then discover this file and use it as extra (or overriding) implementation logic. This is what it looks like:<BR />
+<PRE class="language-javascript"><CODE>module.exports = srv =&gt; {<BR />
+<BR />
+  const { Books } = srv.entities<BR />
+<BR />
+  srv.after('READ', 'Authors', (authors, req) =&gt; {<BR />
+<BR />
+    return authors.map(async author =&gt; {<BR />
+      const publications = await cds.transaction(req).run(<BR />
+        SELECT .from(Books) .where({ author_ID: author.ID })<BR />
+      )<BR />
+      author.numberOfBooks = publications.length<BR />
+    })<BR />
+<BR />
+  })<BR />
+<BR />
+}</CODE></PRE><BR />
+<EM>srv/service.js</EM><BR />
+<BR />
+(In case you're wondering: yes, I am trying to avoid semicolons and double quotes, and yes, I like the ES6 fat arrow syntax for functional style, and no, I am not writing and will not write any "class" based code here - in my opinion the whole "object orientation comes to JS" is the wrong direction entirely. Stick <EM>that</EM> in your pipe and smoke it! :-))<BR />
+<BR />
+Anyway, here's what's going on in the code:<BR />
+<UL><BR />
+ 	<LI>we grab the Books entity from within the service object</LI><BR />
+ 	<LI>we hook in a function to be called when READ requests are processed on the Authors entity, specifically after the main part of the request has been fulfilled (i.e. using srv.after)</LI><BR />
+ 	<LI>that function expects the results of the request fulfilment (i.e. the author(s) retrieved), plus the original request object, from which we can create a context in which to run a CDS query</LI><BR />
+ 	<LI>the query is within a map function over the authors retrieved, and goes to get the books for that author</LI><BR />
+</UL><BR />
+The CDS query is made using the CDS Query Language (CQL) fluent API, which I've tried to illustrate with some gratuitous whitespace (before .from and .where, in particular).<BR />
+<BR />
+Once the value for "numberOfBooks" has been computed and assigned, we simply "let go" and the enhanced result set is returned in the response.<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+<STRONG>Step 3 - profit!</STRONG><BR />
+<BR />
+Here's what this results in, after deploying the definitions and starting the service (I have a few books and authors in some sample CSV files):<BR />
+<PRE class="language-javascript"><CODE>=&gt; cds deploy &amp;&amp; cds run<BR />
+ &gt; filling my.bookshop.Authors from db/csv/my.bookshop-Authors.csv<BR />
+ &gt; filling my.bookshop.Books from db/csv/my.bookshop-Books.csv<BR />
+/&gt; successfully deployed database to ./bookshop.db<BR />
+<BR />
+[cds] - connect to datasource - sqlite:bookshop.db<BR />
+[cds] - serving CatalogService at /catalog - impl: service.js<BR />
+[cds] - service definitions loaded from:<BR />
+<BR />
+  srv/service.cds<BR />
+  db/schema.cds<BR />
+<BR />
+[cds] - server listens at <A href="http://localhost:4004" target="test_blank" rel="nofollow noopener noreferrer">http://localhost:4004</A> ... (terminate with ^C)<BR />
+[cds] - launched in: 1126.872ms</CODE></PRE><BR />
+And here's some sample output, retrieved with "curl" and nicely pretty-printed with "jq" (yes, folks, this is all in a terminal, ON THE COMMAND LINE)*:<BR />
+<PRE class="language-javascript"><CODE>=&gt; curl -s <A href="http://localhost:4004/catalog/Authors" target="test_blank" rel="nofollow noopener noreferrer">http://localhost:4004/catalog/Authors</A> | jq<BR />
+{<BR />
+  "@odata.context": "$metadata#Authors",<BR />
+  "@odata.metadataEtag": "W/\"8q5jjLD6vJ0ARrjnkajTONXIn38vpa1wxoXucua4kzU=\"",<BR />
+  "value": [<BR />
+    {<BR />
+      "ID": 42,<BR />
+      "name": "Douglas Adams",<BR />
+      "numberOfBooks": 3<BR />
+    },<BR />
+    {<BR />
+      "ID": 101,<BR />
+      "name": "Emily Brontë",<BR />
+      "numberOfBooks": 1<BR />
+    },<BR />
+    {<BR />
+      "ID": 107,<BR />
+      "name": "Charlote Brontë",<BR />
+      "numberOfBooks": 1<BR />
+    },<BR />
+    {<BR />
+      "ID": 150,<BR />
+      "name": "Edgar Allen Poe",<BR />
+      "numberOfBooks": 2<BR />
+    },<BR />
+    {<BR />
+      "ID": 170,<BR />
+      "name": "Richard Carpenter",<BR />
+      "numberOfBooks": 1<BR />
+    }<BR />
+  ]<BR />
+}</CODE></PRE><BR />
+&nbsp;<BR />
+<BR />
+That's pretty much all there is to it, at least as far as I can see. I hope you find this useful. I had fun writing it, thanks Pierre for a good question.<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+*i.e. the future

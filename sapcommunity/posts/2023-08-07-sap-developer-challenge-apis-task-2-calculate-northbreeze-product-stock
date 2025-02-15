@@ -1,0 +1,93 @@
+2023-08-07-sap-developer-challenge-apis-task-2-calculate-northbreeze-product-stock
+SAP Developer Challenge - APIs - Task 2 - Calculate Northbreeze product stock
+application-developmentforum-board
+2023-08-07
+https://community.sap.com/t5/application-development-discussions/sap-developer-challenge-apis-task-2-calculate-northbreeze-product-stock/td-p/277325
+<P>(Check out the <A href="https://blogs.sap.com/2023/08/01/sap-developer-challenge-apis/" target="_blank" rel="noopener noreferrer">SAP Developer Challenge - APIs</A> blog post for everything you need to know about the challenge to which this task relates!)</P><P>In this task you'll move from the public Northwind service to a simple version powered by CAP, and explore data with an OData operation and some system query options.</P><H2 id="toc-hId-1651257284">Background</H2><P>The OASIS curated Northwind service is great, but it's also sometimes useful to have one's own version. There's an extremely simplified version of the classic Northwind service, called Northbreeze (get it?) at <A class="" href="https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze" target="_blank" rel="noopener nofollow noreferrer">https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze</A>.</P><P>This Northbreeze service is powered by the SAP Cloud Application Programming Model (CAP) and offers four entity sets:</P><UL><LI>Products</LI><LI>Suppliers</LI><LI>Categories</LI><LI>Summary of sales by years</LI></UL><P>(Well there's technically a fifth, TotalProducts, but that's just a calculation projection on the count of products).</P><P>The reason for running our own version of Northwind is that we can modify and extend it as we see fit, plus being based on CAP, we can learn about and experiment with CAP's rich support for <A href="https://cap.cloud.sap/docs/advanced/odata" target="_blank" rel="noopener nofollow noreferrer">serving OData APIs</A>.</P><P>In this task you'll start to become familiar with the data offered.</P><P>Specifically for this task, you'll need to become familiar with the Products data. To do that, have a look at the Northbreeze service's metadata document at <A class="" href="https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/$metadata" target="_blank" rel="noopener nofollow noreferrer">https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/$metadata</A>.</P><P>Identify the EntityContainer element that describes the entity sets available, in the form of EntitySet elements, and find the element describing the entity set with the name Products, which should look like this:</P><DIV class=""><PRE><SPAN><SPAN class="">&lt;EntitySet</SPAN><SPAN class=""> Name=</SPAN><SPAN class="">"Products"</SPAN><SPAN class=""> EntityType=</SPAN><SPAN class="">"Northbreeze.Products"</SPAN><SPAN class="">&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;NavigationPropertyBinding</SPAN><SPAN class=""> Path=</SPAN><SPAN class="">"Category"</SPAN><SPAN class=""> Target=</SPAN><SPAN class="">"Categories"</SPAN><SPAN class="">/&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;NavigationPropertyBinding</SPAN><SPAN class=""> Path=</SPAN><SPAN class="">"Supplier"</SPAN><SPAN class=""> Target=</SPAN><SPAN class="">"Suppliers"</SPAN><SPAN class="">/&gt;</SPAN></SPAN>
+<SPAN><SPAN class="">&lt;/EntitySet&gt;</SPAN></SPAN></PRE></DIV><P>You can see that this entity set is a collection of Northbreeze.Products entity types. The 'Northbreeze' part is essentially the namespace, generated based on the service name. Follow the trail to the Products entity type, which will be an element outside the EntityContainer element, but still within the Northbreeze-namespaced Schema element.</P><P>The Products entity type should look like this:</P><DIV class=""><PRE><SPAN><SPAN class="">&lt;EntityType</SPAN><SPAN class=""> Name=</SPAN><SPAN class="">"Products"</SPAN><SPAN class="">&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;Key&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;PropertyRef</SPAN><SPAN class=""> Name=</SPAN><SPAN class="">"ProductID"</SPAN><SPAN class="">/&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;/Key&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;Property</SPAN><SPAN class=""> Name=</SPAN><SPAN class="">"ProductID"</SPAN><SPAN class=""> Type=</SPAN><SPAN class="">"Edm.Int32"</SPAN><SPAN class=""> Nullable=</SPAN><SPAN class="">"false"</SPAN><SPAN class="">/&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;Property</SPAN><SPAN class=""> Name=</SPAN><SPAN class="">"ProductName"</SPAN><SPAN class=""> Type=</SPAN><SPAN class="">"Edm.String"</SPAN><SPAN class="">/&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;Property</SPAN><SPAN class=""> Name=</SPAN><SPAN class="">"QuantityPerUnit"</SPAN><SPAN class=""> Type=</SPAN><SPAN class="">"Edm.String"</SPAN><SPAN class="">/&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;Property</SPAN><SPAN class=""> Name=</SPAN><SPAN class="">"UnitPrice"</SPAN><SPAN class=""> Type=</SPAN><SPAN class="">"Edm.Decimal"</SPAN><SPAN class=""> Scale=</SPAN><SPAN class="">"variable"</SPAN><SPAN class="">/&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;NavigationProperty</SPAN><SPAN class=""> Name=</SPAN><SPAN class="">"Category"</SPAN><SPAN class=""> Type=</SPAN><SPAN class="">"Northbreeze.Categories"</SPAN><SPAN class=""> Partner=</SPAN><SPAN class="">"Products"</SPAN><SPAN class="">&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;ReferentialConstraint</SPAN><SPAN class=""> Property=</SPAN><SPAN class="">"Category_CategoryID"</SPAN><SPAN class=""> ReferencedProperty=</SPAN><SPAN class="">"CategoryID"</SPAN><SPAN class="">/&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;/NavigationProperty&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;Property</SPAN><SPAN class=""> Name=</SPAN><SPAN class="">"Category_CategoryID"</SPAN><SPAN class=""> Type=</SPAN><SPAN class="">"Edm.Int32"</SPAN><SPAN class="">/&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;NavigationProperty</SPAN><SPAN class=""> Name=</SPAN><SPAN class="">"Supplier"</SPAN><SPAN class=""> Type=</SPAN><SPAN class="">"Northbreeze.Suppliers"</SPAN><SPAN class=""> Partner=</SPAN><SPAN class="">"Products"</SPAN><SPAN class="">&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;ReferentialConstraint</SPAN><SPAN class=""> Property=</SPAN><SPAN class="">"Supplier_SupplierID"</SPAN><SPAN class=""> ReferencedProperty=</SPAN><SPAN class="">"SupplierID"</SPAN><SPAN class="">/&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;/NavigationProperty&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;Property</SPAN><SPAN class=""> Name=</SPAN><SPAN class="">"Supplier_SupplierID"</SPAN><SPAN class=""> Type=</SPAN><SPAN class="">"Edm.Int32"</SPAN><SPAN class="">/&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;Property</SPAN><SPAN class=""> Name=</SPAN><SPAN class="">"UnitsInStock"</SPAN><SPAN class=""> Type=</SPAN><SPAN class="">"Edm.Int32"</SPAN><SPAN class="">/&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;Property</SPAN><SPAN class=""> Name=</SPAN><SPAN class="">"UnitsOnOrder"</SPAN><SPAN class=""> Type=</SPAN><SPAN class="">"Edm.Int32"</SPAN><SPAN class="">/&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;Property</SPAN><SPAN class=""> Name=</SPAN><SPAN class="">"ReorderLevel"</SPAN><SPAN class=""> Type=</SPAN><SPAN class="">"Edm.Int32"</SPAN><SPAN class="">/&gt;</SPAN></SPAN>
+<SPAN> <SPAN class="">&lt;Property</SPAN><SPAN class=""> Name=</SPAN><SPAN class="">"Discontinued"</SPAN><SPAN class=""> Type=</SPAN><SPAN class="">"Edm.Boolean"</SPAN><SPAN class="">/&gt;</SPAN></SPAN>
+<SPAN><SPAN class="">&lt;/EntityType&gt;</SPAN></SPAN></PRE></DIV><P>Amongst other things, you can see that a product has an ID (ProductID), a name (ProductName), a count of the number of units currently in stock (UnitsInStock) and a boolean that is used to indicate whether or not a product is discontinued (Discontinued).</P><P>Request the first few products to see data for these and the other properties, via&nbsp;<A href="https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/Products?$top=5" target="_blank" rel="noopener nofollow noreferrer">https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/Products?$top=5</A>.&nbsp;You should see something like this:</P><DIV class=""><PRE><SPAN><SPAN class="">{</SPAN></SPAN>
+<SPAN> <SPAN class="">"@odata.context"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"$metadata#Products"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"value"</SPAN><SPAN class="">:</SPAN> <SPAN class="">[</SPAN></SPAN>
+<SPAN> <SPAN class="">{</SPAN></SPAN>
+<SPAN> <SPAN class="">"ProductID"</SPAN><SPAN class="">:</SPAN> <SPAN class="">1</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"ProductName"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"Chai"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"QuantityPerUnit"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"10 boxes x 20 bags"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"UnitPrice"</SPAN><SPAN class="">:</SPAN> <SPAN class="">18</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"Category_CategoryID"</SPAN><SPAN class="">:</SPAN> <SPAN class="">1</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"Supplier_SupplierID"</SPAN><SPAN class="">:</SPAN> <SPAN class="">1</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"UnitsInStock"</SPAN><SPAN class="">:</SPAN> <SPAN class="">39</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"UnitsOnOrder"</SPAN><SPAN class="">:</SPAN> <SPAN class="">0</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"ReorderLevel"</SPAN><SPAN class="">:</SPAN> <SPAN class="">10</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"Discontinued"</SPAN><SPAN class="">:</SPAN> <SPAN class="">false</SPAN></SPAN>
+<SPAN> <SPAN class="">}</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">{</SPAN></SPAN>
+<SPAN> <SPAN class="">"ProductID"</SPAN><SPAN class="">:</SPAN> <SPAN class="">2</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"ProductName"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"Chang"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"QuantityPerUnit"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"24 - 12 oz bottles"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"UnitPrice"</SPAN><SPAN class="">:</SPAN> <SPAN class="">19</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"Category_CategoryID"</SPAN><SPAN class="">:</SPAN> <SPAN class="">1</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"Supplier_SupplierID"</SPAN><SPAN class="">:</SPAN> <SPAN class="">1</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"UnitsInStock"</SPAN><SPAN class="">:</SPAN> <SPAN class="">17</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"UnitsOnOrder"</SPAN><SPAN class="">:</SPAN> <SPAN class="">40</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"ReorderLevel"</SPAN><SPAN class="">:</SPAN> <SPAN class="">25</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"Discontinued"</SPAN><SPAN class="">:</SPAN> <SPAN class="">false</SPAN></SPAN>
+<SPAN> <SPAN class="">}</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">{</SPAN></SPAN>
+<SPAN> <SPAN class="">"ProductID"</SPAN><SPAN class="">:</SPAN> <SPAN class="">3</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"ProductName"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"Aniseed Syrup"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"QuantityPerUnit"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"12 - 550 ml bottles"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"UnitPrice"</SPAN><SPAN class="">:</SPAN> <SPAN class="">10</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"Category_CategoryID"</SPAN><SPAN class="">:</SPAN> <SPAN class="">2</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"Supplier_SupplierID"</SPAN><SPAN class="">:</SPAN> <SPAN class="">1</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"UnitsInStock"</SPAN><SPAN class="">:</SPAN> <SPAN class="">13</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"UnitsOnOrder"</SPAN><SPAN class="">:</SPAN> <SPAN class="">70</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"ReorderLevel"</SPAN><SPAN class="">:</SPAN> <SPAN class="">25</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"Discontinued"</SPAN><SPAN class="">:</SPAN> <SPAN class="">false</SPAN></SPAN>
+<SPAN> <SPAN class="">}</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">{</SPAN></SPAN>
+<SPAN> <SPAN class="">"ProductID"</SPAN><SPAN class="">:</SPAN> <SPAN class="">4</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"ProductName"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"Chef Anton's Cajun Seasoning"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"QuantityPerUnit"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"48 - 6 oz jars"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"UnitPrice"</SPAN><SPAN class="">:</SPAN> <SPAN class="">22</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"Category_CategoryID"</SPAN><SPAN class="">:</SPAN> <SPAN class="">2</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"Supplier_SupplierID"</SPAN><SPAN class="">:</SPAN> <SPAN class="">2</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"UnitsInStock"</SPAN><SPAN class="">:</SPAN> <SPAN class="">53</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"UnitsOnOrder"</SPAN><SPAN class="">:</SPAN> <SPAN class="">0</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"ReorderLevel"</SPAN><SPAN class="">:</SPAN> <SPAN class="">0</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"Discontinued"</SPAN><SPAN class="">:</SPAN> <SPAN class="">false</SPAN></SPAN>
+<SPAN> <SPAN class="">}</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">{</SPAN></SPAN>
+<SPAN> <SPAN class="">"ProductID"</SPAN><SPAN class="">:</SPAN> <SPAN class="">5</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"ProductName"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"Chef Anton's Gumbo Mix"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"QuantityPerUnit"</SPAN><SPAN class="">:</SPAN> <SPAN class="">"36 boxes"</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"UnitPrice"</SPAN><SPAN class="">:</SPAN> <SPAN class="">21.35</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"Category_CategoryID"</SPAN><SPAN class="">:</SPAN> <SPAN class="">2</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"Supplier_SupplierID"</SPAN><SPAN class="">:</SPAN> <SPAN class="">2</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"UnitsInStock"</SPAN><SPAN class="">:</SPAN> <SPAN class="">0</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"UnitsOnOrder"</SPAN><SPAN class="">:</SPAN> <SPAN class="">0</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"ReorderLevel"</SPAN><SPAN class="">:</SPAN> <SPAN class="">0</SPAN><SPAN class="">,</SPAN></SPAN>
+<SPAN> <SPAN class="">"Discontinued"</SPAN><SPAN class="">:</SPAN> <SPAN class="">true</SPAN></SPAN>
+<SPAN> <SPAN class="">}</SPAN></SPAN>
+<SPAN> <SPAN class="">]</SPAN></SPAN>
+<SPAN><SPAN class="">}</SPAN></SPAN></PRE></DIV><H2 id="toc-hId--900899677">Your task</H2><P>Your task is to calculate the total stock quantity (i.e. the total units in stock) for all current products, i.e. products that are not been marked as discontinued. The result of this calculation should be a number.</P><P>Once you have calculated the number, which should be an integer, you should hash it and post the hash as a new reply to this discussion thread, as described in <A href="https://groups.community.sap.com/t5/application-development/sap-developer-challenge-apis-task-0-learn-to-share-your-task/m-p/276058" target="_blank" rel="noopener noreferrer">Task 0 - Learn to share your task results</A> and in a similar way to how you've done this in the previous task.</P><H2 id="toc-hId-841910658">Hints and tips</H2><P>Like all tasks in this challenge, you are free to approach this one however you see fit. One way would be to request all the products (<A class="" href="https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/Products" target="_blank" rel="noopener nofollow noreferrer">https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/Products</A>) and manually sum the values of the relevant UnitsInStock properties.</P><P>But where's the fun in that?</P><P>How about requesting the entire products entity set in your favorite language and obtaining result by parsing the response and using that language to make the calculation?</P><P>You could also use OData's $filter system query option to first reduce the entity set result to only those products that have the value false for the Discontinued property.</P><P>And what about the $count facility, which in OData V4 <A href="https://github.com/qmacro/odata-v4-and-cap/blob/main/slides.md#count-as-system-query-option" target="_blank" rel="noopener nofollow noreferrer">is now a system query option as well something you can append to a resource path</A>?</P><P>This would also be a good opportunity to take your first steps exploring some great new OData V4 features supported by CAP, such as <A href="https://cap.cloud.sap/docs/advanced/odata#data-aggregation" target="_blank" rel="noopener nofollow noreferrer">data aggregation</A>.</P><H2 id="toc-hId--1710246303">For discussion</H2><P>How did you approach this task? If you used a programming language, which one did you use, and how did you do it? If you used an $apply based data aggregation feature, what was it, and was was your experience using it?</P>

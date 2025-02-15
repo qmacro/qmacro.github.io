@@ -1,0 +1,345 @@
+2018-01-14-discovering-scp-workflow-instance-initiation
+Discovering SCP Workflow - Instance Initiation
+technology-blog-members
+2018-01-14
+https://community.sap.com/t5/technology-blogs-by-members/discovering-scp-workflow-instance-initiation/ba-p/13353657
+Previous post in this series:&nbsp;<A href="https://blogs.sap.com/2018/01/08/discovering-scp-workflow-the-monitor/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow – The Monitor</A>.<BR />
+<BR />
+This post is part of a series, a guide to which can be found here: <A href="https://qmacro.org/blog/posts/2018/01/16/discovering-scp-workflow/" target="_blank" rel="nofollow noopener noreferrer">Discovering SCP Workflow.</A><BR />
+<BR />
+In this post we explore the part of the SCP Workflow API that deals with workflow instances, and look at how we initiate a new workflow instance, paying particular attention to how we request, and then use, a cross site request forgery (XSRF) token.<BR />
+<BR />
+In <A href="https://blogs.sap.com/2018/01/08/discovering-scp-workflow-the-monitor/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - The Monitor</A>, we saw that the Workflow API exposes these main entities:<BR />
+<BR />
+Workflow Definitions<BR />
+Workflow Instances<BR />
+User Task Instances<BR />
+Messages<BR />
+<BR />
+We also understand that a workflow instance is a specific occurrence of a given workflow definition. So one might guess, again correctly, that as the Workflow API is informed by <A href="https://blogs.sap.com/2010/01/07/representational-state-transfer-rest-and-sap/" target="_blank" rel="noopener noreferrer">REST</A> principles, we should look to the Workflow Instances entity to see how we might start a new workflow instance using the appropriate HTTP method.<BR />
+<H3 id="toc-hId-1033905544">Workflow instance operations</H3><BR />
+In the <A href="https://api.sap.com/shell/discover/contentpackage/SAPCPWorkflowAPIs/api/SAP_CP_Workflow" target="_blank" rel="noopener noreferrer">API documentation</A>, the operations for Workflow Instances are shown as follows:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-13-at-12.31.05.png" /><BR />
+<BR />
+Considering that initiating a new workflow instance is certainly not idempotent, our eyes are drawn towards:<BR />
+<PRE><CODE>POST /v1/workflow-instances</CODE></PRE><BR />
+While our eyes are wandering over the operations summary, they also surely fall upon the path info given for some of the operations ... whereupon we can surmise that workflow instances have context, error messages, and execution logs (in fact, we looked at some execution logs in <A href="https://blogs.sap.com/2018/01/08/discovering-scp-workflow-the-monitor/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - The Monitor</A>). Perhaps we'll cover that in another installment.<BR />
+<H3 id="toc-hId-837392039">Creating a new instance</H3><BR />
+Looking in more detail at the requirements for the POST operation call, we can see the following:<BR />
+<UL><BR />
+ 	<LI>the resource here is protected against cross site request forgery and an XSRF token will need to be supplied in each request</LI><BR />
+ 	<LI>the payload to supply is to be in JSON format, with two properties:<BR />
+<UL><BR />
+ 	<LI>definitionId: the ID of the actual workflow definition</LI><BR />
+ 	<LI>context: the data pertaining to the particular workflow instance to be initiated</LI><BR />
+</UL><BR />
+</LI><BR />
+</UL><BR />
+It's great to see that a successful response returns HTTP status code 201 CREATED, as it should, in a RESTful sense. As far as I can see, the Location header, that should normally accompany a 201 response, is missing (and the request URL is certainly not the location of the newly created resource, which is the alternative when no Location header is supplied). But let's leave that for another time.<BR />
+<BR />
+Regardless, the process is therefore fairly straightforward. Let's have a look at some sample code from&nbsp;<SPAN class="mention-scrubbed">archana.shukla</SPAN>&nbsp;'s post "<A href="https://blogs.sap.com/2017/10/15/part-2-start-workflow-from-your-html5-application/" target="_blank" rel="noopener noreferrer">Part 2: Start Workflow from your HTML5 application</A>" to embed the process into our brains.<BR />
+<H4 id="toc-hId-769961253">Fetching the XSRF token</H4><BR />
+First, we have the _fetchToken function defined thus:<BR />
+<PRE class="language-javascript"><CODE>_fetchToken: function() {<BR />
+    var token;<BR />
+    $.ajax({<BR />
+        url: "/bpmworkflowruntime/rest/v1/xsrf-token",<BR />
+        method: "GET",<BR />
+        async: false,<BR />
+        headers: {<BR />
+            "X-CSRF-Token": "Fetch"<BR />
+        },<BR />
+        success: function(result, xhr, data) {<BR />
+            token = data.getResponseHeader("X-CSRF-Token");<BR />
+        }<BR />
+    });<BR />
+    return token;<BR />
+}</CODE></PRE><BR />
+This _fetchToken method is called before the main POST method (that's the one that actually initiates the new instance). Let's look closely.<BR />
+<BR />
+There's a GET request made to the following URL:<BR />
+<PRE><CODE>/bpmworkflowruntime/rest/v1/xsrf-token</CODE></PRE><BR />
+This URL is of course abstracted by the destination target entry in the app's neo-app.json descriptor file, which has an entryPath defined as "/workflow-service":<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+    "path": "bpmworkflowruntime", <BR />
+    "target": { <BR />
+        "type": "destination", <BR />
+        "name": "bpmworkflowruntime", <BR />
+        "entryPath": "/workflow-service" <BR />
+    }, <BR />
+    "description": "Workflow Service Runtime" <BR />
+}</CODE></PRE><BR />
+<H3 id="toc-hId-444365029"></H3><BR />
+<A name="digression" target="_blank"></A><STRONG>Digression: Resource URLs and how to think about them</STRONG><BR />
+<BR />
+It's worth stopping briefly to consider what this means and in what way we look at this Workflow API (and APIs for other services), particularly around how we think about different parts of the path info.<BR />
+<BR />
+By the way, the "path info" is that part of the url that starts after the hostname and (optional) port, running up to any query parameters. So for example, in the URL<BR />
+<PRE><CODE><A href="http://host.example.com:8080/something/something-else/this?n=42" target="test_blank" rel="nofollow noopener noreferrer">http://host.example.com:8080/something/something-else/this?n=42</A></CODE></PRE><BR />
+the path info part is:<BR />
+<PRE><CODE>/something/something-else/this</CODE></PRE><BR />
+So, back to the digression.<BR />
+<BR />
+When you enable the Workflow service in the SCP cockpit, a new destination "bpmworkflowruntime" appears, with the URL pattern that looks like this for production accounts:<BR />
+<PRE><CODE><A href="https://bpmworkflowruntimewfs-&lt;user&gt;.hana.ondemand.com" target="test_blank" rel="nofollow noopener noreferrer">https://bpmworkflowruntimewfs-&lt;user&gt;.hana.ondemand.com</A></CODE></PRE><BR />
+and this for trial accounts:<BR />
+<PRE><CODE><A href="https://bpmworkflowruntimewfs-&lt;user&gt;trial.hanatrial.ondemand.com" target="test_blank" rel="nofollow noopener noreferrer">https://bpmworkflowruntimewfs-&lt;user&gt;trial.hanatrial.ondemand.com</A></CODE></PRE><BR />
+So, with this in mind, and looking at the pattern defined for the Workflow API production URL, as described in the <A href="https://api.sap.com/shell/discover/contentpackage/SAPCPWorkflowAPIs/api/SAP_CP_Workflow?section=OVERVIEW" target="_blank" rel="noopener noreferrer">Overview section</A> of the Workflow API documentation on the API Hub:<BR />
+<PRE><CODE><A href="https://bpmworkflowruntime{provideracctname}-{consumeracctname}" target="test_blank" rel="nofollow noopener noreferrer">https://bpmworkflowruntime{provideracctname}-{consumeracctname}</A><BR />
+  .hana.ondemand.com<BR />
+  /workflow-service/rest</CODE></PRE><BR />
+(split for legibility) we can see that "wfs" is the provider account name, and that<BR />
+<PRE><CODE>/workflowservice/rest</CODE></PRE><BR />
+is the "root" part of the path info for the Workflow API resources. In other words, this "root" part is common to all resource URLs in the Workflow API.<BR />
+<BR />
+Taking my trial account for example, it resolves to this:<BR />
+<PRE><CODE><A href="https://bpmworkflowruntimewfs-p481810trial" target="test_blank" rel="nofollow noopener noreferrer">https://bpmworkflowruntimewfs-p481810trial</A><BR />
+  .hanatrial.ondemand.com<BR />
+  /workflow-service/rest</CODE></PRE><BR />
+A complete URL for a given API resource, such as for the workflow instances, would look like this:<BR />
+<PRE><CODE><A href="https://bpmworkflowruntimewfs-p481810trial" target="test_blank" rel="nofollow noopener noreferrer">https://bpmworkflowruntimewfs-p481810trial</A><BR />
+  .hanatrial.ondemand.com<BR />
+  /workflow-service/rest/v1/workflow-instances</CODE></PRE><BR />
+You can see that after the "root" part of the path info, we have the resource-specific part:<BR />
+<PRE><CODE>/v1/workflow-instances</CODE></PRE><BR />
+This might seem like an unnecessary diversion, but I think it's important to understand how resource identifiers (URLs) are structured, so you can think about them in an appropriate way, and have that thinking permeate your code and configuration.<BR />
+<BR />
+So I think here it might be nicer to have a destination target entry like this:<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+    "path": "workflowservice",                  &lt;---<BR />
+    "target": {<BR />
+        "type": "destination",<BR />
+        "name": "bpmworkflowruntime",<BR />
+        "entryPath": "/workflow-service/rest"   &lt;---<BR />
+    },<BR />
+    "description": "Workflow Service Runtime"<BR />
+}</CODE></PRE><BR />
+where the value for the "path" property is deliberately different (so that we don't confuse it with an actual API resource path info section), and the value for the "entryPath" property reflects the full "root" value "/workflow-service/rest". This is so that when we construct relative URLs in our code that relies on these destination target abstractions, we focus solely on the individual and unique resource name that we're interested in, for example:<BR />
+<PRE><CODE>/workflowservice/v1/workflow-instances</CODE></PRE><BR />
+which says to me<BR />
+<BR />
+<EM>"the /v1/workflow-instances API resource provided by the workflow service abstraction".</EM><BR />
+<BR />
+I think this is preferable to having the resource name mixed in with some portion of the API root, and something that might or might not be (in our minds) part of a real URL that looks possibly broken and therefore confusing, like this example:<BR />
+<PRE><CODE>/bpmworkflowruntime/rest/v1/xsrf-token</CODE></PRE><BR />
+This digression is somewhat academic and by no means a criticism of the code in the other blog post, but I thought it was worth at least sharing what's in my head on this subject.<BR />
+<BR />
+Anyway, let's leave the digression there, and get back to looking at the XSRF token fetching part. Taking a second look at the _fetchToken code above, we see that an HTTP GET request is made to the XSRF handling endpoint:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-14-at-08.31.44.png" /><BR />
+<BR />
+The one thing I have to say here is that it irks me more than it should that there's an inconsistency between the terms XSRF and CSRF, but beyond that, it's pretty straightforward.<BR />
+<BR />
+<EM>"Please give me an XSRF token".</EM><BR />
+<BR />
+Notice that the call that is made via AJAX is done in a synchronous way. This is of course because we need the token before making the main call (the HTTP POST). There are other ways to achieve this, avoiding setting the synchronous mode, and also avoiding callback hell, by making use of promises, which we'll look at in the next installment.<BR />
+<H4 id="toc-hId-376934243">Making the POST operation</H4><BR />
+The token received in the previous step can (and must) now be used in making this call:<BR />
+<PRE><CODE>POST /v1/workflow-instances</CODE></PRE><BR />
+The code in Archana's post looks like this:<BR />
+<PRE class="language-javascript"><CODE>_startInstance: function(token) {<BR />
+    var model = this.getView().getModel();<BR />
+    var inputValue = model.getProperty("/text");<BR />
+    $.ajax({<BR />
+        url: "/bpmworkflowruntime/rest/v1/workflow-instances",<BR />
+        method: "POST",<BR />
+        async: false,<BR />
+        contentType: "application/json",<BR />
+        headers: {<BR />
+            "X-CSRF-Token": token<BR />
+        },<BR />
+        data: JSON.stringify({<BR />
+            definitionId: &lt;your workflow ID&gt;,<BR />
+            context: {<BR />
+                text: inputValue<BR />
+            }<BR />
+        }),<BR />
+        success: function(result, xhr, data) {<BR />
+            model.setProperty("/result", JSON.stringify(result, null, 4));<BR />
+        }<BR />
+    });<BR />
+}</CODE></PRE><BR />
+Following the digression above, we'd actually want to make a call to the abstracted URL as shown earlier:<BR />
+<PRE><CODE>/workflowservice/v1/workflow-instances</CODE></PRE><BR />
+provided that we'd made the requisite definition in neo-app.json.<BR />
+<BR />
+The token needs to be supplied using the same header as previously, i.e. "X-CSRF-Token", in place of the "Fetch" value.<BR />
+<BR />
+And it's in the body of this POST request that the details required to initiate a new workflow instance are supplied, in JSON format. The API Hub documentation states that there are two properties, "context" and "definitionId". The former is to supply contextual data relating to the particular instance of the workflow definition to be initiated. We'll look at the detail of that context in another post. The latter is to specify the ID of the workflow definition we want to create an instance of.<BR />
+<BR />
+Pretty simple.<BR />
+<H3 id="toc-hId-51338019"><A name="gotcha" target="_blank"></A>Avoiding the "gotcha".</H3><BR />
+It's worth examining how XSRF tokens work, and how AJAX requests work implicitly, so you don't fall foul of the idea of session context, or rather the lack of it. Erm, like I did.<BR />
+<BR />
+When you request an XSRF token, it's for your session. How is that implemented and controlled? If you could fetch a token and give it to someone else to use, the XSRF mechanism wouldn't be very effective. So when a token is returned in response to a "Fetch" request, it's valid only for that session - as determined by cookies returned in the response. If you use the token outside the context of those cookies in a subsequent request, it's not going to work.<BR />
+<BR />
+So is there some magic going on in how the pair of requests are made in the code we've examined?<BR />
+<BR />
+Well, insofar as <A href="https://www.bennadel.com/blog/1995-ajax-requests-get-and-set-cookies-like-any-other-http-request.htm" target="_blank" rel="nofollow noopener noreferrer">AJAX requests get and set cookies like any other HTTP request</A>, there is. When making HTTP requests via the AJAX mechanism, cookie handling is done for you automatically. So in the second request (the HTTP POST), the token is sent, but also cookies, received in the response to the first request, are sent as well.<BR />
+<BR />
+I guess what I'm trying to say is that the magic happens not because it's magic, but because there's implicit work going on for you, of which you may not have been aware.<BR />
+<H4 id="toc-hId--16092767">Trying to use a token without a session context</H4><BR />
+Let's see this in action by using <A href="https://curl.haxx.se/" target="_blank" rel="nofollow noopener noreferrer">curl</A>, the command line tool for HTTP and a general Swiss Army knife for exploring APIs.<BR />
+<BR />
+First, we'll issue a curl command as the equivalent of our _fetchToken procedure:<BR />
+<PRE class="language-markup"><CODE>curl \<BR />
+  --user p481810 \<BR />
+  --header "X-CSRF-Token: Fetch" \<BR />
+  --verbose \<BR />
+  <A href="https://bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com/workflow-service/rest/v" target="test_blank" rel="nofollow noopener noreferrer">https://bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com/workflow-service/rest/v</A><BR />
+1/xsrf-token</CODE></PRE><BR />
+After being prompted for my password, the HTTP request is made and the response is received. Details of both are shown in the output because of the --verbose option. Here are some of them (the "&gt;" denotes outgoing data, i.e. the request, and the "&lt;" denotes incoming data, i.e. the response):<BR />
+<PRE class="language-markup"><CODE>&gt; GET /workflow-service/rest/v1/xsrf-token HTTP/1.1<BR />
+&gt; Host: bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com<BR />
+&gt; User-Agent: curl/7.52.1<BR />
+&gt; Accept: */*<BR />
+&gt; X-CSRF-Token: Fetch<BR />
+&gt;<BR />
+&lt; HTTP/1.1 200 OK<BR />
+&lt; Expires: Thu, 01 Jan 1970 00:00:00 UTC<BR />
+&lt; Set-Cookie: JSESSIONID=123DCEB713926E0833B45B08247623385CB269BB3A8454790E69372D32DE4538; Path=/workflow-service; Secure; HttpOnly<BR />
+&lt; Set-Cookie: JTENANTSESSIONID_p481810trial=SsaDu1sHjWIX0mDPAJFk0HEr03CSSGyjyWvZ4MrATas%3D; Domain=.hanatrial.ondemand.com; Path=/; Secure; HttpOnly<BR />
+&lt; X-CSRF-Token: 10D04A3B50DDE972188AA980DFDC56D9<BR />
+&lt; X-Content-Type-Options: nosniff<BR />
+&lt; Content-Length: 0<BR />
+&lt; Date: Sun, 14 Jan 2018 14:08:09 GMT<BR />
+&lt; Server: SAP<BR />
+&lt; Set-Cookie: BIGipServer~jpaas_folder~bpmworkflowruntimewfs.hanatrial.ondemand.com=!kCiZlq6atWogI9Y9I+xE<BR />
+tZ891eMS7LkmQdYIxDKM2/HAS5x8xPPhIrAnkPWcRYM1eqXm10QSr+s4Cg==; path=/; httponly; secure<BR />
+&lt; Strict-Transport-Security: max-age=31536000; includeSubDomains; preload<BR />
+&lt;</CODE></PRE><BR />
+An XSRF token is returned in response to the Fetch request, as you can see. Let's use this token in a subsequent HTTP request - this time a POST request to try to initiate a new workflow instance. The body of the POST request is in the data.json file, which contains this:<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+  "definitionId" : "testworkflow",<BR />
+  "context" : {<BR />
+    "thing" : "banana"<BR />
+  }<BR />
+}</CODE></PRE><BR />
+OK, first we set an environmental variable to make the received token available:<BR />
+<PRE><CODE>export CSRFTOKEN=10D04A3B50DDE972188AA980DFDC56D9</CODE></PRE><BR />
+Now we can issue the curl command, sending the token in blissful ignorance of the consequences:<BR />
+<PRE class="language-markup"><CODE>curl \<BR />
+  --user p481810 \<BR />
+  --header "Content-Type: application/json" \<BR />
+  --header "X-CSRF-Token: $CSRFTOKEN" \<BR />
+  --verbose \<BR />
+  --data @data.json \<BR />
+  <A href="https://bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com/workflow-service/rest/v1/workflow-instances" target="test_blank" rel="nofollow noopener noreferrer">https://bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com/workflow-service/rest/v1/workflow-instances</A> </CODE></PRE><BR />
+What do we get? Let's see:<BR />
+<PRE class="language-markup"><CODE>&gt; POST /workflow-service/rest/v1/workflow-instances HTTP/1.1<BR />
+&gt; Host: bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com<BR />
+&gt; User-Agent: curl/7.52.1<BR />
+&gt; Accept: */*<BR />
+&gt; Content-Type: application/json<BR />
+&gt; X-CSRF-Token: 10D04A3B50DDE972188AA980DFDC56D9<BR />
+&gt; Content-Length: 69<BR />
+&gt;<BR />
+} [69 bytes data]<BR />
+&lt; HTTP/1.1 403 Forbidden<BR />
+&lt; Set-Cookie: JSESSIONID=173976D361754979CF900BA9AF9F6197307474F0C7A9AD2619150D371E7EED50; Path=/workflow-service; Secure; HttpOnly<BR />
+&lt; Set-Cookie: JTENANTSESSIONID_p481810trial=lzs6Yz6%2B3pVlPR3kN5ueBmmq1Bm2vr7YsgVJXxrEqM0%3D; Domain=.hanatrial.ondemand.com; Path=/; Secure; HttpOnly<BR />
+&lt; X-CSRF-Token: Required<BR />
+&lt; Content-Type: text/html;charset=utf-8<BR />
+&lt; Content-Language: en<BR />
+&lt; Content-Length: 121<BR />
+&lt; Date: Sun, 14 Jan 2018 14:10:04 GMT<BR />
+&lt; Server: SAP<BR />
+&lt; Set-Cookie: BIGipServer~jpaas_folder~bpmworkflowruntimewfs.hanatrial.ondemand.com=!2Ca7XcLdsg/zzGE9I+xEtZ891eMS7FbugL2TfgJqsHWcgxEC4eqkZJXXbqbJ0xdPDieESOQ1VuZKCQ==; path=/; httponly; secure<BR />
+&lt; Strict-Transport-Security: max-age=31536000; includeSubDomains; preload<BR />
+&lt;<BR />
+&lt;html&gt;<BR />
+&lt;head&gt;<BR />
+&lt;title&gt;Error report&lt;/title&gt;<BR />
+&lt;/head&gt;<BR />
+&lt;body&gt;<BR />
+&lt;h1&gt;HTTP Status 403 - CSRF nonce validation failed&lt;/h1&gt;<BR />
+&lt;/body&gt;<BR />
+&lt;/html&gt;</CODE></PRE><BR />
+Oops! HTTP status code 403 with an error about CSRF nonce validation failure! In other words, our request to create a new workflow instance has been denied, despite sending the token that we were given.<BR />
+<H4 id="toc-hId--212606272">Using the token with the correct session context</H4><BR />
+Let's try that again, but this time we'll ask curl to capture cookies and store them, and then reuse them in the subsequent request:<BR />
+<PRE class="language-markup"><CODE>curl \<BR />
+  --user p481810 \<BR />
+  --header "X-CSRF-Token: Fetch" \<BR />
+  --cookie-jar cookiejar.dat \<BR />
+  --verbose \<BR />
+  <A href="https://bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com/workflow-service/rest/v" target="test_blank" rel="nofollow noopener noreferrer">https://bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com/workflow-service/rest/v</A><BR />
+1/xsrf-token</CODE></PRE><BR />
+Note the use of the --cookie-jar parameter, which result in the "Added cookie" messages in the output regarding&nbsp; cookies being added:<BR />
+<PRE class="language-markup"><CODE>&gt; GET /workflow-service/rest/v1/xsrf-token HTTP/1.1<BR />
+&gt; Host: bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com<BR />
+&gt; User-Agent: curl/7.52.1<BR />
+&gt; Accept: */*<BR />
+&gt; X-CSRF-Token: Fetch<BR />
+&gt;<BR />
+&lt; HTTP/1.1 200 OK<BR />
+&lt; Cache-Control: private<BR />
+&lt; Expires: Thu, 01 Jan 1970 00:00:00 UTC<BR />
+* Added cookie JSESSIONID="2C505C957AD0B1E76BD0535F0AF66C10DD824F88F2FF5F3463DD56AF5020E8D0" for domain bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com, path /workflow-service, expire 0<BR />
+&lt; Set-Cookie: JSESSIONID=2C505C957AD0B1E76BD0535F0AF66C10DD824F88F2FF5F3463DD56AF5020E8D0; Path=/workflow-service; Secure; HttpOnly<BR />
+* Added cookie JTENANTSESSIONID_p481810trial="iIN12zFf3bAmLNOQA3tuM4YVkPI2WgN060d0hgv%2B6W4%3D" for domain hanatrial.ondemand.com, path /, expire 0<BR />
+&lt; Set-Cookie: JTENANTSESSIONID_p481810trial=iIN12zFf3bAmLNOQA3tuM4YVkPI2WgN060d0hgv%2B6W4%3D; Domain=.hanatrial.ondemand.com; Path=/; Secure; HttpOnly<BR />
+&lt; X-CSRF-Token: 63BAF126EF5C164C1945D64192B6E2C6<BR />
+&lt; X-Content-Type-Options: nosniff<BR />
+&lt; Content-Length: 0<BR />
+&lt; Date: Sun, 14 Jan 2018 16:51:44 GMT<BR />
+&lt; Server: SAP<BR />
+* Added cookie BIGipServer~jpaas_folder~bpmworkflowruntimewfs.hanatrial.ondemand.com="!kdw/bjE6WrgieXWwDhtcRsHHmTA76BykeAKzJSQCxdxLV7mHZYmet6Q6LvtTA6c9gdNjkRxfo0Gi4So=" for domain bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com, path /, expire 0<BR />
+&lt; Set-Cookie: BIGipServer~jpaas_folder~bpmworkflowruntimewfs.hanatrial.ondemand.com=!kdw/bjE6WrgieXWwDhtcRsHHmTA76BykeAKzJSQCxdxLV7mHZYmet6Q6LvtTA6c9gdNjkRxfo0Gi4So=; path=/; httponly; secure<BR />
+&lt; Strict-Transport-Security: max-age=31536000; includeSubDomains; preload<BR />
+&lt;</CODE></PRE><BR />
+If you're like me, you'll want to see what's inside cookiejar.dat while reading this post. Here you go:<BR />
+<PRE class="language-markup"><CODE># Netscape HTTP Cookie File<BR />
+# <A href="https://curl.haxx.se/docs/http-cookies.html" target="test_blank" rel="nofollow noopener noreferrer">https://curl.haxx.se/docs/http-cookies.html</A><BR />
+# This file was generated by libcurl! Edit at your own risk.<BR />
+<BR />
+#HttpOnly_bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com     FALSE   /workflow-service       TRUE    0    JSESSIONID       2C505C957AD0B1E76BD0535F0AF66C10DD824F88F2FF5F3463DD56AF5020E8D0<BR />
+#HttpOnly_.hanatrial.ondemand.com       TRUE    /       TRUE    0       JTENANTSESSIONID_p481810trial   iIN12zFf3bAmLNOQA3tuM4YVkPI2WgN060d0hgv%2B6W4%3D<BR />
+#HttpOnly_bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com     FALSE   /       TRUE    0       BIGipServer~jpaas_folder~bpmworkflowruntimewfs.hanatrial.ondemand.com !kdw/bjE6WrgieXWwDhtcRsHHmTA76BykeAKzJSQCxdxLV7mHZYmet6Q6LvtTA6c9gdNjkRxfo0Gi4So=</CODE></PRE><BR />
+So now we have the cookies stored, let's set anew our CSRFTOKEN variable with the token just received:<BR />
+<PRE><CODE>export CSRFTOKEN=63BAF126EF5C164C1945D64192B6E2C6</CODE></PRE><BR />
+and retry the POST request, this time using those cookies captured just now with the --cookie-jar parameter:<BR />
+<PRE class="language-markup"><CODE>curl \<BR />
+  --user p481810 \<BR />
+  --header "Content-Type: application/json" \<BR />
+  --header "X-CSRF-Token: $CSRFTOKEN" \<BR />
+  --cookie cookiejar.dat \<BR />
+  --verbose \<BR />
+  --data @data.json \<BR />
+  <A href="https://bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com/workflow-service/rest/v1/workflow-instances" target="test_blank" rel="nofollow noopener noreferrer">https://bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com/workflow-service/rest/v1/workflow-instances</A> </CODE></PRE><BR />
+Et voila:<BR />
+<PRE class="language-markup"><CODE>&gt; POST /workflow-service/rest/v1/workflow-instances HTTP/1.1<BR />
+&gt; Host: bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com<BR />
+&gt; User-Agent: curl/7.52.1<BR />
+&gt; Accept: */*<BR />
+&gt; Cookie: JSESSIONID=2C505C957AD0B1E76BD0535F0AF66C10DD824F88F2FF5F3463DD56AF5020E8D0; BIGipServer~jpaas_folder~bpmworkflowruntimewfs.hanatrial.ondemand.com=!kdw/bjE6WrgieXWwDhtcRsHHmTA76BykeAKzJSQCxdxLV7mHZYmet6Q6LvtTA6c9gdNjkRxfo0Gi4So=; JTENANTSESSIONID_p481810trial=iIN12zFf3bAmLNOQA3tuM4YVkPI2WgN060d0hgv%2B6W4%3D<BR />
+&gt; Content-Type: application/json<BR />
+&gt; Content-Length: 69<BR />
+&gt;<BR />
+&lt; HTTP/1.1 201 Created<BR />
+&lt; X-Content-Type-Options: nosniff<BR />
+&lt; Content-Type: application/json<BR />
+&lt; Transfer-Encoding: chunked<BR />
+&lt; Date: Sun, 14 Jan 2018 17:03:25 GMT<BR />
+&lt; Server: SAP<BR />
+&lt; Strict-Transport-Security: max-age=31536000; includeSubDomains; preload<BR />
+&lt;<BR />
+{<BR />
+  "id":"d5bca4c9-f94c-11e7-a369-00163e4ef3ca",<BR />
+  "definitionId":"testworkflow",<BR />
+  "definitionVersion":"10",<BR />
+  "subject":"TestWorkflow",<BR />
+  "status":"RUNNING",<BR />
+  "businessKey":"",<BR />
+  "startedAt":"2018-01-14T17:03:25.686Z",<BR />
+  "startedBy":"P481810",<BR />
+  "completedAt":null<BR />
+}</CODE></PRE><BR />
+Phew - thank goodness for AJAX requests, that handle these cookie shenanigans for you!<BR />
+<BR />
+OK, I think that's enough for this post. We now understand how to initiate a new workflow instance, and understand what goes on under the hood.<BR />
+<BR />
+In the next installment, I'll take you through how I use <A href="https://www.getpostman.com/" target="_blank" rel="nofollow noopener noreferrer">Postman</A> and its environment features to provide me with a very comfortable debugging UI to explore the Workflow API and my data contained within it.<BR />
+<BR />
+Next post in this series: <A href="https://blogs.sap.com/2018/01/16/discovering-scp-workflow-using-postman/" target="_blank" rel="noopener noreferrer">Discovering SAP Workflow - Using Postman</A>.

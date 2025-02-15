@@ -1,0 +1,352 @@
+2022-01-28-boosting-tutorial-ux-with-dev-containers-part-2-embedding-prerequisite
+Boosting tutorial UX with dev containers part 2 - embedding prerequisite details
+technology-blog-sap
+2022-01-28
+https://community.sap.com/t5/technology-blogs-by-sap/boosting-tutorial-ux-with-dev-containers-part-2-embedding-prerequisite/ba-p/13540611
+<EM>In this three-part series I outline and demonstrate an approach to help newcomers get started more quickly with our tutorials, by describing and providing an environment with all the prerequisite tools installed ready to go. This is part two, where I add the tutorial prerequisite detail to the Dockerfile I created in part one, and also introduce the devcontainer.json file.</EM><BR />
+<BR />
+You may want the previous or next post in this three-part series:<BR />
+<UL><BR />
+ 	<LI><A href="https://blogs.sap.com/2022/01/27/boosting-tutorial-ux-with-dev-containers-part-1-challenge-and-base-solution/" target="_blank" rel="noopener noreferrer">Boosting tutorial UX with dev containers part 1 - challenge and base solution</A></LI><BR />
+ 	<LI><A href="https://blogs.sap.com/2022/02/01/boosting-tutorial-ux-with-dev-containers-part-3-containers-into-action/" target="_blank" rel="noopener noreferrer">Boosting tutorial UX with dev containers part 3 – containers into action</A></LI><BR />
+</UL><BR />
+At the end of part 1 we had a base solution consisting of a simple Dockerfile definition for an image based on Node.js v16 and Debian buster. This image would be what we'll create containers from, for our development environment, and with <A href="https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers" target="_blank" rel="nofollow noopener noreferrer">VS Code's support for development in remote containers</A>, we'd connect to such a container to work within.<BR />
+<BR />
+We left off at the end of part 1 having instantiated a container based on the image in our Dockerfile definition, and got ourselves a shell environment, like this:<BR />
+<PRE><CODE># /tmp<BR />
+; <STRONG>docker run --rm -it mcr.microsoft.com/vscode/devcontainers/javascript-node:16-buster bash</STRONG><BR />
+root ➜ / $</CODE></PRE><BR />
+Now it's time to work through the steps in the prerequisite tutorial <A href="https://developers.sap.com/tutorials/btp-app-set-up-local-development.html" target="_blank" rel="noopener noreferrer">Set Up Local Development Using VS Code</A> that we looked at briefly in part 1. We'll take the steps one at a time, and decide what we need to do to fulfil what the step describes, but in the context of our image and future containers.<BR />
+<H3 id="toc-hId-1090150822">Step 1: Editors</H3><BR />
+There's not much we need to do here as we're going for VS Code implicitly. We will want to create a <A href="https://code.visualstudio.com/docs/remote/devcontainerjson-reference" target="_blank" rel="nofollow noopener noreferrer">devcontainer configuration file</A> that effectively tells VS Code about the dev container and how to use it, but we'll do that towards the end.<BR />
+<H3 id="toc-hId-893637317">Step 2: Command line interpreters</H3><BR />
+This step tells us that we'll be needing to enter commands on a command line, as part of the tutorial, and therefore a command line interpreter (environment) is required. Here's what the step says:<BR />
+<BR />
+<EM>"This tutorial contains a number of command line snippets that need to be pasted into a command line window. All snippets listed for macOS/Linux or without platform information can be executed in the bash or zsh, which are the default shells for these platforms. The Windows snippets are for the Windows Command Line and not for the PowerShell. Windows users are suggested to use the Git BASH instead, which is part of the Git for Windows installation and contains the basic UNIX command line tools. In the Git BASH, use the macOS/Linux snippets of the tutorial. VS Code supports the use of the Git BASH for the integrated command line window (called Terminal in VS Code) as well."</EM><BR />
+<BR />
+Interestingly, even though all three main OS platforms are mentioned, it didn't escape my notice that Bash was the most prominent shell mentioned - as illustrated by this gratuitous pipeline that analyses the text of that paragraph:<BR />
+<PRE><CODE>; <STRONG>cat paragraph-text \<BR />
+| tr '[:upper:]' '[:lower:]' \<BR />
+| sed -E 's/[^a-z]/ /g; s/ +/\n/g' \<BR />
+| sort \<BR />
+| uniq -c \<BR />
+| sort -nr \<BR />
+| head</STRONG><BR />
+14 the<BR />
+6 for<BR />
+5 line<BR />
+5 command<BR />
+4 windows<BR />
+4 snippets<BR />
+4 of<BR />
+4 git<BR />
+4 bash<BR />
+3 use<BR />
+# /tmp<BR />
+;</CODE></PRE><BR />
+There's <STRONG>bash</STRONG> in the top ten list, no sign of anything else (now where's that troll emoji when I need it?)<BR />
+<BR />
+Anyway, there's nothing for us to do in this step either, as our base image has a shell environment as standard.<BR />
+<H3 id="toc-hId-697123812">Step 3: Install Git</H3><BR />
+Nothing to do here either, as git is already available to us in the base image, which we can check in our Bash shell inside the running container like this:<BR />
+<PRE><CODE>root ➜ / $ <STRONG>git --version</STRONG><BR />
+git version 2.30.2</CODE></PRE><BR />
+Nice!<BR />
+<H3 id="toc-hId-500610307">Step 4: Install Node.js</H3><BR />
+As you can guess, nothing to do here either - the whole point of choosing the base image that we did was to have a Node.js environment. So we don't need to install Node.js explicitly at this point. Note that the step advises us to run the latest LTS version, which we are doing in this image.<BR />
+<H3 id="toc-hId-304096802">Step 5: Install the SAPUI5 command line interface</H3><BR />
+Here's where we get something to do. The ui5 CLI is not going to be in the base Docker image, but it's easily installed as a global Node.js module, via the Node Package Manager (NPM). The instructions in this tutorial step show us how to do that.<BR />
+<BR />
+We can try it now in our currently running container:<BR />
+<PRE><CODE>root ➜ / $ <STRONG>npm install --global @ui5/cli</STRONG><BR />
+<BR />
+added 520 packages, and audited 521 packages in 16s<BR />
+<BR />
+found 0 vulnerabilities<BR />
+root ➜</CODE></PRE><BR />
+We can then invoke it directly, like this:<BR />
+<PRE><CODE>root ➜ / $ <STRONG>ui5 --version</STRONG><BR />
+2.14.4 (from /usr/local/share/npm-global/lib/node_modules/@ui5/cli/bin/ui5.js)<BR />
+root ➜ / $</CODE></PRE><BR />
+Great. Of course, this only gets us the ui5 CLI in the current container, the currently running instance of the Docker image. So we need to add this to our Docker image definition.<BR />
+<BR />
+There's a <A href="https://github.com/microsoft/vscode-dev-containers/blob/e7ee99058efcecb977145640a7f0f09097836403/containers/javascript-node/.devcontainer/Dockerfile" target="_blank" rel="nofollow noopener noreferrer">base image reference</A> that shows us how we should do this, so following that example we end up with this in our Dockerfile:<BR />
+<PRE><CODE>ARG VARIANT="16-buster"<BR />
+FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:${VARIANT}<BR />
+<BR />
+RUN su node -c "npm install -g @ui5/cli"</CODE></PRE><BR />
+<H3 id="toc-hId-107583297">Step 6: Install the Cloud Foundry command line interface</H3><BR />
+If we look closely at this step, there are different instructions depending on what host operating system you're running. The container-based approach alleviates this by providing a common and consistent environment. So we only need to consider instructions for installing the cf CLI once.<BR />
+<BR />
+The image's base is Debian, a Linux distribution, so of course we need to follow the Linux based installation instructions, and <A href="https://docs.cloudfoundry.org/cf-cli/install-go-cli.html#pkg-linux" target="_blank" rel="nofollow noopener noreferrer">we're directed to the Cloud Foundry website</A> to follow them. Let's follow them in our test container that we have running, and for future container instantiation, we'll then add further content to our Dockerfile so that images built from that will have the cf CLI.<BR />
+<BR />
+There are two different ways to install the cf CLI on Linux - using the distribution's package manager, or just downloading and unpacking the binary file. While they're both good approaches, we'll just make a decision and go for the former. Talking of decisions, there are different major versions of the cf CLI available ... to discuss the differences between them is a topic for another time, we'll just go for v7 here as it seems to be gaining usage over v6 and is still not as "bleeding edge" as v8.<BR />
+<BR />
+So the first thing we need to do in the <A href="https://docs.cloudfoundry.org/cf-cli/install-go-cli.html#pkg-linux" target="_blank" rel="nofollow noopener noreferrer">instructions</A> is to add the Cloud Foundry Foundation public key and package repository details so we can use the Debian package manager to install it:<BR />
+<PRE><CODE>root ➜ / $ <STRONG>wget -q -O - <A href="https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key" target="test_blank" rel="nofollow noopener noreferrer">https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key</A> | apt-key add -</STRONG> <BR />
+Warning: apt-key is deprecated. Manage keyring files in trusted.gpg.d instead (see apt-key(8)).<BR />
+OK<BR />
+root ➜ / $</CODE></PRE><BR />
+If you're curious like me, you'll want to know what's happening here. Using wget, the key is downloaded (avoiding normal output, with the -q "quiet" option) and written to standard output STDOUT with the -O - option and value. This key is piped into the standard input STDIN of apt-key to add it to the package manager's key store.<BR />
+<BR />
+Then a new file in the package manager's list of sources is created, pointing to a Cloud Foundry resource for Debian packages:<BR />
+<PRE><CODE>root ➜ / $ <STRONG>echo "deb <A href="https://packages.cloudfoundry.org/debian" target="test_blank" rel="nofollow noopener noreferrer">https://packages.cloudfoundry.org/debian</A> stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list</STRONG><BR />
+root ➜ / $</CODE></PRE><BR />
+Note that in neither of these two activities do we need to use the "sudo" command which was shown in the instructions. This is because in this container, we're the administrative "root" user already.<BR />
+<BR />
+Next we can get the package lists updated like this:<BR />
+<PRE><CODE>root ➜ / $ <STRONG>apt-get update</STRONG><BR />
+Hit:1 <A href="http://security.debian.org/debian-security" target="test_blank" rel="nofollow noopener noreferrer">http://security.debian.org/debian-security</A> buster-security InRelease<BR />
+Hit:2 <A href="http://deb.debian.org/debian" target="test_blank" rel="nofollow noopener noreferrer">http://deb.debian.org/debian</A> buster InRelease <BR />
+Get:3 <A href="http://deb.debian.org/debian" target="test_blank" rel="nofollow noopener noreferrer">http://deb.debian.org/debian</A> buster-updates InRelease [39.4 kB] <BR />
+Hit:5 <A href="https://dl.yarnpkg.com/debian" target="test_blank" rel="nofollow noopener noreferrer">https://dl.yarnpkg.com/debian</A> stable InRelease <BR />
+Hit:4 <A href="https://cf-cli-debian-repo.s3.amazonaws.com" target="test_blank" rel="nofollow noopener noreferrer">https://cf-cli-debian-repo.s3.amazonaws.com</A> stable InRelease <BR />
+Fetched 39.4 kB in 1s (33.9 kB/s)<BR />
+Reading package lists... Done<BR />
+root ➜ / $</CODE></PRE><BR />
+And now we can request the install:<BR />
+<PRE><CODE>root ➜ / $ <STRONG>apt-get install cf7-cli</STRONG><BR />
+Reading package lists... Done<BR />
+Building dependency tree... Done<BR />
+Reading state information... Done<BR />
+The following NEW packages will be installed:<BR />
+cf7-cli<BR />
+0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.<BR />
+Need to get 5853 kB of archives.<BR />
+After this operation, 22.6 MB of additional disk space will be used.<BR />
+Get:1 <A href="https://packages.cloudfoundry.org/debian" target="test_blank" rel="nofollow noopener noreferrer">https://packages.cloudfoundry.org/debian</A> stable/main amd64 cf7-cli amd64 7.4.0 [5853 kB]<BR />
+Fetched 5853 kB in 3s (2022 kB/s) <BR />
+Selecting previously unselected package cf7-cli.<BR />
+(Reading database ... 26901 files and directories currently installed.)<BR />
+Preparing to unpack .../cf7-cli_7.4.0_amd64.deb ...<BR />
+Unpacking cf7-cli (7.4.0) ...<BR />
+Setting up cf7-cli (7.4.0) ...<BR />
+root ➜ / $</CODE></PRE><BR />
+This is all we need to get the cf CLI installed, which it now is, as we can see:<BR />
+<PRE><CODE>root ➜ / $ <STRONG>cf --version</STRONG><BR />
+cf version 7.4.0+e55633fed.2021-11-15<BR />
+root ➜ / $</CODE></PRE><BR />
+Happy with success, we can now make this a standard activity when building the image, with new content in the Dockerfile, so it now looks like this:<BR />
+<PRE><CODE>ARG VARIANT="16-buster" <BR />
+FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:${VARIANT}<BR />
+<BR />
+RUN wget -q -O - <A href="https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key" target="test_blank" rel="nofollow noopener noreferrer">https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key</A> | apt-key add - ; \<BR />
+  echo "deb <A href="https://packages.cloudfoundry.org/debian" target="test_blank" rel="nofollow noopener noreferrer">https://packages.cloudfoundry.org/debian</A> stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list<BR />
+<BR />
+RUN apt-get update \<BR />
+  &amp;&amp; apt-get -y install --no-install-recommends cf7-cli<BR />
+<BR />
+RUN su node -c "npm install -g @ui5/cli"</CODE></PRE><BR />
+This pretty much reflects what we've just done in the container, with the addition of the following options for apt-get:<BR />
+<UL><BR />
+ 	<LI>the -y option sets an automatic "yes" to any prompts that may come up, which is good for unattended execution such as image builds</LI><BR />
+ 	<LI>the --no-install-recommends option prevents apt-get installing anything other than the actual package requested and with its dependencies</LI><BR />
+</UL><BR />
+<H3 id="toc-hId--88930208">Step 7: Add CAP tooling</H3><BR />
+We've installed the ui5 CLI, and now it's time to install the SAP Cloud Application Programming (CAP) model software development kit. This is also in the form of a Node.js module, and we should install that also globally in a similar way to how we installed the ui5 CLI. Let's do it now directly in our running container first:<BR />
+<PRE><CODE>root ➜ / $ <STRONG>npm install --global @sap/cds-dk</STRONG><BR />
+npm WARN deprecated uuid@3.4.0: Please upgrade to version 7 or higher. Older versions may use Math.random() in certain circumstances, which is known to be problematic. See <A href="https://v8.dev/blog/math-random" target="test_blank" rel="nofollow noopener noreferrer">https://v8.dev/blog/math-random</A> for details.<BR />
+npm WARN deprecated har-validator@5.1.5: this library is no longer supported<BR />
+npm WARN deprecated request@2.88.2: request has been deprecated, see <A href="https://github.com/request/request/issues/3142" target="test_blank" rel="nofollow noopener noreferrer">https://github.com/request/request/issues/3142</A><BR />
+npm WARN deprecated node-pre-gyp@0.11.0: Please upgrade to @mapbox/node-pre-gyp: the non-scoped node-pre-gyp package is deprecated and only the @mapbox scoped package will recieve updates in the future<BR />
+npm WARN deprecated tar@2.2.2: This version of tar is no longer supported, and will not receive security updates. Please upgrade asap.<BR />
+<BR />
+added 415 packages, and audited 416 packages in 21s<BR />
+root ➜ / $</CODE></PRE><BR />
+Let's check to see if we have the main CLI executable at our fingertips now (in our PATH):<BR />
+<PRE><CODE>root ➜ / $ <STRONG>cds --version</STRONG><BR />
+@sap/cds: 5.7.3<BR />
+@sap/cds-compiler: 2.11.2<BR />
+@sap/cds-dk: 4.7.3<BR />
+@sap/cds-foss: 3.0.0<BR />
+@sap/eslint-plugin-cds: 2.3.0<BR />
+Node.js: v16.13.2<BR />
+home: /usr/local/share/npm-global/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds<BR />
+root ➜ / $</CODE></PRE><BR />
+Yep, lovely!<BR />
+<BR />
+The simplest thing we can do to encode this installation step into our Dockerfile is to just add it to the existing npm install command already in there. So now our Dockerfile looks like this:<BR />
+<PRE><CODE>ARG VARIANT="16-buster" <BR />
+FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:${VARIANT}<BR />
+<BR />
+RUN wget -q -O - <A href="https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key" target="test_blank" rel="nofollow noopener noreferrer">https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key</A> | apt-key add - ; \<BR />
+  echo "deb <A href="https://packages.cloudfoundry.org/debian" target="test_blank" rel="nofollow noopener noreferrer">https://packages.cloudfoundry.org/debian</A> stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list<BR />
+<BR />
+RUN apt-get update \<BR />
+  &amp;&amp; apt-get -y install --no-install-recommends cf7-cli<BR />
+<BR />
+RUN su node -c "npm install -g @ui5/cli <SPAN id="autocomplete" style="font-size: 1rem"><SPAN id="autocomplete-delimiter">@sap/cds-dk</SPAN></SPAN><SPAN style="font-size: 1rem">"</SPAN></CODE></PRE><BR />
+<H3 id="toc-hId--285443713">Step 8: Install VS Code</H3><BR />
+So here's a step that we don't encode in the image of course - the two core tools you'll need on your local machine are Docker Desktop or equivalent, as already stated, and VS Code, because the whole idea is that you use VS Code and connect to a container for everything else.<BR />
+<BR />
+That said, once we have everything set up, there's a context where neither Docker Desktop nor VS Code is required, but you still have all the tools in a container and you can still run through the entire tutorial mission. Can you guess what that context is? Answer below in the comments.<BR />
+<H3 id="toc-hId--481957218">Step 9: Install VS Code extensions</H3><BR />
+This step, along with the subsequent step, describes a couple of VS Code extensions that are required for the tutorial; they make development in this space a lot easier and more pleasant. This first extension is the <A href="https://marketplace.visualstudio.com/items?itemName=SAPSE.vscode-cds" target="_blank" rel="nofollow noopener noreferrer">SAP CDS Language Support extension</A>.<BR />
+<BR />
+This is a wonderful extension that introduced me to the Language Server Protocol (LSP) which I've covered in some detail in a couple of past episodes of the Hands-on SAP Dev <A href="https://blogs.sap.com/2020/11/09/an-overview-of-sap-developers-video-content/#shows" target="_blank" rel="noopener noreferrer">show</A>:<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=WLkFAtgEWs8" target="_blank" rel="nofollow noopener noreferrer">Ep.7 – Digging into the language server protocol, cds-lsp and Vim</A><BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=S7PaeN4r7vQ" target="_blank" rel="nofollow noopener noreferrer">Ep.26 – Vim CDS plugin with new @sap/cds-lsp package</A><BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/01/screenshot-2022-01-27-at-08.02.02.png" /></P><BR />
+Now, one might think that this extension is to be installed into your local VS Code installation. But with VS Code's support for development containers, there's an alternative approach, described in the <A href="https://code.visualstudio.com/docs/remote/containers#_managing-extensions" target="_blank" rel="nofollow noopener noreferrer">Managing Extensions</A> section of the <A href="https://code.visualstudio.com/docs/remote/containers" target="_blank" rel="nofollow noopener noreferrer">Developing inside a Container</A> article.<BR />
+<BR />
+This alternative approach makes sense, in that it distinguishes between extensions that affect VS Code's direct user interface (UI) such as colour and theme extensions, and extensions that provide additional functionality. It also recognises that extensions are often project specific, and it's a good idea to limit the extensions installed to the ones needed for the particular task at hand.<BR />
+<BR />
+So with the support for developing inside a container, non-UI extensions can be installed when a container is created in the context of VS Code connecting to and using it for remote development. The <A href="https://code.visualstudio.com/docs/remote/containers" target="_blank" rel="nofollow noopener noreferrer">Developing inside a Container</A> article describes a configuration file called <STRONG>devcontainer.json</STRONG> which holds all the configuration for using containers like this.<BR />
+<BR />
+So with what we have at this point, and according to the configuration file specifications, here's the simplest version that we'd need so far:<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+  "name": "Tutorial dev container",<BR />
+  "build": {<BR />
+    "dockerfile": "Dockerfile",<BR />
+  }<BR />
+}</CODE></PRE><BR />
+This is the simplest configuration that could possibly work, and there's more we'll add later but for now, let's just stare at this for a second. What it does is simply point to the Dockerfile, the definition file for the image from which containers are to be created.<BR />
+<BR />
+So where is that Dockerfile located, and where do we put this devcontainer.json file? By default, VS Code will look for a directory named <STRONG>.devcontainer/</STRONG> and this is where we'll put both files:<BR />
+<PRE><CODE>.devcontainer/<BR />
+├── Dockerfile<BR />
+└── devcontainer.json</CODE></PRE><BR />
+This directory can live in the root of your project.<BR />
+<BR />
+So now we have our devcontainer.json configuration file, we can turn our attention back to the task at hand, which is to think about what this prerequisite step is asking us to do, which is to install the SAP CDS Language Support extension. This is not an extension that is designed to directly affect VS Code's UI, and it's quite project-specific (i.e. you'll need it for CAP projects, but not for non-CAP projects). So it's a perfect candidate for associating with the container.<BR />
+<BR />
+And it's within our new devcontainer.json file that we can specify that this extension should be installed. This is what our devcontainer.json file looks like with this in place:<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+  "name": "Tutorial dev container",<BR />
+  "build": {<BR />
+    "dockerfile": "Dockerfile",<BR />
+  },<BR />
+  "extensions": [<BR />
+    "sapse.vscode-cds"<BR />
+  ]<BR />
+}</CODE></PRE><BR />
+In case you're wondering where we get the technical name for the extension from ("sapse.vscode-cds"), it's in the URL of the extension on the Visual Studio Marketplace: <A href="https://marketplace.visualstudio.com/items?itemName=sapse.vscode-cds" target="_blank" rel="nofollow noopener noreferrer">https://marketplace.visualstudio.com/items?itemName=sapse.vscode-cds</A>.<BR />
+<H3 id="toc-hId--678470723">Step 10: Install SAP Fiori tools Extension Pack</H3><BR />
+Here's another extension to install. In fact, it's an extension pack, which is a collection of multiple extensions: <A href="https://marketplace.visualstudio.com/items?itemName=sapse.sap-ux-fiori-tools-extension-pack" target="_blank" rel="nofollow noopener noreferrer">SAP Fiori Tools - Extension Pack</A>. I'll leave you to peruse the extensions that are included; our task at hand is to ensure that this extension pack also gets installed when VS Code attaches to a container.<BR />
+<BR />
+To do that, we just add the extension pack identifier (again, taking it from the <A href="https://marketplace.visualstudio.com/items?itemName=SAPSE.sap-ux-fiori-tools-extension-pack" target="_blank" rel="nofollow noopener noreferrer">URL</A>) to the array in our devcontainer.json configuration. Here's what it looks like now:<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+  "name": "Tutorial dev container",<BR />
+  "build": {<BR />
+    "dockerfile": "Dockerfile",<BR />
+  },<BR />
+  "extensions": [<BR />
+    "sapse.vscode-cds",<BR />
+    "sapse.sap-ux-fiori-tools-extension-pack"<BR />
+  ]<BR />
+}</CODE></PRE><BR />
+<H3 id="toc-hId--950215597">Step 11: Install Yeoman</H3><BR />
+The final step in this prerequisites tutorial is to install Yeoman, a tool for scaffolding web apps. This is a Node.js based tool and can be installed like the other tools we've already installed - the ui5 CLI and the CAP tools, i.e. via npm install.<BR />
+<BR />
+For completeness, let's manually install it inside our current container, just to get a feel for it, and then add the package name "yo" to the list in the RUN line in our Dockerfile.<BR />
+<BR />
+First, here's installing it in our running test container:<BR />
+<PRE><CODE>root ➜ / $ <STRONG>npm install --global yo</STRONG><BR />
+npm WARN deprecated har-validator@5.1.5: this library is no longer supported<BR />
+npm WARN deprecated uuid@3.4.0: Please upgrade to version 7 or higher. Older versions may use Math.random() in certain circumstances, which is known to be problematic. See <A href="https://v8.dev/blog/math-random" target="test_blank" rel="nofollow noopener noreferrer">https://v8.dev/blog/math-random</A> for details.<BR />
+npm WARN deprecated request@2.88.2: request has been deprecated, see <A href="https://github.com/request/request/issues/3142" target="test_blank" rel="nofollow noopener noreferrer">https://github.com/request/request/issues/3142</A><BR />
+<BR />
+added 728 packages, and audited 729 packages in 55s<BR />
+<BR />
+53 packages are looking for funding<BR />
+run `npm fund` for details<BR />
+<BR />
+15 vulnerabilities (13 moderate, 2 high)<BR />
+<BR />
+To address issues that do not require attention, run:<BR />
+npm audit fix<BR />
+<BR />
+To address all issues (including breaking changes), run:<BR />
+npm audit fix --force<BR />
+<BR />
+Run `npm audit` for details.<BR />
+npm notice <BR />
+npm notice New minor version of npm available! 8.1.2 -&gt; 8.3.2<BR />
+npm notice Changelog: <A href="https://github.com/npm/cli/releases/tag/v8.3.2" target="test_blank" rel="nofollow noopener noreferrer">https://github.com/npm/cli/releases/tag/v8.3.2</A><BR />
+npm notice Run npm install -g npm@8.3.2 to update!<BR />
+npm notice <BR />
+root ➜ / $</CODE></PRE><BR />
+And adding the package to the list in our Dockerfile means that it now looks like this:<BR />
+<PRE><CODE>ARG VARIANT="16-buster" <BR />
+FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:${VARIANT}<BR />
+<BR />
+RUN wget -q -O - <A href="https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key" target="test_blank" rel="nofollow noopener noreferrer">https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key</A> | apt-key add - ; \<BR />
+  echo "deb <A href="https://packages.cloudfoundry.org/debian" target="test_blank" rel="nofollow noopener noreferrer">https://packages.cloudfoundry.org/debian</A> stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list<BR />
+<BR />
+RUN apt-get update \<BR />
+  &amp;&amp; apt-get -y install --no-install-recommends cf7-cli<BR />
+<BR />
+RUN su node -c "npm install -g @ui5/cli <SPAN id="autocomplete" style="font-size: 1rem"><SPAN id="autocomplete-delimiter">@sap/cds-dk yo</SPAN></SPAN><SPAN style="font-size: 1rem">"</SPAN></CODE></PRE><BR />
+<H2 id="toc-hId--853326095">Considering the meta prerequisites</H2><BR />
+In a delicious turn of events, this prerequisite tutorial has its own set of prerequisites, which are detailed right at the start:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2022/01/screenshot-2022-01-27-at-09.24.55.png" /></P><BR />
+The image upon which our containers are going to be created are Linux based, so we don't need to pay attention to any of the macOS specific prerequisites in this list.<BR />
+<BR />
+Neither should we need to pay attention to the Windows specific prerequisite (installing sqlite) as on macOS and any normal (i.e. full sized) distribution of Linux, sqlite is installed by default.<BR />
+<BR />
+But we're running on a cut-down distribution, so we'll need to install sqlite with the Debian package manager. That's easy - all we need to do is add the sqlite package to the apt-get install command in the Dockerfile.<BR />
+<BR />
+Now our Dockerfile finally looks like this:<BR />
+<PRE><CODE>ARG VARIANT="16-buster"<BR />
+FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:${VARIANT}<BR />
+<BR />
+RUN wget -q -O - <A href="https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key" target="test_blank" rel="nofollow noopener noreferrer">https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key</A> | apt-key add - ; \<BR />
+echo "deb <A href="https://packages.cloudfoundry.org/debian" target="test_blank" rel="nofollow noopener noreferrer">https://packages.cloudfoundry.org/debian</A> stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list<BR />
+<BR />
+RUN apt-get update \<BR />
+&amp;&amp; apt-get -y install --no-install-recommends cf7-cli sqlite<BR />
+<BR />
+RUN su node -c "npm install -g @ui5/cli @sap/cds-dk yo"</CODE></PRE><BR />
+<H2 id="toc-hId--1049839600">Giving the image a spin</H2><BR />
+We got to the end of the tutorial prerequisite steps and have accounted for all of them that need attention either in the Dockerfile, in the devcontainer.json file. Rather than end this part 2 here, let's have a bit of fun and put our fledgling Dockerfile to the test, manually here, to make sure it holds together.<BR />
+<BR />
+We'll build an image from it, and start a container based on that image, jumping into a shell environment like we did before. Before we do that, let's exit the existing container (either by entering "exit" or using Ctrl-D at the command line) and it should be automatically removed because of the --rm option we specified when creating it.<BR />
+<BR />
+Now, back on our host, let's build the image, and give it the imaginative name "tut-image-test":<BR />
+<PRE><CODE>; <STRONG>docker build -t tut-image-test .</STRONG><BR />
+[+] Building 0.1s (8/8) FINISHED <BR />
+=&gt; [internal] load build definition from Dockerfile 0.0s<BR />
+=&gt; =&gt; transferring dockerfile: 37B 0.0s<BR />
+=&gt; [internal] load .dockerignore 0.0s<BR />
+=&gt; =&gt; transferring context: 2B 0.0s<BR />
+=&gt; [internal] load metadata for mcr.microsoft.com/vscode/devcontainers/javascript-node:16-buster 0.0s<BR />
+=&gt; [1/4] FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:16-buster 0.0s<BR />
+=&gt; CACHED [2/4] RUN wget -q -O - <A href="https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key" target="test_blank" rel="nofollow noopener noreferrer">https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key</A> 0.0s<BR />
+=&gt; CACHED [3/4] RUN apt-get update &amp;&amp; apt-get -y install --no-install-recommends cf7-cli sqlite 0.0s<BR />
+=&gt; CACHED [4/4] RUN su node -c "npm install -g @ui5/cli @sap/cds-dk yo" 0.0s<BR />
+=&gt; exporting to image 0.0s<BR />
+=&gt; =&gt; exporting layers 0.0s<BR />
+=&gt; =&gt; writing image sha256:57c19dcfd263997e737b723febbf4481bf8f06d7eec3044000b9830716478ac1 0.0s<BR />
+=&gt; =&gt; naming to docker.io/library/tut-image-test 0.0s</CODE></PRE><BR />
+Now let's take it for a spin. Creating a container from it (again, with the --rm option), asking for the Bash shell, shows us this, where we move from the command line prompt on the host (mine here is a simple ";") to the command line prompt inside the container ("root ➜ / $"):<BR />
+<PRE><CODE>; <STRONG>docker run --rm -it tut-image-test bash</STRONG><BR />
+root ➜ / $</CODE></PRE><BR />
+The moment of truth arrives - does it have everything we need inside it? Let's see:<BR />
+<PRE><CODE>root ➜ / $ <STRONG>cf --version</STRONG><BR />
+cf version 7.4.0+e55633fed.2021-11-15<BR />
+root ➜ / $ <STRONG>sqlite -version</STRONG><BR />
+2.8.17<BR />
+root ➜ / $ <STRONG>ui5 --version</STRONG><BR />
+2.14.4 (from /usr/local/share/npm-global/lib/node_modules/@ui5/cli/bin/ui5.js)<BR />
+root ➜ / $ <STRONG>cds --version</STRONG><BR />
+@sap/cds: 5.7.3<BR />
+@sap/cds-compiler: 2.11.2<BR />
+@sap/cds-dk: 4.7.3<BR />
+@sap/cds-foss: 3.0.0<BR />
+@sap/eslint-plugin-cds: 2.3.0<BR />
+Node.js: v16.13.2<BR />
+home: /usr/local/share/npm-global/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds<BR />
+root ➜ / $ <STRONG>yo --version</STRONG><BR />
+4.3.0<BR />
+root ➜ / $</CODE></PRE><BR />
+<span class="lia-unicode-emoji" title=":party_popper:">🎉</span> Excellent!<BR />
+<BR />
+We have a Docker image that we can create containers from, and the image has all the tools we need according to the prerequisites. We also have a devcontainer.json file that tells VS Code about the container it is to create and connect to, and the extensions to install in that context.<BR />
+<BR />
+In the third and final part of this series, we'll connect everything together in the context of VS Code, and see where that brings us:<BR />
+<BR />
+<A href="https://blogs.sap.com/2022/02/01/boosting-tutorial-ux-with-dev-containers-part-3-containers-into-action/" target="_blank" rel="noopener noreferrer">Boosting tutorial UX with dev containers part 3 – containers into action</A><BR />
+<BR />
+See you there!

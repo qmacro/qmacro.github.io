@@ -1,0 +1,454 @@
+2020-03-23-annotated-links-episode-58-of-hands-on-sap-dev-with-qmacro
+Annotated links: Episode 58 of Hands-on SAP dev with qmacro
+technology-blog-sap
+2020-03-23
+https://community.sap.com/t5/technology-blogs-by-sap/annotated-links-episode-58-of-hands-on-sap-dev-with-qmacro/ba-p/13437995
+<EM>This is a searchable description of the content of a live stream recording, specifically <STRONG>“Ep.58 - Digging deeper into OAuth 2.0 for CF APIs”</STRONG> in the “<A href="https://bit.ly/handsonsapdev" target="_blank" rel="nofollow noopener noreferrer">Hands-on SAP dev with qmacro</A>” series. There are links directly to specific highlights in the video recording. For links to annotations of other episodes, please see the “<A href="https://bit.ly/handsonsapdev#replays" target="_blank" rel="nofollow noopener noreferrer">Catch the replays</A>” section of the series blog post.</EM><BR />
+<BR />
+This episode was streamed live on Fri 20 Mar and is approximately 60 minutes in length. The stream recording is <A href="https://www.youtube.com/watch?v=AjuwSJeAUy8" target="_blank" rel="nofollow noopener noreferrer">available on YouTube</A>.<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2020/03/Screenshot-2020-03-23-at-16.00.40.png" /><BR />
+<BR />
+Brief synopsis: In the previous episode we put the pieces together on how the "Client Credentials" grant type works with the API Hub and the CF Workflow APIs. Now it’s time for us to dig even deeper and look into alternative flows. Buckle up!<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h01m00s" target="_blank" rel="nofollow noopener noreferrer">00:01:00</A> Live stream starts.<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h03m00s" target="_blank" rel="nofollow noopener noreferrer">00:03:00</A> Switching to the main scene showing some Pivotal documentation on OAuth 2.0, specifically describing four <A href="https://docs.pivotal.io/p-identity/1-10/grant-types.html" target="_blank" rel="nofollow noopener noreferrer">OAuth 2.0 Grant Types</A>: “Authorization Code”, “Client Credentials”, “Resource Owner Password” and “Implicit”. Considering what we’ve done with OAuth so far, we remember that last week we used the “Client Credentials” grant type (or “flow”).<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h07m40s" target="_blank" rel="nofollow noopener noreferrer">00:07:40</A> Earlier on, back in <A href="https://bit.ly/handsonsapdev#ep51" target="_blank" rel="nofollow noopener noreferrer">Ep.51</A> we used the “Resource Owner Password” grant type which, as we’ll see shortly, was quite controversial!<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h08m15s" target="_blank" rel="nofollow noopener noreferrer">00:08:15</A> Now that we’ve established the different grant types (or so we think), we have a brief look at the official OAuth 2.0 website (crazy idea, but hey) and notice something interesting. There are also four grant types listed here, under “most common” … but they’re not the same four!<BR />
+<BR />
+Two are the same, specifically “Authorization Code” and “Client Credentials”. These, as we’ll figure out, are indeed very common and in use in many contexts. But then the other two are different. The first is “Device Code”, which to me seems more of an edge case flow, for “browserless or input-constrained devices”. The second is more interesting. It’s “Refresh Token”, which turns out to be what I’m suddenly going to call a “side flow”, i.e.&nbsp;related to the “Authorization Code” flow, where an access token can be refreshed.<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h09m40s" target="_blank" rel="nofollow noopener noreferrer">00:09:40</A> Scrolling further down, to our surprise, we see that the other two grant types that we listed already (from the Pivotal page), “Implicit” and “[Resource Owner] Password”, are listed under the title “Legacy”! Looking into this a bit more, I came upon a definitive document from the Internet Engineering Task Force (IETF, one of the standards bodies that ensures that the interwebs work well) “<A href="https://tools.ietf.org/html/draft-ietf-oauth-security-topics-13" target="_blank" rel="nofollow noopener noreferrer">OAuth 2.0 Security Best Current Practice</A>, specifically <A href="https://tools.ietf.org/html/draft-ietf-oauth-security-topics-13#section-3.4" target="_blank" rel="nofollow noopener noreferrer">Section 3.4 Resource Owner Password Credentials Grant</A>, where it says <A href="https://tools.ietf.org/html/rfc2119" target="_blank" rel="nofollow noopener noreferrer">in no uncertain terms</A> that this flow MUST NOT be used. For good reasons, explained in the document. Moreover, the”Implicit" flow SHOULD NOT be used either.<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h11m45s" target="_blank" rel="nofollow noopener noreferrer">00:11:45</A> We’re going to take a deep look at the “Authorization Code” grant type now, which, along with the “Client Credentials” grant type, is the most common; and the former is relevant when there’s a human involved.<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h12m40s" target="_blank" rel="nofollow noopener noreferrer">00:12:40</A> Describing where we left off in the <A href="https://bit.ly/handsonsapdev#ep57" target="_blank" rel="nofollow noopener noreferrer">previous episode</A>, with an instance of the Workflow service, and there’s a couple of workflow definitions already deployed - <CODE>orderprocess</CODE>, which related to some other activity I’m involved in, and <CODE>simpleworkflow</CODE> which we’ll use for these experiments. It’s just a definition that starts and then immediately ends.<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h14m15s" target="_blank" rel="nofollow noopener noreferrer">00:14:15</A> Just noting that when you deploy a workflow definition as an MTA module, a service key is generated for you. This is in case the other service key(s) disappear, as, in reality, they should be treated as potentially ephemeral, or at least deletable.<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h15m00s" target="_blank" rel="nofollow noopener noreferrer">00:15:00</A> Moving to the terminal now (yes, <A href="https://twitter.com/search?q=%23TheFutureIsTerminal" target="_blank" rel="nofollow noopener noreferrer">#TheFutureIsTerminal</A> to explore. I’ve already logged into and authenticaed with the CF endpoint with this temporary test user I’m using today, and looking at the service instance list we can see the workflow service instance there. So far so good.<BR />
+<PRE><CODE>-&gt; cf s<BR />
+Getting services in org p2001351149trial / space dev ...<BR />
+<BR />
+name                               service           plan          bound apps                                 last operation     broker                                                       upgrade available<BR />
+portal_resources_workflowtiles     portal            standard      workflowtilesApprouter, workflowtilesFLP   create succeeded   sm-portal-fbae912e-4046-4304-90ad-b6d8ed1fa3be<BR />
+uaa_workflowtiles                  xsuaa             application   workflowtilesApprouter, workflowtilesFLP   create succeeded   sm-xsuaa-9ef36350-f975-4194-a399-54db361e79b5<BR />
+workflow                           workflow          lite          workflowtilesApprouter, workflowtilesFLP   update succeeded   sm-workflow-broker-d2b48385-f83e-4601-9830-0db967aaa2f5<BR />
+workflowtiles_html5_repo_runtime   html5-apps-repo   app-runtime   workflowtilesApprouter                     create succeeded   sm-html5-apps-repo-sb-ebcb2b69-24a5-408e-be00-02066b302b78</CODE></PRE><BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h16m10s" target="_blank" rel="nofollow noopener noreferrer">00:16:10</A> We can also take a look at the service keys that we saw summarised in the web interface, like this:<BR />
+<PRE><CODE>-&gt; cf service-keys workflow<BR />
+Getting keys for service instance workflow ...<BR />
+<BR />
+name<BR />
+OrderProcess-workflow-credentials<BR />
+SimpleWorkflow-workflow-credentials</CODE></PRE><BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h16m40s" target="_blank" rel="nofollow noopener noreferrer">00:16:40</A> Grabbing the service key details for the <CODE>SimpleWorkflow-workflow-credentials</CODE> service key so that we can dig into those details programatically later on:<BR />
+<PRE><CODE>-&gt; cf service-key workflow SimpleWorkflow-workflow-credentials &gt; keys.json</CODE></PRE><BR />
+We have to edit this now to remove the noise that the <CODE>cf</CODE> command spat out when executing this request (<CODE>cf</CODE> is great as it’s a command line tool, but I do think it lacks a certain finesse when it comes to usability, and unfortunately the <CODE>cf curl</CODE> approach, using a completely different API and therefore mental model, is not a good workaround).<BR />
+<BR />
+While editing, we take a look at some of the detail in the file:<BR />
+<PRE><CODE>-&gt; cf service-key workflow SimpleWorkflow-workflow-credentials &gt; keys.json</CODE></PRE><BR />
+We have to edit this now to remove the noise that the <CODE>cf</CODE> command spat out when executing this request (<CODE>cf</CODE> is great as it’s a command line tool, but I do t<BR />
+hink it lacks a certain finesse when it comes to usability, and unfortunately the <CODE>cf curl</CODE> approach, using a completely different API and therefore mental model, is not a<BR />
+good workaround).<BR />
+<BR />
+While editing, we take a look at some of the detail in the file:<BR />
+<PRE><CODE>{                                                                                                                                                                          <BR />
+ "content_endpoint": "https://api.workflow-sap.cfapps.eu10.hana.ondemand.com/workflow-deploy/rest/internal/v1",                                                   <BR />
+ "endpoints": {<BR />
+  "workflow_odata_url": "https://api.workflow-sap.cfapps.eu10.hana.ondemand.com/workflow-service/odata",                                                          <BR />
+  "workflow_rest_url": "https://api.workflow-sap.cfapps.eu10.hana.ondemand.com/workflow-service/rest"                                                             <BR />
+ },                                                                                                                                                                                   <BR />
+ "html5-apps-repo": {                                                                                                                                                       <BR />
+  "app_host_id": "2834263a-6e04-4f43-876a-67b81f32306e,1a5b93af-f1af-4acf-aee0-8c6cc8d3f315,8964e911-e35d-4cfd-972e-08e681a2df0f,9ea7410f-80ea-4b19-bbf0-4fca238ef098&amp;qu<BR />
+ot;                                                                                                                                                                                   <BR />
+ },                                                                                                                                                                                   <BR />
+ "saasregistryappname": "workflow",                                                                                                                               <BR />
+ "sap.cloud.service": "com.sap.bpm.workflow",                                                                                                                     <BR />
+ "uaa": {                                                                                                                                                                   <BR />
+  "apiurl": "https://api.authentication.eu10.hana.ondemand.com",                                                                                                  <BR />
+  "clientid": "sb-clone-deadbeef-03b2-46bb-bd3d-f00b7d2db0d2!b37882|workflow!b10150",                                                                             <BR />
+  "clientsecret": "1090976f-982a-3723-9a5d-723c913aba14$In4EKA1s5AIcfqo_juwHpKwGgh3o_bpYfeyIF0JE1Zg=",                                                            <BR />
+  "identityzone": "p2001351149trial",                                                                                                                             <BR />
+  "identityzoneid": "0a25d69a-6331-312a-bea9-1e90dc1f941f",                                                                                                       <BR />
+  "sburl": "https://internal-xsuaa.authentication.eu10.hana.ondemand.com",                                                                                        <BR />
+  "tenantid": "0a25d69a-6331-47ff-bea9-1e90dc1f941f",                                                                                                             <BR />
+  "tenantmode": "dedicated",                                                                                                                                      <BR />
+  "uaadomain": "authentication.eu10.hana.ondemand.com",<BR />
+  "url": "https://p2001351149trial.authentication.eu10.hana.ondemand.com",<BR />
+  "verificationkey": "-----BEGIN PUBLIC KEY-----MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAwThn6OO9kj0bchkOGkqYBnV1dQ3zU/xtj7Kj7nDd8nyRMcEWCtVzrzjzh- [ ] sRhlrzlRIEY82<BR />
+wRAZNGKMnw7cvCwNixcfcDJnjzgr2pJ+5/yDZUc0IXXyIWPZD+XdL+0EogC3d4+fqyvg/BF/F0t2hKHWr/UTXE6zrGhBKaL0d8rKfYd6olGWigFd+3+24CKI14zWVxUBtC+P9Fhngc9DRzkXqhxOK/EKn0HzSgotf5duq6Tmk9DCNM4sLW4+ERc<BR />
+6xzrgbeEexakabvax/Az9WZ4qhwgw+fwIhKIC7WLwCEJaRs...=-----END PUBLIC KEY-----",<BR />
+  "xsappname": "clone-b34de1f8-03b2-12de-bd3d-f00b7d2db0d2!b37882|workflow!b10150"<BR />
+ }<BR />
+}</CODE></PRE><BR />
+<UL><BR />
+ 	<LI><CODE>endpoints.workflow_rest_url</CODE> is the base URL for the resource server (the Workflow API endpoint, in this case)</LI><BR />
+ 	<LI><CODE>uaa.clientid</CODE> is the client ID to be used in the flow</LI><BR />
+ 	<LI><CODE>uaa.clientsecret</CODE> is the client secret to be used in the flow</LI><BR />
+ 	<LI><CODE>uaa.url</CODE> is the based URL for the authorisation server (for requesting tokens and so on)</LI><BR />
+</UL><BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h18m50s" target="_blank" rel="nofollow noopener noreferrer">00:18:50</A> Briefly looking at an updated version of the <CODE>skv</CODE> function we created in the <A href="https://bit.ly/handsonsapdev#ep57" target="_blank" rel="nofollow noopener noreferrer">previous episode</A>, this time allowing me to use it on different JSON files. Here’s what the definition looks like now:<BR />
+<PRE><CODE>skv () { jq -r ."$2" "$1".json; }</CODE></PRE><BR />
+So in this context, I can get the <CODE>uaa.url</CODE> value from the keys file like this:<BR />
+<PRE><CODE>-&gt; skv keys uaa.url<BR />
+<A href="https://p2001351149trial.authentication.eu10.hana.ondemand.com" target="test_blank" rel="nofollow noopener noreferrer">https://p2001351149trial.authentication.eu10.hana.ondemand.com</A></CODE></PRE><BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h20m00s" target="_blank" rel="nofollow noopener noreferrer">00:20:00</A> Before we continue, we’ll deliberately wipe out any authorities (scopes) we already have, from the perspective of what may already be allowed at the service instance level (for the “Client Credentials” flow), by updating the service instance like this:<BR />
+<PRE><CODE>-&gt; cf update-service workflow -c '{"authorities":[]}'<BR />
+Updating service instance workflow ...<BR />
+OK</CODE></PRE><BR />
+This should mean that we won’t have access to make any useful API calls using the “Client Credentials” flow.<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h20m45s" target="_blank" rel="nofollow noopener noreferrer">00:20:45</A> Looking briefly at what we have from last time, we still have the contents of the <CODE>~/.netrc</CODE> file with the client ID and secret to be used in a Basic Authentication header in calls to the authorisation server endpoint:<BR />
+<PRE><CODE>machine p2001351149trial.authentication.eu10.hana.ondemand.com<BR />
+login sb-clone-deadbeef-03b2-46bb-bd3d-f00b7d2db0d2!b37882|workflow!b10150<BR />
+password 1090976f-982a-3723-9a5d-723c913aba14$In4EKA1s5AIcfqo_juwHpKwGgh3o_bpYfeyIF0JE1Zg=</CODE></PRE><BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h21m28s" target="_blank" rel="nofollow noopener noreferrer">00:21:28</A> Starting to redo what we did last week, so we can compare that approach to what we’re going to do. This is what we did (using a backslash for <A href="http://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Escape-Character" target="_blank" rel="nofollow noopener noreferrer">line continuation</A><span class="lia-unicode-emoji" title=":disappointed_face:">😞</span><BR />
+<PRE><CODE>-&gt; curl -n \<BR />
+&gt; -v \<BR />
+&gt; -X POST \<BR />
+&gt; "$(skv keys uaa.url)/oauth/token?grant_type=client_credentials" &gt; token.json</CODE></PRE><BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h23m10s" target="_blank" rel="nofollow noopener noreferrer">00:23:10</A> In order to keep things clean and tidy as we move from exploring the “Client Credentials” flow to the “Authorisation Code” flow, we now put this <CODE>token.json</CODE> file containing the results of this call into a separate folder signifying the flow that was used. Also, to have the service key details (in the <CODE>keys.json</CODE> file we wrote to earlier) in the same directory, but not repeated, we make a symbolic link, ending up with something like this:<BR />
+<PRE><CODE>├── client_credentials<BR />
+│&nbsp;&nbsp; ├── keys.json -&gt; ../keys.json<BR />
+│&nbsp;&nbsp; └── token.json<BR />
+└── keys.json</CODE></PRE><BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h23m30s" target="_blank" rel="nofollow noopener noreferrer">00:23:30</A> Pretty-printing the contents of the <CODE>token.json</CODE> file, we see that we have these properties returned to us:<BR />
+<UL><BR />
+ 	<LI><CODE>access_token</CODE>: the token itself</LI><BR />
+ 	<LI><CODE>token_type</CODE>: the type of token (it’s a <A href="https://oauth.net/2/bearer-tokens/" target="_blank" rel="nofollow noopener noreferrer">bearer token</A>)</LI><BR />
+ 	<LI><CODE>expires_in</CODE>: how long the token lives for (we had a fun time guessing what the 43199 value represented, back in <A href="https://bit.ly/handsonsapdev#ep52" target="_blank" rel="nofollow noopener noreferrer">Episode 52</A> - see the <A href="https://blogs.sap.com/2020/02/07/annotated-links-episode-52-of-hands-on-sap-dev-with-qmacro/" target="_blank" rel="noopener noreferrer">annotations blog post</A> for more on that)</LI><BR />
+ 	<LI><CODE>scope</CODE>: an indication of the access we have with this particular token, in the form of scopes authorised by the UAA</LI><BR />
+ 	<LI><CODE>jti</CODE>: not mentioned here but this is a unique identifier for this token</LI><BR />
+</UL><BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h23m50s" target="_blank" rel="nofollow noopener noreferrer">00:23:50</A> We look at the value of the <CODE>scope</CODE> property using some basic tools, like this:<BR />
+<PRE><CODE>-&gt; skv token scope | tr ' ' '\n' | sort<BR />
+uaa.resource<BR />
+workflow!b10150.FORM_DEFINITION_DEPLOY<BR />
+workflow!b10150.TASK_DEFINITION_GET<BR />
+workflow!b10150.TASK_GET<BR />
+workflow!b10150.WORKFLOW_DEFINITION_DEPLOY</CODE></PRE><BR />
+The scopes here relate to deploying artifacts, not anything else.<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h24m40s" target="_blank" rel="nofollow noopener noreferrer">00:24:40</A> With this freshly minted token, we try it out by attempting to list the workflow definitions:<BR />
+<PRE><CODE>-&gt; curl -H "Authorization: Bearer $(skv token access_token)" \<BR />
+&gt; "$(skv keys endpoints.workflow_rest_url)/v1/workflow-definitions" \<BR />
+&gt; | jq .<BR />
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current<BR />
+                                 Dload  Upload   Total   Spent    Left  Speed<BR />
+100    65  100    65    0     0    137      0 --:--:-- --:--:-- --:--:--   137<BR />
+{<BR />
+  "error": {<BR />
+    "message": "User does not have sufficient privileges."<BR />
+  }<BR />
+}</CODE></PRE><BR />
+A successful fail! <span class="lia-unicode-emoji" title=":slightly_smiling_face:">🙂</span> (BTW, we can suppress the progress output from curl with the <CODE>-s</CODE> switch).<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h26m30s" target="_blank" rel="nofollow noopener noreferrer">00:26:30</A> So now we add the required scope back to the service instance, like this:<BR />
+<PRE><CODE>-&gt; cf update-service workflow \<BR />
+&gt; -c '{"authorities":["WORKFLOW_DEFINITION_GET"]}'<BR />
+Updating service instance workflow ...<BR />
+OK</CODE></PRE><BR />
+Trying again after this, with the same <CODE>access_token</CODE>, gives us a result that we could have predicted, i.e.&nbsp;we still get the “User does not have sufficient privileges” message. This is of course because when minted, that token didn’t include the scope we’ve just set.<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h27m00s" target="_blank" rel="nofollow noopener noreferrer">00:27:00</A> So, after asking for a new token, we get the result we’re looking for, like this:<BR />
+<PRE><CODE>-&gt; curl -s \<BR />
+&gt; -H "Authorization: Bearer $(skv token access_token)" \<BR />
+&gt; "$(skv keys endpoints.workflow_rest_url)/v1/workflow-definitions"  \<BR />
+&gt; | jq .<BR />
+[<BR />
+  {<BR />
+    "id": "simpleworkflow",<BR />
+    "version": "1",<BR />
+    "name": "simpleworkflow",<BR />
+    "createdBy": "sb-clone-deadbeef-03b2-46bb-bd3d-f00b7d2db0d2!b37882|workflow!b10150",<BR />
+    "createdAt": "2020-03-20T05:57:50.933Z",<BR />
+    "jobs": []<BR />
+  },<BR />
+  {<BR />
+    "id": "orderprocess",<BR />
+    "version": "8",<BR />
+    "name": "orderprocess",<BR />
+    "createdBy": "sb-clone-deadbeef-03b2-46bb-bd3d-f00b7d2db0d2!b37882|workflow!b10150",<BR />
+    "createdAt": "2020-03-18T14:29:16.411Z",<BR />
+    "jobs": []<BR />
+  }<BR />
+]</CODE></PRE><BR />
+Great.<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h28m00s" target="_blank" rel="nofollow noopener noreferrer">00:28:00</A> At this stage, it’s only fair to mention that when I did this last week, I didn’t even notice that I was using the HTTP POST method, when GET would have done the job just as well. The SAP authorisation server’s service is pretty flexible and supports different ways of making these requests. After all, there’s a reason that the Perl community motto <A href="https://en.wikipedia.org/wiki/There%27s_more_than_one_way_to_do_it" target="_blank" rel="nofollow noopener noreferrer">TMTOWTDI</A> exists!<BR />
+<BR />
+So to round out the recap, we try out a couple of alternatives (nothing majorly different, but different enough to look at).<BR />
+<BR />
+First, the same request format, but via GET:<BR />
+<PRE><CODE>-&gt; curl -n \<BR />
+&gt; -v \<BR />
+&gt; "$(skv keys uaa.url)/oauth/token?grant_type=client_credentials" &gt; token.json</CODE></PRE><BR />
+More interestingly, we can use a POST request in a rather different way, like this:<BR />
+<PRE><CODE>-&gt; curl -v \<BR />
+&gt; -d "grant_type=client_credentials&amp;client_id=$(skv keys uaa.clientid)&amp;client_secret=$(skv keys uaa.clientsecret)" \<BR />
+&gt; "$(skv keys uaa.url)/oauth/token" &gt; token.json</CODE></PRE><BR />
+This version of the request doesn’t pass anything in a Basic Authentication header; instead, it passes the client ID and secret, along with the grant type, in the body of the POST request. Lovely!<BR />
+<BR />
+I point out here, having just edited the command in an editor before submitting it, that you can do this too; in bash, just set the option like this:<BR />
+<PRE><CODE>-&gt; set -o vi</CODE></PRE><BR />
+If you’re interested in learning more about vi mode in bash, have a quick watch of this 6 minute video from Luke Smith: <A href="https://www.youtube.com/watch?v=GqoJQft5R2E" target="_blank" rel="nofollow noopener noreferrer">TFW You Learn There’s a Vim Mode in Bash…</A>.<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h32m30s" target="_blank" rel="nofollow noopener noreferrer">00:32:30</A> Moving on now to the “Authorisation Code” flow, which is where a HUMAN is involved. Exciting! Ta show the contrast in sharper relief, we first add the scope to be able to start new workflow instances:<BR />
+<PRE><CODE>-&gt; cf update-service workflow -c '{"authorities": ["WORKFLOW_DEFINITION_GET", "WORKFLOW_INSTANCE_START"]}'<BR />
+Updating service instance workflow ...<BR />
+OK</CODE></PRE><BR />
+(Remember that the list passed like this is absolute, not relative, so that if we’d just passed “WORKFLOW_INSTANCE_START” we’d have effectively removed “WORKFLOW_DEFINITION_GET”).<BR />
+<BR />
+Then, after retrieving a fresh access token like this:<BR />
+<PRE><CODE>-&gt; curl -v \<BR />
+&gt; -d "grant_type=client_credentials&amp;client_id=$(skv keys uaa.clientid)&amp;client_secret=$(skv keys uaa.clientsecret)" \<BR />
+&gt; "$(skv keys uaa.url)/oauth/token" &gt; token.json</CODE></PRE><BR />
+we make a successful call to start a new workflow instance, using the <CODE>/v1/workflow-definitions</CODE> API endpoint, like this:<BR />
+<PRE><CODE>-&gt; curl -s \<BR />
+&gt; -H "Content-Type: application/json" \<BR />
+&gt; -H "Authorization: Bearer $(skv token access_token)" \<BR />
+&gt; -d '{"definitionId":"simpleworkflow", "context":{"number":42}}' \<BR />
+&gt; "$(skv keys endpoints.workflow_rest_url)/v1/workflow-instances" | jq .<BR />
+{<BR />
+  "id": "1fce48e8-6d08-11ea-855a-eeee0a94224d",<BR />
+  "definitionId": "simpleworkflow",<BR />
+  "definitionVersion": "1",<BR />
+  "subject": "simpleworkflow",<BR />
+  "status": "RUNNING",<BR />
+  "businessKey": "",<BR />
+  "startedAt": "2020-03-23T13:13:44.900Z",<BR />
+  "startedBy": "sb-clone-deadbeef-03b2-46bb-bd3d-f00b7d2db0d2!b37882|workflow!b10150",<BR />
+  "completedAt": null<BR />
+}</CODE></PRE><BR />
+(At this point <A href="https://twitter.com/alexellisuk" target="_blank" rel="nofollow noopener noreferrer">Alex Ellis</A> pipes up with a lovely phrase that summarises this hard core session, and which is definitely going on a tshirt (thanks Alex!) - “OAuth at 8am”!)<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h37m15s" target="_blank" rel="nofollow noopener noreferrer">00:37:15</A> And when we go to the Workflow Monitor to look at this newly created instance (which of course is already in the COMPLETED state) we see that it was “Started By” … the client ID. Not me, not any human, but the curl command identified by the credentials granted to it via the token request for that client ID. Not ideal, but a situation we can solve with the use of the “Authorisation Code” grant type, as we’ll see now.<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h40m10s" target="_blank" rel="nofollow noopener noreferrer">00:40:10</A> Armed with the knowledge that two of the four grant types listed on the Pivotal site are now legacy, we revisit the SAP Help Portal pages, specifically the <A href="https://help.sap.com/viewer/e157c391253b4ecd93647bf232d18a83/Cloud/en-US/df943e71122448caaf3c49f5ffd80627.html" target="_blank" rel="noopener noreferrer">Using Workflow APIs</A> section, and now understand why there are only two subsections relating to the access via OAuth:<BR />
+<UL><BR />
+ 	<LI><A href="https://help.sap.com/viewer/e157c391253b4ecd93647bf232d18a83/Cloud/en-US/9edeb36db8aa4628be092328e8810e5e.html" target="_blank" rel="noopener noreferrer">Access Workflow APIs Using OAuth 2.0 Authentication (Authorization Code Grant)</A></LI><BR />
+ 	<LI><A href="https://help.sap.com/viewer/e157c391253b4ecd93647bf232d18a83/Cloud/en-US/c2bd37c63dda47449e24b8830ba312f1.html" target="_blank" rel="noopener noreferrer">Access Workflow APIs Using OAuth 2.0 Authentication (Client Credentials Grant)</A></LI><BR />
+</UL><BR />
+Now we know why!<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h40m30s" target="_blank" rel="nofollow noopener noreferrer">00:40:30</A> Looking at the “Authorisation Code” flow details, we see that the flow is slightly longer, but that’s because a HUMAN is involved, as we saw in the nice diagram on the Pivotal site for that flow section.<BR />
+<BR />
+This is how the flow goes, as we work through it, this time in a new directory <CODE>authorization_code/</CODE> that we create in a similar way to the first one, so we now have:<BR />
+<PRE><CODE>.<BR />
+├── authorization_code<BR />
+│&nbsp;&nbsp; └── keys.json -&gt; ../keys.json<BR />
+├── client_credentials<BR />
+│&nbsp;&nbsp; ├── keys.json -&gt; ../keys.json<BR />
+│&nbsp;&nbsp; └── token.json<BR />
+└── keys.json</CODE></PRE><BR />
+Step 1 is to generate the URL with which we can request a code, noting that the endpoint URL’s path is <CODE>/oauth/authorize</CODE> as opposed to what we’ve seen thus far, i.e. <CODE>/oauth/token</CODE>. This is because we’re not asking for a token directly at this stage.<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h42m50s" target="_blank" rel="nofollow noopener noreferrer">00:42:50</A> We actually need to go to the request URL in our browser, so at this stage we just need to produce the URL, i.e.&nbsp;echo it out to the terminal, so we can grab it to open.<BR />
+<BR />
+BTW, I’ve aliases a pair of little helpers for URL encoding and decoding, which you can see in my <CODE>~/.bash_aliases</CODE>, as we’ll need to URL encode the values in the URL’s query string:<BR />
+<PRE><CODE>-&gt; cat ~/.bash_aliases<BR />
+alias urldecode='python3 -c "import sys, urllib.parse as ul; print(ul.unquote_plus(sys.argv[1]))"'<BR />
+alias urlencode='python3 -c "import sys, urllib.parse as ul; print (ul.quote_plus(sys.argv[1]))"'</CODE></PRE><BR />
+OK, so to the creation of the URL:<BR />
+<PRE><CODE>-&gt; echo "$(skv keys uaa.url)/oauth/authorize?client_id=$(urlencode `skv keys uaa.clientid`)&amp;response_type=code"<BR />
+<A href="https://p2001351149trial.authentication.eu10.hana.ondemand.com/oauth/authorize?client_id=sb-clone-deadbeef-03b2-46bb-bd3d-f00b7d2db0d2%21b37882%7Cworkflow%21b10150&amp;response_type=code" target="test_blank" rel="nofollow noopener noreferrer">https://p2001351149trial.authentication.eu10.hana.ondemand.com/oauth/authorize?client_id=sb-clone-deadbeef-03b2-46bb-bd3d-f00b7d2db0d2%21b37882%7Cworkflow%21b10150&amp;response_type=code</A></CODE></PRE><BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h45m20s" target="_blank" rel="nofollow noopener noreferrer">00:45:20</A> Step 2 is to go to the generated URL, which we do now. And we’re asked, beautifully, to authenticate! Which we do, using my personal credentials in my role as “resource owner” here.<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2020/03/Screenshot-2020-03-23-at-16.15.26.png" /><BR />
+<BR />
+As a result of that, we get redirected to a URL that contains the code that we’re looking for:<BR />
+<BR />
+<A class="uri" href="http://localhost:8080?code=zCyAM2lqaQ" target="_blank" rel="nofollow noopener noreferrer">http://localhost:8080?code=zCyAM2lqaQ</A><BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h46m10s" target="_blank" rel="nofollow noopener noreferrer">00:46:10</A> Step 3 is to ask for an exchange of that code <CODE>zCyAM2lqaQ</CODE> for an access token. So we do that:<BR />
+<PRE><CODE>-&gt; curl -n \<BR />
+&gt; -v \<BR />
+&gt; "$(skv keys uaa.url)/oauth/token?grant_type=authorization_code&amp;code=zCyAM2lqaQ"</CODE></PRE><BR />
+In fact, I forgot to save the (JSON) response into a file, which is a nice mistake to have made, as it illustrated that such codes can only be used once. Trying again to exchange the same code for another access token resulted in an HTTP 400 response. Quite right too!<BR />
+<BR />
+So we request another code, and this time, when we ask for it to be exchanged for an access token, we save the response into a <CODE>token.json</CODE> file (remember, we’re in the <CODE>authorization_code/</CODE> directory here too).<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h48m25s" target="_blank" rel="nofollow noopener noreferrer">00:48:25</A> Moreover, not only do we have an access token now, but also (and this is something that will hopefully pique <SPAN class="mention-scrubbed">phil.cooley</SPAN>’s interest) a refresh token!<BR />
+<BR />
+And there’s more. There are far more scopes related to this access token than we’ve seen thus far. The scopes related to the access token that was granted in our “Client Credentials” flow look like this:<BR />
+<PRE><CODE>-&gt; cd ../client_credentials/<BR />
+-&gt; skv token scope | tr ' ' '\n' | sort<BR />
+uaa.resource<BR />
+workflow!b10150.FORM_DEFINITION_DEPLOY<BR />
+workflow!b10150.TASK_DEFINITION_GET<BR />
+workflow!b10150.TASK_GET<BR />
+workflow!b10150.WORKFLOW_DEFINITION_DEPLOY<BR />
+workflow!b10150.WORKFLOW_DEFINITION_GET<BR />
+workflow!b10150.WORKFLOW_INSTANCE_START</CODE></PRE><BR />
+But the scopes related to the access token we just received, granted in our “Authorisation Code” flow, look like this:<BR />
+<PRE><CODE>-&gt; skv token scope | tr ' ' '\n' | sort<BR />
+openid<BR />
+uaa.user<BR />
+workflow!b10150.AUTHORIZE_WITH_INSTANCE_ROLES<BR />
+workflow!b10150.FORM_DEFINITION_DEPLOY<BR />
+workflow!b10150.FORM_DEFINITION_GET_MODEL<BR />
+workflow!b10150.FORM_DEFINITION_GET_MODEL_ANY<BR />
+workflow!b10150.IMPERSONATION_TOKEN_GET<BR />
+workflow!b10150.READ_FEATURE_FLAGS<BR />
+workflow!b10150.RETRIEVE_XSRF_TOKEN<BR />
+workflow!b10150.TASK_COMPLETE_ANY<BR />
+workflow!b10150.TASK_DEFINITION_QUERY_ANY<BR />
+workflow!b10150.TASK_GET_ATTRIBUTES_ANY<BR />
+workflow!b10150.TASK_GET_CONTEXT_ANY<BR />
+workflow!b10150.TASK_GET_FORM<BR />
+workflow!b10150.TASK_GET_FORM_MODEL<BR />
+workflow!b10150.TASK_MANAGE_OWN<BR />
+workflow!b10150.TASK_PATCH_ANY<BR />
+workflow!b10150.TASK_QUERY_ANY<BR />
+workflow!b10150.WORKFLOW_DEFINITION_DEPLOY<BR />
+workflow!b10150.WORKFLOW_DEFINITION_GET_MODEL<BR />
+workflow!b10150.WORKFLOW_DEFINITION_QUERY_ANY<BR />
+workflow!b10150.WORKFLOW_DEFINITION_VALIDATE<BR />
+workflow!b10150.WORKFLOW_INSTANCE_CANCEL<BR />
+workflow!b10150.WORKFLOW_INSTANCE_ERROR_MESSAGES_QUERY<BR />
+workflow!b10150.WORKFLOW_INSTANCE_GET_ATTRIBUTES<BR />
+workflow!b10150.WORKFLOW_INSTANCE_GET_CONTEXT<BR />
+workflow!b10150.WORKFLOW_INSTANCE_QUERY_ANY<BR />
+workflow!b10150.WORKFLOW_INSTANCE_QUERY_EXECUTION_LOGS<BR />
+workflow!b10150.WORKFLOW_INSTANCE_QUERY_ROLES<BR />
+workflow!b10150.WORKFLOW_INSTANCE_RETRY_RESUME<BR />
+workflow!b10150.WORKFLOW_INSTANCE_START<BR />
+workflow!b10150.WORKFLOW_INSTANCE_SUSPEND<BR />
+workflow!b10150.WORKFLOW_INSTANCE_UPDATE_ROLES</CODE></PRE><BR />
+Gosh!<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h50m10s" target="_blank" rel="nofollow noopener noreferrer">00:50:10</A> Why is this? Well of course, because the access token has been granted on MY behalf, and I have lots of roles assigned to me via the <CODE>workflow</CODE> role collection, which we look at briefly now.<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2020/03/Screenshot-2020-03-23-at-16.16.24.png" /><BR />
+<BR />
+These roles are:<BR />
+<UL><BR />
+ 	<LI>WorkflowAdmin</LI><BR />
+ 	<LI>WorkflowContextViewer</LI><BR />
+ 	<LI>WorkflowDeveloper</LI><BR />
+ 	<LI>WorkflowInitiator</LI><BR />
+ 	<LI>WorkflowParticipant</LI><BR />
+ 	<LI>WorkflowViewer</LI><BR />
+</UL><BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h50m40s" target="_blank" rel="nofollow noopener noreferrer">00:50:40</A> Now we have this access token, we can try to start a new workflow instance, just like we did before. While the token request and receipt has a different flow (and more importantly a different context), the use of the token in an actual API call is the same.<BR />
+<PRE><CODE>-&gt; curl -s \<BR />
+&gt; -H "Content-Type: application/json" \<BR />
+&gt; -H "Authorization: Bearer $(skv token access_token)" \<BR />
+&gt; -d '{"definitionId":"simpleworkflow", "context":{"number":43}}' \<BR />
+&gt; "$(skv keys endpoints.workflow_rest_url)/v1/workflow-instances" | jq .<BR />
+{<BR />
+  "id": "1fce48e8-6d08-11ea-855a-209327de311",<BR />
+  "definitionId": "simpleworkflow",<BR />
+  "definitionVersion": "1",<BR />
+  "subject": "simpleworkflow",<BR />
+  "status": "RUNNING",<BR />
+  "businessKey": "",<BR />
+  "startedAt": "2020-03-23T13:13:44.900Z",<BR />
+  "startedBy": "qmacro+workflowcodejam@gmail.com",<BR />
+  "completedAt": null<BR />
+}</CODE></PRE><BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h53m10s" target="_blank" rel="nofollow noopener noreferrer">00:53:10</A> And which part of these successful results do we think is the most exciting? Well, it’s the value of the <CODE>startedBy</CODE> property, of course! Instead of referring to the non-human client ID, it’s referring to me, the human who actually started the workflow instance.<BR />
+<BR />
+A quick look via the Workflow Monitor shows this contrast between the different “Started By” values. Great!<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h54m50s" target="_blank" rel="nofollow noopener noreferrer">00:54:50</A> Flushed with this success, we talk briefly about how we might have different clients, different apps, with different access rights (as they might serve different purposes) in the context of the “Client Credentials” grant type. And the answer is to have multiple service instances of the workflow service, assign different scopes to these multiple instances, and use the client credentials (ID and secret) from the different service keys connected to these instances accordingly. Now it makes a lot of sense, right?<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h56m10s" target="_blank" rel="nofollow noopener noreferrer">00:56:10</A> In the spirit of “poke it and see what happens”, we take a brief look at whether what we’ve discovered makes sense and holds when we do something … say, like remove a role from the role collection that’s assigned to me.<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=00h56m30s" target="_blank" rel="nofollow noopener noreferrer">00:56:30</A> Before we do anything, we check what’s in the scope relating to our current (Authorisation Code grant type related) access token. We see the list, which is the same as the one above, which includes the scope:<BR />
+<PRE><CODE>workflow!b10150.WORKFLOW_INSTANCE_START</CODE></PRE><BR />
+Good.<BR />
+<BR />
+Now, we remove the WorkflowInitiator role from the role collection that’s assigned to me. Then we generate a new URL to request a new code, using the same <CODE>echo</CODE> command as before:<BR />
+<PRE><CODE>-&gt; echo "$(skv keys uaa.url)/oauth/authorize?client_id=$(urlencode `skv keys uaa.clientid`)&amp;response_type=code"<BR />
+<A href="https://p2001351149trial.authentication.eu10.hana.ondemand.com/oauth/authorize?client_id=sb-clone-deadbeef-03b2-46bb-bd3d-f00b7d2db0d2%21b37882%7Cworkflow%21b10150&amp;response_type=code" target="test_blank" rel="nofollow noopener noreferrer">https://p2001351149trial.authentication.eu10.hana.ondemand.com/oauth/authorize?client_id=sb-clone-deadbeef-03b2-46bb-bd3d-f00b7d2db0d2%21b37882%7Cworkflow%21b10150&amp;response_type=code</A></CODE></PRE><BR />
+We must do a bit of jiggling about in order to remove the cookies to effectively invalidate my already-authenticated status so that we’ll be asked to authenticate again, and once we’ve done this, we do indeed get the authentication challenge screen again, asking me for my email address and password.<BR />
+<BR />
+We then exchange the code we receive for a new access token, and take a look at the scopes:<BR />
+<PRE><CODE>-&gt; skv token scope | tr ' ' '\n' | sort<BR />
+openid<BR />
+uaa.user<BR />
+workflow!b10150.AUTHORIZE_WITH_INSTANCE_ROLES<BR />
+workflow!b10150.FORM_DEFINITION_DEPLOY<BR />
+workflow!b10150.FORM_DEFINITION_GET_MODEL<BR />
+workflow!b10150.FORM_DEFINITION_GET_MODEL_ANY<BR />
+workflow!b10150.IMPERSONATION_TOKEN_GET<BR />
+workflow!b10150.READ_FEATURE_FLAGS<BR />
+workflow!b10150.RETRIEVE_XSRF_TOKEN<BR />
+workflow!b10150.TASK_COMPLETE_ANY<BR />
+workflow!b10150.TASK_DEFINITION_QUERY_ANY<BR />
+workflow!b10150.TASK_GET_ATTRIBUTES_ANY<BR />
+workflow!b10150.TASK_GET_CONTEXT_ANY<BR />
+workflow!b10150.TASK_GET_FORM<BR />
+workflow!b10150.TASK_GET_FORM_MODEL<BR />
+workflow!b10150.TASK_MANAGE_OWN<BR />
+workflow!b10150.TASK_PATCH_ANY<BR />
+workflow!b10150.TASK_QUERY_ANY<BR />
+workflow!b10150.WORKFLOW_DEFINITION_DEPLOY<BR />
+workflow!b10150.WORKFLOW_DEFINITION_GET_MODEL<BR />
+workflow!b10150.WORKFLOW_DEFINITION_QUERY_ANY<BR />
+workflow!b10150.WORKFLOW_DEFINITION_VALIDATE<BR />
+workflow!b10150.WORKFLOW_INSTANCE_CANCEL<BR />
+workflow!b10150.WORKFLOW_INSTANCE_ERROR_MESSAGES_QUERY<BR />
+workflow!b10150.WORKFLOW_INSTANCE_GET_ATTRIBUTES<BR />
+workflow!b10150.WORKFLOW_INSTANCE_GET_CONTEXT<BR />
+workflow!b10150.WORKFLOW_INSTANCE_QUERY_ANY<BR />
+workflow!b10150.WORKFLOW_INSTANCE_QUERY_EXECUTION_LOGS<BR />
+workflow!b10150.WORKFLOW_INSTANCE_QUERY_ROLES<BR />
+workflow!b10150.WORKFLOW_INSTANCE_RETRY_RESUME<BR />
+workflow!b10150.WORKFLOW_INSTANCE_SUSPEND<BR />
+workflow!b10150.WORKFLOW_INSTANCE_UPDATE_ROLES</CODE></PRE><BR />
+Can you see what’s (successfully) missing? Yes, the <CODE>workflow!b10150.WORKFLOW_INSTANCE_START</CODE> scope. This is a direct result of the removal of the WorkflowInitiator role from the workflow role collection assigned to me.<BR />
+<BR />
+And of course, as you can guess, an attempt to start a new workflow instance fails, with:<BR />
+<PRE><CODE>{<BR />
+  "error": {<BR />
+    "message": "User does not have sufficient privileges."<BR />
+  }<BR />
+}</CODE></PRE><BR />
+Great, this is what we expect.<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=01h01m50s" target="_blank" rel="nofollow noopener noreferrer">01:01:50</A> As <SPAN class="mention-scrubbed">phil.cooley</SPAN> had been asking about refresh tokens, we extend the episode by a few minutes to see how we can follow the refresh token flow.<BR />
+<BR />
+First, we have a look at what we have in the <CODE>token.json</CODE> file, remembering which properties are in there:<BR />
+<PRE><CODE>-&gt; jq keys token.json<BR />
+[<BR />
+  "access_token",<BR />
+  "expires_in",<BR />
+  "id_token",<BR />
+  "jti",<BR />
+  "refresh_token",<BR />
+  "scope",<BR />
+  "token_type"<BR />
+]</CODE></PRE><BR />
+(we didn’t use this ‘keys’ option of <CODE>jq</CODE> in the live stream but it’s useful for us here).<BR />
+<BR />
+The flow is described on the same documentation page (<A href="https://help.sap.com/viewer/e157c391253b4ecd93647bf232d18a83/Cloud/en-US/9edeb36db8aa4628be092328e8810e5e.html" target="_blank" rel="noopener noreferrer">Access Workflow APIs Using OAuth 2.0 Authentication (Authorization Code Grant)</A>) and is very simple:<BR />
+<PRE><CODE>-&gt; curl -n -v "$(skv keys uaa.url)/oauth/token?grant_type=refresh_token&amp;refresh_token=$(skv token refresh_token)" &gt; refreshed-token.json</CODE></PRE><BR />
+(At this stage, we also notice that the use of the value “refresh_token” for the <CODE>grant_type</CODE> query string parameter is most likely why “Refresh Token” is <A href="https://oauth.net/2/grant-types/" target="_blank" rel="nofollow noopener noreferrer">listed on the OAuth 2.0 website</A> as a first class grant type citizen.)<BR />
+<BR />
+<A href="https://www.youtube.com/watch?v=AjuwSJeAUy8&amp;t=01h04m35s" target="_blank" rel="nofollow noopener noreferrer">01:04:35</A> Is this new, refreshed access token actually usable? We try it out by trying to get a list of workflow definitions, thus:<BR />
+<PRE><CODE>-&gt; curl -s -H "Authorization: Bearer $(skv token access_token)" "$(skv keys endpoints.workflow_rest_url)/v1/workflow-definitions" | jq .<BR />
+[<BR />
+  {<BR />
+    "id": "simpleworkflow",<BR />
+    "version": "1",<BR />
+    "name": "simpleworkflow",<BR />
+    "createdBy": "sb-clone-b34de1f8-03b2-46bb-bd3d-f00b7d2db0d2!b37882|workflow!b10150",<BR />
+    "createdAt": "2020-03-20T05:57:50.933Z",<BR />
+    "jobs": []<BR />
+  },<BR />
+  {<BR />
+    "id": "orderprocess",<BR />
+    "version": "8",<BR />
+    "name": "orderprocess",<BR />
+    "createdBy": "sb-clone-b34de1f8-03b2-46bb-bd3d-f00b7d2db0d2!b37882|workflow!b10150",<BR />
+    "createdAt": "2020-03-18T14:29:16.411Z",<BR />
+    "jobs": []<BR />
+  }<BR />
+]</CODE></PRE><BR />
+It is indeed usable - hurray!

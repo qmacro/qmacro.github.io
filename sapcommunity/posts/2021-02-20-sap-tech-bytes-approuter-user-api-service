@@ -1,0 +1,109 @@
+2021-02-20-sap-tech-bytes-approuter-user-api-service
+SAP Tech Bytes: Approuter User API Service
+technology-blog-sap
+2021-02-20
+https://community.sap.com/t5/technology-blogs-by-sap/sap-tech-bytes-approuter-user-api-service/ba-p/13488396
+<EM>Use a simple example to kick the tyres of the new User API Service available in the <a href="https://community.sap.com/t5/user/viewprofilepage/user-id/1387241">@Sisn</a>/approuter NPM package.</EM><BR />
+<BR />
+In the <A href="https://www.youtube.com/watch?t=461&amp;v=PgCaIHp1JFY&amp;feature=youtu.be" target="_blank" rel="nofollow noopener noreferrer">SAP Developer News episode for calendar week 04</A>, there was an <A href="https://www.youtube.com/watch?v=PgCaIHp1JFY&amp;list=PL6RpkC85SLQAVBSQXN9522_1jNvPavBgg&amp;index=4&amp;t=462s" target="_blank" rel="nofollow noopener noreferrer">item</A> covering updates to some NPM packages, including <A href="https://www.npmjs.com/package/@sap/approuter" target="_blank" rel="nofollow noopener noreferrer">@sap/approuter</A> - which now has a <A href="https://www.npmjs.com/package/@sap/approuter#user-api-service" target="_blank" rel="nofollow noopener noreferrer">User API Service</A>. If you're interested in kicking the tyres of this new User API and getting a simple example up and running, this quick post is for you (there's a link to files in our GitHub repo at the end).<BR />
+<BR />
+The simplest thing that could possibly work is an <a href="https://community.sap.com/t5/user/viewprofilepage/user-id/1387241">@Sisn</a>/approuter based app with a minimal configuration as described in the <A href="https://www.npmjs.com/package/@sap/approuter#user-api-service" target="_blank" rel="nofollow noopener noreferrer">User API Service section</A>. That app needs to be bound to a minimally configured instance of the Authorization &amp; Trust Management service (aka "xsuaa") and running in Cloud Foundry (CF).<BR />
+<H3 id="toc-hId-1065451453"><STRONG>App with minimal configuration</STRONG></H3><BR />
+While the app is still effectively a Node.js package, there is no code, just configuration. First, in the form of the Node.js <STRONG>package.json</STRONG> file, which looks like this:<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+  "name": "userapitest",<BR />
+  "scripts": {<BR />
+    "start": "node node_modules/@sap/approuter/approuter.js"<BR />
+  },<BR />
+  "dependencies": {<BR />
+    "@sap/approuter": "^9.1.0"<BR />
+  }<BR />
+}<BR />
+</CODE></PRE><BR />
+The built-in approuter.js script is run directly when the app is started. It will look for configuration and find it in an <STRONG>xs-app.json</STRONG> file, the contents of which should look like this:<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+  "welcomeFile": "/user-api/attributes",<BR />
+  "routes": [<BR />
+    {<BR />
+      "source": "^/user-api(.*)",<BR />
+      "target": "$1",<BR />
+      "service": "sap-approuter-userapi"<BR />
+    }<BR />
+  ]<BR />
+}<BR />
+</CODE></PRE><BR />
+Note that the welcomeFile property is used to automatically redirect us to one of the two endpoints supported by the User API Service - the "attributes" endpoint. The rest of the configuration is taken directly from the <A href="https://www.npmjs.com/package/@sap/approuter#user-api-service" target="_blank" rel="nofollow noopener noreferrer">documentation</A>.<BR />
+<BR />
+The xsuaa instance needs some minimal configuration - an app name and the tenant mode in which it is to run. Here it is, in an <STRONG>xs-security.json</STRONG> file:<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+  "xsappname": "userapitest",<BR />
+  "tenant-mode": "dedicated"<BR />
+}</CODE></PRE><BR />
+We can use a simple manifest for the CF command "cf push", to save on typing. This defines what we need (although it doesn't cause the creation of the xsuaa service instance, like an MTA based approach would, but we're keeping things as simple as possible here). The contents of that manifest - in the <STRONG>manifest.yml</STRONG> file, are as follows:<BR />
+<PRE class="language-sql"><CODE>applications:<BR />
+- name: userapitest<BR />
+  disk_quota: 256M<BR />
+  instances: 1<BR />
+  memory: 256M<BR />
+  random-route: true<BR />
+  services:<BR />
+  - xsuaa-application<BR />
+  stack: cflinuxfs3<BR />
+</CODE></PRE><BR />
+<H3 id="toc-hId-868937948"><STRONG>Setting things up</STRONG></H3><BR />
+So all we need to do now is to create the xsuaa service instance, with the "application" plan &amp; those xs-security.json settings, specifying the name "xsuaa-application" (as that's what is expected via the entry in the manifest), and then run the "cf push".<BR />
+<BR />
+Let's take those steps now. First, the service instance creation:<BR />
+<PRE class="language-markup"><CODE>; cf create-service xsuaa application xsuaa-application -c xs-security.json <BR />
+Creating service instance xsuaa-application in org xde3af75trial / space dev as sapdeveloper@example.com...<BR />
+OK</CODE></PRE><BR />
+Now the xsuaa service instance exists, we can create &amp; deploy the app and have it bound to that service instance:<BR />
+<PRE class="language-markup"><CODE>; cf push -f manifest.yml<BR />
+Pushing from manifest to org xde3af75trial / space dev as sapdeveloper@example.com...<BR />
+Using manifest file /Users/sapdeveloper/Projects/userapitest/manifest.yml<BR />
+Getting app info...<BR />
+Creating app with these attributes...<BR />
++ name:         userapitest<BR />
+  path:         /Users/i347491/Projects/userapitest<BR />
++ disk quota:   256M<BR />
++ instances:    1<BR />
++ memory:       256M<BR />
++ stack:        cflinuxfs3<BR />
+  services:<BR />
++   xsuaa-application<BR />
+  routes:<BR />
++   userapitest-grouchy-chimpanzee-nx.cfapps.eu10.hana.ondemand.com<BR />
+[...]<BR />
+Waiting for app to start...<BR />
+[...]<BR />
+     state     since                  cpu    memory          disk         details<BR />
+#0   running   2021-02-19T17:55:10Z   0.0%   35.6K of 256M   8K of 256M<BR />
+;<BR />
+</CODE></PRE><BR />
+And that's it!<BR />
+<H3 id="toc-hId-672424443"><STRONG>Checking the results</STRONG></H3><BR />
+Accessing the route given in the output (the "userapitest-grouchy-chimpanzee.nz" route, here) in the browser results in this output, generated directly by the User API Service for the <STRONG>/user-api/attributes</STRONG>&nbsp;path:<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+  firstname: "SAP",<BR />
+  lastname: "Developer",<BR />
+  email: "sapdeveloper@example.com",<BR />
+  name: "sapdeveloper@example.com",<BR />
+}</CODE></PRE><BR />
+And the output for the <STRONG>/user-api/currentUser</STRONG> path looks like this:<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+  firstname: "SAP",<BR />
+  lastname: "Developer",<BR />
+  email: "sapdeveloper@example.com",<BR />
+  name: "sapdeveloper@example.com",<BR />
+  displayName: "SAP Developer (sapdeveloper@example.com)",<BR />
+}</CODE></PRE><BR />
+<H3 id="toc-hId-475910938"><STRONG>Trying it yourself</STRONG></H3><BR />
+There's a branch for this SAP Tech Bytes post in the accompanying <A href="https://github.com/SAP-samples/sap-tech-bytes" target="_blank" rel="nofollow noopener noreferrer">SAP Tech Bytes repository</A>: Check it out and follow the simple instructions here:<BR />
+<BR />
+<A href="https://github.com/SAP-samples/sap-tech-bytes/tree/2021-02-20-approuter-user-api-service" target="_blank" rel="nofollow noopener noreferrer">https://github.com/SAP-samples/sap-tech-bytes/tree/2021-02-20-approuter-user-api-service</A><BR />
+<BR />
+&nbsp;<BR />
+<BR />
+<HR /><BR />
+<P style="overflow: hidden;margin-bottom: 0px"><A href="#saptechbytes" target="_blank" rel="nofollow noopener noreferrer"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2021/02/screenshot-2021-02-22-at-11.00.25.png" height="35" width="208" /></A></P><BR />
+SAP Tech Bytes is an initiative to bring you bite-sized information on all manner of topics, in <A href="https://www.youtube.com/playlist?list=PL6RpkC85SLQC3HBShmlMaPu_nL--4f20z" target="_blank" rel="nofollow noopener noreferrer">video</A> and <A href="https://blogs.sap.com/tag/sap-tech-bytes/" target="_blank" rel="noopener noreferrer">written</A> format. Enjoy!

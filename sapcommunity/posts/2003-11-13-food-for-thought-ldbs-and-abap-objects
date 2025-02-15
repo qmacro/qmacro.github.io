@@ -1,0 +1,81 @@
+2003-11-13-food-for-thought-ldbs-and-abap-objects
+Food for thought: LDBs and ABAP Objects
+application-developmentblog-board
+2003-11-13
+https://community.sap.com/t5/application-development-blog-posts/food-for-thought-ldbs-and-abap-objects/ba-p/12861477
+<DIV><BR />
+<BR />
+During part of this week I've been fighting with an old adversary,<A class="jive-link-external-small" href="http://help.sap.com/saphelp_46c/helpdata/en/30/c6853488601e33e10000009b38f83b/frameset.htm" target="_blank" rel="noopener noreferrer">output determination</A>. In the fracas, I spent some time inside RSNAST00 (the selection program for issuing output) and couldn't help noticing, in passing, that it used FIELD-GROUPS. This relatively old area of ABAP got me thinking about logical databases (LDBs) and their use in writing reports. You know the sort of thing:<BR />
+<PRE><CODE>GET KNA1.<BR />
+<BR />
+&nbsp; SUMMARY.<BR />
+&nbsp; WRITE: / ...<BR />
+<BR />
+GET KNB1.<BR />
+<BR />
+&nbsp; DETAIL.<BR />
+&nbsp; WRITE: / ...<BR />
+&nbsp; EXTRACT ...<BR />
+</CODE></PRE><BR />
+When you execute a report that uses a logical database, you're really just hitching a ride on the back of the database program that actually reads through the logical database you've specified; your GET statements are <EM>reactive</EM>, event handlers almost, that do something when passed a segment (ahem, node) of data by means of the <EM>proactive</EM>PUT statements in the database program (e.g. SAPDBDDF for the DD-F logical database).<BR />
+<BR />
+Anyway, this brings me to something that's been floating around in the back of my mind since TechEd last month in Basel. I attended a great session on ABAP Objects, given by Stefan Bresch and Horst Keller (thanks, chaps). In a section championing the explicit nature of ABAP Objects, there was a fascinating example of an implementation of a simple LDB using a class, and using ABAP Object events (RAISE EVENT ... EXPORTING) and event subscriptions to achieve the PUT / GET relationship. Here's that example.<BR />
+<BR />
+There's the 'ldb' class that implements a simple database read program for the the single-node (SPFLI) logical database:<BR />
+<PRE><CODE>class ldb definition.<BR />
+&nbsp; public section.<BR />
+&nbsp;&nbsp;&nbsp; methods read_spfli.<BR />
+&nbsp;&nbsp;&nbsp; events spfli_ready exporting value(values) type spfli.<BR />
+&nbsp; private section.<BR />
+&nbsp;&nbsp;&nbsp; data spfli_wa type spfli.<BR />
+endclass.<BR />
+<BR />
+class ldb implementation.<BR />
+&nbsp; method read_spfli.<BR />
+&nbsp;&nbsp;&nbsp; select * from spfli<BR />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; into spfli_wa.<BR />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; raise event spfli_ready exporting values = spfli_wa.<BR />
+&nbsp;&nbsp;&nbsp; endselect.<BR />
+&nbsp; endmethod.<BR />
+endclass.<BR />
+</CODE></PRE><BR />
+Here we have a single public method READ_SPFLI that reads the table SPFLI, raising the event SPFLI_READY for each record it finds. This is like the PUT from our traditional database program.<BR />
+<BR />
+Then we have a report that uses that logical database. It's also written as a class:<BR />
+<PRE><CODE>class rep definition.<BR />
+&nbsp; public section.<BR />
+&nbsp;&nbsp;&nbsp; methods start.<BR />
+&nbsp; private section.<BR />
+&nbsp;&nbsp;&nbsp; data spfli_tab type table of spfli.<BR />
+&nbsp;&nbsp;&nbsp; methods: get_spfli for event spfli_ready of ldb<BR />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; importing values,<BR />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; display_spfli.<BR />
+endclass.<BR />
+<BR />
+class rep implementation.<BR />
+&nbsp; method start.<BR />
+&nbsp;&nbsp;&nbsp; data ldb type ref to ldb.<BR />
+&nbsp;&nbsp;&nbsp; create object ldb.<BR />
+&nbsp;&nbsp;&nbsp; set handler me-&gt;get_spfli for ldb.<BR />
+&nbsp;&nbsp;&nbsp; ldb-&gt;read_spfli( ).<BR />
+&nbsp;&nbsp;&nbsp; display_spfli( ).<BR />
+&nbsp; endmethod.<BR />
+&nbsp; method get_spfli.<BR />
+&nbsp;&nbsp;&nbsp; append values to spfli_tab.<BR />
+&nbsp; endmethod.<BR />
+&nbsp; method display_spfli.<BR />
+&nbsp;&nbsp;&nbsp; data alv_list type ref to cl_gui_alv_grid.<BR />
+&nbsp;&nbsp;&nbsp; create object alv_list<BR />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; exporting i_parent = cl_gui_container=&gt;screen0.<BR />
+&nbsp;&nbsp;&nbsp; alv_list-&gt;set_table_for_first_display(<BR />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; exporting i_structure_name = 'SPFLI'<BR />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; changing&nbsp; it_outtab&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; = spfli_tab ).<BR />
+&nbsp;&nbsp;&nbsp; call screen 100.<BR />
+&nbsp; endmethod.<BR />
+endclass.<BR />
+</CODE></PRE><BR />
+In the START method we effectively are declaring the use of the logical database by instantiating an 'ldb' object, doing the equivalent of specifying a logical database in a report program's attributes section. Then we define the method GET_SPFLI as the handler for the events that will be raised (SPFLI_READY) when we trigger the database's reading with the invocation of the READ_SPFLI method. This of course is the equivalent of a GET SPFLI statement. To initiate the reading of the database we invoke the READ_SPFLI method. Finally there's a DISPLAY_SPFLI event in the 'rep' class using ALV to present the data on the screen.<BR />
+<BR />
+I don't know about you, but I was taken aback by the beauty of this. As we're approaching the weekend, a time to unwind and reflect, I just thought I'd share it with you.<BR />
+<BR />
+</DIV>

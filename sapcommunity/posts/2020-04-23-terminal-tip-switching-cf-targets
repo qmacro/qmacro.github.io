@@ -1,0 +1,53 @@
+2020-04-23-terminal-tip-switching-cf-targets
+Terminal Tip: switching CF targets
+technology-blog-sap
+2020-04-23
+https://community.sap.com/t5/technology-blogs-by-sap/terminal-tip-switching-cf-targets/ba-p/13450867
+(Find more terminal tips here: <A href="https://blogs.sap.com/tag/terminaltip/" target="_blank" rel="noopener noreferrer">https://blogs.sap.com/tag/terminaltip/</A>)<BR />
+<BR />
+Working with Cloud Foundry (CF) from the command line, I use the&nbsp;<CODE>cf</CODE> CLI a lot. As you perhaps may know already, due to the use of Multi Target Applications (multiapps, or MTAs) in the SAP Cloud Platform CF environment, there's a <A href="https://plugins.cloudfoundry.org/" target="_blank" rel="nofollow noopener noreferrer">plugin system</A> for <CODE>cf</CODE> - with the most popular plugin for us being the <A href="https://plugins.cloudfoundry.org/#multiapps" target="_blank" rel="nofollow noopener noreferrer">multiapps</A> plugin for managing MTAs.<BR />
+<BR />
+Another plugin, introduced to me recently by my friend and colleague <SPAN class="mention-scrubbed">iinside</SPAN>, is the <A href="https://plugins.cloudfoundry.org/#Targets" target="_blank" rel="nofollow noopener noreferrer">targets</A> plugin, for managing CF targets (which API endpoints you have and which one do you want to be connected to with <CODE>cf</CODE> at any particular point). I use the commands provided by this plugin (<CODE>targets</CODE>, <CODE>save-target</CODE>, <CODE>delete-target</CODE> and <CODE>set-target</CODE>) often, but I also like choosing my target from a list, so I can see what I'm connected to currently, and what I want to switch to.<BR />
+<BR />
+(If you're interested to learn more about this plugin, check out Max's excellent video: <A href="https://www.youtube.com/watch?v=rIhuxEYfvHo&amp;amp;index=1" target="_blank" rel="nofollow noopener noreferrer">Cloud Foundry CLI Plugin - Targets</A>).<BR />
+<BR />
+Here's a typical manual flow, where I check what I'm currently connected to with <CODE>cf targets</CODE> and then select a new target with <CODE>cf set-target</CODE>:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2020/04/Screenshot-2020-04-23-at-12.17.50.png" /></P><BR />
+To make life a little more pleasant, I use the excellent command line fuzzy finder <A href="https://github.com/junegunn/fzf" target="_blank" rel="nofollow noopener noreferrer">fzf</A>. If you've not discovered this little gem, I'd recommend you head on over, check it out, and install it. If you're a follower of the <A href="https://bit.ly/handsonsapdev" target="_blank" rel="nofollow noopener noreferrer">Hands-on SAP Dev</A> live streams it's likely that you've seen it in action in various places along the way.<BR />
+<BR />
+In its basic form, <CODE>fzf</CODE> takes whatever it's given via STDIN, and presents it in a selection. You can then use various methods to narrow down your search through the selection and choose something, at which point <CODE>fzf</CODE> will then simply output that selection to STDOUT. This is a classic example of the Unix philosophy of tools doing one thing and doing it well, and also conforming to the simple but powerful concepts of pipelining and standard input &amp; output.<BR />
+<BR />
+Anyway, I decided to use <CODE>fzf</CODE> to enhance the flow above, so that I'm simply presented with a list of targets for me to choose from. I wrote a very short script, that looks like this:<BR />
+<PRE class="language-perl"><CODE>#!/usr/bin/env bash<BR />
+<BR />
+target=$(cf targets | fzf --height=25% | cut -d ' ' -f 1) \<BR />
+  &amp;&amp; [ ! -z ${target} ] \<BR />
+  &amp;&amp; cf set-target -f ${target} \<BR />
+  &amp;&amp; cf target</CODE></PRE><BR />
+Breaking it down into its component parts, we have the following:<BR />
+<PRE class="language-perl"><CODE>target=$(cf targets | fzf --height=25% | cut -d ' ' -f 1) \</CODE></PRE><BR />
+This calls <CODE>cf targets</CODE>, which will produce that list of targets available, including highlighting the currently selected target with "(current)" as we saw earlier. It then pipes that into <CODE>fzf</CODE>, which will present me with those options in a short (25% of the height of the current terminal) list to choose from, using fuzzy searching or simply using the up and down arrow keys.<BR />
+<BR />
+Then, once I've selected an entry, <CODE>cut</CODE> is used to take just the first word from the line selected (this is important in the case where "(current)" is added to the line) and then the result is saved into the <CODE>target</CODE> variable.<BR />
+<BR />
+Then we have this:<BR />
+<PRE class="language-abap"><CODE>  &amp;&amp; [ ! -z ${target} ] \</CODE></PRE><BR />
+which just makes sure that we've actually selected something (and not aborted with ^C or something like that).<BR />
+<BR />
+If we do have something selected, then this next part kicks in:<BR />
+<PRE class="language-abap"><CODE>  &amp;&amp; cf set-target -f ${target} \</CODE></PRE><BR />
+which uses the actual <CODE>cf set-target</CODE> command to set the API endpoint to the appropriately selected target.<BR />
+<BR />
+Finally, to give me some information on the newly set target, I run the standard <CODE>cf target</CODE> command (not to be confused with <CODE>cf targets</CODE><span class="lia-unicode-emoji" title=":disappointed_face:">😞</span><BR />
+<PRE class="language-abap"><CODE>  &amp;&amp; cf target</CODE></PRE><BR />
+This will show details of the target currently set.<BR />
+<BR />
+And that's it!<BR />
+<BR />
+I've saved this script to a location in my path, and called it <CODE>cft</CODE> (for 'cf target') and now I can view and select CF targets in comfort!<BR />
+<BR />
+Here's <CODE>cft</CODE> in action, where the current target is 'workflowcodejam' and I want to switch to 'garage':<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2020/04/Screenshot-2020-04-23-at-12.14.58.png" /></P><BR />
+&nbsp;<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2020/04/Screenshot-2020-04-27-at-16.55.18.png" /></P><BR />
+Share &amp; enjoy, and remember, <A href="https://twitter.com/search?q=%23TheFutureIsTerminal&amp;src=typed_query" target="_blank" rel="nofollow noopener noreferrer">#TheFutureIsTerminal</A>!

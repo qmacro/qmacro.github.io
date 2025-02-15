@@ -1,0 +1,197 @@
+2018-10-29-monday-morning-thoughts-exploring-reuse
+Monday morning thoughts: exploring reuse
+technology-blog-sap
+2018-10-29
+https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-exploring-reuse/ba-p/13350771
+<EM>In this post, I think about reuse and extension, in the context of the Application Programming Model for SAP Cloud Platform, and mindful of Björn Goerke's SAP TechEd 2018 keynote message in Barcelona - "keep the core clean".</EM><BR />
+<BR />
+Last week saw the Barcelona edition of SAP TechEd 2018, where&nbsp;SAP CTO Björn Goerke and a great team of role models on stage gave us a keynote with something for everyone - technical and business alike. During the keynote, I <A href="https://twitter.com/qmacro/status/1054640660400295936" target="_blank" rel="nofollow noopener noreferrer">tweeted</A>:<BR />
+<BLOCKQUOTE><EM>My three keywords from the #SAPTechEd keynote so far:</EM><BR />
+<BR />
+<EM>Open (standards, protocols, APIs)</EM><BR />
+<BR />
+<EM>Reuse (important superpower of&nbsp;@sapcp application programming model)&nbsp;</EM><BR />
+<BR />
+<EM>Clean (keep the core clean by extending outside of it)</EM></BLOCKQUOTE><BR />
+I want to think about the "reuse" and "clean" keywords, because in many ways they're complementary, in that reuse (and by association, extension) can help to achieve the goal of a clean core.<BR />
+<BR />
+Of course, there's a lot more to it than that, but reusing &amp; extending definitions and services is a key part of building outside of the core, whether for net new applications or to extend existing solutions. That implies that the application programming model, which has reuse as a "superpower", is a very useful model to know about.<BR />
+<BR />
+So I thought I'd look into an example of reuse and extension that exist for us to meditate upon and learn from.<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+<STRONG>cloud-samples-itelo</STRONG><BR />
+<BR />
+Earlier this year&nbsp;<SPAN class="mention-scrubbed">oliver.welzel</SPAN>&nbsp;wrote "<A href="https://blogs.sap.com/2018/06/27/itelo-a-sample-business-application-for-the-new-application-programming-model-for-sap-cloud-platform/" target="_blank" rel="noopener noreferrer">ITelO – A Sample Business Application for the new Application Programming Model for SAP Cloud Platform</A>" in which he described an application with ra product catalog, and reviews, for the fictitious company ITelO. The data model is in three layers, with each building on the one beneath it.<BR />
+<BR />
+This diagram from the post provides a nice summary of that:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/10/ITelOCatalog.png" /><BR />
+<BR />
+<EM>The component overview, showing how the data model is built up in layers</EM><BR />
+<BR />
+(Perhaps before continuing with this post, it might be worth you going and taking a read of Oliver's post. Don't forget to come back, though!)<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+<STRONG>Multiple layers</STRONG><BR />
+<BR />
+The idea is that there are core artefacts in the "foundation" layer, the "product-catalog" layer builds on top of that, and then there's the "itelo" specific application layer at the top.<BR />
+<BR />
+Each layer is represented by a repository in GitHub, so all the source is available to study. If we start at the top, and look at the data model definition at the "itelo" layer, this is what we see*, specifically in the <A href="https://github.com/SAP/cloud-samples-itelo/blob/rel-1.0/db/model.cds" target="_blank" rel="nofollow noopener noreferrer">db/model.cds</A> source:<BR />
+<PRE class="language-sql"><CODE>namespace clouds.itelo;<BR />
+<BR />
+using clouds.products.Products from '@sap/cloud-samples-catalog';<BR />
+using clouds.foundation as fnd from '@sap/cloud-samples-foundation';<BR />
+<BR />
+extend Products with {<BR />
+	reviews: Association to many Reviews on reviews.product = $self @title: '{i18n&gt;review}';<BR />
+	averageRating: Decimal(4, 2) @(<BR />
+		title: '{i18n&gt;averageRating}',<BR />
+		Common.FieldControl: #ReadOnly<BR />
+	);<BR />
+	numberOfReviews: Integer @(<BR />
+		title: '{i18n&gt;numberOfReviews}',<BR />
+		Common.FieldControl: #ReadOnly<BR />
+	);<BR />
+}<BR />
+<BR />
+entity Reviews: fnd.BusinessObject {<BR />
+	product: Association to Products @title: '{i18n&gt;product}';<BR />
+	reviewer: Association to Reviewers @title: '{i18n&gt;reviewer_XTIT}';<BR />
+	title: String(60) @title: '{i18n&gt;reviewTitle}';<BR />
+	message: String(1024) @title: '{i18n&gt;reviewText}';<BR />
+	rating: Decimal(4, 2) @title: '{i18n&gt;rating}';<BR />
+	helpfulCount: Integer @title: '{i18n&gt;ratedHelpful}';<BR />
+	helpfulTotal: Integer @title: '{i18n&gt;ratedTotal}';<BR />
+}<BR />
+<BR />
+annotate Reviews with {<BR />
+	ID @title: '{i18n&gt;review}';<BR />
+}<BR />
+<BR />
+entity Reviewers: fnd.Person, fnd.BusinessObject {<BR />
+}<BR />
+<BR />
+annotate Reviewers with {<BR />
+	ID @title: '{i18n&gt;reviewer_XTIT}';<BR />
+}</CODE></PRE><BR />
+&nbsp;<BR />
+<BR />
+*I'm specifically using the "rel-1.0" branch in each case, because that's what's also used in the dependency references that we'll see shortly, and represents a stable version that we can examine.<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+<STRONG>Reuse through "using" statements</STRONG><BR />
+<BR />
+Looking at the first few lines, we see some "using" statements:<BR />
+<PRE class="language-sql"><CODE>using clouds.products.Products from '@sap/cloud-samples-catalog';<BR />
+using clouds.foundation as fnd from '@sap/cloud-samples-foundation';</CODE></PRE><BR />
+So this is already interesting. Is this reuse in action? It is. But what does it mean, exactly? Let's investigate. Taking the first "using" statement, something called "clouds.products.Products" is being used from something called "@sap/cloud-samples-catalog".<BR />
+<BR />
+In the <A href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/c6f83f47d8364a06922a60aa57a699f8.html" target="_blank" rel="noopener noreferrer">Model Reuse</A> section of the documentation on the SAP Help Portal, we can see that this is effectively an import of a definition from another CDS model. OK, which one? Well, we can recognise the "cloud-samples-catalog" name as it's one of the layers in the diagram we looked at earlier. But how is that resolved?<BR />
+<BR />
+For that, we have to look in the "itelo" layer project's <A href="https://github.com/SAP/cloud-samples-itelo/blob/rel-1.0/package.json" target="_blank" rel="nofollow noopener noreferrer">package.json</A> file, where, amongst other things, we see some dependencies defined:<BR />
+<PRE class="language-javascript"><CODE>"dependencies": {<BR />
+	"@sap/cloud-samples-foundation": "https://github.com/SAP/cloud-samples-foundation.git#rel-1.0",<BR />
+	"@sap/cloud-samples-catalog": "https://github.com/SAP/cloud-samples-catalog.git#rel-1.0"<BR />
+}<BR />
+</CODE></PRE><BR />
+Ooh, well that's exciting, for a start! The package.json file is <A href="https://docs.npmjs.com/files/package.json" target="_blank" rel="nofollow noopener noreferrer">from the Node Package Manager (NPM) world</A> and the dependencies section is where one defines dependencies to other packages, typically ones like "express", if you're building services that handle HTTP requests, for example. But what do we have here?<BR />
+<BR />
+Well, we can see the names referenced in the "using" statements earlier, in other words "@sap/cloud-samples-catalog" and "@sap/cloud-samples-foundation". But instead of simple package names, they're mapped to GitHub URLs. And not just any GitHub URLs, but URLs that refer to specific repositories, and indeed specific branches! Taking the URL for the "@sap/cloud-samples-catalog" name, we have:<BR />
+<PRE><CODE><A href="https://github.com/SAP/cloud-samples-catalog.git#rel-1.0" target="test_blank" rel="nofollow noopener noreferrer">https://github.com/SAP/cloud-samples-catalog.git#rel-1.0</A></CODE></PRE><BR />
+which refers to the <A href="https://github.com/SAP/cloud-samples-catalog/tree/rel-1.0" target="_blank" rel="nofollow noopener noreferrer">rel-1.0 branch</A> of the cloud-samples-catalog repository belonging to SAP.<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+<STRONG>The "product-catalog" layer</STRONG><BR />
+<BR />
+Looking there, we see a fully formed application - the middle "product-catalog" layer that we saw earlier, with app, srv and db folders representing each of the three components of a typical fully fledged solution based on the application programming model.<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/10/Screenshot-2018-10-29-at-10.19.20.png" height="464" width="620" /><BR />
+<BR />
+In the db folder we see the <A href="https://github.com/SAP/cloud-samples-catalog/blob/rel-1.0/db/model.cds" target="_blank" rel="nofollow noopener noreferrer">model.cds</A> file, which starts like this:<BR />
+<PRE class="language-sql"><CODE>namespace clouds.products;<BR />
+<BR />
+using clouds.foundation as fnd from '@sap/cloud-samples-foundation';<BR />
+using clouds.foundation.CodeList;<BR />
+<BR />
+entity Products: fnd.BusinessObject {<BR />
+	// general info<BR />
+	key ID: String(36);<BR />
+	name: localized String @(<BR />
+		title: '{i18n&gt;name}',<BR />
+		Common.FieldControl: #Mandatory,<BR />
+		Capabilities.SearchRestrictions.Searchable<BR />
+	);<BR />
+	description: localized String @(<BR />
+		title: '{i18n&gt;description}',<BR />
+		Common.FieldControl: #Mandatory<BR />
+	);<BR />
+<BR />
+	[...]</CODE></PRE><BR />
+&nbsp;<BR />
+<BR />
+<STRONG>Fractals</STRONG><BR />
+<BR />
+In a wonderfully fractal way, we notice immediately that this model definition also refers to another package with a "using" statement, but let's resist descending deeper just at this moment. Instead, we can concentrate on looking at what's going on with the "using" statement we've seen in the consuming definition earlier, which looked like this:<BR />
+<PRE><CODE>using clouds.products.Products from '@sap/cloud-samples-catalog';</CODE></PRE><BR />
+We realise that "clouds.products.Products" refers to the Products entity in the "cloud.products" namespace, which is defined here with the "entity" definition:<BR />
+<PRE><CODE>entity Products: fnd.BusinessObject { ... }</CODE></PRE><BR />
+But what is that "fnd.BusinessObject" sitting between the entity name and the block definition in curly braces? Why, it's more reuse, this time of the underlying "foundation" layer. Just above in the same file, we can see that this layer is referenced in a "using" statement, this time with a local alias "fnd" defined:<BR />
+<PRE><CODE>using&nbsp;clouds.foundation as fnd from '@sap/cloud-samples-foundation';</CODE></PRE><BR />
+So now let's briefly descend into the fractal. The reference to "fnd.BusinessObject" is to an entity defined in the "foundation" layer, which we can see if we follow the <A href="https://github.com/SAP/cloud-samples-catalog/blob/rel-1.0/package.json#L9" target="_blank" rel="nofollow noopener noreferrer">dependency reference in the "product-catalog" layer's package.json</A>:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/10/Screenshot-2018-10-29-at-10.22.27.png" /><BR />
+<BR />
+(It's worth observing that in this layer we only have data definitions -- in the form of ".cds" files -- rather than a full blown solution with app, srv and db folders.)<BR />
+<BR />
+In this repository (again, branch "rel-1.0") we can find the definition of the BusinessObject entity <A href="https://github.com/SAP/cloud-samples-foundation/blob/rel-1.0/common.cds#L3-L8" target="_blank" rel="nofollow noopener noreferrer">in the common.cds file</A>&nbsp;looking like this:<BR />
+<PRE class="language-sql"><CODE>abstract entity BusinessObject : ManagedObject {<BR />
+	key ID : UUID @(<BR />
+		title: '{i18n&gt;uuid}',<BR />
+		Common.Text: {$value: name, "@UI.TextArrangement": #TextOnly}<BR />
+	);<BR />
+}</CODE></PRE><BR />
+Note in passing that here the "BusinessObject" entity is defined as "abstract" which means that it's just a type declaration rather than something for which instances should exist. Note also that it's further defined, using a similar pattern to where we saw the "fnd.BusinessObject" reference, by another abstract entity definition "ManagedObject" (you can <A href="https://github.com/SAP/cloud-samples-foundation/blob/rel-1.0/common.cds#L10-L34" target="_blank" rel="nofollow noopener noreferrer">find this definition of ManagedObject</A> also in the common.cds file).<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+<STRONG>Extension through "extend" statements</STRONG><BR />
+<BR />
+Moving back up the layers for some air, we see that directly following the "using" statements, there is this:<BR />
+<PRE class="language-sql"><CODE>extend Products with {<BR />
+	reviews: Association to many Reviews on reviews.product = $self @title: '{i18n&gt;review}';<BR />
+	averageRating: Decimal(4, 2) @(<BR />
+		title: '{i18n&gt;averageRating}',<BR />
+		Common.FieldControl: #ReadOnly<BR />
+	);<BR />
+	numberOfReviews: Integer @(<BR />
+		title: '{i18n&gt;numberOfReviews}',<BR />
+		Common.FieldControl: #ReadOnly<BR />
+	);<BR />
+}</CODE></PRE><BR />
+With the "extend" <A href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/40582e7bbeca4311b0b165c8b9745094.html" target="_blank" rel="noopener noreferrer">aspect</A>, entity definitions can be repurposed with extra properties, for example. In this case, the existing Products entity (from the "product-catalog" layer's data definition) is extended with three properties: "reviews", "averageRating" and "numberOfReviews". Note that the "reviews" property is an association to a <A href="https://github.com/SAP/cloud-samples-itelo/blob/1.0.0/db/model.cds#L18-L26" target="_blank" rel="nofollow noopener noreferrer">Reviews entity</A> at this (itelo) application layer, defined expressly for this purpose.<BR />
+<BR />
+Moreover, some of the properties in the Reviews entity are also defined as associations to further entities therein, such as the reviewer property which points to the <A href="https://github.com/SAP/cloud-samples-itelo/blob/1.0.0/db/model.cds#L32-L33" target="_blank" rel="nofollow noopener noreferrer">Reviewers entity</A>, which has no properties of its own, but in a beautiful way inherits from some of the definitions (Person and BussinessObject) at the "foundation" layer:<BR />
+<PRE class="language-sql"><CODE>entity Reviewers: fnd.Person, fnd.BusinessObject {<BR />
+}</CODE></PRE><BR />
+&nbsp;<BR />
+<BR />
+<STRONG>Wrapping up</STRONG><BR />
+<BR />
+That might be a lot to take in, in one sitting. It has become quite clear to me that the facilities afforded by the CDS language in the application programming model are very rich when it comes to reuse and extensions. Not only at the definition level, but also in the simplicity of how package based references are realised.<BR />
+<BR />
+While at first I thought it was a little odd to see the GitHub repository &amp; branch URLs, and indeed to realise that the package.json mechanism was fundamental to how artefacts in the application programming model are related, I've come to think that it's a natural way to do it, and a celebration of adopting an approach that's already out there in the world beyond our SAP ecosphere.<BR />
+<BR />
+What's more, we haven't even touched on how annotations work and what we are able to do in terms of reuse there too. But I'll leave that for another time, instead leaving you with the suggestion that reuse is indeed an important superpower of the application programming model, and demonstrably so. And keeping the core clean - well, the more extension and reuse we can achieve, the closer we can get to a cleaner core.<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+This post was brought to you by a chilly Monday morning, by <A href="https://www.pactcoffee.com/coffees/asomuprisma" target="_blank" rel="nofollow noopener noreferrer">Pact Coffee's Asomuprisma</A> in my&nbsp;<SPAN id="autocomplete"><SPAN id="autocomplete-delimiter"><A href="https://anchor.fm/sap-community-podcast" target="_blank" rel="nofollow noopener noreferrer">SAP Coffee Corner Radio</A> mug, and by a <A href="https://open.spotify.com/station/user/qmacro/cluster/3JqLjzwr3h5mESenCGHsbr" target="_blank" rel="nofollow noopener noreferrer">Spotify mix</A> designed for concentration.</SPAN></SPAN><BR />
+<BR />
+&nbsp;<BR />
+<BR />
+Read more posts in this series here:&nbsp;<A href="https://blogs.sap.com/tag/mondaymorningthoughts/" target="_blank" rel="noopener noreferrer">Monday morning thoughts</A>.

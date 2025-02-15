@@ -1,0 +1,65 @@
+2024-04-26-avoid-design-time-cap-server-restarts-when-maintaining-local-data-files
+Avoid design time CAP server restarts when maintaining local data files
+application-developmentblog-board
+2024-04-26
+https://community.sap.com/t5/application-development-blog-posts/avoid-design-time-cap-server-restarts-when-maintaining-local-data-files/ba-p/13683635
+<P>Starting the CAP server with<SPAN>&nbsp;</SPAN>cds watch<SPAN>&nbsp;</SPAN>is great for tight development loops at design time, especially with the built-in in-memory SQLite persistence layer, seeded by data in CSV files. When the server notices files have changed, it automatically restarts, which is great.</P><P>But sometimes you want to maintain files and<SPAN>&nbsp;</SPAN><EM>not</EM><SPAN>&nbsp;</SPAN>have the server restart, perhaps because you have made modifications or additions to the data set that's being served, and don't want to lose that by such a restart.</P><P>Here's a quick hack to achieve that.</P><H2 id="toc-hId-993480777">Behind the scenes</H2><P>If you set the<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/node.js/cds-log#debug-env-variable" target="_blank" rel="noopener nofollow noreferrer">DEBUG environment variable</A><SPAN>&nbsp;</SPAN>appropriately when running<SPAN>&nbsp;</SPAN>cds watch, like this:</P><P>&nbsp;</P><pre class="lia-code-sample language-shell"><code>DEBUG=cli cds watch</code></pre><P>&nbsp;</P><P>then you see a little bit more of what's going on behind the scenes:</P><P>&nbsp;</P><pre class="lia-code-sample language-text"><code>[cds] - /cds 7.6.3 loaded: /usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds
+[cds] - Command resolved: /usr/lib/node_modules/@sap/cds-dk/bin/watch.js
+[cli] - live reload available at http://127.0.0.1:35729/livereload.js?snipver=1
+
+cds serve all --with-mocks --in-memory?
+9734 watching: cds,csn,csv,ts,mjs,cjs,js,json,properties,edmx,xml,env ...
+ignoring: (node_modules|_out|@types|@cds-models)\/|app(\/.+)?\/((webapp|dist|target)\/|tsconfig\.json$|.*\.tsbuildinfo$)
+live reload enabled for browsers
+[cli] - livereload ignored: .vscode
+
+...
+
+[cds] - /cds 7.6.3 loaded: /usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds
+[cds] - Command resolved: /usr/lib/node_modules/@sap/cds-dk/bin/serve.js
+[cds] - loaded model from 2 file(s):
+
+  srv/cat-service.cds
+  db/data-model.cds
+
+[cds] - connect using bindings from: { registry: '~/.cds-services.json' }
+[cds] - connect to db &gt; sqlite { database: ':memory:' }
+  &gt; init from db/data/my.bookshop-Books.csv
+/&gt; successfully deployed to in-memory database.
+
+[cds] - using auth strategy {
+  kind: 'mocked',
+  impl: '../../usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds/lib/auth/basic-auth'
+}
+
+[cds] - serving CatalogService { path: '/odata/v4/catalog' }
+
+[cds] - server listening on { url: 'http://localhost:4004' }
+[cds] - launched at 4/10/2024, 8:55:34 AM, version: 7.6.3, in: 736.516ms
+[cds] - [ terminate with ^C ]
+
+[cli] - live reload for . 0 ws clients</code></pre><P>&nbsp;</P><BLOCKQUOTE><P>It's the "ignored" lines that we're interested in, rather than any containing "livereload", which is related, but<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/releases/archive/2021/mar21#live-reload-with-cds-watch" target="_blank" rel="noopener nofollow noreferrer">separate</A>.</P></BLOCKQUOTE><P>It's these two log lines that are interesting here:</P><P>&nbsp;</P><pre class="lia-code-sample language-text"><code>9734 watching: cds,csn,csv,ts,mjs,cjs,js,json,properties,edmx,xml,env ...
+ignoring: (node_modules|_out|@types|@cds-models)\/|app(\/.+)?\/((webapp|dist|target)\/|tsconfig\.json$|.*\.tsbuildinfo$)</code></pre><P>&nbsp;</P><P>The CAP server uses<SPAN>&nbsp;</SPAN><A href="https://github.com/yuanchuan/node-watch" target="_blank" rel="noopener nofollow noreferrer">node-watch</A><SPAN>&nbsp;</SPAN>behind the scenes providing the watch-and-restart mechanism. And it has a default regular expression, which we can see here, to describe file and directory name patterns that this mechanism should ignore.</P><H2 id="toc-hId-796967272">Normal behaviour</H2><P>Sometimes when marshalling data for an OData CREATE operation, for example, I'll use a file to store the JSON payload for such an operation. If I were to create or maintain the contents of a file called<SPAN>&nbsp;</SPAN>data.json<SPAN>&nbsp;</SPAN>in the project root, for example, like this:</P><P>&nbsp;</P><pre class="lia-code-sample language-shell"><code>touch data.json</code></pre><P>&nbsp;</P><P>then the CAP server would be restarted:</P><P>&nbsp;</P><pre class="lia-code-sample language-text"><code>[cli] - Restart { events: [ { type: 'update', name: '/tmp/watchme/data.json' } ] }
+[cli] - ️ SIGTERM 15 received by cds serve
+[cli] - ️ cds serve - cds.shutdown
+[cli] - ️ cds serve - server.close(d)
+[cli] - ️ cds serve - process.beforeExit
+[cli] - ️ cds serve - process.exit
+[cli] - ️ cds watch - child exited 9745
+
+        ___________________________
+
+[cds] - /cds 7.6.3 loaded: /usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds
+[cds] - Command resolved: /usr/lib/node_modules/@sap/cds-dk/bin/serve.js
+
+...
+
+[cds] - serving CatalogService { path: '/odata/v4/catalog' }
+
+[cds] - server listening on { url: 'http://localhost:4004' }
+[cli] - live reload for /tmp/watchme/data.json. 0 ws clients
+[cds] - launched at 4/10/2024, 8:58:31 AM, version: 7.6.3, in: 732.947ms
+[cds] - [ terminate with ^C ]</code></pre><P>&nbsp;</P><P>This would mean that the state of the in-memory data set served by my services would be lost and reset to the original CSV data file based state through the normal restart process.</P><H2 id="toc-hId-600453767">Avoiding normal behaviour</H2><P>If I wanted to avoid that happening, I could create a directory whose name was matched by the "ignore" regular expression. For example, If I could create a directory called<SPAN>&nbsp;</SPAN>_out/<SPAN>&nbsp;</SPAN>in the project root:</P><P>&nbsp;</P><pre class="lia-code-sample language-shell"><code>mkdir _out/</code></pre><P>&nbsp;</P><P>And then any creation or maintenance of files in that directory:</P><P>&nbsp;</P><pre class="lia-code-sample language-shell"><code>touch _out/data.json</code></pre><P>&nbsp;</P><P>would<SPAN>&nbsp;</SPAN><EM>not</EM><SPAN>&nbsp;</SPAN>result in the server being restarted:</P><P>&nbsp;</P><pre class="lia-code-sample language-text"><code>[cli] - ignored: _out
+[cli] - livereload ignored: _out
+[cli] - ignored: _out
+[cli] - ignored: _out/data.json</code></pre><P>&nbsp;</P><P>Good to know!</P><HR /><P><A href="https://qmacro.org/blog/posts/2024/04/10/avoid-design-time-cap-server-restarts-when-maintaining-local-data-files/" target="_blank" rel="noopener nofollow noreferrer">Originally published on qmacro.org</A></P>

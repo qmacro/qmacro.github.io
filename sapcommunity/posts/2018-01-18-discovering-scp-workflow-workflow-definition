@@ -1,0 +1,74 @@
+2018-01-18-discovering-scp-workflow-workflow-definition
+Discovering SCP Workflow - Workflow Definition
+technology-blog-members
+2018-01-18
+https://community.sap.com/t5/technology-blogs-by-members/discovering-scp-workflow-workflow-definition/ba-p/13357746
+Previous post in this series: <A href="https://blogs.sap.com/2018/01/17/discovering-scp-workflow-service-proxy/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Service Proxy</A>.<BR />
+<BR />
+This post is part of a series, a guide to which can be found here:&nbsp;<A href="https://qmacro.org/blog/posts/2018/01/16/discovering-scp-workflow/" target="_blank" rel="nofollow noopener noreferrer">Discovering SCP Workflow</A>.<BR />
+<BR />
+Now that we've covered how to kickstart a workflow instance, It's time to look at the overall picture of what we're building. It's a relatively simple process backed by a three-step workflow definition, which contains one each of the three different task types (user, script and service).<BR />
+<BR />
+I can't imagine this process being particularly useful in the enterprise, but then again, I created it for fun, to help my learning journey, and to be about stuff I'm interested in - stats and info about craft beer. What's not to like?<BR />
+<H3 id="toc-hId-1034025637">General idea</H3><BR />
+Like many of my friends and colleagues, I'm a fan of craft beer as well as someone who likes building with data and putting new technologies through their paces.&nbsp;<A href="https://untappd.com" target="_blank" rel="nofollow noopener noreferrer">Untappd</A>&nbsp;is a place where like-minded folks record (via 'checkins') what beers they're drinking, rating and describing them, sending toasts and comments to each other, and generally having a pleasant time enjoying socialising with good brews.<BR />
+<BR />
+Crucially there's an <A href="https://untappd.com/api/docs" target="_blank" rel="nofollow noopener noreferrer">API</A> that offers access to the rich seam of data that is being gathered, on checkins, beer ratings, breweries, venues, users and so on.<BR />
+<BR />
+I'm always on the lookout for new beers, and to improve my stats, because, well, badges!<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-17-at-06.48.23.png" /><BR />
+<BR />
+So the general idea is to monitor what beers I check in, and then provide me with a selection of similar beers for me to choose from; those I choose end up on a wishlist of sorts, for me to use as a reference on future purchases.<BR />
+<H3 id="toc-hId-837512132">The landscape</H3><BR />
+This process is to run exlusively in the cloud. So the landscape consists solely of platforms that are cloud based. The Untappd API itself of course is "up there", and if you've read the previous post in this series, <A href="https://blogs.sap.com/2018/01/17/discovering-scp-workflow-service-proxy/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Service Proxy</A>, you'll know that the solution spans the Google Cloud Platform (GCP) and the SAP Cloud Platform (SCP).<BR />
+<BR />
+Here's a high level schematic showing the parts of the solution.<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-17-at-07.17.58.png" /><BR />
+<H4 id="toc-hId-770081346">On GCP</H4><BR />
+I've long been a fan of what's now known as G Suite (Google docs, sheets, and so on), for a number of reasons:<BR />
+<UL><BR />
+ 	<LI>the features are exactly what I need, not bloated, and don't get in the way of producing content</LI><BR />
+ 	<LI>my content is secure, and the ability to create, edit and organise it is available everywhere</LI><BR />
+ 	<LI>it is <STRONG>of</STRONG> the web, rather than just <STRONG>on</STRONG> the web (more on that another time, perhaps)</LI><BR />
+</UL><BR />
+and last but not least, it has a fantastic JavaScript-based scripting environment, with access to the G-Suite data and functions, and access to the myriad GCP services too. I've used, and <A href="http://pipetree.com/qmacro/blog/tag/appsscript/" target="_blank" rel="nofollow noopener noreferrer">written about</A>&nbsp;Apps Script a number of times.<BR />
+<BR />
+Of course, with the SAP and Google partnership moving ever closer, it's an ideal complementary platform to SCP.<BR />
+<BR />
+So on GCP, I have a script that:<BR />
+<UL><BR />
+ 	<LI>checks the RSS feed of my checkins that Untappd makes available to me</LI><BR />
+ 	<LI>stores new checkins (in a spreadsheet)</LI><BR />
+ 	<LI>processes new checkins by looking up the checkin detail, finding the beer ID, and then retrieving the beer info for that beer, which includes a "similar beers" section</LI><BR />
+</UL><BR />
+This is done on a regular basis with time-based triggers (think <A href="https://en.wikipedia.org/wiki/Cron" target="_blank" rel="nofollow noopener noreferrer">cron</A> for your scripts in the cloud), using various core services such as the script service <A href="https://developers.google.com/apps-script/reference/url-fetch/url-fetch-app" target="_blank" rel="nofollow noopener noreferrer">UrlFetchApp</A> and the G Suite service <A href="https://developers.google.com/apps-script/reference/spreadsheet/spreadsheet-app" target="_blank" rel="nofollow noopener noreferrer">SpreadsheetApp</A>.<BR />
+<BR />
+This is what the spreadsheet looks like:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-17-at-07.27.35.png" /><BR />
+<BR />
+The empty cell in the last row shows that while the new checkin has been retrieved via the "Poll and store" step, it hasn't yet been processed by the "Process new checkins" step. (This is somewhat artificial, though - in real life the second step happens directly after the first - I just edited the sheet to highlight the difference in steps.)<BR />
+<BR />
+In the <A href="https://blogs.sap.com/2018/01/17/discovering-scp-workflow-service-proxy/" target="_blank" rel="noopener noreferrer">previous post</A> we looked at what then happens - the script initiates a new workflow instance on the SCP Workflow service via the service proxy cloud function.<BR />
+<H4 id="toc-hId-573567841">On SCP</H4><BR />
+The whole idea of this exercise was to dig deeper into the SCP Workflow service, so obviously that's what we're putting into play here. I've <A href="https://help.sap.com/viewer/f85276c5069a429fa37d1cd352785c25/Cloud/en-US/2d65f7db785d4867a49fe8eec3b040be.html" target="_blank" rel="noopener noreferrer">modelled a workflow</A> using the <A href="http://developer.sap.com/webide" target="_blank" rel="noopener noreferrer">SAP Web IDE</A>&nbsp;and it incorporates the three steps in the process above:<BR />
+<UL><BR />
+ 	<LI>Present similar beers - this is a task that involves a human (me) to be presented with information and to make a decision, for the workflow instance to move on to the next stage. The appropriate task type in the workflow definition for this is a <A href="https://help.sap.com/viewer/f85276c5069a429fa37d1cd352785c25/Cloud/en-US/5e058cf1333b4e18bfa6431a52e991d3.html" target="_blank" rel="noopener noreferrer">User Task</A>.</LI><BR />
+ 	<LI>Marshal selections - selections made from the list of similar beers are stored back in the workflow instance's context. At this stage we want to organise the right data, in the right shape, to be sent to a service which will store the selections on a list. We can perform this in JavaScript inside of a <A href="https://help.sap.com/viewer/f85276c5069a429fa37d1cd352785c25/Cloud/en-US/ca9a4381628a40908ffe1f74bde9f3ce.html" target="_blank" rel="noopener noreferrer">Script Task</A> which has full access to the instance's context.</LI><BR />
+ 	<LI>Add to wishlist - the marshalled data is sent to a remote service which stores the selections in the wishlist. This is done in a <A href="https://help.sap.com/viewer/f85276c5069a429fa37d1cd352785c25/Cloud/en-US/a8a6267f537841fbb22c159ba2af8835.html" target="_blank" rel="noopener noreferrer">Service Task</A>, which connects to the remote service via SCP's Connectivity Service. You and me would probably say "via a destination".</LI><BR />
+</UL><BR />
+It isn't by accident that the three steps in this process exercise each of the three types of task - I wanted to create something that caused me to use each of them. Of course, future iterations of this solution design might move some of the processing from GCP into SCP, as further steps in the workflow definition. But for now this will do nicely.<BR />
+<BR />
+Let's take a&nbsp;look at the workflow definition model.<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-17-at-08.35.00.png" /><BR />
+<BR />
+Each task's type is denoted by the icons in the top left corners - user, script and service respectively.<BR />
+<BR />
+I must say, I found the editing of the workflow definition in the Web IDE went very well.<BR />
+<BR />
+In the next few posts in this series, I'll dive deeper into each of these tasks as defined for this solution, including a little bit of how they're defined in the editor. The next post will cover user tasks in general, and start to look at the "Present recommendations" script task in particular.<BR />
+<BR />
+Next post in this series: <A href="https://blogs.sap.com/2018/01/20/discovering-scp-workflow-user-tasks/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - User Tasks</A>.

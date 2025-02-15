@@ -1,0 +1,93 @@
+2021-04-06-sap-tech-bytes-exploring-sap-samples-with-gh-and-fzf
+SAP Tech Bytes: Exploring SAP-samples with gh and fzf
+technology-blog-sap
+2021-04-06
+https://community.sap.com/t5/technology-blogs-by-sap/sap-tech-bytes-exploring-sap-samples-with-gh-and-fzf/ba-p/13512644
+<EM>Discover repositories that might be useful for you by exploring them from the command line with a couple of powerful tools.</EM><BR />
+<BR />
+The <A href="https://github.com/SAP-samples" target="_blank" rel="nofollow noopener noreferrer">SAP-samples organisation on GitHub</A> contains many repositories with sample code on various SAP technology topics. There's also a new show <A href="https://www.youtube.com/playlist?list=PL6RpkC85SLQDS1XbEQIWG_h3fSj_jG_yQ" target="_blank" rel="nofollow noopener noreferrer">SAP Samples Spotlight</A> on our SAP Developers YouTube channel highlighting some of these repositories. We're not going to be able to cover all of them on the show, so here's a way of exploring what's on offer, using command line tools.<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2021/04/org-sampler.gif" /></P><BR />
+GitHub's command line tool <A href="https://github.com/cli/cli" target="_blank" rel="nofollow noopener noreferrer">gh</A> gives us the ability to explore the API surface area. The latest release (1.8.1 at the time of writing) offers pagination, result cacheing and a built-in version of <A href="https://stedolan.github.io/jq/" target="_blank" rel="nofollow noopener noreferrer">jq</A>, the JSON processor.<BR />
+<BR />
+You can install <CODE>gh</CODE> and <CODE>fzf</CODE> locally, or even install them in the terminal of a dev space in the SAP Business Application Studio to try things out. See how we do this in the <A href="https://github.com/SAP-samples/teched2020-developer-keynote" target="_blank" rel="nofollow noopener noreferrer">SAP TechEd 2020 Developer Keynote repository</A> - take a look specifically at the <A href="https://github.com/SAP-samples/teched2020-developer-keynote/tree/main/usingappstudio#add-tools-to-your-dev-space" target="_blank" rel="nofollow noopener noreferrer">Add tools to your dev space</A> section.<BR />
+<BR />
+Before you use <CODE>gh</CODE> for the first time, you'll need to authenticate - use <CODE>gh auth login</CODE> and follow the prompts. Then you're all set to use the <CODE>org-sampler</CODE> script as shown above.<BR />
+<H3 id="toc-hId-1087439937"><STRONG>The script</STRONG></H3><BR />
+Let's break it down line by line (mostly <A href="https://qmacro.org/2021/01/26/columnar-layout-with-awk/#homage" target="_blank" rel="nofollow noopener noreferrer">in homage to a great teacher, Randal L Schwartz</A>).<BR />
+<PRE class="language-markup"><CODE> 1 #!/usr/bin/env bash<BR />
+ 2<BR />
+ 3 readonly org="${1:?Specify org name}"<BR />
+ 4<BR />
+ 5 jqscript() {<BR />
+ 6<BR />
+ 7   cat &lt;&lt; EOF<BR />
+ 8   .[]<BR />
+ 9   | [<BR />
+10     .name,<BR />
+11     "Name: \(.name)\n\nDescription: \(.description)\n\nLanguage: \(.language)\nWatchers: \(.watchers_count)\nStars: \(.stargazers_count)\nForks: \(.forks_count)"<BR />
+12     ]<BR />
+13   | @tsv<BR />
+14 EOF<BR />
+15<BR />
+16 }<BR />
+17<BR />
+18 gh api \<BR />
+19   "/orgs/$org/repos" \<BR />
+20   --paginate \<BR />
+21   --cache 1h \<BR />
+22   --jq "$(jqscript)" \<BR />
+23   | fzf \<BR />
+24     --with-nth=1 \<BR />
+25     --delimiter='\t' \<BR />
+26     --preview='echo -e {2}' \<BR />
+27     --preview-window=up:sharp:wrap:40%<BR />
+</CODE></PRE><BR />
+1: the <A href="https://en.wikipedia.org/wiki/Shebang_(Unix)" target="_blank" rel="nofollow noopener noreferrer">shebang</A> uses <CODE>env</CODE> to find <CODE>bash</CODE> on my system to execute the contents of the file<BR />
+<BR />
+3: the script expects a single argument to be specified - the name of the organisation on GitHub. For our purposes this should be SAP-samples<BR />
+<BR />
+5-16: a simple function to encapsulate the small <CODE>jq</CODE> script that will be passed to the invocation of <CODE>gh</CODE> to parse the JSON output that is returned from the API call<BR />
+<BR />
+8: the JSON output's outermost element is an array, which means we start with <CODE>.[]</CODE> to say "take each of the array items"; each array item represents a repository within the organisation, and has different properties<BR />
+<BR />
+9: we flow the array items (via the <CODE>|</CODE>) into a list of fields that we keep together with <CODE>[</CODE> starting on this line, and ending with <CODE>]</CODE> on line 12<BR />
+<BR />
+10: the first field in the list is simply the value of the <CODE>name</CODE> property (the name of the repository)<BR />
+<BR />
+11: the second field is a string that's made up of literal and repository property values, combined into a multi-line string (note the newline characters in there <CODE>\n</CODE>); this string is what's to be shown in the preview (at the top, in the demo above)<BR />
+<BR />
+13: finally each list of fields is flowed into <CODE>@tsv</CODE> which produces a tab separated values set of records<BR />
+<BR />
+18-22: the main action is in these lines - the call to <CODE>gh</CODE>'s <CODE>api</CODE> facility<BR />
+<BR />
+19: the API call is to the endpoint for <A href="https://docs.github.com/en/rest/reference/repos#list-organization-repositories" target="_blank" rel="nofollow noopener noreferrer">listing organisation repositories</A> - specifically for the organisation (in <CODE>$org</CODE>) specified when the script was invoked<BR />
+<BR />
+20: there are a limited number of results returned by the API in any one response; the <CODE>--paginate</CODE> option tells <CODE>gh</CODE> to make enough calls to page through all of the results - very convenient!<BR />
+<BR />
+21: the recent <CODE>--cache</CODE>option allows for cacheing of the results, to save on hitting the API endpoints too frequently and unnecessarily; it makes a lot of sense here given the frequency of new repository creations<BR />
+<BR />
+22: the <CODE>--jq</CODE> option is also recent, and given that the API output is JSON, is very useful; we use the <CODE>jq</CODE> script defined earlier in the <CODE>jqscript</CODE> function here to produce that set of tab separated records (where the first field is the repository name and the second field is the multi-line string showing the repository details)<BR />
+<BR />
+23: the (tab separated records) output is then passed into <CODE>fzf</CODE>to give us a chance to browse or search through the entire list and see the repositories' details<BR />
+<BR />
+24: using <CODE>--with-nth=1</CODE> we can tell <CODE>fzf</CODE> to only show the first field in the actual selection list<BR />
+<BR />
+25: we tell <CODE>fzf</CODE> how to know what the fields are with <CODE>--delimiter='\t'</CODE>, i.e. the fields are separated by tab characters<BR />
+<BR />
+26: with <CODE>--preview='echo -e {2}'</CODE> we tell <CODE>fzf</CODE> that we want to have something shown in a preview window for each item; what is shown is the result of <CODE>echo -e {2}</CODE> where <CODE>{2}</CODE> is an <CODE>fzf</CODE> placeholder representing the second field in the list (i.e. the multi-line string) and the <CODE>-e</CODE> switch tells <CODE>echo</CODE> to actually interpret backslash escapes, meaning that the newline characters (<CODE>\n</CODE>) in the field will be rendered properly and the preview will indeed be multi-line<BR />
+<BR />
+27: the <CODE>--preview-window=up:sharp:wrap:40%</CODE> option tells <CODE>fzf</CODE> how to display the preview window, including that it should be at the top, above the list (<CODE>up</CODE>), that any long text lines should be wrapped (this is good for the value of the repositories' description fields) and that the preview window should take up just less than half of the screen (<CODE>40%</CODE>)<BR />
+<BR />
+And that's it.<BR />
+<BR />
+The command line is a powerful environment and with it come powerful tools that can help you retrieve, bend and shape the information you need to work with.<BR />
+<H3 id="toc-hId-890926432"><STRONG>Trying it yourself</STRONG></H3><BR />
+There's a branch for this SAP Tech Bytes post in the accompanying <A href="https://github.com/SAP-samples/sap-tech-bytes" target="_blank" rel="nofollow noopener noreferrer">SAP Tech Bytes repository</A>, and it contains the version of the script <A href="https://github.com/SAP-samples/sap-tech-bytes/blob/2021-04-05-exploring-sap-samples-with-gh-and-fzf/org-sampler" target="_blank" rel="nofollow noopener noreferrer">org-sampler</A> described above:<BR />
+<BR />
+<A href="https://github.com/SAP-samples/sap-tech-bytes/tree/2021-04-05-exploring-sap-samples-with-gh-and-fzf" target="_blank" rel="nofollow noopener noreferrer">https://github.com/SAP-samples/sap-tech-bytes/tree/2021-04-05-exploring-sap-samples-with-gh-and-fzf</A><BR />
+<BR />
+<EM>This post was inspired by <A href="https://seb.jambor.dev/posts/improving-shell-workflows-with-fzf/" target="_blank" rel="nofollow noopener noreferrer">Improving shell workflows with fzf</A>.</EM><BR />
+<BR />
+<HR /><BR />
+<P style="overflow: hidden;margin-bottom: 0px"><A href="#saptechbytes" target="_blank" rel="nofollow noopener noreferrer"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2021/02/screenshot-2021-02-22-at-11.00.25.png" height="35" width="208" /></A></P><BR />
+SAP Tech Bytes is an initiative to bring you bite-sized information on all manner of topics, in <A href="https://www.youtube.com/playlist?list=PL6RpkC85SLQC3HBShmlMaPu_nL--4f20z" target="_blank" rel="nofollow noopener noreferrer">video</A> and <A href="https://blogs.sap.com/tag/sap-tech-bytes/" target="_blank" rel="noopener noreferrer">written</A> format. Enjoy!

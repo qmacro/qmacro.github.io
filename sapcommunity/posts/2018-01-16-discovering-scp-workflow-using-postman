@@ -1,0 +1,129 @@
+2018-01-16-discovering-scp-workflow-using-postman
+Discovering SCP Workflow - Using Postman
+technology-blog-members
+2018-01-16
+https://community.sap.com/t5/technology-blogs-by-members/discovering-scp-workflow-using-postman/ba-p/13354064
+Previous post in this series: <A href="https://blogs.sap.com/2018/01/14/discovering-scp-workflow-instance-initiation/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Instance Initiation</A>.<BR />
+<BR />
+This post is part of a series, a guide to which can be found here: <A href="https://qmacro.org/blog/posts/2018/01/16/discovering-scp-workflow/" target="_blank" rel="nofollow noopener noreferrer">Discovering SCP Workflow.</A><BR />
+<BR />
+In this post I'll explain how I use Postman to explore the Workflow API, making the most of some of Postman's great features.<BR />
+<BR />
+Folks like to explore APIs in different ways. There are various tools that I use - the ones that come to mind immediately are <A href="https://curl.haxx.se/" target="_blank" rel="nofollow noopener noreferrer">curl</A> (used in the previous post, in fact) to drive the HTTP conversation and <A href="https://stedolan.github.io/jq/" target="_blank" rel="nofollow noopener noreferrer">jq</A>&nbsp;to manipulate complex JSON data structures that often are returned in responses.<BR />
+<BR />
+There's a relatively new kid on the block in the form of <A href="https://www.getpostman.com" target="_blank" rel="nofollow noopener noreferrer">Postman</A>&nbsp;which describes itself as an API development environment "to share, test, document &amp; monitor APIs". It started out as a Chrome extension, but there are OS-specific native versions too.<BR />
+<BR />
+You can register and thence sign in to Postman, whereupon it will remember your settings (which will come in handy shortly) and synchronise them between different instances over different workstations, which is super useful.<BR />
+<H3 id="toc-hId-1033929597">Sessions and collections</H3><BR />
+In the same way that code editors typically allow multiple files open, Postman allows you to have multiple request/response sessions, and switch between them via tabs. Each request/response is remembered in a History area, but there's also the facility to save and group together specific requests into Collections. I have an "SCP Workflow service" collection:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-15-at-08.50.20.png" /><BR />
+<BR />
+Within a collection you can group together related requests into folders, as you can see in the screenshot ("New Test Workflow Instance", for example). You can even use the Collections as forms of sequences of calls to be made to test an API, using the scripting facilities to setup requests and validate responses automatically.<BR />
+<H3 id="toc-hId-837416092">Preparing requests</H3><BR />
+Consider that an HTTP request has three main parts:<BR />
+<UL><BR />
+ 	<LI>the combination of method and URL</LI><BR />
+ 	<LI>request headers</LI><BR />
+ 	<LI>request body (optional)</LI><BR />
+</UL><BR />
+Postman presents a nice interface to allow you to prepare HTTP requests, with separate areas for Authorization, Headers and Body (as well as the main specification of method and URL of course).<BR />
+<BR />
+But there are also a couple of other areas. In Pre-request Scripts you can write JavaScript that is executed before the HTTP request is sent. And in Tests you can write JavaScript that is executed after the HTTP response is received. You can use the JavaScript Postman API that offer access to the request and response itself plus some Postman specific features such as global and environment variables.<BR />
+<H3 id="toc-hId-640902587">Environments</H3><BR />
+Postman has a concept of environments, which can be specific to you, or shared (if you're running Postman Pro). I use the environment concept to manage my different accesses based on who I'm logging into SCP as at any given time. For example, I have my own private trial account (P481810), and over time I&nbsp;may have access to work accounts, whether trial or productive, and ephemeral ones that are given out in hands-on training sessions.<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-15-at-11.00.43.png" /><BR />
+<BR />
+The environments can contain variables, like this:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-15-at-11.02.43.png" /><BR />
+<BR />
+For exploring the Workflow API, I use the 'basicauthorization' variable in my request headers, the 'workflowservice' variable in constructing the URLs, and the 'xsrftoken' variable to store passing XSRF tokens, allowing me to catch the response from a "Fetch" request and insert the returned token into the next POST request. There are others too ('instanceId', 'taskInstanceId') that I use for storing intermediate values of various properties.<BR />
+<BR />
+Perhaps you've noticed that the value of the 'workflowservice' variable is set to match the API "root", as discussed in the <A href="https://blogs.sap.com/2018/01/14/discovering-scp-workflow-instance-initiation/#digression" target="_blank" rel="noopener noreferrer">digression</A> in the previous post. I do like the clean separation here.<BR />
+<H3 id="toc-hId-444389082">Into action</H3><BR />
+Let's see how all of this fits together. We'll use the two requests within the "New Test Workflow Instance" folder in the Collections screenshot earlier. They look like this:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-15-at-11.23.18.png" /><BR />
+<H4 id="toc-hId-376958296">Fetching an XSRF token</H4><BR />
+This is what the first one "Get CSRF Token" looks like:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-15-at-11.24.19.png" /><BR />
+<BR />
+You can see that I'm using the 'basicauthorization' environment variable in an "Authorization" header. But also I'm making use of the 'workflowservice' root value to help construct the URL - a URL that is specific to the particular environment I've selected, the one for my P481810 trial account. In other words, the resulting URL will resolve to:<BR />
+<PRE><CODE><A href="https://bpmworkflowruntimewfs-p481810trial" target="test_blank" rel="nofollow noopener noreferrer">https://bpmworkflowruntimewfs-p481810trial</A><BR />
+  .hanatrial.ondemand.com<BR />
+  /workflow-service/rest/v1/xsrf-token</CODE></PRE><BR />
+(split for legibility).<BR />
+<BR />
+I've also got a little bit of JavaScript to be run after the response is received, in the "Tests" area. It's this:<BR />
+<PRE class="language-javascript"><CODE>postman.setEnvironmentVariable(<BR />
+  "xsrftoken",<BR />
+  postman.getResponseHeader("X-CSRF-Token")<BR />
+);</CODE></PRE><BR />
+Yes, when the response is returned, it gets the value of the X-CSRF-Token header, which should contain the token we've requested, and stores it in the 'xsrftoken' environment variable. (Did I mention how much CSRF vs XSRF troubles me?)<BR />
+<BR />
+The response from such a request is pretty simple - there's no body, just the headers, as shown:<BR />
+<PRE class="language-markup"><CODE>cache-control : private<BR />
+content-length : 0<BR />
+date : Mon, 15 Jan 2018 11:26:28 GMT<BR />
+expires : Thu, 01 Jan 1970 00:00:00 UTC<BR />
+server : SAP<BR />
+strict-transport-security : max-age=31536000; includeSubDomains; preload<BR />
+x-content-type-options : nosniff<BR />
+x-csrf-token : 2D114FA00565C0997072AD2ECCC1EF96</CODE></PRE><BR />
+The value '2D114FA00565C0997072AD2ECCC1EF96' is what gets stored in 'xsrftoken'.<BR />
+<H4 id="toc-hId-180444791">Using the XSRF token in a POST request</H4><BR />
+Now we have the token, we can use it in the second request in this folder to create a new workflow instance.<BR />
+<BR />
+Let's have a look at what that request looks like, stored and ready in Postman:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-15-at-11.35.13.png" /><BR />
+<BR />
+(you can see that Postman displays the value and scope of a variable if you hover over it).<BR />
+<BR />
+The workflow definition itself is deliberately very simple and not of interest here. We'll cover workflow definitions in another post. But if you're curious, this is what is in the Body area:<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+  "definitionId": "testworkflow",<BR />
+  "context": {<BR />
+    "thing":"banana"<BR />
+  }<BR />
+}</CODE></PRE><BR />
+Looking at the request headers, we still have the 'basicauthorization' variable in use of course, but now we can supply the XSRF token in the 'X-CSRF-Token' header, with the value set to the token we just received on the previous call. Nice!<BR />
+<BR />
+As we have JavaScript at our disposal on receipt of response, we might as well record the ID of the workflow instance created, in an environment variable 'instanceId'. So this is the JavaScript in the 'Tests' area:<BR />
+<PRE class="language-javascript"><CODE>postman.setEnvironmentVariable(<BR />
+  "instanceId", <BR />
+  JSON.parse(responseBody).id<BR />
+);</CODE></PRE><BR />
+Finally, note the lovely URL constructed out of the variable workflow service "root" and the specific API resource '/v1/workflow-instances' that we're sending the POST request to:<BR />
+<PRE><CODE><A href="https://bpmworkflowruntimewfs-p481810trial" target="test_blank" rel="nofollow noopener noreferrer">https://bpmworkflowruntimewfs-p481810trial</A><BR />
+  .hanatrial.ondemand.com<BR />
+  /workflow-service/rest/v1/workflow-instances</CODE></PRE><BR />
+Here's what the response looks like, by the way:<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+    "id": "82817e22-f9e9-11e7-a369-00163e4ef3ca",<BR />
+    "definitionId": "testworkflow",<BR />
+    "definitionVersion": "10",<BR />
+    "subject": "TestWorkflow",<BR />
+    "status": "RUNNING",<BR />
+    "businessKey": "",<BR />
+    "startedAt": "2018-01-15T11:44:57.037Z",<BR />
+    "startedBy": "P481810",<BR />
+    "completedAt": null<BR />
+}</CODE></PRE><BR />
+<H3 id="toc-hId--145151433">Continuing the API conversation</H3><BR />
+And yes, you guessed it, that ID value of '82817e22-f9e9-11e7-a369-00163e4ef3ca' is now available to us in the environment variable 'instanceId'. So we can use it directly in yet another call from our collection, say, the "Retrieve context for a specific workflow instance", without lifting a finger. This time, we're using the 'instanceId' variable in the construction of the URL itself, as that's what's required for this particular resource type in the Workflow API:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-16-at-06.30.54.png" /><BR />
+<BR />
+Note that we didn't have to supply the XSRF token as this is just a GET request.<BR />
+<BR />
+As you can see, Postman is super convenient for exploring APIs such as the Workflow API, especially when it comes to managing different environments that reflect your SCP landscape, and handling information that must be shared across requests.<BR />
+<BR />
+By the way - did you notice something? We didn't have to transfer cookies received in the response to the first (token fetch) request, to explicitly use them in the second request. Just like the AJAX mechanism, explained in the previous post <A href="https://blogs.sap.com/2018/01/14/discovering-scp-workflow-instance-initiation/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Instance Initiation</A>, Postman takes care of that for us automatically.<BR />
+<BR />
+Now we're comfortable with the idea of multiple requests and how the Workflow API feels, in the next post we'll look at a proxy service to wrap this up for us in a convenient package, in the form of a Google Cloud Function.<BR />
+<BR />
+Next post in this series: <A href="https://blogs.sap.com/2018/01/17/discovering-scp-workflow-service-proxy/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Service Proxy</A>.

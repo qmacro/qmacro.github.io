@@ -1,0 +1,172 @@
+2020-01-29-mini-adventures-with-mtas-and-the-cloud-foundry-cli
+Mini adventures with MTAs and the Cloud Foundry CLI
+technology-blog-sap
+2020-01-29
+https://community.sap.com/t5/technology-blogs-by-sap/mini-adventures-with-mtas-and-the-cloud-foundry-cli/ba-p/13439593
+<EM>A few more small adventures using the cf command line client, as well as some shell pipeline goodness and that nifty tip from Marius Obert about radically reducing the size of your deployment archive.&nbsp;</EM><BR />
+<BR />
+Further to my blog post yesterday on <A href="https://blogs.sap.com/2020/01/28/scripting-cloud-foundry-activities-in-trial/" target="_blank" rel="noopener noreferrer">scripting Cloud Foundry activities</A> I extended my experiments into using the 'cf' command line interface (CLI) tool to quickly remove the Business Rules Editor app and supporting services.<BR />
+<BR />
+Along the way I tweaked a couple of existing command pipelines to display the lists of services and apps on Cloud Foundry (CF), and tried out <SPAN class="mention-scrubbed">mariusobert</SPAN> 's <A href="https://twitter.com/IObert_/status/1220321066029142018" target="_blank" rel="nofollow noopener noreferrer">great tip</A> on reducing the size of your deployment archive.<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+<A name="tldr" target="_blank"></A><STRONG>TL;DR</STRONG><BR />
+<BR />
+If you're like me, and want -- (in the immortal words of Boycie in the Only Fools And Horses episode "Chain Gang") -- to "<A href="https://www.youtube.com/watch?v=WcrsW8CAC5s" target="_blank" rel="nofollow noopener noreferrer">let the dog see the rabbit</A>" to see what this is all about, you can watch this little Asciinema recording of what I describe in the rest of this post.<BR />
+<BR />
+<A href="https://asciinema.org/a/296532" target="_blank" rel="noopener noreferrer nofollow"><IMG src="https://asciinema.org/a/296532.svg" /></A><BR />
+<BR />
+&nbsp;<BR />
+<BR />
+Still around and want the nitty-gritty? Read on!<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+<STRONG>The app and supporting services</STRONG><BR />
+<BR />
+The Business Rules Editor runs in a space in my CF org connected to my SAP Cloud Platform (SCP) trial subaccount. There's the app itself (which is actually just an approuter fronting the actual editor app artifacts) named "businessruleseditor_appRouter".<BR />
+<BR />
+This app is bound to service instances, thus:<BR />
+<UL><BR />
+ 	<LI>an instance of the 'business-rules' service called 'businessrules' that I created shortly after re-creating my SCP subaccount and CF org and space</LI><BR />
+ 	<LI>an instance of the 'xsuaa' service called 'businessrules_uaa'</LI><BR />
+ 	<LI>an instance of the 'html5-apps-repo' service (to serve the actual app artifacts) called 'businessruleseditor_html5_repo_runtime'</LI><BR />
+</UL><BR />
+&nbsp;<BR />
+<BR />
+<STRONG>Checking the running app and services</STRONG><BR />
+<BR />
+At the start, the app is running, along with the bound services. I check this with the 'cf' command line client, combined with a bit of shell pipeline to massage the output. The output from 'cf' is relatively messy and <A href="https://github.com/cloudfoundry/cli/issues/604#issuecomment-562571995" target="_blank" rel="nofollow noopener noreferrer">harder than it should be to parse</A> (yes, there's the 'cf curl' approach but that's a sledgehammer solution to a problem that should be addressed with better text-based output), so I have to pass it through some classic Unix command line tools to get what I want.<BR />
+<BR />
+For parsing and displaying service information, I have a small shell script 'service_status', which looks like this:<BR />
+<PRE class="language-swift"><CODE>cf s \<BR />
+| sed '/^OK$/d' \<BR />
+| awk 'NR&gt;3 { printf "%s ", $1; $1=$2=$3=$NF=""; printf "\n%s\n\n", $0 }' \<BR />
+| awk '{$1=$1};1'</CODE></PRE><BR />
+This runs the 'cf s' command to retrieve the service information. The output from 'cf s' looks like this:<BR />
+<PRE class="language-swift"><CODE>Getting services in org I347491trial_qmacrosubdomain / space dev as dj.adams@sap.com...<BR />
+<BR />
+name                                     service           plan          bound apps                      last operation     broker                                                       upgrade available<BR />
+businessrules                            business-rules    lite          businessruleseditor_appRouter   create succeeded   sm-businessrules-e73ec4d2-a715-4849-a5e9-77b521e7a086        <BR />
+businessrules_uaa                        xsuaa             application   businessruleseditor_appRouter   create succeeded   sm-xsuaa-9ef36350-f975-4194-a399-54db361e79b5                <BR />
+businessruleseditor_html5_repo_runtime   html5-apps-repo   app-runtime   businessruleseditor_appRouter   create succeeded   sm-html5-apps-repo-sb-ebcb2b69-24a5-408e-be00-02066b302b78   </CODE></PRE><BR />
+You might think that looks quite neat, but don't be deceived - if there are no bound apps, the column is empty, which makes parsing of the output more unpredictable that it should be (why can't something like 'none' be emitted for this column so it has a consistent value?). Moreover, the contents of the column showing the last operation is also unpredictable, in that the value or values can contain spaces, which makes text-based parsing harder than it should be.<BR />
+<BR />
+Anyway, before I go on a mini-rant about this, let me explain what I do to reduce this output down to the essentials.<BR />
+<BR />
+The second line of the 'service_status' script removes any line that is simply 'OK'. When retrieving the app information (with 'cf a') you get an 'OK', but when retrieving service information, you don't. Again, unpredictable. So let's just get rid of it anyway.<BR />
+<BR />
+The third line uses the venerable <A href="https://en.wikipedia.org/wiki/AWK" target="_blank" rel="nofollow noopener noreferrer">awk</A> language to print the first column of the actual output, which is a single value on each line (in this case 'businessrules', 'businessrules_uaa' and 'businessruleseditor_html5_repo_runtime'). With 'NR&gt;3' it skips over the first three lines of output so that only the actual service lines are processed.<BR />
+<BR />
+Finally, the last line uses awk again to strip spaces from the start and end of the lines.<BR />
+<BR />
+So running this script produces this output:<BR />
+<PRE class="language-swift"><CODE>businessrules<BR />
+businessruleseditor_appRouter create succeeded<BR />
+<BR />
+businessrules_uaa<BR />
+businessruleseditor_appRouter create succeeded<BR />
+<BR />
+businessruleseditor_html5_repo_runtime<BR />
+businessruleseditor_appRouter create succeeded</CODE></PRE><BR />
+This is much nicer and what I want for a display in my terminal. Note that I take advantage of the poor formatting from the output of 'cf s' by (inadvertently) grabbing the value of the 'bound apps' column if it contains values. This is what the output looks like when the services have just been created but before they've been bound to the 'businessruleseditor_appRouter' app:<BR />
+<PRE class="language-swift"><CODE>businessrules<BR />
+create succeeded<BR />
+<BR />
+businessrules_uaa<BR />
+create succeeded<BR />
+<BR />
+businessruleseditor_html5_repo_runtime<BR />
+create succeeded</CODE></PRE><BR />
+I have another script to display the apps information, called 'app_status', which looks very similar:<BR />
+<PRE class="language-swift"><CODE>cf a \<BR />
+| sed '/^OK$/d' \<BR />
+| awk 'NR&gt;3 { printf "%s\n%s\n\n", $1, $2 }' \<BR />
+| awk '{$1=$1};1'</CODE></PRE><BR />
+There's just a bit of difference in the main awk invocation - I simply want to print the first and second columns, on separate lines. Here's what the output looks like when the 'businessruleseditor_appRouter' app is running:<BR />
+<PRE class="language-swift"><CODE>businessruleseditor_appRouter<BR />
+started<BR />
+</CODE></PRE><BR />
+I use the terminal multiplexor app '<A href="https://en.wikipedia.org/wiki/Tmux" target="_blank" rel="nofollow noopener noreferrer">tmux</A>' to manage individual windows and panes (sub-windows) in my terminal, and divide up the space to show the output of my 'service_status' and 'app_status' scripts in separate areas. The output is always up-to-date as I drive the execution of these scripts with the excellent '<A href="https://en.wikipedia.org/wiki/Watch_(Unix)" target="_blank" rel="nofollow noopener noreferrer">watch</A>' command, which by default will re-execute the specified script every 2 seconds.<BR />
+<BR />
+This is what it looks like in action:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2020/01/Screenshot-2020-01-29-at-10.22.42.png" /><BR />
+<BR />
+&nbsp;<BR />
+<BR />
+<STRONG>Removing the app and supporting services</STRONG><BR />
+<BR />
+I wanted to remove the running app and the services it was bound directly to, i.e. the 'businessrules_uaa' and 'businessruleseditor_html5_repo_runtime' services'. Of course, I could have simply used a combination of the 'cf delete' and 'cf delete-service' commands ('cf d' and 'cf ds' in short form). But there's a neater way, with '<A href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/fab96a603a004bd992822c83d4b01370.html" target="_blank" rel="noopener noreferrer">cf undeploy</A>'.<BR />
+<BR />
+The 'cf undeploy' command requires the MTA ID, which can be retrieved with the 'cf mtas' command, which shows output like this:<BR />
+<PRE class="language-swift"><CODE>Getting multi-target apps in org I347491trial_qmacrosubdomain / space dev as dj.adams@sap.com...<BR />
+OK<BR />
+mta id                version<BR />
+businessruleseditor   0.0.1</CODE></PRE><BR />
+In this case, the ID is 'businessruleseditor'.<BR />
+<BR />
+Now I can use the 'cf undeploy', along with the '-delete-services' option, to clean out exactly the right parts, in the right order, too. If there's any issue with deleting services, there's a number of times the operation will be retried, too:<BR />
+<PRE class="language-swift"><CODE>cf undeploy businessruleseditor -delete-services -f</CODE></PRE><BR />
+This is what the output looks like:<BR />
+<PRE class="language-swift"><CODE>Undeploying multi-target app businessruleseditor in org I347491trial_qmacrosubdomain / space dev as dj.adams@sap.com...<BR />
+Detected deployed MTA with ID "businessruleseditor" and version "0.0.1"<BR />
+Deleting routes for application "businessruleseditor_appRouter"...<BR />
+Deleting route "i347491trial-qmacrosubdomain-dev-businessruleseditor-approuter.cfapps.eu10.hana.ondemand.com"...<BR />
+Stopping application "businessruleseditor_appRouter"...<BR />
+Deleting application "businessruleseditor_appRouter"...<BR />
+Deleting service "businessrules_uaa"...<BR />
+Deleting service "businessruleseditor_html5_repo_runtime"...<BR />
+Error deleting services: Error deleting service "businessruleseditor_html5_repo_runtime" from offering "html5-apps-repo" and plan "app-runtime": Service broker operation failed: 502 Bad Gateway: CF-ServiceBrokerBadResponse(10001): Service instance businessruleseditor_html5_repo_runtime: Service broker error: Service broker html5-apps-repo-sb failed with: Internal Server Error<BR />
+Proceeding with automatic retry... (3 of 3 attempts left)<BR />
+Services "[businessrules_uaa]" are already deleted<BR />
+Deleting service "businessruleseditor_html5_repo_runtime"...<BR />
+1 of 1 done<BR />
+Process finished.<BR />
+Use "cf dmol -i aad5f179-4286-11ea-be81-eeee0a930fbf" to download the logs of the process.</CODE></PRE><BR />
+&nbsp;<BR />
+<BR />
+<STRONG>Redeploying, with a reduced size MTA archive</STRONG><BR />
+<BR />
+When I'm ready to redeploy I can do so, following the flow I described in yesterday's post "<A href="https://blogs.sap.com/2020/01/28/scripting-cloud-foundry-activities-in-trial/" target="_blank" rel="noopener noreferrer">Scripting Cloud Foundry activities in trial</A>".<BR />
+<BR />
+However, there's a <A href="https://twitter.com/IObert_/status/1220321066029142018" target="_blank" rel="nofollow noopener noreferrer">lovely bit of advice</A> from my friend and colleague <SPAN class="mention-scrubbed">mariusobert</SPAN> that can be used to reduce the size of the MTA deployment archive. Shown in a <A href="https://gist.github.com/IObert/220cb211a63a4030c25b31d912243d6a" target="_blank" rel="nofollow noopener noreferrer">Gist</A>, there's a '<A href="https://gist.github.com/IObert/220cb211a63a4030c25b31d912243d6a#file-mta-yaml-L18-L19" target="_blank" rel="nofollow noopener noreferrer">build-parameters' setting</A> that can be added to a module definition, so that the 'node_modules/' directory, which is often the bulk of the archive, can be omitted (it will be created in the cloud once deployed). This is what the parameter looks like:<BR />
+<PRE class="language-swift"><CODE>build-parameters:<BR />
+  ignore: ["node_modules/"]</CODE></PRE><BR />
+Adding this to the definition of the 'businessruleseditor_appRouter' module (effectively the definition for the app itself) like this, reduces the archive file size from<BR />
+<PRE class="language-swift"><CODE> - name: businessruleseditor_appRouter                                                                                           <BR />
+   type: approuter.nodejs                                                                                                        <BR />
+   path: businessruleseditor_appRouter                                                                                           <BR />
+   parameters:                                                                                                                   <BR />
+      disk-quota: 256M                                                                                                           <BR />
+      memory: 256M<BR />
+   build-parameters:<BR />
+       ignore: ["node_modules/"]<BR />
+   requires:<BR />
+    - name: businessruleseditor_html5_repo_runtime<BR />
+    - name: businessrules_uaa<BR />
+    - name: businessrules</CODE></PRE><BR />
+Without this setting, the size of the 'businessruleseditor_0.0.1.mtar' archive is 12 megabytes:<BR />
+<PRE class="language-swift"><CODE>-&gt; ls -l --block-size=M mta_archives/<BR />
+total 12M<BR />
+-rw-r--r-- 1 qmacro qmacro 12M Jan 29 11:09 businessruleseditor_0.0.1.mtar</CODE></PRE><BR />
+With this setting, the size is only 17 kilobytes!<BR />
+<PRE class="language-swift"><CODE>-&gt; ls -l --block-size=K mta_archives/<BR />
+total 20K<BR />
+-rw-r--r-- 1 qmacro qmacro 17K Jan 29 11:13 businessruleseditor_0.0.1.mtar</CODE></PRE><BR />
+As a bonus, the build is slightly quicker, and the deploy is definitely quicker!<BR />
+<BR />
+Take a look at the Asciinema recording (<A href="#tldr" target="_blank" rel="nofollow noopener noreferrer">above</A>) to see this in action - where you can also see the appearance of the binding information in the service output, as the app is created and bindings are made.<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+<STRONG>Wrapping up</STRONG><BR />
+<BR />
+When I started hacking around with the 'cf' command earlier this morning, I didn't intend to write a blog post, but I thought it was worthwhile in the end to share some of my learnings. I hope you found it interesting - and more importantly, I'd love to know what sort of automation and convenience tools you have set up for yourself. Let me know in the comments. And as always, happy hacking!<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+&nbsp;

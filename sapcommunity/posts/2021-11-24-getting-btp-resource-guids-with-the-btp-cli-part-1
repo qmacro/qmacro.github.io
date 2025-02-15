@@ -1,0 +1,283 @@
+2021-11-24-getting-btp-resource-guids-with-the-btp-cli-part-1
+Getting BTP resource GUIDs with the btp CLI - part 1
+technology-blog-sap
+2021-11-24
+https://community.sap.com/t5/technology-blogs-by-sap/getting-btp-resource-guids-with-the-btp-cli-part-1/ba-p/13511167
+<EM>Learn how to use the btp CLI to determine resource GUIDs in your global account. This post is part 1, covering the <CODE>bgu</CODE> mechanism.</EM><BR />
+<BR />
+Update: the second blog post in this series is now also available: <A href="https://blogs.sap.com/2021/12/01/getting-btp-resource-guids-with-the-btp-cli-part-2-json-and-jq/" target="_blank" rel="noopener noreferrer">Getting BTP resource GUIDs with the btp CLI – part 2 – JSON and jq</A>.<BR />
+<BR />
+In the <A href="https://reg.sapevents.sap.com/flow/sap/sapteched2021/portal/page/sessions/session/1632238684525001QKhY" target="_blank" rel="noopener noreferrer">Developer Keynote</A> during SAP TechEd, specifically in the Command Line Magic <A href="https://github.com/SAP-samples/teched2021-developer-keynote#sections" target="_blank" rel="nofollow noopener noreferrer">section</A>, I used a little mechanism I called <CODE>bgu</CODE> (for "btp GUID"), to determine the GUIDs for various resources (a subaccount, and later, a directory) in my global account. Here you can see <CODE>bgu</CODE> in action:<BR />
+<FIGURE><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2021/11/bgu-trial-1.png" /><FIGCAPTION aria-hidden="true"></FIGCAPTION></FIGURE><BR />
+<FIGURE><FIGCAPTION aria-hidden="true"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2021/11/bgu-messaging-1.png" /></FIGCAPTION></FIGURE><BR />
+In case you're interested in re-watching this section of the Developer Keynote, there's a link in the <A href="#furtherreading" target="_blank" rel="nofollow noopener noreferrer">Further reading and viewing</A> section later.<BR />
+<BR />
+In this post I explain what this <CODE>bgu</CODE> mechanism is and how it works, because it may be useful to you too. Moreover, the background information and context should provide you with some extra knowledge about BTP and the command line interface tool, <CODE>btp</CODE>.<BR />
+<H2 id="starting-at-a-high-level" id="toc-hId-958322687">Starting at a high level</H2><BR />
+The <CODE>bgu</CODE> mechanism is actually a function in my shell environment, which calls a script called <CODE>btpguid</CODE>. This in turn uses the btp CLI to examine the global account's resource hierarchy and pick information out of it - specifically the GUID for a given resource name. Let's break that down.<BR />
+<BR />
+We can ask what <CODE>bgu</CODE> is with the Bash shell's <CODE>type</CODE> builtin. This itself is an opportunity for us to enjoy a little bit of meta before we start, by asking what the type of <CODE>type</CODE> is:<BR />
+<DIV><BR />
+<PRE class="sourceCode bash"><CODE class="sourceCode bash"><SPAN id="cb1-1"><SPAN class="kw">;</SPAN> <SPAN class="bu">type</SPAN> type</SPAN><BR />
+<SPAN id="cb1-2"><SPAN class="bu">type</SPAN> is a shell builtin</SPAN></CODE></PRE><BR />
+</DIV><BR />
+Anyway, enough of that, let's ask what <CODE>bgu</CODE> is:<BR />
+<DIV><BR />
+<PRE class="sourceCode bash"><CODE class="sourceCode bash"><SPAN id="cb2-1"><SPAN class="kw">;</SPAN> <SPAN class="bu">type</SPAN> bgu</SPAN><BR />
+<SPAN id="cb2-2"><SPAN class="ex">bgu</SPAN> is a function</SPAN><BR />
+<SPAN id="cb2-3"><SPAN class="fu">bgu ()</SPAN></SPAN><BR />
+<SPAN id="cb2-4"><SPAN class="kw">{</SPAN></SPAN><BR />
+<SPAN id="cb2-5">    <SPAN class="ex">btpguid</SPAN> <SPAN class="st">"</SPAN><SPAN class="va">$@</SPAN><SPAN class="st">"</SPAN><SPAN class="kw">;</SPAN></SPAN><BR />
+<SPAN id="cb2-6">    <SPAN class="cf">if</SPAN> <SPAN class="kw">[[</SPAN> <SPAN class="va">$#</SPAN> <SPAN class="ot">-gt</SPAN> 1 <SPAN class="kw">]];</SPAN> <SPAN class="cf">then</SPAN></SPAN><BR />
+<SPAN id="cb2-7">        <SPAN class="ex">btpctx</SPAN> <SPAN class="op">&gt;</SPAN> <SPAN class="st">"</SPAN><SPAN class="va">$HOME</SPAN><SPAN class="st">/.status"</SPAN><SPAN class="kw">;</SPAN></SPAN><BR />
+<SPAN id="cb2-8">    <SPAN class="cf">fi</SPAN></SPAN><BR />
+<SPAN id="cb2-9"><SPAN class="kw">}</SPAN></SPAN></CODE></PRE><BR />
+</DIV><BR />
+So there we are, <CODE>bgu</CODE> is a function that I've defined and made available in my shell. All it does is call <CODE>btpguid</CODE> with all of the arguments that were passed:<BR />
+<DIV><BR />
+<PRE class="sourceCode bash"><CODE class="sourceCode bash"><SPAN id="cb3-1"><SPAN class="ex">btpguid</SPAN> <SPAN class="st">"</SPAN><SPAN class="va">$@</SPAN><SPAN class="st">"</SPAN></SPAN></CODE></PRE><BR />
+</DIV><BR />
+Then, depending on circumstances, it calls another script (<CODE>btpctx</CODE>) to write some info to a status file. This is not relevant here (it's related to my <CODE>tmux</CODE>-based status line in my terminal) so let's just focus on the call to <CODE>btpguid</CODE>.<BR />
+<BR />
+So what is <CODE>btpguid</CODE>? Let's find out:<BR />
+<DIV><BR />
+<PRE class="sourceCode bash"><CODE class="sourceCode bash"><SPAN id="cb4-1"><SPAN class="kw">;</SPAN> <SPAN class="bu">type</SPAN> btpguid</SPAN><BR />
+<SPAN id="cb4-2"><SPAN class="ex">btpguid</SPAN> is /home/user/.dotfiles/scripts/btp/btpguid</SPAN></CODE></PRE><BR />
+</DIV><BR />
+So <CODE>btpguid</CODE> is a script. Great, let's have a look at it!<BR />
+<H2 id="the-btpguid-script" id="toc-hId-761809182">The btpguid script</H2><BR />
+<DIV><BR />
+<PRE class="sourceCode bash"><CODE class="sourceCode bash"><SPAN id="cb5-1"><SPAN class="co">#!/usr/bin/env bash</SPAN></SPAN><BR />
+<SPAN id="cb5-2"></SPAN><BR />
+<SPAN id="cb5-3"><SPAN class="co"># btpguid - return BTP subaccount/directory GUIDs</SPAN></SPAN><BR />
+<SPAN id="cb5-4"></SPAN><BR />
+<SPAN id="cb5-5"><SPAN class="co"># Usage: btpguid [-t|--target] displayname</SPAN></SPAN><BR />
+<SPAN id="cb5-6"></SPAN><BR />
+<SPAN id="cb5-7"><SPAN class="co"># Returns the GUID for the given subaccount or directory, which is</SPAN></SPAN><BR />
+<SPAN id="cb5-8"><SPAN class="co"># specified by name. If the option -t or --target is specified, it</SPAN></SPAN><BR />
+<SPAN id="cb5-9"><SPAN class="co"># will also set that subaccount or directory as the target.</SPAN></SPAN><BR />
+<SPAN id="cb5-10"></SPAN><BR />
+<SPAN id="cb5-11"><SPAN class="co"># Requires the btp CLI. Will direct you to log in first if you're</SPAN></SPAN><BR />
+<SPAN id="cb5-12"><SPAN class="co"># not already logged in.</SPAN></SPAN><BR />
+<SPAN id="cb5-13"></SPAN><BR />
+<SPAN id="cb5-14"><SPAN class="co"># It uses the detail from the output of this command:</SPAN></SPAN><BR />
+<SPAN id="cb5-15"><SPAN class="co"># btp get accounts/global-account --show-hierarchy</SPAN></SPAN><BR />
+<SPAN id="cb5-16"></SPAN><BR />
+<SPAN id="cb5-17"><SPAN class="co"># The output looks like this:</SPAN></SPAN><BR />
+<SPAN id="cb5-18"></SPAN><BR />
+<SPAN id="cb5-19"><SPAN class="co"># Showing details for global account af39080b-1527-40a1-b78a-3b605af7e811...</SPAN></SPAN><BR />
+<SPAN id="cb5-20"><SPAN class="co">#</SPAN></SPAN><BR />
+<SPAN id="cb5-21"><SPAN class="co"># ├─ c35b11e4trial (af39080b-1527-40a1-b78a-3b605af7e811 - global account)</SPAN></SPAN><BR />
+<SPAN id="cb5-22"><SPAN class="co"># │  ├─ trial (b6501bff-e0ac-4fdf-8898-81f305d25335 - subaccount)</SPAN></SPAN><BR />
+<SPAN id="cb5-23"><SPAN class="co"># │  ├─ techedhouse (e57c5b13-9480-4a68-9c04-a603d7a017a9 - directory)</SPAN></SPAN><BR />
+<SPAN id="cb5-24"><SPAN class="co">#</SPAN></SPAN><BR />
+<SPAN id="cb5-25"><SPAN class="co"># type:            id:                                    display name:   parent id:</SPAN></SPAN><BR />
+<SPAN id="cb5-26"><SPAN class="co"># global account   af39080b-1527-40a1-b78a-3b605af7e811   c35b11e4trial</SPAN></SPAN><BR />
+<SPAN id="cb5-27"><SPAN class="co"># subaccount       b6501bff-e0ac-4fdf-8898-81f305d25335   trial           af39080b-...</SPAN></SPAN><BR />
+<SPAN id="cb5-28"><SPAN class="co"># directory        e57c5b13-9480-4a68-9c04-a603d7a017a9   techedhouse     af39080b-...</SPAN></SPAN><BR />
+<SPAN id="cb5-29"></SPAN><BR />
+<SPAN id="cb5-30"><SPAN class="co"># It's the second part of the output (the table) that is used.</SPAN></SPAN><BR />
+<SPAN id="cb5-31"></SPAN><BR />
+<SPAN id="cb5-32"><SPAN class="co"># Uses the "${2:-$1}" technique seen in fff - see</SPAN></SPAN><BR />
+<SPAN id="cb5-33"><SPAN class="co"># <A href="https://qmacro.org/autodidactics/2021/09/03/exploring-fff-part-1-main/" target="test_blank" rel="nofollow noopener noreferrer">https://qmacro.org/autodidactics/2021/09/03/exploring-fff-part-1-main/</A></SPAN></SPAN><BR />
+<SPAN id="cb5-34"><SPAN class="co"># for details.</SPAN></SPAN><BR />
+<SPAN id="cb5-35"></SPAN><BR />
+<SPAN id="cb5-36"><SPAN class="fu">gethier()</SPAN> <SPAN class="kw">{</SPAN></SPAN><BR />
+<SPAN id="cb5-37">  <SPAN class="ex">btp</SPAN> get accounts/global-account <SPAN class="at">--show-hierarchy</SPAN> <SPAN class="dv">2</SPAN><SPAN class="op">&gt;</SPAN> /dev/null</SPAN><BR />
+<SPAN id="cb5-38"><SPAN class="kw">}</SPAN></SPAN><BR />
+<SPAN id="cb5-39"></SPAN><BR />
+<SPAN id="cb5-40"><SPAN class="fu">main()</SPAN> <SPAN class="kw">{</SPAN></SPAN><BR />
+<SPAN id="cb5-41"></SPAN><BR />
+<SPAN id="cb5-42">  <SPAN class="bu">local</SPAN> <SPAN class="va">hierarchy</SPAN> <SPAN class="va">subtype</SPAN> <SPAN class="va">guid</SPAN> <SPAN class="va">displayname</SPAN> <SPAN class="va">rc</SPAN><SPAN class="op">=</SPAN>0</SPAN><BR />
+<SPAN id="cb5-43"></SPAN><BR />
+<SPAN id="cb5-44">  <SPAN class="va">displayname</SPAN><SPAN class="op">=</SPAN><SPAN class="st">"</SPAN><SPAN class="va">${2</SPAN><SPAN class="op">:-</SPAN><SPAN class="va">$1}</SPAN><SPAN class="st">"</SPAN></SPAN><BR />
+<SPAN id="cb5-45"></SPAN><BR />
+<SPAN id="cb5-46">  <SPAN class="kw">[[</SPAN> <SPAN class="ot">-z</SPAN> <SPAN class="va">$displayname</SPAN> <SPAN class="kw">]]</SPAN> <SPAN class="kw">&amp;&amp;</SPAN> <SPAN class="kw">{</SPAN></SPAN><BR />
+<SPAN id="cb5-47">    <SPAN class="bu">echo</SPAN> <SPAN class="st">"No display name specified"</SPAN></SPAN><BR />
+<SPAN id="cb5-48">    <SPAN class="bu">exit</SPAN> 1</SPAN><BR />
+<SPAN id="cb5-49">  <SPAN class="kw">}</SPAN></SPAN><BR />
+<SPAN id="cb5-50"></SPAN><BR />
+<SPAN id="cb5-51">  <SPAN class="va">hierarchy</SPAN><SPAN class="op">=</SPAN><SPAN class="st">"</SPAN><SPAN class="va">$(</SPAN><SPAN class="ex">gethier</SPAN><SPAN class="va">)</SPAN><SPAN class="st">"</SPAN> <SPAN class="kw">||</SPAN> <SPAN class="kw">{</SPAN> <SPAN class="ex">btp</SPAN> login <SPAN class="kw">&amp;&amp;</SPAN> <SPAN class="va">hierarchy</SPAN><SPAN class="op">=</SPAN><SPAN class="st">"</SPAN><SPAN class="va">$(</SPAN><SPAN class="ex">gethier</SPAN><SPAN class="va">)</SPAN><SPAN class="st">"</SPAN><SPAN class="kw">;</SPAN> <SPAN class="kw">}</SPAN></SPAN><BR />
+<SPAN id="cb5-52">  <SPAN class="bu">read</SPAN> <SPAN class="at">-r</SPAN> <SPAN class="va">subtype</SPAN> <SPAN class="va">guid</SPAN> <SPAN class="op">&lt;&lt;&lt;</SPAN> <SPAN class="st">"</SPAN><SPAN class="va">$(</SPAN><SPAN class="fu">grep</SPAN> <SPAN class="at">-P</SPAN> <SPAN class="at">-o</SPAN> <SPAN class="st">"^(subaccount|directory)\s+(\S+)(?=\s+</SPAN><SPAN class="va">$displayname</SPAN><SPAN class="st">)"</SPAN> <SPAN class="op">&lt;&lt;&lt;</SPAN> <SPAN class="st">"</SPAN><SPAN class="va">$hierarchy</SPAN><SPAN class="st">"</SPAN><SPAN class="va">)</SPAN><SPAN class="st">"</SPAN></SPAN><BR />
+<SPAN id="cb5-53"></SPAN><BR />
+<SPAN id="cb5-54">  <SPAN class="co"># Set the subtype as target if requested</SPAN></SPAN><BR />
+<SPAN id="cb5-55">  <SPAN class="kw">[[</SPAN> <SPAN class="va">$1</SPAN> <SPAN class="ot">==</SPAN> -t <SPAN class="kw">]]</SPAN> <SPAN class="kw">||</SPAN> <SPAN class="kw">[[</SPAN> <SPAN class="va">$1</SPAN> <SPAN class="ot">==</SPAN> --target <SPAN class="kw">]]</SPAN> <SPAN class="kw">&amp;&amp;</SPAN> <SPAN class="kw">{</SPAN></SPAN><BR />
+<SPAN id="cb5-56">    <SPAN class="ex">btp</SPAN> target <SPAN class="st">"--</SPAN><SPAN class="va">${subtype}</SPAN><SPAN class="st">"</SPAN> <SPAN class="st">"</SPAN><SPAN class="va">$guid</SPAN><SPAN class="st">"</SPAN> <SPAN class="op">&amp;&gt;</SPAN> /dev/null</SPAN><BR />
+<SPAN id="cb5-57">    <SPAN class="va">rc</SPAN><SPAN class="op">=</SPAN><SPAN class="va">$?</SPAN></SPAN><BR />
+<SPAN id="cb5-58">  <SPAN class="kw">}</SPAN></SPAN><BR />
+<SPAN id="cb5-59"></SPAN><BR />
+<SPAN id="cb5-60">  <SPAN class="bu">echo</SPAN> <SPAN class="st">"</SPAN><SPAN class="va">$guid</SPAN><SPAN class="st">"</SPAN></SPAN><BR />
+<SPAN id="cb5-61">  <SPAN class="cf">return</SPAN> <SPAN class="va">$rc</SPAN></SPAN><BR />
+<SPAN id="cb5-62"></SPAN><BR />
+<SPAN id="cb5-63"><SPAN class="kw">}</SPAN></SPAN><BR />
+<SPAN id="cb5-64"></SPAN><BR />
+<SPAN id="cb5-65"><SPAN class="ex">main</SPAN> <SPAN class="st">"</SPAN><SPAN class="va">$@</SPAN><SPAN class="st">"</SPAN></SPAN></CODE></PRE><BR />
+</DIV><BR />
+Hopefully the comments provide the general idea - given the name of a resource, say "trial" or "techedhouse", this script will find and return that resource's GUID. In addition, if the <CODE>--target</CODE> option is specified, it will also <A href="https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/720645a3ed3945bd8d97a670b948ac07.html?locale=en-US" target="_blank" rel="noopener noreferrer">set the default command context</A>, but we'll leave that for another time.<BR />
+<H2 id="an-overview-of-structure-in-btp" id="toc-hId-565295677">An overview of structure in BTP</H2><BR />
+Before we dig in to some of the details of the script, let's just spend a few moments thinking about subaccounts and the hierarchies that can be built using directories.<BR />
+<BR />
+Basically, within a global account, you can create subaccounts, and you can set up those subaccounts using directories. This is a flexible and simple way to organise resources, assignments, adminstrative access and more using a well understood paradigm.<BR />
+<BR />
+You can read more about this on the SAP Help Portal in <A href="https://help.sap.com/products/BTP/df50977d8bfa4c9a8a063ddb37113c43/b5a6b58694784d0c9f4ff85f9b7336dd.html?locale=en-US" target="_blank" rel="noopener noreferrer">Account Models With Directories and Subaccounts [Feature Set B]</A>.<BR />
+<BR />
+Let's look at an example. The structure that existed at the end of the Command Line Magic section of the Developer Keynote looked like this:<BR />
+<PRE><CODE>├─ 1a99110dtrial (c63c501e-e589-467d-8875-1821927ea713 - global account)<BR />
+│  ├─ trial (00516298-b174-418e-9824-8824de04bfa3 - subaccount)<BR />
+│  ├─ techedhouse (2558794c-f8cd-4422-b071-3b21c2922a02 - directory)<BR />
+│  │  ├─ messaging (3ea88c9c-010b-4bf0-9fdb-5c29c9087660 - subaccount)</CODE></PRE><BR />
+We saw, very briefly, a representation of this structure in the BTP cockpit too, right at the end of this section of the keynote:<BR />
+<FIGURE><FIGCAPTION aria-hidden="true"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2021/11/hierarchy-1.png" /></FIGCAPTION></FIGURE><BR />
+Staring at this structure for a few seconds, we see that it's made up of directories and subaccounts; the "messaging" subaccount sits within the "techedhouse" directory, which itself sits alongside (at the same level as) the default "trial" subaccount that was set up automatically for me when my global account was created.<BR />
+<H2 id="resources-guids-and-command-substitution" id="toc-hId-368782172">Resources, GUIDs and command substitution</H2><BR />
+When managing these subaccount and directory resources, GUIDs are used. We saw multiple examples where GUIDs are required - here are three of them. However, note that each time, instead of finding and specifying a GUID manually, a <A href="https://www.gnu.org/software/bash/manual/html_node/Command-Substitution.html" target="_blank" rel="nofollow noopener noreferrer">command substitution</A> (they look like this: <CODE>$(...)</CODE>) is used, to make things easier:<BR />
+<UL><BR />
+ 	<LI><A href="https://github.com/SAP-samples/teched2021-developer-keynote/tree/main/section/command-line-magic#reducing-existing-entitlement-quota-to-zero" target="_blank" rel="nofollow noopener noreferrer">Reducing quota for a subaccount</A>: <CODE>btp assign accounts/entitlement --for-service enterprise-messaging --plan dev --to-subaccount $(bgu trial) --amount 0</CODE></LI><BR />
+ 	<LI><A href="https://github.com/SAP-samples/teched2021-developer-keynote/tree/main/section/command-line-magic#assigning-service-quota-to-directory" target="_blank" rel="nofollow noopener noreferrer">Assigning quota to a directory</A>: <CODE>btp assign accounts/entitlement --for-service enterprise-messaging --plan dev --to-directory $(bgu techedhouse) --amount 1 --auto-assign</CODE></LI><BR />
+ 	<LI><A href="https://github.com/SAP-samples/teched2021-developer-keynote/tree/main/section/command-line-magic#creating-the-new-subaccount" target="_blank" rel="nofollow noopener noreferrer">Creating the subaccount within a directory</A>: <CODE>btp create accounts/subaccount --region us10 --display-name messaging --beta-enabled true --subdomain $(uuidgen) --directory $(bgu techedhouse)</CODE></LI><BR />
+</UL><BR />
+In each case, instead of manually looking up the GUID for a resource, and then copy-pasting that in for the value to use with <CODE>--to-subaccount</CODE>, <CODE>--to-directory</CODE> and <CODE>--directory</CODE> above, the <CODE>bgu</CODE> mechanism was used to do that for us. As the <A href="https://www.gnu.org/software/bash/manual/html_node/Command-Substitution.html" target="_blank" rel="nofollow noopener noreferrer">manual section on command substitution</A> says:<BR />
+<BLOCKQUOTE>"<EM>command substitution allows the output of a command to replace the command itself</EM>"</BLOCKQUOTE><BR />
+In other words, when you see something like this (taken from the first example above):<BR />
+<PRE><CODE>--to-subaccount $(bgu trial)</CODE></PRE><BR />
+then what happens is that the command <CODE>bgu trial</CODE> is executed, and the output is then substituted as the value for the <CODE>--to-subaccount</CODE> parameter.<BR />
+<BR />
+(In case you're wondering, command substitution comes in two forms: <CODE>`...`</CODE> and <CODE>$(...)</CODE>; the former is now deprecated.)<BR />
+<H2 id="determining-the-guids" id="toc-hId-172268667">Determining the GUIDs</H2><BR />
+Now that we understand the structure of resources in BTP accounts, we can turn our attention to the heart of the <CODE>btpguid</CODE> script. This incarnation of the script, which was used in the Developer Keynote, invokes a btp CLI command (which we'll see shortly), and parses some of its output:<BR />
+<PRE><CODE>hierarchy="$(gethier)" || { btp login &amp;&amp; hierarchy="$(gethier)"; }<BR />
+read -r subtype guid &lt;&lt;&lt; "$(grep -P -o "^(subaccount|directory)\s+(\S+)(?=\s+$displayname)" &lt;&lt;&lt; "$hierarchy")"</CODE></PRE><BR />
+Let's break that down so we understand what's going on.<BR />
+<BR />
+The first line executes the <CODE>gethier</CODE> function which is defined earlier in the script.<BR />
+<BLOCKQUOTE>In case you're wondering about the rest of the first line, this is to deal with the situation where you're not yet (or no longer) logged in with <CODE>btp</CODE>, and if that's the case, you're guided to log in first, and then the call is re-tried.</BLOCKQUOTE><BR />
+The <CODE>gethier</CODE> function just runs the following <CODE>btp</CODE> command:<BR />
+<DIV><BR />
+<PRE class="sourceCode bash"><CODE class="sourceCode bash"><SPAN id="cb9-1"><SPAN class="ex">btp</SPAN> get accounts/global-account <SPAN class="at">--show-hierarchy</SPAN> <SPAN class="dv">2</SPAN><SPAN class="op">&gt;</SPAN> /dev/null</SPAN></CODE></PRE><BR />
+</DIV><BR />
+<BLOCKQUOTE>I'm redirecting standard error (with <CODE>2&gt;</CODE>) to <CODE>/dev/null</CODE>, to get rid of anything printed there. Currently the btp CLI outputs an "OK" to standard error, and I don't want to see that anywhere.</BLOCKQUOTE><BR />
+The <CODE>--show-hierarchy</CODE> parameter is responsible for the lovely detail that you saw earlier. Let's look at an example of that detail before diving into the second line, so we know what we're dealing with. This example is from the script's comments above:<BR />
+<PRE><CODE>Showing details for global account af39080b-1527-40a1-b78a-3b605af7e811...<BR />
+<BR />
+├─ c35b11e4trial (af39080b-1527-40a1-b78a-3b605af7e811 - global account)<BR />
+│  ├─ trial (b6501bff-e0ac-4fdf-8898-81f305d25335 - subaccount)<BR />
+│  ├─ techedhouse (e57c5b13-9480-4a68-9c04-a603d7a017a9 - directory)<BR />
+<BR />
+type:            id:                                    display name:   parent id:<BR />
+global account   af39080b-1527-40a1-b78a-3b605af7e811   c35b11e4trial<BR />
+subaccount       b6501bff-e0ac-4fdf-8898-81f305d25335   trial           af39080b-...<BR />
+directory        e57c5b13-9480-4a68-9c04-a603d7a017a9   techedhouse     af39080b-...</CODE></PRE><BR />
+Right, so what is the second line doing? From a high level, it's looking for lines in this output starting with either "subaccount" or "directory", grabbing the GUID and resource type on the line that's found, and assigning them to two variables, <CODE>guid</CODE> and <CODE>subtype</CODE> respectively:<BR />
+<DIV><BR />
+<PRE class="sourceCode bash"><CODE class="sourceCode bash"><SPAN id="cb11-1"><SPAN class="bu">read</SPAN> <SPAN class="at">-r</SPAN> <SPAN class="va">subtype</SPAN> <SPAN class="va">guid</SPAN> <SPAN class="op">&lt;&lt;&lt;</SPAN> <SPAN class="st">"</SPAN><SPAN class="va">$(</SPAN><SPAN class="fu">grep</SPAN> <SPAN class="at">-P</SPAN> <SPAN class="at">-o</SPAN> <SPAN class="st">"^(subaccount|directory)\s+(\S+)(?=\s+</SPAN><SPAN class="va">$displayname</SPAN><SPAN class="st">)"</SPAN> <SPAN class="op">&lt;&lt;&lt;</SPAN> <SPAN class="st">"</SPAN><SPAN class="va">$hierarchy</SPAN><SPAN class="st">"</SPAN><SPAN class="va">)</SPAN><SPAN class="st">"</SPAN></SPAN></CODE></PRE><BR />
+</DIV><BR />
+It looks a little complex, but if you stare at it for a few minutes, this pattern emerges:<BR />
+<BLOCKQUOTE>read [into two variables] from the results of searching and extracting values from the hierarchy data</BLOCKQUOTE><BR />
+A couple of "here strings" in the form of the <CODE>&lt;&lt;&lt;</CODE> construct are used (see section 3.6.7 of the <A href="https://www.gnu.org/software/bash/manual/html_node/Redirections.html" target="_blank" rel="nofollow noopener noreferrer">Bash manual section on redirections</A>). Such "here strings" allow us to supply the value of a variable as input data to a command or builtin that would normally expect to read from standard input (STDIN). If you're interested in understanding here strings and how they fit in, have a look at <A href="https://qmacro.org/autodidactics/2021/11/07/exploring-fff-part-2-get-ls-colors/#ioredirection" target="_blank" rel="nofollow noopener noreferrer">Input/output redirection, here documents and here strings</A>.<BR />
+<BR />
+Knowing this, we can break the line down into parts. The first part is this, inside the command substitution construct <CODE>$(...)</CODE>:<BR />
+<DIV><BR />
+<PRE class="sourceCode bash"><CODE class="sourceCode bash"><SPAN id="cb12-1"><SPAN class="fu">grep</SPAN> <SPAN class="at">-P</SPAN> <SPAN class="at">-o</SPAN> <SPAN class="st">"^(subaccount|directory)\s+(\S+)(?=\s+</SPAN><SPAN class="va">$displayname</SPAN><SPAN class="st">)"</SPAN> <SPAN class="op">&lt;&lt;&lt;</SPAN> <SPAN class="st">"</SPAN><SPAN class="va">$hierarchy</SPAN><SPAN class="st">"</SPAN></SPAN></CODE></PRE><BR />
+</DIV><BR />
+Here are some notes to help you interpret this:<BR />
+<TABLE><COLGROUP> <COL style="width: 25%" /> </COLGROUP> <COLGROUP> <COL style="width: 75%" /></COLGROUP><BR />
+<THEAD><BR />
+<TR class="header"><BR />
+<TH>Part</TH><BR />
+<TH>Description</TH><BR />
+</TR><BR />
+</THEAD><BR />
+<TBODY><BR />
+<TR class="odd"><BR />
+<TD><CODE>grep</CODE></TD><BR />
+<TD>this is the command to search for patterns in data</TD><BR />
+</TR><BR />
+<TR class="even"><BR />
+<TD><CODE>-P</CODE></TD><BR />
+<TD>this tells <CODE>grep</CODE> that we're going to use a Perl Compatible Regular Expression (PCRE)</TD><BR />
+</TR><BR />
+<TR class="odd"><BR />
+<TD><CODE>-o</CODE></TD><BR />
+<TD>this tells <CODE>grep</CODE> to output not the entire matched line, but only the parts that are matched and captured (via parentheses)</TD><BR />
+</TR><BR />
+<TR class="even"><BR />
+<TD><CODE>"$hierarchy"</CODE></TD><BR />
+<TD>this is the value of the <CODE>hierarchy</CODE> variable that holds the output from <CODE>btp get accounts/global-account --show-hierarchy</CODE></TD><BR />
+</TR><BR />
+<TR class="odd"><BR />
+<TD><CODE>^</CODE></TD><BR />
+<TD>this anchors the pattern to the beginning of the line (in other words, either "subaccount" or "directory" needs to be right at the start of the line for the match to be successful)</TD><BR />
+</TR><BR />
+<TR class="even"><BR />
+<TD><CODE>\s</CODE> and <CODE>\S</CODE></TD><BR />
+<TD>these are very common metacharacters used in regular expressions, and represent "a whitespace character" and "anything but a whitespace character" respectively</TD><BR />
+</TR><BR />
+<TR class="odd"><BR />
+<TD><CODE>+</CODE></TD><BR />
+<TD>this is a modifier which represents "at least one, possibly more" and is different from <CODE>\*</CODE> which is "zero or more" and <CODE>?</CODE> which means "optional (i.e. either no occurrence or just one occurrence)"</TD><BR />
+</TR><BR />
+<TR class="even"><BR />
+<TD><CODE>$displayname</CODE></TD><BR />
+<TD>because the entire pattern is enclosed in double quotes (<CODE>"..."</CODE>) the shell will substitute the value of this variable into the pattern; the variable holds the value specified when <CODE>btpguid</CODE> is invoked, i.e. the name of the resource we're looking for</TD><BR />
+</TR><BR />
+<TR class="odd"><BR />
+<TD><CODE>(...)</CODE></TD><BR />
+<TD>these are matching parentheses, called "capturing groups", to identify and grab what we want from the match</TD><BR />
+</TR><BR />
+<TR class="even"><BR />
+<TD><CODE>(?=...)</CODE></TD><BR />
+<TD>this is a positive lookahead assertion which allows us to say things like "must be followed by" without consuming anything in the match; note also that despite there being parentheses, this is not itself a capturing group and therefore what's being asserted is not grabbed</TD><BR />
+</TR><BR />
+<TR class="odd"><BR />
+<TD><CODE>&lt;&lt;&lt;</CODE></TD><BR />
+<TD>this is a here string construct that provides the input to <CODE>grep</CODE> from the value of the <CODE>hierarchy</CODE> variable instead of from standard input</TD><BR />
+</TR><BR />
+</TBODY><BR />
+</TABLE><BR />
+With that in mind, let's look again at the pattern, in quotes:<BR />
+<PRE><CODE>"^(subaccount|directory)\s+(\S+)(?=\s+$displayname)"</CODE></PRE><BR />
+If the <CODE>displayname</CODE> variable contains "techedhouse", then, after parameter substitution within these double quotes (i.e. at the shell level), we have this as the actual pattern:<BR />
+<PRE><CODE>^(subaccount|directory)\s+(\S+)(?=\s+techedhouse)</CODE></PRE><BR />
+Spoken out loud we might say: <EM>the line must start with either 'subaccount' or 'directory' right at the beginning, and whichever it is, we want to capture it; that must be directly followed by at least one whitespace character (<CODE>\s+</CODE>), followed by at least one non-whitespace character (<CODE>\S+</CODE>), and we want to capture those non-whitespace characters*; oh, but also this must be followed (<CODE>(?=</CODE>) by at least one whitespace character (<CODE>\s+</CODE>) and then 'techedhouse'</EM>.<BR />
+<BR />
+* those non-whitespace characters will be the GUID<BR />
+<BR />
+Let's test this out manually, to see what happens. Let's assume that we're looking for the GUID of a resource with a display name of "techedhouse":<BR />
+<DIV><BR />
+<PRE class="sourceCode bash"><CODE class="sourceCode bash"><SPAN id="cb15-1"><SPAN class="kw">;</SPAN> <SPAN class="ex">btp</SPAN> get accounts/global-account <SPAN class="at">--show-hierarchy</SPAN> <SPAN class="dv">2</SPAN><SPAN class="op">&gt;</SPAN>/dev/null <SPAN class="dt">\</SPAN></SPAN><BR />
+<SPAN id="cb15-2">  <SPAN class="kw">|</SPAN> <SPAN class="fu">grep</SPAN> <SPAN class="at">-P</SPAN> <SPAN class="at">-o</SPAN> <SPAN class="st">'^(subaccount|directory)\s+(\S+)(?=\s+techedhouse)'</SPAN></SPAN><BR />
+<SPAN id="cb15-3"><SPAN class="ex">directory</SPAN>        2558794c-f8cd-4422-b071-3b21c2922a02</SPAN></CODE></PRE><BR />
+</DIV><BR />
+Note that the whitespace and "techedhouse" inside the positive lookahead assertion (i.e. <CODE>(?=\s+techedhouse)</CODE>) is not captured and therefore we don't see it as a third value in the output.<BR />
+<BR />
+With the two values output like this:<BR />
+<PRE><CODE>directory        2558794c-f8cd-4422-b071-3b21c2922a02</CODE></PRE><BR />
+we can better understand what's happening with the <CODE>read</CODE> builtin; let's substitute the output to see it in action:<BR />
+<DIV><BR />
+<PRE class="sourceCode bash"><CODE class="sourceCode bash"><SPAN id="cb17-1"><SPAN class="bu">read</SPAN> <SPAN class="at">-r</SPAN> <SPAN class="va">subtype</SPAN> <SPAN class="va">guid</SPAN> <SPAN class="op">&lt;&lt;&lt;</SPAN> <SPAN class="st">"directory        2558794c-f8cd-4422-b071-3b21c2922a02"</SPAN></SPAN></CODE></PRE><BR />
+</DIV><BR />
+And guess what - after this, the <CODE>subtype</CODE> variable will contain "directory" and the <CODE>guid</CODE> variable will contain "2558794c-f8cd-4422-b071-3b21c2922a02". And then with the <CODE>echo</CODE> a little bit further on in the script, this GUID is emitted to standard output before the script ends. Nice!<BR />
+<BR />
+In case you're wondering about the <CODE>-r</CODE> option to the <CODE>read</CODE> builtin, it's to stop any backslashes in the input being interpreted inappropriately. I wrote about this in a recent post on my <A href="https://qmacro.org/autodidactics/" target="_blank" rel="nofollow noopener noreferrer">Autodidactics blog</A> - see <A href="https://qmacro.org/autodidactics/2021/11/07/exploring-fff-part-2-get-ls-colors/#readcommand" target="_blank" rel="nofollow noopener noreferrer">The read command</A> section of <A href="https://qmacro.org/autodidactics/2021/11/07/exploring-fff-part-2-get-ls-colors/" target="_blank" rel="nofollow noopener noreferrer">Exploring fff part 2 - get_ls_colors</A>.<BR />
+<H2 id="wrapping-up-this-part" id="toc-hId--24244838">Wrapping up this part</H2><BR />
+We can see how the power of the <A href="https://en.wikipedia.org/wiki/Unix_philosophy" target="_blank" rel="nofollow noopener noreferrer">Unix Philosophy</A> helps us prepare, run, and handle output of executables on the command line. Here we put together just a few lines to help us level up and be even more efficient, by allowing us to determine our SAP Business Technology Platform account's resource GUIDs with zero effort, and use those determined GUIDs in the context of other commands.<BR />
+<BR />
+In part 2 we'll learn a little bit more about the Unix Philosophy and then examine alternative output formats for complex data structures and relationships; formats that are more predictable and - with the right tools - more reliably parseable.<BR />
+<BR />
+<A name="furtherreading" target="_blank"></A><BR />
+<H2 id="further-reading-and-viewing" id="toc-hId--220758343">Further reading and viewing</H2><BR />
+Here's a quick list of resources that you may wish to consume, relating to what you've read in this post:<BR />
+<UL><BR />
+ 	<LI>The replay of the SAP TechEd Developer Keynote itself: <A href="https://www.youtube.com/watch?v=kOFuwDSXBZg" target="_blank" rel="nofollow noopener noreferrer">Improve Developers' Lives: Developer Keynote and Open Discussion</A></LI><BR />
+ 	<LI>A link to the part of that Developer Keynote replay which goes directly to the relevant demo part: <A href="https://youtu.be/kOFuwDSXBZg?t=193" target="_blank" rel="nofollow noopener noreferrer">Command Line Magic</A></LI><BR />
+ 	<LI>More on the Developer Keynote in this blog post from <SPAN class="mention-scrubbed">thomas.jung</SPAN>: <A href="https://blogs.sap.com/2021/11/17/sap-teched-2021-developer-keynote/" target="_blank" rel="noopener noreferrer">SAP TechEd 2021 Developer Keynote</A></LI><BR />
+ 	<LI>The SAP btp CLI branch of our SAP Tech Bytes repository on GitHub, which has links to related blog posts: <A href="https://github.com/SAP-samples/sap-tech-bytes/tree/2021-09-01-btp-cli" target="_blank" rel="nofollow noopener noreferrer">SAP btp CLI</A></LI><BR />
+ 	<LI>The official place to download the btp CLI: <A href="https://tools.hana.ondemand.com/#cloud" target="_blank" rel="nofollow noopener noreferrer">SAP Development Tools - Cloud</A></LI><BR />
+ 	<LI>A script that will download, unpack and set up the btp CLI for you: <A href="https://github.com/SAP-samples/sap-tech-bytes/blob/2021-09-01-btp-cli/getbtpcli" target="_blank" rel="nofollow noopener noreferrer">getbtpcli</A></LI><BR />
+ 	<LI>A mini-series on the SAP btp CLI from the Hands-on SAP Dev show on the SAP Developers YouTube channel: <A href="https://www.youtube.com/playlist?list=PL6RpkC85SLQDXx827kdjKc6HRvdMRZ8P5" target="_blank" rel="nofollow noopener noreferrer">The SAP btp CLI</A></LI><BR />
+ 	<LI>A reference manual for Bash: <A href="https://www.gnu.org/software/bash/manual/html_node/index.html" target="_blank" rel="nofollow noopener noreferrer">Bash Reference Manual</A></LI><BR />
+ 	<LI>Documentation from the SAP Help Portal: <A href="https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/a21360fa19714751a7c49c796d39ac3d.html?locale=en-US&amp;state=DRAFT&amp;version=Cloud" target="_blank" rel="noopener noreferrer">Setting up a Trial Account via the Command Line [Feature Set B]</A></LI><BR />
+ 	<LI>The official SAP btp CLI documentation: <A href="https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/7c6df2db6332419ea7a862191525377c.html?locale=en-US&amp;version=Cloud" target="_blank" rel="noopener noreferrer">Account Administration Using the SAP BTP Command Line Interface (btp CLI) [Feature Set B]</A></LI><BR />
+ 	<LI>More deep dives into Bash script arcana: <A href="https://qmacro.org/autodidactics/2021/09/03/exploring-fff-part-1-main/" target="_blank" rel="nofollow noopener noreferrer">Exploring fff part 1 - main</A> and <A href="https://qmacro.org/autodidactics/2021/11/07/exploring-fff-part-2-get-ls-colors/" target="_blank" rel="nofollow noopener noreferrer">Exploring fff part 2 - get_ls_colors</A></LI><BR />
+</UL><BR />
+The second blog post in this series is now also available: <A href="https://blogs.sap.com/2021/12/01/getting-btp-resource-guids-with-the-btp-cli-part-2-json-and-jq/" target="_blank" rel="noopener noreferrer">Getting BTP resource GUIDs with the btp CLI – part 2 – JSON and jq</A>.

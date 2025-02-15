@@ -1,0 +1,56 @@
+2020-04-24-terminal-tip-remotely-monitor-a-cf-deployment
+Terminal Tip: remotely monitor a CF deployment
+technology-blog-sap
+2020-04-24
+https://community.sap.com/t5/technology-blogs-by-sap/terminal-tip-remotely-monitor-a-cf-deployment/ba-p/13453433
+(Find more terminal tips here: <A href="https://blogs.sap.com/tag/terminaltip/" target="_blank" rel="noopener noreferrer">https://blogs.sap.com/tag/terminaltip/</A>)<BR />
+<BR />
+In today's <A href="https://bit.ly/handsonsapdev" target="_blank" rel="nofollow noopener noreferrer">HandsOnSAPDev</A> live stream, <A href="http://bit.ly/handsonsapdev#ep65" target="_blank" rel="nofollow noopener noreferrer">Ep.65</A>, we built the SAP Cloud Platform Workflow sample application MTA in the SAP Web IDE, and deployed it to our Cloud Foundry (CF) space from there too. We noticed that the console logging was buffering the deployment log, so we didn't see much during the operation:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><A href="https://www.youtube.com/watch?v=ZLtwMSq0DKo" target="_blank" rel="nofollow noopener noreferrer"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2020/04/Screenshot-2020-04-24-at-14.38.26.png" /></A></P><BR />
+At the time, I wondered out loud whether it was possible to remotely monitor an operation.<BR />
+<BR />
+Remember that the <A href="https://plugins.cloudfoundry.org/#multiapps" target="_blank" rel="nofollow noopener noreferrer">multiapps</A> plugin for the <CODE>cf</CODE> command line tool gives us lots of options in relation to multi target application (MTA) operations. A couple of example are:<BR />
+<UL><BR />
+ 	<LI>see a summary list of active operations with the <CODE>mta-ops</CODE> command</LI><BR />
+ 	<LI>download the logs of such an operation, with the <CODE>download-mta-op-logs</CODE> command (which is also available in the form of a mercifully shorter alias <CODE>dmol</CODE>)</LI><BR />
+</UL><BR />
+This latter command is in the right ballpark, but doesn't allow the live monitoring (or "tailing") of log output.<BR />
+<BR />
+After the live stream ended, I was pondering this and had a look at the documentation on the SAP Help Portal, specifically the <A href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/65ddb1b51a0642148c6b468a759a8a2e.html" target="_blank" rel="noopener noreferrer">Multitarget Application Commands for the Cloud Foundry Environment</A> section. There, it describes the <CODE>-i</CODE> option to the <CODE>cf deploy</CODE> command, which allows us to interact with active MTA operations:<BR />
+<PRE class="pre codeblock prettyprint w-buttons prettyprinted"><SPAN class="ph cmdtext"><SPAN class="pln">cf deploy  </SPAN><SPAN class="pun">[-</SPAN><SPAN class="pln">i </SPAN><VAR class="keyword varname"><SPAN class="pun">&lt;</SPAN><SPAN class="pln">OPERATION_ID</SPAN><SPAN class="pun">&gt;</SPAN></VAR><SPAN class="pun">]</SPAN> <SPAN class="pun">[-</SPAN><SPAN class="pln">a </SPAN><VAR class="keyword varname"><SPAN class="pun">&lt;</SPAN><SPAN class="pln">ACTION</SPAN><SPAN class="pun">&gt;</SPAN></VAR><SPAN class="pun">]</SPAN> </SPAN></PRE><BR />
+Digging a little further, it turns out that one of the actions is <CODE>monitor</CODE>, and indeed that's exactly what we're looking for!<BR />
+<BR />
+So, kicking off a deployment in the SAP Web IDE gives us something in the console that looks like what we see above in the screenshot. But we can switch to a more comfortable terminal environment and use this feature to monitor that very operation that we kicked off in the SAP Web IDE.<BR />
+<BR />
+Here's how: In the terminal, we can first find out the ID of the MTA operation, like this:<BR />
+<PRE class="language-abap"><CODE>-&gt; cf mta-ops                                                                                                                   <BR />
+Getting active multi-target app operations in org p2001351149trial / space dev as qmacro+workflowcodejam@example.com...           <BR />
+OK                                                                                                                              <BR />
+id                                     type     mta id                  status    started at                      started by    <BR />
+f450e444-8632-11ea-abb3-eeee0a8f6ba7   DEPLOY   sample.onboarding.mta   RUNNING   2020-04-24T13:53:19.367Z[UTC]   qmacro+workflowcodejam@example.com </CODE></PRE><BR />
+We can then take the ID and use it like this:<BR />
+<PRE class="language-abap"><CODE>-&gt; cf deploy -i f450e444-8632-11ea-abb3-eeee0a8f6ba7 -a monitor                                   <BR />
+Updating application "uiDeployer"...<BR />
+Application "uiDeployer" attributes are not modified and will not be updated                      <BR />
+Uploading application "uiDeployer"...<BR />
+Content of application "uiDeployer" is not changed - upload will be skipped.                      <BR />
+Starting application "uiDeployer"...<BR />
+Application "uiDeployer" started<BR />
+Application "uiDeployer" executed<BR />
+Stopping application "uiDeployer"...<BR />
+Deleting discontinued configuration entries for application "uiDeployer"...<BR />
+Service key "onboarding-workflow-credentials" for service "workflow" already exists<BR />
+Uploading content module "onboarding" in target service "workflow"...<BR />
+Deploying content module "onboarding" in target service "workflow"...<BR />
+Skipping deletion of services, because the command line option "--delete-services" is not specified.<BR />
+Process finished.<BR />
+Use "cf dmol -i f450e444-8632-11ea-abb3-eeee0a8f6ba7" to download the logs of the process.</CODE></PRE><BR />
+I'd say that the ability to monitor ongoing MTA operations in the terminal, regardless of where the operation was initiated, is pretty neat. Wouldn't you?<BR />
+<BR />
+If this has whetted your appetite, read the next post in this collection: <A href="https://blogs.sap.com/2020/05/01/terminal-tip-a-cf-remote-monitor-script/" target="_blank" rel="noopener noreferrer">Terminal Tip: a CF remote monitor script</A>, which ties these things together into a neat little script.<BR />
+<BR />
+Share &amp; enjoy, and remember, <A href="https://twitter.com/search?q=%23TheFutureIsTerminal&amp;src=typed_query" target="_blank" rel="nofollow noopener noreferrer">TheFutureIsTerminal</A>!<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+&nbsp;

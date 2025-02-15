@@ -1,0 +1,149 @@
+2018-01-26-discovering-scp-workflow-script-tasks
+Discovering SCP Workflow - Script Tasks
+technology-blog-members
+2018-01-26
+https://community.sap.com/t5/technology-blogs-by-members/discovering-scp-workflow-script-tasks/ba-p/13371812
+Previous post in this series:&nbsp;<A href="https://blogs.sap.com/2018/01/24/discovering-scp-workflow-recommendation-ui/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow – Recommendation UI</A>.<BR />
+<BR />
+This post is part of a series, a guide to which can be found here:&nbsp;<A href="https://qmacro.org/blog/posts/2018/01/16/discovering-scp-workflow/" target="_blank" rel="nofollow noopener noreferrer">Discovering SCP Workflow</A>.<BR />
+<BR />
+It's time to move on from user tasks and take a look at script tasks. By this point in the series, we've reached the stage where the user has been presented with a list of beers, recommended because of the beer that was originally checked in. They've made their choice in the <A href="https://blogs.sap.com/2018/01/24/discovering-scp-workflow-recommendation-ui/" target="_blank" rel="noopener noreferrer">recommendation UI</A>&nbsp;and hit the Continue action button to move on.<BR />
+<BR />
+Let's remind ourselves of the flow, from a previous post in this series: <A href="https://blogs.sap.com/2018/01/18/discovering-scp-workflow-workflow-definition/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Workflow Definition</A>:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-17-at-07.17.58.png" /><BR />
+<BR />
+It's time to marshal the user's selections, and for that we can use a script task.<BR />
+<H3 id="toc-hId-1035694797">Script tasks and JavaScript</H3><BR />
+From reading the <A href="https://help.sap.com/viewer/f85276c5069a429fa37d1cd352785c25/Cloud/en-US/ca9a4381628a40908ffe1f74bde9f3ce.html" target="_blank" rel="noopener noreferrer">documentation on script tasks</A>, we find that, at least in the Workflow service's current incarnation, script tasks are relatively simple and restricted. That said, they're a very useful mechanism for manipulating the data within a workflow instance before moving on to further steps in the flow.<BR />
+<BR />
+Script tasks are written in JavaScript. Beware, however, that it's specifically ECMAScript (ES) 5.1, rather than any later version of JavaScript. Being functionally inclined, I tend to write a lot of ES6 style JavaScript, using fat arrow syntax and so on, but that's not supported here.<BR />
+<BR />
+If you do write ES6, you'll be warned by the linter, like this:<BR />
+<BR />
+<IMG src="https://mail.google.com/mail/u/0/?ui=2&amp;ik=f61bf3ef4b&amp;view=fimg&amp;th=16131616c19beadf&amp;attid=0.2&amp;disp=emb&amp;realattid=ii_jcvlw8cu2_161315e8c7321462&amp;attbid=ANGjdJ9YbXZhoq-LsfrKoFE9OsYNPd-t1FhLXjqdmJNyFneDJirDfNdunMaLNknwOwFQfzvCTasqJJNnGXXqPLX7Js6I65d6ahoiztyhgF79sV2-DRJ8eL_Y0pUlbWU&amp;sz=w912-h150&amp;ats=1516956486090&amp;rm=16131616c19beadf&amp;zw&amp;atsh=1" /><BR />
+<BR />
+ES6 came into being for most people in 2015, but there are still systems where it's not yet supported. This is one of them. Another major system where I still have to write ES5 code is in Google Apps Scripts. Interestingly that's another cloud based, server side execution context service. So it's not an isolated issue at all. I mean, it's not that it's an issue per se - I just personally prefer ES6.<BR />
+<BR />
+The script task itself, in the workflow definition, is very simple - it just points to a JavaScript file within the workflow project:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-26-at-08.58.06.png" /><BR />
+<BR />
+We'll see the content of that file shortly.<BR />
+<H3 id="toc-hId-839181292">What can you do?</H3><BR />
+The documentation says "Configure a script task if you want the system to run a script to perform a task in the workflow", which is quite generic.<BR />
+<BR />
+Considering the sandbox within which the JavaScript is executed, and the access that JavaScript has, there's currently really only a single main focus for script tasks, and that's to access and manipulate the workflow instance's context.<BR />
+<BR />
+Why might you want to do that? Well, a number of reasons come to mind:<BR />
+<UL><BR />
+ 	<LI>to make calculations and set values that can be tested in further steps within the workflow</LI><BR />
+ 	<LI>to combine and otherwise modify existing data</LI><BR />
+ 	<LI>to marshal a set of properties ready for a further step within the workflow, specifically a service task step</LI><BR />
+</UL><BR />
+There are couple of special variables available that afford access to the context and a little bit of the workflow instance metadata:<BR />
+<UL><BR />
+ 	<LI>$.context - this is the entire workflow instance context</LI><BR />
+ 	<LI>$.info - this exposes some instance specific metadata (currently the workflow instance ID, the ID of the script task itself, and the ID of the workflow definition)</LI><BR />
+</UL><BR />
+Stepping back from the keyboard for a second, one might imagine the scope of access expanding to include other data in a workflow instance. How about being able to see other tasks within the instance, and modify their properties, such as a user task's priority, or the path of a service task's endpoint?<BR />
+<BR />
+Of course, there's a balance to be had between changing these things dynamically, and perhaps "opaquely" in code within a script task, and making things more "explicit" with other workflow definition mechanisms at our disposal, such as <A href="https://help.sap.com/viewer/f85276c5069a429fa37d1cd352785c25/Cloud/en-US/22cda7ec05514383b914229b57b0f5cf.html" target="_blank" rel="noopener noreferrer">gateways</A>. It all depends of course. I'm sure the Workflow service team are thinking hard about these issues and the pros and cons of each approach.<BR />
+<H3 id="toc-hId-642667787">Marshalling recommendations</H3><BR />
+Going back to the reasons for using a script task that we considered earlier, our simple workflow definition calls for the readying of values in preparation for a call to a remote service in the next step - a service task, which we'll look at next time.<BR />
+<BR />
+Considering what we have right now, there's a <A href="https://untappd.com/api/docs#beerinfo" target="_blank" rel="nofollow noopener noreferrer">ton of information</A> in the context, put there for the most part when the instance was kicked off. We also have indications of which beers the user selected in the task UI, for inclusion within their wishlist.<BR />
+<BR />
+These indications are the presence of a new property "_selected" in the similar items array. Let's remind ourselves of what this might look like.<BR />
+<BR />
+This chunk of JSON shows the "similar" property in the (heavily redacted) context of a workflow instance started following a check-in to <A href="https://untappd.com/b/brouwerij-der-trappisten-van-westmalle-westmalle-trappist-dubbel/4168" target="_blank" rel="nofollow noopener noreferrer">Westmalle Dubbel</A>, and where the user selected <A href="https://untappd.com/b/brouwerij-bosteels-tripel-karmeliet/6511" target="_blank" rel="nofollow noopener noreferrer">Tripel Karmeliet</A> (the queen of beers!) and <A href="https://untappd.com/b/abbaye-notre-dame-de-saint-remy-trappistes-rochefort-10/6766" target="_blank" rel="nofollow noopener noreferrer">Trappistes Rochefort 10</A> (a solid quadrupel):<BR />
+<PRE class="language-javascript"><CODE>"similar": {<BR />
+    "count": 5,<BR />
+    "items": [<BR />
+        {<BR />
+            "beer": {<BR />
+                "bid": 487,<BR />
+                "beer_name": "Westmalle Trappist Tripel",<BR />
+                [...]<BR />
+            },<BR />
+        },<BR />
+        {<BR />
+            "beer": {<BR />
+                "bid": 6511,<BR />
+                "beer_name": "Tripel Karmeliet",<BR />
+                [...]<BR />
+            },<BR />
+            "_selected": true<BR />
+        },<BR />
+        {<BR />
+            "beer": {<BR />
+                "bid": 1830,<BR />
+                "beer_name": "La Trappe Quadrupel",<BR />
+                [...]<BR />
+            },<BR />
+        },<BR />
+        {<BR />
+            "beer": {<BR />
+                "bid": 6766,<BR />
+                "beer_name": "Trappistes Rochefort 10",<BR />
+                [...]<BR />
+            },<BR />
+            "_selected": true<BR />
+        },<BR />
+        {<BR />
+            "beer": {<BR />
+                "bid": 34039,<BR />
+                "beer_name": "Chimay Blue / Bleue / Blauw (Grande Réserve)",<BR />
+                [...]<BR />
+            },<BR />
+        }<BR />
+    ]<BR />
+}</CODE></PRE><BR />
+Note the two "_selected" properties.<BR />
+<BR />
+We want to marshal the selected recommendations, along with some small details about the original beer that was checked in, ready to send to the external service in the next step.<BR />
+<BR />
+Here's the entire code in the script task, contained in the marshalSelectedRecommendations.js script:<BR />
+<PRE class="language-javascript"><CODE>$.context.wishlistEntry = {<BR />
+    checkin : {<BR />
+        bid : $.context.beer.bid,<BR />
+        beer_name : $.context.beer.beer_name,<BR />
+        brewery_name : $.context.beer.brewery.brewery_name<BR />
+    },<BR />
+    selected : $.context.beer.similar.items<BR />
+        .filter(function(x) { return x._selected; })<BR />
+        .map(function(x) {<BR />
+        	return {<BR />
+	            bid : x.beer.bid,<BR />
+	            beer_name : x.beer.beer_name,<BR />
+	            brewery_name : x.brewery.brewery_name<BR />
+        	};<BR />
+     	})<BR />
+};</CODE></PRE><BR />
+Yes, I know it would look much nicer with ES6 fat arrow syntax, thank you very much.<BR />
+<BR />
+The key point here, I guess, is that the code is very simple, and almost not worth examining too much, except for these points:<BR />
+<UL><BR />
+ 	<LI>we're using the $.context variable to access the entire context</LI><BR />
+ 	<LI>we're creating a new property in the context called "wishlistEntry" that we'll use in the next step</LI><BR />
+ 	<LI>obviously we're only gathering the recommendations that were selected (with the filter call)</LI><BR />
+</UL><BR />
+And that's it. At this point, we "let go" and allow the flow to continue on to the next step, which is an call to send this wishlistEntry to an external service.<BR />
+<H3 id="toc-hId-446154282">A note on empty wishlists</H3><BR />
+The astute amongst you may be thinking: "Wait, the user might not have chosen any of the recommendations, what then? Are we going to append an empty list to the wishlist in this case?"<BR />
+<BR />
+Well, for the purposes of this series, we are. There's a time and a place to look at more complex workflow definitions that use decision points and forks in the flow to deal with different situations. While the place might be here, the time is not right now. We'll keep things simple and maintain a single threaded flow in the definition.<BR />
+<H3 id="toc-hId-249640777">Final thoughts</H3><BR />
+Actually the hardest thing about building this script task was not writing the JavaScript, but having the context at hand, including the recommendation selections from the previous user task. It's always nicer to write code, even code as simple as this, against some real data, rather than just imagining the shape of it in your head.<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-17-at-08.35.00.png" /><BR />
+<BR />
+The challenge was that as soon as the user task "Present Recommendations" completed, when the user hit the "Continue" button in the task UI, the flow continued on and executed whatever was in the script task "Marshal selections" (this task) at the time. Too late for any examination of the context that we wanted to manipulate!<BR />
+<BR />
+If you want to find out how I dealt with this issue, let me know in the comments, and I can write about it in an appendix to this series.<BR />
+<BR />
+In the next post, we'll look at sending the wishlistEntry data to an external service, to collect together the general beer wishlist I want to build up.<BR />
+<BR />
+<EM>This morning's post was brought to you by <A href="https://www.pactcoffee.com/coffees/el-aguacate-espresso" target="_blank" rel="nofollow noopener noreferrer">El Aguacate from Pact Coffee</A>, Erroll Garner's <A href="https://open.spotify.com/album/1cb4bE5Q1vLla4jjoNV1gS" target="_blank" rel="nofollow noopener noreferrer">Ready Take One</A>&nbsp;and the number 14.1.</EM><BR />
+<BR />
+Next post in this series: <A href="https://blogs.sap.com/2018/01/29/discovering-scp-workflow-service-tasks/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Service Tasks</A>.

@@ -1,0 +1,463 @@
+2021-12-01-getting-btp-resource-guids-with-the-btp-cli-part-2-json-and-jq
+Getting BTP resource GUIDs with the btp CLI – part 2 - JSON and jq
+technology-blog-sap
+2021-12-01
+https://community.sap.com/t5/technology-blogs-by-sap/getting-btp-resource-guids-with-the-btp-cli-part-2-json-and-jq/ba-p/13517574
+<EM>In this second part of a 2-part blog post series on getting BTP resource GUIDs with the btp CLI, we look at how the CLI supports JSON output, why it's a good choice, and how to parse that.</EM><BR />
+<BR />
+If you haven't done already, take a look at <A href="https://blogs.sap.com/2021/11/24/getting-btp-resource-guids-with-the-btp-cli-part-1/" target="_blank" rel="noopener noreferrer">part 1</A> before reading this part.<BR />
+<H2 id="the-unix-philosophy-and-alternative-output-formats" id="toc-hId-958505305">The Unix philosophy and alternative output formats</H2><BR />
+The <A href="https://en.wikipedia.org/wiki/Unix_philosophy" target="_blank" rel="nofollow noopener noreferrer">Unix philosophy</A> is all about small programs, joined loosely together. It's about composability*, not monolithic constructs.<BR />
+<BR />
+* It is not lost on me that composability is also a key feature of the functional programming paradigm, which has a similar beauty to me.<BR />
+<BR />
+This approach to executing programs, using the power of <A href="https://tldp.org/LDP/abs/html/io-redirection.html" target="_blank" rel="nofollow noopener noreferrer">input / output redirection</A> &amp; pipelines and employing a handful of small, focused &amp; powerful tools has been with us for almost half a century now and is at the heart of the dominant operating system powering the cloud.<BR />
+<BR />
+More recently, we've been seeing a need to deal with resources which have structure that is sometimes more complex than can be described in mostly record-oriented plain text. In parallel, we're seeing declarative approaches to devops and system resource management (such as Kubernetes cluster definitions, infrastructure-as-code, and so on), with those declarative constructs expressing complex relationships and interdependencies.<BR />
+<BR />
+The approach to encapsulate machine-readable definitions of such resources and definitions has been to employ formats such as JSON and YAML.<BR />
+<BR />
+These formats lend themselves well to describing requirements, but also to representing structure. With the myriad resources on SAP Business Technology Platform, there are relationships that need to be expressed, conveying inherent structure that is fundamental to the understanding and operation of those resources.<BR />
+<BR />
+And so, like many of today's command line tools, the btp CLI has the ability to express the output in a format that can reliably, predictably and cleanly convey that structure. This ability comes in the form of a general option:<BR />
+<PRE><CODE>--format json</CODE></PRE><BR />
+You can read more about this option in the <A href="https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/dcb85b7dea61432cbafaab4ce0ec9b08.html?locale=en-US" target="_blank" rel="noopener noreferrer">Change the Output Format to JSON</A> section in the SAP Help Portal. In our Hands-on SAP Dev show, specifically within the <A href="https://www.youtube.com/playlist?list=PL6RpkC85SLQDXx827kdjKc6HRvdMRZ8P5" target="_blank" rel="nofollow noopener noreferrer">SAP btp CLI</A> series, there's an episode <A href="https://www.youtube.com/watch?v=xRmHZGk4QCU&amp;list=PL6RpkC85SLQDXx827kdjKc6HRvdMRZ8P5&amp;index=3" target="_blank" rel="nofollow noopener noreferrer">Scripting and JSON output with btp, the SAP Business Technology Platform CLI</A> where we cover exactly this.<BR />
+<H2 id="plain-text-vs-json" id="toc-hId-761991800">Plain text vs JSON?</H2><BR />
+The question clearly arises - when should I use this option? In some philosophical ways, JSON output flows against the original Unix Philosophy, but there are most certainly pragmatic reasons why it's employed. If you're interested in reading more, I highly recommend <A href="https://blog.kellybrazil.com/2019/11/26/bringing-the-unix-philosophy-to-the-21st-century/" target="_blank" rel="nofollow noopener noreferrer">Bringing the Unix Philosophy to the 21st Century</A> which not only is a good read, but also introduces a generic tool <CODE>jc</CODE> that is certainly fascinating and not a little thought provoking.<BR />
+<BR />
+So, back to the question. As far as the btp CLI is concerned, let's put it this way:<BR />
+<UL><BR />
+ 	<LI>if you're using it interactively, as a human, then the plain text output is fine of course</LI><BR />
+ 	<LI>if you're using it non-interactively, such as in a script, then the recommendation is to use the JSON output format</LI><BR />
+</UL><BR />
+For non-interactive use, where you're going to want to extract information from the output of a btp CLI command, this makes sense because the JSON output is going to be more stable, more reliable and more predictable. The plain text output may change over time, but the btp CLI team are making a big effort, and an intentional one, to provide that stability.<BR />
+<BR />
+Of course, for quick one-off pipeline constructs on the command line, I may still use the plain text output and some traditional Unix tools to parse and extract information from the output. But for longer lived tasks, scripts and so on, I will more likely reach for the JSON output format.<BR />
+<H2 id="parsing-json-on-the-command-line" id="toc-hId-565478295">Parsing JSON on the command line</H2><BR />
+The tool of choice for parsing JSON on the command line is <A href="https://stedolan.github.io/jq/" target="_blank" rel="nofollow noopener noreferrer">jq</A>, which the author describes as "a lightweight and flexible command-line JSON processor".<BR />
+<BR />
+I've written about <CODE>jq</CODE> before in various blog posts and also covered it in some of the Hands-on SAP Dev <A href="https://blogs.sap.com/2020/11/09/an-overview-of-sap-developers-video-content/#shows" target="_blank" rel="noopener noreferrer">show</A> episodes - pick one that appeals to you from <A href="https://www.google.com/search?q=site%3Ablogs.sap.com+JSON+%22jq%22" target="_blank" rel="nofollow noopener noreferrer">this quick list of search results for mention of JSON and jq on this site</A> to read more.<BR />
+<H2 id="revisiting-the-hierarchy-output" id="toc-hId-368964790">Revisiting the hierarchy output</H2><BR />
+In <A href="https://blogs.sap.com/2021/11/24/getting-btp-resource-guids-with-the-btp-cli-part-1/" target="_blank" rel="noopener noreferrer">Getting BTP resource GUIDs with the btp CLI – part 1</A>, the first part of this two-part series, I explained how I used various tools to extract the GUIDs for resources shown in the output of this command:<BR />
+<PRE><CODE>btp get accounts/global-account --show-hierarchy</CODE></PRE><BR />
+The output that this command produces looks something like this:<BR />
+<PRE><CODE>Showing details for global account af39080b-1527-40a1-b78a-3b605af7e811...<BR />
+<BR />
+├─ c35b11e4trial (af39080b-1527-40a1-b78a-3b605af7e811 - global account)<BR />
+│  ├─ trial (b6501bff-e0ac-4fdf-8898-81f305d25335 - subaccount)<BR />
+│  ├─ techedhouse (e57c5b13-9480-4a68-9c04-a603d7a017a9 - directory)<BR />
+<BR />
+type:            id:                                    display name:   parent id:<BR />
+global account   af39080b-1527-40a1-b78a-3b605af7e811   c35b11e4trial<BR />
+subaccount       b6501bff-e0ac-4fdf-8898-81f305d25335   trial           af39080b-...<BR />
+directory        e57c5b13-9480-4a68-9c04-a603d7a017a9   techedhouse     af39080b-...</CODE></PRE><BR />
+While it was definitely possible to consistently extract the GUIDs using the approach I took, there are other similar extraction tasks in this area that might be more troublesome.<BR />
+<BR />
+For example, if I wanted to grab the display names of all the subaccounts in my global account, the parsing and extraction would be similar; I'd pull the output apart using whitespace as boundaries and get the job done that way. However, if a display name contained a space, which is valid, I'd start to struggle. How would I know if that space was the column boundary, or just part of the value in that column? I could resort to some sort of column-oriented slicing of the rows, but that's most likely just asking for trouble, making the parsing and extracting more brittle.<BR />
+<H2 id="parsing-brittle-plain-text-output-vs-complex-json-output" id="toc-hId-172451285">Parsing brittle plain text output vs complex JSON output</H2><BR />
+Recently, on my Autodidactics blog, I wrote about this very challenge of parsing text output that was brittle in the post <A href="https://qmacro.org/autodidactics/2021/10/29/embracing-jq-and-json/" target="_blank" rel="nofollow noopener noreferrer">Embracing jq and JSON</A> (see <A href="#where-i-write-my-posts" target="_blank" rel="nofollow noopener noreferrer">Where I write my posts</A> for more info). The subject at hand was the same - the ouptut of <CODE>btp get account/global-account --show-hierarchy</CODE>, although what I was trying to extract was slightly different. Most importantly though, it demonstrated that correctly and reliably extracting a value with spaces (the resource display name 'this and that') was not straightforward.<BR />
+<BLOCKQUOTE>Some of you may think, and I'd agree, that one way that this would normally be tackled is to use tabs as field separators; this would address the situation and is indeed a standard part of how the Unix toolchain operates - look at what the default delimiter is for the <A href="https://man7.org/linux/man-pages/man1/cut.1.html" target="_blank" rel="nofollow noopener noreferrer">cut</A> command, for example.</BLOCKQUOTE><BR />
+What it also demonstrated was that taking the JSON output approach was preferable. Initially, as I described in that post, the prospect was a little daunting, as the structure represented in JSON consisted of nested arrays of objects. But a little digging into the <A href="https://stedolan.github.io/jq/manual/" target="_blank" rel="nofollow noopener noreferrer">jq manual</A> showed me functions that would help out.<BR />
+<BR />
+So what I want to do here is find a drop-in replacement for these two lines that we looked at in detail in <A href="https://blogs.sap.com/2021/11/24/getting-btp-resource-guids-with-the-btp-cli-part-1/" target="_blank" rel="noopener noreferrer">part 1</A>:<BR />
+<DIV><BR />
+<PRE class="sourceCode bash"><CODE class="sourceCode bash"><SPAN id="cb4-1"><SPAN class="va">hierarchy</SPAN><SPAN class="op">=</SPAN><SPAN class="st">"</SPAN><SPAN class="va">$(</SPAN><SPAN class="ex">gethier</SPAN><SPAN class="va">)</SPAN><SPAN class="st">"</SPAN> <SPAN class="kw">||</SPAN> <SPAN class="kw">{</SPAN> <SPAN class="ex">btp</SPAN> login <SPAN class="kw">&amp;&amp;</SPAN> <SPAN class="va">hierarchy</SPAN><SPAN class="op">=</SPAN><SPAN class="st">"</SPAN><SPAN class="va">$(</SPAN><SPAN class="ex">gethier</SPAN><SPAN class="va">)</SPAN><SPAN class="st">"</SPAN><SPAN class="kw">;</SPAN> <SPAN class="kw">}</SPAN></SPAN><BR />
+<SPAN id="cb4-2"><SPAN class="bu">read</SPAN> <SPAN class="at">-r</SPAN> <SPAN class="va">subtype</SPAN> <SPAN class="va">guid</SPAN> <SPAN class="op">&lt;&lt;&lt;</SPAN> <SPAN class="st">"</SPAN><SPAN class="va">$(</SPAN><SPAN class="fu">grep</SPAN> <SPAN class="at">-P</SPAN> <SPAN class="at">-o</SPAN> <SPAN class="st">"^(subaccount|directory)\s+(\S+)(?=\s+</SPAN><SPAN class="va">$displayname</SPAN><SPAN class="st">)"</SPAN> <SPAN class="op">&lt;&lt;&lt;</SPAN> <SPAN class="st">"</SPAN><SPAN class="va">$hierarchy</SPAN><SPAN class="st">"</SPAN><SPAN class="va">)</SPAN><SPAN class="st">"</SPAN></SPAN></CODE></PRE><BR />
+</DIV><BR />
+That replacement is to use the JSON format output from the <CODE>btp</CODE> command. Let's start by examining what that looks like.<BR />
+<H3 id="the-hierarchy-in-json-format" id="toc-hId-105020499">The hierarchy in JSON format</H3><BR />
+While we know what the plain text output looks like from <CODE>btp get accounts/global-account --show-hierarchy</CODE>, the JSON output looks like this (I've removed some properties that are not relevant, to keep the JSON small enough to stare at in one go):<BR />
+<DIV><BR />
+<PRE class="sourceCode json"><CODE class="sourceCode json"><SPAN id="cb5-1"><SPAN class="fu">{</SPAN></SPAN><BR />
+<SPAN id="cb5-2">  <SPAN class="dt">"guid"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"c63c501e-e589-467d-8875-1821927ea713"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-3">  <SPAN class="dt">"displayName"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"1a99110dtrial"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-4">  <SPAN class="dt">"children"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="ot">[</SPAN></SPAN><BR />
+<SPAN id="cb5-5">    <SPAN class="fu">{</SPAN></SPAN><BR />
+<SPAN id="cb5-6">      <SPAN class="dt">"guid"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"2558794c-f8cd-4422-b071-3b21c2922a02"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-7">      <SPAN class="dt">"parentGuid"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"c63c501e-e589-467d-8875-1821927ea713"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-8">      <SPAN class="dt">"parentType"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"ROOT"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-9">      <SPAN class="dt">"globalAccountGUID"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"c63c501e-e589-467d-8875-1821927ea713"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-10">      <SPAN class="dt">"displayName"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"techedhouse"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-11">      <SPAN class="dt">"stateMessage"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"Directory created."</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-12">      <SPAN class="dt">"subdomain"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"2558794c-f8cd-4422-b071-3b21c2922a02"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-13">      <SPAN class="dt">"directoryType"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"PROJECT"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-14">      <SPAN class="dt">"directoryFeatures"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="ot">[</SPAN></SPAN><BR />
+<SPAN id="cb5-15">        <SPAN class="st">"DEFAULT"</SPAN><SPAN class="ot">,</SPAN></SPAN><BR />
+<SPAN id="cb5-16">        <SPAN class="st">"ENTITLEMENTS"</SPAN><SPAN class="ot">,</SPAN></SPAN><BR />
+<SPAN id="cb5-17">        <SPAN class="st">"AUTHORIZATIONS"</SPAN></SPAN><BR />
+<SPAN id="cb5-18">      <SPAN class="ot">]</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-19">      <SPAN class="dt">"subaccounts"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="ot">[</SPAN></SPAN><BR />
+<SPAN id="cb5-20">        <SPAN class="fu">{</SPAN></SPAN><BR />
+<SPAN id="cb5-21">          <SPAN class="dt">"guid"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-22">          <SPAN class="dt">"displayName"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"messaging"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-23">          <SPAN class="dt">"globalAccountGUID"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"c63c501e-e589-467d-8875-1821927ea713"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-24">          <SPAN class="dt">"parentGUID"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"2558794c-f8cd-4422-b071-3b21c2922a02"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-25">          <SPAN class="dt">"parentType"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"PROJECT"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-26">          <SPAN class="dt">"parentFeatures"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="ot">[</SPAN></SPAN><BR />
+<SPAN id="cb5-27">            <SPAN class="st">"DEFAULT"</SPAN><SPAN class="ot">,</SPAN></SPAN><BR />
+<SPAN id="cb5-28">            <SPAN class="st">"ENTITLEMENTS"</SPAN><SPAN class="ot">,</SPAN></SPAN><BR />
+<SPAN id="cb5-29">            <SPAN class="st">"AUTHORIZATIONS"</SPAN></SPAN><BR />
+<SPAN id="cb5-30">          <SPAN class="ot">]</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-31">          <SPAN class="dt">"region"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"us10"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-32">          <SPAN class="dt">"subdomain"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"20b8636b-af4c-4c42-b79b-780763663fbb"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-33">          <SPAN class="dt">"stateMessage"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"Subaccount created."</SPAN></SPAN><BR />
+<SPAN id="cb5-34">        <SPAN class="fu">}</SPAN></SPAN><BR />
+<SPAN id="cb5-35">      <SPAN class="ot">]</SPAN></SPAN><BR />
+<SPAN id="cb5-36">    <SPAN class="fu">}</SPAN></SPAN><BR />
+<SPAN id="cb5-37">  <SPAN class="ot">]</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-38">  <SPAN class="dt">"subdomain"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"1a99110dtrial-ga"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-39">  <SPAN class="dt">"subaccounts"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="ot">[</SPAN></SPAN><BR />
+<SPAN id="cb5-40">    <SPAN class="fu">{</SPAN></SPAN><BR />
+<SPAN id="cb5-41">      <SPAN class="dt">"guid"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"00516298-b174-418e-9824-8824de04bfa3"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-42">      <SPAN class="dt">"displayName"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"trial"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-43">      <SPAN class="dt">"globalAccountGUID"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"c63c501e-e589-467d-8875-1821927ea713"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-44">      <SPAN class="dt">"parentGUID"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"c63c501e-e589-467d-8875-1821927ea713"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-45">      <SPAN class="dt">"parentType"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"ROOT"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-46">      <SPAN class="dt">"region"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"eu10"</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-47">      <SPAN class="dt">"subdomain"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"1a99110dtrial"</SPAN></SPAN><BR />
+<SPAN id="cb5-48">    <SPAN class="fu">}</SPAN></SPAN><BR />
+<SPAN id="cb5-49">  <SPAN class="ot">]</SPAN><SPAN class="fu">,</SPAN></SPAN><BR />
+<SPAN id="cb5-50">  <SPAN class="dt">"licenseType"</SPAN><SPAN class="fu">:</SPAN> <SPAN class="st">"TRIAL"</SPAN></SPAN><BR />
+<SPAN id="cb5-51"><SPAN class="fu">}</SPAN></SPAN></CODE></PRE><BR />
+</DIV><BR />
+Here are a few interesting points to notice:<BR />
+<UL><BR />
+ 	<LI>the hierarchy is expressed via sub-nodes via two properties - <CODE>children</CODE> (which are directories) and <CODE>subaccounts</CODE></LI><BR />
+ 	<LI>each object that is either a directory or a subaccount has a <CODE>guid</CODE> property, which is what we're ultimately looking for</LI><BR />
+ 	<LI>there's a <CODE>directoryType</CODE> property on the directory objects, with a value of <CODE>PROJECT</CODE></LI><BR />
+ 	<LI>the subaccount objects don't have a <CODE>directoryType</CODE> property but do have a <CODE>region</CODE> property and value</LI><BR />
+</UL><BR />
+Moreover, the nesting depth of each of these directory and subaccount objects depends on where they sit in the actual hierarchy. So we have our work cut out to parse this, right?<BR />
+<H3 id="rolling-our-jq-sleeves-up" id="toc-hId--91493006">Rolling our jq sleeves up</H3><BR />
+Well, if you took a look at the <A href="https://qmacro.org/autodidactics/2021/10/29/embracing-jq-and-json/" target="_blank" rel="nofollow noopener noreferrer">Embracing jq and JSON</A> post mentioned earlier, you'll know that it's not as bad as it first seems. Let's work through parsing this, step by step. The general idea is to flatten the structure, identify the objects in there, pick out the potential objects that might match, narrow down further, and then we have what we're looking for.<BR />
+<BR />
+For the sake of exploration, let's assume we have the JSON above in a file called <CODE>hierarchy.json</CODE>.<BR />
+<H4 id="step-1---flatten-the-structure" id="toc-hId--158923792">Step 1 - flatten the structure</H4><BR />
+To flatten the struture, I've taken to using the <CODE>recurse</CODE> function; here's what it does (a lot of the output has been omitted for brevity):<BR />
+<PRE><CODE>; jq 'recurse' hierarchy.json<BR />
+{<BR />
+  "guid": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+  "displayName": "1a99110dtrial",<BR />
+  "children": [<BR />
+    {<BR />
+      "guid": "2558794c-f8cd-4422-b071-3b21c2922a02",<BR />
+      "parentGuid": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+      "parentType": "ROOT",<BR />
+      "globalAccountGUID": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+      "displayName": "techedhouse",<BR />
+      ...<BR />
+"2558794c-f8cd-4422-b071-3b21c2922a02"<BR />
+"c63c501e-e589-467d-8875-1821927ea713"<BR />
+"ROOT"<BR />
+"c63c501e-e589-467d-8875-1821927ea713"<BR />
+"techedhouse"<BR />
+"Directory created."<BR />
+"2558794c-f8cd-4422-b071-3b21c2922a02"<BR />
+"PROJECT"<BR />
+[<BR />
+  "DEFAULT",<BR />
+  "ENTITLEMENTS",<BR />
+  "AUTHORIZATIONS"<BR />
+]<BR />
+"c63c501e-e589-467d-8875-1821927ea713"<BR />
+"ROOT"<BR />
+"eu10"<BR />
+"1a99110dtrial"<BR />
+"TRIAL"</CODE></PRE><BR />
+As you can see, it descends the entire structure and emits everything it finds. This is a little too much, as non-objects are also emitted as the recursive descent progresses. Let's address that.<BR />
+<H4 id="step-2---identify-the-objects" id="toc-hId--355437297">Step 2 - identify the objects</H4><BR />
+To narrow down this large amount of output to just the objects, we can use the aptly named <CODE>objects</CODE> function which will emit only objects that pass through it, discarding anything else (like those simple strings such as "ROOT", "eu10" and "1a99110dtrial" we see above). Here we go:<BR />
+<PRE><CODE>; jq 'recurse | objects'<BR />
+{<BR />
+  "guid": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+  "displayName": "1a99110dtrial",<BR />
+  "children": [<BR />
+    {<BR />
+      "guid": "2558794c-f8cd-4422-b071-3b21c2922a02",<BR />
+      "parentGuid": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+      "parentType": "ROOT",<BR />
+      "globalAccountGUID": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+      "displayName": "techedhouse",<BR />
+      "stateMessage": "Directory created.",<BR />
+      "subdomain": "2558794c-f8cd-4422-b071-3b21c2922a02",<BR />
+      "directoryType": "PROJECT",<BR />
+      "directoryFeatures": [<BR />
+        "DEFAULT",<BR />
+        "ENTITLEMENTS",<BR />
+        "AUTHORIZATIONS"<BR />
+      ],<BR />
+      "subaccounts": [<BR />
+        {<BR />
+          "guid": "3ea88c9c-010b-4bf0-9fdb-5c29c9087660",<BR />
+          "displayName": "messaging",<BR />
+          "globalAccountGUID": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+          "parentGUID": "2558794c-f8cd-4422-b071-3b21c2922a02",<BR />
+          "parentType": "PROJECT",<BR />
+          "parentFeatures": [<BR />
+            "DEFAULT",<BR />
+            "ENTITLEMENTS",<BR />
+            "AUTHORIZATIONS"<BR />
+          ],<BR />
+          "region": "us10",<BR />
+          "subdomain": "20b8636b-af4c-4c42-b79b-780763663fbb",<BR />
+          "stateMessage": "Subaccount created."<BR />
+        }<BR />
+      ]<BR />
+    }<BR />
+  ],<BR />
+  "subdomain": "1a99110dtrial-ga",<BR />
+  "subaccounts": [<BR />
+    {<BR />
+      "guid": "00516298-b174-418e-9824-8824de04bfa3",<BR />
+      "displayName": "trial",<BR />
+      "globalAccountGUID": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+      "parentGUID": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+      "parentType": "ROOT",<BR />
+      "region": "eu10",<BR />
+      "subdomain": "1a99110dtrial"<BR />
+    }<BR />
+  ],<BR />
+  "licenseType": "TRIAL"<BR />
+}<BR />
+{<BR />
+  "guid": "2558794c-f8cd-4422-b071-3b21c2922a02",<BR />
+  "parentGuid": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+  "parentType": "ROOT",<BR />
+  "globalAccountGUID": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+  "displayName": "techedhouse",<BR />
+  "stateMessage": "Directory created.",<BR />
+  "subdomain": "2558794c-f8cd-4422-b071-3b21c2922a02",<BR />
+  "directoryType": "PROJECT",<BR />
+  "directoryFeatures": [<BR />
+    "DEFAULT",<BR />
+    "ENTITLEMENTS",<BR />
+    "AUTHORIZATIONS"<BR />
+  ],<BR />
+  "subaccounts": [<BR />
+    {<BR />
+      "guid": "3ea88c9c-010b-4bf0-9fdb-5c29c9087660",<BR />
+      "displayName": "messaging",<BR />
+      "globalAccountGUID": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+      "parentGUID": "2558794c-f8cd-4422-b071-3b21c2922a02",<BR />
+      "parentType": "PROJECT",<BR />
+      "parentFeatures": [<BR />
+        "DEFAULT",<BR />
+        "ENTITLEMENTS",<BR />
+        "AUTHORIZATIONS"<BR />
+      ],<BR />
+      "region": "us10",<BR />
+      "subdomain": "20b8636b-af4c-4c42-b79b-780763663fbb",<BR />
+      "stateMessage": "Subaccount created."<BR />
+    }<BR />
+  ]<BR />
+}<BR />
+{<BR />
+  "guid": "3ea88c9c-010b-4bf0-9fdb-5c29c9087660",<BR />
+  "displayName": "messaging",<BR />
+  "globalAccountGUID": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+  "parentGUID": "2558794c-f8cd-4422-b071-3b21c2922a02",<BR />
+  "parentType": "PROJECT",<BR />
+  "parentFeatures": [<BR />
+    "DEFAULT",<BR />
+    "ENTITLEMENTS",<BR />
+    "AUTHORIZATIONS"<BR />
+  ],<BR />
+  "region": "us10",<BR />
+  "subdomain": "20b8636b-af4c-4c42-b79b-780763663fbb",<BR />
+  "stateMessage": "Subaccount created."<BR />
+}<BR />
+{<BR />
+  "guid": "00516298-b174-418e-9824-8824de04bfa3",<BR />
+  "displayName": "trial",<BR />
+  "globalAccountGUID": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+  "parentGUID": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+  "parentType": "ROOT",<BR />
+  "region": "eu10",<BR />
+  "subdomain": "1a99110dtrial"<BR />
+}</CODE></PRE><BR />
+That looks better! While the nested child objects are still expressed, each actual object in the hierarchy now appears at the top level for us to filter through.<BR />
+<H4 id="step-3---pick-out-potentially-matching-objects" id="toc-hId--551950802">Step 3 - Pick out potentially matching objects</H4><BR />
+I'm deliberately doing this in a step by step way; there are most likely more efficient ways of performing this parsing but hopefully we learn more by taking each logical piece at a time.<BR />
+<BR />
+And here we want to filter the objects down to those that may be a valid match of a subaccount or directory. In other words, we don't want the top level node, the global account. We can achieve this by identifying our potential matches as being objects that contain a pointer to a parent (as the top level node won't have one). Let's do that now.<BR />
+<BLOCKQUOTE>I'll express the <CODE>jq</CODE> incantation across multiple lines now so it remains readable in the narrow width of this blog post rendering.</BLOCKQUOTE><BR />
+<PRE><CODE>; jq '<BR />
+recurse<BR />
+| objects<BR />
+| select(.parentGuid? or .parentGUID?)<BR />
+' hierarchy.json<BR />
+{<BR />
+  "guid": "2558794c-f8cd-4422-b071-3b21c2922a02",<BR />
+  "parentGuid": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+  "parentType": "ROOT",<BR />
+  "globalAccountGUID": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+  "displayName": "techedhouse",<BR />
+  "stateMessage": "Directory created.",<BR />
+  "subdomain": "2558794c-f8cd-4422-b071-3b21c2922a02",<BR />
+  "directoryType": "PROJECT",<BR />
+  "directoryFeatures": [<BR />
+    "DEFAULT",<BR />
+    "ENTITLEMENTS",<BR />
+    "AUTHORIZATIONS"<BR />
+  ],<BR />
+  "subaccounts": [<BR />
+    {<BR />
+      "guid": "3ea88c9c-010b-4bf0-9fdb-5c29c9087660",<BR />
+      "displayName": "messaging",<BR />
+      "globalAccountGUID": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+      "parentGUID": "2558794c-f8cd-4422-b071-3b21c2922a02",<BR />
+      "parentType": "PROJECT",<BR />
+      "parentFeatures": [<BR />
+        "DEFAULT",<BR />
+        "ENTITLEMENTS",<BR />
+        "AUTHORIZATIONS"<BR />
+      ],<BR />
+      "region": "us10",<BR />
+      "subdomain": "20b8636b-af4c-4c42-b79b-780763663fbb",<BR />
+      "stateMessage": "Subaccount created."<BR />
+    }<BR />
+  ]<BR />
+}<BR />
+{<BR />
+  "guid": "3ea88c9c-010b-4bf0-9fdb-5c29c9087660",<BR />
+  "displayName": "messaging",<BR />
+  "globalAccountGUID": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+  "parentGUID": "2558794c-f8cd-4422-b071-3b21c2922a02",<BR />
+  "parentType": "PROJECT",<BR />
+  "parentFeatures": [<BR />
+    "DEFAULT",<BR />
+    "ENTITLEMENTS",<BR />
+    "AUTHORIZATIONS"<BR />
+  ],<BR />
+  "region": "us10",<BR />
+  "subdomain": "20b8636b-af4c-4c42-b79b-780763663fbb",<BR />
+  "stateMessage": "Subaccount created."<BR />
+}<BR />
+{<BR />
+  "guid": "00516298-b174-418e-9824-8824de04bfa3",<BR />
+  "displayName": "trial",<BR />
+  "globalAccountGUID": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+  "parentGUID": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+  "parentType": "ROOT",<BR />
+  "region": "eu10",<BR />
+  "subdomain": "1a99110dtrial"<BR />
+}</CODE></PRE><BR />
+Using the <CODE>select</CODE> function we can filter the objects down to only those that have a property pointing to a parent, i.e. either a <CODE>parentGuid</CODE> or <CODE>parentGUID</CODE> property, using the optional operator <CODE>?</CODE>.<BR />
+<BLOCKQUOTE>I've connected with the lovely BTP Accounts Service API team asking them about this property name discrepancy for parent GUIDs and have asked them to consider addressing it</BLOCKQUOTE><BR />
+<H4 id="step-4---narrow-down-to-what-were-looking-for" id="toc-hId--1246181402">Step 4 - Narrow down to what we're looking for</H4><BR />
+Now we have just a list of subaccount and directory objects, we can comfortably filter further based on the display name given. When invoking <CODE>jq</CODE> you can pass arguments with the <CODE>--arg</CODE> option, so we can supply the chosen display name dynamically:<BR />
+<PRE><CODE>; jq --arg displayname "messaging" '<BR />
+recurse<BR />
+| objects<BR />
+| select(.parentGuid? or .parentGUID?)<BR />
+| select(.displayName == $displayname)<BR />
+' hierarchy.json<BR />
+{<BR />
+  "guid": "3ea88c9c-010b-4bf0-9fdb-5c29c9087660",<BR />
+  "displayName": "messaging",<BR />
+  "globalAccountGUID": "c63c501e-e589-467d-8875-1821927ea713",<BR />
+  "parentGUID": "2558794c-f8cd-4422-b071-3b21c2922a02",<BR />
+  "parentType": "PROJECT",<BR />
+  "parentFeatures": [<BR />
+    "DEFAULT",<BR />
+    "ENTITLEMENTS",<BR />
+    "AUTHORIZATIONS"<BR />
+  ],<BR />
+  "region": "us10",<BR />
+  "subdomain": "20b8636b-af4c-4c42-b79b-780763663fbb",<BR />
+  "stateMessage": "Subaccount created."<BR />
+}</CODE></PRE><BR />
+Now we have exactly the object we're looking for.<BR />
+<H4 id="step-5---pick-out-the-values-we-need" id="toc-hId--1442694907">Step 5 - Pick out the values we need</H4><BR />
+It's just remains for us to determine the values we need:<BR />
+<UL><BR />
+ 	<LI>whether it's a subaccount or a directory</LI><BR />
+ 	<LI>what the GUID is</LI><BR />
+</UL><BR />
+We can easily pick out the GUID, it's in the <CODE>guid</CODE> property. But to determine the type, we need to introduce a bit of logic. Let's based that logic on whether the object has a <CODE>region</CODE> property - if it does, we can assume it's a subaccount, otherwise it's a directory (directories are logical constructs only).<BR />
+<BR />
+Here's that logic in action and in context:<BR />
+<PRE><CODE>; jq --arg displayname "messaging" '<BR />
+recurse<BR />
+| objects<BR />
+| select(.parentGuid? or .parentGUID?)<BR />
+| select(.displayName == $displayname)<BR />
+| [if .region? then "subaccount" else "directory" end, .guid]<BR />
+' hierarchy.json<BR />
+[<BR />
+  "subaccount",<BR />
+  "3ea88c9c-010b-4bf0-9fdb-5c29c9087660"<BR />
+]</CODE></PRE><BR />
+Getting there!<BR />
+<H4 id="step-6---formatting-the-output" id="toc-hId--1639208412">Step 6 - Formatting the output</H4><BR />
+To be a drop-in replacement for the previous logic, we should really be returning these in a whitespace separated construction on the same line, in the same way that they were returned in part 1 - see the <A href="https://blogs.sap.com/2021/11/24/getting-btp-resource-guids-with-the-btp-cli-part-1/#determining-the-guids" target="_blank" rel="noopener noreferrer">Determining the GUIDs</A> section for details.<BR />
+<BR />
+This can be done with with the <CODE>@tsv</CODE> <A href="https://stedolan.github.io/jq/manual/v1.5/#Formatstringsandescaping" target="_blank" rel="nofollow noopener noreferrer">format string</A>, which will turn an array like this into a nice tab separated values construct. When invoking this, we want to use the <CODE>--raw-output</CODE> option (short form is <CODE>-r</CODE>) to have the output written directly to standard output rather than being formatted as a JSON string inside quotes:<BR />
+<PRE><CODE>; jq --raw-output --arg displayname "messaging" '<BR />
+recurse<BR />
+| objects<BR />
+| select(.parentGuid? or .parentGUID?)<BR />
+| select(.displayName == $displayname)<BR />
+| [if .region? then "subaccount" else "directory" end, .guid]<BR />
+| @tsv<BR />
+' hierarchy.json<BR />
+subaccount      3ea88c9c-010b-4bf0-9fdb-5c29c9087660</CODE></PRE><BR />
+In case you're wondering what we'd get without the <CODE>--raw-output</CODE> option, it's this:<BR />
+<PRE><CODE>"subaccount\t3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</CODE></PRE><BR />
+And yes, that is valid JSON, which is what <CODE>jq</CODE> will try to emit by default.<BR />
+<H2 id="adjusting-the-btpguid-script" id="toc-hId--1248915903">Adjusting the btpguid script</H2><BR />
+It's time to adapt the existing <CODE>btpguid</CODE> script to use this new approach, as a drop-in replacement. The existing script in its entirety is listed in part 1, in <A href="https://blogs.sap.com/2021/11/24/getting-btp-resource-guids-with-the-btp-cli-part-1/#the-btpguid-script" target="_blank" rel="noopener noreferrer">The btpguid script</A> section. We need to make three alterations:<BR />
+<UL><BR />
+ 	<LI>modify the <CODE>gethier</CODE> function to specify the JSON output format</LI><BR />
+ 	<LI>add a new function <CODE>parse</CODE> to use the <CODE>jq</CODE> script to parse the JSON hierarchy and ouptut the subtype and GUID</LI><BR />
+ 	<LI>modify the <CODE>read</CODE> line inside the <CODE>main</CODE> function to take input from what this new <CODE>parse</CODE> function produces</LI><BR />
+</UL><BR />
+<H3 id="modifying-the-gethier-function" id="toc-hId--1738832415">Modifying the gethier function</H3><BR />
+We just need to add <CODE>--format json</CODE> to the invocation, so the resulting <CODE>gethier</CODE> function now looks like this:<BR />
+<DIV><BR />
+<PRE class="sourceCode bash"><CODE class="sourceCode bash"><SPAN id="cb13-1"><SPAN class="fu">gethier()</SPAN> <SPAN class="kw">{</SPAN></SPAN><BR />
+<SPAN id="cb13-2">  <SPAN class="ex">btp</SPAN> <SPAN class="at">--format</SPAN> json get accounts/global-account <SPAN class="at">--show-hierarchy</SPAN> <SPAN class="dv">2</SPAN><SPAN class="op">&gt;</SPAN> /dev/null</SPAN><BR />
+<SPAN id="cb13-3"><SPAN class="kw">}</SPAN></SPAN></CODE></PRE><BR />
+</DIV><BR />
+<H3 id="adding-a-new-parse-function" id="toc-hId--1935345920">Adding a new parse function</H3><BR />
+To keep things separate and more readable, the new <CODE>parse</CODE> function encapsulates the invocation of <CODE>jq</CODE> on the hierarchy data, which will now be in JSON format. The entire function expects a display name for which to search, and the JSON hierarchy data, and looks like this:<BR />
+<DIV><BR />
+<PRE class="sourceCode bash"><CODE class="sourceCode bash"><SPAN id="cb14-1"><SPAN class="fu">parse()</SPAN> <SPAN class="kw">{</SPAN></SPAN><BR />
+<SPAN id="cb14-2"></SPAN><BR />
+<SPAN id="cb14-3">  <SPAN class="bu">local</SPAN> <SPAN class="va">displayname</SPAN><SPAN class="op">=</SPAN><SPAN class="va">$1</SPAN></SPAN><BR />
+<SPAN id="cb14-4">  <SPAN class="bu">local</SPAN> <SPAN class="va">hierarchy</SPAN><SPAN class="op">=</SPAN><SPAN class="va">$2</SPAN></SPAN><BR />
+<SPAN id="cb14-5"></SPAN><BR />
+<SPAN id="cb14-6">  <SPAN class="ex">jq</SPAN> <SPAN class="at">--raw-output</SPAN> <SPAN class="at">--arg</SPAN> displayname <SPAN class="st">"</SPAN><SPAN class="va">$displayname</SPAN><SPAN class="st">"</SPAN> <SPAN class="st">'</SPAN></SPAN><BR />
+<SPAN id="cb14-7"><SPAN class="st">    recurse</SPAN></SPAN><BR />
+<SPAN id="cb14-8"><SPAN class="st">    | objects</SPAN></SPAN><BR />
+<SPAN id="cb14-9"><SPAN class="st">    | select(.parentGuid? or .parentGUID?)</SPAN></SPAN><BR />
+<SPAN id="cb14-10"><SPAN class="st">    | select(.displayName == $displayname)</SPAN></SPAN><BR />
+<SPAN id="cb14-11"><SPAN class="st">    | [if .region? then "subaccount" else "directory" end, .guid]</SPAN></SPAN><BR />
+<SPAN id="cb14-12"><SPAN class="st">    | @tsv</SPAN></SPAN><BR />
+<SPAN id="cb14-13"><SPAN class="st">  '</SPAN> <SPAN class="op">&lt;&lt;&lt;</SPAN> <SPAN class="st">"</SPAN><SPAN class="va">$hierarchy</SPAN><SPAN class="st">"</SPAN></SPAN><BR />
+<SPAN id="cb14-14"></SPAN><BR />
+<SPAN id="cb14-15"><SPAN class="kw">}</SPAN></SPAN></CODE></PRE><BR />
+</DIV><BR />
+<H3 id="adjusting-the-main-function" id="toc-hId--2131859425">Adjusting the main function</H3><BR />
+Now all we need to do is adjust the line with <CODE>read</CODE> to take input from the invocation of this new <CODE>parse</CODE> function. It looks like this (the first line is unchanged, and is just listed here to provide a bit of context):<BR />
+<DIV><BR />
+<PRE class="sourceCode bash"><CODE class="sourceCode bash"><SPAN id="cb15-1">  <SPAN class="va">hierarchy</SPAN><SPAN class="op">=</SPAN><SPAN class="st">"</SPAN><SPAN class="va">$(</SPAN><SPAN class="ex">gethier</SPAN><SPAN class="va">)</SPAN><SPAN class="st">"</SPAN> <SPAN class="kw">||</SPAN> <SPAN class="kw">{</SPAN> <SPAN class="ex">btp</SPAN> login <SPAN class="kw">&amp;&amp;</SPAN> <SPAN class="va">hierarchy</SPAN><SPAN class="op">=</SPAN><SPAN class="st">"</SPAN><SPAN class="va">$(</SPAN><SPAN class="ex">gethier</SPAN><SPAN class="va">)</SPAN><SPAN class="st">"</SPAN><SPAN class="kw">;</SPAN> <SPAN class="kw">}</SPAN></SPAN><BR />
+<SPAN id="cb15-2">  <SPAN class="bu">read</SPAN> <SPAN class="at">-r</SPAN> <SPAN class="va">subtype</SPAN> <SPAN class="va">guid</SPAN> <SPAN class="op">&lt;&lt;&lt;</SPAN> <SPAN class="st">"</SPAN><SPAN class="va">$(</SPAN><SPAN class="ex">parse</SPAN> <SPAN class="st">"</SPAN><SPAN class="va">$displayname</SPAN><SPAN class="st">"</SPAN> <SPAN class="st">"</SPAN><SPAN class="va">$hierarchy</SPAN><SPAN class="st">"</SPAN><SPAN class="va">)</SPAN><SPAN class="st">"</SPAN></SPAN></CODE></PRE><BR />
+</DIV><BR />
+<H2 id="wrapping-up" id="toc-hId--2034969923">Wrapping up</H2><BR />
+So there we have it. Using the btp CLI's <CODE>--format json</CODE> option, with a bit of <CODE>jq</CODE> scripting, gives us what we want. The jq language itself is more fully formed than you might think - and given the relevance that JSON has today, both in output from tools like this, responses from API endpoints, and representations of declarative definitions for cloud services and clusters, I'd suggest that it's worth investing a little bit of time into being able to wield a few <CODE>jq</CODE> scripts, even if they are one-liners.<BR />
+<BR />
+And talking of <CODE>jq</CODE> scripts, I'm sure there are other ways of pulling out the information from the JSON using <CODE>jq</CODE>. If you've taken a different approach, I'd love to hear about it - please share what you've done in the comments. Thanks, and happy coding!<BR />
+<BR />
+<HR /><BR />
+<BR />
+<A name="where-i-write-my-posts" target="_blank"></A><BR />
+<H2 id="where-i-write-my-posts" id="toc-hId-2063483868">Where I write my posts</H2><BR />
+Here's a short section to provide context on where my Autodidactics blog fits in. I write here on the SAP Community, but I have blogs elsewhere that I publish on too:<BR />
+<UL><BR />
+ 	<LI>my <A href="https://qmacro.org" target="_blank" rel="nofollow noopener noreferrer">main blog</A> containing posts on all sorts of topics</LI><BR />
+ 	<LI>a <A href="https://langram.org/" target="_blank" rel="nofollow noopener noreferrer">language ramblings blog</A></LI><BR />
+ 	<LI>my journal entries are in a GitHub-issue based <A href="https://github.com/qmacro/thinking-aloud" target="_blank" rel="nofollow noopener noreferrer">Thinking Aloud</A> blog</LI><BR />
+ 	<LI>shortish posts about stuff I learn are to be found on my <A href="https://qmacro.org/autodidactics/" target="_blank" rel="nofollow noopener noreferrer">Autodidactics</A> blog</LI><BR />
+</UL><BR />
+You can keep track of the posts on all these blogs, and also the other content I create, by checking <A href="https://github.com/qmacro" target="_blank" rel="nofollow noopener noreferrer">my home page on GitHub</A>, which lists the most recent items for each area.

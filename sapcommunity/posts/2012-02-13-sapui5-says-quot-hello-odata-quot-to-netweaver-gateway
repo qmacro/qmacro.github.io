@@ -1,0 +1,107 @@
+2012-02-13-sapui5-says-quot-hello-odata-quot-to-netweaver-gateway
+SAPUI5 says "Hello OData" to NetWeaver Gateway
+technology-blog-members
+2012-02-13
+https://community.sap.com/t5/technology-blogs-by-members/sapui5-says-quot-hello-odata-quot-to-netweaver-gateway/ba-p/12939142
+So following a very interesting <A class="jive-link-external-small" href="http://www.spreaker.com/page#!/user/4440992/episode_010_sap_s_ui_toolkit_aka_sapui5" target="_blank" rel="nofollow noopener noreferrer">podcast</A> from Rui Nogueira with SAP's Michael Falk and Tim Back on the HTML5-based UI Toolkit for SAP NetWeaver Gateway (aka "SAPUI5") earlier this month, a beta version of&nbsp; SAPUI5 was released to the world on SDN, specifically in the "<A class="jive-link-external-small" href="http://www.sdn.sap.com/irj/sdn/sap-technology-innovation?rid=/webcontent/uuid/20a34ae7-762d-2f10-c994-db2e898d5f70" target="_blank" rel="noopener noreferrer">Developer Center for UI Development Toolkit for HTML5</A>" section. I downloaded it and unpacked the contents into a directory to have a look at the docu and guidelines, and have an initial poke around.<BR />
+<BR />
+Wow, those folks have certainly put together some nice documentation already! Try it for yourself - once downloaded, open the demokit directory and you should be presented with a nice (SAPUI5-powered) overview, developer guide, controls and API reference:<BR />
+<DIV><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2012/02/sapui5overview.png" /></DIV><BR />
+The framework is based upon JQuery / UI and contains&nbsp; a huge number of controls. It also supports data bindings, and one thing that had<A class="jive-link-external-small" href="https://twitter.com/#!/qmacro/status/167191292919545856" target="_blank" rel="nofollow noopener noreferrer"> intrigued me</A> from the podcast was that data bindings were possible to arbitrary JSON and XML ... and OData resources.<BR />
+<BR />
+"Gosh", I hear you say, "that reminds me of something!" Of course, SAP NetWeaver Gateway's REST-informed data-centric consumption model is based upon OData. So of course I immediately was curious to learn about SAPUI5 with an OData flavour. How could I try out one of the controls to surface information in OData resources exposed by NetWeaver Gateway?<BR />
+<BR />
+What I ended up with is SAPUI5's DataTable control filled with travel agency information from my copy of the <A class="jive-link-external-small" href="http://www.sdn.sap.com/irj/sdn/gateway?rid=/webcontent/uuid/90b292cc-a2d7-2e10-709d-9fba966a6937" target="_blank" rel="noopener noreferrer">trial NetWeaver Gateway system</A>, via an OData service all ready to use. You can see what I mean in this short <A class="jive-link-external-small" href="http://youtu.be/yHVuWHNWK3I" target="_blank" rel="nofollow noopener noreferrer">screencast</A>.<BR />
+<BR />
+Here's what I did to get the pieces together. I'm assuming you've got the trial Gateway system installed and set up (you know, fully qualified hostname, ICM configured nicely, and so on), and that you're semi-familiar with the SFLIGHT dataset.<BR />
+<H3 id="toc-hId-316503632">Step 1. The OData Service</H3><BR />
+Check with transaction /iwfnd/reg_service, for the LOCAL system alias, that the service RMTSAMPLEFLIGHT is available, as shown here.<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2012/02/iwfnd_reg_service1.png" /></P><BR />
+Check you can see the service document by clicking the Call Browser button (you may need to provide a user and password for HTTP basic authentication). You can also check the data by manually navigating to the TravelagencyCollection by following the relative href attribute of the app:collection element as shown here:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2012/02/travelagencycollection.png" /></P><BR />
+In other words, navigate from something like this:<BR />
+<PRE><CODE><A class="jive-link-external-small" href="http://gateway.serverport" target="_blank" rel="nofollow noopener noreferrer">http://gateway.server:port/sap/opu/sdata/IWFND/RMTSAMPLEFLIGHT/?$format=xml</A></CODE></PRE><BR />
+to this:<BR />
+<PRE><CODE><A class="jive-link-external-small" href="http://gateway.serverport" target="_blank" rel="nofollow noopener noreferrer">http://gateway.server:port/sap/opu/sdata/IWFND/RMTSAMPLEFLIGHT/TravelagencyCollection?$format=xml</A></CODE></PRE><BR />
+(The $format=xml is to force the service to return a less exotic Content-Type of application/xml rather than an Atom-flavoured one, so that the browser is more likely to render the data in human-readable form.)<BR />
+<BR />
+Following this href should show you some actual travel agency data in the form of entries in an Atom feed (yes, "everything is a collection/feed!"):<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2012/02/atomentry1-300x204-1.png" /></P><BR />
+<BR />
+<H3 id="toc-hId-119990127">Step 2. The SAPUI5 Framework</H3><BR />
+Make your SAPUi5 framework accessible. To avoid Same Origin Policy based issues in your browser, get your Gateway's ICM to serve the files for you. Create a 'sapui5' directory in your Gateway's filesystem:<BR />
+<PRE><CODE>/usr/sap/NPL/DVEBMGS42/sapui5/</CODE></PRE><BR />
+unpack the SAPUI5 framework into here, and add an instance profile configuration parameter to tell the ICM to serve files from this location:<BR />
+<PRE><CODE>icm/HTTP/file_access_5 = PREFIX=/sapui5/, DOCROOT=$(DIR_INSTANCE)/sapui5/, BROWSEDIR=2</CODE></PRE><BR />
+(here I have 5 previous file_access_xx parameters, hence the '5' suffix in this example)<BR />
+<BR />
+and when you restart the ICM it should start serving the framework to you:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2012/02/sapui5dir-300x119-1.png" /></P><BR />
+&nbsp;<BR />
+<H3 id="toc-hId--76523378">Step 3. The HTML / Javascript Application Skeleton</H3><BR />
+Actually, calling it an application is far too grand. But you know what I mean. Now we have the SAPUI5 framework being served, and the OData service available, it's time to put the two together.<BR />
+<BR />
+Here's the general skeleton of the application - we pull in SAPUI5, and have an element in the body where the control will be placed:<BR />
+<PRE><CODE></CODE></PRE><BR />
+<PRE><CODE>&lt;html&gt;<BR />
+&nbsp; &lt;head&gt;<BR />
+&nbsp;&nbsp;&nbsp; &lt;meta http-equiv="X-UA-Compatible" content="IE=edge" /&gt;<BR />
+&nbsp;&nbsp;&nbsp; &lt;title&gt;SAP OData in SAPUI5 Data Table Control&lt;/title&gt;</CODE></PRE><BR />
+<PRE><CODE>&nbsp;&nbsp;&nbsp; &lt;!-- Load SAPUI5, select theme and control libraries --&gt;<BR />
+&nbsp;&nbsp;&nbsp; &lt;script id="sap-ui-bootstrap"<BR />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; type="text/javascript"<BR />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; src="<A class="jive-link-external-small" href="http://gateway.serverport" target="_blank" rel="nofollow noopener noreferrer">http://gateway.server:port/sapui5/sapui5-static/resources/sap-ui-core.js</A>"<BR />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; data-sap-ui-theme="sap_platinum"<BR />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; data-sap-ui-libs="sap.ui.commons,sap.ui.table"&gt;<BR />
+&nbsp;&nbsp;&nbsp; &lt;/script&gt;<BR />
+<BR />
+&nbsp; &lt;script&gt;<BR />
+&nbsp;&nbsp;&nbsp; ...<BR />
+&nbsp; &lt;/script&gt;<BR />
+<BR />
+&lt;/head&gt;<BR />
+&lt;body&gt;<BR />
+&nbsp; &lt;h1&gt;SAP OData in SAPUI5 Data Table Control&lt;/h1&gt;<BR />
+&nbsp; &lt;div id="dataTable"&gt;&lt;/div&gt;<BR />
+&lt;/body&gt;<BR />
+&lt;/html&gt;</CODE></PRE><BR />
+In the final step we'll have a look at what goes in the "..." bit.<BR />
+<H3 id="toc-hId--273036883">Step 4. Using the SAPUI5 Framework in the Application</H3><BR />
+So now it's time to flex our Javascript fingers, stand on the shoulders of giants, and write a few lines of code to invoke the SAPUI5 power and glory.<BR />
+<BR />
+What we need to do is:<BR />
+<UL><BR />
+ 	<LI>create a DataTable control</LI><BR />
+ 	<LI>add columns to it to represent the fields in the OData entries</LI><BR />
+ 	<LI>create an OData data model</LI><BR />
+ 	<LI>link the DataTable to this data model</LI><BR />
+ 	<LI>bind the rows to the TravelagencyCollection</LI><BR />
+ 	<LI>place the control on the page</LI><BR />
+</UL><BR />
+Simples!<BR />
+<BR />
+Creating the DataTable control goes like this (but you must remember to add the control library to the data-sap-ui-libs attribute when loading SAPUI5 - see Step 3):<BR />
+<PRE><CODE>var oTable = new sap.ui.table.DataTable();</CODE></PRE><BR />
+Each column is added and described like this:<BR />
+<PRE><CODE>oTable.addColumn(new sap.ui.table.Column({<BR />
+&nbsp; label: new sap.ui.commons.Label({text: "Agency Name"}),<BR />
+&nbsp; template: new sap.ui.commons.TextView().bindProperty("text", "NAME"),<BR />
+&nbsp; sortProperty: "NAME"<BR />
+}));</CODE></PRE><BR />
+There are three different templates in use, for different fields - the basic TextView, the TextField and the Link.<BR />
+<BR />
+The OData data model is created like this, where the URL parameter points to the service document:<BR />
+<PRE><CODE>var oModel = new sap.ui.model.odata.ODataModel("<A class="jive-link-external-small" href="http://gateway.serverport" target="_blank" rel="nofollow noopener noreferrer">http://gateway.server:port/sap/opu/sdata/iwfnd/RMTSAMPLEFLIGHT</A>");</CODE></PRE><BR />
+It's then linked to the control like this:<BR />
+<PRE><CODE>oTable.setModel(oModel);</CODE></PRE><BR />
+The specific OData resource TravelagencyCollection is bound to the control's rows like this:<BR />
+<PRE><CODE>oTable.bindRows("TravelagencyCollection");</CODE></PRE><BR />
+And then the control is placed on the page like this:<BR />
+<PRE><CODE>oTable.placeAt("dataTable");</CODE></PRE><BR />
+I've put the complete code in a Github <A class="jive-link-external-small" href="https://gist.github.com/1820544" target="_blank" rel="nofollow noopener noreferrer">Gist</A> for you to have a look at.<BR />
+<H3 id="toc-hId--469550388">Result</H3><BR />
+What you end up with is live data from your SAP Gateway system that is presented to you like this:<BR />
+<P style="overflow: hidden;margin-bottom: 0px"><IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2012/02/result-300x107-1.png" /></P><BR />
+&nbsp;<BR />
+<BR />
+Share and enjoy!

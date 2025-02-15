@@ -1,0 +1,79 @@
+2004-06-24-forget-soap-build-real-web-services-with-the-icf
+Forget SOAP - build real web services with the ICF
+application-developmentblog-board
+2004-06-24
+https://community.sap.com/t5/application-development-blog-posts/forget-soap-build-real-web-services-with-the-icf/ba-p/12824505
+<DIV><BR />
+<BR />
+I don't like getting into a lather when it comes to data and function integration. Rather than using SOAP, I prefer real web services, built with HTTP.<BR />
+<BR />
+As an example of taking the <A class="jive-link-external-small" href="http://rest.blueoxen.net/cgi-bin/wiki.pl" target="_blank" rel="nofollow noopener noreferrer">REST</A>ian approach to exposing your SAP data and functionality through services you can build with the excellent Internet Communication Framework (ICF) layer, I thought I'd show you how straightforward and natural data integration can be by using a spreadsheet as an example.<BR />
+<BR />
+In my recent SDN article (published this week) ...<BR />
+<BLOCKQUOTE class="jive-quote">"<A class="jive-link-external-small" href="https://archive.sap.com/kmuuid2/ea8db790-0201-0010-af98-de15b6c1ee1a/Real%20Web%20Services%20with%20REST%20and%20ICF.article" target="_blank" rel="noopener noreferrer">Real Web Services with REST and ICF</A>"</BLOCKQUOTE><BR />
+... I presented a simple ICF handler example that allowed you to directly address various elements of CTS data (I prototyped it in my NW4 system so I thought I'd use data at hand, and build an example that you could try out too). For instance, you could retrieve the username of the person responsible for a transport by addressing precisely that data element like this:<BR />
+<PRE><CODE><A class="jive-link-external-small" href="http://shrdlu.local.net:8000/qmacro/transport/NW4K900007/as4text" target="_blank" rel="nofollow noopener noreferrer">http://shrdlu.local.net:8000/qmacro/transport/NW4K900007/as4text</A><BR />
+</CODE></PRE><BR />
+The approach of making your SAP data and functionality first class web entities, by giving each element its own URL, has wide and far reaching benefits.<BR />
+<BR />
+Take a programmable spreadsheet, for example. You're managing transports between systems by recording activity in a spreadsheet. You're mostly handling actual transport numbers, but have also to log onto SAP to pull out information about those transports. You think: "Hmmm, wouldn't it be useful if I could just <EM>specify the address</EM> of transport XYZ's user in this cell here, and then the value would appear automatically?"<BR />
+<BR />
+Let's look at how this is done. My spreadsheet program of choice is the popular <A class="jive-link-external-small" href="http://www.gnome.org/projects/gnumeric/" target="_blank" rel="nofollow noopener noreferrer">Gnumeric</A>, available on Linux. If you use another brand, no problem - there's bound to be similarities enough for you to do the same as what follows. For background reading on extending Gnumeric with Python, you should take a look <A class="jive-link-external-small" href="http://www.csse.monash.edu.au/~ctwardy/starting-with-python.html" target="_blank" rel="nofollow noopener noreferrer">here</A>.<BR />
+<BR />
+With Gnumeric, you can extend the functions available by writing little methods in Python. It's pretty straightforward. In my home directory, I have a subdirectory structure<BR />
+<PRE><CODE>.gnumeric/1.2.1-bonobo/plugins/myfuncs/<BR />
+</CODE></PRE><BR />
+where I keep the Python files that hold my personal extended methods.<BR />
+<BR />
+In there, in a file called my-funcs.py, I have a little script that defines a method func_get(). This method takes a URL as an argument, and goes to fetch the value of what that URL represents. In other words, it performs an HTTP GET to retrieve the content. If successful, and if the value is appropriate (it's just an example here, I'm expecting a text/plain result), then it's returned ... and the cell containing the call to that function is populated with the value.<BR />
+<BR />
+Here's the code.<BR />
+<PRE><CODE># The libs needed for this example<BR />
+import Gnumeric<BR />
+import string<BR />
+import urllib<BR />
+from re import sub<BR />
+<BR />
+# My version of FancyURLopener to provide basic auth info<BR />
+class MyURLopener(urllib.FancyURLopener):<BR />
+&nbsp;&nbsp;&nbsp; def prompt_user_passwd(self, *args):<BR />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return ('developer', 'developer')<BR />
+<BR />
+# The actual extended function definition<BR />
+def func_get(url):<BR />
+&nbsp;&nbsp;&nbsp; urllib._urlopener = MyURLopener()<BR />
+&nbsp;&nbsp;&nbsp; connection = urllib.urlopen(url)<BR />
+&nbsp;&nbsp;&nbsp; data = connection.read()<BR />
+&nbsp;&nbsp;&nbsp; if connection.info().gettype() == 'text/plain':<BR />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return sub("<BR />
+$", "", data)<BR />
+&nbsp;&nbsp;&nbsp; else:<BR />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; return "#VALUE!"<BR />
+<BR />
+# The link between the extended function name and the method name<BR />
+example_functions = {<BR />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 'py_get': func_get<BR />
+}<BR />
+</CODE></PRE><BR />
+It's pretty straightforward. Let's just focus on the main part, func_get(). Because the resource in this example is protected with basic authentication (i.e. you have to supply a username and password), we subclass the standard FancyURLopener to be able to supply the username and password tuple, and then assign an instance of that class to the urllib._urlopener variable before actually making the call to GET.<BR />
+<BR />
+If we get some 'text/plain' content as a result, we brush it off and return it to be populated into the cell, otherwise we return a 'warning - something went wrong' value.<BR />
+<BR />
+We add the method definition to a hash that Gnumeric reads, and through the assignment, the func_get() method is made available as new custom function 'py_get' in the spreadsheet. (There's also an extra XML file called plugin.xml, not shown here but described in the Gnumeric programming documentation mentioned earlier, that contains the name of the function so that it can be found when the spreadsheet user browses the list of functions.)<BR />
+<BR />
+So, what does that give us? It gives us the ability to type something like this into a spreadsheet cell (split for readability):<BR />
+<PRE><CODE>=py_get('<A class="jive-link-external-small" href="http://shrdlu.local.net:8000/qmacro/transport/NW4K900011/as4user" target="_blank" rel="nofollow noopener noreferrer">http://shrdlu.local.net:8000/qmacro/transport/NW4K900011/as4user</A>')<BR />
+</CODE></PRE><BR />
+and have the cell automagically populated with the appropriate data from SAP. You can see an example of this in action in the screenshot:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2004/06/3_38895.png" height="301" width="586" /><BR />
+<BR />
+As you can see, being able to address information as first class web resources opens up a universe of possibilities for the use of real web services.<BR />
+<BR />
+As a final note, I've submitted a SAP TechEd talk proposal. It's titled:<BR />
+<BLOCKQUOTE class="jive-quote"><STRONG>"The Internet Communication Framework: Into Context and Into Action!"</STRONG></BLOCKQUOTE><BR />
+If you're interested in learning more about the ICF, and want to have some fun building and debugging a simple web service with me, you know where to <A class="jive-link-external-small" href="http://www.sapteched.com/speakers/SDN/CastYourVote.asp" target="_blank" rel="nofollow noopener noreferrer">cast your vote</A> if you haven't already. Hurry though - there's only a few hours to go!<BR />
+<BR />
+Thanks!<BR />
+<BR />
+</DIV>

@@ -1,0 +1,94 @@
+2004-05-31-nw4-oss1-and-logon-group-selection-for-oss
+NW4, OSS1 and logon group selection for OSS
+erp-blog-members
+2004-05-31
+https://community.sap.com/t5/enterprise-resource-planning-blogs-by-members/nw4-oss1-and-logon-group-selection-for-oss/ba-p/12822388
+<DIV><BR />
+<BR />
+While waiting for the DD ACTIVATION phase of an add-on installation to finish, my mind wandered off to something I'd noticed with my new <A class="jive-link-external-small" href="https://blogs.sap.com/?p=39434" target="_blank" rel="noopener noreferrer">WAS 6.40 testdrive for Linux is here!</A> system, with the SID "NW4" (NetWeaver '04). Normally, when you start transaction OSS1, and hit the button to connect to OSS, you're presented with a popup giving you a choice of groups, like the one in the screenshot here.<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2004/05/groupselectionpopup_38869.png" height="304" width="360" /><BR />
+<BR />
+But it wasn't happening from my NW4 system. So I rolled up my sleeves, and wielded the mighty "/h" in the ok-code (in the R/2 days we used to call this "hobble mode" :-), cleaving my way into the ABAP that lay beneath OSS1. What I found was quite interesting.<BR />
+<H3 id="toc-hId-286744475">lgtst</H3><BR />
+There's a command-line program called <EM>lgtst</EM> that can be used to query the message server of an SAP system and have information on logon groups and so on returned. This lgtst program is not, apparently, supported on all operating systems, so there's a condition in the ABAP that checks that.<BR />
+<H3 id="toc-hId-90230970">Direct SAPGUI call</H3><BR />
+If the server's operating system is <STRONG>not</STRONG> supported, then a simple logon string is constructed from the technical settings held in OSS1 (menu path Parameter -&gt; Technical settings). For example, if you specify a SAProuter at your site thus:<BR />
+<PRE><CODE>Name: host01 IP Address: 192.168.0.66 Instance: 99</CODE></PRE><BR />
+&nbsp;<BR />
+<BR />
+with SAProuter details thus:<BR />
+<PRE><CODE>Name: sapserv3 IP Address: 147.204.2.5 Instance: 99</CODE></PRE><BR />
+&nbsp;<BR />
+<BR />
+and the SAPnet message server details thus:<BR />
+<PRE><CODE>Name: oss001 DB Name: O01 Instance: 01</CODE></PRE><BR />
+then the route string constructed is just the concatenated saprouters leading to the dispatcher at O01's '01' instance, like this:<BR />
+<BR />
+&nbsp;<BR />
+<PRE><CODE>/H/192.168.0.66/S/sapdp99/H/147.204.2.5/S/sapdp99/H/oss001/S/sapdp01</CODE></PRE><BR />
+&nbsp;<BR />
+<BR />
+This route string is then used in conjunction with a direct local call to your SAPGUI client, so that the end result is that a new SAPGUI instance is started for that connection.<BR />
+<BR />
+So far, so good (or not, depending on your luck with SAProuter routing :-).<BR />
+<H3 id="toc-hId--106282535">Logon group popup, then SAPGUI call</H3><BR />
+On the other hand, if the server's operating system <STRONG>is</STRONG> supported, then something rather different happens. In this case, the <EM>lgtst</EM> program is executed on the server, to discover what logon groups are available for OSS. How does this happen? Well, the SAProuter information we've already seen is used to construct a route string:<BR />
+<PRE><CODE>/H/192.168.0.66/S/sapdp99/H/147.204.2.5/S/sapdp99 ...</CODE></PRE><BR />
+&nbsp;<BR />
+<BR />
+<STRONG>but</STRONG>, instead of pointing to a dispatcher at the SAP OSS end:<BR />
+<PRE><CODE>... /H/oss001/S/sapdp01</CODE></PRE><BR />
+&nbsp;<BR />
+<BR />
+it points to system O01's message server:<BR />
+<PRE><CODE>... /H/oss001/S/sapmsO01</CODE></PRE><BR />
+&nbsp;<BR />
+<BR />
+Once this route string has been constructed, it's used in a call to <EM>lgtst</EM> like this:<BR />
+<PRE><CODE>lgtst -H /H/.../H/oss001/S/sapmsO01 -S x -W 30000</CODE></PRE><BR />
+This is basically requesting that the message server for O01 send back information on available servers (instances) and logon groups. A typical reply looks like this:<BR />
+<BR />
+&nbsp;<BR />
+<PRE><CODE>list of reachable application servers ------------------------------------- <BR />
+[pwdf1120_O01_01] [pwdf1120] [10.16.0.11] [sapdp01] [3201] [DIA UPD BTC SPO ICM ] <BR />
+[pwdf1302_O01_01] [pwdf1302] [147.204.100.41] [sapdp01] [3201] [DIA BTC SPO ICM ] <BR />
+[pwdf0936_O01_01] [pwdf0936] [10.16.0.19] [sapdp01] [3201] [DIA BTC SPO ICM ] <BR />
+[pwdf0810_O01_01] [pwdf0810] [10.16.0.18] [sapdp01] [3201] [DIA BTC SPO ICM ] <BR />
+[pwdf1307_O01_01] [pwdf1307] [147.204.100.46] [sapdp01] [3201] [DIA BTC SPO ICM ] <BR />
+[pwdf1300_O01_01] [pwdf1300] [147.204.100.39] [sapdp01] [3201] [DIA BTC SPO ICM ] <BR />
+[pwdf1301_O01_01] [pwdf1301] [147.204.100.40] [sapdp01] [3201] [DIA BTC SPO ICM ] <BR />
+[pwdf1177_O01_01] [pwdf1177] [10.16.1.13] [sapdp01] [3201] [DIA UPD BTC SPO ICM ] <BR />
+[pwdf0937_O01_01] [pwdf0937] [10.16.0.20] [sapdp01] [3201] [DIA BTC SPO ICM ] <BR />
+[pwdf0809_O01_01] [pwdf0809] [10.16.0.17] [sapdp01] [3201] [DIA BTC SPO ICM ] <BR />
+[pwdf0808_O01_01] [pwdf0808] [10.16.0.16] [sapdp01] [3201] [DIA UPD BTC SPO ICM ] <BR />
+[pwdf0807_O01_01] [pwdf0807] [10.16.0.15] [sapdp01] [3201] [DIA BTC SPO ICM ] <BR />
+[pwdf0392_O01_01] [pwdf0392] [10.16.0.10] [sapdp01] [3201] [DIA BTC SPO ICM ] <BR />
+[o01main_O01_01] [pwdf1070] [147.204.100.35] [sapdp01] [3201] [DIA UPD ENQ BTC SPO UP2 ICM ] <BR />
+list of selectable logpn groups with favorites ------------------------------------------------ <BR />
+[1_PUBLIC] [147.204.100.40] [3201] [620] <BR />
+[2_JAPANESE] [147.204.100.40] [3201] [620] <BR />
+[DO_NOT_USE] [147.204.100.35] [3201] [620] <BR />
+[EWA] [147.204.100.40] [3201] [620] <BR />
+[REPL] [10.16.1.13] [3201] [620] <BR />
+[SPACE] [10.16.1.13] [3201] [620]</CODE></PRE><BR />
+&nbsp;<BR />
+<BR />
+What we're interested in are the lines in the second half of the output - the list of selectable logon groups. The key data items here are the group names themselves (e.g. 1_PUBLIC), the IP addresses (e.g. 147.204.100.40), and the port numbers (e.g. 3201). The ABAP behind transaction OSS1 receives this <EM>lgtst</EM> output and parses it out into a nice list of groups, which it then presents to the user as shown in the screenshot above.<BR />
+<BR />
+(And it goes almost without saying that if the call to <EM>lgtst</EM> fails, we get that friendly message "Unable to connect to message server (default connection will be used)" and revert back to the direct SAPGUI call).<BR />
+<BR />
+So <STRONG>that's</STRONG> where this popup comes from. Ok. Now I understand. It's amazing how you use a transaction for years and never really look into how it actually works.<BR />
+<H3 id="toc-hId--302796040">Why not Linux?</H3><BR />
+So, just to get back to why I came here in the first place - why doesn't this popup appear in NW4? NW4 is a Linux-based testdrive system. <EM>lgtst</EM> works fine. But look at this:<BR />
+<PRE><CODE>*---- Folgende Betriebssysteme werden unterstützt <BR />
+IF ( SY-OPSYS = 'HP-UX' ) OR ( SY-OPSYS = 'AIX' ) <BR />
+OR ( SY-OPSYS = 'OSF1' ) OR ( SY-OPSYS = 'SINIX' ) <BR />
+OR ( SY-OPSYS = 'SunOS' ) OR ( SY-OPSYS = 'Windows NT' ) <BR />
+OR ( SY-OPSYS = 'Relia' ) OR ( SY-OPSYS = 'SP_DC' ) <BR />
+OR ( SY-OPSYS = 'OS/400' ).</CODE></PRE><BR />
+No Linux? Hmm, I soon fixed that, by copying the transaction (OSS1 -&gt; ZSS1) and the ABAP behind OSS1 (RSEFA910), adding a line to this IF statement to bring a bit of love the choice operating system of a "Gnu generation" <span class="lia-unicode-emoji" title=":winking_face:">😉</span><BR />
+<BR />
+Now I can call ZSS1 and delight in the group logon popup. Hurrah!<BR />
+<BR />
+</DIV>

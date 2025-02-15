@@ -1,0 +1,279 @@
+2018-01-17-discovering-scp-workflow-service-proxy
+Discovering SCP Workflow - Service Proxy
+technology-blog-members
+2018-01-17
+https://community.sap.com/t5/technology-blogs-by-members/discovering-scp-workflow-service-proxy/ba-p/13356138
+Previous post in this series: <A href="https://blogs.sap.com/2018/01/16/discovering-scp-workflow-using-postman/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Using Postman</A>.<BR />
+<BR />
+This post is part of a series, a guide to which can be found here: <A href="https://qmacro.org/blog/posts/2018/01/16/discovering-scp-workflow/" target="_blank" rel="nofollow noopener noreferrer">Discovering SCP Workflow.</A><BR />
+<BR />
+In this post, I'll present a small proxy service I wrote to handle the minutiae of initiating a new workflow instance (see <A href="https://blogs.sap.com/2018/01/14/discovering-scp-workflow-instance-initiation/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Instance Initiation</A>).<BR />
+<BR />
+Why did I write it? Well, lots of reasons. Here are some sensible sounding ones:<BR />
+<UL><BR />
+ 	<LI>In my journey of discovery, it enables me to encapsulate stuff I've covered, to allow me to keep the surface area for initiating new workflow instances to a minimum within the wider context of what I'm doing</LI><BR />
+ 	<LI>It's a way to hide authentication details, especially when wanting to connect to the Workflow API from outside of the context of the SCP Connectivity Service</LI><BR />
+ 	<LI>It wraps up the XSRF token process so that I don't have to deal with or even see what's going on</LI><BR />
+</UL><BR />
+Here are some more fun ones:<BR />
+<UL><BR />
+ 	<LI>It allows me to continue my journey <A href="http://pipetree.com/qmacro/blog/2017/04/30/google-cloud-functions-sheets-apps-script-actions-on-google-win/" target="_blank" rel="nofollow noopener noreferrer">exploring</A> Google Cloud Functions on the Google Cloud Platform (GCP), which I have used already but in a different context: writing handlers for Actions on Google - the framework for the Google Assistant platform which is the underlying layer for Google Home devices and more</LI><BR />
+ 	<LI>Similarly it lets me explore how I use Node.js libraries, and learn what's out there</LI><BR />
+ 	<LI>I love the idea of "<A href="https://twitter.com/qmacro/status/952650820788609030" target="_blank" rel="nofollow noopener noreferrer">the second mainframe era</A>" with cloud computing and web terminals (I'm building all this and writing about it purely on Chrome OS with no workstation-local activities), and the combination of GCP and SCP is very attractive</LI><BR />
+ 	<LI>The proxy lets me explore the possibilities of how to divide up work across different areas of the cloud</LI><BR />
+</UL><BR />
+This last reason is important to me - there's so much choice across different platforms (SCP, GCP and beyond) for design-time and runtime for solutions that unless you try things out it's hard to make informed decisions.<BR />
+<BR />
+<EM>(Note: in the following post, some lines - code, URLs, etc - have been split for readability.)</EM><BR />
+<H3 id="toc-hId-1033990051">The general requirements</H3><BR />
+The idea is that I will want to initiate workflow instances from various processes, and want a simple way of doing that with the minimum of fuss. As far as protection goes, I'm using a simple shared secret, in the form of a string that the caller passes and the receiver verifies before proceeding.<BR />
+<BR />
+I also want to write and forget, and do it all in the cloud.<BR />
+<H3 id="toc-hId-837476546">Google Cloud Functions</H3><BR />
+Before proceeding, it's worth spending a minute on what Google Cloud Functions allows me to do. I can write serverless functions (similar to AWS Lambda) and maintain the code in git repositories stored on GCP (similar to how git repositories are available on SCP). I can write a function in JavaScript, within a Node.js context, availing myself of the myriad libraries available for that platform, and I can test it inside a <A href="https://cloud.google.com/functions/docs/emulator" target="_blank" rel="nofollow noopener noreferrer">functions runtime emulator</A>&nbsp;before deploying it to GCP using direct references to the source code master branch in the git repository.<BR />
+<BR />
+And yes, I edited and tested this whole project it all in the cloud too, using a combination of vim on my <A href="https://cloud.google.com/shell/docs/" target="_blank" rel="nofollow noopener noreferrer">Google Cloud Shell</A> instance, and of course the <A href="http://developer.sap.com/webide" target="_blank" rel="noopener noreferrer">SAP Web IDE</A>. After all, we're surely&nbsp;<A href="https://twitter.com/qmacro/status/952650820788609030" target="_blank" rel="nofollow noopener noreferrer">in the 2nd mainframe era</A>&nbsp;by now!<BR />
+<BR />
+Anyway, who knows, in the future I may migrate this proxy function to some other platform or service, but for now it will do fine.<BR />
+<BR />
+The entry point to a Google Cloud Function is an <A href="https://expressjs.com/" target="_blank" rel="nofollow noopener noreferrer">Express</A>-based handler, which like many HTTP server side frameworks, has the concept of a request object and a response object. For what it's worth, this simple pattern also influenced the work on the early <A href="https://blogs.sap.com/2009/09/21/a-new-rest-handler-dispatcher-for-the-icf/" target="_blank" rel="noopener noreferrer">Alternative Dispatcher Layer (ADL)</A> for the ABAP and ICF platform.<BR />
+<BR />
+The way I write my functions for this environment is to have a relatively simple file, exporting a single 'handler' function, and then farm out heavy lifting to another module. The Node.js require/export concept is what this is based upon. We'll see this at a detailed level shortly.<BR />
+<H3 id="toc-hId-640963041">Setting the scene</H3><BR />
+I've always wondered whether it's better to show source code before demonstrating it, or demonstrating it first to give the reader some understanding of what the code is trying to achieve. In this case the demo is simple and worth showing first.<BR />
+<BR />
+First, I'll highlight where I'm using this proxy for real, in a fun experiment involving beer recommendations based on what you're drinking, courtesy of <A href="https://untappd.com/user/qmacro" target="_blank" rel="nofollow noopener noreferrer">Untappd</A>'s API, and presented within the SCP Workflow context:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-16-at-10.42.17.png" /><BR />
+<BR />
+I have workflow definition called "untappdrecommendation" which I initiate instances of when another mechanism sees that I've checked in a beer on Untappd.<BR />
+<BR />
+That mechanism is a Google Apps Script that polls an RSS feed associated with my Untappd checkins and notices when I check in a new beer (I did start by looking at using <A href="https://ifttt.com" target="_blank" rel="nofollow noopener noreferrer">IFTTT</A> for this but my experience with it wasn't great, so I rolled my own). Once it sees a new checkin, it uses the <A href="https://untappd.com/api/docs" target="_blank" rel="nofollow noopener noreferrer">Untappd API</A> to grab relevant information and then calls the Workflow API, via the proxy that is the subject of this post. Here's an excerpt from that Google Apps Script:<BR />
+<PRE class="language-javascript"><CODE>var WFS_PROXY = "https://us-central1-ZZZ.cloudfunctions.net/wfs-proxy";<BR />
+var WFS_SECRET = "lifetheuniverseandeverything";<BR />
+var WORKFLOW_DEFINITION_ID = "untappdrecommendation";<BR />
+<BR />
+[...]<BR />
+<BR />
+// Go and get the beer info for this beer, particularly the similar beers.<BR />
+// If we get the info, add it to the data and initiate a workflow.<BR />
+var beerInfo = retrieveBeerInfo(beerId);<BR />
+if (beerInfo) {<BR />
+  row[CHECKIN.STATUS] = initiateWorkflow(beerInfo) || "FAILED";<BR />
+}<BR />
+<BR />
+[...]<BR />
+<BR />
+function initiateWorkflow(context) {<BR />
+<BR />
+  return UrlFetchApp<BR />
+    .fetch(WFS_PROXY + "?token=" + WFS_SECRET + "&amp;definitionId=" + WORKFLOW_DEFINITION_ID, {<BR />
+      method : "POST",<BR />
+      contentType : "application/json",<BR />
+      payload : JSON.stringify(context)<BR />
+    })<BR />
+    .getContentText();<BR />
+}</CODE></PRE><BR />
+Let's look into what that initiateWorkflow function is doing:<BR />
+<UL><BR />
+ 	<LI>it receives a map* of information on the specific beer checked in</LI><BR />
+ 	<LI>then it makes a POST HTTP request to the proxy service, passing<BR />
+<UL><BR />
+ 	<LI>a secret token (mentioned earlier)</LI><BR />
+ 	<LI>the workflow definition ID "untappdrecommendation"</LI><BR />
+ 	<LI>the context, containing the beer information, for the workflow instance</LI><BR />
+</UL><BR />
+</LI><BR />
+</UL><BR />
+<EM>*some folks call them objects ... I prefer to call them maps if they're "passive" (if they have no other methods other than the JavaScript object built-in methods). The term map is used in other languages for this sort of structure.</EM><BR />
+<BR />
+Looking at the value of WFS_PROXY, we can see that it's the address of my live, hosted Google Cloud Function. The "ZZZ" here replaces the real address, by the way. And while "lifetheuniverseandeverything" isn't the real secret token, I thought it was a nice substitute for this post.<BR />
+<BR />
+Note that the ability to call the initiateWorkflow function just like that, and to only have to make a single call to UrlFetchApp.fetch (to make a single HTTP request using a facility in the standard Google Apps Script class UrlFetchApp), is what I was meaning with "simple" and "minimum fuss". I'm not having to deal with XSRF tokens, nor wonder whether I need to manage the token's context between calls either.<BR />
+<BR />
+Stepping out of the Google Apps Script context for a moment, let's see what it looks like when I use that proxy function by hand, with curl.<BR />
+<BR />
+First, we've got a file, context.json, containing the beer info to be provided to the newly minted workflow instance in the form of context:<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+  "beer": {<BR />
+    "bid": 1868220,<BR />
+    "beer_name": "Subluminal",<BR />
+    "beer_abv": 10,<BR />
+    "beer_ibu": 60,<BR />
+    "beer_slug": "buxton-brewery-subluminal",<BR />
+    "beer_style": "Stout - Imperial / Double",<BR />
+    "is_in_production": 1,<BR />
+    [...]<BR />
+  }<BR />
+}</CODE></PRE><BR />
+We'll send that file as the body of a POST request thus:<BR />
+<PRE class="language-markup"><CODE>curl \<BR />
+  --verbose \<BR />
+  --data @context.json \<BR />
+  --header "Content-Type: application/json" \<BR />
+  "https://us-central1-ZZZ.cloudfunctions.net/wfs-proxy<BR />
+  ?definitionId=untappdrecommendation<BR />
+  &amp;token=lifetheuniverseandeverthing"</CODE></PRE><BR />
+Here's what we see:<BR />
+<PRE class="language-markup"><CODE>&gt; POST /wfs-proxy?definitionId=untappdrecommendation&amp;token=lifetheuniverseandeverything HTTP/1.1<BR />
+&gt; Host: us-central1-ZZZ.cloudfunctions.net<BR />
+&gt; User-Agent: curl/7.52.1<BR />
+&gt; Accept: */*<BR />
+&gt; Content-Type: application/json<BR />
+&gt; Content-Length: 131956<BR />
+&gt;<BR />
+&lt; HTTP/2 200<BR />
+&lt; content-type: text/html; charset=utf-8<BR />
+&lt; etag: W/"2-d736d92d"<BR />
+&lt; function-execution-id: pr85lvavhrvx<BR />
+&lt; x-powered-by: Express<BR />
+&lt; x-cloud-trace-context: 12ea0eb8b055ade13ff786b4c52af11e;o=1<BR />
+&lt; date: Tue, 16 Jan 2018 12:12:12 GMT<BR />
+&lt; server: Google Frontend<BR />
+&lt; content-length: 2<BR />
+&lt;<BR />
+OK</CODE></PRE><BR />
+(Woo, an HTTP/2 response, by the way!)<BR />
+<BR />
+This results, in the creation of an instance of the "untappdrecommendation" workflow definition which appears in My Inbox as shown in the screenshot earlier.<BR />
+<H3 id="toc-hId-444449536">The proxy code</H3><BR />
+Now that we've seen what's supposed to happen, it's time to have a look at the JavaScript code. It's in two files. First, there's index.js, which contains the entry point handler which is invoked by the Google Cloud Functions machinery.<BR />
+<BR />
+As an aside, it's this entry point handler which is referred to in the package.json which describes, amongst other things, the incantation to deploy a function to the cloud. Here's package.json, in case you're curious:<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+  "name": "wfs-proxy",<BR />
+  "project": "ZZZ",<BR />
+  "version": "0.0.1",<BR />
+  "description": "A proxy to triggering a workflow on the SCP Workflow Service",<BR />
+  "main": "index.js",<BR />
+  "scripts": {<BR />
+    "test": "functions deploy $npm_package_name --entry-point handler --trigger-http",<BR />
+    "deploy": "gcloud beta functions deploy $npm_package_name <BR />
+              --entry-point handler <BR />
+              --trigger-http <BR />
+              --source <A href="https://source.developers.google.com" target="test_blank" rel="nofollow noopener noreferrer">https://source.developers.google.com</A><BR />
+                /projects/$npm_package_project/repos/$npm_package_name"<BR />
+  },<BR />
+  "author": "DJ Adams",<BR />
+  "license": "ISC",<BR />
+  "dependencies": {<BR />
+    "axios": "^0.17.1"<BR />
+  }<BR />
+}</CODE></PRE><BR />
+You can see that 'handler' (in index.js) is specified as the cloud function's entry point in the deploy incantation.<BR />
+<BR />
+Ok, so this is what's in index.js:<BR />
+<PRE class="language-javascript"><CODE>const<BR />
+<BR />
+	wfslib = require("./wfslib"),<BR />
+<BR />
+	user = "p481810",<BR />
+	pass = "*******",<BR />
+	secret = "lifetheuniverseandeverything",<BR />
+<BR />
+	initiateWorkflow = (definitionId, context, callback) =&gt; {<BR />
+<BR />
+		wfslib.initiate({<BR />
+			user : user,<BR />
+			pass : pass,<BR />
+			prod : false,<BR />
+			definitionId : definitionId,<BR />
+			context : context<BR />
+		});<BR />
+<BR />
+		callback("OK");<BR />
+<BR />
+	},<BR />
+<BR />
+	/**<BR />
+	 * Main entrypoint, following the Node Express <BR />
+	 * pattern. Expects an HTTP POST request with the<BR />
+	 * workflow definition ID in a query parameter<BR />
+	 * 'definitionId' and the payload being a JSON<BR />
+	 * encoded context.<BR />
+	 */<BR />
+    handler = (req, res) =&gt; {<BR />
+<BR />
+		switch (req.query.token) {<BR />
+			case secret:<BR />
+				initiateWorkflow(<BR />
+					req.query.definitionId,<BR />
+					req.body,<BR />
+					result =&gt; { res.status(200).send(result); }<BR />
+				);<BR />
+				break;<BR />
+			default:<BR />
+				res.status(403).send("Incorrect token supplied");<BR />
+		}<BR />
+<BR />
+	};<BR />
+<BR />
+exports.handler = handler;</CODE></PRE><BR />
+It's pretty straightfoward, with the handler function being the one that takes the pair of HTTP request and response objects, checks the token matches, and calls the initiateWorkflow function, accessing the definitionId and the context via the req.query and req.body mechanisms on the request object.<BR />
+<BR />
+I'm not interested in what the Workflow API returns (if you remember from the previous post, it's a map that includes the ID of the newly minted workflow instance, details of the definition upon which it's based, etc). So I just return a simple string.<BR />
+<BR />
+To keep things modular, the actual "heavy lifting", if you can call it that, is done in wfslib.js, which looks like this:<BR />
+<PRE class="language-javascript"><CODE>const<BR />
+	axios = require("axios"),<BR />
+	wfsUrl = "https://bpmworkflowruntimewfs-USERTRIAL.hanaTRIAL.ondemand.com/workflow-service/rest",<BR />
+	tokenPath = "/v1/xsrf-token",<BR />
+	workflowInstancesPath = "/v1/workflow-instances",<BR />
+<BR />
+	/**<BR />
+	 * opts:<BR />
+	 * - user: SCP user e.g. p481810<BR />
+	 * - pass: SCP password<BR />
+	 * - prod: SCP production (boolean, default false)<BR />
+	 * - definitionId: ID of workflow definition<BR />
+	 * - context: context to pass when starting the workflow instance<BR />
+	 */<BR />
+	initiate = opts =&gt; {<BR />
+<BR />
+		const<BR />
+			client = axios.create({<BR />
+				baseURL : wfsUrl<BR />
+					.replace(/USER/, opts.user)<BR />
+					.replace(/TRIAL/g, opts.prod ? "" : "trial"),<BR />
+				auth : {<BR />
+					username : opts.user,<BR />
+					password : opts.pass<BR />
+				}<BR />
+			});<BR />
+<BR />
+		return client<BR />
+			.get(tokenPath, {<BR />
+				headers : {<BR />
+					"X-CSRF-Token" : "Fetch"<BR />
+				}<BR />
+			})<BR />
+			.then(res =&gt; {<BR />
+				client<BR />
+					.post(workflowInstancesPath, {<BR />
+						definitionId : opts.definitionId,<BR />
+						context : opts.context<BR />
+					},<BR />
+					{<BR />
+						headers : {<BR />
+							"X-CSRF-Token" : res.headers["x-csrf-token"],<BR />
+							"Cookie" : res.headers["set-cookie"].join("; ")<BR />
+						}<BR />
+					})<BR />
+					.then(res =&gt; res.data)<BR />
+					.catch(err =&gt; err.status);<BR />
+			});<BR />
+	};<BR />
+<BR />
+exports.initiate = initiate;<BR />
+</CODE></PRE><BR />
+Here there's a single function defined and exported - initiate - which takes a series of parameters in a map (opts), determines the Workflow API root endpoint, based on the username and whether it's a trial account or not.<BR />
+<BR />
+I'm using the Promise-based HTTP library <A href="https://github.com/axios/axios" target="_blank" rel="nofollow noopener noreferrer">axios</A>&nbsp;to manage my sequential HTTP requests, to avoid callbacks. First there's the GET request to /v1/xsrf-token to request a token, and then there's the POST request to /v1/workflow-instances to initiate a new instance. Inside the second call, I'm taking the XSRF token that was returned from the first call from the headers of the first response (res.headers["x-csrf-token"]).<BR />
+<BR />
+Note here that this being a more low level HTTP client library, there's no automatic cookie handling as happens automatically in AJAX requests, or in Postman (see <A href="https://blogs.sap.com/2018/01/14/discovering-scp-workflow-instance-initiation/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Instance Initiation</A>&nbsp;and <A href="https://blogs.sap.com/2018/01/16/discovering-scp-workflow-using-postman/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Using Postman</A>). We have to exert a little bit of manual effort - joining together any cookies returned from the first response, using semi-colons, and sending them in the second request in a Cookie header.<BR />
+<BR />
+That's pretty much it. I have a nice simple function, running serverless in the cloud, which I can call with minimal effort to kick off a new workflow on the SAP Cloud Platform. Now I have that, I can go to town on the important stuff - making sure that my workflow definition fits the requirements and that the UI for the user task (making a choice from the recommended beers) works well and is available to handle the detail of the workflow item in the My Inbox app in the SAP Fiori Launchpad.<BR />
+<BR />
+Next post in this series: <A href="https://blogs.sap.com/2018/01/18/discovering-scp-workflow-workflow-definition/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Workflow Definition</A>.<BR />
+<BR />
+&nbsp;

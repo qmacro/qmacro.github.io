@@ -1,0 +1,161 @@
+2018-10-22-monday-morning-thoughts-dynamic-language
+Monday morning thoughts: dynamic language
+technology-blog-sap
+2018-10-22
+https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-dynamic-language/ba-p/13383046
+<EM>In this post, I think about a particular function definition in JavaScript, and how it represents beauty and practicality in equal measure.</EM><BR />
+<BR />
+On Friday evening, I <A href="https://twitter.com/qmacro/status/1053322908813148165" target="_blank" rel="nofollow noopener noreferrer">tweeted</A>:<BR />
+<BLOCKQUOTE>Heading to the woodstore with a beer and cigar. I was reminded of this little gem just now. Lovely.<BR />
+<PRE><CODE>const push = (xs, x) =&gt; (_ =&gt; xs)(xs.push(x))</CODE></PRE><BR />
+</BLOCKQUOTE><BR />
+It was something I'd come across while idly perusing some source code, and I thought it was quite beautiful. I had a few responses to the tweet. In one of them, <SPAN class="mention-scrubbed">speri</SPAN>&nbsp;asked for an explanation, and then&nbsp;<SPAN class="mention-scrubbed">julie.plummer</SPAN>&nbsp;<A href="https://twitter.com/JuliePlummer20/status/1053526571745755137" target="_blank" rel="nofollow noopener noreferrer">suggested</A>&nbsp;I do it in the form of a post in this <A href="https://blogs.sap.com/tag/mondaymorningthoughts/" target="_blank" rel="noopener noreferrer">Monday morning thoughts series</A>. This was a great idea, as I was already on my way to the woodstore.<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/10/woodstore.jpg" height="282" width="501" /><BR />
+<BR />
+<EM>The woodstore, where I read and think about things (and enjoy a beer or two).</EM><BR />
+<BR />
+&nbsp;<BR />
+<BR />
+<STRONG>The context</STRONG><BR />
+<BR />
+The source code in question is a utility program, <A href="https://github.com/SAP/cloud-sample-spaceflight/blob/master/db/reuseTableData.js" target="_blank" rel="nofollow noopener noreferrer">reuseTableData.js</A>, part of the base repository <A href="https://github.com/SAP/cloud-sample-spaceflight" target="_blank" rel="nofollow noopener noreferrer">SAP/cloud-sample-spaceflight</A> which contains the base Core Data &amp; Services data model for the Application Programming Model sessions at SAP TechEd this year (see "<A href="https://blogs.sap.com/2018/10/10/application-programming-model-start-here/" target="_blank" rel="noopener noreferrer">Application Programming Model for SAP Cloud Platform - start here</A>") and written by&nbsp;<SPAN class="mention-scrubbed">christian.georgi</SPAN>&nbsp;&amp; my <A href="http://langram.org/" target="_blank" rel="nofollow noopener noreferrer">Language Ramblings</A> partner in crime&nbsp;<SPAN class="mention-scrubbed">chris.whealy</SPAN>.<BR />
+<BR />
+Why was I reading this? Well, out of curiosity, and a desire to learn more, of course. I have heard that programmers spend only around 10% of their time writing code, and 90% reading it. That sounds extreme, but I can imagine it being true in some circumstances. I'm guessing this covers not only reading code to work out what it does before extending or modifying it, but also reading code for pleasure, to learn how other people write.<BR />
+<BR />
+<IMG src="http://pipetree.com/qmacro/images/programmingjabber.jpg" alt="Programming Jabber" width="169" height="222" /><BR />
+<BR />
+I remember researching for my first book "<A href="http://shop.oreilly.com/product/9780596002022.do" target="_blank" rel="nofollow noopener noreferrer">Programming Jabber</A>" in the early 2000's. I spent many hours in the local coffee shop reading through the source code of the reference implementation of the Jabber (now <A href="https://xmpp.org/" target="_blank" rel="nofollow noopener noreferrer">XMPP</A>) protocol - the jabberd source code, written in C by <A href="https://en.wikipedia.org/wiki/Jeremie_Miller" target="_blank" rel="nofollow noopener noreferrer">Jeremie Miller</A> and others. I learned a lot from it, and I enjoy reading other people's code now and then - not least to see how each author's character gently but inevitably leaks through into the code.<BR />
+<BR />
+So back to the program in question. To add a little context, here's the <A href="https://github.com/SAP/cloud-sample-spaceflight/blob/c3c152e192b1d3dcfea23242681f3521d32b22f2/db/reuseTableData.js#L36-L37" target="_blank" rel="nofollow noopener noreferrer">line of code</A> again, with the comment that accompanies it:<BR />
+<PRE class="language-javascript"><CODE>// A useful version of Array push that returns the modified array <BR />
+// rather than the index of the newly added item...<BR />
+const push = (arr, newEl) =&gt; (_ =&gt; arr)(arr.push(newEl))</CODE></PRE><BR />
+In JavaScript, Array is a global object used to represent lists, and has a number of built-in functions, or methods, that operate on Array object instances.<BR />
+<BR />
+For example, you can create an array and then use the Array object's join() function like this:<BR />
+<PRE class="language-javascript"><CODE>&gt; const colours = ['red', 'green', 'blue']<BR />
+undefined<BR />
+&gt; colours.join(' and ')<BR />
+'red and green and blue'<BR />
+&gt; </CODE></PRE><BR />
+(Code samples here are from Chrome console sessions, using <A href="https://bytearcher.com/articles/es6-vs-es2015-name/" target="_blank" rel="nofollow noopener noreferrer">ES6</A>).<BR />
+<BR />
+Another built-in function for the Array object is push(), one of a group of four functions I mentally think about together as a family, as they do very similar things:<BR />
+<PRE><CODE>  shift() &lt;---+           +---&gt; pop()<BR />
+             &nbsp;|           |<BR />
+              |           |<BR />
+             [1, 2, 3, 4, 5]<BR />
+ &nbsp;            ^           ^<BR />
+              |           |<BR />
+unshift() ----+           +---- push()</CODE></PRE><BR />
+The functions shift() and unshift() operate on the front of an array, removing or adding elements respectively. The functions pop() and push() operate on the end of an array, removing or adding elements respectively.<BR />
+<BR />
+There are also other functions for manipulating elements in other places in an array, functions such as splice() and slice(), but what we want to concentrate on right now is push() and its sibling unshift(). Both add one or more elements to the array. And in both cases, what's returned is the length of the new array. For example:<BR />
+<PRE class="language-javascript"><CODE>&gt; const colours = ['red', 'green', 'blue']<BR />
+undefined<BR />
+&gt; colours.push('yellow')<BR />
+4<BR />
+&gt; </CODE></PRE><BR />
+This is not unreasonable, but it's also less useful than you might think.<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+<STRONG>Practicality</STRONG><BR />
+<BR />
+In many situations, you'll want to create something - an array, a map, another higher level object, and manipulate it. One approach to this which feels to many quite natural is to use method chaining, which is effectively like saying: "do this, then that, then the other".<BR />
+<BR />
+This is common in UI5, where for example standard controls, such as the Button control in the sap.m library has methods, many of which return the Button instance upon which they're operating, explicitly to allow method chaining (see for example <A href="https://ui5.sap.com/#/api/sap.m.Button/methods/attachPress" target="_blank" rel="noopener noreferrer">attachPress</A>). So we can end up with something like this, where four methods are "chained" together:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/10/Screenshot-2018-10-22-at-08.36.39.png" /><BR />
+<BR />
+In a similar way, you might want to create a list of elements, rearrange it by some means, add something to the end of it, and then map over each of the final collection of elements to end up with what you really need. Like this, for example:<BR />
+<PRE class="language-javascript"><CODE>['red', 'white', 'blue']<BR />
+	.push('orange')<BR />
+	.sort()<BR />
+	.map(x =&gt; x.toUpperCase())</CODE></PRE><BR />
+You'd hope to get this:<BR />
+<PRE class="language-javascript"><CODE>["BLUE", "ORANGE", "RED", "WHITE"] </CODE></PRE><BR />
+However, you'd end up with this:<BR />
+<PRE class="language-javascript"><CODE>Uncaught TypeError: ["red","white","blue"].push(...).sort is not a function<BR />
+    at &lt;anonymous&gt;:3:3</CODE></PRE><BR />
+This is because the push() function returns the new length of the array (4) rather than the array itself. Not ideal.<BR />
+<BR />
+What's perhaps worse is that it makes it cumbersome to employ higher level functions like reduce(), in combination with the shorter ES6 based <A href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions" target="_blank" rel="nofollow noopener noreferrer">arrow function</A> style of function definition. With arrow functions, the function definition itself is much shorter and (without curly braces) there's an implicit return of whatever is evaluated as a result of that function's execution.<BR />
+<BR />
+If you're not familiar with using reduce() and taking advantage of the new ES6 arrow function style, here's a contrived example:<BR />
+<PRE class="language-javascript"><CODE>&gt; [1,2,3,4,5].reduce((a, x) =&gt; a * x, 1)<BR />
+120</CODE></PRE><BR />
+Here, we multiply a list of numbers, and take advantage of the fact that the function definition being passed to reduce:<BR />
+<PRE class="language-javascript"><CODE>(a, x) =&gt; a * x</CODE></PRE><BR />
+<EM>implicitly returns</EM>&nbsp;the result of the expression a * x, to be fed into the next element iteration until the list of elements is exhausted.<BR />
+<BR />
+In other words, if you want to use Array's push() function as the function definition passed in a reduce() scenario, you can't, or at least, what it evaluates to (the new length of the array) is almost certainly not what you want fed into the next iteration - you want the new (modified) array*.<BR />
+<BR />
+*the keen readers amongst you will guess that I'm currently slightly uncomfortable at completely ignoring the fact that push() is mutating the array, which is generally a Bad Thing(tm) - but I'm ignoring it deliberately, as that's a whole other subject for another time.<BR />
+<BR />
+If you read further on in the <A href="https://github.com/SAP/cloud-sample-spaceflight/blob/master/db/reuseTableData.js" target="_blank" rel="nofollow noopener noreferrer">reuseTableData.js</A>&nbsp;program, you'll see that there's a reduce() in <A href="https://github.com/SAP/cloud-sample-spaceflight/blob/c3c152e192b1d3dcfea23242681f3521d32b22f2/db/reuseTableData.js#L73" target="_blank" rel="nofollow noopener noreferrer">line 73</A> function being employed to gather table names together:<BR />
+<PRE class="language-javascript"><CODE>var tableNames = _getTableDataSync(path.join('db/src/csv')).<BR />
+  reduce(<BR />
+    (accOuter, filePath) =&gt;<BR />
+      JSON.<BR />
+        parse(fs.readFileSync(filePath)).<BR />
+        imports.<BR />
+        reduce((accInner, entry) =&gt; push(accInner, entry.target_table), accOuter)<BR />
+  , [])</CODE></PRE><BR />
+This use of<BR />
+<PRE class="language-javascript"><CODE>push(accInner, entry.target_table)</CODE></PRE><BR />
+is not the standard push() function from the Array object. Rather, it's our push() function defined earlier, the subject of this post:<BR />
+<PRE class="language-javascript"><CODE>const push = (arr, newEl) =&gt; (_ =&gt; arr)(arr.push(newEl))</CODE></PRE><BR />
+Now we understand the context of where it's used, and why the standard push() function is no good, let's dig in to this definition to see how it works, and why it can be used.<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+<STRONG>Beauty</STRONG><BR />
+<BR />
+So first off, we can see it's a function definition using the fat arrow (=&gt;) syntax from ES6. We're now already somewhat familiar with that, but it still looks a little odd, with that strange looking underscore, and what initially looks like a slightly uncomfortable number of brackets.<BR />
+<BR />
+Remember that contrived example using a reduce() function above? You can see that the function passed to reduce() is one with two parameters - the accumulator 'a', and 'x' to represent the elements that are passed in, one iteration at a time. So also here we have a function definition with two parameters, again, an accumulator 'arr' (array) and 'newEl' representing the elements passed to the function as reduce's list mechanics iterate over the array, one element at a time.<BR />
+<BR />
+So what's the actual function definition here? Well, it's this bit:<BR />
+<PRE class="language-javascript"><CODE>(_ =&gt; arr)(arr.push(newEl))</CODE></PRE><BR />
+The first part, (_ =&gt; arr) is yet another function definition. What the heck does it do?<BR />
+<BR />
+Well, it takes one parameter, and promptly ignores it, simply returning the value of 'arr'. The use of the underscore for this ignored parameter is convention - it tells the reader "we're expecting a parameter to be passed to this function, but we're not actually interested in it". (It's often used where there's more than one parameter in a function definition signature, and the intention is to ignore one or more of them.)<BR />
+<BR />
+The body of this function is simply 'arr' which returns whatever value 'arr' has. Which is what?<BR />
+<BR />
+To answer that, we need to look at the other part of the definition. This is the 'arr.push(newEl)' bit, but we can't and shouldn't ignore all those brackets. Breaking those brackets down, we have a first pair surrounding '_ =&gt; arr', a second pair surrounding 'arr.push(newEl)' and the pair around 'newEl'.<BR />
+<BR />
+We can be happy enough with this last pair, it's just a standard invocation of the push() function, where the value of 'newEl' is the new element being pushed onto the end of 'arr'.<BR />
+<BR />
+So what about the other two pairs of brackets? Well, in JavaScript, you can define an anonymous function on the fly, and call it immediately. When you do this, you wrap the anonymous function definition in brackets:<BR />
+<PRE class="language-javascript"><CODE>(_ =&gt; arr)</CODE></PRE><BR />
+and then call it, passing any arguments in brackets, as normal. In this case, there's one argument to pass (to match up with the single '_' parameter the function is expecting). This argument is the result of the evaluation of this:<BR />
+<PRE class="language-javascript"><CODE>arr.push(newEl)</CODE></PRE><BR />
+which, as we know, will be the new length of the 'arr' array. But by the time this is evaluated, the 'arr' array will already have had 'newEl' added as a new last element, and so we don't have to worry about the value returned from this (the new length), as we're going to capture it in the '_' parameter of '(_ =&gt; arr)' and ignore it anyway.&nbsp;The sole purpose of the '(_ =&gt; arr)' function is to return the value of 'arr' -- which now has the value of 'newEl' on the end.<BR />
+<BR />
+The upshot of this definition of a custom push function is that we can use it to push an element onto the end of an array, and have it return the infinitely more useful modified array, rather than the almost useless new length of the array. We can then employ it in higher order function invocations such as those with reduce().<BR />
+<BR />
+Beyond the ability to define anonymous functions (to use in higher order functions) and generally program in this dynamic way, the mechanic that allows this whole idea to work is called a <A href="https://en.wikipedia.org/wiki/Closure_(computer_programming)" target="_blank" rel="nofollow noopener noreferrer">closure</A>.<BR />
+<PRE class="language-javascript"><CODE>const push = (arr, newEl) =&gt; (_ =&gt; arr)(arr.push(newEl))<BR />
+</CODE></PRE><BR />
+The value of 'arr', initially passed to the outer function definition as the accumulator, by reduce's list mechanics, is available on the right hand side of the main fat arrow, both in the inner function definition as well as the on-the-fly call to push that is passed as the argument to that inner function.<BR />
+<BR />
+Dynamic programming in general, and this style of extension in particular, is a wonderful thing, and I consider this particular definition of push to be quite beautiful.<BR />
+<BR />
+There are alternatives, of course - my friend <A href="https://twitter.com/martinrue" target="_blank" rel="nofollow noopener noreferrer">Martin Rue</A>&nbsp;<A href="https://twitter.com/martinrue/status/1053332526285144064" target="_blank" rel="nofollow noopener noreferrer">suggested</A> this:<BR />
+<PRE class="language-javascript"><CODE>const push = (xs, x) =&gt; xs.push(x) &amp;&amp; xs</CODE></PRE><BR />
+which achieves the same effect by relying on the fact that the last value evaluated in the execution of a function (again, without curly braces) is the value that is returned. In this case, that is simply 'xs'*. Also very elegant.<BR />
+<BR />
+*I note that Martin used 'xs' to represent a list of 'x' elements, which is a rather nice meme, or at least an idea, that I picked up from various functional programming treatises and used, for example, by <A href="https://en.wikipedia.org/wiki/Erik_Meijer_(computer_scientist)" target="_blank" rel="nofollow noopener noreferrer">Erik Meijer</A>&nbsp;in his wonderful series on Haskell and F#. Perhaps more on that another time.<BR />
+<BR />
+So, here's a hat tip to Chris Whealy who I'm guessing had some influence on the distinctive style of this reuseTableData.js code. I know Chris and have started to recognise his 'signature' in code. And I'll leave you with a recommendation to study other people's code every now and then. It can be a lot of fun, and educational to boot. Happy reading!<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+This post was brought to you by a cold Monday morning, before setting off to the airport for Barcelona and the European instance of SAP TechEd. If you're there, stop by the Developer Garage for a chat about this or anything else!<BR />
+<BR />
+&nbsp;<BR />
+<BR />
+Read more posts in this series here:&nbsp;<A href="https://blogs.sap.com/tag/mondaymorningthoughts/" target="_blank" rel="noopener noreferrer">Monday morning thoughts</A>.

@@ -1,0 +1,172 @@
+2024-04-11-cap-cors-and-custom-headers
+CAP, CORS and custom headers
+application-developmentblog-board
+2024-04-11
+https://community.sap.com/t5/application-development-blog-posts/cap-cors-and-custom-headers/ba-p/13666840
+<P>A colleague asked me if I could add CORS support to a service I was running, built with the SAP Cloud Application Programming Model (CAP). CAP already has some basic support for CORS, so I dug in. Here's what I learned, about CORS headers, preflight requests, CAP custom servers and more.</P><BLOCKQUOTE><P>The<SPAN>&nbsp;</SPAN><A href="https://www.npmjs.com/package/@sap/approuter" target="_blank" rel="noopener nofollow noreferrer">@sap/approuter</A><SPAN>&nbsp;</SPAN>has full support for CORS but I wanted to find out about what CAP offers and how to extend it. Specifically, this exploration was made with<SPAN>&nbsp;</SPAN>@sap/cds<SPAN>&nbsp;</SPAN>at version 7.8.0.</P></BLOCKQUOTE><H2 id="toc-hId-991725056">Test service</H2><P>Before diving in, let's create the simplest server that could possibly work<A href="https://qmacro.org/blog/posts/2024/03/30/cap-cors-and-custom-headers/#footnotes" target="_blank" rel="noopener nofollow noreferrer">1</A><SPAN>&nbsp;</SPAN>to explore CORS support in CAP. First, a minimal project:</P><PRE># /home/user/work/scratch
+; cds init corstest \
+    &amp;&amp; cd $_ \
+    &amp;&amp; rm -rf .vscode/ app/ srv/ db/ README.md \
+    &amp;&amp; tree -a
+Creating new CAP project in ./corstest
+
+Adding feature 'nodejs'...
+
+Successfully created project. Continue with 'cd corstest'.
+Find samples on https://github.com/SAP-samples/cloud-cap-samples
+Learn about next steps at https://cap.cloud.sap
+.
+|-- .cdsrc.json
+|-- .eslintrc
+|-- .gitignore
+`-- package.json
+
+1 directory, 4 files</PRE><P>Now, just the simplest test REST style service. In<SPAN>&nbsp;</SPAN>services.cds<A href="https://qmacro.org/blog/posts/2024/03/30/cap-cors-and-custom-headers/#footnotes" target="_blank" rel="noopener nofollow noreferrer">2</A>:</P><PRE>@protocol: 'rest'
+service corstest {
+    function go() returns String;
+}</PRE><P>And in the default implementation file for this service file, i.e.<SPAN>&nbsp;</SPAN>services.js:</P><PRE>module.exports = (s) =&gt;
+    s.on('go', () =&gt; `Hello, World!`)</PRE><P>Let's also install the runtime locally with<SPAN>&nbsp;</SPAN>npm install<SPAN>&nbsp;</SPAN>(as we'll want to look into one of the files there later), and start the server up with<SPAN>&nbsp;</SPAN>cds watch. Now we can perform a basic test, asking for verbose output<A href="https://qmacro.org/blog/posts/2024/03/30/cap-cors-and-custom-headers/#footnotes" target="_blank" rel="noopener nofollow noreferrer">3</A>, to see what we get:</P><PRE># /home/user/work/scratch/corstest
+; curl --verbose --url localhost:4004/rest/corstest/go
+&gt; GET /rest/corstest/go HTTP/1.1
+&gt; Host: localhost:4004
+&gt; User-Agent: curl/7.88.1
+&gt; Accept: */*
+&gt;
+&lt; HTTP/1.1 200 OK
+&lt; X-Powered-By: Express
+&lt; Content-Type: text/plain; charset=utf-8
+&lt; Content-Length: 13
+&lt;
+Hello, World!</PRE><BLOCKQUOTE><P>In the verbose output for this HTTP request and all subsequent ones, some of the HTTP response headers have been omitted for brevity.</P></BLOCKQUOTE><P>OK, all set.</P><H2 id="toc-hId-795211551">Getting started</H2><P>CORS, or<SPAN>&nbsp;</SPAN><A href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS" target="_blank" rel="noopener nofollow noreferrer">Cross Origin Resource Sharing</A>, "is an HTTP-header based mechanism that allows a server to indicate any origins (domain, scheme, or port) other than its own from which a browser should permit loading resources". You come across it in the browser when wanting to consume resources from a different server to the one, the "origin", that the consuming code came from.</P><P>There's a<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/node.js/best-practices#cross-origin-resource-sharing-cors" target="_blank" rel="noopener nofollow noreferrer">section on CORS</A><SPAN>&nbsp;</SPAN>in the<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/node.js/best-practices" target="_blank" rel="noopener nofollow noreferrer">Node.js Best Practices</A><SPAN>&nbsp;</SPAN>part of<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/" target="_blank" rel="noopener nofollow noreferrer">Capire</A>. In there, it merely says:</P><P>"If not running in production, CAP's default server allows all origins. For production, you can add CORS to your server as follows ..."</P><P>That tantalisingly short paragraph got me hooked. What does that mean? How does that work? I knew that finding out the answers to these questions would help me with providing what my colleague was asking for.</P><P>There are three parts to the paragraph:</P><UL><LI>"if not running in production"</LI><LI>"CAP's default server allows all origins"</LI><LI>"you can add CORS to your server as follows"</LI></UL><P>Let's take the "default server" part first.</P><H3 id="toc-hId-727780765">Default server support</H3><P>What is the "default server"? Basically, it's the process that runs when you invoke something like<SPAN>&nbsp;</SPAN>cds watch, or<SPAN>&nbsp;</SPAN>cds serve, and is also known as the<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/node.js/cds-server#built-in-server-js" target="_blank" rel="noopener nofollow noreferrer">built-in server.js</A>.</P><P>So what sort of support are we looking for anyway? CORS support comes in the form of HTTP headers, and the ones that we should be expecting are returned<SPAN>&nbsp;</SPAN><A href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#the_http_response_headers" target="_blank" rel="noopener nofollow noreferrer">in the HTTP response</A>. The header names all start<SPAN>&nbsp;</SPAN>Access-Control-..., such as<SPAN>&nbsp;</SPAN>Access-Control-Allow-Origin.</P><P>But there are no CORS headers in the response to the basic service test above:</P><PRE>&lt; HTTP/1.1 200 OK
+&lt; X-Powered-By: Express
+&lt; Content-Type: text/plain; charset=utf-8
+&lt; Content-Length: 13</PRE><P>That's because the HTTP request didn't include any<SPAN>&nbsp;</SPAN><A href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#the_http_request_headers" target="_blank" rel="noopener nofollow noreferrer">headers in the request that make use of the CORS features</A>. The basics can be triggered by including an<SPAN>&nbsp;</SPAN>Origin<SPAN>&nbsp;</SPAN>HTTP header in the request (this is done automatically by the browser in such cross origin resource retrieval circumstances).</P><H4 id="toc-hId-660349979">Regular CORS processing</H4><P>Let's do that and see what we get from the CAP server. The important thing for this test is to specify a value for the<SPAN>&nbsp;</SPAN>Origin<SPAN>&nbsp;</SPAN>HTTP header that is different to the CAP server. Let's use<SPAN>&nbsp;</SPAN>qmacro.org:</P><PRE>; curl \
+    --verbose \
+    --header 'Origin: https://qmacro.org' \
+    --url localhost:4004/rest/corstest/go
+&gt; GET /rest/corstest/go HTTP/1.1
+&gt; Host: localhost:4004
+&gt; User-Agent: curl/7.88.1
+&gt; Accept: */*
+&gt; Origin: https://qmacro.org
+&gt;
+&lt; HTTP/1.1 200 OK
+&lt; X-Powered-By: Express
+&lt; access-control-allow-origin: https://qmacro.org
+&lt; Content-Type: text/plain; charset=utf-8
+&lt; Content-Length: 13
+&lt;
+Hello, World!</PRE><P>Check out that extra header in the response, shown in the verbose output:</P><PRE>&lt; access-control-allow-origin: https://qmacro.org</PRE><P>From a CORS perspective, this response header tells the browser to allow that origin to access the resource being returned.</P><P>So where is that header coming from? Well, the answer is in the default server. Specifically that's<SPAN>&nbsp;</SPAN><a href="https://community.sap.com/t5/user/viewprofilepage/user-id/1387241">@Sisn</a>/cds/server.js, which has been installed in the<SPAN>&nbsp;</SPAN>node_modules/<SPAN>&nbsp;</SPAN>directory during the<SPAN>&nbsp;</SPAN>npm install<SPAN>&nbsp;</SPAN>process earlier. The relevant part is here, in a<SPAN>&nbsp;</SPAN>cors<SPAN>&nbsp;</SPAN><A href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/get" target="_blank" rel="noopener nofollow noreferrer">getter</A>:</P><PRE>get cors() {
+    return process.env.NODE_ENV === 'production'
+        ? null
+        : (req, res, next) =&gt; {
+            const { origin } = req.headers
+            if (origin) {
+                res.set('access-control-allow-origin', origin)
+                if (req.method === 'OPTIONS')
+                    return res.set(
+                        'access-control-allow-methods',
+                        'GET,HEAD,PUT,PATCH,POST,DELETE'
+                    ).end()
+            }
+            next()
+        }
+}</PRE><BLOCKQUOTE><P>I took the liberty of reformatting the code for better readability and so it would fit better width-wise in this blog post.</P></BLOCKQUOTE><P>The middle section is what came into play here. If there's an<SPAN>&nbsp;</SPAN>Origin<SPAN>&nbsp;</SPAN>header in the request, then an<SPAN>&nbsp;</SPAN>Access-Control-Allow-Origin<SPAN>&nbsp;</SPAN>header is sent in the response, with the same value that came in the request (<A href="https://qmacro.org" target="_blank" rel="noopener nofollow noreferrer">https://qmacro.org</A>) :</P><PRE>access-control-allow-origin: https://qmacro.org</PRE><P>An alternative value would be<SPAN>&nbsp;</SPAN>*<SPAN>&nbsp;</SPAN>but I think I like this reciprocal approach better.</P><BLOCKQUOTE><P>Header names during runtime in the CAP server are lower-cased for consistency and ease of processing.</P></BLOCKQUOTE><P>But what about that bit that starts with the<SPAN>&nbsp;</SPAN>req.method === 'OPTIONS'<SPAN>&nbsp;</SPAN>condition, with the<SPAN>&nbsp;</SPAN>Access-Control-Allow-Methods<SPAN>&nbsp;</SPAN>header (as opposed to the<SPAN>&nbsp;</SPAN>Access-Control-Allow-Origin<SPAN>&nbsp;</SPAN>header?</P><P>That's related to another part of CORS processing - "preflight" requests.</P><H4 id="toc-hId-463836474">Preflight CORS processing</H4><P>In some cross origin resource retrieval circumstances, a browser will also send a so-called "preflight" request. Basically, if the intended HTTP request to the remote server is not considered a<SPAN>&nbsp;</SPAN><A href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#simple_requests" target="_blank" rel="noopener nofollow noreferrer">simple request</A>, then a preflight request is made first.</P><P>For example, if the method of the intended request is something other than<SPAN>&nbsp;</SPAN>GET,<SPAN>&nbsp;</SPAN>HEAD<SPAN>&nbsp;</SPAN>or<SPAN>&nbsp;</SPAN>POST, or if there are headers that will be supplied that are not "standard", then a preflight request is made, to check that the remote server is indeed willing to handle such an intended request.</P><P>And preflight requests take the form of an HTTP request with the<SPAN>&nbsp;</SPAN>OPTIONS<SPAN>&nbsp;</SPAN>method. Taking one of those cases of a non-simple request, where the method of the request is going to be<SPAN>&nbsp;</SPAN>PUT, for example, then the browser will first send an HTTP request like this (displayed here using curl's verbose output convention):</P><PRE>&gt; OPTIONS /rest/corstest/go HTTP/1.1
+&gt; Host: localhost:4004
+&gt; User-Agent: curl/7.88.1
+&gt; Accept: */*
+&gt; Origin: https://qmacro.org
+&gt; Access-Control-Request-Method: PUT</PRE><P>This is the preflight request. Note the<SPAN>&nbsp;</SPAN>Access-Control-Request-Method<SPAN>&nbsp;</SPAN>header with the method of the intended request.</P><P>Unless the remote server responds appropriately to such a preflight request, the browser will not allow the actual request to be made. What is an appropriate response here to this preflight request? Something like this:</P><PRE>&lt; HTTP/1.1 200 OK
+&lt; X-Powered-By: Express
+&lt; access-control-allow-origin: https://qmacro.org
+&lt; access-control-allow-methods: GET,PUT</PRE><P>In other words, a response that tells the browser "yes,<SPAN>&nbsp;</SPAN>PUT<SPAN>&nbsp;</SPAN>requests from this origin are allowed".</P><P>And that is exactly what the default server's CORS handling mechanism is doing in the condition that checks whether the HTTP method is<SPAN>&nbsp;</SPAN>OPTIONS, i.e. if it's a preflight request. It adds the<SPAN>&nbsp;</SPAN>Access-Control-Allow-Methods<SPAN>&nbsp;</SPAN>header to response to preflight requests, and includes all the "usual suspect" HTTP methods (GET,HEAD,PUT,PATCH,POST,DELETE).</P><P>For testing, we can actually construct a preflight request, using curl's<SPAN>&nbsp;</SPAN>--request<SPAN>&nbsp;</SPAN>option to be able to specify the HTTP method to use, so that we can see a preflight request/response for real. Here goes:</P><PRE>; curl \
+    --verbose \
+    --request OPTIONS \
+    --header 'Origin: https://qmacro.org' \
+    --url localhost:4004/rest/corstest/go
+&gt; OPTIONS /rest/corstest/go HTTP/1.1
+&gt; Host: localhost:4004
+&gt; User-Agent: curl/7.88.1
+&gt; Accept: */*
+&gt; Origin: https://qmacro.org
+&gt;
+&lt; HTTP/1.1 200 OK
+&lt; X-Powered-By: Express
+&lt; access-control-allow-origin: https://qmacro.org
+&lt; access-control-allow-methods: GET,HEAD,PUT,PATCH,POST,DELETE
+&lt; Content-Length: 0</PRE><BLOCKQUOTE><P>Note that I didn't actually need to specify an<SPAN>&nbsp;</SPAN>Access-Control-Request-Method<SPAN>&nbsp;</SPAN>header in this preflight request; the CORS support in the default CAP server will just supply an equivalent<SPAN>&nbsp;</SPAN>Allow<SPAN>&nbsp;</SPAN>response header covering the main methods.</P></BLOCKQUOTE><P>Great!</P><H3 id="toc-hId-138240250">The automatic CORS support context</H3><P>Next, let's take the "if not running in production" part.</P><P>Running anything in production requires more thinking about security, resilience, and so on. And while this default "yes, we're open!" CORS support we've seen so far is very useful at design time when you're exploring and iterating, it's probably not what you want in production.</P><P>The<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/node.js/cds-env#profiles" target="_blank" rel="noopener nofollow noreferrer">configuration profile</A><SPAN>&nbsp;</SPAN>facilities that CAP Node.js offers includes the standard Node.js approach of using the environment variable<SPAN>&nbsp;</SPAN>NODE_ENV<SPAN>&nbsp;</SPAN>to determine in what "mode" the server is running.</P><P>Unless explicitly specified, via a configuration profile (--profile production, or the shorthand<SPAN>&nbsp;</SPAN>--production) or simply directly, via the value<SPAN>&nbsp;</SPAN>production<SPAN>&nbsp;</SPAN>set for<SPAN>&nbsp;</SPAN>NODE_ENV<A href="https://qmacro.org/blog/posts/2024/03/30/cap-cors-and-custom-headers/#footnotes" target="_blank" rel="noopener nofollow noreferrer">4</A>, the CAP server is deemed NOT to be in productive mode.</P><P>The startup of the simple CAP server here was brought about simply with<SPAN>&nbsp;</SPAN>cds watch, so it is not running in "production mode" either.</P><P>And this is what's referenced in the first part of the CORS getter in<SPAN>&nbsp;</SPAN><a href="https://community.sap.com/t5/user/viewprofilepage/user-id/1387241">@Sisn</a>/cds/server.js<SPAN>&nbsp;</SPAN>that we saw earlier:</P><PRE>get cors() {
+    return process.env.NODE_ENV === 'production'
+        ? null
+        : (req, res, next) =&gt; {
+            ...
+        }
+}</PRE><P>Here, through the use of one of my favourite constructs, the<SPAN>&nbsp;</SPAN><A href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Conditional_operator" target="_blank" rel="noopener nofollow noreferrer">ternary operator</A>, the CORS getter will either return the anonymous function<SPAN>&nbsp;</SPAN>(req, res, next) =&gt; { ... }<SPAN>&nbsp;</SPAN>that adds the CORS "allow" response headers, or nothing at all (null), depending on the value of<SPAN>&nbsp;</SPAN>NODE_ENV.</P><P>So when the<SPAN>&nbsp;</SPAN>cors<SPAN>&nbsp;</SPAN>object property is referenced in the running server to potentially provide CORS processing for a request, there will either be a function ready to do that, or, in the case of a production context, nothing to do anything at all.</P><H2 id="toc-hId--187355974">Adding custom CORS headers</H2><P>The last of the three parts, "you can add CORS to your server as follows", is where we move away from the standard CORS facilities of the default server.</P><P>The standard facilities will return, as appropriate, one or both of these headers:</P><UL><LI>Access-Control-Allow-Origin</LI><LI>Access-Control-Allow-Methods</LI></UL><P>My colleague's request for CORS support would have normally been fulfilled by this. The method of the remote request being made from his web app origin was GET. This falls into the "simple request" category. But the remote requests will also include a custom header<SPAN>&nbsp;</SPAN>CommunityID.</P><P>If you worked through the tasks in last August's<SPAN>&nbsp;</SPAN><A href="https://community.sap.com/t5/technology-blogs-by-sap/sap-developer-challenge-apis/ba-p/13573168" target="_blank">Developer Challenge on APIs</A>, you may remember this header. The hash facility described in<SPAN>&nbsp;</SPAN><A href="https://community.sap.com/t5/application-development-discussions/sap-developer-challenge-apis-task-0-learn-to-share-your-task-results/m-p/276058#M2319" target="_blank">Task 0 - Learn to share your task results</A><SPAN>&nbsp;</SPAN>requires you to supply your SAP Community ID in the form of a header in the HTTP request, like this:</P><PRE>CommunityID: qmacro</PRE><P>This hash facility is the service that my colleague was wanting to call remotely from his web app. And the requirement for this custom header when calling the service<A href="https://qmacro.org/blog/posts/2024/03/30/cap-cors-and-custom-headers/#footnotes" target="_blank" rel="noopener nofollow noreferrer">5</A><SPAN>&nbsp;</SPAN>meant that such requests are not considered "simple".</P><P>This in turn meant that preflight requests would be made. Not only that, but the custom header<SPAN>&nbsp;</SPAN>CommunityID<SPAN>&nbsp;</SPAN>would be supplied in such preflight requests in an<SPAN>&nbsp;</SPAN>Access-Control-Request-Headers<SPAN>&nbsp;</SPAN>header too, in a similar way to how any "unusual" HTTP methods would be supplied in an<SPAN>&nbsp;</SPAN>Access-Control-Request-Method<SPAN>&nbsp;</SPAN>header. And the browser will expect, in the responses to such preflight requests, that the custom header is included in an<SPAN>&nbsp;</SPAN>Access-Control-Allow-Headers<SPAN>&nbsp;</SPAN>header.</P><P>But while the built-in CORS handling of the default CAP server provides preflight response support for<SPAN>&nbsp;</SPAN>Access-Control-Request-Method<SPAN>&nbsp;</SPAN>headers, it doesn't provide support for<SPAN>&nbsp;</SPAN>Access-Control-Request-Headers<SPAN>&nbsp;</SPAN>headers.</P><BLOCKQUOTE><P>We can debate whether this should be standard in the default CAP server, i.e. how much CORS support we should expect out of the box, but here I saw it as an opportunity to learn how I might extend the support myself.</P></BLOCKQUOTE><H3 id="toc-hId--254786760">Using a custom server.js</H3><P>The<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/node.js/cds-server" target="_blank" rel="noopener nofollow noreferrer">Boostrapping Servers</A><SPAN>&nbsp;</SPAN>section of Capire includes information about being able to supply your own<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/node.js/cds-server#custom-server-js" target="_blank" rel="noopener nofollow noreferrer">custom server</A><SPAN>&nbsp;</SPAN>logic, like this:</P><PRE>const cds = require('@sap/cds')
+// react on bootstrapping events...
+cds.on('bootstrap', ...)</PRE><P>This is particularly relevant when we revisit that<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/node.js/best-practices#cross-origin-resource-sharing-cors" target="_blank" rel="noopener nofollow noreferrer">section on CORS</A><SPAN>&nbsp;</SPAN>mentioned earlier, where it says "... For production, you can add CORS to your server as follows". And the code example given there is in the context of such a<SPAN>&nbsp;</SPAN>bootstrap<SPAN>&nbsp;</SPAN>event for which custom server implementations are often used - i.e. to hook into part of the CAP server startup to add custom logic:</P><PRE>const ORIGINS = { 'https://example.com': 1 }
+cds.on('bootstrap', async app =&gt; {
+    app.use((req, res, next) =&gt; {
+        ...
+    })
+})</PRE><P>The<SPAN>&nbsp;</SPAN><A href="https://cap.cloud.sap/docs/node.js/best-practices#manual-implementation-1" target="_blank" rel="noopener nofollow noreferrer">CORS-relevant code presented in this section</A><SPAN>&nbsp;</SPAN>is similar to the code in the built-in server (as the point of the example shown is to supply an equivalent level of CORS handling that comes out of the box in non production mode). But what was needed to satisfy my colleague's requirement was to handle the custom HTTP header information in the CORS preflight requests.</P><H3 id="toc-hId--451300265">Implementing a custom server.js</H3><P>Essentially I needed to "flip" the value of any incoming<SPAN>&nbsp;</SPAN>Access-Control-Request-Headers<SPAN>&nbsp;</SPAN>header in preflight HTTP requests, by sending that value back in an<SPAN>&nbsp;</SPAN>Access-Control-Allow-Headers<SPAN>&nbsp;</SPAN>header in each corresponding HTTP response.</P><P>How might that look? Well, here's one approach. Note that this code can be simply stored in a file called<SPAN>&nbsp;</SPAN>server.js<SPAN>&nbsp;</SPAN>which will then be picked up automatically on startup:</P><PRE>const cds = require('@sap/cds')
+const log = cds.log('custom-cors', 'info')
+const ALLOWED = /(\.build\.cloud\.sap|\bqmacro.org)$/i
+
+log('In custom server.js')
+
+cds.on('bootstrap', async app =&gt; {
+    app.use((req, res, next) =&gt; {
+
+        const {
+            'access-control-request-headers': request_headers,
+            origin
+        } = req.headers
+
+        // Handle headers request in preflight CORS requests
+        if (
+            req.method === 'OPTIONS'
+            &amp;&amp; origin
+            &amp;&amp; request_headers
+            &amp;&amp; ALLOWED.test(origin)
+        ) {
+            log(`Adding allow-headers for ${request_headers}`)
+            res.set(
+                'access-control-allow-headers',
+                request_headers
+            )
+        }
+        next()
+    })
+})</PRE><P>Breaking this down:</P><UL><LI>We not only have the<SPAN>&nbsp;</SPAN>cds<SPAN>&nbsp;</SPAN>constant defined, just like in the example code earlier, but also a custom logging constant<SPAN>&nbsp;</SPAN>log. This is so we can emit log output and have it appear in the CAP server output with a prefix we can easily recognise.</LI><LI>There's also an<SPAN>&nbsp;</SPAN>ALLOWED<SPAN>&nbsp;</SPAN>constant which is a regular expression that we can use to check the origin, to determine whether or not we want to perform a "headers flip". This particular regular expression allows anything ending with<SPAN>&nbsp;</SPAN>.build.cloud.sap, and anything from my own<SPAN>&nbsp;</SPAN>qmacro.org<SPAN>&nbsp;</SPAN>domain<A href="https://qmacro.org/blog/posts/2024/03/30/cap-cors-and-custom-headers/#footnotes" target="_blank" rel="noopener nofollow noreferrer">6</A>.</LI><LI>Following the pattern from the example, we have some logic inside a custom function<SPAN>&nbsp;</SPAN>(req, res, next) =&gt; { ... }<SPAN>&nbsp;</SPAN>that will receive and get to have a say in processing incoming requests.</LI></UL><P>The logic inside that custom function goes like this:</P><UL><LI>Grab the values of any<SPAN>&nbsp;</SPAN>Origin<SPAN>&nbsp;</SPAN>header and any<SPAN>&nbsp;</SPAN>Access-Control-Request-Headers<SPAN>&nbsp;</SPAN>header<A href="https://qmacro.org/blog/posts/2024/03/30/cap-cors-and-custom-headers/#footnotes" target="_blank" rel="noopener nofollow noreferrer">7</A></LI><LI>If the request method is<SPAN>&nbsp;</SPAN>OPTIONS<SPAN>&nbsp;</SPAN>(signifying a possible preflight request)</LI><LI>plus if there's a value for the<SPAN>&nbsp;</SPAN>Origin<SPAN>&nbsp;</SPAN>header</LI><LI>plus if there's a value for the<SPAN>&nbsp;</SPAN>Access-Control-Request-Headers<SPAN>&nbsp;</SPAN>header</LI><LI>and the origin is "allowed" according to the regular expression</LI><LI>then flip the value by adding an<SPAN>&nbsp;</SPAN>Access-Control-Allow-Headers<SPAN>&nbsp;</SPAN>header, with that header value, to the HTTP response</LI><LI>then "let go" and allow any further processing of that HTTP request to take place</LI></UL><H3 id="toc-hId--647813770">The custom server.js logic in action</H3><P>Here's what happens when we try this out. We have the above code in<SPAN>&nbsp;</SPAN>server.js<SPAN>&nbsp;</SPAN>in the CAP project's root directory. Here's a simulation of a preflight request that will be made from the browser in the context of my colleague's web app (except that it's to the test CAP service here of course):</P><PRE>curl \
+    --verbose \
+    --request OPTIONS \
+    --header 'Access-Control-Request-Method: GET' \
+    --header 'Access-Control-Request-Headers: communityid' \
+    --header 'origin: https://testing-42p9ebmu.eu10.apps.build.cloud.sap' \
+    --url localhost:4004/rest/corstest/go</PRE><P>Here's the corresponding HTTP request and response details from that verbose output from curl:</P><PRE>&gt; OPTIONS /rest/corstest/go HTTP/1.1
+&gt; Host: localhost:4004
+&gt; User-Agent: curl/7.88.1
+&gt; Accept: */*
+&gt; Access-Control-Request-Method: GET
+&gt; Access-Control-Request-Headers: communityid
+&gt; origin: https://testing-42p9ebmu.preview.eu10.apps.build.cloud.sap
+&gt;
+&lt; HTTP/1.1 200 OK
+&lt; X-Powered-By: Express
+&lt; access-control-allow-headers: communityid
+&lt; access-control-allow-origin: https://testing-42p9ebmu.eu10.apps.build.cloud.sap
+&lt; access-control-allow-methods: GET,HEAD,PUT,PATCH,POST,DELETE
+&lt; Content-Length: 0</PRE><P>Excellent - we now have the<SPAN>&nbsp;</SPAN>communityid<SPAN>&nbsp;</SPAN>header value "flipped" and returned in the CORS preflight response.</P><P>And here's (some reduced) log output from the CAP server, showing the loading of the custom server, and the custom log record output too:</P><PRE>[cds] - loading server from { file: 'server.js' }
+[custom-cors] - in custom server.js
+[cds] - loaded model from 1 file(s):
+
+  services.cds
+
+...
+
+[cds] - serving corstest { impl: 'services.js', path: '/rest/corstest' }
+
+[cds] - server listening on { url: 'http://localhost:4004' }
+[cds] - launched at 3/31/2024, 8:20:37 AM, version: 7.8.0, in: 2.226s
+[cds] - [ terminate with ^C ]
+
+[custom-cors] - Adding allow-headers for communityid</PRE><H2 id="toc-hId--626155637">Wrapping up</H2><P>That's pretty much mission accomplished, and my colleague can now successfully make use of my service from the web app, served from a different origin, in the browser.</P><HR /><P>&nbsp;</P><H2 id="toc-hId--822669142">Footnotes</H2><P>1: This phrase borrows from "the simplest thing that could possibly work", from Ward Cunningham. See my recording of "The Simplest Thing that Could Possibly Work, A conversation with Ward Cunningham" in the<SPAN>&nbsp;</SPAN><A href="https://podcasters.spotify.com/pod/show/tech-aloud/episodes/The-Simplest-Thing-that-Could-Possibly-Work--A-conversation-with-Ward-Cunningham--Part-V---Bill-Venners-e5dpts" target="_blank" rel="noopener nofollow noreferrer">Tech Aloud podcast episode</A>.</P><P>2: You may have noticed the removal of the standard directories<SPAN>&nbsp;</SPAN>app/,<SPAN>&nbsp;</SPAN>srv/<SPAN>&nbsp;</SPAN>and<SPAN>&nbsp;</SPAN>db/<SPAN>&nbsp;</SPAN>when we set this project up; this is just to keep things as simple as possible. The file name<SPAN>&nbsp;</SPAN>services.cds<SPAN>&nbsp;</SPAN>(and its corresponding default implementation file<SPAN>&nbsp;</SPAN>services.js) is part of the CAP server "roots" that are valid default locations and files that it looks at. You can see this for yourself by running<SPAN>&nbsp;</SPAN>cds env roots<SPAN>&nbsp;</SPAN>which will emit<SPAN>&nbsp;</SPAN>[ 'db/', 'srv/', 'app/', 'schema', 'services' ].</P><P>3: When asked to provide verbose output, curl prefixes the outgoing HTTP request headers with<SPAN>&nbsp;</SPAN>&gt;<SPAN>&nbsp;</SPAN>and the incoming HTTP response headers with<SPAN>&nbsp;</SPAN>&lt;.</P><P>4: Ultimately, however you specify the mode, the appropriate value will end up in<SPAN>&nbsp;</SPAN>NODE_ENV<SPAN>&nbsp;</SPAN>for the server to be able to check.</P><P>5: The requirement to supply a custom header in calls to the hash facility was deliberate, to encourage the participants to explore a tiny bit beyond standard HTTP requests. After all, the challenge was all about APIs and making HTTP calls.</P><P>6: The<SPAN>&nbsp;</SPAN>\b<SPAN>&nbsp;</SPAN>is a<SPAN>&nbsp;</SPAN><A href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Regular_expressions/Word_boundary_assertion" target="_blank" rel="noopener nofollow noreferrer">word boundary assertion</A>, and used here means that it will allow values like<SPAN>&nbsp;</SPAN><A href="https://qmacro.org" target="_blank" rel="noopener nofollow noreferrer">https://qmacro.org</A>,<SPAN>&nbsp;</SPAN><A href="http://test.qmacro.org" target="_blank" rel="noopener nofollow noreferrer">http://test.qmacro.org</A><SPAN>&nbsp;</SPAN>and so on, but not something like<SPAN>&nbsp;</SPAN>fakeqmacro.org.</P><P>7: This is done using<SPAN>&nbsp;</SPAN><A href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment" target="_blank" rel="noopener nofollow noreferrer">destructuring</A>, and the first of the two assignments has the slightly extended syntax, to provide the alternative identifier<SPAN>&nbsp;</SPAN>request_headers, as<SPAN>&nbsp;</SPAN>access-control-request-headers<SPAN>&nbsp;</SPAN>would not be a valid JavaScript identifier.</P><HR /><P><A href="https://qmacro.org/blog/posts/2024/03/30/cap-cors-and-custom-headers/" target="_blank" rel="nofollow noopener noreferrer">Originally published on qmacro.org</A></P>

@@ -1,0 +1,434 @@
+2018-01-24-discovering-scp-workflow-recommendation-ui
+Discovering SCP Workflow - Recommendation UI
+technology-blog-members
+2018-01-24
+https://community.sap.com/t5/technology-blogs-by-members/discovering-scp-workflow-recommendation-ui/ba-p/13365480
+Previous post in this series: <A href="https://blogs.sap.com/2018/01/22/discovering-scp-workflow-component-startup/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Component Startup</A>.<BR />
+<BR />
+This post is part of a series, a guide to which can be found here: <A href="https://qmacro.org/blog/posts/2018/01/16/discovering-scp-workflow/" target="_blank" rel="nofollow noopener noreferrer">Discovering SCP Workflow</A>.<BR />
+<BR />
+We've seen the task UI many times now in previous posts. In this post we'll take a quick look at how that was put together. There's nothing particularly special about the UI5 app itself, save for the component startup that we covered in the previous post. But it's worth covering, if not just so you have another angle on creating apps to support user tasks in My Inbox.<BR />
+<H3 id="toc-hId-1034886811">Structure</H3><BR />
+The app has a standard structure, which came about as I created it using the "Basic SAPUI5 Application Project" template in the SAP Web IDE. This comes with settings that cause an automatic build (minification / preload) which is useful.<BR />
+<BR />
+It's a simple set of artifacts, much as one might expect from a UI that is a single view, as we saw at the end of the last post:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-21-at-19.23.33.png" /><BR />
+<BR />
+The rest of the "chrome" (<A href="https://www.nngroup.com/articles/browser-and-gui-chrome/" target="_blank" rel="nofollow noopener noreferrer">lower-case "C"</A>) - the master list of user task items, the footer bar with buttons, and so on - comes from the My Inbox host app. All we have to do for this Untappd Recommendation workflow user task is provide enough structure to present the app in the form of a component (who doesn't do that anyway, these days?) which does most of the important work, and a simple view and controller.<BR />
+<BR />
+So here's the project folder:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-23-at-07.48.06.png" /><BR />
+<BR />
+There are a few non-core artifacts here too - I have the "Show Hidden Files" setting turned on, and there's the (unexpanded) dist folder containing the files built for deployment.<BR />
+<H3 id="toc-hId-838373306">The artifacts</H3><BR />
+Let's look at the key artifacts one by one, examining the important bits.<BR />
+<H4 id="toc-hId-770942520">manifest.json</H4><BR />
+There's nothing special in this file, except I guess for the important reference to the Workflow runtime route, which sits alongside the SAPUI5 resources routes:<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+  "welcomeFile": "/webapp/index.html",<BR />
+  "routes": [<BR />
+    {<BR />
+      "path": "/resources",<BR />
+      "target": {<BR />
+        "type": "service",<BR />
+        "name": "sapui5",<BR />
+        "entryPath": "/resources"<BR />
+      },<BR />
+      "description": "SAPUI5 Resources"<BR />
+    },<BR />
+    {<BR />
+      "path": "/test-resources",<BR />
+      "target": {<BR />
+        "type": "service",<BR />
+        "name": "sapui5",<BR />
+        "entryPath": "/test-resources"<BR />
+      },<BR />
+      "description": "SAPUI5 Test Resources"<BR />
+    },<BR />
+    {<BR />
+      "path": "/bpmworkflowruntime",<BR />
+      "target": {<BR />
+        "type": "destination",<BR />
+        "name": "bpmworkflowruntime",<BR />
+        "entryPath": "/workflow-service"<BR />
+      },<BR />
+      "description": "Workflow REST API"<BR />
+    }<BR />
+  ],<BR />
+  "sendWelcomeFileRedirect": true<BR />
+}</CODE></PRE><BR />
+That said, there's one thing worth pointing out here.<BR />
+<BR />
+In <A href="https://blogs.sap.com/2018/01/14/discovering-scp-workflow-instance-initiation/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Instance Initiation</A>, I suggested an improved route name of "workflowservice", with an entryPath of "/workflow-service/rest", rather than the more low-level "bpmworkflowruntime" with its entryPath of simply "/workflow-service". So why are we not using that improved "workflowservice" route name here?<BR />
+<BR />
+Consider the context in which the task UI is instantiated. It's as a component, within a component container, inside an already running host app (My Inbox). So the destination routing is controlled by the routes defined in the host app's neo-app.json, not the task UI's neo-app.json.<BR />
+<BR />
+In other words, because the My Inbox app, known by its real name "bpmmyinbox", has a route "bpmworkflowruntime" defined, and not "workflowservice", we have to use that in our task UI app too.<BR />
+<BR />
+Theoretically we don't actually need any destination route in the task UI app's neo-app.json to point to the BPM workflow runtime. Except we do - if we want to test the UI before deploying it! And in that case, for consistency, we also need to use "bpmworkflowruntime".<BR />
+<H4 id="toc-hId-574429015">index.html</H4><BR />
+We actually examined the key parts of the standalone harness for our task UI in the previous post <A href="https://blogs.sap.com/2018/01/22/discovering-scp-workflow-component-startup/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Component Startup</A>. There's nothing special in there at all beyond what came from the template, except for the addition of the settings property in the instantiation of the Component Container, to allow passing of a task instance ID in the URL:<BR />
+<PRE class="language-javascript"><CODE>sap.ui.getCore().attachInit(function() {<BR />
+	new sap.m.Shell({<BR />
+		app: new sap.ui.core.ComponentContainer({<BR />
+			height : "100%",<BR />
+			name : "qmacro.UntappdRecommendationApproval",<BR />
+			settings : {<BR />
+				componentData : {<BR />
+					startupParameters : {<BR />
+						taskModel : new sap.ui.model.json.JSONModel({<BR />
+							InstanceID : jQuery.sap.getUriParameters().get("InstanceID")<BR />
+						})<BR />
+					}<BR />
+				}<BR />
+			}<BR />
+		})<BR />
+	}).placeAt("content");<BR />
+});</CODE></PRE><BR />
+<H4 id="toc-hId-377915510">Component.js</H4><BR />
+We've already seen the heart of the Component.js file in the previous post - the init function. Here's the entire source:<BR />
+<PRE class="language-javascript"><CODE>sap.ui.define([<BR />
+	"sap/ui/core/UIComponent",<BR />
+	"sap/ui/Device",<BR />
+	"qmacro/UntappdRecommendationApproval/model/models"<BR />
+], function(UIComponent, Device, models) {<BR />
+	"use strict";<BR />
+<BR />
+	return UIComponent.extend("qmacro.UntappdRecommendationApproval.Component", {<BR />
+<BR />
+		metadata: {<BR />
+			manifest: "json"<BR />
+		},<BR />
+<BR />
+		/**<BR />
+		 * The component is initialized by UI5 automatically during the startup of the app and calls the init method once.<BR />
+		 * @public<BR />
+		 * @override<BR />
+		 */<BR />
+		init: function() {<BR />
+			// call the base component's init function<BR />
+			UIComponent.prototype.init.apply(this, arguments);<BR />
+<BR />
+			// enable routing<BR />
+			this.getRouter().initialize();<BR />
+<BR />
+			// set the device model<BR />
+			this.setModel(models.createDeviceModel(), "device");<BR />
+			<BR />
+			// app-wide helper model<BR />
+			this.setModel(models.createAppModel(), "app");<BR />
+<BR />
+			// get task data<BR />
+			var startupParameters = this.getComponentData().startupParameters;<BR />
+			var taskModel = startupParameters.taskModel;<BR />
+			var taskData = taskModel.getData();<BR />
+			var taskId = taskData.InstanceID;<BR />
+<BR />
+			// initialize model<BR />
+			var contextModel = new sap.ui.model.json.JSONModel("/bpmworkflowruntime/rest/v1/task-instances/" + taskId + "/context");<BR />
+			this.setModel(contextModel);<BR />
+<BR />
+			// Ensure we have access to the Inbox API before continuing<BR />
+			// (we don't except when running within the My Inbox context, ie<BR />
+			// when running "for real", rather than in test mode).<BR />
+			if (startupParameters.inboxAPI) {<BR />
+<BR />
+				// get the task description<BR />
+				var appModel = this.getModel("app");<BR />
+				startupParameters.inboxAPI.getDescription("NA", taskId)<BR />
+					.done(function(data){<BR />
+	                	appModel.setProperty("/taskDescription", data.Description);<BR />
+					})<BR />
+					.fail(function(errorText){<BR />
+	                	jQuery.sap.require("sap.m.MessageBox");<BR />
+	                	sap.m.MessageBox.error(errorText, { title: "Error"});<BR />
+	        		});<BR />
+<BR />
+				//add actions<BR />
+				startupParameters.inboxAPI.addAction({<BR />
+					type: "Accept",<BR />
+					label: "Continue"<BR />
+				}, function(button) {<BR />
+					this._completeTask(taskId, true);<BR />
+				}, this);<BR />
+<BR />
+			}<BR />
+		},<BR />
+		<BR />
+		// Taken mostly straight out of the "Book Approval" tutorial for now<BR />
+		_completeTask: function(taskId, approvalStatus) {<BR />
+			var token = this._fetchToken();<BR />
+			$.ajax({<BR />
+				url: "/bpmworkflowruntime/rest/v1/task-instances/" + taskId,<BR />
+				method: "PATCH",<BR />
+				contentType: "application/json",<BR />
+				async: false,<BR />
+				data: JSON.stringify({<BR />
+					status: "COMPLETED",<BR />
+					context: this.getModel().getData()<BR />
+				}),<BR />
+				headers: {<BR />
+					"X-CSRF-Token": token<BR />
+				}<BR />
+			});<BR />
+			this._refreshTask(taskId);<BR />
+		}<BR />
+<BR />
+		,<BR />
+		_fetchToken: function() {<BR />
+			var token;<BR />
+			$.ajax({<BR />
+				url: "/bpmworkflowruntime/rest/v1/xsrf-token",<BR />
+				method: "GET",<BR />
+				async: false,<BR />
+				headers: {<BR />
+					"X-CSRF-Token": "Fetch"<BR />
+				},<BR />
+				success: function(result, xhr, data) {<BR />
+					token = data.getResponseHeader("X-CSRF-Token");<BR />
+				}<BR />
+			});<BR />
+			return token;<BR />
+		},<BR />
+<BR />
+		_refreshTask: function(taskId) {<BR />
+			this.getComponentData().startupParameters.inboxAPI.updateTask("NA", taskId);<BR />
+		}<BR />
+<BR />
+<BR />
+<BR />
+	});<BR />
+});</CODE></PRE><BR />
+The rest of it is pretty standard, plus we have the _completeTask, _fetchToken and _refreshTask functions that I lifted straight from&nbsp;<SPAN class="mention-scrubbed">christian.loos</SPAN>&nbsp;'s post&nbsp;<A href="https://blogs.sap.com/2017/11/06/getting-started-with-sap-cloud-platform-workflow-how-to-build-a-simple-approval-ui/" target="_blank" rel="noopener noreferrer">Getting started with SAP Cloud Platform Workflow – How to build a simple approval UI</A>.<BR />
+<H4 id="toc-hId-181402005">model/models.js</H4><BR />
+This is what the model module looks like:<BR />
+<PRE class="language-javascript"><CODE>sap.ui.define([<BR />
+	"sap/ui/model/json/JSONModel",<BR />
+	"sap/ui/Device"<BR />
+], function(JSONModel, Device) {<BR />
+	"use strict";<BR />
+<BR />
+	return {<BR />
+<BR />
+		createDeviceModel: function() {<BR />
+			var oModel = new JSONModel(Device);<BR />
+			oModel.setDefaultBindingMode("OneWay");<BR />
+			return oModel;<BR />
+		},<BR />
+		<BR />
+		createAppModel: function() {<BR />
+			return new JSONModel({<BR />
+				taskDescription: ""<BR />
+			});<BR />
+		}<BR />
+<BR />
+	};<BR />
+});</CODE></PRE><BR />
+Nothing exciting there. We can see the createAppModel function that we call from the component's init function to create the app model, with a single property taskDescription, having an initial value of an empty string. This is used in the view shortly, and the actual value is taken from the description in the user task in the specific workflow instance, via the call to startupParameters.inboxAPI.getDescription function (see earlier).<BR />
+<BR />
+The interesting thing about this description value is that it is specific to the particular workflow underway, and can be built from static strings and variable substitutions. But not in the context of UI5 ... it's actually in the workflow definition itself.<BR />
+<BR />
+Take a look at the screenshot we saw in a previous post <A href="https://blogs.sap.com/2018/01/20/discovering-scp-workflow-user-tasks/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - User Tasks</A>:<BR />
+<BR />
+<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-18-at-09.46.58.png" /><BR />
+<BR />
+The Description field here ("You recently checked in ...") is the source of what we're retrieving and storing against the taskDescription property in our app model.<BR />
+<H4 id="toc-hId--15111500">i18n/i18n.properties</H4><BR />
+Let's take a quick look in here, so at least we have an idea of what the text substitutions are when we look at the view shortly.<BR />
+<PRE class="language-markup"><CODE>title=Beer Recommendations<BR />
+appTitle=UntappdRecommendationApproval<BR />
+<BR />
+abv=% ABV<BR />
+untappdBeerLink=https://untappd.com/beer/{0}<BR />
+ <BR />
+#XFLD: <BR />
+rating=Rating<BR />
+ <BR />
+#XFLD: <BR />
+totalCheckins=Total Checkins<BR />
+<BR />
+beerAndBrewery={0} by {1}<BR />
+beerDescription={1}% ABV Rating {2} {0} </CODE></PRE><BR />
+<H4 id="toc-hId--211625005">view/Main.view.xml</H4><BR />
+Now we get to possibly the most interesting part - how the task UI itself is constructed. But we find there's actually almost nothing special at all. It's a regular XML view, with a reference to a controller (which we'll look at next), and a Page where we can display the checked-in beer and the recommended beers:<BR />
+<PRE class="language-markup"><CODE>&lt;mvc:View <BR />
+	controllerName="qmacro.UntappdRecommendationApproval.controller.Main" <BR />
+	displayBlock="true"<BR />
+	xmlns:mvc="sap.ui.core.mvc"<BR />
+	xmlns="sap.m"&gt;<BR />
+	&lt;App id="idAppControl"&gt;<BR />
+		&lt;pages&gt;<BR />
+			&lt;Page<BR />
+				binding="{/beer}"			<BR />
+				showHeader="false"&gt;<BR />
+				&lt;content&gt;<BR />
+					&lt;ObjectHeader<BR />
+						icon="{beer_label}"<BR />
+						title="{beer_name}"<BR />
+						number="{beer_abv}"<BR />
+						numberUnit="{i18n&gt;abv}" &gt;<BR />
+						&lt;statuses&gt;<BR />
+							&lt;ObjectStatus<BR />
+								title="{i18n&gt;rating}"<BR />
+								text="{rating_score}" /&gt;<BR />
+							&lt;ObjectStatus<BR />
+								title="{i18n&gt;totalCheckins}"<BR />
+								text="{stats/total_count}" /&gt;<BR />
+						&lt;/statuses&gt;<BR />
+						&lt;attributes&gt;<BR />
+							&lt;ObjectAttribute text="{brewery/brewery_name}" /&gt;<BR />
+							&lt;ObjectAttribute text="{beer_style}" /&gt;<BR />
+							&lt;ObjectAttribute<BR />
+								text="{<BR />
+									parts : [<BR />
+										'i18n&gt;untappdBeerLink',<BR />
+										'bid'<BR />
+									],<BR />
+									formatter : 'jQuery.sap.formatMessage'<BR />
+								}"<BR />
+								active="true"<BR />
+								press="onLinkAttributePress" /&gt;<BR />
+						&lt;/attributes&gt;<BR />
+					&lt;/ObjectHeader&gt;<BR />
+					&lt;Text<BR />
+						width="100%"<BR />
+						text="{app&gt;/taskDescription}" /&gt;<BR />
+					&lt;List<BR />
+						mode="MultiSelect"<BR />
+						items="{similar/items}"&gt;<BR />
+						&lt;items&gt;<BR />
+							&lt;StandardListItem<BR />
+								selected="{_selected}"<BR />
+								icon="{beer/beer_label}"<BR />
+								title="{<BR />
+									parts : [<BR />
+										'i18n&gt;beerAndBrewery',<BR />
+										'beer/beer_name',<BR />
+										'brewery/brewery_name'<BR />
+									],<BR />
+									formatter : 'jQuery.sap.formatMessage'<BR />
+								}"<BR />
+								description="{<BR />
+									parts : [<BR />
+										'i18n&gt;beerDescription',<BR />
+										'beer/beer_style',<BR />
+										'beer/beer_abv',<BR />
+										'rating_score'<BR />
+									],<BR />
+									formatter : 'jQuery.sap.formatMessage'<BR />
+								}" /&gt;<BR />
+						&lt;/items&gt;<BR />
+					&lt;/List&gt;<BR />
+ 				&lt;/content&gt;<BR />
+			&lt;/Page&gt;<BR />
+		&lt;/pages&gt;<BR />
+	&lt;/App&gt;<BR />
+&lt;/mvc:View&gt;</CODE></PRE><BR />
+The entire Page control is bound to the root property "beer" in the domain model (the workflow context), so all the other properties are relative to this. It's going to be easier to read this view definition if we have an idea of what this context looks like, i.e. what's in the domain model, so take a look at the <A href="https://untappd.com/api/docs#beerinfo" target="_blank" rel="nofollow noopener noreferrer">Untappd API documentation for the "beerinfo" resource</A>, because at this point in the workflow, the context contains exactly that. And you can see that the root property in the API documentation is indeed "beer".<BR />
+<BR />
+Let's take a quick look at the context for one of the existing workflow instances I have:<BR />
+<BR />
+Request:<BR />
+<PRE><CODE>GET <SPAN class="resolvedVariable">{{workflowservice}}</SPAN>/v1/workflow-instances/<SPAN class="resolvedVariable">{{instanceId}}</SPAN>/context</CODE></PRE><BR />
+Response:<BR />
+<PRE class="language-javascript"><CODE>{<BR />
+    "beer": {<BR />
+        "bid": 1868220,<BR />
+        "beer_name": "Subluminal",<BR />
+        "beer_abv": 10,<BR />
+        "stats": {<BR />
+            "total_count": 6731,<BR />
+            "monthly_count": 118<BR />
+        },<BR />
+        "brewery": {<BR />
+            "brewery_name": "Buxton Brewery"<BR />
+        },<BR />
+        "auth_rating": 0,<BR />
+        "wish_list": false,<BR />
+        "media": {<BR />
+            [...]<BR />
+        },<BR />
+        "checkins": {<BR />
+            [...]<BR />
+        },<BR />
+        "similar": {<BR />
+            "count": 5,<BR />
+            "items": [<BR />
+                {<BR />
+                    "rating_score": 3.77814,<BR />
+                    "beer": {<BR />
+                        "bid": 1387819,<BR />
+                        "beer_name": "Blueberry Maple Stout",<BR />
+                        "beer_abv": 6,<BR />
+                        "beer_label": "https://untappd.akamaized.net/site/beer_logos/beer-1387819_a53f2_sm.jpeg"<BR />
+                    },<BR />
+                    "brewery": {<BR />
+                        "brewery_name": "Saugatuck Brewing Company"<BR />
+                    }<BR />
+                },<BR />
+                {<BR />
+                    "rating_score": 4.3603,<BR />
+                    "beer": {<BR />
+                        "bid": 2224760,<BR />
+                        "beer_name": "Original Maple Truffle Ice Cream Waffle",<BR />
+                        "beer_abv": 11.5,<BR />
+                        "beer_label": "https://untappd.akamaized.net/site/beer_logos/beer-2224760_0a5e5_sm.jpeg"<BR />
+                    },<BR />
+                    "brewery": {<BR />
+                        "brewery_name": "Omnipollo"<BR />
+                    }<BR />
+                },<BR />
+                [...]<BR />
+            ]<BR />
+        }<BR />
+    }<BR />
+}</CODE></PRE><BR />
+Let's pick out the parts in this view that are worthy of at least some attention:<BR />
+<UL><BR />
+ 	<LI>the Page control's showHeader property is set to false, because the My Inbox app's detail view will already be setting up a header, highlighted in red here. If we were to have the task UI's Page header showing, it would be as shown in green here. Double trouble! If you look closely at the control tree hierarchy, you can see the Page within a Page. ("<A href="https://open.spotify.com/track/65ZVM2RDxqnQHk4Xp9ebOG" target="_blank" rel="nofollow noopener noreferrer">Wheels within wheels, in a spiral array...</A>" etc)<IMG class="migrated-image" src="https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/01/Screenshot-2018-01-23-at-11.57.19.png" /></LI><BR />
+ 	<LI>there's a handler for the press event of the active Object Attribute showing the link to the Untappd page for the checked-in beer. This handler, the function onLinkAttributePress, is actually the only function in the controller.</LI><BR />
+ 	<LI>the very useful built-in formatter facility jQuery.sap.formatMessage is used in a few places to merge static text with variables, defined in the i18n file.</LI><BR />
+ 	<LI>the List control's items aggregation is bound to the array of recommended beers, i.e. those that appear in the "similar" property in the beer info data we saw earlier.</LI><BR />
+</UL><BR />
+And that's pretty much it!<BR />
+<BR />
+Probably the most interesting, and most subtle aspect of this view definition is the binding of the selected property in the Standard List Item control template, to the property "_selected" in the domain model.<BR />
+<BR />
+Rather than build a mechanism that explicitly and actively saves selections, we can just take advantage of the default two-way binding of JSON models, which will cause changes to the value(s) of this selected property to be written to corresponding "_selected" property values in the array of similar items in the context data, effectively adding a new property there to signify whether the user chose it or not. Thanks UI5!<BR />
+<H4 id="toc-hId--408138510">controller/Main.controller.js</H4><BR />
+Pretty simple:<BR />
+<PRE class="language-javascript"><CODE>sap.ui.define([<BR />
+	"sap/ui/core/mvc/Controller"<BR />
+], function(Controller) {<BR />
+	"use strict";<BR />
+<BR />
+	return Controller.extend("qmacro.UntappdRecommendationApproval.controller.Main", {<BR />
+<BR />
+		onLinkAttributePress : function(oEvent) {<BR />
+			var sBeerId = oEvent.getSource().getModel().getProperty("/beer/bid"),<BR />
+				sUrl = "https://untappd.com/beer/" + sBeerId;<BR />
+			sap.m.URLHelper.redirect(sUrl, true);<BR />
+		}<BR />
+<BR />
+	});<BR />
+});</CODE></PRE><BR />
+It's just that handler we mentioned earlier, to open a new browser page at the canonical destination for that beer on Untappd. For example, for Subluminal, this is, via the shortcut link&nbsp;<A href="https://untappd.com/beer/1868220" target="_blank" rel="nofollow noopener noreferrer">https://untappd.com/beer/1868220</A>, here:&nbsp;<A href="https://untappd.com/b/buxton-brewery-subluminal/1868220" target="_blank" rel="nofollow noopener noreferrer">https://untappd.com/b/buxton-brewery-subluminal/1868220</A>.<BR />
+<H3 id="toc-hId--733734734">Review</H3><BR />
+All in all, the task UI app is a pretty straightforward affair. Of course, this reflects the fact that the user task in this workflow definition is straightforward too. But then we want to keep things simple for the busy user, right?<BR />
+<BR />
+Let's wrap this post up by thinking about what happens when the user has "completed" the task. There's no handler in the controller which would be what one would expect in a normal UI5 app. Rather, it's a combination of a couple of things. Consider this stanza from within the component's init function:<BR />
+<PRE class="language-javascript"><CODE>startupParameters.inboxAPI.addAction({<BR />
+	type: "Accept",<BR />
+	label: "Continue"<BR />
+}, function(button) {<BR />
+	this._completeTask(taskId, true);<BR />
+}, this);</CODE></PRE><BR />
+The first thing is that we've defined an anonymous function to be executed when the "Continue" button is pressed. That anonymous function calls _completeTask, which we know about.<BR />
+<BR />
+The second thing is the context to which the function is bound - that's the third parameter passed to the addAction call, i.e. the reference to "this". It means that within _completeTask, we have access to what "this" is - the component, and everything associated with it, including the domain model we previously set on it, the model which now will contain any selections of beers recommended. Wonderful!<BR />
+<BR />
+In the next post, we'll move away from user tasks and look at another workflow task type - the script task.<BR />
+<BR />
+Next post in this series: <A href="https://blogs.sap.com/2018/01/26/discovering-scp-workflow-script-tasks/" target="_blank" rel="noopener noreferrer">Discovering SCP Workflow - Script Tasks</A>.
