@@ -118,4 +118,4 @@ Read more posts in this series here: [Monday morning thoughts](https://web.archi
 
 ---
 
-[Originally published on SAP Community](https://web.archive.org/web/20240115015504/https://blogs.sap.com/2018/08/20/monday-morning-thoughts-odata/)
+[Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-odata/ba-p/13351220)
