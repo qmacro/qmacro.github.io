@@ -4,18 +4,30 @@ set -o errexit
 
 declare post="${1:?Specify post ID}"
 declare postid="${post##*/}"
-declare postdir="./posts/save/${postid}"
+declare blog="$(pwd)/.."
 
 declare title="$(sed "2q;d" $post)"
 declare date="$(sed "4q;d" $post)"
+declare dateyyyymm="${date:0:7}"
+declare datedir="${dateyyyymm/-/\/}"
 declare url="$(sed "5q;d" $post)"
 
-mkdir -p "$postdir/src/posts" "$postdir/src/images"
-tree $postdir
+declare markdownfile="${blog}/src/posts/${postid}.md"
+declare content="$(\
+  tail -n+6 "$post" \
+  | pandoc -r html -w markdown --lua-filter=remove-attr.lua \
+  | sed -E "s/https:\/\/community\.sap\.com\/.+blog_attachments\//\/images\//g" \
+  | sed -E "s/\\\([\"'])/\1/g" \
+  | sed -E "s/\\\\$//g"
+)"
 
+mkdir -p "$blog/src/images/$datedir"
 
+for imageurl in $(grep -oP '(?<=src=")([^"]+)(?=")' $post); do
+  cd "$blog/src/images/$datedir" && curl -s -O --url "$imageurl"
+done
 
-cat <<EOF > "${postdir}/src/posts/${postid}.md"
+cat <<EOF > "$markdownfile"
 ---
 layout: post
 title: "${title}"
@@ -24,7 +36,13 @@ tags:
   - sapcommunity
 ---
 
+${content}
+
 ---
 
 [Originally published on SAP Community](${url})
 EOF
+
+echo $url
+read -p "Press a key to edit..."
+nvim "$markdownfile"
