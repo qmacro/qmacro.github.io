@@ -9,7 +9,7 @@ tags:
   - handsonsapdev
   - seriespost
 ---
-Here's a summary of the resources relating to the series called "The Art and Science of CAP" with Daniel Hutzel. The series consists of a number of episodes, broadcast live on the [Hands-on SAP Dev show][31], and of course available for viewing afterwards too.
+Here's a summary of the resources relating to the series called "The Art and Science of CAP" with Daniel Hutzel. The series consists of a number of episodes, broadcast live on the [Hands-on SAP Dev show][31], and available for viewing afterwards too.
 
 There is a [playlist][10] that contains all the episodes, in order.
 
@@ -25,6 +25,7 @@ Part|Broadcast|Live Stream / Recording|Notes & Links|Community
 6|20 Dec 2024|[cZCOQpxC118][6]|[TASC Notes - Part 6][16]|[Link][46]
 7|07 Feb 2025|[r_mxsBZSgEo][7]|[TASC Notes - Part 7][17]|[Link][47]
 8|14 Feb 2025|[FF1NzLwsmos][8]|(pending)|[Link][48]
+8|21 Feb 2025|[Tz7TTM1pOIk][9]|(pending)|[Link][49]
 
 
 [1]: https://www.youtube.com/watch?v=XMchiFnDJ6E
@@ -35,6 +36,7 @@ Part|Broadcast|Live Stream / Recording|Notes & Links|Community
 [6]: https://www.youtube.com/watch?v=cZCOQpxC118
 [7]: https://www.youtube.com/watch?v=r_mxsBZSgEo
 [8]: https://www.youtube.com/watch?v=FF1NzLwsmos
+[9]: https://www.youtube.com/watch?v=Tz7TTM1pOIk
 [11]: /blog/posts/2024/09/30/tasc-notes-part-1/
 [12]: /blog/posts/2024/11/22/tasc-notes-part-2/
 [13]: /blog/posts/2024/11/29/tasc-notes-part-3/
@@ -53,3 +55,4 @@ Part|Broadcast|Live Stream / Recording|Notes & Links|Community
 [46]: https://community.sap.com/t5/sap-community/the-art-and-science-of-cap-part-6-with-daniel-hutzel-holiday-season-edition/ec-p/13963130
 [47]: https://community.sap.com/t5/sap-community/the-art-and-science-of-cap-part-7-with-daniel-hutzel/ec-p/13998160
 [48]: https://community.sap.com/t5/sap-community/the-art-and-science-of-cap-part-8-with-daniel-hutzel/ec-p/14012833
+[49]: https://community.sap.com/t5/sap-community/the-art-and-science-of-cap-part-9-with-daniel-hutzel/ec-p/14018517
