@@ -23,4 +23,4 @@ And if you're interested in how this came about, see this pull request on Github
 
 Share & enjoy!
 
-[Originally published on SAP Community](https://blogs.sap.com/2014/03/04/small-steps-openui5-toolkit-now-in-jsbincom/)
+[Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-members/small-steps-openui5-toolkit-now-in-jsbin-com/ba-p/13090678)
