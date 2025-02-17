@@ -114,7 +114,9 @@ Today's business API interoperability and open standards are built upon a long h
 
 This post was brought to you by [Pact Coffee's Planalto](https://www.pactcoffee.com/coffees/planalto) and the delivery of the milk by the milkman even earlier than usual.
 
-Read more posts in this series here: [Monday morning thoughts](https://web.archive.org/web/20240120051848/https://blogs.sap.com/tag/mondaymorningthoughts/).
+---
+
+Read more posts in this series here: [Monday morning thoughts](/tags/mondaymorningthoughts/).
 
 ---
 
