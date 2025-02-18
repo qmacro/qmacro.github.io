@@ -4,6 +4,7 @@ title: "Monday morning thoughts: milestones"
 date: 2018-05-21
 tags:
   - sapcommunity
+  - mondaymorningthoughts
 ---
 
 *In this post, I look back at changes and developments that I consider
