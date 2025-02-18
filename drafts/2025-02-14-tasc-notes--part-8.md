@@ -53,7 +53,7 @@ VAR S REAL RELATION
     KEY { S# };
 ```
 
-This definition helps cement the concept of a relvar through the `VAR` "assignment" or "association" of a relation definition (`{ ... }`) to a name `S`. So we can think of a relvar as a symbol that can reference different values at different times, where the values are actually what we'd normally refer to as "tables" or "views" (and their contents), i.e. relations.
+This definition helps cement the concept of a relvar through the `VAR` "assignment" or "association" of a relation definition (`{ ... }`) to a name `S`. So we can think of a relvar as a symbol that can reference different values at different times, where the values are actually what we'd normally refer to as "tables" or "views", formally called relations, and the data that they contain, and that we can query.
 
 ### Exploring in SQLite
 
@@ -75,6 +75,45 @@ table|foo|foo|2|CREATE TABLE foo ( a,b,c )
 view|bar|bar|0|CREATE VIEW bar as select * from foo
 ```
 
+This is a little easier to comprehend if we look at the [SQLite schema table reference][12]:
+
+```sql
+CREATE TABLE sqlite_schema(
+  type text,
+  name text,
+  tbl_name text,
+  rootpage integer,
+  sql text
+);
+```
+
+In fact, we can use the SQLite REPL command `.headers on`[<sup>1</sup>](#footnote-1) so that output like this is simpler to understand:
+
+```text
+sqlite> .headers on
+sqlite> select * from sqlite_schema;
+type|name|tbl_name|rootpage|sql
+table|foo|foo|2|CREATE TABLE foo ( a,b,c )
+view|bar|bar|0|CREATE VIEW bar as select * from foo
+```
+
+Having examined the definitions of the fields in `sqlite_schema`, we can interpret these two records (or tuples, to use formal parlance) as:
+
+* `foo --> table(CREATE TABLE foo ( a,b,c )`
+* `bar --> view(CREATE VIEW bar as select * from foo`
+
+where the `-->` arrows indicate reference, associating the relvars with the relations.
+
+## Local development, monorepos and workspaces
+
+...
+
+<a name="footnotes"></a>
+## Footnotes
+
+<a name="footnote-1"></a>
+1. Notice how these REPL commands have a similar structure (they begin with a `.`) to the Node.js / cds REPL.
+
 
 
 ---
@@ -90,3 +129,4 @@ view|bar|bar|0|CREATE VIEW bar as select * from foo
 [9]: https://www.oreilly.com/library/view/relational-theory-for/9781449365431/
 [10]: https://en.wikipedia.org/wiki/Relvar
 [11]: https://archive.org/embed/databasestypesre0003date
+[12]: https://www.sqlite.org/schematab.html
