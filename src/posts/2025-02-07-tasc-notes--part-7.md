@@ -132,12 +132,14 @@ Hu?
 Boom!
 
  
+<a name="reflection-in-the-cds-repl"></a>
 ## Reflection in the cds REPL
 
 Directly after this, at around [38:56][21], Daniel jumps into the cds REPL to demonstrate how much of this is also reflected in CDS model construction. He almost immediately reaches for the relatively new `.inspect` cds REPL command (which we saw both in a [previous episode of this series][22] and also in [part 2 of the mini-series on CAP Node.js plugins][23]), which in turn reveals a whole series of `LinkedDefinitions`.
 
 These `LinkedDefinitions` are [iterables][41], and if you want to know more about how to embrace them, for example using destructuring assignments or the `for ... of` and `for ... in` statements see the [Digging deeper into the Bookshop service][24] section of the notes to part 2 of this series.
 
+<a name="reflection-in-cds-modelling"></a>
 ## Reflection in CDS modelling
 
 Launching from the fundamental prototype approach which we've explored now, Daniel connects the dots for us by revisiting some common[<sup>4</supp>](#footnote-3) aspects (`managed` and `cuid`) to show how the prototype approach brings the ultimate in aspect-based flexibility.
@@ -326,6 +328,7 @@ extend managed with {
 }
 ```
 
+<a name="wrapping-up-with-relational-algebra"></a>
 ## Wrapping up with relational algebra
 
 CAP's query language, [CQL][39], is based upon and extends SQL in two important directions:
