@@ -159,6 +159,7 @@ Hence Daniel's remark, and the two `on` phase handlers that he highlights (and t
 
 The clue is in the names - any action or function (which will form part of the URL when being invoked) whose name _contains a verb_ (here: "submit" and "prepare") is pretty much by definition non-RESTful.
 
+<a name="awaitable-queries-and-thenables"></a>
 ## Awaitable queries and thenables
 
 At [22:49][102] Daniel doubles down on part of the detail in the command he used to start the cds REPL, which was:
