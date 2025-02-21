@@ -184,7 +184,7 @@ await cds.ql `SELECT ID,name from Authors`
 
 Here, `Authors` is the name of an entity, in CDS model terms. It also happens to be a table (at the [persistence layer level](#exploring-in-sqlite)).
 
-But critically, this is a _relvar_.
+But critically, this is (almost) a _relvar_.
 
 What's returned ... is a set of _tuples_ (four, in this case):
 
@@ -237,13 +237,13 @@ from Authors                { ID: 170, name: 'Richar...
                           ]
 ```
 
-No. But we can store that query in a variable[<sup>2</sup>](#footnote-2):
+Almost, but not quite. But we can store that query in a variable[<sup>2</sup>](#footnote-2):
 
 ```javascript
 myAuthors = cds.ql `SELECT ID,name,books.title from Authors`
 ```
 
-and then `myAuthors` is the relvar:
+and then that variable `myAuthors` is the relvar:
 
 ```text
 myAuthors                 [
