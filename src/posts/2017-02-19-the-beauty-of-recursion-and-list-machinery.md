@@ -8,7 +8,7 @@ There are beautiful patterns inherent in the use of recursion that I've seen in 
 
 This post explores one particular pattern that is inherent in how recursion is often expressed in some functional languages, and finishes with the alternative based on what I'm going to call "list machinery" - mechanisms within a language that provide powerful processing abstractions over structures such as lists.
 
-# <a name="initialrecognition"></a>Initial recognition
+# <a name="initial-recognition"></a>Initial recognition
 
 Erik Meijer, whom I'll mention properly in a moment, uses a phrase:
 
