@@ -21,6 +21,7 @@ This episode started with me rambling slightly more than usual as I attempted to
 
 We took slightly longer to review and discuss [the notes on the previous episode (part 7)][3], as there were some super eye openers that were worth revisiting, not least the beautiful reveal of the parallel between functional programming and aspect oriented techniques, and the proper way to extend entities.
 
+<a name="the-relational-model"></a>
 ## The relational model
 
 At [23:50][7] Daniel dives back into where we left off in the previous episode, to dwell a little on some important theory in the form of the [Relational Model][8].
@@ -110,6 +111,7 @@ Having examined the definitions of the fields in `sqlite_schema`, we can interpr
 
 where the `-->` arrows indicate reference, associating the relvars with the relations.
 
+<a name="local-development-submodules-and-workspaces"></a>
 ## Local development, submodules and workspaces
 
 While we've [talked briefly about monorepos][13] previously in this series, it's worth revisiting for a second here too, where at around [29:30][14] Daniel outlines his local development setup which is based on an "umbrella" Node.js project using submodules and workspaces.  
@@ -172,6 +174,7 @@ Welcome to cds repl v 8.8.0
 
 Note the locations of each of these five loaded files!
 
+<a name="queries-declare-relations"></a>
 ## Queries declare relations!
 
 Daniel started the cds REPL at around [36:45][22] with the "bookshop" service to have something concrete with which to illustrate the close proximity of CAP (and CDS and CQL in particular) to the formal relational model.
@@ -257,6 +260,7 @@ from Authors                { ID: 170, name: 'Richar...
 
 And if we [use await][24] to reify that relvar, we get the relation.
 
+<a name="relations-attributes-and-values"></a>
 ## Relations, attributes and values
 
 When reifying a relation you're essentially expecting a set of tuples containing values. What happens when the attribute projection of an element expressed in a query doesn't have a value? What does that even mean? Well, Daniel illustrates this next by digging in a little deeper to the managed associations between `Books` and `Authors` here.
@@ -356,6 +360,7 @@ Here, we're still requesting values for an association (`author`) but this time 
 
 In the context of SQL being the real world representation of relations, in the end, we also can think about how foreign keys, the "coupling" in to-one association, become the values of the references that are surfaced in reifying such ad hoc relations. Before that, associations are "just pointer-shaped ideas".
 
+<a name="postfix-projections-and-set-theory"></a>
 ### Postfix projections and set theory
 
 Now we're more comfortable with the concept of "pointers" in the relational model and how it is respected in CAP, here's something that will blow your mind in a hopefully similar way to which it was in the previous part where the parallel between functional programming, aspects and entity extensions was revealed (see the [Reflections in CDS modelling][27] section).
@@ -419,6 +424,7 @@ which produces:
 
 Spot the nesting also in the result set - there are two books from Mr Poe, and (to use relational model terms) both are returned in the _set of tuples_ for the `books` _attribute_ projected from the pointer _attribute_ in the corresponding `Author` _tuple_.
 
+<a name="the-universe-of-discourse-and-correlated-queries"></a>
 ### The universe of discourse and correlated subqueries
 
 Rounding out this mind-expanding episode, Daniel notes that the concept of the "universe of discourse" (alternatively called the [domain of discourse][31]), the set of entities over which values may range, is an appropriate theoretical construct in which to think about how these values (from the nested projections) exist.
