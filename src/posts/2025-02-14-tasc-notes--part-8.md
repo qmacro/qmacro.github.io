@@ -224,6 +224,7 @@ This is what's returned:
 
 The result is another set of tuples, where the path expression has been materialised into just another attribute `books_title` (regardless of any SQL details going on under the surface to make this happen). This result set is ... a _relation_.
 
+<a name="ad-hoc-relation"></a>
 But it's not a relation pre-declared like `S` (see [What is a relvar?](#what-is-a-relvar) earlier); it's a relation declared ad hoc _with the query_.
 
 In SQL (and consequently CQL): queries describe (declare) relations.
