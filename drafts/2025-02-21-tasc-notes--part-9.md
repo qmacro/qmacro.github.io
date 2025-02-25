@@ -92,7 +92,7 @@ This is the basis of how Daniel shows that CQL is a valid extension to SQL in te
 
 ### Nesting not flattening
 
-In the previous part we also learned about the [postfix projection][17] approach for queries, enabling us to express the desired tuple shape in a `{ ... }` block that arguably better represents the concept we're aiming for. Here, that would be:
+In the previous part we also learned about the [postfix projection][17] approach for queries, enabling us to express the desired tuple shape in a `{ ... }` block that arguably better represents the concept we're aiming for. Here, that would be (in pseudocode):
 
 ```text
 Authors -> { ID, name, books.title as book }
@@ -104,7 +104,7 @@ But now it's also much easier to think in terms of nesting, "un-flattening" `boo
 await cds.ql `SELECT from Authors { ID, name, books { title as book } }`
 ```
 
-What's returned, from a nominal data perspective, is the same, but from a shape perspective is now what we might refer to as "deep" and - as far it can refer to object structures - normalised (observe how there's now only one entry for Edgar Allen Poe, but with both books contained):
+What's returned is the same, from a nominal data perspective. But from a shape perspective what's returned is what we might refer to as "deep" and - as far it can refer to object structures - normalised (observe how there's now only one entry for Edgar Allen Poe, but with both books contained):
 
 ```json
 [
@@ -131,9 +131,155 @@ What's returned, from a nominal data perspective, is the same, but from a shape 
 ]
 ```
 
-As a bonus side effect of all this hard work: abstraction, extension and dedicated conformance to the constraints of the relational model, CAP's support for relational and non-relational (object) persistence mechanisms is impressive.
+As a bonus side effect of all this hard work (abstraction, extension and dedicated conformance to the constraints of the relational model) CAP's support for relational and non-relational (object) persistence mechanisms is impressive.
 
-GOT TO 34:30
+## It's lookup tables all the way down
+
+At around [35:12][18] Daniel take the opportunity to both double down on concepts and insights we've covered before, and to drive them home. While still in the cds REPL, he [changes tack][19] slightly and takes another look at the SQLite schema table, the same one that we looked at last week - see [Exploring in SQLite][20].
+
+This time, to add colour, he remains in the cds REPL (rather than switches to the SQLite REPL) and just uses CQL, because "why not?". He also uses a slightly different form of [query construction][21] - the fluent API style:
+
+```javascript
+await SELECT.from('sqlite.schema') (fluent API style)
+```
+
+rather than the tagged template literal approach:
+
+```javascript
+await cds.ql `SELECT from sqlite.schema`
+```
+
+_(Accessing the SQLite schema table here feels like finding a secret door to the private rooms in a posh hotel, a door that's been hiding in plain sight but I've just not noticed it.)_
+
+Being in the context of the cds REPL previously started with `cds r -r @capire/bookshop`, with the CDS model compiled and deployed to the persistence layer (a SQLite in-memory database in this case), we see considerably more output than [our previous look][20]. Thirty five entries in the schema, in the lookup table:
+
+```javascript
+await cds.ql `SELECT from sqlite.schema` .then(x => x.length) // -> 35
+```
+
+One of these that Daniel highlights at random is:
+
+```json
+{
+  type: 'view',
+  name: 'localized_CatalogService_Currencies',
+  tbl_name: 'localized_CatalogService_Currencies',
+  rootpage: 0,
+  sql: 'CREATE VIEW localized_CatalogService_Currencies AS SELECT\n' +
+    '  Currencies_0.name,\n' +
+    '  Currencies_0.descr,\n' +
+    '  Currencies_0.code,\n' +
+    '  Currencies_0.symbol,\n' +
+    '  Currencies_0.minorUnit\n' +
+    'FROM localized_sap_common_Currencies AS Currencies_0'
+}
+```
+
+The point is that in the "universe of discourse" here, this entry in the lookup table is exactly what we've been talking about - a relvar (`localized_CatalogService_Currencies`, from the `name` property) pointing to, being related to, a relation definition in the `sql` property (`CREATE VIEW ...`) to contain data.
+
+In other words, this database schema is a lookup table of relvars pointing to definitions, and queries relating to those definitions (of relations) have data returned as the "extent".
+
+## Universes and variables
+
+In the universe of discourse that encapsulates queries, `Authors` is a relvar (as it refer to a relation).
+
+But in another universe of discourse, that of CAP's [LinkedDefinitions][22], `Authors` is a variable but not a relvar; rather than refer to a relation (that can be queried), it refers to the definition at the CDS model level.
+
+Let's have a look, with the help of a [destructuring assignment][23] (to a different variable name `Authors` than the original property name `sap.capire.bookshop.Authors`):
+
+
+```javascript
+{ 'sap.capire.bookshop.Authors': Authors } = cds.model.definitions
+```
+
+Here, `Authors` is now a variable, but not a relvar (as there's no relation, no queryable data, on the right hand side of the imaginary arrow):
+
+```shell
+> Authors
+entity {
+  kind: 'entity',
+  includes: [ 'managed' ],
+  elements: LinkedDefinitions {
+    createdAt: Timestamp {
+      '@cds.on.insert': { '=': '$now' },
+      '@UI.HiddenFilter': true,
+      '@UI.ExcludeFromNavigationContext': true,
+      '@Core.Immutable': true,
+      '@title': '{i18n>CreatedAt}',
+      '@readonly': true,
+      type: 'cds.Timestamp',
+      '@Core.Computed': true,
+      '@Common.Label': '{i18n>CreatedAt}'
+    },
+    createdBy: String {
+      '@cds.on.insert': { '=': '$user' },
+      '@UI.HiddenFilter': true,
+      '@UI.ExcludeFromNavigationContext': true,
+      '@Core.Immutable': true,
+      '@title': '{i18n>CreatedBy}',
+      '@readonly': true,
+      '@description': '{i18n>UserID.Description}',
+      type: 'cds.String',
+      length: 255,
+      '@Core.Computed': true,
+      '@Common.Label': '{i18n>CreatedBy}',
+      '@Core.Description': '{i18n>UserID.Description}'
+    },
+    modifiedAt: Timestamp {
+      '@cds.on.insert': { '=': '$now' },
+      '@cds.on.update': { '=': '$now' },
+      '@UI.HiddenFilter': true,
+      '@UI.ExcludeFromNavigationContext': true,
+      '@title': '{i18n>ChangedAt}',
+      '@readonly': true,
+      type: 'cds.Timestamp',
+      '@Core.Computed': true,
+      '@Common.Label': '{i18n>ChangedAt}'
+    },
+    modifiedBy: String {
+      '@cds.on.insert': { '=': '$user' },
+      '@cds.on.update': { '=': '$user' },
+      '@UI.HiddenFilter': true,
+      '@UI.ExcludeFromNavigationContext': true,
+      '@title': '{i18n>ChangedBy}',
+      '@readonly': true,
+      '@description': '{i18n>UserID.Description}',
+      type: 'cds.String',
+      length: 255,
+      '@Core.Computed': true,
+      '@Common.Label': '{i18n>ChangedBy}',
+      '@Core.Description': '{i18n>UserID.Description}'
+    },
+    ID: Integer { key: true, type: 'cds.Integer' },
+    name: String {
+      '@mandatory': true,
+      type: 'cds.String',
+      length: 111,
+      '@Common.FieldControl': { '#': 'Mandatory' }
+    },
+    dateOfBirth: Date { type: 'cds.Date' },
+    dateOfDeath: Date { type: 'cds.Date' },
+    placeOfBirth: String { type: 'cds.String' },
+    placeOfDeath: String { type: 'cds.String' },
+    books: Association {
+      type: 'cds.Association',
+      cardinality: { max: '*' },
+      target: 'sap.capire.bookshop.Books',
+      on: [ { ref: [ 'books', 'author' ] }, '=', { ref: [ '$self' ] } ]
+    }
+  }
+}
+```
+
+## Relvars and queries that declare relations (revisited)
+
+![Two Spiderman characters looking at each other, with the word "Authors" below them][25]
+
+_Screenshot from [Double Identity][26] (1967)_
+
+If the whole `Authors` variability has your mind throbbing, 
+
+
 
 
 ---
@@ -145,9 +291,13 @@ GOT TO 34:30
 1. You might also be interested to know that forward declared joins are a core part of [patent US10599650B2 "Enhancements for forward joins expressing relationships"][9], on which Daniel is named as a co-inventor.
 
 <a name="footnote-2"></a>
-2. The thought of moving away from query languages to ORMs and the complexities that come with them "merely" because of the struggle with JOIN syntax reminds me of the classic [Jamie Zawinski][12] quote: _Some people, when confronted with a problem, think "I know, I'll use regular expressions". Now they have two problems_.
+2. The thought of moving away from query languages towards ORMs and the complexities that come with them "merely" because of the struggle with JOIN syntax reminds me of the classic [Jamie Zawinski][12] quote: _Some people, when confronted with a problem, think "I know, I'll use regular expressions". Now they have two problems_.
 
+<a name="footnote-3"></a>
 3. Sorry, I couldn't resist that juxtaposition.
+
+<a name="footnote-4"></a>
+4. Pseudocode yes but also deliberately expressed to remind ourselves of what a relvar (`Authors` in this case) is, i.e. something that points (`->`) to a relation (here represented by an ad hoc set of attributes).
 
 ---
 
@@ -168,3 +318,12 @@ GOT TO 34:30
 [15]: https://en.wikipedia.org/wiki/Denormalization
 [16]: /blog/posts/2025/02/14/tasc-notes-part-8/#the-universe-of-discourse-and-correlated-subqueries
 [17]: /blog/posts/2025/02/14/tasc-notes-part-8/#postfix-projections-and-set-theory
+[18]: https://www.youtube.com/live/Tz7TTM1pOIk?t=2112
+[19]: https://en.wiktionary.org/wiki/change_tack
+[20]: /blog/posts/2025/02/14/tasc-notes-part-8/#exploring-in-sqlite
+[21]: https://cap.cloud.sap/docs/node.js/cds-ql#constructing-queries
+[22]: https://cap.cloud.sap/docs/node.js/cds-reflect#iterable
+[23]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
+[24]: https://www.youtube.com/live/Tz7TTM1pOIk?t=2275
+[25]: /images/2025/02/spiderman-authors.png
+[26]: https://www.imdb.com/title/tt0824188/
