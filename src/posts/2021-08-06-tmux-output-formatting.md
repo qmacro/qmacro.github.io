@@ -99,7 +99,7 @@ In the last part of the pipeline, this value (the name of the session that was s
 tmux switch-client -t writing
 ```
 
-This of course is the denoument to which we've been building up, and our `tmux` client is switched to the session we selected. Success!
+This of course is the denouement to which we've been building up, and our `tmux` client is switched to the session we selected. Success!
 
 ## Formats and an alternative approach
 
