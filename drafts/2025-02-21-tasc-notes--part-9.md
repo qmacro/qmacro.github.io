@@ -92,7 +92,7 @@ This is the basis of how Daniel shows that CQL is a valid extension to SQL in te
 
 ### Nesting not flattening
 
-In the previous part we also learned about the [postfix projection][17] approach for queries, enabling us to express the desired tuple shape in a `{ ... }` block that arguably better represents the concept we're aiming for. Here, that would be (in pseudocode):
+In the previous part we also learned about the [postfix projection][17] approach for queries, enabling us to express the desired tuple shape in a `{ ... }` block that arguably better represents the concept we're aiming for. Here, that would be (in pseudocode[<sup>4</sup>](#footnote-4)):
 
 ```text
 Authors -> { ID, name, books.title as book }
@@ -179,6 +179,7 @@ The point is that in the "universe of discourse" here, this entry in the lookup 
 
 In other words, this database schema is a lookup table of relvars pointing to definitions, and queries relating to those definitions (of relations) have data returned as the "extent".
 
+<a name="universes-and-variables"></a>
 ## Universes and variables
 
 In the universe of discourse that encapsulates queries, `Authors` is a relvar (as it refer to a relation).
@@ -277,7 +278,101 @@ entity {
 
 _Screenshot from [Double Identity][26] (1967)_
 
-If the whole `Authors` variability has your mind throbbing, 
+Just as we're reeling with wonder, Daniel introduces the denouement (at around [37:58][24]), subtly at first, by capturing a query in (assigning a query to) a variable (remember, [queries are first class citizens in CAP][27]):
+
+```javascript
+authors = cds.ql `SELECT from sap.capire.bookshop.Authors { ID, name, books { title as book } }`
+```
+
+What is `authors` here? Well, it's a query, yes:
+
+```text
+cds.ql {
+  SELECT: {
+    from: { ref: [ 'sap.capire.bookshop.Authors' ] },
+    columns: [
+      { ref: [ 'ID' ] },
+      { ref: [ 'name' ] },
+      {
+        ref: [ 'books' ],
+        expand: [ { ref: [ 'title' ], as: 'book' } ]
+      }
+    ]
+  }
+}
+```
+
+But it's _also a relvar_, because as we learned in the previous part, [queries declare relations!][28].
+
+And because `authors` is a relvar, we should be able to use it to make a query.
+
+Can we?
+
+```javascript
+await SELECT.from(authors)
+```
+
+Of course we can!
+
+```json
+[
+  {
+    ID: 101,
+    name: 'Emily Brontë'
+    books: [ { book: 'Wuthering Heights' } ]
+  },
+  {
+    ID: 107,
+    name: 'Charlotte Brontë',
+    books: [ { book: 'Jane Eyre' } ]
+  },
+  {
+    ID: 150,
+    name: 'Edgar Allen Poe',
+    books: [ { book: 'The Raven' }, { book: 'Eleonora' } ]
+  },
+  {
+    ID: 170,
+    name: 'Richard Carpenter',
+    books: [ { book: 'Catweazle' } ]
+  }
+]
+```
+
+Boom!
+
+I don't know about you, but this is another beautiful moment, to see the depth to which CAP follows and is informed by the relational model. Reflecting on [what the original wiki has to say about the Relational Model][29][<sup>6</sup>](#footnote-6):
+
+> _It has been the foundation of most database software and theoretical database research ever since._
+
+CAP's intentions and achievements here are worthy of deep reflection.
+
+### A note on fully qualified names and reflected variables
+
+In Daniel's demo the unqualified `Authors` entity name was used, which is why it didn't work[<sup>5</sup>](#footnote-5) at the time. The fully qualified name `sap.capire.bookshop.Authors` is needed.
+
+If this is too cumbersome, remember that you have the automatically reflected entities in the cds REPL:
+
+```text
+Following variables are made available in your repl's global context:
+
+from cds.entities: {
+  Books,
+  Authors,
+  Genres,
+}
+``` 
+
+So
+
+```javascript
+authors = cds.ql `SELECT from ${Authors} { ID, name, books { title as book } }`
+```
+
+would work nicely too (noting here that [we redefined the value for `Authors` earlier](#universes-and-variables), but to the same value :-)).
+
+
+
 
 
 
@@ -298,6 +393,12 @@ If the whole `Authors` variability has your mind throbbing,
 
 <a name="footnote-4"></a>
 4. Pseudocode yes but also deliberately expressed to remind ourselves of what a relvar (`Authors` in this case) is, i.e. something that points (`->`) to a relation (here represented by an ad hoc set of attributes).
+
+<a name="footnote-5"></a>
+5. Not because of any breakage in the "infer" code.
+
+<a name="footnote-6"></a>
+6. Yes, I couldn't resist referencing the Cunningham & Cunningham wiki, the home of the creator of the wiki Ward Cunningham and indeed [already mentioned in the notes to part 3 of this series][30] too.
 
 ---
 
@@ -327,3 +428,7 @@ If the whole `Authors` variability has your mind throbbing,
 [24]: https://www.youtube.com/live/Tz7TTM1pOIk?t=2275
 [25]: /images/2025/02/spiderman-authors.png
 [26]: https://www.imdb.com/title/tt0824188/
+[27]: /blog/posts/2024/12/16/functions-as-first-class-citizens-in-sicp-lecture-1a/
+[28]: /blog/posts/2025/02/14/tasc-notes-part-8/#queries-declare-relations
+[29]: https://wiki.c2.com/?RelationalModel
+[30]: /blog/posts/2024/11/29/tasc-notes-part-3/
