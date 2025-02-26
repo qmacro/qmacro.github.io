@@ -42,9 +42,11 @@ While Mr Big might have said "[names is for tombstones baby][6]" (a phrase which
 
 We've thought about this already in terms of one of the two main ways that CQL extends SQL, i.e. as a _path expression_. Another term to use which Daniel introduces us to now is a "flattening" which makes a lot of sense, in that we can think of and treat the items in this projection (alternatively the _attributes_ in this _tuple_ shape construction) as flat, as along the same(attribute/tuple) plane. This is of course despite whatever SQL is required to actually realise this query expression - in particular a JOIN (the `.` in the name gives us a clue to this respect).
 
-Talking of JOINs, we must note that, being a path expression, `author.name` benefits from the concept of a "forward declared join" (`author` represents the association). We can see a brief mention of this concept in Capire for [associations in CDL][7]:
+Talking of JOINs, we must note that, being a path expression, `author.name` benefits from the concept of a "forward declared join" (`author` represents the association). There's a brief mention of this concept in Capire for [associations in CDL][7]:
 
 > "Associations capture relationships between entities. They are like forward-declared joins added to a table definition in SQL."
+
+There's also a longer explanation in the dropdown box within the [Associations][49] section of the Best Practices topic in Capire.
 
 Like the concept of a "relvar", this is something I initially struggled to grok. But having previously asked around internally and got some great help from lovely colleagues (thanks Patrice, Sebastian and Adrian)[<sup>1</sup>](#footnote-1), I think of forward declared joins as a sort of more abstract "preamble" description of a relationship, that might likely be realised by a JOIN at the SQL level. Think of it as an expression of join opportunities with additional info on relationship qualification, i.e. ON conditions, which here are pulled from the managed associations used in the CDS model.
 
@@ -653,6 +655,89 @@ we get double the number of records for Mr Poe, as we've followed the to-many as
 
 > Did you notice the subtle but ultimately vast convenience of the [as yet unwritten][45] convention of naming elements in the singular or plural according to the cardinality of the association? In constructing or reading the extended path expression `books.author...` we instinctively know that `books.` represents a to-many association but `author.` represents a to-one association.
 
+### "You're supposed to vote for _my_ preference!"
+
+One way to bring the data back cleanly is to include the `DISTINCT` keyword; and here we get an insight into the inner workings of the CAP team; what seems on the surface like trivial minutiae - where to allow the placement of such a keyword - is, like everything else, an important discussion that will have ramifications long after the discussion is done.
+
+Currently there are two options being debated:
+
+* Daniel prefers the `DISTINCT` to follow the `SELECT` statement directly, as in `SELECT DISTINCT FROM Authors ...`
+* The compiler team prefer it after the relvar and projection, as in `SELECT FROM Authors { ... } DISTINCT ...`
+
+Right now, the compiler team have the edge, thus:
+
+```javascript
+await cds.ql `
+  SELECT 
+    FROM Authors[ID >= 150] DISTINCT {
+      name, books.author.books.author.books {
+        title 
+      }
+    }
+`
+```
+
+which produces:
+
+```json
+[
+  {
+    name: 'Edgar Allen Poe',
+    books_author_books_author_books: [ { title: 'The Raven' }, { title: 'Eleonora' } ]
+  },
+  {
+    name: 'Richard Carpenter',
+    books_author_books_author_books: [ { title: 'Catweazle' } ]
+  }
+]
+```
+
+On playfully expressing a preference for this, I am reprimanded by Daniel. And rightly so ;-)
+
+### Expressing paths in the FROM clause
+
+Not only are path expressions possible in projections, but also even in `FROM` clauses, as Daniel illustrates next (at around [53:14][46]):
+
+```javascript
+await cds.ql `
+  SELECT 
+    FROM sap.capire.bookshop.Authors:books {
+      ID, title
+    }
+`
+```
+
+which produces:
+
+```json
+[
+  { ID: 201, title: 'Wuthering Heights' },
+  { ID: 207, title: 'Jane Eyre' },
+  { ID: 251, title: 'The Raven' },
+  { ID: 252, title: 'Eleonora' },
+  { ID: 271, title: 'Catweazle' }
+]
+```
+
+So far we have seen the use of the period `.` to join parts of a path expression together. But in the context of a `FROM` clause, where we are normally specifying entity names, which can be fully qualified and therefore contain periods (e.g. with a namespace prefix, like here: `sap.capire.bookshop.Authors`), we must use a different character - the colon `:`.
+
+Note that the example above was just to illustrate this contrast between the use of `.` and `:`; you can of course also just say:
+
+```javascript
+await cds.ql `
+  SELECT 
+    FROM Authors:books {
+      ID, title
+    }
+`
+```
+
+See the [Path Expressions][47] section of the CQL topic in Capire for further information on this.
+
+### Understanding path intent and realisation
+
+At [54:51][48], Daniel reminds us that with great power comes great responsibility. While it's easy to create CQL queries that get you what you (ostensibly) want, you should always be aware of the implicit intent of the expression, and how it's realised underneath.
+
 
 
 
@@ -770,3 +855,7 @@ would work nicely too (noting here that [we redefined the value for `Authors` ea
 [43]: https://en.wikipedia.org/wiki/Larry_Wall
 [44]: https://en.wikipedia.org/wiki/Alan_Kay
 [45]: https://cap.cloud.sap/docs/guides/domain-modeling#naming-conventions
+[46]: https://www.youtube.com/live/Tz7TTM1pOIk?t=3194
+[47]: https://cap.cloud.sap/docs/cds/cql#path-expressions
+[48]: https://www.youtube.com/live/Tz7TTM1pOIk?t=3291
+[49]: https://cap.cloud.sap/docs/about/best-practices#associations
