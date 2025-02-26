@@ -736,7 +736,102 @@ See the [Path Expressions][47] section of the CQL topic in Capire for further in
 
 ### Understanding path intent and realisation
 
-At [54:51][48], Daniel reminds us that with great power comes great responsibility. While it's easy to create CQL queries that get you what you (ostensibly) want, you should always be aware of the implicit intent of the expression, and how it's realised underneath.
+At [54:51][48], building on this newfound ability to express paths in the `FROM` clause, Daniel reminds us that with great power comes great responsibility. While it's easy to create CQL queries that get you what you (ostensibly) want, you should always be aware of the implicit intent of the expression, and how it's realised underneath.
+
+Here's an example. At this point in time, the query we just executed (written in-line again so we can compare it more easily with the next one):
+
+```javascript
+await cds.ql `SELECT FROM Authors:books { ID, title }`
+```
+
+produces this:
+
+```json
+[
+  { ID: 201, title: 'Wuthering Heights' },
+  { ID: 207, title: 'Jane Eyre' },
+  { ID: 251, title: 'The Raven' },
+  { ID: 252, title: 'Eleonora' },
+  { ID: 271, title: 'Catweazle' }
+]
+```
+
+By way of comparison, this query:
+
+```javascript
+await cds.ql `SELECT FROM Books { ID, title }`
+```
+
+also produces the same.
+
+The difference becomes evident when we add a new book:
+
+```shell
+> await INSERT.into(Books, { title: 'Robin of Sherwood' })
+InsertResult { results: [ { changes: 1, lastInsertRowid: 272 } ] }
+```
+
+While the `SELECT FROM Books { ID, title }` includes this new book in the result set:
+
+```json
+[
+  { ID: 201, title: 'Wuthering Heights' },
+  { ID: 207, title: 'Jane Eyre' },
+  { ID: 251, title: 'The Raven' },
+  { ID: 252, title: 'Eleonora' },
+  { ID: 271, title: 'Catweazle' },
+  { ID: 272, title: 'Robin of Sherwood' }
+]
+```
+
+the one with the path expression in the `FROM` clause (`SELECT FROM Authors.books { ID, title }`) does not!
+
+Why? Well, consider what we inserted, and what we didn't, plus what the root of the path expression `Authors.books` is:
+
+* the root of the path expression is `Authors`
+* the insertion target was `Books`
+* the relation between a book and its author is via the `author_ID` foreign key on `Books`
+* but we didn't include any value for `author_ID` (spot the `null` value)
+
+```shell
+> await cds.ql `SELECT FROM Books { ID, title, author_ID }`
+[
+  { ID: 201, title: 'Wuthering Heights', author_ID: 101 },
+  { ID: 207, title: 'Jane Eyre', author_ID: 107 },
+  { ID: 251, title: 'The Raven', author_ID: 150 },
+  { ID: 252, title: 'Eleonora', author_ID: 150 },
+  { ID: 271, title: 'Catweazle', author_ID: 170 },
+  { ID: 272, title: 'Robin of Sherwood', author_ID: null }
+]
+```
+
+So following the path from `Authors` along the `books` association will not reach any tuple corresponding to this new insertion!
+
+Of course, we can fix that:
+
+```shell
+> await UPDATE(Books).set({ author_ID:170 }).where({ ID:272 })
+1
+```
+
+With the result that we can now find the book if we start from the authors:
+
+```shell
+> await cds.ql `SELECT FROM Authors:books { ID, title }`
+[
+  { ID: 201, title: 'Wuthering Heights' },
+  { ID: 207, title: 'Jane Eyre' },
+  { ID: 251, title: 'The Raven' },
+  { ID: 252, title: 'Eleonora' },
+  { ID: 271, title: 'Catweazle' },
+  { ID: 272, title: 'Robin of Sherwood' }
+]
+```
+
+Nice!
+
+TODO GOT TO 55:30
+
 
 
 
