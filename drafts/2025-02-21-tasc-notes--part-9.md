@@ -542,6 +542,122 @@ and
 
 * infix filters
 
+What fills me with wonder and amazement at this point is that what we think therefore might be possible, extrapolating from what we've learned thus far in this context ... **is** actually possible.
+
+This does remind me of one adage that is a tagline of Perl, which is that it "_makes easy things easy and hard things possible_". This is of course from the great [Larry Wall][43][<sup>9</sup>](#footnote-9), and possibly originally from the equally great [Alan Kay][44].
+
+[To wit][42]: being "all just a path game", we can stretch these path expressions to hop between associations as we see fit(this is a slightly simplified version based on what Daniel used):
+
+```javascript
+await cds.ql `
+  SELECT 
+    FROM Authors[ID >= 150] {
+      name, books.authors.books {
+        title 
+      }
+    }
+`
+```
+
+This produces a sort of hybrid of [nesting and flattening](#nesting-not-flattening), with the nesting coming from the postfx projection (`books { title }`) and the flattening from the rest of the extended path expression (`books.authors.books`):
+
+```json
+[
+  {
+    name: 'Edgar Allen Poe',
+    books_author_books: [ { title: 'The Raven' }, { title: 'Eleonora' } ]
+  },
+  {
+    name: 'Edgar Allen Poe',
+    books_author_books: [ { title: 'The Raven' }, { title: 'Eleonora' } ]
+  },
+  {
+    name: 'Richard Carpenter',
+    books_author_books: [ { title: 'Catweazle' } ]
+  }
+]
+```
+
+Let's refresh our memories on this CDS model:
+
+```cds
+entity Books : {
+  key ID : Integer;
+  title  : String;
+  author : Association to Authors;
+}
+
+entity Authors : {
+  key ID : Integer;
+  name  : String;
+  books : Association to many Books on books.author = $self;
+}
+```
+
+If we look at Mr Poe and his two works, we can clearly see the effect of both. With the nesting, the two books are returned within the one author: `[ { title: 'The Raven' }, { title: 'Eleonora' } ]`.
+
+With the flattening, the author has been denormalised due to the to-many association (`books.`) section within the extended path expression:
+
+```json
+[
+  {
+    name: 'Edgar Allen Poe',
+    books_author_books: [ { title: 'The Raven' }, { title: 'Eleonora' } ]
+  },
+  {
+    name: 'Edgar Allen Poe',
+    books_author_books: [ { title: 'The Raven' }, { title: 'Eleonora' } ]
+  }
+]
+```
+
+If we go crazy and do this, in the interests of science:
+
+```javascript
+await cds.ql `
+  SELECT 
+    FROM Authors[ID >= 150] {
+      name, books.author.books.author.books {
+        title 
+      }
+    }
+`
+```
+
+we get double the number of records for Mr Poe, as we've followed the to-many association twice through (in the path expression, i.e. not including the postfix projection):
+
+```json
+[
+  {
+    name: 'Edgar Allen Poe',
+    books_author_books_author_books: [ { title: 'The Raven' }, { title: 'Eleonora' } ]
+  },
+  {
+    name: 'Edgar Allen Poe',
+    books_author_books_author_books: [ { title: 'The Raven' }, { title: 'Eleonora' } ]
+  },
+  {
+    name: 'Edgar Allen Poe',
+    books_author_books_author_books: [ { title: 'The Raven' }, { title: 'Eleonora' } ]
+  },
+  {
+    name: 'Edgar Allen Poe',
+    books_author_books_author_books: [ { title: 'The Raven' }, { title: 'Eleonora' } ]
+  },
+  {
+    name: 'Richard Carpenter',
+    books_author_books_author_books: [ { title: 'Catweazle' } ]
+  }
+]
+```
+
+> Did you notice the subtle but ultimately vast convenience of the [as yet unwritten][45] convention of naming elements in the singular or plural according to the cardinality of the association? In constructing or reading the extended path expression `books.author...` we instinctively know that `books.` represents a to-many association but `author.` represents a to-one association.
+
+
+
+
+
+
 
 
 
@@ -604,6 +720,9 @@ would work nicely too (noting here that [we redefined the value for `Authors` ea
 <a name="footnote-8"></a>
 8. [Beyond the basics, with which folks still seem to be struggling][36].
 
+<a name="footnote-9"></a>
+9. Whom I've met a couple of times in my erstwhile role as speaker at the fantastic Foo Camp, Perl Conferences and Open Source Convention (OSCON) conferences, and as member of the Perl community.
+
 ---
 
 [1]: https://www.youtube.com/watch?v=Tz7TTM1pOIk
@@ -647,3 +766,7 @@ would work nicely too (noting here that [we redefined the value for `Authors` ea
 [39]: https://www.youtube.com/live/Tz7TTM1pOIk?t=2727
 [40]: /blog/posts/2025/02/14/tasc-notes-part-8/#a-closure-easter-egg
 [41]: /blog/posts/2024/12/13/tasc-notes-part-5/#cql-sql
+[42]: https://www.collinsdictionary.com/dictionary/english/to-wit
+[43]: https://en.wikipedia.org/wiki/Larry_Wall
+[44]: https://en.wikipedia.org/wiki/Alan_Kay
+[45]: https://cap.cloud.sap/docs/guides/domain-modeling#naming-conventions

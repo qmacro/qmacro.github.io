@@ -278,7 +278,7 @@ entity Books : {
 entity Authors : {
   key ID : Integer;
   name  : String;
-  books : Association many Books on books.author = $self;
+  books : Association to many Books on books.author = $self;
 }
 ```
 
