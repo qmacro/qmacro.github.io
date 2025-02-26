@@ -15,6 +15,7 @@ For all resources related to this series, see the post [The Art and Science of C
 
 I take a little longer than usual to go through the [notes to the previous part 8][3] as there was so much that Daniel covered and it was worth spending time making sure we're all on the same page.
 
+<a name="whats-in-a-name"></a>
 ## What's in a name?
 
 At [26:46][4] I finally give Daniel a chance to continue, picking up more or less where we left off last time, and that was with some query action.
@@ -58,6 +59,7 @@ FROM Books
 JOIN Authors as author ON author.ID = Books.author_ID
 ```
 
+<a name="from-to-one-to-to-many-associations"></a>
 ## From to-one to to-many associations
 
 ```text
@@ -90,6 +92,7 @@ Observe how this [ad hoc relation][14] is [denormalised][15] - there is redundan
 
 This is the basis of how Daniel shows that CQL is a valid extension to SQL in terms of the relational model, remembering also the enhancement to allow non-scalar values in a result set, which we covered at the end of the previous part - see [The universe of discourse and correlated subqueries][16].
 
+<a name="nesting-not-flattening"></a>
 ### Nesting not flattening
 
 In the previous part we also learned about the [postfix projection][17] approach for queries, enabling us to express the desired tuple shape in a `{ ... }` block that arguably better represents the concept we're aiming for. Here, that would be (in pseudocode[<sup>4</sup>](#footnote-4)):
@@ -133,6 +136,7 @@ What's returned is the same, from a nominal data perspective. But from a shape p
 
 As a bonus side effect of all this hard work (abstraction, extension and dedicated conformance to the constraints of the relational model) CAP's support for relational and non-relational (object) persistence mechanisms is impressive.
 
+<a name="its-lookup-tables-all-the-way-down"></a>
 ## It's lookup tables all the way down
 
 At around [35:12][18] Daniel take the opportunity to both double down on concepts and insights we've covered before, and to drive them home. While still in the cds REPL, he [changes tack][19] slightly and takes another look at the SQLite schema table, the same one that we looked at last week - see [Exploring in SQLite][20].
@@ -272,6 +276,7 @@ entity {
 }
 ```
 
+<a name="relvars-and-queries-that-declare-relations-revisited"></a>
 ## Relvars and queries that declare relations (revisited)
 
 ![Two Spiderman characters looking at each other, with the word "Authors" below them][25]
@@ -302,7 +307,7 @@ cds.ql {
 }
 ```
 
-But it's _also a relvar_, because as we learned in the previous part, [queries declare relations!][28].
+But it's _also a relvar_, because as we learned in the previous part, [queries declare relations][28] (even - or perhaps especially - those with `WHERE` clauses; see the next section for an example of this).
 
 And because `authors` is a relvar, we should be able to use it to make a query.
 
@@ -341,13 +346,70 @@ Of course we can!
 
 Boom!
 
-I don't know about you, but this is another beautiful moment, to see the depth to which CAP follows and is informed by the relational model. Reflecting on [what the original wiki has to say about the Relational Model][29][<sup>6</sup>](#footnote-6):
+I don't know about you, but this is another beautiful moment, to see the depth to which CAP follows and is informed by the relational model. Reflecting on [what the original wiki has to say about the Relational Model][29][<sup>6</sup>](#footnote-6) we see why this is important:
 
-> _It has been the foundation of most database software and theoretical database research ever since._
+"_It has been the foundation of most database software and theoretical database research ever since._"
 
-CAP's intentions and achievements here are worthy of deep reflection.
+> See [Appendix - A note on fully qualified names and reflected variables](#appendix-fully-qualified-names-and-reflected-variables) for further information on this, including the reason this didn't work for Daniel during the live stream.
 
-### A note on fully qualified names and reflected variables
+<a name="defining-a-relvar-as-a-query-with-a-where-clause"></a>
+## Defining a relvar as a query with a WHERE clause
+
+Arounbd [39:40][31], answering my question on what we might call such relvars based on queries with `WHERE` clauses, which are then used in queries with `WHERE` clauses themselves, Daniel explains that these relvars are like views. And with their nest-able, or "reflexive" nature, we can have "views upon views upon views upon views ...".
+
+![a photo of a stack of turtles][32]
+
+_Turtles (or views) all the way down - [image courtesy of Pelf and Wikipedia][33]._
+
+Here's an example of that. If we define a relvar `worksOfPoe` (also directly "testing" it) thus:
+
+```shell
+> worksOfPoe = cds.ql `SELECT FROM ${Books} { ID, title } WHERE author.name like '%Poe'`
+cds.ql {
+  SELECT: {
+    from: { ref: [ 'sap.capire.bookshop.Books' ] },
+    columns: [ { ref: [ 'ID' ] }, { ref: [ 'title' ] } ],
+    where: [ { ref: [ 'author', 'name' ] }, 'like', { val: '%Poe' } ]
+  }
+}
+> await worksOfPoe
+[ { ID: 251, title: 'The Raven' }, { ID: 252, title: 'Eleonora' } ]
+```
+
+then we can think of this as a view, and use it like this:
+
+```shell
+> await SELECT.from(worksOfPoe).where(`title like 'The %'`)
+[ { ID: 251, title: 'The Raven' } ]
+```
+
+<a name="lazy-evaluation-and-late-materialisation"></a>
+## Lazy evaluation and late materialisation
+
+Let's go back briefly to a key source of inspiration for CAP, functional programming. There's a particular aspect of functional programming that we haven't mentioned much in this series, and that is [lazy evaluation][34], introduced in the contexts of lambda calculus and programming languages in the 1970's. Lazy (or "delayed") evaluation is where an expression is not evaluated as soon as it's defined and bound to a variable; the evaluation is delayed until a value is actually required.
+
+As Daniel mentions, this is a valuable approach for views in this context too, especially if we have a view defined on a view defined on a view (ad nauseam, if not ad infinitum[<sup>7</sup>](#footnote-7)). The individual materialisation of just one of those views, especially towards the bottom of the stack, might be hundreds of columns (ahem, attributes) but the amalgamated construct of all the views might be just a couple.
+
+Because of late materialisation, the relational model equivalent of lazy evaluation, this makes it possible for the engine to perform more efficiently, and ultimately only have to reify tuples consisting of just those two attributes.
+
+<a name="projections-selections-and-infix-filters"></a>
+## Projections, selections and infix filters
+
+Continuing at [42:34][35], Daniel enters this into his cds REPL to lay the foundation for explaining infix filters:
+
+```javascript
+await cds.ql `SELECT from Authors { ID, name, books { ID, title } } where ID >= 150`
+```
+
+But first, why don't we take the opportunity to double down on getting the terminology right? I find that knowing and using the right terms for technical concepts[<sup>8</sup>](#footnote-8) really helps form solid synaptic connections and is the basis for better understanding and communication.
+
+
+
+
+---
+
+<a name="appendix-fully-qualified-names-and-reflected-variables"></a>
+## Appendix - fully qualified names and reflected variables
 
 In Daniel's demo the unqualified `Authors` entity name was used, which is why it didn't work[<sup>5</sup>](#footnote-5) at the time. The fully qualified name `sap.capire.bookshop.Authors` is needed.
 
@@ -371,12 +433,6 @@ authors = cds.ql `SELECT from ${Authors} { ID, name, books { title as book } }`
 
 would work nicely too (noting here that [we redefined the value for `Authors` earlier](#universes-and-variables), but to the same value :-)).
 
-
-
-
-
-
-
 ---
 
 <a name="footnotes"></a>
@@ -399,6 +455,12 @@ would work nicely too (noting here that [we redefined the value for `Authors` ea
 
 <a name="footnote-6"></a>
 6. Yes, I couldn't resist referencing the Cunningham & Cunningham wiki, the home of the creator of the wiki Ward Cunningham and indeed [already mentioned in the notes to part 3 of this series][30] too.
+
+<a name="footnote-7"></a>
+7. Once a Classics (Latin & Greek) scholar, always a Classics scholar, natch.
+
+<a name="footnote-8"></a>
+8. [Beyond the basics, with which folks still seem to be struggling][36].
 
 ---
 
@@ -432,3 +494,9 @@ would work nicely too (noting here that [we redefined the value for `Authors` ea
 [28]: /blog/posts/2025/02/14/tasc-notes-part-8/#queries-declare-relations
 [29]: https://wiki.c2.com/?RelationalModel
 [30]: /blog/posts/2024/11/29/tasc-notes-part-3/
+[31]: https://www.youtube.com/live/Tz7TTM1pOIk?t=2380
+[32]: /images/2025/02/stack-of-turtles.jpg
+[33]: https://en.wikipedia.org/wiki/File:River_terrapin.jpg
+[34]: https://en.wikipedia.org/wiki/Lazy_evaluation
+[35]: https://www.youtube.com/live/Tz7TTM1pOIk?t=2554
+[36]: /blog/posts/2024/01/22/accuracy-and-precision-in-language/
