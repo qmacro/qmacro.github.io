@@ -90,7 +90,7 @@ This new query which also has a path expression, this time based on the to-many 
 
 Observe how this [ad hoc relation][14] is [denormalised][15] - there is redundancy in the tuples owing to the 2 (many) "to-many"[<sup>3</sup>](#footnote-3) association between Edgar Allen Poe and two of his books in the bookshop.
 
-This is the basis of how Daniel shows that CQL is a valid extension to SQL in terms of the relational model, remembering also the enhancement to allow non-scalar values in a result set, which we covered at the end of the previous part - see [The universe of discourse and correlated subqueries][16].
+This is the basis of how Daniel shows that CQL is a valid extension to SQL in terms of the Relational Model, remembering also the enhancement to allow non-scalar values in a result set, which we covered at the end of the previous part - see [The universe of discourse and correlated subqueries][16].
 
 <a name="nesting-not-flattening"></a>
 ### Nesting not flattening
@@ -134,7 +134,7 @@ What's returned is the same, from a nominal data perspective. But from a shape p
 ]
 ```
 
-As a bonus side effect of all this hard work (abstraction, extension and dedicated conformance to the constraints of the relational model) CAP's support for relational and non-relational (object) persistence mechanisms is impressive.
+As a bonus side effect of all this hard work (abstraction, extension and dedicated conformance to the constraints of the Relational Model) CAP's support for relational and non-relational (object) persistence mechanisms is impressive.
 
 <a name="its-lookup-tables-all-the-way-down"></a>
 ## It's lookup tables all the way down
@@ -346,7 +346,7 @@ Of course we can!
 
 Boom!
 
-I don't know about you, but this is another beautiful moment, to see the depth to which CAP follows and is informed by the relational model. Reflecting on [what the original wiki has to say about the Relational Model][29][<sup>6</sup>](#footnote-6) we see why this is important:
+I don't know about you, but this is another beautiful moment, to see the depth to which CAP follows and is informed by the Relational Model. Reflecting on [what the original wiki has to say about the Relational Model][29][<sup>6</sup>](#footnote-6) we see why this is important:
 
 "_It has been the foundation of most database software and theoretical database research ever since._"
 
@@ -390,18 +390,160 @@ Let's go back briefly to a key source of inspiration for CAP, functional program
 
 As Daniel mentions, this is a valuable approach for views in this context too, especially if we have a view defined on a view defined on a view (ad nauseam, if not ad infinitum[<sup>7</sup>](#footnote-7)). The individual materialisation of just one of those views, especially towards the bottom of the stack, might be hundreds of columns (ahem, attributes) but the amalgamated construct of all the views might be just a couple.
 
-Because of late materialisation, the relational model equivalent of lazy evaluation, this makes it possible for the engine to perform more efficiently, and ultimately only have to reify tuples consisting of just those two attributes.
+Because of late materialisation, the Relational Model equivalent of lazy evaluation, this makes it possible for the engine to perform more efficiently, and ultimately only have to reify tuples consisting of just those two attributes.
 
-<a name="projections-selections-and-infix-filters"></a>
-## Projections, selections and infix filters
+<a name="projections-selections-and-infix-notation"></a>
+## Projections, selections and infix notation
 
 Continuing at [42:34][35], Daniel enters this into his cds REPL to lay the foundation for explaining infix filters:
 
 ```javascript
-await cds.ql `SELECT from Authors { ID, name, books { ID, title } } where ID >= 150`
+await cds.ql `
+  SELECT 
+    FROM Authors {
+      ID, name, books { 
+        ID, title 
+      }
+    }
+    WHERE ID >= 150
+`
 ```
 
-But first, why don't we take the opportunity to double down on getting the terminology right? I find that knowing and using the right terms for technical concepts[<sup>8</sup>](#footnote-8) really helps form solid synaptic connections and is the basis for better understanding and communication.
+> For longer examples like this that use the backtick construct (`` `...` ``), I'm experimenting with conveying them across multiple lines; let me know if this makes it easier. By the way, I try to ensure that they're still executable as-is if you copy and paste them (thanks to the [support of multi-line strings in template literals][38]). I'm also thinking of capitalising the CQL keywords as I've done here. Let me know what you think about this too, and what your preference is.
+
+But first, why don't we take the opportunity to stare at this CQL statement and practise getting the terminology right? I find that knowing and using the right terms for technical concepts[<sup>8</sup>](#footnote-8) really helps form solid synaptic connections and is the basis for better understanding and communication.
+
+First, `{ ID, name, books { ID, title } }` is a **projection** and `where ID >= 150` is a **selection** of the `Authors` **relation** (or perhaps even more precisely of the **relation** referred to with the `Authors` **relvar**).
+
+Projections and selections are the two major operations in the Relational Model.
+
+Next, `{ ID, title }` is also a **projection**, of the **relation** referred to via the `books` **relvar**. What Daniel also refers to as an "inner relation". Note that even though it only has a single component, `books` here is also a **path expression** (see [From to-one to to-many associations](#from-to-one-to-to-many-associations) earlier). Note that the **projection** `{ ID, title }` qualifying that relation is a **_postfix_ projection**.
+
+Now, with that out of the way, let's dig in to what this section is really about, and that is the concept of **infix filters**, a syntactic solution, in a way, to finding the right balance between clarity and understanding at the CQL expression level and how much work the compiler has to do (and how much chance there is for an error to occur) to turn the CQL into something the persistence layer can execute. We touched on [infix filters in the notes to part 5 of this series][37] and Daniel gives us an example of an infix filter here.
+
+First, let's look at what the query above returns, which is:
+
+```json
+[
+  {
+    ID: 150,
+    name: 'Edgar Allen Poe',
+    books: [ { ID: 251, title: 'The Raven' }, { ID: 252, title: 'Eleonora' } ]
+  },
+  {
+    ID: 170,
+    name: 'Richard Carpenter',
+    books: [ { ID: 271, title: 'Catweazle' } ]
+  }
+]
+```
+
+If we wanted to restrict the output to only show the books that had `ID` values greater than 251 (effectively excluding "The Raven" here) then we might think that this would be the approach, with a selection - a `where` clause (`where ID > 251`) - directly following the nested projection:
+
+```javascript
+await cds.ql `
+  SELECT 
+    FROM Authors {
+      ID, name, books { 
+        ID, title 
+      }
+      WHERE ID > 251
+    }
+    WHERE ID >= 150
+` // this is incorrect!
+```
+
+Because this would present problems (and possible ambiguities) for the compiler, this is not the way.
+
+_This_ is the way:
+
+```javascript
+await cds.ql `
+  SELECT 
+    FROM Authors {
+      ID, name, books[ID > 251] { 
+        ID, title 
+      }
+    }
+    WHERE ID >= 150
+`
+```
+
+which produces:
+
+```json
+[
+  {
+    ID: 150,
+    name: 'Edgar Allen Poe',
+    books: [ { ID: 252, title: 'Eleonora' } ]
+  },
+  {
+    ID: 170,
+    name: 'Richard Carpenter',
+    books: [ { ID: 271, title: 'Catweazle' } ]
+  }
+]
+```
+
+There's actually an optional `where` keyword that can be used here for clarity, if you wish, i.e. `books [where ID > 251]`:
+
+In fact, the infix construct `[ ... ]` allows for not only filters, but other query result mechanisms, such as ordering (note here that to get back both books for Poe being returned, the filter was changed from `ID > 251` to `ID > 250`):
+
+```javascript
+await cds.ql `
+  SELECT 
+    FROM Authors {
+      ID, name, books[where ID > 251 order by title desc] { 
+        ID, title 
+      }
+    }
+    WHERE ID >= 150 order by name desc
+`
+```
+
+(This doesn't currently work as expected, due to some issues. Watch this space!)
+
+### The universes of discourse and closures
+
+At [45:27][39], in the context of these CQL statements we've just been playing around with, Daniel declares something that is obvious when we think about it for a second, but is still necessary to say out loud:
+
+* `Authors` and `books` are path expressions
+* The "path" part of a path expression always has to start somewhere
+* That "somewhere" is a universe of discourse, or scope
+* For `books` it is `Authors`
+* For `Authors` it is ... _the schema_
+
+and yes:
+
+* These enclosing relationships and references are indeed [similar to closures][40].
+
+### "It's all just a path game"
+
+Moving back to the infix notation briefly, Daniel illustrates that "it's all just a path game", and in fact the outermost `WHERE` clause (the selection) on `Authors` could be expressed using infix notation too:
+
+```javascript
+await cds.ql `
+  SELECT 
+    FROM Authors[ID >= 150] {
+      ID, name, books[ID > 251] { 
+        ID, title 
+      }
+    }
+`
+```
+
+Perhaps we should revisit our "definition" of [CQL > SQL][41] to add a third enhancement:
+
+* associations and path expressions
+* nested projections
+
+and
+
+* infix filters
+
+
+
 
 
 
@@ -500,3 +642,8 @@ would work nicely too (noting here that [we redefined the value for `Authors` ea
 [34]: https://en.wikipedia.org/wiki/Lazy_evaluation
 [35]: https://www.youtube.com/live/Tz7TTM1pOIk?t=2554
 [36]: /blog/posts/2024/01/22/accuracy-and-precision-in-language/
+[37]: /blog/posts/2024/12/13/tasc-notes-part-5/#infix-filters
+[38]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#multi-line_strings
+[39]: https://www.youtube.com/live/Tz7TTM1pOIk?t=2727
+[40]: /blog/posts/2025/02/14/tasc-notes-part-8/#a-closure-easter-egg
+[41]: /blog/posts/2024/12/13/tasc-notes-part-5/#cql-sql

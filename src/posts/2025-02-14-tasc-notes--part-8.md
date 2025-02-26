@@ -525,6 +525,9 @@ By the way:
 
 * The "correlated" part of this SQL subselect (subquery) is how the inner relation (`WHERE Authors.ID = books.author_ID`) refers to a value in the outer query (`SELECT Authors.ID`)
 
+<a name="a-closure-easter-egg"></a>
+## A closure Easter Egg
+
 This is where this episode ends, having imparted a metric tonne of wonder and understanding both from the art and the science side of CAP. But did you notice? Daniel wasn't even done at this point - he left us with a small Easter Egg here, in showing us the nature of correlated subqueries.
 
 What is that Easter Egg? Well, we've previously learned how some functional programming concepts such as pure functions play a key role in the layers that inform CAP's design and implementation. Well, here's another: did you notice how correlated subqueries are exactly like [closures][37] (a technique for implementing lexically scoped name binding in languages with support for first class functions)? Let me know in the comments what you think.
