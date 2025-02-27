@@ -938,7 +938,7 @@ Earlier in these notes we dwelled briefly on the fact that "above" every domain 
 * [It's lookup tables all the way down](#its-lookup-tables-all-the-way-down)
 * [Closures and the universes of discourse](#closures-and-the-universes-of-discourse)
 
-This has largely been notional, but the reward is to see Daniel make it real. How? With a deft CDL flavoured flick of the wrist, revisiting the end of part 7:
+This has largely been notional, but the reward is to see Daniel make it real. How? With a deft CDL flavoured flick of the wrist, as hinted at at the end of part 7, but now as something we have a much better chance of understanding:
 
 ```cds
 @singleton
@@ -949,7 +949,7 @@ entity Schema {
 
 Here, we now have a _singleton_ ("[Es kann nur einen geben!][51]") `Schema`, representing the entire context in which our domain entities are resolved.
 
-In fact, the relationship from `Schema` to (here) `Authors` as an association is as if we've bumped up the entity-ness one level higher (to `Schema`) and proved that the `Authors` entity can actually act as an association in this top level universe of discourse.
+In fact, the relationship here from `Schema` to `Authors` as an association is as if we've bumped up the entity-ness one level higher (to `Schema`) and proved that the `Authors` entity can actually act as an association in this top level universe of discourse.
 
 ```javascript
 await cds.ql `SELECT FROM Schema:Authors` // just like <deity> ultimately intended
@@ -961,7 +961,7 @@ The CDS model, and CQL as its language, is really based on decades of theory and
 
 ---
 
-That's the end of the notes for this episode. If you made it all the way here in the notes, please put a comment below to tell me, and thank you for reading!
+That's the end of the notes for this episode. If you made it all the way here, please put a comment below to tell me, and thank you for reading!
 
 ---
 
