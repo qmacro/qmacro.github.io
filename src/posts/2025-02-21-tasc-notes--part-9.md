@@ -66,7 +66,7 @@ JOIN Authors as author ON author.ID = Books.author_ID
 
 ```text
 +---------+                 +---------+
-|  Books  | N <---------> 1 | Authors |
+|  Books  | N [---------] 1 | Authors |
 +---------+                 +---------+
 ```
 
