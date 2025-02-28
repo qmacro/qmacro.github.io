@@ -26,7 +26,7 @@ Part|Broadcast|Live Stream / Recording|Notes & Links|Community
 7|07 Feb 2025|[r_mxsBZSgEo][7]|[TASC Notes - Part 7][17]|[Link][47]
 8|14 Feb 2025|[FF1NzLwsmos][8]|[TASC Notes - Part 8][18]|[Link][48]
 9|21 Feb 2025|[Tz7TTM1pOIk][9]|[TASC Notes - Part 9][19]|[Link][49]
-10|28 Feb 2025|[483aIk_-PqQ][10]|(pending)|[Link][50]
+10|28 Feb 2025|[483aIk_-PqQ][10]|N/A|[Link][50]
 
 
 [1]: https://www.youtube.com/watch?v=XMchiFnDJ6E
