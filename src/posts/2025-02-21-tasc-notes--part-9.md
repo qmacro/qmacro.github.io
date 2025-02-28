@@ -1015,7 +1015,7 @@ So, what's the outcome? At first, a little underwhelming:
 
 But with the understanding we've gained from this episode, we know how things work in theory (associations between relations) and practice (how the compiler will form the appropriate SQL statement out of whatever expressions of art and ideals we choose to make in our CQL explorations of that theory).
 
-And what's missing becomes clear when we allow our minds to chew things over[<sup>10</sup>](#footnote-10): _There's no data at the `Schema` level, so there's going to be no chance of even getting started to follow that to-many association path down to `Authors`!_
+And what's missing becomes clear when we allow our minds to chew things over[<sup>10</sup>](#footnote-10): _There's no data at the `Schema` level, i.e. nothing in the "lookup table", so there's going to be no chance of even getting started to follow that to-many association path down to `Authors`!_
 
 So remedy that (and in fact this remedy was hiding in plain sight when Daniel [first introduced it in part 7][50]):
 
