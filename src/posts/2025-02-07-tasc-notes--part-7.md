@@ -369,12 +369,14 @@ so:
 
 ```text
 > await cds.ql `SELECT from Schema:Books`
-[ <some results> ]
+[ (some results) ]
 ```
 
 Your task (homework), should you choose to accept it, is to think about this, read up on the [Relational Model][40], and maybe even try the queries out yourself. 
 
 Until next time!
+
+**Update 27 Feb 2025**: See the final section of the notes to part 9: [Back to the root(s)][42] for more on this and a dig in to making this real.
 
 ---
 
@@ -435,3 +437,4 @@ Until next time!
 [39]: https://cap.cloud.sap/docs/cds/cql
 [40]: https://en.wikipedia.org/wiki/Relational_model
 [41]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol
+[42]: /blog/posts/2025/02/21/tasc-notes-part-9/#back-to-the-roots
