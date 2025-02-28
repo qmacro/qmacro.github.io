@@ -357,7 +357,7 @@ I don't know about you, but this is another beautiful moment, to see the depth t
 <a name="defining-a-relvar-as-a-query-with-a-where-clause"></a>
 ## Defining a relvar as a query with a WHERE clause
 
-Arounbd [39:40][31], answering my question on what we might call such relvars based on queries with `WHERE` clauses, which are then used in queries with `WHERE` clauses themselves, Daniel explains that these relvars are like views. And with their nest-able, or "reflexive" nature, we can have "views upon views upon views upon views ...".
+Around [39:40][31], answering my question on what we might call such relvars based on queries with `WHERE` clauses, which are then used in queries with `WHERE` clauses themselves, Daniel explains that these relvars are like views. And with their nest-able, or "reflexive" nature, we can have "views upon views upon views upon views ...".
 
 ![a photo of a stack of turtles][32]
 
