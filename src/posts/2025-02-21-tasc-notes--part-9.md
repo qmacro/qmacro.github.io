@@ -938,24 +938,113 @@ Earlier in these notes we dwelled briefly on the fact that "above" every domain 
 * [It's lookup tables all the way down](#its-lookup-tables-all-the-way-down)
 * [Closures and the universes of discourse](#closures-and-the-universes-of-discourse)
 
-This has largely been notional, but the reward is to see Daniel make it real. How? With a deft CDL flavoured flick of the wrist, as hinted at at the end of part 7, but now as something we have a much better chance of understanding:
+This has largely been notional, but the reward is to see Daniel make it real. How? With a deft CDL flavoured flick of the wrist, as hinted at at the end of part 7, but now as something we have a much better chance of understanding.
+
+Here's a version of what was shown in part 7 that you can try at home. First, clone the [cloud-cap-samples][52] repo and change directory into it:
+
+```shell
+$ git clone https://github.com/SAP-samples/cloud-cap-samples \
+  && cd cloud-cap-samples
+```
+
+Then create a file `schema.cds` containing:
 
 ```cds
+using { sap.capire.bookshop.Books as books } from '@capire/bookshop';
+using { sap.capire.bookshop.Authors as authors } from '@capire/bookshop';
+
 @singleton
 entity Schema {
-  Authors : Association to many Authors where 1=1;
+  key ID   : Integer; // just to make it a valid DDL
+  Books    : Association to many books on 1=1;
+  Authors  : Association to many authors on 1=1;
 }
 ```
 
-Here, we now have a _singleton_ ("[Es kann nur einen geben!][51]") `Schema`, representing the entire context in which our domain entities are resolved.
+> Here, we now have a _singleton_ ("[Es kann nur einen geben!][51]") `Schema`, representing the entire context in which our domain entities are resolved.
+>
+> In fact, the relationship here from `Schema` to `Authors` as an association is as if we've bumped up the entity-ness one level higher (to `Schema`) and proved that the `Authors` entity can actually act as an association in this top level universe of discourse.
+>
+> Also note that the `1=1` is a bit like saying "true in all cases" for the predicate.
 
-In fact, the relationship here from `Schema` to `Authors` as an association is as if we've bumped up the entity-ness one level higher (to `Schema`) and proved that the `Authors` entity can actually act as an association in this top level universe of discourse.
+Now fire up the cds REPL with the `--run` option pointing to the current directory (which should therefore see the engine pick up this `schema.cds` file):
+
+```shell
+$ cds r -r .
+Welcome to cds repl v 8.7.2
+[cds] - loaded model from 7 file(s):
+
+  schema.cds
+  bookshop/index.cds
+  bookshop/srv/user-service.cds
+  bookshop/srv/cat-service.cds
+  bookshop/srv/admin-service.cds
+  bookshop/db/schema.cds
+  node_modules/@sap/cds/common.cds
+
+...
+
+------------------------------------------------------------------------
+Following variables are made available in your repl's global context:
+
+from cds.entities: {
+  Schema,
+}
+
+from cds.services: {
+  db,
+  CatalogService,
+  AdminService,
+  UserService,
+}
+
+Simply type e.g. UserService in the prompt to use the respective objects.
+```
+
+In the cds REPL, try this:
 
 ```javascript
 await cds.ql `SELECT FROM Schema:Authors` // just like <deity> ultimately intended
 ```
 
-By the way, the `1=1` is a bit like saying "true in all cases" for the predicate.
+So, what's the outcome? At first, a little underwhelming:
+
+```json
+[]
+```
+
+But with the understanding we've gained from this episode, we know how things work in theory (associations between relations) and practice (how the compiler will form the appropriate SQL statement out of whatever expressions of art and ideals we choose to make in our CQL explorations of that theory).
+
+And what's missing becomes clear when we allow our minds[<sup>11</sup>](#footnote-11) to chew things over: _There's no data at the `Schema` level, so there's going to be no chance of even getting started to follow that to-many association path down to `Authors`!_
+
+So remedy that (and in fact this remedy was hiding in plain sight when Daniel [first introduced it in part 7][50]):
+
+```javascript
+await INSERT({ ID: 1 }).into(Schema)
+```
+
+(even passing an empty object `{}` to `INSERT` would work here)
+
+
+Now try that again (reducing the output with a postfix projection):
+
+```javascript
+await cds.ql `select from Schema:Books { title }`
+```
+
+Bingo!
+
+```json
+[
+  { title: 'Wuthering Heights' },
+  { title: 'Jane Eyre' },
+  { title: 'The Raven' },
+  { title: 'Eleonora' },
+  { title: 'Catweazle' }
+]
+```
+
+💥
 
 The CDS model, and CQL as its language, is really based on decades of theory and practice, and we all benefit.
 
@@ -1075,3 +1164,4 @@ would work nicely too (noting here that [we redefined the value for `Authors` ea
 [49]: https://cap.cloud.sap/docs/about/best-practices#associations
 [50]: /blog/posts/2025/02/07/tasc-notes-part-7/#wrapping-up-with-relational-algebra
 [51]: https://www.youtube.com/watch?v=HEQt_2EBV8A
+[52]: https://github.com/SAP-samples/cloud-cap-samples
