@@ -1015,7 +1015,7 @@ So, what's the outcome? At first, a little underwhelming:
 
 But with the understanding we've gained from this episode, we know how things work in theory (associations between relations) and practice (how the compiler will form the appropriate SQL statement out of whatever expressions of art and ideals we choose to make in our CQL explorations of that theory).
 
-And what's missing becomes clear when we allow our minds[<sup>11</sup>](#footnote-11) to chew things over: _There's no data at the `Schema` level, so there's going to be no chance of even getting started to follow that to-many association path down to `Authors`!_
+And what's missing becomes clear when we allow our minds to chew things over[<sup>10</sup>](#footnote-10): _There's no data at the `Schema` level, so there's going to be no chance of even getting started to follow that to-many association path down to `Authors`!_
 
 So remedy that (and in fact this remedy was hiding in plain sight when Daniel [first introduced it in part 7][50]):
 
@@ -1110,6 +1110,9 @@ would work nicely too (noting here that [we redefined the value for `Authors` ea
 
 <a name="footnote-9"></a>
 9. Whom I've met a couple of times in my erstwhile role as speaker at the fantastic Foo Camp, Perl Conferences and Open Source Convention (OSCON) conferences, and as member of the Perl community.
+
+<a name="footnote-10"></a>
+10. It was the end of the day and I struggled a little with this, until I took a nap. And I woke up with the answer, realising what problem had been!
 
 ---
 
