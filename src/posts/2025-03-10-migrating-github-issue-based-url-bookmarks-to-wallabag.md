@@ -199,4 +199,4 @@ A short while later, they were all loaded, all 400+ of them:
 
 ## Wrapping up
 
-So far I've been very impressed with Wallabag - it's functionality, the support for running in a Docker container, the documentation and the API too. Now all I have to do is actually get round to reading those bookmarked articles!
+So far I've been very impressed with Wallabag - its functionality, the support for running in a Docker container, the documentation and the API too. Now all I have to do is actually get round to reading those bookmarked articles!
