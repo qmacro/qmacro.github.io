@@ -197,6 +197,31 @@ A short while later, they were all loaded, all 400+ of them:
 
 ![441 unread entries](/images/2025/03/wallabag-unread-entries.png)
 
+<a name="tidying-up"></a>
+### Tidying up
+
+I wanted to close all the issues I migrated, which I did like this:
+
+```shell
+jq -r '.[].url' issues.json \
+| while read -r issue
+do
+  gh issue close $issue
+  sleep 1
+done
+```
+
+The `gh issue close` command accepts an issue number or URL, which is great. The output is also nice and clean, which is pleasing to look at too:
+
+```log
+✓ Closed issue #564 (The Seven Reasons Your SAP Tech Initiatives Are Failing — Second Phase Solutions)
+✓ Closed issue #563 (Working with submodules - The GitHub Blog)
+✓ Closed issue #562 (Self Hosting Twitter Archive on Github Pages | Justin Mancinelli)
+...
+```
+
+> I could have done this in the same loop as when [feeding in the bookmarks](#feeding-in-the-bookmarks), dependent on the outcome of the API calls, but in the end I did it separately.
+
 ## Wrapping up
 
 So far I've been very impressed with Wallabag - its functionality, the support for running in a Docker container, the documentation and the API too. Now all I have to do is actually get round to reading those bookmarked articles!
