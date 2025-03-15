@@ -184,7 +184,7 @@ jq -r '.[]|[.body,.url]|@tsv' issues.json \
 | while read -r url origin_url
 do
   curl \
-    --url 'https://wallabag.tail92f5b.ts.net/api/entries.json' \
+    --url 'https://wallabag.secret.ts.net/api/entries.json' \
     --header 'Authorization: Bearer N2RkM2FjZmRk...' \
     --data url="$url" \
     --data origin_url="$origin_url" \
