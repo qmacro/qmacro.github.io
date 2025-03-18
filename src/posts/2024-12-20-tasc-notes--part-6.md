@@ -15,6 +15,7 @@ For all resources related to this series, see the post [The Art and Science of C
 
 This episode started with a review of the previous episode (part 5), based on the [notes for that episode][3].
 
+<a name="improved-display-of-service-handlers"></a>
 ## Improved display of service handlers
 
 Daniel starts at around [21:53][101] in the cds REPL showing an improved display for the handlers of a service.
@@ -273,7 +274,8 @@ get then() {
 ```
 
 It's worth dwelling on yet another [DWIM][11] feature in CAP - that this thenable executes the query, by default, on the primary database connection (or on a service to which it has been bound). _"Do what I mean!"_
- 
+
+<a name="connecting to remote services from within the-repl"></a>
 ## Connecting to remote services from within the REPL
 
 Next, around [26:45][104], Daniel revisits a theme we touched upon in the previous episode - [local and remote services][13], specifically attempting a connection to the `bookshop` service's `CatalogService` endpoint ... from within a cds REPL session. And, as usual, there's plenty to unpack and dwell upon.
@@ -358,7 +360,6 @@ Given this opportunity, Daniel used the `options` to provide enough information 
 
 In case you're wondering, `odata` is a synonym for `odata-v4`.
 
-
 Of course, hard-coding service binding information like this is very useful, but only for design time and when iterating on the build of your service constellation. Information like this, especially credentials (beyond merely a URL) should be stored securely and separate to the code context. This is what `VCAP_SERVICES` in Cloud Foundry is for, as an example, and more generally what the SAP BTP's [Destination Service][16] offers.
 
 **A note on the word "remote" 👉** Calling this a "remote connection" is a little bit misleading, in that it's "just a connection", and the agnostic nature of CAP, specifically here embodied in this `cds.connect.to` method, means that the fact that it's remote is only because the `options.credentials.url` value points to a remote address, and at this stage, that's just for us humans to consider; the machinery doesn't really care (although it will need to use extra libraries to make the connection). See also [There is no remote](#there-is-no-remote) later in these notes for part 6.
@@ -375,6 +376,7 @@ Uncaught:
 
 This error was something that really only surfaced because of our explorations here in the cds REPL. This Art and Science of CAP series just keeps on giving! Daniel was keen to not only work out what was going on here, but to share it with us.
 
+<a name="debug-all-the-things"></a>
 ### Debug all the things
 
 So at around [28:53][105] he restarts the cds REPL but with the value `y` for the `DEBUG` environment variable:
@@ -478,6 +480,7 @@ Briefly, what we can discern from it is that there are log records from the `cds
 
 It's always worth taking a few seconds to stare at output like this. Even when it doesn't directly help the diagnosis, it will almost always add value, context and understanding.
 
+<a name="the-uncaughtexception-culprit"></a>
 ### The 'uncaughtException' culprit 
 
 Through some brute-force searching through the codebase, Daniel eventually finds the problem - the [Winston logger][21], which [emits an uncaught exception][22]. The Winston logger is used by the [SAP Cloud SDK][23], which we know (if you don't, see [footnote 2](#footnote-2)) is used by the CAP server for remote connections.
@@ -521,6 +524,7 @@ RemoteService {
 >
 > Nor would that make much sense anyway, in that the protocols supported are all "connection-less" (in that, for example, HTTP is a connection-less protocol). This point can be driven home by stopping the remote service at this point, then restarting it, and it makes no difference to this existing `RemoteService` object and whether it can still reach the remote endpoints (it can).
 
+<a name="caps-open-source-philosophy"></a>
 ### CAP's open source philosophy
 
 In wrapping up this section, Daniel explains at [30:26][106] his philosophy on the use of open source software, warranties, and minimising the risk surface area for libraries employed. There are only three major open source libraries used in CAP Node.js, and those are:
@@ -604,6 +608,7 @@ cats.kind                  cats.middlewares           cats.name                 
 cats.requestTimeout
 ```
 
+<a name="properties-of-a-remote-service"></a>
 ### Properties of a remote service
 
 But what is a `RemoteService`, essentially?
@@ -684,6 +689,7 @@ Interestingly, directly following the [REST-style API][32] section in Capire, th
 ]
 ```
 
+<a name="other-ways-to-provide-configuration"></a>
 ### Other ways to provide configuration
 
 Earlier we saw Daniel demonstrated how to [provide configuration programmatically](#providing-configuration-programmatically). At this point, following a brief discussion about security and managing credentials, Daniel demonstrated one of the many other ways to provide configuration. There's lots to discover in the [cds.env][35] Capire topic, and the [On the Command Line][36] section in particular describes what is demonstrated next:
@@ -829,6 +835,7 @@ Oh, and don't forget, folks: REST is not a protocol, it's an architectural style
 
 That's why Daniel was saying that while CQN could be transported over REST, you'd have to construct an actual language, a protocol, to do so (and if you did it thoroughly, you might end up with something like ... OData).
 
+<a name="best-practices-revisited"></a>
 ## Best practices revisited
 
 At [45:30][108] Daniel returns to Capire's [Best Practices][43] topic; here's a brief summary of his commentary:
@@ -841,6 +848,7 @@ At [45:30][108] Daniel returns to Capire's [Best Practices][43] topic; here's a 
 * **Agnostic by Design**: This is such a fundamental driving theme for CAP, and is inspired by the idea of [hexagonal architecture][47]; in fact [CAP is an implementation of it][48], notably in how it shields us from the "real world" of cloud services, reflecting the key intent of hexagonal architecture which is to provide _isolation_ from real world peripheral hardware and software objects.
 * **Intrinsic Extensibility**: As CAP's "everything" mantra goes ("[everything is a service][50]", "[everything is an event][51]") - everything is extensible. Models (through the power of aspects - see [Separating concerns and focusing on the important stuff][49]), logic, and of course the framework itself - see the [Interacting with the database service][52] section of the notes to Part 4 of this series. Of course, the CAP framework is extensible in other ways - such as [with the plugin concept][53] (for which we have a short series too - see the link in the "Wrapping up" section below).
 
+<a name="wrapping-up"></a>
 ## Wrapping up
 
 That just about wraps it up for this episode; the series is now paused while we make space for other topics (such as the [CAP Node.js Plugins][54] mini-series in January 2025) but we hope to be back live again with you soon! Thanks for reading these notes, I'd love to hear from you in the comments section below.
