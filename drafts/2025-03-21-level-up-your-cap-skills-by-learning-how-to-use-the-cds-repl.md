@@ -29,7 +29,7 @@ A REPL is the perfect environment for interactive explorations and experimentati
 <a name="follow-along"></a>
 ## Follow along
 
-You can follow along with all the examples here in a container, so you don't have to install anything locally or clean up afterwards. The [qmacro/cap-con-img](https://github.com/qmacro/cap-con-img) repo contains definitions for a base image and CAP Node.js version specific images. Assuming you have Docker Desktop (or equivalent runtime) installed and can run the `docker` client CLI, you can do what I did to set things up for this talk and set of notes, which is:
+You can follow along with all the examples here in a container, so you don't have to install anything locally or clean up afterwards. The [qmacro/cap-con-img](https://github.com/qmacro/cap-con-img) repo contains definitions for a base image and CAP Node.js version specific images. Assuming you have Docker Desktop (or equivalent runtime) installed, along with `git` and a standard shell (`bash`), and can run the `docker` client CLI, you can do what I did to set things up for this talk and set of notes, which is:
 
 * `git clone https://github.com/qmacro/cap-con-img && cd cap-con-img`
 * `./buildbase && ./buildver 8.8.1`
@@ -58,9 +58,6 @@ The CAP Node.js REPL is essentially an extension of the [standard Node.js REPL](
 Compare:
 
 ```shell
-$ node
-Node.js v22.12.0
-node ➜ ~/samples (main)
 $ node
 Welcome to Node.js v22.12.0.
 Type ".help" for more information.
@@ -132,10 +129,12 @@ SEE ALSO
     cds eval  to evaluate and execute JavaScript.
 ```
 
+> Due to lack of time, we won't be looking at the `--use` option in this talk. Maybe next time!
+
 <a name="part-1-starting-up"></a>
 ## Part 1 - starting up
 
-The biggest benefit of a cds REPL is being able to start up and interact with a live, running CAP server. And remember that being a Node.js REPL at heart, you can use any and every JavaScript expression and construct, as well as some special CAP specific features.
+The biggest benefit of a cds REPL is being able to explore the entire API as well as start up & interact with a live, running CAP server. And remember that being a Node.js REPL at heart, you can use any and every JavaScript expression and construct, as well as some special CAP specific features.
 
 <a name="using-cds-test"></a>
 ### Using cds.test()
@@ -211,7 +210,7 @@ from cds.services: {
 Simply type e.g. UserService in the prompt to use the respective objects.
 ```
 
-The entities and services defined in the specified directory are identified and exposed to us. Note that along with `AdminService`, `CatalogService` and `UserService`, all defined [as services in the bookshop project](https://github.com/SAP-samples/cloud-cap-samples/tree/main/bookshop/srv), there's also `db`. Yes, that's a service too, and one we can examine, modify and influence as readily as our own services, should we so desire. In CAP, [everything is a service](/blog/posts/2024/12/10/tasc-notes-part-4/#everything-is-a-service).
+The entities and services defined in the specified directory are identified and exposed to us. Note that along with `AdminService`, `CatalogService` and `UserService`, all defined [as services in the bookshop project](https://github.com/SAP-samples/cloud-cap-samples/tree/main/bookshop/srv), there's also `db`. Yes, that's a service too, and one we can examine, modify and influence as readily as our own services, should we so desire. In CAP, [everything is a service](/blog/posts/2024/12/10/tasc-notes-part-4/#everything-is-a-service). (The `db` service is a `SQLiteService` as we'll see [later](#entities-and-services).
 
 <a name="using-the-run-option"></a>
 ### Using the --run option
@@ -262,6 +261,7 @@ For example, the runtime environment represented by `cds.env` has not yet appear
 
 ```text
 {
+  ...,
   sql: { names: 'plain', dialect: 'sqlite' },
   hana: { 'deploy-format': 'hdbtable', journal: { 'change-mode': 'alter' } },
   build: { target: 'gen' },
@@ -307,7 +307,7 @@ While we can of course use standard JavaScript techniques to examine things furt
 ]
 ```
 
-we can use the other cds REPL specific command `.inspect`. Using this command directly will show us everything, as above. But we can add the `.depth` option like this:
+we can use the other cds REPL specific command `.inspect`. Using this command directly will show us everything, as above. But we can add the `.depth` option like this to reduce the volume of output:
 
 ```shell
 > .inspect cds.env .depth=0
@@ -339,6 +339,8 @@ cds.env: Config {
   config: [Object]
 }
 ```
+
+> `0` represents the lowest amount of information, whereas `11` represents the highest, and is the default. I'd like to think that this was a nod to [Spinal Tap](https://www.youtube.com/watch?v=4xgx4k83zzc) but I suspect it's just another [Schnapszahl](https://www.google.com/search?q=site%3Aqmacro.org+%23tasc+schnapszahlen).
 
 <a name="entities-and-services"></a>
 ### Entities and services
@@ -436,7 +438,7 @@ Instead of having to specify a depth each time we use `.inspect`, we can set it 
  updated node:util.inspect.defaultOptions with: { depth: 0 }
  ```
 
-We can get hold of an entity, say, `Books`, either directly (as `cds.entities.Books`) or by accessing `cds.entities` which is a [LinkedDefinitions](https://cap.cloud.sap/docs/node.js/cds-reflect#iterable) class. This is an [iterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol), and access is possible in different ways. There's destructuring:
+We can get hold of an entity, say, `Books`, either directly (as `cds.entities.Books`) or by more generally working with `cds.entities` which is a [LinkedDefinitions](https://cap.cloud.sap/docs/node.js/cds-reflect#iterable) class. This is an [iterable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols#the_iterable_protocol), and access is possible in different ways. There's destructuring:
 
 * `{ Books } = cds.entities`
 * `{ Books: mybooks } = cds.entities` (with new variable name assignment)
@@ -542,7 +544,7 @@ CatalogService: CatalogService {
 }
 ```
 
-We can dig into those properties too. The `handlers` are of particular interest, and thanks to [a recent improvement on the display of those handlers](/blog/posts/2024/12/20/tasc-notes-part-6/#improved-display-of-service-handlers) we have a convenient way of visualising what's set up:
+We can dig into those properties too. The `handlers` are of particular interest, and thanks to [a recent improvement on the display of those handlers](/blog/posts/2024/12/20/tasc-notes-part-6/#improved-display-of-service-handlers) we have a convenient way of neatly visualising what's set up:
 
 ```shell
 > .inspect CatalogService.handlers .depth=2
@@ -614,7 +616,7 @@ For example, we can use the [CRUD-style API](https://cap.cloud.sap/docs/node.js/
 cds.ql { SELECT: [Object] }
 ```
 
-OK, so what's emitted here is not that exciting. Partly because our inspection depth is currently set to 0 ("minimum information"), and partly because API operations like this are asynchronous (promises) and we need to `await` them to see the results.
+OK, so what's emitted here is not that exciting. Partly because our inspection depth is currently set to `0`, and partly because API operations like this are asynchronous (promises) and we need to `await` them to see the results.
 
 Let's deal with these one at a time, mostly because even seeing the pre-executed query in more detail is worthwhile:
 
@@ -666,7 +668,7 @@ At this point we're probably keen to move from the metadata to the data, so let'
 }
 ```
 
-We can of course qualify that query using the fluent API style that `cds.ql` makes available for us. First, let's check who the authors are and how to identify them, also, for a change, using the `cds.ql` class directly, this time supplying a [CQL](https://cap.cloud.sap/docs/cds/cql) expression in a template string:
+We can of course qualify that query, this time using the fluent API style that `cds.ql` makes available for us, for a change. First, let's check who the authors are and how to identify them, supplying a [CQL](https://cap.cloud.sap/docs/cds/cql) expression in a template string:
 
 ```shell
 > await cds.ql `SELECT ID, name from Authors`
@@ -678,7 +680,7 @@ We can of course qualify that query using the fluent API style that `cds.ql` mak
 ]
 ```
 
-Now we know that Mr Poe's ID is 150, we can start to build a query; but first, let's increment the inspection depth as the query that we'll be constructing (or having the API construct for us) will be a little deeper:
+Now we know that Mr Poe's ID is 150, we can start to build a query; but first, let's increment the inspection depth as the query that we'll be constructing (or, more precisely, having the API construct for us) will be a little deeper:
 
 ```shell
 > .inspect .depth=4
