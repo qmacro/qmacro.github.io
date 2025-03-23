@@ -61,6 +61,25 @@ Here are some notes:
 
 > On this last point, I'd like to dig in more to see how I might improve this, especially with respect to those circumstances (like here) where I'm downloading a particular tool's binary release which has been built for a specific architecture which is also in the tarball URL name.
 
+Here's the (cached) build output:
+
+```shell
+$ docker build --build-arg QRTERMINALVER=3.2.1 -t qmacro/qrt .
+[+] Building 1.9s (7/7) FINISHED                                     docker:default
+ => [internal] load build definition from Dockerfile                           0.0s
+ => => transferring dockerfile: 448B                                           0.0s
+ => [internal] load metadata for docker.io/library/alpine:3.21                 1.9s
+ => [internal] load .dockerignore                                              0.0s
+ => => transferring context: 2B                                                0.0s
+ => [base 1/2] FROM docker.io/library/alpine:3.21@sha256:a8560b36e8b8210634f7  0.0s
+ => CACHED [base 2/2] RUN wget   -O -   -q   https://github.com/mdp/qrtermina  0.0s
+ => CACHED [stage-1 1/1] COPY --from=base /qrterminal /                        0.0s
+ => exporting to image                                                         0.0s
+ => => exporting layers                                                        0.0s
+ => => writing image sha256:7731e4687c0a4272f2a06002c2bc933fdb5fe3e7c6f0b6f53  0.0s
+ => => naming to docker.io/qmacro/qrt                                          0.0s
+```
+
 I was happy with the result, shown here via `docker image ls`:
 
 ```text
