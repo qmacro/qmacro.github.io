@@ -32,8 +32,7 @@ Here's how we might do that in an imperative, procedural fashion:
 ```javascript
 for (let i = 0; i < aNums.length; i++) {
   aNums[i] = aNums[i] * 2;
- }
-
+}
 //=> 10
 ```
 
@@ -80,7 +79,10 @@ aNums.reduce((a, x) => a + x, 0)
 Reduce can produce a differently shaped output. It doesn't have to "reduce" a list down to something smaller (like a scalar value, 15, in this case). Let's produce a list of records instead:
 
 ```javascript
-aNums.reduce((a, x) => { a.push({ val : x}); return a; }, [])
+aNums.reduce(
+  (a, x) => { a.push({ val : x}); return a; },
+  []
+)
 //=> [ { val : 1 }, { val : 2 }, { val : 3 }, { val : 4 }, { val : 5 } ]
 ```
 
