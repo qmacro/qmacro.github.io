@@ -2,6 +2,7 @@
 layout: post
 title: F3C Part 8 - Promises
 tags:
+  - fp
   - language-ramblings
   - f3c
 ---

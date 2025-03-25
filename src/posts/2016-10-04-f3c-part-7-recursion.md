@@ -2,6 +2,7 @@
 layout: post
 title: F3C Part 7 - Recursion
 tags:
+  - fp
   - language-ramblings
   - f3c
 ---

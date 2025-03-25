@@ -2,6 +2,7 @@
 layout: post
 title: F3C Parts 9 and 10 - Functors
 tags:
+  - fp
   - language-ramblings
   - f3c
 ---

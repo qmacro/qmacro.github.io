@@ -2,6 +2,7 @@
 layout: post
 title: FOFP 1.1 Introduction
 tags:
+  - fp
   - language-ramblings
 ---
 Part of the [Fundamentals of Functional Programming](/blog/posts/2016/05/03/fofp-fundamentals-of-functional-programming/) document.

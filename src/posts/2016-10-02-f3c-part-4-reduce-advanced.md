@@ -2,6 +2,7 @@
 layout: post
 title: F3C Part 4 - Reduce advanced
 tags:
+  - fp
   - language-ramblings
   - f3c
 ---

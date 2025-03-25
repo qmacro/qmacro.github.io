@@ -2,6 +2,7 @@
 layout: post
 title: F3C Part 5 - Closures
 tags:
+  - fp
   - language-ramblings
   - f3c
 ---

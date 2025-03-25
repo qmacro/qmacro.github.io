@@ -2,6 +2,7 @@
 layout: post
 title: ES6, reduce and pipe
 tags:
+  - fp
   - language-ramblings
 ---
 In learning about functional programming, one thing that's worked for me is to take my time, and not rush over fundamental concepts. In fact, like a good beer or whisky, a fundamental concept is something to savour, to enjoy at a leisurely pace.

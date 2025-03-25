@@ -2,6 +2,7 @@
 layout: post
 title: The beauty of recursion and list machinery
 tags:
+  - fp
   - language-ramblings
 ---
 There are beautiful patterns inherent in the use of recursion that I've seen in my attempts to reboot my brain with a new, more functionally focused way of thinking about programming.

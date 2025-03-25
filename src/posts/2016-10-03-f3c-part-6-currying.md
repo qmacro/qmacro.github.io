@@ -2,6 +2,7 @@
 layout: post
 title: F3C Part 6 - Currying
 tags:
+  - fp
   - language-ramblings
   - f3c
 ---
