@@ -2,6 +2,7 @@
 layout: post
 title: Enlightenment in action
 tags:
+  - fp
   - language-ramblings
 ---
 One of the ideas that Clojure embraces is this [Perlism](http://www.cs.yale.edu/homes/perlis-alan/quotes.html):

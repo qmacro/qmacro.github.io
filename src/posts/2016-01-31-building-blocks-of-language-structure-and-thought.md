@@ -2,6 +2,7 @@
 layout: post
 title: Building blocks of language, structure and thought
 tags:
+  - fp
   - language-ramblings
 ---
 As I travel on my path to perhaps what I deem as some sort of enlightenment, back in time via Clojure to one of the great ancestors of language, structure and computational thought (Lisp), I continue to come across a simple theme.

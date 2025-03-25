@@ -2,6 +2,7 @@
 layout: post
 title: My journey to Clojure
 tags:
+  - fp
   - language-ramblings
 ---
 I'm learning Clojure. Slowly, but hopefully surely. Clojure is a Lisp, which I like saying, because it makes me sound as though I know what I'm talking about and that my language experience is as old as the hills. Perhaps the only thing that is valid there is that I'm old. But anyway.

@@ -2,6 +2,7 @@
 layout: post
 title: 4Clojure Puzzle 66
 tags:
+  - fp
   - language-ramblings
 ---
 In my quest to teach myself more Clojure, I'm solving puzzles. Puzzles from websites such as [Project Euler](http://projecteuler.net) and [Advent of Code](http://www.adventofcode.com). More recently I've been plugging away at puzzles on [4Clojure](https://www.4clojure.com).

@@ -2,6 +2,7 @@
 layout: post
 title: Language minutiae and learning to SWIM
 tags:
+  - fp
   - language-ramblings
 ---
 Further to [Enlightenment in action](http://langram.org/2016/04/12/enlightenment-in-action/), here's a tiny bit more light that I discovered on my journey up to Newcastle this morning.
