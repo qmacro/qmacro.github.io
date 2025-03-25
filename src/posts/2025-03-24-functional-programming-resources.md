@@ -6,7 +6,7 @@ tags:
   - fp
   - meta
 ---
-_I've created quite a bit of FP related content in the past but it's somewhat scattered across different platforms and in different formats and I can't remember what or where it all is. So this is a meta post in which I point to all the resources I (can remember that) I've created on the topic._
+_I've created quite a bit of FP related content in the past but it's somewhat scattered across different platforms and in different formats and I can't remember what or where it all is. So this is a meta post in which I point to all the resources (that I can remember that) I've created on the topic._
 
 ## Blog posts
 
