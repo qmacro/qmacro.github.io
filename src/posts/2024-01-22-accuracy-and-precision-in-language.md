@@ -42,11 +42,11 @@ And articles presented and available on such a _Web log_, on a _blog_, were refe
 
 ### Blogs and posts
 
-To take this blog as an example, the Web log (_blog_) itself, containing all _posts_, is at <https://qmacro.org/blog/>. Individual _posts_ in the _blog_ can be found at their specific URLs, such as:
+To take this blog as an example, the Web log (_blog_) itself, containing all _posts_, is at <https://qmacro.org/blog/>. Individual _posts_ in the _blog_ can be found at their specific URLs, such as (relatively speaking, with a bit of whitespace for better formatting and wrapping):
 
-* <https://qmacro.org/blog/posts/2024/01/15/developing-cap-in-containers-three-ways/>
-* <https://qmacro.org/blog/posts/2024/01/09/battlestation-2024/>
-* <https://qmacro.org/blog/posts/2024/01/09/a-simple-jq-repl-with-tmux-bash-vim-and-entr/>
+* <a href="/blog/posts/2024/01/15/developing-cap-in-containers-three-ways">/blog/posts/2024/01/15/ developing-cap-in-containers-three-ways</a>
+* <a href="/blog/posts/2024/01/09/battlestation-2024">/blog/posts/2024/01/09/ battlestation-2024</a>
+* <a href="/blog/posts/2024/01/09/a-simple-jq-repl-with-tmux-bash-vim-and-entr">/blog/posts/2024/01/09 a-simple-jq-repl-with-tmux-bash-vim-and-entr</a>
 
 There's a clue in the path section of each of these URLs.
 
