@@ -17,7 +17,7 @@ After some introductory material, there are four main parts to this post:
 * [Part 1 - starting up](#part-1-starting-up)
 * [Part 2 - inspecting](#part-2-inspecting)
 * [Part 3 - querying](#part-3-querying)
-* [Part 4 - digging deper](#part-4-digging-deeper)
+* [Part 4 - digging deeper](#part-4-digging-deeper)
 
 <a name="what-a-repl-is"></a>
 ## What a REPL is
