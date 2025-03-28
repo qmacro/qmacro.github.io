@@ -12,6 +12,13 @@ _These are notes I wrote for my talk at SAP Inside Track Madrid on 20 March 2025
 
 Here's the talk abstract: "The cds repl (REPL stands for Read Evaluate Print Loop) is an extremely powerful and versatile tool for every CAP Node.js developer. In this session, you'll become acquainted with it, get a feel for what it's like, how to wield its powers, and more. No experience required, this will be a live session with no slides."
 
+After some introductory material, there are four main parts to this post:
+
+* [Part 1 - starting up](#part-1-starting-up)
+* [Part 2 - inspecting](#part-2-inspecting)
+* [Part 3 - querying](#part-3-querying)
+* [Part 4 - digging deper](#part-4-digging-deeper)
+
 <a name="what-a-repl-is"></a>
 ## What a REPL is
 
