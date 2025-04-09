@@ -21,4 +21,6 @@ The nearest thing I could find to commemorate was this bottle of bubbly, handed 
 
 So, happy anniversary, SAP mailing lists one and all!
 
+---
+
 [Originally published on SAP Community](https://blogs.sap.com/2005/07/04/the-sap-developer-community-10-years-ago/)
