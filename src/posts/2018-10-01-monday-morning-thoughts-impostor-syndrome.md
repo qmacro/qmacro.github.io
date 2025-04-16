@@ -20,7 +20,7 @@ and enjoyable today as they were then.
 ## The Total Perspective Vortex
 
 The episode I listened to was Fit the Eighth where Zaphod Beeblebrox was
-fed into the [Total Perspective Vortex](https://en.wikipedia.org/wiki/Technology_in_The_Hitchhiker%27s_Guide_to_the_Galaxy#Total_Perspective_Vortex), allegedly
+fed into the [Total Perspective Vortex](https://hitchhikers.fandom.com/wiki/Total_Perspective_Vortex), allegedly
 the most horrible torture device to which a sentient being can be
 subjected, in that:
 
