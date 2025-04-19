@@ -141,7 +141,7 @@ Vegas and some coffee from the hotel that was only just "OK".
 
 ---
 
-Read more posts in this series here: [Monday morning thoughts](https://qmacro.org/tags/mondaymorningthoughts/)
+Read more posts in this series here: [Monday morning thoughts](/tags/mondaymorningthoughts/)
 
 ---
 

@@ -236,7 +236,7 @@ order.
 ---
 
 Read more posts in this series here: [Monday morning
-thoughts](https://blogs.sap.com/tag/mondaymorningthoughts/).
+thoughts](/tags/mondaymorningthoughts/).
 
 ---
 
