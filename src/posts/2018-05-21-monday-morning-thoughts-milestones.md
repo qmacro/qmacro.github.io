@@ -20,6 +20,7 @@ commons](https://commons.wikimedia.org/wiki/File:Milestone_rixton_greater_manche
 I've been fortunate enough to have lived and worked through more than
 three decades of SAP technology.
 
+<a name="seismic-changes"></a>
 ## Seismic changes
 
 In that time, I've seen seismic changes. Here are three of those that
@@ -61,6 +62,7 @@ monolith, in a way - the database as application server.
 Beyond these particular seismic changes, there are smaller but still
 hugely significant events that I consider major milestones.
 
+<a name="major-milestones"></a>
 ## Major milestones
 
 Various additions to the general SAP technology set have had huge
@@ -73,6 +75,7 @@ There are clearly more major milestones than I could fit into a
 reasonably sized blog post, so I've picked out a handful that are
 meaningful to me.
 
+<a name="introduction-of-the-abap-language"></a>
 ### Introduction of the ABAP language
 
 I started working on SAP R/2 version 4.1D. There was no concept of
@@ -94,6 +97,7 @@ native thinking powered by a whitelisted set of constructs that allow us
 to use the power of standard data and metadata definitions and integrate
 the classic with the new.
 
+<a name="r3-on-linux"></a>
 ### R/3 on Linux
 
 One could see Linux as just another Unix flavour, alongside the
@@ -116,6 +120,7 @@ The ubiquity of Linux in general is well known, and the fact that one
 can see Linux as the standard delivery platform for SAP software
 (including HANA) is just wonderful.
 
+<a name="the-internet-communication-manager"></a>
 ### The Internet Communication Manager
 
 This one is my personal favourite. Early R/3 systems communicated
@@ -161,6 +166,7 @@ Manchester's MadLab](https://vimeo.com/36828893) a few years back.
 
 \*via plugins, the ICM also spoke other protocols such as SMTP
 
+<a name="neo-and-cloud-platform"></a>
 ### Neo and Cloud Platform
 
 This milestone is almost still too new to think about in terms of being
@@ -187,6 +193,7 @@ Without Neo and the advent of the SAP Cloud Platform, we wouldn't be
 looking towards the brave new world of cloud native, nor would we have
 S/4HANA Cloud.
 
+<a name="ui5"></a>
 ### UI5
 
 Of course, this list wouldn't be complete without including one of the
@@ -215,6 +222,7 @@ enabler for this move, and the combination is still the killer choice,
 not because it's the only choice, but for most cases it's the right
 choice.
 
+<a name="todays-milestones"></a>
 ## Today's milestones?
 
 What technologies and advancements today might we come to consider as
