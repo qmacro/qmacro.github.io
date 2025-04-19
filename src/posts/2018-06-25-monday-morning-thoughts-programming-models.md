@@ -115,7 +115,7 @@ my machines, which co-incidentally features in [yesterday's "on this
 day"
 tweet](/tweets/qmacro/status/1010932700230889473/):
 
-![](https://qmacro.org/tweets/qmacro/tweets_media/1010932700230889473-DgeN7KyW4AAHnj6.jpg)
+![](/tweets/qmacro/tweets_media/1010932700230889473-DgeN7KyW4AAHnj6.jpg)
 
 which in turn points
 to a post of mine from 2004 "[Forget SOAP -- build real web services
