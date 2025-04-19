@@ -9,7 +9,7 @@ Something is surfacing that makes me rather uncomfortable.
 
 I saw a few tweets this week, including [this one](https://twitter.com/judell/status/1037537440263618560) from Jon Udell which pointed me to a tweet and article on Wired that talked about Google rethinking the idea of the URL. On the one hand, the concept of URLs doesn't belong exclusively for Google to do with as it pleases ... on the other hand, it's not for me to say what they can and can't think about.
 
-Anyway, I read the article -- "[Google want to kill the URL](https://www.wired.com/story/google-wants-to-kill-the-url/)", by Emily Waite -- on Wired. At least, I *think* it was on Wired, I wasn't sure because Chrome was [deliberately obscuring the URL in the address bar](https://twitter.com/qmacro/status/1037684084066136064).
+Anyway, I read the article -- "[Google want to kill the URL](https://www.wired.com/story/google-wants-to-kill-the-url/)", by Emily Waite -- on Wired. At least, I *think* it was on Wired, I wasn't sure because Chrome was [deliberately obscuring the URL in the address bar](/tweets/qmacro/status/1037684084066136064/).
 
 I thought it was worth sharing the thoughts that occurred to me as I read through it, so here they are, in context. I'd encourage you to read the article too, so you can come to your own conclusions. My thoughts are just that - thoughts, opinions, based upon nothing much except what I've read, mind you. Note also that some sections that I quote are directly from the article's author, others are quotes from other people interviewed for the article.
 

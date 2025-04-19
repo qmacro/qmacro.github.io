@@ -10,7 +10,7 @@ tags:
 
 Don’t get me wrong, the openSAP initiative is excellent, free learning materials of high quality? Yes please and thank you! This instills a passion in me (and I’m sure many others) for (a) learning more and (b) trying to attain the highest achievement. In the case of openSAP, this means trying to attain high marks in the assignments.
 
-Unfortunately, the question and answer sections of the weekly assignments sometimes get in the way of that, in that the questions and / or answers are ambiguous. The current openSAP course “[Build Your Own SAP Fiori App in the Cloud](https://open.sap.com/courses/fiux1/)“, has great content but the questions are dubious. Here are a couple of examples, that we’re [discussing on Twitter right now](https://twitter.com/qmacro/status/590774440969031680):
+Unfortunately, the question and answer sections of the weekly assignments sometimes get in the way of that, in that the questions and / or answers are ambiguous. The current openSAP course “[Build Your Own SAP Fiori App in the Cloud](https://open.sap.com/courses/fiux1/)“, has great content but the questions are dubious. Here are a couple of examples, that we’re [discussing on Twitter right now](/tweets/qmacro/status/590774440969031680/):
 
 In the assignment for Week 2, there is the following question, with the 4 possible answers thus:
 

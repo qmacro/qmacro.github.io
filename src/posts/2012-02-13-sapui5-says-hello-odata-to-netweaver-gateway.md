@@ -11,7 +11,7 @@ Wow, those folks have certainly put together some nice documentation already! Tr
 
 ![SAPUI5 overview](/images/2012/02/sapui5overview.png)
 
-The framework is based upon JQuery / UI and contains  a huge number of controls. It also supports data bindings, and one thing that had [intrigued me](https://twitter.com/qmacro/status/167191292919545856) from the podcast was that data bindings were possible to arbitrary JSON and XML … and OData resources.
+The framework is based upon JQuery / UI and contains  a huge number of controls. It also supports data bindings, and one thing that had [intrigued me](/tweets/qmacro/status/167191292919545856/) from the podcast was that data bindings were possible to arbitrary JSON and XML … and OData resources.
 
 "Gosh", I hear you say, "that reminds me of something!" Of course, SAP NetWeaver Gateway's REST-informed data-centric consumption model is based upon OData. So of course I immediately was curious to learn about SAPUI5 with an OData flavour. How could I try out one of the controls to surface information in OData resources exposed by NetWeaver Gateway?
 

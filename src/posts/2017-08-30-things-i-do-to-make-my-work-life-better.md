@@ -58,7 +58,7 @@ Also, lunch time isn't fixed. My day starts early, which means lunch for me is a
 <a name="people"></a>
 ## **Remember it's the people that matter**
 
-If I'm honest, it's taken me a while to come to this conclusion. I've been fortunate recently to move into a position where I can look after a team of folks who are all amazing, technically and otherwise. And through my career hacking on SAP technology, it's been the [people that matter](https://twitter.com/qmacro/status/902434375010275328).
+If I'm honest, it's taken me a while to come to this conclusion. I've been fortunate recently to move into a position where I can look after a team of folks who are all amazing, technically and otherwise. And through my career hacking on SAP technology, it's been the [people that matter](/tweets/qmacro/status/902434375010275328/).
 
 I try to think what I can do to help them. Not all the time, I'm not that saintly. But when I can, when I'm mindful of what's important, I try to make time. I've been in this business for three decades now, and it stands to reason that I probably have some wisdom to share, even if it's "don't do that, I did, and it's not good".
 

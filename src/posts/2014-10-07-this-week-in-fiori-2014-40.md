@@ -27,7 +27,7 @@ With the combination of this issue and the as yet unresolved issues from Week 2,
 
 I must say that I’ve not given up on Open SAP as a whole – in fact I’m eagerly awaiting the next Fiori related course … now that Fiori installation and configuration is out of the way with this first course, it could be full steam ahead for the UX part!
 
-**Update 20 Oct 2014**: Since this post, there has been some discussion internally, on various email threads and also publically here and [on Twitter](https://twitter.com/qmacro/status/523472656457531392). And today SAP posted “[Help Shape the Next SAP Fiori Course](http://scn.sap.com/community/opensap/blog/2014/10/20/help-shape-the-next-sap-fiori-ux-course)” which acknowledges the issues with the lack of UX content and solicits input to determine the content for the next course. Well done Open SAP! This is a conversation in action. I’d encourage you to go over to the [survey](https://www.sapsurvey.com/cgi-bin/qwebcorporate.dll?idx=8SCKQZ) and add your thoughts.
+**Update 20 Oct 2014**: Since this post, there has been some discussion internally, on various email threads and also publically here and [on Twitter](/tweets/qmacro/status/523472656457531392/). And today SAP posted “[Help Shape the Next SAP Fiori Course](http://scn.sap.com/community/opensap/blog/2014/10/20/help-shape-the-next-sap-fiori-ux-course)” which acknowledges the issues with the lack of UX content and solicits input to determine the content for the next course. Well done Open SAP! This is a conversation in action. I’d encourage you to go over to the [survey](https://www.sapsurvey.com/cgi-bin/qwebcorporate.dll?idx=8SCKQZ) and add your thoughts.
 
 Until next time, share & enjoy!
 

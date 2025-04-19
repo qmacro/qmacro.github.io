@@ -10,7 +10,7 @@ I often use ijq, or "interactive jq", to explore JSON, and also to improve my jq
 
 There's a wrapper around `jq` called [ijq](https://sr.ht/~gpanders/ijq/) (short for "interactive jq") which is a bit like a REPL in that it affords immediate feedback. It's a lovely program, and I use it a lot.
 
-Yesterday I [shared a short video](https://twitter.com/qmacro/status/1527678770454331392) of an example of how it can be used to explore a JSON dataset and I thought I'd give that example a more permanent home here on the blog.
+Yesterday I [shared a short video](/tweets/qmacro/status/1527678770454331392/) of an example of how it can be used to explore a JSON dataset and I thought I'd give that example a more permanent home here on the blog.
 
 ![ijq in action](/images/2022/05/ijq.gif)
 

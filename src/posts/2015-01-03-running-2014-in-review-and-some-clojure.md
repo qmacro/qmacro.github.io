@@ -21,7 +21,7 @@ I enjoyed running in 2014 and logged each one via [Endomondo](https://www.endomo
 
 I’ve been using a [Garmin Forerunner 110](https://buy.garmin.com/en-GB/GB/watches-wearable-technology/wearables/forerunner-110/prod63511.html) watch which has been very good, on the whole, although the USB cable and connectivity left something to be desired.
 
-I bought my wife Michelle a [TomTom Runner Cardio](http://www.tomtom.com/en_gb/sports/running/products/runner-cardio-gps-watch/white-red/) for her birthday back in August, and have been intrigued by it ever since. And she bought me one for Christmas, so I’m trying that out for 2015. I went out on my first run of this year with it [just this morning](https://twitter.com/qmacro/status/551299062616817664), in fact.
+I bought my wife Michelle a [TomTom Runner Cardio](http://www.tomtom.com/en_gb/sports/running/products/runner-cardio-gps-watch/white-red/) for her birthday back in August, and have been intrigued by it ever since. And she bought me one for Christmas, so I’m trying that out for 2015. I went out on my first run of this year with it [just this morning](/tweets/qmacro/status/551299062616817664/), in fact.
 
 ## Run data
 

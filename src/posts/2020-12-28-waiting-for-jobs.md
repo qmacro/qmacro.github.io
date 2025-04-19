@@ -82,7 +82,7 @@ The `-n` option makes `wait` wait for the next job to terminate, whatever that j
 
 Now we know what `wait` can do, I'd like to think a little bit about what it represents, too.
 
-Recently my learning radar has been picking up various conversations where it seemed to me that people were [misunderstanding what shell scripting is](https://twitter.com/qmacro/status/1332303180240216066). It also came up this month in a Lobster thread, where the user "pm" really [helped me put my finger on](https://lobste.rs/s/yeloyn/minimal_safe_bash_script_template#c_q4gyqw) what is frustrating about the "Bash vs a real programming language" discussion.
+Recently my learning radar has been picking up various conversations where it seemed to me that people were [misunderstanding what shell scripting is](/tweets/qmacro/status/1332303180240216066/). It also came up this month in a Lobster thread, where the user "pm" really [helped me put my finger on](https://lobste.rs/s/yeloyn/minimal_safe_bash_script_template#c_q4gyqw) what is frustrating about the "Bash vs a real programming language" discussion.
 
 The shell is like a [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop) to your operating system, an interactive environment where you can have a conversation with it - manage resources, execute programs and so on. In that sense, the language of that conversation needs to be simple and have minimal noise. You want to just type something in and have it happen.
 

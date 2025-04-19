@@ -23,7 +23,7 @@ keep up to date) on top. This only added to the feeling that [I've no
 idea what I'm
 doing](/blog/posts/2018/07/09/monday-morning-thoughts:-curiosity-and-understanding/#another-win-for-curiosity).
 
-I [tweeted](https://twitter.com/qmacro/status/1070232169996414977) my
+I [tweeted](/tweets/qmacro/status/1070232169996414977/) my
 thoughts at the time, and they seemed to resonate with folks:
 
 ![](/images/2018/12/Screenshot-2018-12-10-at-08.29.26.png)
@@ -99,7 +99,7 @@ much better understanding.
 And what about actual programming? Well, there are languages and
 frameworks that immediately come to mind. Yesterday I was helping out at
 [Manchester CoderDojo](https://mcrcoderdojo.org.uk/) [teaching some
-JavaScript](https://twitter.com/qmacro/status/1071886022353584128) to
+JavaScript](/tweets/qmacro/status/1071886022353584128/) to
 some youngsters (and enjoying the delight on their faces when they
 solved some simple cryptography puzzles programmatically). We managed to
 solve the puzzles using some basic procedural approaches, and even
@@ -174,7 +174,7 @@ This post was brought to you by the happy feeling of a good run this
 morning, by a nice cup of [Pact Coffee's La
 Concepcion](https://www.pactcoffee.com/coffees/la-concepcion) and the
 calming purple tones of my [Dracula themed
-desktop](https://twitter.com/qmacro/status/1071079866265669635).
+desktop](/tweets/qmacro/status/1071079866265669635/).
 
 ---
 

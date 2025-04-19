@@ -14,7 +14,7 @@ In my [Thinking Aloud](https://github.com/qmacro/thinking-aloud) journal, the en
 
 That's worked fine, but in the overview of the issues it wasn't really practical to pick out the one I wanted to read or edit, because all I had to go on was the timestamp. Of course, I could scan the [recent entries](https://github.com/qmacro/thinking-aloud/blob/main/recent.md) but that would quickly become a little limiting as the number of journal entries grows.
 
-In a small script [preptweet](https://github.com/qmacro/thinking-aloud/blob/main/preptweet), used when automatically tweeting about new entries, I was extracting the first 50 characters from the body and using that in the tweet. You can see an example in [this tweet](https://twitter.com/qmacro/status/1380500800879919105) - "I've been thinking about field naming conventions today …".
+In a small script [preptweet](https://github.com/qmacro/thinking-aloud/blob/main/preptweet), used when automatically tweeting about new entries, I was extracting the first 50 characters from the body and using that in the tweet. You can see an example in [this tweet](/tweets/qmacro/status/1380500800879919105/) - "I've been thinking about field naming conventions today …".
 
 I thought this would be a useful string to have in the journal entry (issue) titles too, so I wrote a script [appendtitle](https://github.com/qmacro/thinking-aloud/blob/main/appendtitle) that would do that for me for the existing issues. I have yet to decide how to modify the process of creating a new journal entry (I could just have this script run as a separate job step in the [workflow](https://github.com/qmacro/thinking-aloud/blob/main/.github/workflows/process-new-entry.yaml) I already have, for example).
 

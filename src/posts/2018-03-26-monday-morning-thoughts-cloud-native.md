@@ -62,7 +62,7 @@ recent #APIFriday post "[Building your Developer Profile -- GitHub
 UI5](https://blogs.sap.com/2018/03/22/building-your-developer-profile-github-ui5/)").
 
 I'm mindful of the tools I use with kids [at the local Primary
-School](https://twitter.com/qmacro/status/976761337874350081) and at
+School](/tweets/qmacro/status/976761337874350081/) and at
 [Manchester CoderDojo](http://mcrcoderdojo.org.uk/). All the teaching I
 do, from Google Apps Script, to JavaScript, Scratch and even UI5, is
 done online. All the kids need is a laptop with enough battery, a

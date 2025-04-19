@@ -9,7 +9,7 @@ I'm sitting in TLV airport waiting for my flight back to MAN via FRA. I've just 
 
 ![Me and Aviad](/images/2013/10/saplabsil_meandaviad.png)
 
-Of course as you may know Aviad, who organised the whole event, was announced as one of the new SAP Mentors today. Congratulations! I did have the "insider knowledge" yesterday, hence the double meaning of my [flying the @SAPMentors flag](https://twitter.com/qmacro/status/385428895131906048) tweet yesterday evening on the roof terrace of the SAP Labs building 🙂
+Of course as you may know Aviad, who organised the whole event, was announced as one of the new SAP Mentors today. Congratulations! I did have the "insider knowledge" yesterday, hence the double meaning of my [flying the @SAPMentors flag](/tweets/qmacro/status/385428895131906048/) tweet yesterday evening on the roof terrace of the SAP Labs building 🙂
 
 ![Customer corner poster](/images/2013/10/customercorner.png)
 

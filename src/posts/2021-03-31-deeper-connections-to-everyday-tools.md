@@ -22,7 +22,7 @@ What was profound was that the lack of relationship I had with the stuff I just 
 
 **Tools I use often in the kitchen**
 
-I'd been thinking about tools I use often, since [noticing how worn my hand milk frother was recently](https://twitter.com/qmacro/status/1374655713331544065).
+I'd been thinking about tools I use often, since [noticing how worn my hand milk frother was recently](/tweets/qmacro/status/1374655713331544065/).
 
 <img src="/images/2021/03/milkfrother.jpeg" alt="Worn milk frother" width="200" height="138"/>
 

@@ -35,4 +35,4 @@ Version 4 of Bash came with lots of wonderful stuff, including 4 separate case m
 |`${var,}`|Make first char of `var` value lowercase|
 |`${var,,}`|Make all chars of `var` value lowercase|
 
-I didn't know that, but [I do now!](https://twitter.com/qmacro/status/1317046383950659584)
+I didn't know that, but [I do now!](/tweets/qmacro/status/1317046383950659584/)

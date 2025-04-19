@@ -5,7 +5,7 @@ title: The myriad meanings of pwd in Unix systems
 
 _Last week I ran a poll on Twitter to see what people considered with respect to the meaning of 'pwd' in Unix and Linux systems. The results were varied, for perhaps good reason._
 
-At the end of Oct 2020 I ran a [brief poll on Twitter](https://twitter.com/qmacro/status/1322567992551624705), on which 82 people voted. Here's that poll, and the results. They're quite mixed, which at first might seem surprising. But there are reasons for that, as we'll find out.
+At the end of Oct 2020 I ran a [brief poll on Twitter](/tweets/qmacro/status/1322567992551624705/), on which 82 people voted. Here's that poll, and the results. They're quite mixed, which at first might seem surprising. But there are reasons for that, as we'll find out.
 
 ![Poll on Twitter: "Fun Saturday afternoon shell poll. In Unix (and Linux), what do you think the P in $PWD (or pwd) stand for?"]( {{ "/images/2020/11/twitter-poll-pwd.png" | url }})
 

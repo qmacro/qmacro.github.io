@@ -45,7 +45,7 @@ There I was met at the station by Valentino, the CodeJam organiser at Regesta. W
 
 The day flew by. 
 
-I can honestly say this was one of the most diligent groups of CodeJam attendees I've had the pleasure of working with. [Everyone got properly involved in the content](https://twitter.com/qmacro/status/1659467428093390849), asked great questions, worked with each other through each exercise, and made it easy for me to convey all the concepts and details. Thanks folks!
+I can honestly say this was one of the most diligent groups of CodeJam attendees I've had the pleasure of working with. [Everyone got properly involved in the content](/tweets/qmacro/status/1659467428093390849/), asked great questions, worked with each other through each exercise, and made it easy for me to convey all the concepts and details. Thanks folks!
 
 ![the CodeJam attendees](/images/2023/05/codejam-attendees.jpg)
 

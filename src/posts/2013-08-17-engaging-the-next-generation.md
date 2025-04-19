@@ -11,7 +11,7 @@ From the show and tell and judging on the weekend, here's a quote from one of th
 
 _"<organisation> has an open API so we used that"_
 
-In my [tweet](https://twitter.com/qmacro/status/366513722170155008) I alluded to the fact that this was a sentiment echoed by all the participants at YRS - the kids building cool hacks on open data and sharing the source code are our future.
+In my [tweet](/tweets/qmacro/status/366513722170155008/) I alluded to the fact that this was a sentiment echoed by all the participants at YRS - the kids building cool hacks on open data and sharing the source code are our future.
 
 What are we doing to help form and guide this future? Well for a start, there are a great number of people who get involved with this sort of thing on a regular basis. John Astill for example took part in a "hyperlocal" instance of YRS - at YRS NYC, last month. And of course, for the second year running, SAP itself, through the guidance and steady hand of [Thomas Grassl](https://people.sap.com/thomas.grassl) is headline sponsor, helping make the whole thing happen (thank you SAP, I'm proud to have been able to connect you with YRS in the first place, last year!). [Ian Thain](https://people.sap.com/ian.thain) was there also and wrote up a piece on YRS this year too: [SAP and the young Developers of tomorrow](https://blogs.sap.com/2013/08/13/sap-and-the-young-developers-of-tomorrow/).
 

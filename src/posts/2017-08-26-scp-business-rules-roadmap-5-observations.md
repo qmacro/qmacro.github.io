@@ -15,7 +15,7 @@ I started to dig in to the Business Rules services this month, and liked what I 
 
 It's been updated to reflect the next few quarters. I read through it this morning, and have some observations on what I read, which I wanted to share:
 
-1) While it may be early days (Business Rules only [went GA](https://twitter.com/qmacro/status/895623419403939840) recently), this diagram shows how important the service is in the grand scheme of things:
+1) While it may be early days (Business Rules only [went GA](/tweets/qmacro/status/895623419403939840/) recently), this diagram shows how important the service is in the grand scheme of things:
 
 ![]( {{ "/images/2017/08/Screen-Shot-2017-08-26-at-07.38.55.png" | url }})
 

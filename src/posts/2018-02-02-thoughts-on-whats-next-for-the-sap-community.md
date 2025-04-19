@@ -9,7 +9,7 @@ I have been involved in building and helping the SAP community (small 'c') grow 
 
 It's been great to see Developer Relations and the SAP Community moving under the wing of the office of the CTO, and with [the backing of CEO Bill McDermott](https://blogs.sap.com/2018/01/16/the-future-of-sap-community/), there's certainly more than enough torque and momentum upon which to build.
 
-The chassis has undergone some significant welding in recent years, but the current remodelling, while still needing some love and attention, is [so much better for content creators](https://twitter.com/qmacro/status/950628022842994688). And without content, there is no community. I'm hopeful that the chassis and bodywork will go from strength to strength, especially with the recently announced [2018 redesigns](https://blogs.sap.com/2018/01/26/sneak-peak-2018-sap-community-redesign/), and we see the rebirth of interconnectivity.
+The chassis has undergone some significant welding in recent years, but the current remodelling, while still needing some love and attention, is [so much better for content creators](/tweets/qmacro/status/950628022842994688/). And without content, there is no community. I'm hopeful that the chassis and bodywork will go from strength to strength, especially with the recently announced [2018 redesigns](https://blogs.sap.com/2018/01/26/sneak-peak-2018-sap-community-redesign/), and we see the rebirth of interconnectivity.
 
 What struck me most about listening to Björn and Thomas on the video just now was my perception of the sense of community being the strong, implicit anchor for the message and the vision. So I decided to transcribe the video, to perform a simple text analysis. 
 

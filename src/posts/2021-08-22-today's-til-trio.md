@@ -100,7 +100,7 @@ tcp6       0      0  *.22                   *.*                    LISTEN
 $
 ```
 
-But I learned something as a side effect from reading a great post (which I [auto-tweeted](https://twitter.com/qmacro/status/1429463349239197701) from my [https://github.com/qmacro-org/url-notes](URL Notes) repo today): [Bringing the Unix Philosophy to the 21st Century - Brazil's Blog](https://twitter.com/qmacro/status/1429463349239197701).
+But I learned something as a side effect from reading a great post (which I [auto-tweeted](/tweets/qmacro/status/1429463349239197701/) from my [https://github.com/qmacro-org/url-notes](URL Notes) repo today): [Bringing the Unix Philosophy to the 21st Century - Brazil's Blog](/tweets/qmacro/status/1429463349239197701/).
 
 The author gave this example of using their `jc` utility (which looks fascinating) to be able to more easily parse this sort of `netstat` output:
 

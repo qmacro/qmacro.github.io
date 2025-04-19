@@ -37,7 +37,7 @@ If you're curious to see what the Apps Script based API produces, here's an exam
 
 Note that the topics (Data Science, Security, Chrome OS and so on) are returned in a map, where the properties are the topics and the values are the lists of sessions for each of those topics. The data thus retrieved is stored in the relevant context, so that once the user has heard about the topics available and wants to explore the related sessions, the data is available immediately without a further call needed to the service API.
 
-Anyway, I'll leave it there for now. The writing of this post was spurred on by [Eric Koleda](https://twitter.com/erickoleda) who [asked me to share a demo](https://twitter.com/qmacro/status/857992647763517441) - thanks for the prompting, Eric! 
+Anyway, I'll leave it there for now. The writing of this post was spurred on by [Eric Koleda](https://twitter.com/erickoleda) who [asked me to share a demo](/tweets/qmacro/status/857992647763517441/) - thanks for the prompting, Eric! 
 
 If there's interest, there's a lot to talk about in future posts. Some topics that come to mind are:
 

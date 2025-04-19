@@ -78,7 +78,7 @@ computing, but in life generally. I'm half tempted to talk about the
 reasons why Unix became so popular, because of the portability afforded
 to it by the C language, but I'll leave that for another time, perhaps.
 Instead, I'll mention something that occurred to me on [my run this
-morning](https://twitter.com/qmacro/status/1018729969470582785) instead.
+morning](/tweets/qmacro/status/1018729969470582785/) instead.
 The spoken word is also an abstraction. That seems obvious when you say
 it out loud, as it were. But the concept of a common "high level"
 language like English closely parallels programming languages. The

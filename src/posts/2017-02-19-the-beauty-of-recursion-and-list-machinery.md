@@ -25,7 +25,7 @@ It was my son [Joseph](http://jcla1.com) that introduced me to the concept that 
 
 The next time I encountered this pattern matching technique was in a series of lectures by the inimitable Erik Meijer. These lectures are on functional programming techniques, and the series is called "[Programming in Haskell](https://www.youtube.com/watch?v=UIUlFQH4Cvo&list=PLTA0Ta9Qyspa5Nayx0VCHj5AHQJqp1clD)", although the concepts themselves are explained in terms of other languages (C#, LINQ) too. I thoroughly recommend you spend some time enjoying them. One thing that Erik said a lot was "x over xs", which is expressed as `x::xs`.
 
-Being somewhat intimidated by the M-word (monad), I have avoided Haskell so far, although my interest in functional programming in other languages (such as in Clojure, and with Ramda in JavaScript) has grown considerably ... I presented at [SAP TechEd EMEA](https://sessioncatalog.sapevents.com/go/agendabuilder.sessions/?l=133&sid=37706_0&locale=en_US) and also at [UI5con](https://twitter.com/qmacro/status/802108634255806465), both in 2016, on functional programming techniques in JavaScript.
+Being somewhat intimidated by the M-word (monad), I have avoided Haskell so far, although my interest in functional programming in other languages (such as in Clojure, and with Ramda in JavaScript) has grown considerably ... I presented at [SAP TechEd EMEA](https://sessioncatalog.sapevents.com/go/agendabuilder.sessions/?l=133&sid=37706_0&locale=en_US) and also at [UI5con](/tweets/qmacro/status/802108634255806465/), both in 2016, on functional programming techniques in JavaScript.
 
 ## Elm
 

@@ -46,7 +46,7 @@ And so it is with GitHub Actions. Unless I'm using self-hosted runners, I have n
 
 Anyway, I'm not really sure where I'm going with this post. I'd started out with the intention of explaining a little bit as to why, to GitHub Actions product manager [Chris Patterson](https://twitter.com/chrisrpatterson)'s question "If you had one wish for GitHub Actions what would it be?", my answer was:
 
-["SDSF for workflow/job execution and output. Please :-)"](https://twitter.com/qmacro/status/1372578449743826949)
+["SDSF for workflow/job execution and output. Please :-)"](/tweets/qmacro/status/1372578449743826949/)
 
 IBM's System Display and Search Facility ([SDSF](https://en.wikipedia.org/wiki/SDSF)) was how I navigated the output from batch jobs that had executed. How I searched, sorted, viewed, printed and purged output. How I found patterns in what was happening in the area for which I was responsible. Using a powerful and classic terminal user interface (TUI) design which fit well with the Interactive System Productivity Facility (ISPF) world where we spent our working hours.
 
