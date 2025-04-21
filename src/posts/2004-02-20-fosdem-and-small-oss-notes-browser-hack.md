@@ -4,6 +4,8 @@ title: FOSDEM, and small OSS Notes Browser Hack
 date: 2004-02-20
 tags:
   - sapcommunity
+  - fosdem
+  - oss
 ---
 Tomorrow morning I’m off to Brussels for [FOSDEM](https://www.fosdem.org) – the Free and Open Source Software Developers’ Meeting. Some people might wonder what this has to do with SAP, but don’t forget that lots of people (including yours truly) combine open source technologies with SAP regularly. And don’t forget that SAP have flown the flag for making ERP application source code available (in R/2 and R/3) for years now. I’m not sure whether that excellent situation is going to continue into the age of J2EE – I note, sadly, that SAP don’t supply the Java source in the PARs they make available on [iViewStudio](https://web.archive.org/web/20040324133803/http://www.iviewstudio.com/SAPPortal/home.asp) – but I’m not giving up yet.
 
@@ -27,5 +29,7 @@ http://service.sap.com/~form/handler
 to which the entered OSS number is appended. This URL is the one used in the Javascript displayNote() function behind the OSS note quick access form on the main notes page at SAP.
 
 Simple but effective! You might consider building something like this into your browser too.
+
+---
 
 [Originally published on SAP Community](https://blogs.sap.com/2004/02/20/fosdem-and-small-oss-notes-browser-hack/)

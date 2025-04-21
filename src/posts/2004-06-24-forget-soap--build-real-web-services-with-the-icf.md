@@ -11,13 +11,9 @@ I don’t like getting into a lather when it comes to data and function integrat
 
 As an example of taking the [REST](https://web.archive.org/web/20040907010810/http://rest.blueoxen.net/cgi-bin/wiki.pl)ian approach to exposing your SAP data and functionality through services you can build with the excellent Internet Communication Framework (ICF) layer, I thought I’d show you how straightforward and natural data integration can be by using a spreadsheet as an example.
 
-In my recent SDN article (published this week):
+In my recent SDN article (published this week) [Real Web Services with REST and ICF](/blog/posts/2004/06/22/real-web-services-with-rest-and-icf/) I presented a simple ICF handler example that allowed you to directly address various elements of CTS data (I prototyped it in my NW4 system so I thought I’d use data at hand, and build an example that you could try out too). For instance, you could retrieve the username of the person responsible for a transport by addressing precisely that data element like this:
 
-**“Real Web Services with REST and ICF“** (unfortunately lost and not archived)
-
-… I presented a simple ICF handler example that allowed you to directly address various elements of CTS data (I prototyped it in my NW4 system so I thought I’d use data at hand, and build an example that you could try out too). For instance, you could retrieve the username of the person responsible for a transport by addressing precisely that data element like this:
-
-```text
+```url
 http://shrdlu.local.net:8000/qmacro/transport/NW4K900007/as4text
 ```
 
@@ -93,5 +89,7 @@ As a final note, I’ve submitted a SAP TechEd talk proposal. It’s titled:
 If you’re interested in learning more about the ICF, and want to have some fun building and debugging a simple web service with me, you know where to cast your vote if you haven’t already. Hurry though – there’s only a few hours to go!
 
 Thanks!
+
+---
 
 [Originally published on SAP Community](https://blogs.sap.com/2004/06/24/forget-soap-build-real-web-services-with-the-icf/)

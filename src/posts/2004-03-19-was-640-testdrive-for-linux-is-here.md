@@ -4,6 +4,7 @@ title: WAS 6.40 testdrive for Linux is here!
 date: 2004-03-19
 tags:
   - sapcommunity
+  - cebit
 ---
 Phew. What a day yesterday at the world’s biggest IT fair. I arrived by train and joined the masses along the CeBIT skywalk to enter Aladdin's cave.
 
@@ -29,5 +30,7 @@ and we tramped round the halls until our feet were sore and our heads were full.
 ![Benny and DJ](/images/2004/03/BennyAndDj.jpg)
 
 The nominal caption is “SOAP sucks!” 🙂
+
+---
 
 [Originally published on SAP Community](https://blogs.sap.com/2004/03/19/was-640-testdrive-for-linux-is-here/)

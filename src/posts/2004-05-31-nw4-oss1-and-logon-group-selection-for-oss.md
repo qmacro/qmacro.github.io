@@ -69,7 +69,7 @@ it points to system O01’s message server:
 
 Once this route string has been constructed, it’s used in a call to `lgtst` like this:
 
-```text
+```shell
 lgtst -H /H/.../H/oss001/S/sapmsO01 -S x -W 30000
 ```
 
@@ -110,7 +110,7 @@ So **that’s** where this popup comes from. Ok. Now I understand. It’s amazin
 
 So, just to get back to why I came here in the first place – why doesn’t this popup appear in NW4? NW4 is a Linux-based testdrive system. `lgtst` works fine. But look at this:
 
-```text
+```abap
 *---- Folgende Betriebssysteme werden unterstützt 
 IF ( SY-OPSYS = 'HP-UX' ) OR ( SY-OPSYS = 'AIX' ) 
 OR ( SY-OPSYS = 'OSF1' ) OR ( SY-OPSYS = 'SINIX' ) 
@@ -122,5 +122,7 @@ OR ( SY-OPSYS = 'OS/400' ).
 No Linux? Hmm, I soon fixed that, by copying the transaction (OSS1 -> ZSS1) and the ABAP behind OSS1 (RSEFA910), adding a line to this IF statement to bring a bit of love the choice operating system of a “Gnu generation” 😉
 
 Now I can call ZSS1 and delight in the group logon popup. Hurrah!
+
+---
 
 [Originally published on SAP Community](https://blogs.sap.com/2004/05/31/nw4-oss1-and-logon-group-selection-for-oss/)
