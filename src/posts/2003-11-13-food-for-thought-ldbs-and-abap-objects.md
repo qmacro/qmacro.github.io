@@ -8,7 +8,7 @@ tags:
 ---
 During part of this week I’ve been fighting with an old adversary, [output determination](https://help.sap.com/saphelp_46c/helpdata/en/30/c6853488601e33e10000009b38f83b/frameset.htm). In the fracas, I spent some time inside RSNAST00 (the selection program for issuing output) and couldn’t help noticing, in passing, that it used FIELD-GROUPS. This relatively old area of ABAP got me thinking about logical databases (LDBs) and their use in writing reports. You know the sort of thing:
 
-```text
+```abap
 GET KNA1.
 
   SUMMARY.
@@ -27,7 +27,7 @@ Anyway, this brings me to something that’s been floating around in the back of
 
 There’s the ‘ldb’ class that implements a simple database read program for the the single-node (SPFLI) logical database:
 
-```text
+```abap
 class ldb definition.
   public section.
     methods read_spfli.
@@ -50,7 +50,7 @@ Here we have a single public method READ_SPFLI that reads the table SPFLI, raisi
 
 Then we have a report that uses that logical database. It’s also written as a class:
 
-```text
+```abap
 class rep definition.
   public section.
     methods start.
@@ -88,6 +88,6 @@ In the START method we effectively are declaring the use of the logical database
 
 I don’t know about you, but I was taken aback by the beauty of this. As we’re approaching the weekend, a time to unwind and reflect, I just thought I’d share it with you.
 
+---
 
 [Originally published on SAP Community](https://blogs.sap.com/2003/05/30/the-sapmysql-partnership/)
-

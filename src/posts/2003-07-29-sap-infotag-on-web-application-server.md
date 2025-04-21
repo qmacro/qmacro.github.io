@@ -25,4 +25,6 @@ so perhaps I’ll go just for the afternoon.
 
 Now, if I can persuade my wife that it’s worth the EUR 150 attendance fee they’re asking. Hmm, if I just go for the afternoon and miss the lunch, perhaps it would be less 😉
 
+---
+
 [Originally published on SAP Community](https://blogs.sap.com/2003/07/29/sap-infotag-on-web-application-server/)

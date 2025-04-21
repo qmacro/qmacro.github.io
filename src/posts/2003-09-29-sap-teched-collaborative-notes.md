@@ -3,6 +3,7 @@ layout: post
 title: SAP TechEd - Collaborative notes
 date: 2003-09-29
 tags:
+  - teched
   - sapcommunity
 ---
 I’m off to SAP TechEd this week in Basel. Fantastic. It was a bit of a bumpy start – the online-registration process was a bit of a shambles, and I had to ring up to complete the transaction as the webpage (javascript?) was broken. Not a good advert for web-based commerce, is it? Anyway, after 3  (!)separate phone calls to the registration company I finally got the details I needed, and I’m off on the train via Koeln tomorrow down to Basel.
@@ -14,5 +15,7 @@ With that in mind, and presuming that there will be ‘net access, I’ve set up
 So if you’re interested in finding a place to chat about things and log things of interest with comments, you’re welcome to the #teched channel and the use of the Chump bot.
 
 Any questions, just ask!
+
+---
 
 [Originally published on SAP Community](https://blogs.sap.com/2003/09/29/sap-teched-collaborative-notes/)

@@ -4,6 +4,7 @@ title: Evaluation WAS 6.40 on Linux - top reason for attending CeBIT 2004
 date: 2003-12-17
 tags:
   - sapcommunity
+  - cebit
 ---
 Ahh, it’s always great to be able to attend the world’s biggest ICT (information and communication technology) fair – [CeBIT](https://web.archive.org/web/20030922064442/http://www.cebit2004.de/). And of course being an SAP hacker, it goes without saying that a visit to the SAP stand is a must.
 
@@ -14,5 +15,7 @@ Anyway, one big reason to visit Hannover in March is because SAP is intending to
 Yippee!
 
 For references, have a look at the comments thread to [Visiting SAP NetWeaver Development Nerve Center](https://blogs.sap.com/2003/12/09/visiting-sap-netweaver-development-nerve-center/), specifically [this message](https://blogs.sap.com/2003/12/09/visiting-sap-netweaver-development-nerve-center/#comment-5686). Also, Alexander H from the Linux Lab was kind enough to send this reply to an email on the linux.general mailing list.
+
+---
 
 [Originally published on SAP Community](https://blogs.sap.com/2003/12/17/evaluation-was-640-on-linux-top-reason-for-attending-cebit-2004/)

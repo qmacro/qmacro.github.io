@@ -3,6 +3,7 @@ layout: post
 title: Improving the OSS note experience
 date: 2003-07-30
 tags:
+  - oss
   - sapcommunity
 ---
 I remember the time when OSS was a fledgling service, and it ran on an R/2 system in Walldorf. You accessed it via the R/2 SAPGUI just as any other R/2 system. It was great, and the volume of notes being generated then (I remember particularly at the time I was working at Deutsche Telekom in the early 90s)  was small enough that I could read each and every note that was written on certain subjects that interested me. I used to come in early in the morning, grab a coffee, and then browse the new OSS notes. The systems were bigger, the note numbers had less digits, and I had more hair.
@@ -24,5 +25,7 @@ And while we’re at it – how about offering [RSS](http://purl.org/rss/1.0) fe
 For many SAP hackers like me, OSS is still a very important source of info. Small improvements like this would make our lives a lot more pleasant.
 
 [The concept of a “first class URL” is of course from the RESTian (REpresentational State Transfer) view of the web. For more info, see the [REST  Wiki](https://web.archive.org/web/20031004160636/http://internet.conveyor.com/RESTwiki/moin.cgi/FrontPage).]
+
+---
 
 [Originally published on SAP Community](https://blogs.sap.com/2003/07/30/improving-the-oss-note-experience/)

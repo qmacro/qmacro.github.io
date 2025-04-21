@@ -12,5 +12,7 @@ IMO making and maintaining DBMS products isn’t one of SAP’s core business dr
 
 As long as the relationship remains open source, what can be seen as bad about the partnership?
 
+---
+
 [Originally published on SAP Community](https://blogs.sap.com/2003/05/30/the-sapmysql-partnership/)
 

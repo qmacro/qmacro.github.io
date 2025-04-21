@@ -3,6 +3,7 @@ layout: post
 title: BSP - Mangled URL Decoder
 date: 2003-10-17
 tags:
+  - bsp
   - sapcommunity
 ---
 The BSP mangles URLs. Deep down. In [BSP In-Depth: URL Mangling](https://blogs.sap.com/2003/09/30/bsp-in-depth-url-mangling/), Brian McKellar did a splendid job of both feeding hunger for information and increasing one’s appetite. He mentioned the BSP application `decode_url` which shows you what the gunk in the rewritten (mangled) URL actually is. Unfortunately, my free trial WAS system is at release 6.10 and doesn’t contain `decode_url`.
@@ -20,5 +21,7 @@ This is what it looks like in action:
 ![screenshot of decode_url in a browser](/images/2003/10/decode_url.png)
 
 Thanks to Brian, I took a small stroll through some of the BSP’s guts, and learnt stuff on the way. I’ve always said the best way to broaden your R/3 and Basis skills is to spend an hour debugging an area that interests you, and this time was no exception. So get out your tools and off you go!
+
+---
 
 [Originally published on SAP Community](https://blogs.sap.com/2003/10/17/bsp-mangled-url-decoder/)
