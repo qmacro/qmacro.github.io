@@ -46,7 +46,7 @@ example: <http://jsbin.com/gatan/edit?html,js,output>.
 But the ability to create and serve UI5 apps, resplendent in their
 multi-artifact construction, still remained a desire, which was
 fulfilled with the advent of Plunkr, similar to JSBin. See this post
-from denise.nepraunig.sap for more details on UI5 with Plunkr:
+from Denise Nepraunig for more details on UI5 with Plunkr:
 "[Quickly tinker around with SAPUI5
 examples](https://blogs.sap.com/2015/01/04/quickly-tinker-around-online-with-sapui5-explored-examples/)".
 
@@ -57,7 +57,7 @@ evolution. It is, nevertheless, a very nice experience:
 
 ![](/images/2018/03/Screen-Shot-2018-03-26-at-08.47.34.png)
 
-(Yes, this is a little UI5 app that was inspired by meredith.hassett 's
+(Yes, this is a little UI5 app that was inspired by Meredith Hassett's
 recent #APIFriday post "[Building your Developer Profile -- GitHub 
 UI5](https://blogs.sap.com/2018/03/22/building-your-developer-profile-github-ui5/)").
 
