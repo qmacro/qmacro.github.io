@@ -18,7 +18,7 @@ Ahh, [OSS notes](http://service.sap.com/notes) - a topic close to my heart:
 The other day I decided to stop going on about how painful using OSS
 notes on the web was, and do something about it. So I hacked up
 a [Greasemonkey](http://greasemonkey.mozdev.org)
-script, [OssNoteFix](http://www.pipetree.com/~dj/2005/05/OssNoteFix/ossnotefix.user.js),
+script, [OssNoteFix](/images/2005/05/ossnotefix.user.js),
 that addresses the three main issues I have:
 
 - Not having the OSS note number in the title of the page makes it hard to manage more than a couple of notes at once
@@ -56,7 +56,7 @@ like this into your address bar:
 note 19466
 ```
 
-(You can see this in action in the screencast linked below.)
+(You can see this in action in the screencast below.)
 
 ## Installing Greasemonkey and the OssNoteFix Script
 
@@ -68,10 +68,12 @@ Firefox to have this extension take effect.
 
 Now it's time to install the Greasemonkey script that I wrote,
 "OssNoteFix". Go
-to [ossnotefix.user.js](http://www.pipetree.com/~dj/2005/05/OssNoteFix/ossnotefix.user.js).
+to [ossnotefix.user.js](/images/2005/05/ossnotefix.user.js).
 Because of the ending (.user.js), Greasemonkey recognises it and gives
-you the option of installing it: Tools-\>Install User Script (see
-the[screenshot](http://www.pipetree.com/~dj/2005/05/OssNoteFix/ossnotefix_install.png).)
+you the option of installing it: Tools-\>Install User Script, see
+this screenshot:
+
+![screenshot of install](/images/2005/05/ossnotefix_install.png)
 
 Once you've got it installed, visit an OSS note page:
 
