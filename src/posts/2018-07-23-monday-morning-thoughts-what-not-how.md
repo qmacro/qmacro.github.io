@@ -18,15 +18,15 @@ model definition abstraction of Core Data
 Services](https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/c94d921f740e4c66a15924fb53933eef.html) (CDS),
 following on from last week's post in this [Monday morning thoughts
 series](/tags/mondaymorningthoughts/), on
-[abstraction](https://blogs.sap.com/2018/07/16/monday-morning-thoughts-abstraction/).
+[abstraction](/blog/posts/2018/07/16/monday-morning-thoughts:-abstraction/).
 
 Then, in browsing the content of my bookshelves, I came across a copy of
 a wonderful course on SAP assembler macro programming, called IT400 and
 written by Peter Skov.
 
-![](https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/07/Screen-Shot-2018-07-23-at-06.55.09.png)
+![](/images/2018/07/it-400.png)
 
-(I'd lost my original copy; this new copy was courtesy of chris.whealy,
+(I'd lost my original copy; this new copy was courtesy of Chris Whealy,
 a good friend and fellow curious companion - he was one half of our
 old shared blog "Language Ramblings").
 
@@ -66,7 +66,7 @@ what's written. Moreover, how the definitions and relationships are
 implemented - in a database-specific way - are not important at this
 level. The beauty of this is that it allows the extension of definitions
 to other models in a high-level and natural way. (If you're interested
-in learning more about this, see oliver.welzel's post "[ITelO -- A
+in learning more about this, see Oliver Welzel's post "[ITelO -- A
 Sample Business Application for the new Application Programming Model
 for SAP Cloud
 Platform](https://blogs.sap.com/2018/06/27/itelo-a-sample-business-application-for-the-new-application-programming-model-for-sap-cloud-platform)".)
@@ -101,7 +101,7 @@ It's a session I've given before in a number of different forms
 
 It was for the hands-on format that I created a 20 page worksheet which is available for all online:
 
-![](https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/07/Screen-Shot-2018-07-23-at-06.53.35.png)
+![](/images/2018/07/worksheet.png)
 
 [Functional Programming for your UI5 Apps - Hands-On
 Worksheet](https://docs.google.com/document/d/1Nx2PFqObMtir0rSzjU804PAAVkC3j4lZTtfRRoLSocQ/)
@@ -222,7 +222,7 @@ session](https://www.youtube.com/watch?v=R8Z25evYw0o&list=PLHUs_FUbq4dWi0NJg0o6-
 version of the worksheet in the form of a [presentation](https://docs.google.com/presentation/d/1tSQkrIUneHENJqqAogFkcyw2Hztxk-SL497w1RH6emg/). The recording is
 one in a whole series of recordings from the UI5con Bangalore event.
 
-![](https://community.sap.com/legacyfs/online/storage/blog_attachments/2018/07/Screen-Shot-2018-08-03-at-06.04.09.png)
+![](/images/2018/07/ui5conflyer.png)
 
 ---
 

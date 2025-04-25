@@ -5,6 +5,9 @@ date: 2018-05-07
 tags:
   - sapcommunity
   - mondaymorningthoughts
+  - acornatom
+  - cloudnative
+  - containers
 ---
 
 *In this post I think about the silence of workstations and what that
@@ -16,7 +19,7 @@ England. But I wanted to publish a new set of thoughts, related to what
 I've written about previously. Not least because I know that there's
 [at least one
 person](https://twitter.com/JuliePlummer20/status/991215288925507584)
-going to read them (thanks julie.plummer).
+going to read them (thanks Julie Plummer).
 
 In a previous post ([Monday morning thoughts: upload/download in a cloud
 native

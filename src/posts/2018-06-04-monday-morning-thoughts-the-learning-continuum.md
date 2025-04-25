@@ -42,7 +42,7 @@ this is, as I've said often enough, that to remain relevant as a
 developer, a key skill you need is the ability to learn, and you need to
 put that skill into practice often.
 
-Listening to uxkjaer talk to craig.cmehil in the most
+Listening to Jakob Kjaer talk to Craig Cmehil in the most
 recent episode of [SAP Coffee Corner
 Radio](https://creators.spotify.com/pod/profile/sap-community-podcast/) I heard some definitions of
 community. I'd suggest that there's an extra definition that's
@@ -92,7 +92,7 @@ and is a constant in the learning continuum.
 
 ## The continuum expansion
 
-Take, for example, the recent blog post by yuval.anafi: "[Develop SAP
+Take, for example, the recent blog post by Yuval Anafi: "[Develop SAP
 Cloud Platform Business Applications with SAP Web
 IDE](https://blogs.sap.com/2018/06/03/develop-sap-cloud-platform-business-applications-with-sap-web-ide/)".
 It was only last week when I came across the [Getting Started

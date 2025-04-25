@@ -40,7 +40,7 @@ availability of a UI for Kubeless, which looks like this:
 
 ![](https://github.com/kubeless/kubeless-ui/raw/master/kubeless.png)
 
-(The Kubeless UI, from the [Kubeless UI Github
+(The Kubeless UI, from the [Kubeless UI GitHub
 page](https://github.com/kubeless/kubeless-ui))
 
 ## YAEE (Yet Another Editor Environment)\*
@@ -51,10 +51,7 @@ weekend, on my local Kubernetes environment via
 This environment is not required to build serverless functions, but
 makes the process a little more comfortable.
 
-\* The term and acronym "Yet Another \..." comes from the Perl
-community, where there's the "JAPH" acronym, (Just Another Perl
-Hacker), originated and popularised by Randal Schwartz, and the "YAPC"
-acronym (Yet Another Perl Conference).
+_\* The term and acronym "Yet Another \..." comes from the Perl community, where there's the "JAPH" acronym, (Just Another Perl Hacker), originated and popularised by Randal Schwartz, and the "YAPC" acronym (Yet Another Perl Conference)._
 
 The editor is basic, and arguably only one of the key components of the
 environment. But a basic editor here is perhaps "good enough", because

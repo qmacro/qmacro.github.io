@@ -12,7 +12,7 @@ milestones in SAP's technology history, and muse on some of the
 developments today that we'll consider milestones in the future.*
 
 ![Image result for manchester
-milestone](https://upload.wikimedia.org/wikipedia/commons/a/a5/Milestone_rixton_greater_manchester.jpg)
+milestone](/images/2018/05/Milestone_rixton_greater_manchester.jpg)
 
 *A milestone on the A57, just outside of Manchester ([Wikimedia
 commons](https://commons.wikimedia.org/wiki/File:Milestone_rixton_greater_manchester.jpg)).*

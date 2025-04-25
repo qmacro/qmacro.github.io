@@ -31,7 +31,6 @@ polished and less real.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/Sf21TlN17Mg?si=OA6VHKtaazpsrq2W" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-
 During the recording, I mentioned
 [Greasemonkey](https://en.wikipedia.org/wiki/Greasemonkey), which was a
 wonderful tool that allowed one to write JavaScript to be automatically
@@ -44,9 +43,7 @@ Extensions such as
 I used Greasemonkey back in 2005 to improve the OSS Note experience -
 you can read about it in this post "[Hacking the SAP service portal to
 make OSS notes
-better](https://blogs.sap.com/2005/05/20/hacking-the-sap-service-portal-to-make-oss-notes-better/)"
-(unfortunately I lost the screencast but you can get a good idea of what
-I was building from the post itself).
+better](/blog/posts/2005/05/20/hacking-the-sap-service-portal-to-make-oss-notes-better/)".
 
 So I wanted to leave you with two thoughts for this week:
 
@@ -72,21 +69,18 @@ Let us know in the comments below.
 p.s. For those that are interested, here's the final version of the
 JavaScript I put in my bookmarklet:
 
-    javascript: (function() {
+```javascript
+javascript: (function() {
+    opl = sap.ui.getCore().byId("application-bpmworkflowmonitor-DisplayInstances-component---InstancesDetailView--ObjectPageLayout")
+       || sap.ui.getCore().byId("application-bpmworkflowmonitor-DisplayDefinitions-component---InstancesDetailView--ObjectPageLayout");
+    opl.insertSection(opl.removeSection(3), 1);
+})();
+```
 
-        opl = sap.ui.getCore().byId("application-bpmworkflowmonitor-DisplayInstances-component---InstancesDetailView--ObjectPageLayout")
-
-           || sap.ui.getCore().byId("application-bpmworkflowmonitor-DisplayDefinitions-component---InstancesDetailView--ObjectPageLayout");
-
-        opl.insertSection(opl.removeSection(3), 1);
-
-    })();
-
-
- 
+---
 
 Read more posts in this series here: [Monday morning
-thoughts](https://blogs.sap.com/tag/mondaymorningthoughts/).
+thoughts](/tags/mondaymorningthoughts/).
 
 ---
 

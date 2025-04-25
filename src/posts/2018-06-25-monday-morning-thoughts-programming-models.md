@@ -6,7 +6,6 @@ tags:
   - sapcommunity
   - mondaymorningthoughts
 ---
-
 *In this post, I think about the idea of the programming model and
 consider the occurrence of such over the recent years in the SAP
 development ecosphere.*
