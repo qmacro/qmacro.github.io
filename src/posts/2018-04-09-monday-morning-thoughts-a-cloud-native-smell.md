@@ -37,17 +37,20 @@ URL of a Google spreadsheet, for example, or a Google document, or a
 Google Form, or whatever - is unique and permanent. It doesn't change.
 Even if you change the name of that "document" (we should really say
 "of that resource"), the URL remains the same. And that brings a
-superset of web-based by-products that we take for granted. For example,
+superset of web-based by-products that we take for granted.
+
+For example,
 I can jump to a document I've been working on recently in literally a
 handful of keystrokes, without having to think of where I stored it or
 what the URL might be, or what the navigation path might be that I have
 to take once if I have to first find some sort of "root" resource.
 This is all I have to do:
-<br/>
 
-1. Cmd-T to get a new browser tab and have my cursor placed in the omnibar
-2. then three or four characters to identify the working title of the document
-3. finally a down-arrow or two and Enter to request that resource
+👉 Cmd-T to get a new browser tab and have my cursor placed in the omnibar
+
+👉 Then three or four characters to identify the working title of the document
+
+👉 Finally a down-arrow or two and Enter to request that resource
 
 Bam. In and editing.
 

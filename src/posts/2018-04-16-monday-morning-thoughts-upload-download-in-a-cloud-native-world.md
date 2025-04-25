@@ -37,8 +37,8 @@ computing teeth on IBM big iron at the first company I worked for after
 finishing my degree. Moreover, during my degree I used various
 minicomputers, such as Vaxen\*, while moonlighting in the computer lab
 and earning money programming for insurance companies in my spare time.
-Even before that, my first exposure to computing was at school where we
-had a PDP-11 with paper terminals.
+Even before that, my first exposure to computing was [at school where we
+had a PDP-11 with paper terminals](/blog/posts/2020/11/03/computer-unit-1979/#superterm).
 
 \*yes, that's the colloquial plural for Vax machines.
 
@@ -47,9 +47,15 @@ experiences sitting at workstations that looked like this:
 
 ![](/images/2018/04/DEC-VT320-0a.jpg)
 
+or this:
+
 ![](/images/2018/04/Screen-Shot-2018-04-16-at-06.24.24.png)
 
+or this:
+
 ![](/images/2018/04/Screen-Shot-2018-04-16-at-06.32.29.png)
+
+(I've spent many years in front of each of these).
 
 One obvious common factor was that these terminals were known as
 "dumb", in that they had no real local processing power of their own.
