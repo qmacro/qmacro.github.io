@@ -102,7 +102,7 @@ of four functions I mentally think about together as a family, as they
 do very similar things:
 
 ```text
-  shift() <---+           +---> pop()
+  shift() &lt;---+           +---> pop()
               |           |
               |           |
              [1, 2, 3, 4, 5]
@@ -171,7 +171,7 @@ However, you'd end up with this:
 
 ```log
 Uncaught TypeError: ["red","white","blue"].push(...).sort is not a function
-at <anonymous>:3:3
+at &lt;anonymous>:3:3
 ```
 
 This is because the `push()` function returns the new length of the array
@@ -297,7 +297,8 @@ invocation of the `push()` function, where the value of `newEl` is the
 new element being pushed onto the end of `arr`.
 
 So what about the other two pairs of brackets? Well, in JavaScript, you
-can define an anonymous function on the fly, and call it immediately.
+can define an anonymous function on the fly, and call it immediately
+(that's called an Immediately Invoked Function Expression, or IIFE).
 When you do this, you wrap the anonymous function definition in
 brackets:
 
