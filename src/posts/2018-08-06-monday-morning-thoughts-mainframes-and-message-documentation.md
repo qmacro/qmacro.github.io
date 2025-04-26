@@ -29,7 +29,7 @@ until Adrian explained; basically, they're services at the opposite end
 of the scale to microservices. You know the sort of thing:
 
 ```text
-smaller <-- pico nano micro milli ~~ kilo mega giga tera --> larger
+smaller -- pico nano micro milli ~~ kilo mega giga tera -- larger
 ```
 
 The irony of the misspelling in the InfoQ title makes me smile - the
