@@ -20,6 +20,7 @@ SAP's User Interface Development Toolkit for HTML5 - aka SAPUI5 - is a very rece
 
 When you think of the SAP user interface experience, what comes to mind? The venerable SAPGUI? The edgy NetWeaver Business Client? Some browser-based but ultimately and unmistakeably SAP flavoured HTML experience? For many of us, it's "all of the above". When you consider all of these approaches, and the technologies that power them, there's a single theme that emerges: the theme of "Inside-Out". Classic dynpros, WebDynpro for Java, WebDynpro for ABAP, Business Server Pages and (gasp) home-brew solutions based on a custom set of templates are all technologies where the user experience is designed, built and pushed out from the inside of an SAP system, and exposed to the outside in the last-mile of user connectivity. That's served us well, but there's a sea-change ahead.
 
+<a name="from-inside-out-to-outside-in"></a>
 ## From inside-out to outside-in
 
 _"SAPUI5 supports application developers in creating fast and easy User Interface Applications based on HTML5 and JavaScript."_

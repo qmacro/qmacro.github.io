@@ -6,15 +6,14 @@ tags:
   - sapcommunity
   - mondaymorningthoughts
 ---
-
 *In this post, I think about what makes a good blog post, and also what
-writing such a post does for the author, too. *
+writing such a post does for the author, too.*
 
 It's a bank holiday Monday today in England, and so of course it's
 raining\*. I spent a bit of time earlier this morning perusing the news,
 marking blog posts that looked interesting additions to content for my
 [learning
-continuum](https://blogs.sap.com/2018/06/04/monday-morning-thoughts-the-learning-continuum/),
+continuum](/blog/posts/2018/06/04/monday-morning-thoughts:-the-learning-continuum/),
 and also looking at some draft blog posts here in the SAP Community.
 
 I've become involved in helping out with some moderation for blog posts
@@ -25,11 +24,9 @@ about what makes a good blog post, and I thought I'd share those
 thoughts here.
 
 \*but that's OK, [I do like the
-rain](https://twitter.com/qmacro/status/1033748664009797632).
+rain](/tweets/qmacro/status/1033748664009797632).
 
- 
-
-**Opinion**
+## Opinion
 
 Of course, these are just my opinions, yours may differ. But I think
 that's a generally useful ingredient for most posts - opinion, based on
@@ -50,9 +47,7 @@ worth is directly proportional to the thought process and experience
 directly behind it. So it follows that if you're going to offer your
 opinion, don't forget to include your reasons for that opinion.
 
- 
-
-**Education**
+## Education
 
 In today's online world where everyone has a voice and can write about
 things, it's sometimes difficult to write about something that's not
@@ -75,8 +70,6 @@ particular aspect of a subject a number of times, from different people,
 with different voices, experience and opinion, and that is very valuable
 to me.
 
- 
-
 ![](/images/2018/08/Screen-Shot-2018-08-27-at-10.28.08.png)
 
 *I like to intersperse narrative with pictures, to break things up and
@@ -85,9 +78,7 @@ anything appropriate for the somewhat conceptual subject matter of this
 post, so here's a nice picture of a telegraph pole with the moon in the
 background.*
 
- 
-
-**Clarity**
+## Clarity
 
 If you're going to write about something, it's good if you can make it
 worthwhile. Worth whose while? Well, first and foremost, make it worth
@@ -119,9 +110,7 @@ the right antennae tuned, but it also helps you work out what you're
 going to say and stay on track while you work out how you're going to
 say it.
 
- 
-
-**Learn something yourself**
+## Learn something yourself
 
 Another benefit of making a post worth your own while is that you learn
 something yourself. There's an idea that teaching something is often a
@@ -139,16 +128,14 @@ for your post. A full understanding subsequently helps you write in a
 clear and concise way, too.
 
 Here's an example from a few years ago: [Custom Sorting and
-Grouping](https://blogs.sap.com/2013/11/29/custom-sorter-and-grouper/) -
+Grouping](/blog/posts/2013/11/29/custom-sorting-and-grouping/) -
 researching the content for that post really cemented my understanding
 of the nuances of the subject I was writing about (relating to complex
 data binding features in UI5). I sort of had a general idea of the
 detail before I started writing that post, but by the time I'd
 finished, I'd really deepened and broadened my understanding.
 
- 
-
-**Final thoughts**
+## Final thoughts
 
 There are plenty more aspects to a good blog post, but if I covered them
 all, this would be a much longer affair. There are more basic angles
@@ -163,7 +150,7 @@ to read over a coffee or lunch break, then your readers might be less
 inclined to engage. Consider splitting a long piece into a series of
 shorter pieces, that are more manageable. I did this, for example, with
 my [Discovering SCP
-Workflow](http://pipetree.com/qmacro/blog/2018/01/16/discovering-scp-workflow/)
+Workflow](/blog/posts/2018/01/16/discovering-scp-workflow/)
 posts, and even then the individual posts are still on the long side.
 
 There are other aspects that should go without saying, so I'll end this
@@ -175,16 +162,16 @@ For more info on blogging on the SAP Community, it's worth having a
 read through the [Rules Of
 Engagement](https://www.sap.com/community/about/rules-of-engagement.html).
 
- 
+---
 
 This post was brought to you by a holiday Monday breakfast of black
 pudding and avocado, and the usual excellent [Pact Coffee
 Planalto](https://www.pactcoffee.com/coffees/planalto).
 
- 
+---
 
 Read more posts in this series here: [Monday morning
-thoughts](https://blogs.sap.com/tag/mondaymorningthoughts/).
+thoughts](/tags/mondaymorningthoughts/).
 
 ---
 

@@ -5,7 +5,7 @@ date: 2013-11-29
 tags:
   - sapcommunity
 ---
-Summary: Learn how to control the order of groups in a sorted list. You don't do it directly with the grouper function, you do it with the sorter function.
+*Learn how to control the order of groups in a sorted list. You don't do it directly with the grouper function, you do it with the sorter function.*
 
 One of the features of the app that the participants build in the CD168 sessions at SAP TechEd Amsterdam is a list of sales orders that can be grouped according to status or price (the screenshot shows the orders grouped by price).
 
@@ -61,98 +61,98 @@ So here's the example, described step by step. It's also available as a Gist on 
 As the source code is available in the Gist, I won't bother showing you the HTML and SAPUI5 bootstrap, I'll just explain the main code base.
 
 ```javascript
-        var sSM = 10;  // < 10  Small
-        var sML = 15;  // < 15  Medium
-                       //   15+ Large
+var sSM = 10;  // < 10  Small
+var sML = 15;  // < 15  Medium
+               //   15+ Large
 ```
 
 Here we just specify the boundary values for chunking our items up into groups. Anything less than 10 is "Small", less than 15 is "Medium", otherwise it's "Large". I've deliberately chosen groupings that are not of equal size (the range is 1-30) just for a better visual example effect.
 
 ```javascript
-        // Generate the list of numbers and assign to a model
-        var aValues = [];
-        for (var i = 0; i < 30; i++) aValues.push(i);
-        sap.ui.getCore().setModel(
-            new sap.ui.model.json.JSONModel({
-                records: aValues.map(function(v) { return { value: v }; })
-            })
-        );
+// Generate the list of numbers and assign to a model
+var aValues = [];
+for (var i = 0; i < 30; i++) aValues.push(i);
+sap.ui.getCore().setModel(
+    new sap.ui.model.json.JSONModel({
+        records: aValues.map(function(v) { return { value: v }; })
+    })
+);
 ```
 
 So we generate a list of numbers (I was really missing Python's xrange here, apropo of nothing!) and add it as a model to the core.
 
 ```javascript
-        // Sort order and title texts of the S/M/L groups
-        var mGroupInfo = {
-            S: { order: 2, text: "Small"},
-            M: { order: 1, text: "Medium"},
-            L: { order: 3, text: "Large"}
-        }
+// Sort order and title texts of the S/M/L groups
+var mGroupInfo = {
+    S: { order: 2, text: "Small"},
+    M: { order: 1, text: "Medium"},
+    L: { order: 3, text: "Large"}
+}
 ```
 
 Here I've created a map object that specifies the order in which the Small, Medium and Large groups should appear in the list (Medium first, then Small, then Large). The texts are what should be displayed in the group subheader/dividers in the list display.
 
 ```javascript
-        // Returns to what group (S/M/L) a value belongs
-        var fGroup = function(v) {
-            return v < sSM ? "S" : v < sML ? "M" : "L";
-        }
+// Returns to what group (S/M/L) a value belongs
+var fGroup = function(v) {
+    return v < sSM ? "S" : v < sML ? "M" : "L";
+}
 ```
 
 This is just a helper function to return which size category (S, M or L) a given value belongs to.
 
 ```javascript
-        // Grouper function to be supplied as 3rd parm to Sorter
-        // Note that it uses the mGroupInfo, as does the Sorter
-        var fGrouper = function(oContext) {
-            var v = oContext.getProperty("value");
-            var group = fGroup(v);
-            return { key: group, text: mGroupInfo[group].text };
-        }
+// Grouper function to be supplied as 3rd parm to Sorter
+// Note that it uses the mGroupInfo, as does the Sorter
+var fGrouper = function(oContext) {
+    var v = oContext.getProperty("value");
+    var group = fGroup(v);
+    return { key: group, text: mGroupInfo[group].text };
+}
 ```
 
 Here's our custom Grouper function that will be supplied as the third parameter to the Sorter. It pulls the value of the property from the context object it receives, uses the fGroup function (above) to determine the size category, and then returns what a group function should return - an object with key and text properties that are then used in the display of the bound items.
 
 ```javascript
-        // The Sorter, with a custom compare function, and the Grouper
-        var oSorter = new sap.ui.model.Sorter("value", null, fGrouper);
-        oSorter.fnCompare = function(a, b) {
-            // Determine the group and group order
-            var agroup = mGroupInfo[fGroup(a)].order;
-            var bgroup = mGroupInfo[fGroup(b)].order;
-            // Return sort result, by group ...
-            if (agroup < bgroup) return -1;
-            if (agroup > bgroup) return  1;
-             // ... and then within group (when relevant)
-            if (a < b) return -1;
-            if (a == b) return 0;
-            if (a > b) return  1;
-        }
+// The Sorter, with a custom compare function, and the Grouper
+var oSorter = new sap.ui.model.Sorter("value", null, fGrouper);
+oSorter.fnCompare = function(a, b) {
+    // Determine the group and group order
+    var agroup = mGroupInfo[fGroup(a)].order;
+    var bgroup = mGroupInfo[fGroup(b)].order;
+    // Return sort result, by group ...
+    if (agroup < bgroup) return -1;
+    if (agroup > bgroup) return  1;
+     // ... and then within group (when relevant)
+    if (a < b) return -1;
+    if (a == b) return 0;
+    if (a > b) return  1;
+}
 ```
 Here's our custom Sorter. We create one as normal, specifying the fact that we want the "value" property to be the basis of our sorting. The 'null' is specified in the ascending/descending position (default is ascending), and then we specify our Grouper function. Remember, the grouper just hitches a ride on the sorter.
 
 Because we want to influence the sort order of the groups as well as the order of the items within each group, we have to determine to what group each of the two values to be compared belong. If the groups are different, we just return the sort result (-1 or 1) at the group level. But if the two values are in the same group then we have to make sure that the sort result is returned for the items themselves.
 
 ```javascript
-        // Simple List in a Page
-        new sap.m.App({
-            pages: [
-                new sap.m.Page({
-                    title: "Sorted Groupings",
-                    content: [
-                        new sap.m.List("list", {
-                            items: {
-                                path: '/records',
-                                template: new sap.m.StandardListItem({
-                                    title: '{value}'
-                                }),
-                                sorter: oSorter
-                            }
-                        })
-                    ]
+// Simple List in a Page
+new sap.m.App({
+    pages: [
+        new sap.m.Page({
+            title: "Sorted Groupings",
+            content: [
+                new sap.m.List("list", {
+                    items: {
+                        path: '/records',
+                        template: new sap.m.StandardListItem({
+                            title: '{value}'
+                        }),
+                        sorter: oSorter
+                    }
                 })
             ]
-        }).placeAt("content");
+        })
+    ]
+}).placeAt("content");
 ```
 
 And that's pretty much it. Once we've done the hard work of writing our custom sorting logic, and shared the group determination between the Sorter and the Grouper (DRY!) we can just specify the custom Sorter in our binding of the items.
@@ -170,32 +170,32 @@ So let's say you have an array of records in your data model, and these records 
 In this case, you could have two Sorters: One for the beerType, with a Grouper function, and another for the beerName. Like this:
 
 ```javascript
-        var fGrouper = function(oContext) {
-            var sType = oContext.getProperty("beerType") || "Undefined";
-            return { key: sType, value: sType }
-        }
-        new sap.m.App({
-            pages: [
-                new sap.m.Page({
-                    title: "Craft Beer",
-                    content: [
-                        new sap.m.List("list", {
-                            items: {
-                                path: '/',
-                                template: new sap.m.StandardListItem({
-                                    title: "{beerName}",
-                                    description: "{beerType}"
-                                }),
-                                sorter: [
-                                    new sap.ui.model.Sorter("beerType", null, fGrouper),
-                                    new sap.ui.model.Sorter("beerName", null, null)
-                                ]
-                            }
-                        })
-                    ]
+var fGrouper = function(oContext) {
+    var sType = oContext.getProperty("beerType") || "Undefined";
+    return { key: sType, value: sType }
+}
+new sap.m.App({
+    pages: [
+        new sap.m.Page({
+            title: "Craft Beer",
+            content: [
+                new sap.m.List("list", {
+                    items: {
+                        path: '/',
+                        template: new sap.m.StandardListItem({
+                            title: "{beerName}",
+                            description: "{beerType}"
+                        }),
+                        sorter: [
+                            new sap.ui.model.Sorter("beerType", null, fGrouper),
+                            new sap.ui.model.Sorter("beerName", null, null)
+                        ]
+                    }
                 })
             ]
-        }).placeAt("content");
+        })
+    ]
+}).placeAt("content");
 ```
 
 I've put [a complete example](https://github.com/qmacro/sapui5bin/blob/master/SortingAndGrouping/TwoProperties.html) together for this, and it's in the [sapui5bin Github repo](https://blogs.sap.com/?p=79248).
@@ -203,5 +203,7 @@ I've put [a complete example](https://github.com/qmacro/sapui5bin/blob/master/So
 And while we're on the subject of code examples, there's a [complete example for the main theme of this post](https://github.com/qmacro/sapui5bin/blob/master/SortingAndGrouping/SingleProperty.html) too.
 
 Share & enjoy!
+
+---
 
 [Originally published on SAP Community](https://blogs.sap.com/2013/11/29/custom-sorter-and-grouper/)
