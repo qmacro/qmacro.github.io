@@ -17,7 +17,8 @@ On Friday evening, I
 > little gem just now. Lovely.
 >
 > ```javascript
-> const push = (xs, x) => (_ => xs)(xs.push(x))
+> const push = (xs, x) =>
+>   (_ => xs)(xs.push(x))
 > ```
 
 It was something I'd come across while idly perusing some source code,
@@ -74,7 +75,8 @@ again, with the comment that accompanies it:
 ```javascript
 // A useful version of Array push that returns the modified array 
 // rather than the index of the newly added item...
-const push = (arr, newEl) => (_ => arr)(arr.push(newEl))
+const push = (arr, newEl) =>
+  (_ => arr)(arr.push(newEl))
 ```
 
 In JavaScript, Array is a global object used to represent lists, and has
@@ -82,7 +84,7 @@ a number of built-in functions, or methods, that operate on Array object
 instances.
 
 For example, you can create an array and then use the Array object's
-join() function like this:
+`join()` function like this:
 
 ```shell
 > const colours = ['red', 'green', 'blue']
@@ -116,8 +118,8 @@ respectively.
 
 There are also other functions for manipulating elements in other places
 in an array, functions such as `splice()` and `slice()`, but what we want to
-concentrate on right now is `push()` and its sibling `unshift()`. Both add
-one or more elements to the array. And in both cases, what's returned
+concentrate on right now is `push()` and its cousin `unshift()`. Both add
+elements to the array. And in both cases, what's returned
 is the length of the new array. For example:
 
 ```shell
@@ -138,7 +140,7 @@ which feels to many quite natural is to use method chaining, which is
 effectively like saying: "do this, then that, then the other".
 
 This is common in UI5, where for example standard controls, such as the
-Button control in the sap.m library has methods, many of which return
+Button control in the `sap.m` library has methods, many of which return
 the Button instance upon which they're operating, explicitly to allow
 method chaining (see for example
 [attachPress](https://ui5.sap.com/#/api/sap.m.Button/methods/attachPress)).
@@ -240,7 +242,8 @@ is not the standard `push()` function from the Array object. Rather, it's
 our `push()` function defined earlier, the subject of this post:
 
 ```javascript
-const push = (arr, newEl) => (_ => arr)(arr.push(newEl))
+const push = (arr, newEl) =>
+  (_ => arr)(arr.push(newEl))
 ```
 
 Now we understand the context of where it's used, and why the standard
@@ -333,7 +336,8 @@ allows this whole idea to work is called a
 [closure](https://en.wikipedia.org/wiki/Closure_(computer_programming)).
 
 ```javascript
-const push = (arr, newEl) => (_ => arr)(arr.push(newEl))
+const push = (arr, newEl) =>
+  (_ => arr)(arr.push(newEl))
 ```
 
 The value of `arr`, initially passed to the outer function definition
