@@ -16,7 +16,7 @@ To follow on from the [first coffeeshop demo screencast](/blog/posts/2009/07/28/
 
 This time, the [coffeeshop](http://wiki.github.com/qmacro/coffeeshop) instance I’m using is one running on Google’s [App Engine](http://code.google.com/appengine/) cloud infrastructure — on [appspot.com](http://appgallery.appspot.com/).
 
-<object data="http://www.youtube.com/v/TI48cdpWOBg&hl=en&fs=1&" height="340" type="application/x-shockwave-flash" width="560"><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><param name="src" value="http://www.youtube.com/v/TI48cdpWOBg&hl=en&fs=1&"></param><param name="allowfullscreen" value="true"></param></object>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/TI48cdpWOBg?si=RpV5djGPjMqJI8zb" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 [http://www.youtube.com/watch?v=TI48cdpWOBg](http://www.youtube.com/watch?v=TI48cdpWOBg)
 

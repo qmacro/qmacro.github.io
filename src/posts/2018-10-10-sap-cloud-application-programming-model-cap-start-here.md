@@ -201,7 +201,7 @@ exercise materials for CNA376*
 [applicationprogrammingmodel](https://blogs.sap.com/tag/applicationprogrammingmodel/) with
 the new tag [SAP Cloud Application Programming
 Model](https://blogs.sap.com/tags/9f13aee1-834c-4105-8e43-ee442775e5ce/) (hat
-tip to Mike Doyle4 for the
+tip to Mike Doyle for the
 [reminder](https://blogs.sap.com/2018/10/10/application-programming-model-start-here/#comment-446336))*
 
 *03 Jan 2019 - added info on finding tutorials by tag via a URL (hat tip

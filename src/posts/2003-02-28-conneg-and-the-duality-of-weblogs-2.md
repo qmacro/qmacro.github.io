@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "'Conneg' and the duality of weblogs."
+title: "'Conneg' and the duality of weblogs"
 tags:
 - blosxom
 - conneg

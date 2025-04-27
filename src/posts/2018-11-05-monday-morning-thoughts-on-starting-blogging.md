@@ -173,7 +173,7 @@ Read more posts in this series here: [Monday morning thoughts](/tags/mondaymorn
 
 ---
 
-*Update 05 Nov:* oddss has published a nice post "[Hello World! Three
+*Update 05 Nov:* Audrey Stevenson has published a nice post "[Hello World! Three
 Easy Ways to Get Started with SAP
 Community](https://blogs.sap.com/2018/11/05/hello-world-three-easy-ways-to-get-started-with-sap-community/)"
 which is a useful resource for beginners and fits well into the context

@@ -263,12 +263,18 @@ framework relating to your favourite language. As well as being a
 meditation on a now-venerable protocol, it will help you step into this
 new era of cloud computing.
 
+---
+
 This post was brought to you by the prospect of a relaxing week off, by
 the distraction of the falling leaves outside, and by [Pact Coffee's
 Asomuprisma](https://www.pactcoffee.com/coffees/asomuprisma).
 
+---
+
 Read more posts in this series here: [Monday morning
 thoughts](/tags/mondaymorningthoughts/).
+
+---
 
 *Update 20 Nov 2018: See James Governor's post "[GitHub Universe 2018:
 Low Key

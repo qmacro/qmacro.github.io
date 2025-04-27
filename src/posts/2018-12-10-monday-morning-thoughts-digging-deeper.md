@@ -48,7 +48,7 @@ local Application Programming Model
 development](/blog/posts/2018/10/16/set-up-vs-code-on-chrome-os-for-local-application-programming-model-development/)"
 for more details on this.
 
-\*I didn't make that statistic up, but I suspect that the person who
+\* I didn't make that statistic up, but I suspect that the person who
 wrote that (which is where I got it from) might have done.
 
 ## Cloud related tools
@@ -169,6 +169,8 @@ broad as I should this year, so next year I want to at least be
 consciously influencing a return to depth.
 
 Wish me luck!
+
+---
 
 This post was brought to you by the happy feeling of a good run this
 morning, by a nice cup of [Pact Coffee's La
