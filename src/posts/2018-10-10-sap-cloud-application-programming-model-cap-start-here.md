@@ -171,7 +171,9 @@ pod bite
 where I interview Rui Nogueira on the Application Programming Model.
 
 On SAP CodeTalk, there's [a short interview with Ian Thain and me
-talking about CAP at a high level](https://www.youtube.com/watch?v=GhEpcB7x4UA) (this video has been made private, I'm trying to rescue it).
+talking about CAP at a high level](https://www.youtube.com/watch?v=GhEpcB7x4UA).
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/GhEpcB7x4UA?si=lXyRfiGIbiTrLx9Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 On the SAP Mentors GitHub organisation there's a repo representing CAP
 community activity - check it out at

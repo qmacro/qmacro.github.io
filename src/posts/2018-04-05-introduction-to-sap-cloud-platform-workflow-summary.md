@@ -72,7 +72,9 @@ Webcast](https://blogs.sap.com/2018/04/01/save-the-date-your-guide-to-every-upco
 
 Have fun on your own journey of discovery!
 
-**Update 10 April 2018** A couple of days after this I was honoured to record a CodeTalk on the subject of the Workflow service with Ian Thain (unfortunately the video recording seems to have been made private, I'm trying to track it down).
+**Update 10 April 2018** A couple of days after this I was honoured to record [a CodeTalk on the subject of the Workflow service with Ian Thain](https://www.youtube.com/watch?v=t5V0WRle1xc).
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/GhEpcB7x4UA?si=lXyRfiGIbiTrLx9Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ---
 
