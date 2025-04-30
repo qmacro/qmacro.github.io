@@ -14,23 +14,23 @@ _Implementing a simple cleanup script for workflow runs, using `gh`, `jq`, `fzf`
 
 Yesterday, while [thinking aloud](https://github.com/qmacro/thinking-aloud/issues/13), I was wondering how best to mass-delete logs from GitHub Actions workflow runs. Such a feature isn't available in the Web based Actions UI and my lack of competence in the Actions area means that I have a lot of cruft from my trial and error approach to writing and executing workflows.
 
-**The GitHub Workflow Runs API**
+## The GitHub Workflow Runs API
 
 I knew the answer probably was in the GitHub API, and it was - in the form of the [Workflow Runs](https://docs.github.com/en/rest/reference/actions#workflow-runs) API. There are various endpoints that follow a clean and logical design. Workflow runs are repo specific, and to list them, the following API endpoint is available to access via the GET method:
 
-```
+```shell
 GET /repos/{owner}/{repo}/actions/runs
 ```
 
 Following this straightforward URL-space design, a deletion is possible thus:
 
-```
+```shell
 DELETE /repos/{owner}/{repo}/actions/runs/{run_id}
 ```
 
 Incidentally, I like the use of "owner" here - because a repo can belong to an individual GitHub account (such as [qmacro](https://github.com/qmacro)) or an organisation (such as [SAP-samples](https://github.com/SAP-samples)), and "owner" is a generic term that covers both situations and has the right semantics.
 
-**Requesting the workflow run information with `gh`**
+## Requesting the workflow run information with gh
 
 To make use of these API endpoints, I used the excellent `gh` [GitHub CLI](https://github.com/cli/cli), specifically the [api](https://cli.github.com/manual/gh_api) facility. Once [authenticated](https://cli.github.com/manual/gh_auth), it's super easy to make API calls; to retrieve the workflow runs for the `qmacro/thinking-aloud` repo, it's as simple as this (some pretty-printed output is also shown here):
 
@@ -52,7 +52,7 @@ To make use of these API endpoints, I used the excellent `gh` [GitHub CLI](https
       ...
 ```
 
-**Making sense of the response with `jq`**
+## Making sense of the response with jq
 
 The response from the API has a JSON representation and a straightfoward but rich set of details. This is where `jq` comes in. I started with just pulling out values for a few properties like this:
 
@@ -105,12 +105,12 @@ def tz:
   | @tsv
 ```
 
-**Presenting the list with `fzf`**
+## Presenting the list with fzf
 
 Now all that was required was to present the list of workflow runs in a list, for me to choose which ones to delete. The wonderful `fzf` came to the rescue here. If you've not heard of `fzf`, go and read all about [the command line fuzzy-finder](https://github.com/junegunn/fzf) right now. I've written a couple of posts on this very blog about `fzf` basics too:
 
-- [fzf - the basics part 1 - layout](https://qmacro.org/autodidactics/2021/02/02/fzf-the-basics-1-layout/)
-- [fzf - the basics part 2 - search results](https://qmacro.org/autodidactics/2021/02/07/fzf-the-basics-2-search-results/)
+- [fzf - the basics part 1 - layout](/blog/posts/2021/02/02/fzf-the-basics-part-1-layout/)
+- [fzf - the basics part 2 - search results](/blog/posts/2021/02/07/fzf-the-basics-part-2-search-results/)
 
 This is how I combined the `gh`, `jq` and `fzf` invocations, inside a [`selectruns`](https://github.com/qmacro/dotfiles/blob/230c6df494f239e9d1762794943847816e1b7c32/scripts/dwr#L43-L49) function:
 
@@ -135,7 +135,7 @@ printf "%s\t%s\n" "$result" "$run")
 
 The use of `cut` was to pick out the `id` property in the list, as presented to (and selected via) `fzf`; the list is tab separated (thanks to `@tsv`) and `cut`'s default delimiter is tab too, which is nice.
 
-**The script in action**
+## The script in action
 
 That's about it - here's the entire script in action:
 
