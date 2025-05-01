@@ -354,7 +354,7 @@ That's straightforward, in that if no value is supplied for `b`, the default val
 
 But what about `env=cds.env`? The default value here ... is referring to a property in the `cds` object, which itself is the first parameter! Said out loud: 
 
-"_If there's no value[<sup>3</sup>](#footnote-4) for the `env` parameter, take the value of the `env` property of the (object) value passed to the first parameter named `cds`_".
+"_If there's no value[<sup>4</sup>](#footnote-4) for the `env` parameter, take the value of the `env` property of the (object) value passed to the first parameter named `cds`_".
 
 I did a double-take when I first saw that, and thought it worth highlighting.
  
