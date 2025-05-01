@@ -31,6 +31,7 @@ strong the spoon would stand up, and wrote Rexx scripts & ISPF
 panel-based applications to heavy-lift SAP R/2 installations like they
 were LEGO constructions (and yes, Sergio, we had SBEZ! :-)).
 
+<a name="documentation"></a>
 Being an IBM disciple at the time, I was aware how good the IBM
 documentation was. Seriously. I relished every opportunity to visit the
 documentation room, where I could diagnose any problem imaginable.
