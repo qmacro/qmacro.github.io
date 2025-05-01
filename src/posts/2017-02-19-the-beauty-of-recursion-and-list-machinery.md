@@ -17,6 +17,7 @@ Erik Meijer, whom I'll mention properly in a moment, uses a phrase:
 
 This really appeals to me, because it expresses the act of focus and concentration in a wonderfully casual way. I've stared at this stuff long enough for it to become something tangible, something recognisable, and hopefully there's useful content here for you to stare at too.
 
+<a name="introduction-via-haskell"></a>
 ## Introduction via Haskell
 
 It was my son [Joseph](http://jcla1.com) that introduced me to the concept that has intrigued me since the first day I saw it. Proficient in many different languages, he was showing me some solutions to [Project Euler]((https://www.youtube.com/watch?v=UIUlFQH4Cvo&list=PLTA0Ta9Qyspa5Nayx0VCHj5AHQJqp1clD)) challenges that he'd written in Haskell. They involved a fascinating approach using pattern matching. Determining the resulting value of something based upon a list of possible matches on the data being processed. It involved expressions involving the symbols `x` and `xs`. This is very abstract, but it will become more concrete shortly.

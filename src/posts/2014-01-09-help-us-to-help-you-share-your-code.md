@@ -4,8 +4,11 @@ title: Help Us To Help You - Share Your Code
 date: 2014-01-09
 tags:
   - sapcommunity
+  - gists
+  - ui5
+  - github
 ---
-Yesterday I tweeted: "We should encourage folk to post full Gists with their ui5 issues, for easier debugging and analysis ([http://scn.sap.com/message/14665116](https://web.archive.org/web/20151116084802/http://scn.sap.com/message/14665116#14665116))".
+Yesterday I [tweeted](/tweets/qmacro/status/420840232008028161/): "We should encourage folk to post full Gists with their #UI5 issues, for easier debugging and analysis ([http://scn.sap.com/message/14665116](https://web.archive.org/web/20151116084802/http://scn.sap.com/message/14665116#14665116)). Agree?".
 
 ![A screenshot of the tweet](/images/2014/01/tweet.png)
 
@@ -31,9 +34,9 @@ Posting large (or even small) chunks of code inside the body of a forum question
 
 ZIP files of complete applications are better, but they're still very cumbersome - you have to download them in your browser, unzip the files, choose a directory, and so on. And nobody can read the code at their leisure, or get a quick understanding of what's going on.
 
-## Use Github's Gists
+## Use GitHub's Gists
 
-Best of all, at least IMHO, is to create a [Gist on Github](https://gist.github.com/). This puts the code centre stage, treats it as a first class citizen on the Web (you can address whole applications, individual files, or even individual lines, with their own URLs) and what's more, it's one command to pull the entire codebase of an application to a local directory and start working on it immediately. If nothing else, sharing the code you want help with as a Gist on Github puts the onus on you, who are seeking help (rather than your potential helpers, who are offering help) to marshal the code so that it can be properly diagnosed.
+Best of all, at least IMHO, is to create a [Gist on GitHub](https://gist.github.com/). This puts the code centre stage, treats it as a first class citizen on the Web (you can address whole applications, individual files, or even individual lines, with their own URLs) and what's more, it's one command to pull the entire codebase of an application to a local directory and start working on it immediately. If nothing else, sharing the code you want help with as a Gist on GitHub puts the onus on you, who are seeking help (rather than your potential helpers, who are offering help) to marshal the code so that it can be properly diagnosed.
 
 [Here's a recent example](https://answers.sap.com/questions/10567169/adding-type-information-in-xml-views.html) of where someone had a problem with his application and asked for help, posting not only a formatted snippet to provide initial context: 
 
@@ -53,6 +56,8 @@ Here's a short screencast of how that shared code, in a Gist, is very easy to pu
 
 <https://www.youtube.com/watch?v=Fgp_e3Uv5Xs>
 
-Hat tip to my son Joseph Adams, who first showed me that Gists could contain more than one file, and for pointing out that they were normal git repos.
+Hat tip to my son Joseph, who first showed me that Gists could contain more than one file, and for pointing out that they were normal git repos.
+
+---
 
 [Originally published on SAP Community](https://blogs.sap.com/2014/01/09/help-us-to-help-you-share-your-code/)

@@ -59,4 +59,6 @@ So, my advice is – learn CAP, understand how to make use of the superpowers it
 
 And, in the nicest possible way, just as for me my knowledge of the English language and and my understanding of social rules and customs fades into unimportance when interacting with my fellow human beings, consider CAP as unimportant in the same way. Fundamental, something you should learn and be able to make full use of, but a means to an end.
 
+---
+
 [Originally published on SAP Community](https://blogs.sap.com/2019/11/06/cap-is-important-because-its-not-important/)
