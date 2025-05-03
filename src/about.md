@@ -31,7 +31,7 @@ I've spoken at conferences such as [OSCON](https://www.oreilly.com/conferences/o
 
 I run a live stream show called [Hands-on SAP Dev](https://www.youtube.com/playlist?list=PL6RpkC85SLQABOpzhd7WI-hMpy99PxUo0) and cover various technical topics in the SAP developer space. The main philosophy that guides each episode's content is "friendly chat and curiosity driven learning-by-doing".
 
-Follow me on [Mastodon](//hachyderm.io/@qmacro), [Bluesky](https://bsky.app/profile/qmacro.bsky.social) and [LinkedIn](https://www.linkedin.com/in/djadams/).
+Follow me on [Mastodon](//hachyderm.io/@qmacro), [Bluesky](https://bsky.app/profile/qmacro.org) and [LinkedIn](https://www.linkedin.com/in/djadams/).
 
 <a name="books"></a>
 ## Books
