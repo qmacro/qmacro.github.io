@@ -61,3 +61,7 @@ I guess once I find an Allen key that fits, I can try to screw it in tight enoug
 Until then, I've gone back to the bakelite knob ... with the pin pushed back through, but not all the way so I can get it out more easily next time.
 
 ![the espresso machine]( {{ "/images/2020/06/lapavoni.jpg" | url }})
+
+## Update
+
+I had to go through this process again, and while I struggled again too (I'd lost the punch pin) I found that using WD-40 on the roll pin really helped get it moving and drive it out.
