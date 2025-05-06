@@ -3,6 +3,7 @@ layout: post
 title: Creating the new Tech Aloud intro and outro music
 date: 2024-11-16
 tags:
+  - podcast
   - techaloud
   - javascript
 ---

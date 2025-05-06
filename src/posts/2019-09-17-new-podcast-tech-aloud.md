@@ -1,9 +1,11 @@
 ---
 layout: post
 title: New podcast - Tech Aloud
+tags:
+  - podcast
+  - techaloud
 ---
-
-_I've created a new podcast called "Tech Aloud", where I read out loud tech articles and blog posts, so you can consume them while on the go._
+*I've created a new podcast called "Tech Aloud", where I read out loud tech articles and blog posts, so you can consume them while on the go.*
 
 [![Tech Aloud logo](/images/2019/09/tech-aloud.jpeg)][1]
 
