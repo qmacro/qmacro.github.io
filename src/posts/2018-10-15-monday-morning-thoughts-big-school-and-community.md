@@ -67,7 +67,7 @@ get lost, or find yourself in a place where you ought not to be.
 
 \* there was even a computer room with terminals available (and this was
 in the 1970's) - see this O'Reilly Radar interview: [Burn In 7: DJ
-Adams](https://web.archive.org/web/20091201000000*/http://radar.oreilly.com/2005/11/burn-in-7-dj-adams.html) for
+Adams](https://web.archive.org/web/20091118000142/http://radar.oreilly.com/2005/11/burn-in-7-dj-adams.html) for
 more info on that.
 
 ![](/images/2018/10/Screenshot-2018-10-15-at-07.42.24.png)
