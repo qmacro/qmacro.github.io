@@ -89,8 +89,6 @@ So some of the items that I'd like to dig deeper into and learn more
 about this year are a result of this way of looking at computing, both
 in business and as a hobby.
 
- 
-
 ## Part 1 - Understanding core things better
 
 And so to the list, where I begin with a category that contains
@@ -133,8 +131,6 @@ me. Similarly with [Ansible](https://www.ansible.com/), which I used
 recently for the first time to manage the Raspberry Pi cluster I set up
 with my son Joseph to eventually run a local Kubernetes cluster.
 
- 
-
 ## Part 2 - New technologies
 
 And so we come to the second part of the list, of technologies that are
@@ -152,7 +148,7 @@ more specifically [LXC](https://en.wikipedia.org/wiki/LXC) powered
 containers and related technologies such as
 [Docker](https://www.docker.com/) (if you want to learn more about
 Docker, Witalij Rudnicki has a nice series "[Understanding
-Containers](https://blogs.sap.com/tag/understandcontainers/)" here on
+Containers](https://community.sap.com/t5/tag/UnderstandContainers/tg-p)" here on
 the SAP Community).
 
 I guess there's an irony in the title of this part of the list ("New
