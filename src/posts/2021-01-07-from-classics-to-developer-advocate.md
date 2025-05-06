@@ -148,8 +148,6 @@ of learning and sharing, dare I say teaching, combined with a nigh on
 insatiable curiosity. That's what's at the heart of this journey for
 me.
 
----
-
 ## Further related reading
 
 These other posts from my [Monday morning
