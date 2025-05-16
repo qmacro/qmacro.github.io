@@ -52,7 +52,7 @@ which emits:
 }
 ```
 
-> In the `jq` filter here (and elsewhere) `.value` is an artifact of the OData V4 JSON representation of data, not anything inherently required by `jq`.
+> In the `jq` filter here (and elsewhere in this post) `.value` is an artifact of the OData V4 JSON representation of the data, not anything inherently required by `jq`.
 
 ### Discontinued products
 
@@ -179,31 +179,29 @@ In fact, talking of `add`, how about this succinct way of emitting the average u
 
 This produces the value `28.866363636363637`.
 
-### OData data aggregation facilities
-
-Incidentally we can check and compare that to what Northbreeze tells us, using an OData V4 [data aggregation](https://github.com/qmacro/odata-v4-and-cap/blob/main/slides.md#data-aggregation) feature that is supported out of the box with CAP (see the [Aggregation Methods](https://cap.cloud.sap/docs/advanced/odata#aggregation-methods) section of the OData APIs topic in Capire); the resource at [this URL](https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/Products?$apply=aggregate(UnitPrice%20with%20average%20as%20AvgPrice)):
-
-```url
-https://developer-challenge.cfapps.eu10.hana.ondemand.com
-  /odata/v4/northbreeze/Products
-  ?
-  $apply=aggregate(UnitPrice with average as AvgPrice)
-```
-
-is returned in a JSON representation, like this:
-
-```json
-{
-  "@odata.context": "$metadata#Products(AvgPrice)",
-  "value": [
-    {
-      "AvgPrice@odata.type": "#Decimal",
-      "AvgPrice": 28.8663636363636,
-      "@odata.id": null
-    }
-  ]
-}
-```
+> Incidentally we can check and compare that to what Northbreeze tells us, using an OData V4 [data aggregation](https://github.com/qmacro/odata-v4-and-cap/blob/main/slides.md#data-aggregation) feature that is supported out of the box with CAP (see the [Aggregation Methods](https://cap.cloud.sap/docs/advanced/odata#aggregation-methods) section of the OData APIs topic in Capire); the resource at [this URL](https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/Products?$apply=aggregate(UnitPrice%20with%20average%20as%20AvgPrice)):
+> 
+>```url
+>https://developer-challenge.cfapps.eu10.hana.ondemand.com
+>  /odata/v4/northbreeze/Products
+>  ?
+>  $apply=aggregate(UnitPrice with average as AvgPrice)
+>```
+>
+> is returned in a JSON representation, like this:
+>
+>```json
+>{
+>  "@odata.context": "$metadata#Products(AvgPrice)",
+>  "value": [
+>    {
+>      "AvgPrice@odata.type": "#Decimal",
+>      "AvgPrice": 28.8663636363636,
+>      "@odata.id": null
+>    }
+>  ]
+>}
+>```
 
 ### Examining the data flow
 
@@ -341,9 +339,9 @@ and produces:
 
 ### A contrived example
 
-This "data last" approach, combined with [closures](https://en.wikipedia.org/wiki/Closure_(computer_programming)), makes currying and partial application so powerful.
+This "data last" approach, combined with [closures](https://en.wikipedia.org/wiki/Closure_(computer_programming)), makes currying and partial application not only possible, but powerful.
 
-Let's examine what this means with another slightly contrived example, focusing on the [products in the Produce (dried fruit and bean curd) category](https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/Categories/7?$expand=Products), this time in JavaScript. I'll use some functions from [Ramda](https://ramdajs.com), mostly to illustrate the mechanisms in a "purer" form than the equivalents in standard JavaScript, such as in the form of functions "attached" to the `Array` prototype, for example.
+Let's examine what this means with another slightly contrived example, focusing on the [products in the Produce (dried fruit and bean curd) category](https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/Categories/7?$expand=Products), this time in JavaScript. I'll use some functions from [Ramda](https://ramdajs.com), mostly to illustrate the mechanisms in a "purer" form than the equivalents in standard JavaScript where the equivalent functions are "attached" to the `Array` prototype.
 
 Assuming the entire JSON representation of the [Products entityset](https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/Products) is available in a file called `products.json`, let's start like this:
 
@@ -356,7 +354,7 @@ Ramda's [prop](https://ramdajs.com/docs/#prop) is a convenient function for gett
 
 > It's worth pausing here to think about how this `prop` function might look in its basic form, as it could help to further cement the concepts of currying and partial application (and closures, by the by). Given an object such as [the Chai product](https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/Products/1) (see [earlier](#chai)), if we want a function with which to retrieve the value of a property, we need both the object and the property name, which we can express with a definition such as `myprop = p => o => o[p]`. One difference between `myprop` here and `prop` is that the latter, being a Ramda function, is curried by default.
 
-OK. Suppose we wanted to determine the products in the Produce category (7) and emit a list of their names.
+OK. Suppose we wanted to determine the products in the Produce category (the category ID is 7) and emit a list of their names.
 
 The "imperative", or at least direct way of approaching this might look like this:
 
@@ -380,11 +378,13 @@ This produces what we want:
 ]
 ```
 
-but is a little rigid. It's not *bad*, and JavaScript's native `filter` and `map` functions work well. But we'll switch to the Ramda equivalents to experiment a little bit more, and to explore the point free and partial application concepts further, as well as working our way towards a nice (if not a little contrived) composition.
+but is a little rigid. It's not *bad*, and JavaScript's native `filter` and `map` functions work well. But we'll switch to the Ramda equivalents to experiment a little bit more, and to explore the point free and partial application concepts further, as well as working our way towards a nice (if not a little simple) composition.
 
 ### Building blocks
 
-Let's feel our way through constructing some high level building blocks (in the form of functions, of course). First, how about this. I'll add [curry](https://ramdajs.com/docs/#curry) and [filter](https://ramdajs.com/docs/#filter) to the list of explicitly imported functions (`const { prop, curry } = require('ramda')`), and use it when defining a function thus:
+Let's feel our way through constructing some high level building blocks (in the form of functions, of course).
+
+First, how about this. I'll add [curry](https://ramdajs.com/docs/#curry) and [filter](https://ramdajs.com/docs/#filter) to the list of explicitly imported functions (`const { prop, curry, filter } = require('ramda')`), and use it when defining a function thus:
 
 ```javascript
 const justCategory = curry((n, x) => prop('Category_CategoryID', x) == n)
@@ -400,16 +400,18 @@ Now we can use this as follows:
 
 ```javascript
 console.log(
-    filter(produceOnly, products)
+    filter(onlyProduce, products)
     .map(prop('productname'))
 )
 ```
 
-Not a huge change, and right now it feels weird because we're sort of in a hybrid state - a "pure" `filter` function from Ramda but then the `Array.prototype.map` function tacked on at the end. Let's think about where that `products` data reference is currently, it's sort of stuck, embedded within the entire expression. If we add `map` to the list of imported functions, we can modify things to use Ramda's `map` so that we have a literal composition:
+Not a huge change, but right now it feels weird because we're sort of in a hybrid state - a "pure" `filter` function from Ramda but then the `Array.prototype.map` function tacked on at the end. Moreover, consider where that `products` data reference is currently: it's sort of stuck, embedded within the entire expression.
+
+If we add `map` to the list of imported functions, we can modify things to use Ramda's `map` so that we have a literal composition:
 
 ```javascript
 console.log(
-    map(prop('ProductName'), filter(produceOnly, products))
+    map(prop('ProductName'), filter(onlyProduce, products))
 )
 ```
 
@@ -420,9 +422,9 @@ This is also a sort of intermediate state but one that conveniently illustrates 
 So let's use Ramda's [compose](https://ramdajs.com/docs/#compose) to cement this, noting that we can "unnest" the relationship, and more importantly "lose" the reference to the data:
 
 ```javascript
-const ProduceList = compose(
+const produceList = compose(
   map(prop('ProductName')),
-  filter(produceOnly)
+  filter(onlyProduce)
 )
 ```
 
@@ -435,13 +437,13 @@ const name = prop('ProductName')
 and use that to move our composition to something that is arguably even more declarative:
 
 ```javascript
-const ProduceList = compose(
+const produceList = compose(
   map(name),
-  filter(produceOnly)
+  filter(onlyProduce)
 )
 ```
 
-Be aware that at this point, emitting `ProduceList` to the log will show this:
+Be aware that at this point, emitting `produceList` to the log will show this:
 
 ```text
 [Function (anonymous)]
@@ -451,7 +453,7 @@ That's because `compose` has also only been partially applied, and is *waiting f
 
 ```javascript
 console.log(
-  ProduceList(products)
+  produceList(products)
 )
 ```
 
@@ -478,17 +480,33 @@ const justCategory = curry((n, x) => prop('Category_CategoryID', x) == n)
 const onlyProduce = justCategory(7)
 const name = prop('ProductName')
 
-const ProduceList = compose(
+const produceList = compose(
   map(name),
   filter(onlyProduce)
 )
 
-console.log(ProduceList(products))
+console.log(produceList(products))
+```
+
+### One extra level of abstraction
+
+Depending on how we prefer to think about the abstractions, we might wish to go one level further up towards even higher level coding abstractions by pushing the `map` and `filter` up into the pre-`compose` definitions:
+
+```javascript
+const onlyProduce = filter(justCategory(7))
+const names = map(prop('ProductName'))
+
+const produceList = compose(
+  names,
+  onlyProduce
+)
+
+console.log(produceList(products))
 ```
 
 ### Pipe
 
-In a way, we got here via a route that included function chains, which are most similar to the pipe based constructions in the `jq` and `bash` examples earlier. And in fact there's a sibling function to `compose` in the Ramda toolkit, which is [pipe](https://ramdajs.com/docs/#pipe).
+In a way, we got here to this composition via a route that included function chains, which are most similar to the pipe based constructions in the `jq` and `bash` examples earlier. And in fact there's a sibling function to `compose` in the Ramda toolkit, which is [pipe](https://ramdajs.com/docs/#pipe).
 
 With `compose`, we think about the `f(g(x))` pattern and express it naturally in that way, with the innermost function last in the list:
 
@@ -496,13 +514,22 @@ With `compose`, we think about the `f(g(x))` pattern and express it naturally in
 compose(f, g)
 ```
 
-Alternatively we can consider the data flowing through a series of functions, our building blocks, so it's easier to think about things the other way round, i.e. `x | g | f`, and with `pipe` we can express it naturally in that way:
+Alternatively we can consider the data flowing through a series of functions, our building blocks, so it's easier to think about things the other way round, i.e. `-> | g | f`, and with `pipe` we can express it naturally in that way:
 
 ```javascript
 pipe(g, f)
 ```
 
 If you're coming from a more standard JavaScript background and have been used to using function chains with the `Array` prototypical functions such as `map`, `filter`, `some`, `reduce` and so on, then `pipe` might be a better mental fit.
+
+By the way, based on the `pipe` equivalent of the even higher abstraction version, it would look like this (assuming we add `pipe` to the list of imported functions from Ramda of course):
+
+```javascript
+const produceList = pipe(
+  onlyProduce,
+  names
+)
+```
 
 ## Wrapping up
 
