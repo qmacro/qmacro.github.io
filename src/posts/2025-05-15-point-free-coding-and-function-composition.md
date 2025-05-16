@@ -401,7 +401,7 @@ Now we can use this as follows:
 ```javascript
 console.log(
     filter(onlyProduce, products)
-    .map(prop('productname'))
+    .map(prop('ProductName'))
 )
 ```
 
