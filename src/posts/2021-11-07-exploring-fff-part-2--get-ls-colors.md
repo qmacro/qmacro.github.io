@@ -567,10 +567,10 @@ Let's break it down: we have the explicit setting of `IFS`, a `read` statement, 
 
 I managed to get this post finished while stuck on the ICE 1011 from Düsseldorf to Frankfurt which has been stationary for over two and a half hours already (and we're still stationary) due to a serious incident further down the line.
 
-[part-1]: https://qmacro.org/autodidactics/2021/09/03/exploring-fff-part-1-main/
+[part-1]: /blog/posts/2021/09/03/exploring-fff-part-1-main/
 [shell-parameter-expansion]: https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html
-[conditional-expression]: https://qmacro.org/autodidactics/2021/09/03/exploring-fff-part-1-main/#conditional-expression
+[conditional-expression]: /blog/posts/2021/09/03/exploring-fff-part-1-main/#conditional-expression
 [absg]: https://tldp.org/LDP/abs/html/index.html
 [bash-hackers-wiki]: https://wiki.bash-hackers.org/syntax/arrays
-[understanding-declare]: https://qmacro.org/autodidactics/2020/10/08/understanding-declare/
+[understanding-declare]: /blog/posts/2020/10/08/understanding-declare/
 [conditional-constructs]: https://www.gnu.org/s/bash/manual/html_node/Conditional-Constructs.html
