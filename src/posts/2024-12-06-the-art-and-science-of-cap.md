@@ -28,7 +28,6 @@ Part|Broadcast|Live Stream / Recording|Notes & Links|Community
 9|21 Feb 2025|[Tz7TTM1pOIk][9]|[TASC Notes - Part 9][19]|[Link][49]
 10|28 Feb 2025|[483aIk_-PqQ][10]|N/A|[Link][50]
 
-
 [1]: https://www.youtube.com/watch?v=XMchiFnDJ6E
 [2]: https://www.youtube.com/watch?v=gXsqOFArqCw
 [3]: https://www.youtube.com/watch?v=oujZD2xEUBM
