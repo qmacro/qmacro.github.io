@@ -198,11 +198,12 @@ Looking at the first instance, we see this:
 Beyond the actual concise way this has been written, avoiding the wordy "if ... then ... fi" construct, there are a couple of things that are worth looking at.
 
 <a name="conditional-expression"></a>
+
 ### Conditional expression
 
 Following the `if` of the standard construct, we have a command list, the exit code of which is checked to determine how to proceed. How this command list is expressed has changed over the years, as we've moved from `sh` to `bash` and had POSIX to think about too.
 
-More traditionally the condition `$1 == -v` might have been introduced with `test`, or expressed within single square brackets, i.e. `[ $1 == -v ]`. The opening single square bracket is interesting in its own right, being a synonym for `test`. In fact, while `[` is built in to many shells (including `bash`), it's also an external command, as is `test`. In case you want to find out more, you may find this post interesting: [The open square bracket \[ is an executable](/blog/posts/2020/08/21/the-open-square-bracket-is-an-executable/).
+More traditionally the condition `$1 == -v` might have been introduced with `test`, or expressed within single square brackets, i.e. `[ $1 == -v ]`. The opening single square bracket is interesting in its own right, being a synonym for `test`. In fact, while `[` is built in to many shells (including `bash`), it's also an external command, as is `test`. In case you want to find out more, you may find this post interesting: [The open square bracket \[ is an executable](https://qmacro.org/autodidactics/2020/08/21/open-square-bracket/).
 
 These days one often sees the more modern version of double square brackets, as we see here. This is a construct also built into `bash` and allows for a richer set of expressions within. For example, the operator `=~`, which allows the use of a regular expression for matching, is not available within the `[ ... ]` construct but is available within `[[ ... ]]`. Moreover, there are different quoting rules; for example, in some cases, you can omit double quotes within some `[[ ... ]]`-enclosed conditions.
 
@@ -502,4 +503,4 @@ So that's it for the `main` function. Directory startup, option parameter handli
 
 If you're still reading, thank you for indulging me, and I hope you've enjoyed the journey as much as I have. There's plenty more to learn from this script; let me know if you found it useful and whether I should venture further.
 
-**Update: You may like to know that there's now a second part: [Exploring fff part 2 - get_ls_colors](/blog/posts/2021/11/07/exploring-fff-part-2-get_ls_colors/).**
+**Update: You may like to know that there's now a second part: [Exploring fff part 2 - get_ls_colors](https://qmacro.org/autodidactics/2021/11/07/exploring-fff-part-2-get-ls-colors/).**

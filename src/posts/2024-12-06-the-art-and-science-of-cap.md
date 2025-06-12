@@ -11,7 +11,7 @@ tags:
 ---
 Here's a summary of the resources relating to the series called "The Art and Science of CAP" with Daniel Hutzel. The series consists of a number of episodes, broadcast live on the [Hands-on SAP Dev show][31], and available for viewing afterwards too.
 
-There is a [playlist] that contains all the episodes, in order.
+There is a [playlist][10] that contains all the episodes, in order.
 
 The inaugural episode was broadcast during [Devtoberfest][32] 2024, and kicked of the series. This blog post will be updated to reflect each subsequent episode and any related resources.
 
@@ -27,6 +27,7 @@ Part|Broadcast|Live Stream / Recording|Notes & Links|Community
 8|14 Feb 2025|[FF1NzLwsmos][8]|[TASC Notes - Part 8][18]|[Link][48]
 9|21 Feb 2025|[Tz7TTM1pOIk][9]|[TASC Notes - Part 9][19]|[Link][49]
 10|28 Feb 2025|[483aIk_-PqQ][10]|N/A|[Link][50]
+
 
 [1]: https://www.youtube.com/watch?v=XMchiFnDJ6E
 [2]: https://www.youtube.com/watch?v=gXsqOFArqCw
@@ -47,7 +48,7 @@ Part|Broadcast|Live Stream / Recording|Notes & Links|Community
 [17]: /blog/posts/2025/02/07/tasc-notes-part-7/
 [18]: /blog/posts/2025/02/14/tasc-notes-part-8/
 [19]: /blog/posts/2025/02/21/tasc-notes-part-9/
-[playlist]: https://www.youtube.com/playlist?list=PL6RpkC85SLQAe45xlhIfhTYB9G0mdRVjI
+[10]: https://www.youtube.com/playlist?list=PL6RpkC85SLQAe45xlhIfhTYB9G0mdRVjI
 [31]: https://community.sap.com/t5/technology-blogs-by-sap/hands-on-sap-dev-with-qmacro-onwards-and-upwards/ba-p/13396497
 [32]: https://developers.sap.com/devtoberfest.html
 [41]: https://community.sap.com/t5/devtoberfest/the-art-amp-science-of-cap/ec-p/13856120#M721
