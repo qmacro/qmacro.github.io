@@ -464,9 +464,9 @@ vim.keymap.set('n', '<leader>dq', vim.diagnostic.setqflist)
 
 I've come to a point where it makes sense to finish this post. There's plenty more to learn about with respect to diagnostics, and the [standard Diagnostic documentation] is great, I'd recommend you have a coffee-time browse through at some point.
 
-Until next time, happy editing!
+If you want to try out this exact setup without messing up your current config, or are just curious to see how it feels, I've set up a repo on GitHub called [neovim-modern-clean-cap-nodejs] that has a dev container definition so you can create a codespace from it, ssh to it, and run Neovim with this config. All the instructions are in the repo's README.
 
----
+Until next time, happy editing!
 
 ## Appendix
 
@@ -516,8 +516,6 @@ While my statusline does a good job of summarising the LSP facilities in play fo
 
 This is very useful to keep an eye on what's going on in the language server mechanisms of Neovim.
 
----
-
 [0.11]: https://neovim.io/doc/user/news-0.11.html 'The official release news item'
 [What's new in Neovim 0.11]: https://gpanders.com/blog/whats-new-in-neovim-0-11/ 'A very readable post by Gregory Anders'
 [Diagnostics]: https://gpanders.com/blog/whats-new-in-neovim-0-11/#diagnostics
@@ -555,3 +553,4 @@ This is very useful to keep an eye on what's going on in the language server mec
 [vim.diagnostic.setqflist()]: https://neovim.io/doc/user/diagnostic.html#vim.diagnostic.setqflist()
 [Telescope]: https://github.com/nvim-telescope/telescope.nvim
 [standard Diagnostic documentation]: https://neovim.io/doc/user/diagnostic.html
+[neovim-modern-clean-cap-nodejs]: https://github.com/qmacro/neovim-modern-clean-cap-nodejs
