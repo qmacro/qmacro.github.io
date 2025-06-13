@@ -845,7 +845,7 @@ The service we'll connect to is a cut down version of the classic Northwind serv
 
 Before we embark upon this, we need to do two things.
 
-First, we need to add the Cloud SDK as remote connectivity in CAP Node.js delegates the heavy lifting of remote connection management and use to that library.
+First, we need to add the Cloud SDK because CAP Node.js delegates the heavy lifting of remote connection management and use to that library.
 
 ```shell
 node ➜ ~/samples (main)
@@ -941,7 +941,7 @@ RemoteService {
 
 In the `credentials` part of the options we just need to specify the URL, the service is open and doesn't require authentication.
 
-OK, now we're ready to send a query to that remote service. Let's first define and store a simple it using the [SELECT](https://cap.cloud.sap/docs/node.js/cds-ql#select) class:
+OK, now we're ready to send a query to that remote service. Let's first define and store a simple query using the [SELECT](https://cap.cloud.sap/docs/node.js/cds-ql#select) class:
 
 ```shell
 > categories = SELECT `CategoryName` .from `Categories`
