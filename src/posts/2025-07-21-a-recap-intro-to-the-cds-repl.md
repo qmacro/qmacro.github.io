@@ -14,6 +14,7 @@ At [reCAP], part of [Code Connect 2025], I gave a talk on the cds REPL: "Gain a 
 
 ![A selfie with the audience](/images/2025/07/audimax-shot.png)
 
+<a name="setting-up"></a>
 ## Setting up
 
 Using my [cap-con-img] repo I built an image with the (at the time) latest CAP Node.js release which was 9.1.0 and launched a throwaway (`--rm`) container from it (I actually used `./buildver latest` which will also work but today will give you a newer version of course):
@@ -89,6 +90,7 @@ service CatalogService {
 }
 ```
 
+<a name="getting-help"></a>
 ## Getting help
 
 The cds REPL is based on the Node.js REPL and asking for help shows the regular Node.js REPL commands plus `.run` and `.inspect` which are specific to the cds REPL:
@@ -108,6 +110,7 @@ The cds REPL is based on the Node.js REPL and asking for help shows the regular 
 Press Ctrl+C to abort current expression, Ctrl+D to exit the REPL
 ```
 
+<a name="exploring-the-cds-facade-with-inspect"></a>
 ## Exploring the cds facade with .inspect
 
 The [cds facade] is a good place to start exploring. It contains a lot of detail, so I used the `.inspect` feature to keep things to a minimum:
@@ -148,6 +151,7 @@ updated node:util.inspect.defaultOptions with: { depth: 0 }
 
 At this point there are no values for `db`, `services` or `model` in the facade, because I've not yet started any CAP server.
 
+<a name="starting-a-server-with-run"></a>
 ## Starting a server with .run
 
 With `.run` I started a CAP server based on the project in the current (`.`) directory:
@@ -223,6 +227,7 @@ EventHandlers {
 }
 ```
 
+<a name="understanding-entities-at-different-levels"></a>
 ## Understanding entities at different levels
 
 With the [CDS model](#cds-model) in mind, I stopped for a moment to look at the difference between what the injected variable `Books` represents (shown just above), and what the expanded "service-equivalent" looks like, in `CatalogService.entities`, which I first extracted using a destructuring assignment:
@@ -253,6 +258,7 @@ entity {
 
 What's different is that this "version" is a projection on the `Books` entity (in the `my.bookshop` namespace), defined by a query object construct, there's a `@readonly` annotation defined upon it, which in turn [expand into] the `@Capabilities` based restrictions seen here.
 
+<a name="building-and-executing-query-objects"></a>
 ## Building and executing query objects
 
 In CAP query objects are first class citizens and essential to our understanding of the fundamentals. They're constructed at a core level with [cds.ql] but there are also higher level APIs such as the [CRUD-style API] which I used here, assigning the object directly to a variable:
@@ -300,6 +306,7 @@ Queries can be extended, which I did at this point:
 > }
 > ```
 
+<a name="creating-a-service-from-scratch"></a>
 ## Creating a service from scratch
 
 As well as defining a service (such as `CatalogService`) in the CDS model, it's possible to create a service from the ground up, which I illustrated next:
@@ -367,6 +374,7 @@ This `next` vs `_dummy` function is at the heart of one of the key differences b
 
 The handling of _requests_ is done in the context of a classic [interceptor stack], where any given handler break the chain and effectively declare that the message has been handled (by not calling `next` to pass the processing to the next handler in the stack). But there is no interceptor stack in the handling of _events_ - every registered handler is called, regardless (and therefore there's no need for the `next` function).
 
+<a name="sending-queries-to-a-remote-service"></a>
 ## Sending queries to a remote service
 
 Constructing and sending queries to services is fundamental in CAP. Earlier I constructed a query and sent it to the `db` service. In this last part of the talk I showed how one can construct a query and send it to a remote service (my [Northbreeze OData service]), without having to think too much at all about the fact that it is even remote.
