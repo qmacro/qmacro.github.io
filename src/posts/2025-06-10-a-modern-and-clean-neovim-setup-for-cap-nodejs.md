@@ -147,6 +147,8 @@ The language server specific configuration itself can be found in individual fil
 >```
 >
 > Until I do, I've disabled the LSP connection for Lua.
+>
+> Update: I found out how to do this in 0.11 - see the [Prevent the Lua "undefined global" diagnostic message](#prevent-the-lua-undefined-global-diagnostic-message) section in the Appendix.
 
 Here is what `lsp/javascript.lua` contains:
 
@@ -515,6 +517,23 @@ While my statusline does a good job of summarising the LSP facilities in play fo
 ```
 
 This is very useful to keep an eye on what's going on in the language server mechanisms of Neovim.
+
+<a name="prevent-the-lua-undefined-global-diagnostic-message"></a>
+### Prevent the Lua "undefined global" diagnostic message
+
+Here's how to prevent the "undefined global" diagnostic message for "vim" appearing when editing Lua files:
+
+```lua
+vim.lsp.config("lua", {
+  settings = {
+    Lua = {
+      diagnostics = {
+        globals = { "vim" }
+      }
+    }
+  }
+})
+```
 
 [0.11]: https://neovim.io/doc/user/news-0.11.html 'The official release news item'
 [What's new in Neovim 0.11]: https://gpanders.com/blog/whats-new-in-neovim-0-11/ 'A very readable post by Gregory Anders'
