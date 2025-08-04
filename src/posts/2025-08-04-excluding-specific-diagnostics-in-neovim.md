@@ -9,7 +9,7 @@ tags:
 ---
 _Here's what I did to be able to exclude certain diagnostic messages in Neovim._
 
-Note: I'm still learning (a) Lua, (b) the API surface of Neovim and (c) how the different core components interact and work together, so this may not be the best solution, but it works for me and I've learned a lot digging in and putting it together._
+Note: I'm still learning (a) Lua, (b) the API surface of Neovim and (c) how the different core components interact and work together, so this may not be the best solution, but it works for me and I've learned a lot digging in and putting it together.
 
 I recently revisited my Neovim config, with a view to updating and simplifying it with the advent of release 0.11. I covered some of this in my last Neovim related post [A modern and clean Neovim setup for CAP Node.js - configuration and diagnostics]. In that context, when editing Node.js (JavaScript) files, everything worked nicely with regards to the Language Server and how the diagnostics were surfaced.
 
@@ -54,7 +54,7 @@ With regards to diagnostics, a simplified flow between Neovim and a language ser
 
 While I first went down the path of trying to add a filter in the last part (diagnostic display), I found that this was ultimately the wrong way to go about it, not least because I would have found myself having to override all the various diagnostic display affordances such as signs, virtual text, and so on.
 
-The key was to interrupt the setting of the diagnostics so that I could filter some out before they were actually stored, which meant overriding `vim.diagnostic.set`.
+The key was to interrupt the _setting_ of the diagnostics so that I could filter some out before they were actually stored, which meant overriding `vim.diagnostic.set`.
 
 ## Examining the anatomy of a diagnostic
 
