@@ -7,7 +7,7 @@ tags:
   - lsp
   - lua
 ---
-_Here's what I did to be able to exclude certain diagnostic messages in Neovim._
+_Here's what I did to be able to filter out certain diagnostic messages in Neovim._
 
 Note: I'm still learning (a) Lua, (b) the API surface of Neovim and (c) how the different core components interact and work together, so this may not be the best solution, but it works for me and I've learned a lot digging in and putting it together.
 
