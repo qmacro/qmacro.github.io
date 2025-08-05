@@ -228,7 +228,7 @@ node_modules/
         ├── _i18n
         ├── app
         ├── bin
-        ├── common.cds          <---
+ --->   ├── common.cds
         ├── eslint.config.mjs
         ├── lib
         ├── libx
