@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Neovim configuration for file and module navigation in CDS models
-date: 2025-08-05
+date: 2025-08-06
 tags:
   - neovim
   - cds
@@ -112,31 +112,31 @@ aspect managed {
 Here's what these relations (and navigations) look like in "diagram" form (thanks to [ASCIIFlow]):
 
 ```text
-┌─────────────────────────────┐
-│app/admin/fiori-service.cds  │
-├─────────────────────────────┤
-│using ... from               │
-│'../../srv/admin-service.cds'│
-│             │              1│
-└─────────────┼───────────────┘ ┌─────────────────────────────┐
-              └─────────────────►srv/admin-service.cds        │
-                                ├─────────────────────────────┤
-                                │using ... from               │
-                                │'../db/schema'               │
-                                │            │               2│
-┌─────────────────────────────┐ └────────────┼────────────────┘
-│db/schema.cds                ◄──────────────┘
-├─────────────────────────────┤
-│using ... from               │
-│'@sap/cds/common'            │
-│             │              3│
-└─────────────┼───────────────┘ ┌─────────────────────────────┐
-              └─────────────────►@sap/cds/common              │
-                                ├─────────────────────────────┤
-                                │type Currency ...            │
-                                │aspect managed { ... }       │
-                                │                            4│
-                                └─────────────────────────────┘
++-----------------------------+
+|app/admin/fiori-service.cds  |
++-----------------------------+
+|using ... from               |
+|'../../srv/admin-service.cds'|
+|             |              1|
++-------------|---------------+   +-----------------------------+
+              +-------------------|srv/admin-service.cds        |
+                                  +-----------------------------+
+                                  |using ... from               |
+                                  |'../db/schema.cds'           |
+                                  |            |               2|
++-----------------------------+   +------------|----------------+
+|db/schema.cds                |----------------+
++-----------------------------+
+|using ... from               |
+|'@sap/cds/common'            |
+|             |              3|
++-------------|---------------+   +-----------------------------+
+              +-------------------|@sap/cds/common              |
+                                  +-----------------------------+
+                                  |type Currency ...            |
+                                  |aspect managed { ... }       |
+                                  |                            4|
+                                  +-----------------------------+
 ```
 
 > As mentioned earlier, the `@sap/cds/common` resource is a file called `common.cds` within the `@sap/cds` module.
@@ -228,7 +228,7 @@ node_modules/
         ├── _i18n
         ├── app
         ├── bin
- --->   ├── common.cds
+  --->  ├── common.cds
         ├── eslint.config.mjs
         ├── lib
         ├── libx
