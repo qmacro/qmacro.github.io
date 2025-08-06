@@ -263,14 +263,24 @@ This was a quick configuration hack in an area of Neovim (well, Vim, I guess) th
 
 > In VS Code each newly navigated-to resource was opened in a separate tab by default. In Neovim they're opened in the same buffer, so to return to the previous resource in the "jump list" one can use `ctrl-o`.
 
+## See also
+
+- [A modern and clean Neovim setup for CAP Node.js - configuration and diagnostics]
+- [Excluding specific diagnostics in Neovim]
+
+[A modern and clean Neovim setup for CAP Node.js - configuration and diagnostics]: /blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node.js-configuration-and-diagnostics/
+[Excluding specific diagnostics in Neovim]: /blog/posts/2025/08/04/excluding-specific-diagnostics-in-neovim/
+[Neovim configuration for file and module navigation in CDS models]: /blog/posts/2025/08/06/neovim-configuration-for-file-and-module-navigation-in-cds-models/
 [Aspects]: https://cap.cloud.sap/docs/about/best-practices#aspects
 [sample]: https://cap.cloud.sap/docs/tools/cds-cli#sample
 [ASCIIFlow]: https://asciiflow.com/#/
 [SAP CDS Language Support]: https://marketplace.visualstudio.com/items?itemName=SAPSE.vscode-cds
-[A modern and clean Neovim setup for CAP Node.js - configuration and diagnostics]: /blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node.js-configuration-and-diagnostics/
 [gf]: https://neovim.io/doc/user/editing.html#gf
 [ftplugin]: https://neovim.io/doc/user/usr_41.html#_writing-a-filetype-plugin
 [uv.fs_stat]: https://neovim.io/doc/user/lua.html#vim.fs.exists()
 [vim.opt.suffixesadd]: https://neovim.io/doc/user/options.html#'suffixesadd'
 [scopes]: https://docs.npmjs.com/about-scopes
 [isfname]: https://neovim.io/doc/user/options.html#'isfname'
+[A modern and clean Neovim setup for CAP Node.js - configuration and diagnostics]: /blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node.js-configuration-and-diagnostics/
+[Excluding specific diagnostics in Neovim]: /blog/posts/2025/08/04/excluding-specific-diagnostics-in-neovim/
+[Neovim configuration for file and module navigation in CDS models]: /blog/posts/2025/08/06/neovim-configuration-for-file-and-module-navigation-in-cds-models/

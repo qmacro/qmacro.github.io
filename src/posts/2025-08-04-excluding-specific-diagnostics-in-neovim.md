@@ -257,7 +257,14 @@ Along with the Neovim documentation itself, the following resources helped clari
 
 Thanks!
 
-[A modern and clean Neovim setup for CAP Node.js - configuration and diagnostics]:/blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node.js-configuration-and-diagnostics/
+## See also
+
+- [A modern and clean Neovim setup for CAP Node.js - configuration and diagnostics]
+- [Neovim configuration for file and module navigation in CDS models]
+
+[A modern and clean Neovim setup for CAP Node.js - configuration and diagnostics]: /blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node.js-configuration-and-diagnostics/
+[Excluding specific diagnostics in Neovim]: /blog/posts/2025/08/04/excluding-specific-diagnostics-in-neovim/
+[Neovim configuration for file and module navigation in CDS models]: /blog/posts/2025/08/06/neovim-configuration-for-file-and-module-navigation-in-cds-models/
 [diagnostic framework]: https://neovim.io/doc/user/diagnostic.html
 [LSP client / framework]: https://neovim.io/doc/user/lsp.html
 [Lua engine]: https://neovim.io/doc/user/lua.html

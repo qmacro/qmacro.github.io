@@ -470,6 +470,11 @@ If you want to try out this exact setup without messing up your current config, 
 
 Until next time, happy editing!
 
+## See also
+
+- [Excluding specific diagnostics in Neovim]
+- [Neovim configuration for file and module navigation in CDS models]
+
 ## Appendix
 
 <a name="lsp-health-check"></a>
@@ -573,3 +578,5 @@ vim.lsp.config("lua", {
 [Telescope]: https://github.com/nvim-telescope/telescope.nvim
 [standard Diagnostic documentation]: https://neovim.io/doc/user/diagnostic.html
 [neovim-modern-clean-cap-nodejs]: https://github.com/qmacro/neovim-modern-clean-cap-nodejs
+[Excluding specific diagnostics in Neovim]: /blog/posts/2025/08/04/excluding-specific-diagnostics-in-neovim/
+[Neovim configuration for file and module navigation in CDS models]: /blog/posts/2025/08/06/neovim-configuration-for-file-and-module-navigation-in-cds-models/
