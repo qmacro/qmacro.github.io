@@ -540,6 +540,23 @@ vim.lsp.config("lua", {
 })
 ```
 
+Having just read the example `vim.lsp.config` code in the [lsp-quickstart] section of the Neovim documentation, I see it's also possible ([and preferable, I think]) to add this directly to the table of settings for the language server itself, i.e.:
+
+```lua
+return {
+  cmd = { 'lua-language-server' },
+  root_markers = { 'package.json', '.git' },
+  filetypes = { 'lua' },
+  settings = {
+    Lua = {
+      diagnostics = {
+        globals = { "vim" }
+      }
+    }
+  }
+}
+```
+
 [0.11]: https://neovim.io/doc/user/news-0.11.html 'The official release news item'
 [What's new in Neovim 0.11]: https://gpanders.com/blog/whats-new-in-neovim-0-11/ 'A very readable post by Gregory Anders'
 [Diagnostics]: https://gpanders.com/blog/whats-new-in-neovim-0-11/#diagnostics
@@ -580,3 +597,5 @@ vim.lsp.config("lua", {
 [neovim-modern-clean-cap-nodejs]: https://github.com/qmacro/neovim-modern-clean-cap-nodejs
 [Excluding specific diagnostics in Neovim]: /blog/posts/2025/08/04/excluding-specific-diagnostics-in-neovim/
 [Neovim configuration for file and module navigation in CDS models]: /blog/posts/2025/08/06/neovim-configuration-for-file-and-module-navigation-in-cds-models/
+[lsp-quickstart]: https://neovim.io/doc/user/lsp.html#lsp-quickstart
+[and preferable, I think]: https://github.com/qmacro/dotfiles/commit/a240b0c6b604e6d188e1dea23fdce7b1f753347b
