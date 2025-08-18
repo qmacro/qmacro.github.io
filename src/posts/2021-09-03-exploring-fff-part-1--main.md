@@ -6,8 +6,7 @@ tags:
   - fff
   - shell
 ---
-Here's what I learned from starting to read the source code to fff - in particular, the main function.
-<!--excerpt-->
+_Here's what I learned from starting to read the source code to fff - in particular, the main function._
 
 [`fff`](https://github.com/dylanaraps/fff) is "a simple file manager written in Bash". As I'm always on the lookout to learn more about Bash, that description got my attention immediately. It's a small but perfectly formed offering, complete with man page and even a `Makefile` for installation. And the file manager executable\* itself is a single Bash script.
 
@@ -17,7 +16,7 @@ The author, [Dylan Araps](https://github.com/dylanaraps) has produced other inte
 
 It seems that recently Dylan has [disappeared off the radar](https://www.reddit.com/r/kisslinux/comments/lsbz8n/an_update_on_dylan/), I don't know what the situation is but I wish him well.
 
-Anyway, I wanted to take a first look at `fff` to see what I could discern. I'm reviewing the code as it stands at the latest to-date [commit](https://github.com/dylanaraps/fff/commit/5b90a8599cce3333672947438bb1718e1298e068), i.e. [here](https://github.com/dylanaraps/fff/tree/5b90a8599cce3333672947438bb1718e1298e068).
+Anyway, I wanted to take a first look at `fff` to see what I could discern. I'm reviewing the code as it stands at the latest to-date [commit](https://github.com/dylanaraps/fff/commit/5b90a8599cce3333672947438bb1718e1298e068), i.e. [at this commit point](https://github.com/dylanaraps/fff/tree/5b90a8599cce3333672947438bb1718e1298e068).
 
 Where I can, I link to reference material so you can dig in further to Bash details that take your fancy. This reference material includes the following sites (and there are more of course):
 
@@ -27,11 +26,11 @@ Where I can, I link to reference material so you can dig in further to Bash deta
 * the [Bash FAQ on Greg's Wiki](https://mywiki.wooledge.org/BashFAQ)
 * the [Shellcheck Wiki](https://github.com/koalaman/shellcheck/wiki)
 
-# Structure and use of main function
+## Structure and use of main function
 
 As I mentioned recently in [Learning by rewriting - bash, jq and fzf details](https://qmacro.org/2021/08/26/learning-by-rewriting/), I like to structure Bash scripts into functions, with a `main` function towards the end, followed by a simple call to that function, passing in everything that was specified on the command line via the `$@` [special parameter](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html) which "expands to the positional parameters, starting from one" (positional parameter zero is the name of the script itself).
 
-This is a practice I picked up, I think, from Google's [Shell Style Guide](https://google.github.io/styleguide/shellguide.html) - see [this section](https://google.github.io/styleguide/shellguide.html#s7.8-main) for details. I wrote about this guide last year in [Improving my shell scripting](https://qmacro.org/2020/10/05/improving-my-shell-scripting/).
+This is a practice I picked up, I think, from Google's [Shell Style Guide](https://google.github.io/styleguide/shellguide.html) - see [this section](https://google.github.io/styleguide/shellguide.html#s7.8-main) for details. I wrote about this guide last year in [Improving my shell scripting](/blog/posts/2020/10/05/improving-my-shell-scripting/).
 
 Dylan structures `fff` in the same way, and [uses the `main` pattern too](https://github.com/dylanaraps/fff/blob/5b90a8599cce3333672947438bb1718e1298e068/fff#L1145). For me, that's a good affirmation of this approach.
 
@@ -109,19 +108,19 @@ The behaviour actually appropriate in these cases is just to allow the `cd` invo
 
 What we see here is `&>` and according to [3.6.4 Redirecting Standard Output and Standard Error](https://www.gnu.org/software/bash/manual/html_node/Redirections.html#Redirecting-Standard-Output-and-Standard-Error) in the Bash manual, it's the preferred short form for redirecting both standard output (STDOUT) and standard error (STDERR) to the same place. Indeed, we see that
 
-```
+```shell
 &>/dev/null
 ```
 
 is equivalent to
 
-```
+```shell
 >/dev/null 2>&1
 ```
 
 Moreover, you may be happy to find out that this in turn is a short form of
 
-```
+```shell
 1>/dev/null 2>&1
 ```
 
@@ -137,13 +136,13 @@ This is just my guess, but because redirecting standard output to a file is very
 
 Note that when using redirection, the [order of redirection](https://wiki.bash-hackers.org/howto/redirection_tutorial#order_of_redirection_ie_file_2_1_vs_2_1_file) is important:
 
-```
+```shell
 >/dev/null 2>&1
 ```
 
 is not the same as
 
-```
+```shell
 2>&1 >/dev/null
 ```
 
@@ -198,12 +197,11 @@ Looking at the first instance, we see this:
 Beyond the actual concise way this has been written, avoiding the wordy "if ... then ... fi" construct, there are a couple of things that are worth looking at.
 
 <a name="conditional-expression"></a>
-
 ### Conditional expression
 
 Following the `if` of the standard construct, we have a command list, the exit code of which is checked to determine how to proceed. How this command list is expressed has changed over the years, as we've moved from `sh` to `bash` and had POSIX to think about too.
 
-More traditionally the condition `$1 == -v` might have been introduced with `test`, or expressed within single square brackets, i.e. `[ $1 == -v ]`. The opening single square bracket is interesting in its own right, being a synonym for `test`. In fact, while `[` is built in to many shells (including `bash`), it's also an external command, as is `test`. In case you want to find out more, you may find this post interesting: [The open square bracket \[ is an executable](https://qmacro.org/autodidactics/2020/08/21/open-square-bracket/).
+More traditionally the condition `$1 == -v` might have been introduced with `test`, or expressed within single square brackets, i.e. `[ $1 == -v ]`. The opening single square bracket is interesting in its own right, being a synonym for `test`. In fact, while `[` is built in to many shells (including `bash`), it's also an external command, as is `test`. In case you want to find out more, you may find this post interesting: [The open square bracket \[ is an executable](/blog/posts/2020/08/21/the-open-square-bracket-is-an-executable/).
 
 These days one often sees the more modern version of double square brackets, as we see here. This is a construct also built into `bash` and allows for a richer set of expressions within. For example, the operator `=~`, which allows the use of a regular expression for matching, is not available within the `[ ... ]` construct but is available within `[[ ... ]]`. Moreover, there are different quoting rules; for example, in some cases, you can omit double quotes within some `[[ ... ]]`-enclosed conditions.
 
@@ -285,7 +283,7 @@ $BASH_ALIASES              $BASH_CMDS                 $BASH_REMATCH             
 
 There's `BASH_VERSION` which is a string like this:
 
-```
+```text
 5.1.4(1)-release
 ```
 
@@ -332,7 +330,7 @@ read_flags="-t 0.05" read "$read_flags" -srn 1
 
 would have resulted in `read` complaining about the timeout (`-t`) value, like this:
 
-```
+```text
 read:  0.05: invalid timeout specification
 ```
 
@@ -344,7 +342,7 @@ A side effect of the enlightenment that came my way from this was the fact that 
 read_flags="-t 0.05" read $read_flags -srn 1
 ```
 
-This works fine and `read` doesn't complain, because the shell is [word splitting](https://mywiki.wooledge.org/WordSplitting) on whitespace and thus the rogue space between `-t` and `0.05` which was being passed to `read` is now consumed in the word splitting action. I'm so used to quoting variables because, since [introducing `shellcheck` into my scripting flow](https://qmacro.org/2020/10/05/improving-my-shell-scripting) I'm constantly reminded to so by [SC2086](https://github.com/koalaman/shellcheck/wiki/SC2086). I guess there are (rare) cases where you _don't_ want to avoid word splitting on the value of a variable.
+This works fine and `read` doesn't complain, because the shell is [word splitting](https://mywiki.wooledge.org/WordSplitting) on whitespace and thus the rogue space between `-t` and `0.05` which was being passed to `read` is now consumed in the word splitting action. I'm so used to quoting variables because, since [introducing `shellcheck` into my scripting flow](/blog/posts/2020/10/05/improving-my-shell-scripting) I'm constantly reminded to so by [SC2086](https://github.com/koalaman/shellcheck/wiki/SC2086). I guess there are (rare) cases where you _don't_ want to avoid word splitting on the value of a variable.
 
 ### FFF settings check
 
@@ -372,7 +370,7 @@ This is a very succinct way of assigning default values, with an expression. In 
 
 While the `get_ls_colors` function is elsewhere in the `fff` script and we'll get to that another time, it's worth taking a quick look at what's executed if `FFF_HIDDEN` is `1`. The [relevant section of the man page](https://github.com/dylanaraps/fff/blob/5b90a8599cce3333672947438bb1718e1298e068/fff.1#L80-L82) explains what this variable controls - whether hidden files are shown in the file manager or not. In fact, the explanation in the man page reflects the `:=0` part of the parameter expansion (i.e. the default value is `0`, as shown in the man page):
 
-```
+```bash
 # Show/Hide hidden files on open.
 # (On by default)
 export FFF_HIDDEN=0
@@ -414,7 +412,7 @@ trap 'get_term_size; redraw' WINCH
 
 Looking at the [Bash Beginners Guide section on traps](https://tldp.org/LDP/Bash-Beginners-Guide/html/sect_12_02.html) we can see that the `trap` pattern is:
 
-```
+```bash
 trap [COMMANDS] [SIGNALS]
 ```
 
@@ -461,7 +459,6 @@ for ((;;)); {
 }
 ```
 
-
 Why not simply `while true; do ...; done`? I can only summise this is something playful, an enjoyment of the relationship that Bash has (or doesn't have, mostly) to the C programming language, where this so-called [three-expression for loop](https://www.cyberciti.biz/faq/bash-for-loop/#C_style_for_loop) is widely used, with an initialiser, a loop continuation condition and a modifier that are separated by `;` characters. Common in C and related languages, but not so much in Bash, I would have thought.
 
 What has got me thinking, however, is why and how does `((;;))` even work?
@@ -503,4 +500,4 @@ So that's it for the `main` function. Directory startup, option parameter handli
 
 If you're still reading, thank you for indulging me, and I hope you've enjoyed the journey as much as I have. There's plenty more to learn from this script; let me know if you found it useful and whether I should venture further.
 
-**Update: You may like to know that there's now a second part: [Exploring fff part 2 - get_ls_colors](https://qmacro.org/autodidactics/2021/11/07/exploring-fff-part-2-get-ls-colors/).**
+**Update: You may like to know that there's now a second part: [Exploring fff part 2 - get_ls_colors](/blog/posts/2021/11/07/exploring-fff-part-2-get_ls_colors/).**
