@@ -10,6 +10,8 @@ tags:
 ---
 _These are notes I wrote for my talk at SAP Inside Track Madrid on 20 March 2025. I wrote them partly to think about what I wanted to say, and partly to share the info in written form too. Note that the idea is to introduce the concepts and show some basic examples for cds REPL "initiates". Nothing too exotic._
 
+_Update July 2025: I've made a few updates to this post to reflect some changes in the cds REPL that were brought in to tighten up query resolution and execution._
+
 Here's the talk abstract: "The cds repl (REPL stands for Read Evaluate Print Loop) is an extremely powerful and versatile tool for every CAP Node.js developer. In this session, you'll become acquainted with it, get a feel for what it's like, how to wield its powers, and more. No experience required, this will be a live session with no slides."
 
 After some introductory material, there are four main parts to this post:
@@ -42,7 +44,9 @@ You can follow along with all the examples here in a container, so you don't hav
 * `./buildbase && ./buildver 8.8.1`
 * `docker run -it --name cds-repl-talk cap-8.8.1 bash`
 
-and then within the container (where you should have a prompt like this `node ➜ ~`) you can clone the CAP samples repo:
+> You can also specify `latest` instead of a specific CAP version.
+
+and then within the container (where you should have a prompt like this `node ➜ ~`) you can clone the CAP samples repo (actually this next part is [now automatically performed in the `buildver` part](https://github.com/qmacro/cap-con-img/commit/fc8baa3c39563b55b58b3b5c99d62f1c0056b622)):
 
 * `git clone https://github.com/SAP-samples/cloud-cap-samples samples`
 * `cd samples && npm ci`
@@ -330,7 +334,7 @@ Further, we can access different elements of the individual areas by the dotted 
 }
 ```
 
-> If you're interested to know why these two entries exist, you might want to take a look at [CAP Node.js Plugins](/blog/posts/2024/12/30/cap-node.js-plugins/).
+> If you're interested to know why entries already exist even at this early stage, you might want to take a look at [CAP Node.js Plugins](/blog/posts/2024/12/30/cap-node.js-plugins/).
 
 That said, we also have the other cds REPL specific command `.inspect`. Using this command directly will show us everything, as above. But we can add the `.depth` option like this to reduce the volume of output:
 
@@ -510,7 +514,7 @@ Genres.texts
 whereas `for ... of` gives access to the values:
 
 ```shell
-for (e of cds.entities) { console.log(e) }
+> for (e of cds.entities) { console.log(e) }
 entity {
   kind: 'entity',
   includes: [Array],
@@ -682,10 +686,24 @@ cds.ql {
 }
 ```
 
-At this point we're probably keen to move from the metadata to the data, so let's just dive in for a bit of relief:
+At this point we're probably keen to move from the metadata to the data, so let's just dive in for a bit of relief.
+
+Just before we do, though, let's consider what `Books` represents here - the "base layer" definition (in [`cloud-cap-samples/bookshop/db/schema.cds`](https://github.com/SAP-samples/cloud-cap-samples/blob/1ff53edf858f13320d4653e91f61f0991f1bae17/bookshop/db/schema.cds#L2-L14)):
+
+```cds
+namespace sap.capire.bookshop;
+
+entity Books : managed {
+  // ...
+}
+```
+
+We can see this representation reflected in the "from: ref:" value `sap.capire.bookshop.Books` in the query.
+
+So when we want to resolve the query, we should use the base `db` service, rather than go through the `CatalogService` service - which we've merely used here as a way to avail ourselves of the CRUD-style API calls.
 
 ```shell
-> await CatalogService.read(Books)
+> await db.run(CatalogService.read(Books))
 [
   {
     createdAt: '2025-03-18T05:38:55.530Z',
@@ -719,10 +737,12 @@ At this point we're probably keen to move from the metadata to the data, so let'
 }
 ```
 
-We can of course qualify that query, this time using the fluent API style that `cds.ql` makes available for us, for a change. First, let's check who the authors are and how to identify them, supplying a [CQL](https://cap.cloud.sap/docs/cds/cql) expression in a template string:
+We can of course qualify that query, and to explore the different ways we can construct query objects, we'll use the fluent API style this time that `cds.ql` makes available for us.
+
+For example let's check who the authors are, supplying a [CQL](https://cap.cloud.sap/docs/cds/cql) expression in a template string:
 
 ```shell
-> await cds.ql `SELECT ID, name from Authors`
+> await cds.ql `SELECT ID, name FROM Authors`
 [
   { ID: 101, name: 'Emily Brontë' },
   { ID: 107, name: 'Charlotte Brontë' },
@@ -731,7 +751,20 @@ We can of course qualify that query, this time using the fluent API style that `
 ]
 ```
 
-Now we know that Mr Poe's ID is 150, we can start to build a query; but first, let's increment the inspection depth as the query that we'll be constructing (or, more precisely, having the API construct for us) will be a little deeper:
+Here's another example:
+
+```shell
+> await cds.ql `SELECT title, stock FROM Books`
+[
+  { title: 'Wuthering Heights', stock: 12 },
+  { title: 'Jane Eyre', stock: 11 },
+  { title: 'The Raven', stock: 333 },
+  { title: 'Eleonora', stock: 555 },
+  { title: 'Catweazle', stock: 22 }
+]
+```
+
+Now we see that there's a large variance in book stock, we can start to build a query to explore that. But first, let's increment the inspection depth as the query that we'll be constructing (or, more precisely, having the API construct for us) will be a little deeper, specifically when it comes to showing `columns` information:
 
 ```shell
 > .inspect .depth=4
@@ -739,64 +772,83 @@ Now we know that Mr Poe's ID is 150, we can start to build a query; but first, l
  updated node:util.inspect.defaultOptions with: { depth: 4 }
 ```
 
+Let's go back to the CRUD-style API, and this time use the context of the `CatalogService` service directly; but for this, we first must get a handle on that service's "view" of the `Books` entity. We'll do that with a bit of [destructuring with the assignment pattern](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring#binding_and_assignment):
+
+```shell
+> { Books: catbooks } = CatalogService.entities
+```
+
 OK, here goes. Let's define a basic "book titles" query, treating it as what it is - a first class citizen, assignable to a variable (and able to be passed around to and from functions as well):
 
 ```shell
-> booktitles = CatalogService.read('title').from(Books)
+> booktitles = CatalogService.read('title').from(catbooks)
 cds.ql {
   SELECT: {
-    from: { ref: [ 'sap.capire.bookshop.Books' ] },
+    from: { ref: [ 'CatalogService.Books' ] },
     columns: [ { ref: [ 'title' ] } ]
   }
 }
 ```
 
-No trip to the persistence layer has been made yet, we have just defined a query object and stored it in the variable `booktitles`. Now that we have it in a variable, we can use and even extend it:
+> Take note of the different value for the "from: ref:" - this time it's `CatalogService.Books` rather than `sap.capire.bookshop.Books`.
+
+No trip to the persistence layer has been made yet, we have just defined a query object and stored it in the variable `booktitles`. Now that we have it in a variable, we can even extend it (note that this will mutate the original `booktitles` query too):
 
 ```shell
-> await booktitles.where({author_ID:150})
-[ { title: 'The Raven' }, { title: 'Eleonora' } ]
-```
-
-We could of course have also even crystallised that into another query object:
-
-```shell
-> booksFromPoe = booktitles.where({author_ID:150})
+> overstocked = booktitles.where({stock:{'>':250}})
 cds.ql {
   SELECT: {
-    from: { ref: [ 'sap.capire.bookshop.Books' ] },
+    from: { ref: [ 'CatalogService.Books' ] },
     columns: [ { ref: [ 'title' ] } ],
-    where: [
-      { ref: [ 'author_ID' ] },
-      '=',
-      { val: 150 },
-      'and',
-      { ref: [ 'author_ID' ] },
-      '=',
-      { val: 150 }
-    ]
+    where: [ { ref: [ 'stock' ] }, '>', { val: 250 } ]
   }
 }
 ```
 
-which we can then use whenever we need to:
+and of course then "resolve" the query:
 
 ```shell
-> await booksFromPoe
+> await overstocked
 [ { title: 'The Raven' }, { title: 'Eleonora' } ]
 ```
 
-And of course, based on the philosophy that anything expressed in a query language is a "query", we can perform non-read-only operations which would be OK to show in this section of the blog post :-)
+And of course, based on the philosophy that anything expressed in a query language is a "query", we can perform write operations which would be OK to show in this "querying" section of the blog post :-)
+
+Let's first try this:
 
 ```shell
-> await CatalogService.update(Books).set({price:100}).where({title:'Eleonora'})
-{ price: 100 }
+> await CatalogService.update(catbooks).set({price:4711}).where({title:'Eleonora'})
+Uncaught Error: ENTITY_IS_READ_ONLY
+    at CatalogService.check_readonly (/home/node/samples/node_modules/@sap/cds/libx/_runtime/common/generic/auth/readOnly.js:10:61)
+    at CatalogService.handle (/home/node/samples/node_modules/@sap/cds/lib/srv/srv-dispatch.js:44:53)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async REPL390:1:33 {
+  code: 405,
+  args: [ 'CatalogService.Books' ],
+  numericSeverity: 4
+}
+```
+
+Oops! But of course, we're going via the `CatalogService` service, which has [a `@readonly` annotation on the projection on `Books`](https://github.com/SAP-samples/cloud-cap-samples/blob/1ff53edf858f13320d4653e91f61f0991f1bae17/bookshop/srv/cat-service.cds#L9). So in fact this error is a good thing, and the HTTP response code [405](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/405) that is available for when such an error is bubbled up to a consumer, is also spot on.
+
+Let's avoid the `@readonly` restriction by going directly to the schema, i.e. the lower layer entity definition (because we can, here in the cds REPL; remember that consumers of your CAP app must go via the services that you expose):
+
+```shell
+> await db.run(CatalogService.update(Books).set({price:4711}).where({title:'Eleonora'}))
+1
+```
+
+> In case you're wondering, the `1` represents the number of rows affected by the query.
+
+This was a success, as we can see:
+
+```shell
 > await cds.ql `SELECT title, price from Books`
 [
   { title: 'Wuthering Heights', price: 11.11 },
   { title: 'Jane Eyre', price: 12.34 },
   { title: 'The Raven', price: 13.13 },
-  { title: 'Eleonora', price: 100 },
+  { title: 'Eleonora', price: 4711 },
   { title: 'Catweazle', price: 150 }
 ]
 ```
@@ -897,11 +949,15 @@ cds.env.requires: {
 }
 ```
 
+> This `db` requirement doesn't exist in a fresh cds REPL - it's here because we've started a CAP server with `.run bookshop`.
+
 Because of how `cds.connect.to` has been defined, we can define a service on the fly, [programmatically](/blog/posts/2024/12/20/tasc-notes-part-6/#providing-configuration-programmatically), supplying the requisite details.
 
-Let's do that now:
+Let's do that now, in a fresh cds REPL:
 
 ```shell
+$ cds repl
+Welcome to cds repl v 8.8.1
 > northbreeze = await cds.connect.to('northbreeze', {kind:'odata',credentials:{url:'https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze'}})
 RemoteService {
   name: 'northbreeze',

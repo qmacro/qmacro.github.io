@@ -147,6 +147,8 @@ The language server specific configuration itself can be found in individual fil
 >```
 >
 > Until I do, I've disabled the LSP connection for Lua.
+>
+> Update: I found out how to do this in 0.11 - see the [Prevent the Lua "undefined global" diagnostic message](#prevent-the-lua-undefined-global-diagnostic-message) section in the Appendix.
 
 Here is what `lsp/javascript.lua` contains:
 
@@ -468,6 +470,11 @@ If you want to try out this exact setup without messing up your current config, 
 
 Until next time, happy editing!
 
+## See also
+
+- [Excluding specific diagnostics in Neovim]
+- [Neovim configuration for file and module navigation in CDS models]
+
 ## Appendix
 
 <a name="lsp-health-check"></a>
@@ -516,6 +523,40 @@ While my statusline does a good job of summarising the LSP facilities in play fo
 
 This is very useful to keep an eye on what's going on in the language server mechanisms of Neovim.
 
+<a name="prevent-the-lua-undefined-global-diagnostic-message"></a>
+### Prevent the Lua "undefined global" diagnostic message
+
+Here's how to prevent the "undefined global" diagnostic message for "vim" appearing when editing Lua files:
+
+```lua
+vim.lsp.config("lua", {
+  settings = {
+    Lua = {
+      diagnostics = {
+        globals = { "vim" }
+      }
+    }
+  }
+})
+```
+
+Having just read the example `vim.lsp.config` code in the [lsp-quickstart] section of the Neovim documentation, I see it's also possible ([and preferable, I think]) to add this directly to the table of settings for the language server itself, i.e.:
+
+```lua
+return {
+  cmd = { 'lua-language-server' },
+  root_markers = { 'package.json', '.git' },
+  filetypes = { 'lua' },
+  settings = {
+    Lua = {
+      diagnostics = {
+        globals = { "vim" }
+      }
+    }
+  }
+}
+```
+
 [0.11]: https://neovim.io/doc/user/news-0.11.html 'The official release news item'
 [What's new in Neovim 0.11]: https://gpanders.com/blog/whats-new-in-neovim-0-11/ 'A very readable post by Gregory Anders'
 [Diagnostics]: https://gpanders.com/blog/whats-new-in-neovim-0-11/#diagnostics
@@ -554,3 +595,7 @@ This is very useful to keep an eye on what's going on in the language server mec
 [Telescope]: https://github.com/nvim-telescope/telescope.nvim
 [standard Diagnostic documentation]: https://neovim.io/doc/user/diagnostic.html
 [neovim-modern-clean-cap-nodejs]: https://github.com/qmacro/neovim-modern-clean-cap-nodejs
+[Excluding specific diagnostics in Neovim]: /blog/posts/2025/08/04/excluding-specific-diagnostics-in-neovim/
+[Neovim configuration for file and module navigation in CDS models]: /blog/posts/2025/08/06/neovim-configuration-for-file-and-module-navigation-in-cds-models/
+[lsp-quickstart]: https://neovim.io/doc/user/lsp.html#lsp-quickstart
+[and preferable, I think]: https://github.com/qmacro/dotfiles/commit/a240b0c6b604e6d188e1dea23fdce7b1f753347b

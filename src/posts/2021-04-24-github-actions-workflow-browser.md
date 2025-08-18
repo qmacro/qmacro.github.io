@@ -237,7 +237,7 @@ Once constructed, the array is passed to `@tsv` which puts the values into a nic
 
 This then produces the lines that we've seen earlier, i.e. ones that look like this:
 
-```
+```text
 qmacro-org/test/dump.yml	qmacro-org	test	.github/workflows/dump.yml
 qmacro/showntell/main.yml	qmacro	showntell	.github/workflows/main.yml
 qmacro/qmacro/build.yml	qmacro	qmacro	.github/workflows/build.yml
@@ -342,6 +342,8 @@ That is:
 1. that unadorned workflow definition goes to STDOUT, which is then fed through the pipe to the STDIN of `vim`, my editor, where I tell it to read from STDIN (that's the use of `-`) and, using `--not-a-term`, tell it that its startup context is not a terminal (it's a pipe) so that it won't issue any warnings along those lines
 
 Here's an example of that pipeline flow in action:
+
+<a name="unix-pipeline-example"></a>
 
 <script id="asciicast-409639" src="https://asciinema.org/a/409639.js" async></script>
 

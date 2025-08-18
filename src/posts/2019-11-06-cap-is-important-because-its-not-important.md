@@ -47,6 +47,7 @@ I can't actually remember a time when I didn't have to think about specific pers
 
 And the mental heavy lifting previously needed to consider how I might go about building a solution that involved persistence, built-in extensibility, enterprise messaging and more … well, as a regular developer with limited brain power, I'm now in a much better position to create solutions like that.
 
+<a name="start-smart"></a>
 ## Start smart
 
 With the building blocks such as the family of [Domain Specific Languages](https://blogs.sap.com/2019/09/18/tech-aloud-podcast-an-introduction/#dsls)\*, with the convention-over-configuration approach, with the first class support for [today's most popular language](https://qmacro.org/2019/04/18/brief-thoughts-on-the-2019-stack-overflow-developer-survey-results/#languages), CAP helps you start smart, start your development project at a level far higher up, far nearer the business domain, than you could have started previously.

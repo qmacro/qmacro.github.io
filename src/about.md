@@ -8,7 +8,7 @@ image: '/images/DJA-head.png'
 <a name="main"></a>
 I'm a [Developer Advocate at SAP](https://developers.sap.com/developer-advocates.html). I've been hacking on SAP enterprise software for more than three decades, and am still enjoying it. I created the first online SAP community in 1995, and in 2003 I co-created what is now known today as [SAP Community](https://community.sap.com).
 
-I've been a member of SAP's [Mentors Advisory Board](http://web.archive.org/web/20170910073813/https://blogs.sap.com/2016/03/08/introducing-the-new-sap-mentors-advisory-board-2016-2018/), and also a member of SAP's Developer Advisory Board.
+I was a member of SAP's [Mentors Advisory Board](http://web.archive.org/web/20170910073813/https://blogs.sap.com/2016/03/08/introducing-the-new-sap-mentors-advisory-board-2016-2018/), and also a member of SAP's Developer Advisory Board.
 
 I've contributed to the [SAP](http://community.sap.com), [Perl](http://search.cpan.org/~qmacro/), [XMPP (Jabber)](http://xmpp.org) and [Google](http://gtugs.org) developer communities and was made an [SAP Mentor](http://www.sap.com/uk/community/resources/influencer-programs.html) in recognition of my contributions to the [SAP Developer Network (now "SAP Community")](http://community.sap.com).
 
