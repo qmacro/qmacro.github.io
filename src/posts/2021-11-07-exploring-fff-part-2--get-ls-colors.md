@@ -165,7 +165,7 @@ From the GNU Bash Reference Manual: "*The file whose name results from the expan
 #### Here document (`<<`)
 
 ```text
-[n]<<[-]word
+[n]&lt;&lt;[-]word
   here-document
 delimiter
 ```
@@ -178,7 +178,7 @@ I do find that this example from the reference manual is a little confusing as `
 #### Here string (`<<<`)
 
 ```text
-[n]<<< word
+[n]&lt;&lt;&lt; word
 ```
 
 Smaller still is the "here string", the younger sibling of the "here document". This time, `word` is not a filename, nor is it a delimiter. It's actually the input.
