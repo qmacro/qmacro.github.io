@@ -50,7 +50,7 @@ And the mental heavy lifting previously needed to consider how I might go about 
 <a name="start-smart"></a>
 ## Start smart
 
-With the building blocks such as the family of [Domain Specific Languages](https://blogs.sap.com/2019/09/18/tech-aloud-podcast-an-introduction/#dsls)\*, with the convention-over-configuration approach, with the first class support for [today's most popular language](https://qmacro.org/2019/04/18/brief-thoughts-on-the-2019-stack-overflow-developer-survey-results/#languages), CAP helps you start smart, start your development project at a level far higher up, far nearer the business domain, than you could have started previously.
+With the building blocks such as the family of [Domain Specific Languages](https://blogs.sap.com/2019/09/18/tech-aloud-podcast-an-introduction/#dsls)\*, with the convention-over-configuration approach, with the first class support for [today's most popular language](/blog/posts/2019/04/18/first-thoughts-on-the-2019-stack-overflow-developer-survey-results/#languages), CAP helps you start smart, start your development project at a level far higher up, far nearer the business domain, than you could have started previously.
 
 You could say that this higher level starting point puts you closer to the cloud before you've even begun!
 

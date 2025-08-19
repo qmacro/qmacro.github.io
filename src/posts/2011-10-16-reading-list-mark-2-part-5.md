@@ -13,42 +13,44 @@ tags:
 ---
 
 
-This is Part 5, the last part in a series about an example app that I put together to demonstrate and describe the use of various Google Apps Script features. See [Part 1](/blog/posts/2011/10/08/reading-list-mark-2-part-1/) for an introduction. This part is "Putting it all together and using the OnOpen event to insert a new 2-item menu entry on the spreadsheet’s page".
+This is Part 5, the last part in a series about an example app that I put together to demonstrate and describe the use of various Google Apps Script features. See [Part 1](/blog/posts/2011/10/08/reading-list-mark-2-part-1/) for an introduction.
 
-**Parts Overview**
+This part is "**Putting it all together and using the OnOpen event to insert a new 2-item menu entry on the spreadsheet’s page**".
+
+## Parts Overview
 
 1. [Introduction to the app, and a short screencast showing the features](/blog/posts/2011/10/08/reading-list-mark-2-part-1/)
 2. [Using the Tasks API to retrieve and insert tasklists, and the Ui Services to build the tasklist chooser component](/blog/posts/2011/10/10/reading-list-mark-2-part-2/)
 3. [Using the UrlFetch Services to interact with the Google+ API and grab info on articles pointed to by users in their activity stream](/blog/posts/2011/10/14/reading-list-mark-2-part-3/)
 4. [Synchronising the URL list in the spreadsheet with corresponding tasks in the chosen tasklist](/blog/posts/2011/10/15/reading-list-mark-2-part-4/)
-5. [Putting it all together and using the OnOpen event to insert a new 2-item menu entry on the spreadsheet’s page](/blog/posts/2011/10/16/reading-list-mark-2-part-5/) <– you are here
+5. [Putting it all together and using the OnOpen event to insert a new 2-item menu entry on the spreadsheet’s page](/blog/posts/2011/10/16/reading-list-mark-2-part-5/) **<– you are here**
 
-**Putting it all together**
+## Putting it all together
 
 So at this stage we’ve done pretty much everything required for this example app. The final task is to extend the standard Spreadsheet menu to give the user access to the custom features of selecting a tasklist, and kicking off an update (URL pull and synchronisation). It’s very easy to extend the menu; in a few lines of code we’re going to end up with something like this:
 
-![]( {{ "/images/2017/12/menu.png" | url }})
+![Menu](/images/2017/12/menu.png)
 
 It’s as simple as this:
 
-```
-function onOpen() { 
-  var ss = SpreadsheetApp.getActiveSpreadsheet(); 
+```javascript
+function onOpen() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
   var menuEntries = [
     {name: "Update", functionName: "update"},
     {name: "Select Task List", functionName: "taskListUi"}
-  ]; 
-  ss.addMenu("Articles", menuEntries); 
+  ];
+  ss.addMenu("Articles", menuEntries);
 }
 ```
 
 We use the [addMenu](http://code.google.com/googleapps/appsscript/class_spreadsheet.html#addMenu)() method of the Spreadsheet class to create a new menu entry with an array of objects representing menu items. And the function name? onOpen() is one of a number of [built-in simple event handler functions](http://code.google.com/googleapps/appsscript/guide_events.html); this one runs automatically when a spreadsheet is opened – an ideal time to extend the menu.
 
-**The complete script**
+## The complete script
 
 So we’re done with the final part! Let’s celebrate with the script in its entirety. And a beer. Cheers!
 
-```
+```javascript
 // -------------------------------------------------------------------------
 // Constants
 // -------------------------------------------------------------------------
@@ -71,7 +73,7 @@ function update() {
   if(taskListId === '') {
     SpreadsheetApp.getActiveSpreadsheet().toast(
       "Use Articles -> Select Task List to choose a task list",
-      "No Task List", 
+      "No Task List",
       5
     );
   // Otherwise, we know which task list to synchronise with, so
@@ -79,7 +81,7 @@ function update() {
   // list, and then sync that with the task list items
   } else {
     retrieveActivityUrls_();
-    synchronise_(taskListId); 
+    synchronise_(taskListId);
   }
 }
 
@@ -103,7 +105,7 @@ function taskListUi() {
   var tasklists = getTasklists_();
   for (var tl in tasklists) {
     lb.addItem(tasklists[tl].getTitle());
-  }  
+  }
 
   // Use the grid to layout the listbox, a textbox for a new list,
   // and some corresponding labels
@@ -115,18 +117,18 @@ function taskListUi() {
 
   // The only button; handler will be linked to this button click event
   // Remember to add the grid contents to the callback context
-  var button = app.createButton("Choose");  
+  var button = app.createButton("Choose");
   var chooseHandler = app.createServerClickHandler('handleChooseButton_');
   chooseHandler.addCallbackElement(grid);
   button.addClickHandler(chooseHandler);
-  
+
   // Put it all together and show it
   panel.add(app.createLabel("Select existing or create new list"));
   panel.add(grid);
   panel.add(button);
   app.add(panel);
   doc.show(app);
-}  
+}
 
 // -------------------------------------------------------------------------
 // handleChooseButton_(e)
@@ -135,7 +137,7 @@ function taskListUi() {
 // and stores the task list name and id in the TASKLISTCELL
 // -------------------------------------------------------------------------
 function handleChooseButton_(e) {
-  
+
   // Assume an existing list was chosen
   var selectedList = e.parameter.existingList;
 
@@ -151,7 +153,7 @@ function handleChooseButton_(e) {
   var taskLists = getTasklists_();
   var taskListId = -1;
   for(tl in taskLists){
-    if(taskLists[tl].getTitle() === selectedList) { 
+    if(taskLists[tl].getTitle() === selectedList) {
       taskListId = taskLists[tl].getId();
       break;
     }
@@ -217,21 +219,21 @@ function retrieveActivityUrls_() {
   var jsonString = UrlFetchApp.fetch(actListUrl).getContentText()
   var activities = Utilities.jsonParse(jsonString);
 
-  // We're looking for the item object attachments, where the 
+  // We're looking for the item object attachments, where the
   // attachment's objectType is 'article'. We want the url and displayName
   for (var i in activities.items) {
     var attachments = activities.items[i].object.attachments;
     for (var a in attachments) {
       var attachment = attachments[a];
-      // We've got a URL and title; store it as new if it doesn't 
-      // already exist. Store it as list of lists, ready for 
+      // We've got a URL and title; store it as new if it doesn't
+      // already exist. Store it as list of lists, ready for
       // a setValues([][]) insert
       if (attachment.objectType == 'article') {
         if (! (attachment.url in list['old'])) {
           list['new'].push([attachment.url, attachment.displayName]);
         }
       }
-    }    
+    }
   }
 
   // Blammo!
@@ -254,13 +256,13 @@ function synchronise_(taskListId) {
   var urlRange = sh.getRange(2, 1, sh.getLastRow() - 1, 1);
   var urls = urlRange.getValues();
   var comments = urlRange.getComments();
-  
+
   // For each URL, check the status of the associated task.
   // If there isn't an associated task, create one.
   for (var i = 0, j = urls.length; i < j; i++) {
     if (comments[i] == "") {
       Logger.log("New task");
-      var task = Tasks.newTask(); 
+      var task = Tasks.newTask();
       task.setTitle(urls[i]);
       var newTask = Tasks.Tasks.insert(task, taskListId);
       sh.getRange(i + 2, 1).setComment(newTask.getId());
@@ -279,7 +281,7 @@ function synchronise_(taskListId) {
 // Creates a specific resource address (URL) for the public activities
 // for a given person in Google+
 // See https://developers.google.com/+/api/latest/activities/list
-// This will be obsolete when there are direct Google+ Services for 
+// This will be obsolete when there are direct Google+ Services for
 // Apps Script
 // -------------------------------------------------------------------------
 function buildActivityListUrl_(userId, collection, apiKey) {
@@ -290,5 +292,5 @@ function buildActivityListUrl_(userId, collection, apiKey) {
   actListUrl = actListUrl + '?key=' + apiKey;
 
   return actListUrl;
-}    
+}
 ```

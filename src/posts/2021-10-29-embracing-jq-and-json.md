@@ -23,7 +23,7 @@ btp get accounts/global-account --show-hierarchy
 
 which shows me something like this:
 
-```
+```log
 Showing details for global account 42bb4252-2b49-4685-bcd7-62c8d85d8b13...
 
 ├─ 7f81446xtrial (42bb4252-2b49-4685-bcd7-62c8d85d8b13 - global account)
@@ -55,7 +55,7 @@ btp get accounts/global-account --show-hierarchy \
 
 This gives me the following:
 
-```
+```log
 global account   42bb4252-2b49-4685-bcd7-62c8d85d8b13   7f81446xtrial
 subaccount       b3f3b2a3-d96d-4bea-8bbf-57ee84a9fc23   trial           42bb4252-2b49-4685-bcd7-62c8d85d8b13   global account
 directory        e6cde265-5d78-4e7c-a8cb-8625a4daaa04   mydir           42bb4252-2b49-4685-bcd7-62c8d85d8b13   global account
@@ -75,7 +75,7 @@ btp get accounts/global-account --show-hierarchy \
 
 This gives me:
 
-```
+```log
 directory        e6cde265-5d78-4e7c-a8cb-8625a4daaa04   mydir           42bb4252-2b49-4685-bcd7-62c8d85d8b13   global account
 directory        4cc2e8f8-8cef-4828-82af-9b5adae387de   fruit           e6cde265-5d78-4e7c-a8cb-8625a4daaa04   directory
 directory        3b4ba347-973f-4571-b4af-7862886104be   apple           4cc2e8f8-8cef-4828-82af-9b5adae387de   directory
@@ -93,9 +93,9 @@ The BTP CLI sports a [JSON output mode](https://help.sap.com/viewer/65de2977205c
 
 However, the structure of the JSON in this particular case is not regular; the nesting of parent and child objects reflects the structure of the actual hierarchy in the global account. That makes sense of course, but to be honest, the prospect of wielding some `jq` incantation to parse an object structure that I cannot know in advance felt a little scary; I had visions of recursive procedures and more.
 
-Here's a short section of the [JSON output](/autodidactics/content/2021/10/hierarchy.json), to show you what I mean:
+Here's a short section of the JSON output, to show you what I mean:
 
-![JSON output structure]({{ "/images/2021/10/json-output-structure.png" | url}})
+![JSON output structure](/images/2021/10/json-output-structure.png)
 
 As it turns out, finding the objects in this hierarchy of nested parents and children turned out to be not as scary as I thought. Here's the invocation again, this time passing the option `--format json` when invoking `btp`, and parsing the output with `jq`:
 
@@ -106,7 +106,7 @@ btp --format json get accounts/global-account --show-hierarchy \
 
 This produces the following output to STDOUT:
 
-```
+```log
 fruit
 banana
 apple

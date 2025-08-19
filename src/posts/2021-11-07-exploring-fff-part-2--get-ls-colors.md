@@ -9,7 +9,7 @@ tags:
 Continuing to read and learn from the source code to fff - this time, the getls_colors function.
 <!--excerpt-->
 
-In [part 1][part-1] I took a first look at [`fff`](https://github.com/dylanaraps/fff), "a simple file manager written in Bash", focusing on the `main` function, and learned a lot. In this part I take a look at the first function called from `main`, and that is `get_ls_colors`. I'm continuing to use the same commit reference as last time, i.e. the state of `fff` [here](https://github.com/dylanaraps/fff/tree/5b90a8599cce3333672947438bb1718e1298e068).
+In [part 1][part-1] I took a first look at [`fff`](https://github.com/dylanaraps/fff), "a simple file manager written in Bash", focusing on the `main` function, and learned a lot. In this part I take a look at the first function called from `main`, and that is `get_ls_colors`. I'm continuing to use the same commit reference as last time, i.e. the state of `fff` [at this commit](https://github.com/dylanaraps/fff/tree/5b90a8599cce3333672947438bb1718e1298e068).
 
 <a name="ls_colors"></a>
 ## LS_COLORS and where get_ls_colors comes in
@@ -155,35 +155,35 @@ What do I mean about the input shrinking? Well to me, a file is "large", some in
 <a name="standardredirection"></a>
 #### Standard redirection (`<`)
 
-```
-[n]<word
+```text
+[n]&lt;word
 ```
 
-From the GNU Bash Reference Manual: "_The file whose name results from the expansion of_ word _to be opened for reading on file descriptor n, or the standard input (file descriptor 0) if n is not specified._". In other words, input is taken from the file `word`.
+From the GNU Bash Reference Manual: "*The file whose name results from the expansion of* word *to be opened for reading on file descriptor n, or the standard input (file descriptor 0) if n is not specified.*". In other words, input is taken from the file `word`.
 
 <a name="heredocument"></a>
 #### Here document (`<<`)
 
-```
+```text
 [n]<<[-]word
   here-document
 delimiter
 ```
 
-A slightly strange name, this is a "here document". I think of this as "the input is right here!", rather than in a file. So, arguably "smaller" than a file (to follow the German licence place parallel). To quote the GNU Bash Reference Manual, "_input from the current source [is taken] until a line containing only_ word _(with no trailing blanks) is seen._". In other words, `word` here is not a filename, but a delimiter. The delimiter `EOF` is often seen.
+A slightly strange name, this is a "here document". I think of this as "the input is right here!", rather than in a file. So, arguably "smaller" than a file (to follow the German licence place parallel). To quote the GNU Bash Reference Manual, "*input from the current source [is taken] until a line containing only* word *(with no trailing blanks) is seen.*". In other words, `word` here is not a filename, but a delimiter. The delimiter `EOF` is often seen.
 
 I do find that this example from the reference manual is a little confusing as `word` is not the same as `delimiter` (which it would be in reality), and the indentation you see relates to the `<<-` version which you can read up on in that section.
 
 <a name="herestring"></a>
 #### Here string (`<<<`)
 
-```
+```text
 [n]<<< word
 ```
 
 Smaller still is the "here string", the younger sibling of the "here document". This time, `word` is not a filename, nor is it a delimiter. It's actually the input.
 
-To quote the GNU Bash Reference Manual again, "_the word undergoes tilde expansion, parameter and variable expansion, command substitution, arithmetic expansion, and quote removal. Filename expansion and word splitting are not performed. The result is supplied as a single string, with a newline appended, to the command on its standard input (or file descriptor n if n is specified)_".
+To quote the GNU Bash Reference Manual again, "*the word undergoes tilde expansion, parameter and variable expansion, command substitution, arithmetic expansion, and quote removal. Filename expansion and word splitting are not performed. The result is supplied as a single string, with a newline appended, to the command on its standard input (or file descriptor n if n is specified)*".
 
 Sensibly, in the case of here documents, none of the expansions happen, of course. Now hopefully the "hello world" example earlier makes sense.
 
@@ -200,7 +200,7 @@ Now we understand that, the final thing to think about is how the `IFS` value of
 
 The comment we came across earlier gives us a nice small example:
 
-```
+```text
 # Format: ':.ext=0;0:*.jpg=0;0;0:*png=0;0;0;0:'
 ```
 
@@ -223,7 +223,7 @@ OK, sort of as expected. But what's that space character right at the start of t
 *png=0;0;0;0
 ```
 
-Because the value of `LS_COLORS` _starts with_ a colon, there's an empty value that gets put into the first slot of the array.
+Because the value of `LS_COLORS` *starts with* a colon, there's an empty value that gets put into the first slot of the array.
 
 But this empty value doesn't seem to matter, as the rest of the `get_ls_colors` function is looking for specific patterns anyway. So let's start looking at that next.
 
@@ -270,7 +270,7 @@ Each of the items in `ls_cols` (via the `i` iterator) is tested according to the
 
 Out of the values we see in the example `LS_COLORS` above, only this one matches:
 
-```
+```text
 *png=0;0;0;0
 ```
 
@@ -282,7 +282,7 @@ If this conditional expression is true, then what happens? Well, this line gets 
 ls_patterns+="${ls_cols[i]/=*}|"
 ```
 
-Let's start with `ls_patterns`. This is the first time this variable name appears. No previous declarations, no nothing. Is that a good thing? I'm not sure, but I do defer to Dylan's superior skill, style and experience here. It does turn out that, according to the [Advanced Bash Scripting Guide][absg], specifically section [4.3. Bash Variables Are Untyped](https://tldp.org/LDP/abs/html/untyped.html), "_Bash variables are character strings_". That is, unless they're explicitly [declared](https://tldp.org/LDP/abs/html/declareref.html) to be something else such as integers or arrays. So here `ls_patterns` is a string, and it starts out having no value.
+Let's start with `ls_patterns`. This is the first time this variable name appears. No previous declarations, no nothing. Is that a good thing? I'm not sure, but I do defer to Dylan's superior skill, style and experience here. It does turn out that, according to the [Advanced Bash Scripting Guide][absg], specifically section [4.3. Bash Variables Are Untyped](https://tldp.org/LDP/abs/html/untyped.html), "*Bash variables are character strings*". That is, unless they're explicitly [declared](https://tldp.org/LDP/abs/html/declareref.html) to be something else such as integers or arrays. So here `ls_patterns` is a string, and it starts out having no value.
 
 That brief excursion helps us contextualise the `+=` assignment operator which is covered in the [Shell Parameters](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameters.html) section of the GNU Bash Reference Manual. Unless the variable is an integer or an array, this assignment operator does what we expect it to do, i.e. appends the value on the right hand side to any existing value already in the left hand side. Seeing the `|` at the end of the string on the right hand side, here:
 
@@ -294,15 +294,15 @@ gives us a hint that it's going to be a pipe (`|`) separated string of those pat
 
 But not exactly those patterns. Notice the `/=*` just after the `ls_cols[i]`. This is actually a short version of this string replacement form of [shell parameter expansion][shell-parameter-expansion]:
 
-```
+```text
 ${parameter/pattern/string}
 ```
 
-Specifically, what we're seeing is this rule in play: "_If string is null, matches of_ pattern _are deleted and the / following_ pattern _may be omitted._".
+Specifically, what we're seeing is this rule in play: "*If string is null, matches of* pattern *are deleted and the / following* pattern *may be omitted.*".
 
 So `/=*` will cause anything starting with (and including) an equals sign to be removed from the value. Looking again at the `LS_COLORS` item matched above:
 
-```
+```text
 *png=0;0;0;0
 ```
 
@@ -392,7 +392,7 @@ so=01;35
 
 This is another form of:
 
-```
+```text
 ${parameter/pattern/string}
 ```
 
@@ -402,9 +402,9 @@ Moreover, by default, `echo` suppresses any interpretation of backslashes in the
 
 Anyway, this larger example value for `LS_COLORS` shows that not only are there items starting with an asterisk, but also other two-character items - these represent file types. Examples are `ln` for symbolic links, `di` for directories, `so` for sockets, and so on.
 
-Now the second regular expression `^(\*|\.)` that also matches items beginning with asterisks makes more sense, in that beyond what's matched here as well, there are other item types, and fits with the "_if they aren't types of files..._" comment.
+Now the second regular expression `^(\*|\.)` that also matches items beginning with asterisks makes more sense, in that beyond what's matched here as well, there are other item types, and fits with the "*if they aren't types of files...*" comment.
 
-But anyway, back down to business. What is to be done with `LS_COLORS` items that match this second regular expression - items that are _not_ file types? Let's take a closer look, bearing in mind what's in the comment that hints at prefixing "ls_" to these items:
+But anyway, back down to business. What is to be done with `LS_COLORS` items that match this second regular expression - items that are *not* file types? Let's take a closer look, bearing in mind what's in the comment that hints at prefixing "ls_" to these items:
 
 ```bash
 ls_cols[i]=${ls_cols[i]#\*}
@@ -418,7 +418,7 @@ This is effectively a two-pass change of the item value, by means of a [paramete
 
 I'm honestly not sure what the significance of this prefix is, but I guess we'll find out later.
 
-> I had a hard time remembering the difference between the meanings of the `${parameter#word}` and `${parameter%word}` varieties (and their double versions, i.e. `${parameter##word}` and `${parameter%%word}`) until I decided to think about `#` being the character to introduce a comment at the _start of_ a line, and `%` being the percent character that one puts after (_at the end of_) a number.
+> I had a hard time remembering the difference between the meanings of the `${parameter#word}` and `${parameter%word}` varieties (and their double versions, i.e. `${parameter##word}` and `${parameter%%word}`) until I decided to think about `#` being the character to introduce a comment at the *start of* a line, and `%` being the percent character that one puts after (*at the end of*) a number.
 
 <a name="processingallatonce"></a>
 ### Processing all the LS_COLORS items at once
@@ -448,11 +448,11 @@ In the [Storing Values](https://wiki.bash-hackers.org/syntax/arrays#storing_valu
 "${ls_cols[@]//[^a-zA-Z0-9=\\;]/_}"
 ```
 
-And by now we should recognise that immediately, albeit in a slightly different guise. It's our old friend the `${parameter/pattern/string}` parameter expansion, but this time, applied not to a scalar variable but to an array. The [Shell Parameter Expansion][shell-parameter-expansion] section for this variation has this to say: "_If parameter is an array variable subscripted with ‘@’ or ‘*’, the substitution operation is applied to each member of the array in turn, and the expansion is the resultant list._".
+And by now we should recognise that immediately, albeit in a slightly different guise. It's our old friend the `${parameter/pattern/string}` parameter expansion, but this time, applied not to a scalar variable but to an array. The [Shell Parameter Expansion][shell-parameter-expansion] section for this variation has this to say: "*If parameter is an array variable subscripted with ‘@’ or ‘*’, the substitution operation is applied to each member of the array in turn, and the expansion is the resultant list.*".
 
 That's what we could probably guess would happen, but it's nice to have the behaviour described explicitly.
 
-So what's happening in this parameter expansion? Well, the pattern is `[^a-zA-Z0-9=\\;]`, matching anything that _isn't_ alphanumeric or an equals sign, an actual backslash or a semicolon, and replacing all occurrences (all because the second forward slash signifies "global") with underscores. And this global replacement is performed on each member of the `ls_cols` array.
+So what's happening in this parameter expansion? Well, the pattern is `[^a-zA-Z0-9=\\;]`, matching anything that *isn't* alphanumeric or an equals sign, an actual backslash or a semicolon, and replacing all occurrences (all because the second forward slash signifies "global") with underscores. And this global replacement is performed on each member of the `ls_cols` array.
 
 A short visualisation might help here. Let's say we have five items in the `ls_cols` array; we can set that up like this:
 
@@ -468,7 +468,7 @@ Applying this parameter expansion and printing the results, one item on each lin
 
 And the output is as follows:
 
-```
+```text
 ab_c
 D_EF
 gh\i
@@ -540,37 +540,21 @@ to deal silently with anything that might go wrong with the export, and just a f
 
 Now that we have glimpsed a little of the history, and (via [Understanding declare][understanding-declare]) know that `-g` must be used with `declare` within a function to declare variables that have an existence beyond the function's scope, the comments make more sense.
 
-I guess we'll find out _how_ these variables are used elsewhere in the script, but for now, this brings this post, on `get_ls_colors`, to an end.
+I guess we'll find out *how* these variables are used elsewhere in the script, but for now, this brings this post, on `get_ls_colors`, to an end.
 
 <a name="wrappingup"></a>
 ### Wrapping up
 
 I have again learned a lot by poring over the details of this, and I'm always happy to hear from you too. Has this helped? Did I miss something, or get something wrong? Whatever it is, please feel free to let me know in the comments mechanism below. Thanks for reading this far, and thanks especially to my son Joseph for a great eye and some very helpful observations!
 
-<a name="splittingpairs"></a>
-### Splitting the pairs into an array
-
-Next comes a lovely line, with a comment:
-
-```bash
-# Turn $LS_COLORS into an array.
-IFS=: read -ra ls_cols <<< "$LS_COLORS"
-```
-
-> Don't confuse `=:` with any sort of assignment operator you might have seen elsewhere (such as `:=` in Go or Mathematica) - it's just the assignment (`=`) of a colon (`:`) to `IFS`.
-
-We saw one use of `read` in [part 1][part-1] but that was more about how the read flags were constructed and used. Here we have another use of `read`, arguably a very common one, i.e. in combination with a temporary setting of a value for the `IFS` environment variable. By temporary, I mean that the assignment holds just for the rest of that same line only.
-
-Let's break it down: we have the explicit setting of `IFS`, a `read` statement, which is being given the value of the `LS_COLORS` variable as its input, via the rather splendid looking `<<<`.
-
 ---
 
 I managed to get this post finished while stuck on the ICE 1011 from Düsseldorf to Frankfurt which has been stationary for over two and a half hours already (and we're still stationary) due to a serious incident further down the line.
 
-[part-1]: https://qmacro.org/autodidactics/2021/09/03/exploring-fff-part-1-main/
+[part-1]: /blog/posts/2021/09/03/exploring-fff-part-1-main/
 [shell-parameter-expansion]: https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html
-[conditional-expression]: https://qmacro.org/autodidactics/2021/09/03/exploring-fff-part-1-main/#conditional-expression
+[conditional-expression]: /blog/posts/2021/09/03/exploring-fff-part-1-main/#conditional-expression
 [absg]: https://tldp.org/LDP/abs/html/index.html
 [bash-hackers-wiki]: https://wiki.bash-hackers.org/syntax/arrays
-[understanding-declare]: https://qmacro.org/autodidactics/2020/10/08/understanding-declare/
+[understanding-declare]: /blog/posts/2020/10/08/understanding-declare/
 [conditional-constructs]: https://www.gnu.org/s/bash/manual/html_node/Conditional-Constructs.html

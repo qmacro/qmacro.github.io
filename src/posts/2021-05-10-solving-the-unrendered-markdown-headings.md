@@ -4,12 +4,11 @@ title: Solving mysterious unrendered markdown headings
 tags:
   - markdown
 ---
-
 _I finally spent some time getting to the bottom of why some headings in my markdown content weren't getting rendered properly._
 
 I've noticed over the years that occasionally the rendered version of my markdown content, in particular on GitHub (which is where most of my markdown content ends up), sometimes contains unrendered headings. Here's [an example](https://github.com/qmacro-org/test/blob/d6f348858dd5014d8b96060e4b8dd75999af431b/README.md):
 
-![Rendered markdown showing an unrendered heading - on GitHub]({{ "/images/2021/05/unrendered-heading-github.png" | url }})
+![Rendered markdown showing an unrendered heading - on GitHub](/images/2021/05/unrendered-heading-github.png)
 
 The second level 2 heading "Another heading level 2" remains unrendered, even though everything looks fine. Why? This has bugged me for a while, but not so much as to make me stop and work out why it was happening. When it happened, I'd just go into the markdown source, rewrite the heading line, and all was fine.
 
@@ -18,7 +17,7 @@ Today I finally stopped to spend a bit of time to look into it. Turns out it's q
 The [basic syntax](https://www.markdownguide.org/basic-syntax/) for headings involves one or more hashes (depending on the heading level needed) followed by the heading text. There's a space that should separate the hashes and the heading text. Here's an example:
 
 ```markdown
-## Heading level 2
+## Heading level 2
 ```
 
 What's causing that heading above not to be rendered properly? Well, it's the space. To you and me there is indeed a space between `##` and `Another heading level 2`.
@@ -27,7 +26,7 @@ But it's [the wrong type of space](https://en.wikipedia.org/wiki/The_wrong_type_
 
 Checking first that it's not something weird going on with the markdown renderer on GitHub, let's try a different rendering, in the terminal, with the excellent [glow](https://github.com/charmbracelet/glow) tool:
 
-![Rendered markdown showing an unrendered heading - using glow]({{ "/images/2021/05/unrendered-heading-glow.png" | url }})
+![Rendered markdown showing an unrendered heading - using glow](/images/2021/05/unrendered-heading-glow.png)
 
 Same issue.
 
@@ -35,7 +34,7 @@ So let's dig in a little deeper, and look at the source.
 
 First, let's look at the first level 2 heading, which has been rendered correctly:
 
-```
+```shell
 # ~/Projects/gh/github.com/qmacro-org/test (main=)
 ; grep 'Heading level 2' README.md | od -t x1 -c
 0000000    23  23  20  48  65  61  64  69  6e  67  20  6c  65  76  65  6c
@@ -51,7 +50,7 @@ Seems OK, and yes, there's the space, hex value `20`, following the two hashes (
 
 Now let's look at the second level 2 heading, which has not been correctly rendered;
 
-```
+```shell
 # ~/Projects/gh/github.com/qmacro-org/test (main=)
 ; grep 'Another heading level 2' README.md | od -t x1 -c
 0000000    23  23  c2  a0  41  6e  6f  74  68  65  72  20  68  65  61  64
@@ -65,7 +64,7 @@ Now let's look at the second level 2 heading, which has not been correctly rende
 
 What the heck is that following the two hex `23` hash characters?
 
-```
+```shell
 0000000    23  23  c2  a0
            #   # 302 240
 ```

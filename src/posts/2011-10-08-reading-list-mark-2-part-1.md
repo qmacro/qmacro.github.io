@@ -11,8 +11,6 @@ tags:
 - ui
 - urlfetch
 ---
-
-
 Over on the Google Apps Scripts articles section of the Google Code site there’s a great article “[Integrating with Google APIs – Creating a simple reading list](http://code.google.com/googleapps/appsscript/articles/google_apis_reading_list.html)” which takes the reader through a nice example of using a couple of APIs that have recently been made available to Google Apps Script via the [Google APIs Services](http://code.google.com/googleapps/appsscript/googleapisservices.html) – the UrlShortener API and the Tasks API. Inspired by the article, I decided to take the idea a little bit further and build something I could demo and then explain at our [Manchester GTUG meetup](http://madlab.org.uk/content/manchester-google-technology-user-group-13/).
 
 I used the same idea of a reading list, but added a Ui component to allow the user to select a task list interactively, and instead of using the UrlShortener API, I explored the relatively young [Google+ API](https://developers.google.com/+/api/), in that I pulled in articles to read automatically from URLs posted by people on Google+.
@@ -32,5 +30,3 @@ I’ll describe how everything is put together over the next few blog posts:
 5. [Putting it all together and using the OnOpen event to insert a new 2-item menu entry on the spreadsheet’s page](/blog/posts/2011/10/16/reading-list-mark-2-part-5/)
 
 Stay tuned!
-
-
