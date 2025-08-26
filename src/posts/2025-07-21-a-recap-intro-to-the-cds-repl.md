@@ -179,7 +179,7 @@ Everything is a service, including the database facility (`db`) as well as the `
 
 And there's also the `Books` entity from `db/schema.cds` (at this point I've increased the `.inspect` depth from 0 to 4):
 
-```bash
+```javascript
 > Books
 entity {
   kind: 'entity',
@@ -193,7 +193,7 @@ entity {
 
 I then took a peek at some of the detail in the `CatalogService`, specifically the `handlers`, to show [the built-in mechanisms] - all those features one can read about in [Capire] such as auth checks, autoexposure, input validation, paging, sorting, and so on, plus the complete support for CRUD operations, is there:
 
-```bash
+```javascript
 > CatalogService.handlers
 EventHandlers {
   _initial: [
@@ -232,14 +232,14 @@ EventHandlers {
 
 With the [CDS model](#cds-model) in mind, I stopped for a moment to look at the difference between what the injected variable `Books` represents (shown just above), and what the expanded "service-equivalent" looks like, in `CatalogService.entities`, which I first extracted using a destructuring assignment:
 
-```bash
+```javascript
 > { Books: mybooks } = CatalogService.entities
 [object Function]
 ```
 
 and then inspected:
 
-```bash
+```javascript
 > mybooks
 entity {
   kind: 'entity',
@@ -263,7 +263,7 @@ What's different is that this "version" is a projection on the `Books` entity (i
 
 In CAP query objects are first class citizens and essential to our understanding of the fundamentals. They're constructed at a core level with [cds.ql] but there are also higher level APIs such as the [CRUD-style API] which I used here, assigning the object directly to a variable:
 
-```bash
+```javascript
 > thebooks = CatalogService.read(mybooks)
 cds.ql {
   SELECT: { from: { ref: [ 'CatalogService.Books' ] } }
@@ -272,7 +272,7 @@ cds.ql {
 
 To [execute the query] I used `await`, which by default passes the query to `cds.db.run()`:
 
-```bash
+```javascript
 > await thebooks
 [
   { ID: 1, title: 'Wuthering Heights', stock: 100 },
@@ -282,7 +282,7 @@ To [execute the query] I used `await`, which by default passes the query to `cds
 
 In other words, this is the same as:
 
-```bash
+```javascript
 > await db.run(thebooks)
 ```
 
@@ -290,13 +290,13 @@ because I still have the `db` variable that was automatically made available in 
 
 Queries can be extended, which I did at this point:
 
-```bash
+```javascript
 > await thebooks.where({'stock': {'>': 100}})
 [ { ID: 2, title: 'Jane Eyre', stock: 500 } ]
 ```
 
 > Beware, this will modify the query object:
-> ```bash
+> ```javascript
 > > thebooks
 > cds.ql {
 >   SELECT: {
@@ -311,7 +311,7 @@ Queries can be extended, which I did at this point:
 
 As well as defining a service (such as `CatalogService`) in the CDS model, it's possible to create a service from the ground up, which I illustrated next:
 
-```bash
+```javascript
 > srv = new cds.Service
 Service {
   name: 'Service',
@@ -331,20 +331,20 @@ This is like an "empty" version of the service I looked at before - for example,
 
 That doesn't prevent the sending of messages; it's just that nothing will happen, as I then demonstrated:
 
-```bash
+```javascript
 > await srv.send('recap', { is: "awesome" })
 >
 ```
 
 At this point I defined a super simple handler for the `recap` event (remember, a handler definition is essentially a function, so `console.log` will do just fine here):
 
-```bash
+```javascript
 > srv.on('recap', console.log)
 ```
 
 This time, because of the definition of the `on` phase handler for this event named `recap`, the data is passed to the handler function, which outputs it:
 
-```bash
+```javascript
 > await srv.send('recap', { is: "awesome" })
 Request { method: 'recap', data: { is: 'awesome' } } [AsyncFunction: next]
 ```
@@ -359,7 +359,7 @@ In other words, this is effectively a request/response concept, close to the syn
 
 Then, to contrast this with an event message concept, close to the ideas in the asynchronous ideas in event emitters and receivers, I swapped out the `srv.send` and used `srv.emit` instead:
 
-```bash
+```javascript
 > await srv.emit('recap', { is: "awesome" })
 EventMessage { event: 'recap', data: { is: 'awesome' } } [Function: _dummy]
 ```
@@ -383,7 +383,7 @@ In CAP services are either "required" or "provided". A remote service is one tha
 
 I don't have anything in `package.json#cds.requires` so this is what I got when I tried something simple like this:
 
-```bash
+```javascript
 > cds.connect.to('northbreeze')
 Promise {
   <rejected> Error: Didn't find a configuration for 'cds.requires.northbreeze' in /home/node/tiny-sample
@@ -391,7 +391,7 @@ Promise {
 
 There's a second parameter to `cds.connect.to` which expects an options object, wherein one can provide a service binding (essentially a destination object) in a `credentials` property:
 
-```bash
+```javascript
 > nb = await cds.connect.to('northbreeze', {kind: 'odata', credentials: { url: 'https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze' }})
 RemoteService {
   name: 'northbreeze',
@@ -431,7 +431,7 @@ RemoteService {
 
 Doing this, and assigning the result to a variable, gives a `RemoteService` object, which is on a similar level to the `db` and `CatalogService` objects I had after starting the CAP server:
 
-```bash
+```javascript
 > [db, CatalogService, nb].forEach(x => console.log(`${x.name}: ${x.constructor.name} (${x.kind})`))
 db: SQLiteService (sqlite)
 CatalogService: ApplicationService (app-service)
@@ -440,7 +440,7 @@ northbreeze: RemoteService (odata)
 
 At this point I constructed a new query object, enjoying how the approach (which uses tagged templates) allows me to express my query in almost-English:
 
-```bash
+```javascript
 > cats = SELECT `CategoryName` .from `Categories`
 cds.ql {
   SELECT: {
@@ -454,14 +454,14 @@ The context here in the post has diverged slightly from the context of the talk,
 
 So when I ran this during the talk, this happened, which nicely illustrated the default use of `db.run` when `await`-ing a query:
 
-```shell
+```javascript
 > await cats
 Uncaught Error: Can't execute query as no primary database is connected.
 ```
 
 But here, while we _do_ have a primary database in the form of `db`, we get a different and equally illustrative error:
 
-```shell
+```javascript
 > await cats
 Uncaught SqliteError: no such table: Categories in:
 SELECT CategoryName FROM Categories
@@ -469,7 +469,7 @@ SELECT CategoryName FROM Categories
 
 Of course, I wanted to have this query sent to the remote service, which I achieved with the same method but called on the `RemoteService` object (in `nb`), rather than the `SQLiteService` object (in `db`):
 
-```bash
+```javascript
 > await nb.run(cats)
 [
   { CategoryName: 'Beverages', CategoryID: 1 },
@@ -485,7 +485,7 @@ Of course, I wanted to have this query sent to the remote service, which I achie
 
 The query object is serialised and sent to the remote service, and the results returned, without me having to do anything! If you're curious, information on the built-in implementation that facilitates this is also available:
 
-```bash
+```javascript
 > nb.options
 {
   kind: 'odata',
