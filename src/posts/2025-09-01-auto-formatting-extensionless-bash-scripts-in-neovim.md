@@ -9,6 +9,8 @@ tags:
   - lsp
   - shfmt
 ---
+_Here's what I did to make the combination of the Bash language server and shfmt work with Editorconfig settings for Bash script files that don't have extensions._
+
 ## TL;DR
 
 The Bash language server is easy to install and has support for `shfmt` which in turn has support for Editorconfig settings.
