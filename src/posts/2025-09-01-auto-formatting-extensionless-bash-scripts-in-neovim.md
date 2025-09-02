@@ -236,7 +236,7 @@ return {
     bashIde = {
       logLevel = 'debug',
       shfmt = {
-        path = '/home/dj/.local/bin/shfmt-wrapper'
+        path = vim.fn.expand('$HOME') .. '/.local/bin/shfmt-wrapper'
       }
     },
   },
@@ -257,6 +257,7 @@ Setting this to `DEBUG`, either by changing the value in the `init.lua` file its
 ```shell
 :lua vim.lsp.set_log_level("DEBUG")
 ```
+
 does the trick, and output like this appears in the `lsp.log` file:
 
 ```log
@@ -345,7 +346,7 @@ return {
     bashIde = {
       logLevel = 'debug',
       shfmt = {
-        path = '/home/dj/.local/bin/shfmt-wrapper'
+        path = vim.fn.expand('$HOME') .. '/.local/bin/shfmt-wrapper'
       }
     },
   },
