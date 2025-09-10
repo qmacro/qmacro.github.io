@@ -42,6 +42,8 @@ Abstract: There are some great facilities in CAP Node.js for local development, 
 
 I'm honoured to play a part in session [KEY101 | Draft day for developers: Turning new technology into real-world wins](https://www.sap.com/events/teched/berlin/flow/sap/te25/catalog-inperson/page/catalog/session/1755789361320001c3gG), the Developer Keynote on Wed 05 Nov at SAP TechEd this year.
 
+![TechEd speaker profile](/images/2025/09/teched-speaker.png)
+
 Abstract: The picks are in, and developers, their tools, and frameworks are first-round talent. Get a front-row seat to SAP's latest innovations built to accelerate how you code, automate, and scale. Explore how you can use SAP's newest AI capabilities, generative agents, and enhanced tooling to build faster and smarter with less friction and more impact.
 
 ### 05 Nov: Trivia competition
