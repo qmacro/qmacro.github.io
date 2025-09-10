@@ -30,7 +30,7 @@ This is an SAP CodeJam [on Wed 08 Oct in Birmingham, UK](https://community.sap.c
 
 ### 10 Oct: Service integration with SAP Cloud Application Programming Model
 
-This is an SAP CodeJam [on Fri 10 Oct in Munich, DE](https://github.com/SAP-samples/cap-service-integration-codejam/), led by me.
+This is an SAP CodeJam [on Fri 10 Oct in Munich, DE](https://community.sap.com/t5/sap-codejam/service-integration-with-the-sap-cloud-application-programming-model-munich/ec-p/14212922), led by me.
 
 ### 11 Oct: CAP Node.js features for local development
 
