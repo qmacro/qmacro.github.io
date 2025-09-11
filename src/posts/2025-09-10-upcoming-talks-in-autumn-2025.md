@@ -40,7 +40,7 @@ Abstract: There are some great facilities in CAP Node.js for local development, 
 
 ### 05 Nov: Draft day for developers: Turning new technology into real-world wins
 
-I'm honoured to play a part in session [KEY101 | Draft day for developers: Turning new technology into real-world wins](https://www.sap.com/events/teched/berlin/flow/sap/te25/catalog-inperson/page/catalog/session/1755789361320001c3gG), the Developer Keynote on Wed 05 Nov at SAP TechEd this year.
+I'll [be at SAP TechEd](https://www.sap.com/events/teched/berlin/flow/sap/te25/speaker-catalog-inperson/page/dj-adams), and I'm honoured to play a part in session [KEY101 | Draft day for developers: Turning new technology into real-world wins](https://www.sap.com/events/teched/berlin/flow/sap/te25/catalog-inperson/page/catalog/session/1755789361320001c3gG), the Developer Keynote on Wed 05 Nov at SAP TechEd in Berlin this year.
 
 ![TechEd speaker profile](/images/2025/09/teched-speaker.png)
 
@@ -48,11 +48,11 @@ Abstract: The picks are in, and developers, their tools, and frameworks are firs
 
 ### 05 Nov: Trivia competition
 
-I'll be running a live trivia competition ([CT1288](https://www.sap.com/events/teched/berlin/flow/sap/te25/catalog-inperson/page/catalog/session/1756936085495001SaY9)) on Wed 05 Nov in the Community Theatre at SAP TechEd in Berlin, DE this year.
+I'll be running a live trivia competition ([CT1288](https://www.sap.com/events/teched/berlin/flow/sap/te25/catalog-inperson/page/catalog/session/1756936085495001SaY9)) on Wed 05 Nov in the Community Theatre.
 
 ### 05 Nov: Learning by doing in the cds REPL
 
-This is a talk ([CT1291](https://www.sap.com/events/teched/berlin/flow/sap/te25/catalog-inperson/page/catalog/session/1756936609129001McHZ)) that I'm giving in the Community Theatre on Wed 05 Nov at SAP TechEd in Berlin, DE.
+This is a talk ([CT1291](https://www.sap.com/events/teched/berlin/flow/sap/te25/catalog-inperson/page/catalog/session/1756936609129001McHZ)) that I'm giving in the Community Theatre on Wed 05 Nov.
 
 Abstract: Work through a simple SAP Cloud Application Programming Model (CAP) project, live with your peers, in the cds REPL. Explore as you go and collectively ask each other questions, such as "What will happen if?" "What do you think this will evaluate to?" and "Why does this happen?"
 
