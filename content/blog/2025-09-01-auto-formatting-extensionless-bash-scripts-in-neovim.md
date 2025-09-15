@@ -19,7 +19,7 @@ But that's non-standard, and when invoked via the Bash language server, doesn't 
 
 ## Background
 
-In my continuing quest to [build out a cleaner and leaner Neovim configuration](/blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node.js-configuration-and-diagnostics/) I turned my attention recently to improving my Bash script editing experience. For Bash there are plenty of facilities that fit into my Personal Development Environment, including `shellcheck` and `shfmt`, both of which I have been using for quite a while (see [Improving my shell scripting](/blog/posts/2020/10/05/improving-my-shell-scripting/)).
+In my continuing quest to [build out a cleaner and leaner Neovim configuration](/blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node-js-configuration-and-diagnostics/) I turned my attention recently to improving my Bash script editing experience. For Bash there are plenty of facilities that fit into my Personal Development Environment, including `shellcheck` and `shfmt`, both of which I have been using for quite a while (see [Improving my shell scripting](/blog/posts/2020/10/05/improving-my-shell-scripting/)).
 
 I decided to give the [Bash language server](https://github.com/bash-lsp/bash-language-server) a try. It's a super easy setup [for Neovim 0.11+](https://github.com/bash-lsp/bash-language-server?tab=readme-ov-file#neovim) and the [integration with shfmt](https://github.com/bash-lsp/bash-language-server?tab=readme-ov-file#shfmt-integration) was a feature that caught my eye in particular. See [Appendix C](#appendix-c-neovim-lsp-configuration-for-the-bash-language-server) for the setup configuration details.
 
@@ -333,7 +333,7 @@ const rawConfig = {
 <a name="appendix-c-neovim-lsp-configuration-for-the-bash-language-server"></a>
 ## Appendix C - Neovim LSP configuration for the Bash language server
 
-To add the Bash language server to [my Neovim 0.11+ setup](/blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node.js-configuration-and-diagnostics/) and configure it, all I needed was to create a new configuration file `~/.config/nvim/lsp/bash.lua`:
+To add the Bash language server to [my Neovim 0.11+ setup](/blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node-js-configuration-and-diagnostics/) and configure it, all I needed was to create a new configuration file `~/.config/nvim/lsp/bash.lua`:
 
 ```lua
 return {
