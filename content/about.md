@@ -21,7 +21,7 @@ I have spent many happy hours teaching kids & teachers to code. I ran a [CodeClu
 
 I gave a talk on teaching kids to code, and why it's important, at TEDx Oldham. There's a recording here: [Our computational future: DJ Adams at TEDx Oldham](https://www.youtube.com/watch?v=-gvOCaExeK0).
 
-I have a wonderful son Joseph, of whom I'm **very** proud.
+I have a wonderful son [Joseph](https://www.math.hhu.de/en/chairs-/-people-/-contact-persons/the-chairs-of-the-mathematical-institute/chair-of-applied-analysis/team/dr-joseph-adams), of whom I'm **very** proud.
 
 <a name="writing-and-talks"></a>
 ## Writing and Talks
