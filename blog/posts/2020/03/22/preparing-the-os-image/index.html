@@ -1,10 +1,593 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2020/03/22/preparing-the-os-image/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Preparing the OS image | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Preparing the OS image"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2020/03/22/preparing-the-os-image/"><meta name="description" content="Preparing the OS image 22 Mar 2020 | 5 min read This post describes how I prepared the base OS image for each of the Raspberry Pis in my..."><meta property="og:description" content="Preparing the OS image 22 Mar 2020 | 5 min read This post describes how I prepared the base OS image for each of the Raspberry Pis in my..."><meta name="description" content="Preparing the OS image 22 Mar 2020 | 5 min read This post describes how I prepared the base OS image for each of the Raspberry Pis in my..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Preparing the OS image</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Preparing the OS image</h1><div class="post__details"><time datetime="2020-03-22">22 Mar 2020 </time><span>| </span><span>5 min read</span></div></header><main class="post__content"><p><em>This post describes how I prepared the base OS image for each of the Raspberry Pis in my &quot;Brambleweeny&quot; cluster.</em></p><p>This is a post in the &quot;<a href="/blog/posts/2020/03/22/brambleweeny-cluster-experiments/">Brambleweeny Cluster Experiments</a>&quot; series of blog posts, which accompanies the <a href="https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe">YouTube live stream recording playlist</a> of the same name. The video linked here is the one that accompanies this blog post.</p><iframe width="560" height="315" src="https://www.youtube.com/embed/IY5ZNZDI-EQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><p>Previous post in this series: <a href="/blog/posts/2020/03/22/starting-out-with-raspberry-pi-experiments/">Starting out with Raspberry Pi experiments</a><br>Next post in this series: <a href="/blog/posts/2020/03/22/finding-the-pis-on-the-network/">Finding the Pis on the network</a></p><blockquote><p>This post has been updated to reflect the new name of the OS -- Raspberry Pi OS -- which changed (from Raspbian) around May 2020.</p></blockquote><p>There are many ways to prepare base OS images for your Raspberry Pi computers. In the past I've used various devices and software to write bootable images to SD cards, but I've settled on using <a href="https://www.balena.io/etcher/">balena Etcher</a> that I read about in Alex Ellis's <a href="https://medium.com/@alexellisuk/walk-through-install-kubernetes-to-your-raspberry-pi-in-15-minutes-84a8492dc95a">Walk-through — install Kubernetes to your Raspberry Pi in 15 minutes</a>.</p><p>The Pis in the cluster will be run headless (the only cable running to each of them will be an Ethernet cable). This has a couple of implications for us at this stage, which are (a) there's no point installing graphical tools or a full desktop, and (b) we'll be using remote access only.</p><h2>No GUI</h2><p>There's no point in installing a graphical user interface (GUI) or windowing system on the Pis. That said, of course, with the power of X Windows we can have remote GUI windows but that's another story and a path we don't want to take for now.</p><p>There are different operating systems available for the Raspberry Pi, and at the time of this edit, <a href="https://www.raspberrypi.org/downloads/raspberry-pi-os/">Raspberry Pi OS</a> (previously called Raspbian), is a Linux OS based on Debian Linux (currently Buster). Here, the &quot;Lite&quot; image, that comes without GUI software or a windowing system, is appropriate. This is convenient as the image is a lot smaller in size, too.</p><p><img src="/images/2020/03/os-image.png" alt="Raspberry Pi OS (32-bit) Lite"></p><h2>Remote access</h2><p>To access the headless Pis remotely, we'll be using Secure Shell (SSH). There's a bit of a chicken-and-egg problem though, in that we need to be able to configure the Pis to allow remote access via SSH, before we can make the connection. For that we'd need a keyboard and screen, to be able to log on, install and set up the SSH service.</p><p>However, headless use of Raspberry Pi computers is so common that there's a nice way to solve this dilemma, and it's described in the official documentation, in a section on <a href="https://www.raspberrypi.org/documentation/configuration/boot_folder.md">the boot folder</a>. Basically, the OS image that is to be written to the SD card for installation on the Pis has a partition named <code>boot</code>. If you stick an SD card with a Linux image like Raspian Buster on it into your desktop computer or laptop, and automatic mounting is enabled, you'll see this boot partition mounted, and you can have a look inside.</p><p>If you place a file called <code>ssh</code> in this boot partition, then when the image is inserted into a Pi and the Pi is booted, SSH will be enabled automatically and set up appropriately. Nice!</p><h2>Preparing the image</h2><p>Most of the articles on the preparation of SD cards for Pis involve multiple steps: first, burn the OS image, then eject and re-insert the SD card to have the <code>boot</code> partition from that new image automatically mounted, then create the <code>ssh</code> file in that partition, and finally unmount the partition. This is fine for the occasional SD card preparation, but when preparing SD cards for an entire cluster, this can get tedious.</p><p>So I decided to embrace one of the <a href="http://threevirtues.com/">three virtues</a> of a programmer, namely laziness.</p><p>After downloading the Raspbian Buster Lite image, I unzipped the archive to reveal the actual image file, which I then mounted. In the mounted partition, I added the <code>ssh</code> file, before unmounting it again. I then zipped the now-SSH-enabled image file up again, ready for writing to the SD cards.</p><p>On my macOS machine (which is one of the few devices I have that has an SD card slot), I unzipped the archive like this:</p><pre class="language-shell"><code class="language-shell">-<span class="token operator">></span> <span class="token function">unzip</span> <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf.zip<br>Archive:  <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf.zip<br>  inflating: <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf.img</code></pre><p>Then I used the DiskImageMounter utility <code>hdiutil</code> to mount the <code>.img</code> image file (noting also that the <code>boot</code> partition is only one of two partitions on the image - the other, of type &quot;Linux&quot;, being the eventual root partition):</p><pre class="language-shell"><code class="language-shell">-<span class="token operator">></span> hdiutil <span class="token function">mount</span> <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf.img<br>/dev/disk3              FDisk_partition_scheme<br>/dev/disk3s1            Windows_FAT_32                  /Volumes/boot<br>/dev/disk3s2            Linux</code></pre><p>The <code>boot</code> partition was made available at <code>/Volumes/boot</code>, as we can see from what <code>df</code> tells us:</p><pre><code>-&gt; df | grep disk3
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="preparing-the-os-image">Preparing the OS image</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2020-03-22">22 March 2020</time></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p><em>This post describes how I prepared the base OS image for each of the Raspberry Pis in my &quot;Brambleweeny&quot; cluster.</em></p>
+<p>This is a post in the &quot;<a href="/blog/posts/2020/03/22/brambleweeny-cluster-experiments/">Brambleweeny Cluster Experiments</a>&quot; series of blog posts, which accompanies the <a href="https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe">YouTube live stream recording playlist</a> of the same name. The video linked here is the one that accompanies this blog post.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/IY5ZNZDI-EQ" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+<p>Previous post in this series: <a href="/blog/posts/2020/03/22/starting-out-with-raspberry-pi-experiments/">Starting out with Raspberry Pi experiments</a><br>
+Next post in this series: <a href="/blog/posts/2020/03/22/finding-the-pis-on-the-network/">Finding the Pis on the network</a></p>
+<blockquote>
+<p>This post has been updated to reflect the new name of the OS -- Raspberry Pi OS -- which changed (from Raspbian) around May 2020.</p>
+</blockquote>
+<p>There are many ways to prepare base OS images for your Raspberry Pi computers. In the past I've used various devices and software to write bootable images to SD cards, but I've settled on using <a href="https://www.balena.io/etcher/">balena Etcher</a> that I read about in Alex Ellis's <a href="https://medium.com/@alexellisuk/walk-through-install-kubernetes-to-your-raspberry-pi-in-15-minutes-84a8492dc95a">Walk-through — install Kubernetes to your Raspberry Pi in 15 minutes</a>.</p>
+<p>The Pis in the cluster will be run headless (the only cable running to each of them will be an Ethernet cable). This has a couple of implications for us at this stage, which are (a) there's no point installing graphical tools or a full desktop, and (b) we'll be using remote access only.</p>
+<h2 id="no-gui">No GUI</h2>
+<p>There's no point in installing a graphical user interface (GUI) or windowing system on the Pis. That said, of course, with the power of X Windows we can have remote GUI windows but that's another story and a path we don't want to take for now.</p>
+<p>There are different operating systems available for the Raspberry Pi, and at the time of this edit, <a href="https://www.raspberrypi.org/downloads/raspberry-pi-os/">Raspberry Pi OS</a> (previously called Raspbian), is a Linux OS based on Debian Linux (currently Buster). Here, the &quot;Lite&quot; image, that comes without GUI software or a windowing system, is appropriate. This is convenient as the image is a lot smaller in size, too.</p>
+<p><img src="/images/2020/03/os-image.png" alt="Raspberry Pi OS (32-bit) Lite"></p>
+<h2 id="remote-access">Remote access</h2>
+<p>To access the headless Pis remotely, we'll be using Secure Shell (SSH). There's a bit of a chicken-and-egg problem though, in that we need to be able to configure the Pis to allow remote access via SSH, before we can make the connection. For that we'd need a keyboard and screen, to be able to log on, install and set up the SSH service.</p>
+<p>However, headless use of Raspberry Pi computers is so common that there's a nice way to solve this dilemma, and it's described in the official documentation, in a section on <a href="https://www.raspberrypi.org/documentation/configuration/boot_folder.md">the boot folder</a>. Basically, the OS image that is to be written to the SD card for installation on the Pis has a partition named <code>boot</code>. If you stick an SD card with a Linux image like Raspian Buster on it into your desktop computer or laptop, and automatic mounting is enabled, you'll see this boot partition mounted, and you can have a look inside.</p>
+<p>If you place a file called <code>ssh</code> in this boot partition, then when the image is inserted into a Pi and the Pi is booted, SSH will be enabled automatically and set up appropriately. Nice!</p>
+<h2 id="preparing-the-image">Preparing the image</h2>
+<p>Most of the articles on the preparation of SD cards for Pis involve multiple steps: first, burn the OS image, then eject and re-insert the SD card to have the <code>boot</code> partition from that new image automatically mounted, then create the <code>ssh</code> file in that partition, and finally unmount the partition. This is fine for the occasional SD card preparation, but when preparing SD cards for an entire cluster, this can get tedious.</p>
+<p>So I decided to embrace one of the <a href="http://threevirtues.com/">three virtues</a> of a programmer, namely laziness.</p>
+<p>After downloading the Raspbian Buster Lite image, I unzipped the archive to reveal the actual image file, which I then mounted. In the mounted partition, I added the <code>ssh</code> file, before unmounting it again. I then zipped the now-SSH-enabled image file up again, ready for writing to the SD cards.</p>
+<p>On my macOS machine (which is one of the few devices I have that has an SD card slot), I unzipped the archive like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">-<span class="token operator">></span> <span class="token function">unzip</span> <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf.zip
+Archive:  <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf.zip
+  inflating: <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf.img</code></pre>
+<p>Then I used the DiskImageMounter utility <code>hdiutil</code> to mount the <code>.img</code> image file (noting also that the <code>boot</code> partition is only one of two partitions on the image - the other, of type &quot;Linux&quot;, being the eventual root partition):</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">-<span class="token operator">></span> hdiutil <span class="token function">mount</span> <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf.img
+/dev/disk3              FDisk_partition_scheme
+/dev/disk3s1            Windows_FAT_32                  /Volumes/boot
+/dev/disk3s2            Linux</code></pre>
+<p>The <code>boot</code> partition was made available at <code>/Volumes/boot</code>, as we can see from what <code>df</code> tells us:</p>
+<pre><code>-&gt; df | grep disk3
 /dev/disk3s1  516190   104290   411900   21%   0    0  100%  /Volumes/boot
-</code></pre><p>I could then add an empty <code>ssh</code> file to the filesystem on that partition:</p><pre class="language-shell"><code class="language-shell">-<span class="token operator">></span> <span class="token function">touch</span> /Volumes/boot/ssh</code></pre><h2>WiFi connection</h2><p>If you'd also like your Raspberry Pi to connect to your WiFi network when it boots (which will often be the case, even for headless mode), then at this stage you can also add another file, and this time, it's not an empty file like the <code>ssh</code> one, but one with configuration so that the Pi can connect to and authenticate with your WiFi network.</p><p>If you want to do that, create a file in the same boot partition as you created the <code>ssh</code> file, called <code>wpa_supplicant.conf</code>, and add the following configuration to it:</p><pre><code>ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+</code></pre>
+<p>I could then add an empty <code>ssh</code> file to the filesystem on that partition:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">-<span class="token operator">></span> <span class="token function">touch</span> /Volumes/boot/ssh</code></pre>
+<h2 id="wifi-connection">WiFi connection</h2>
+<p>If you'd also like your Raspberry Pi to connect to your WiFi network when it boots (which will often be the case, even for headless mode), then at this stage you can also add another file, and this time, it's not an empty file like the <code>ssh</code> one, but one with configuration so that the Pi can connect to and authenticate with your WiFi network.</p>
+<p>If you want to do that, create a file in the same boot partition as you created the <code>ssh</code> file, called <code>wpa_supplicant.conf</code>, and add the following configuration to it:</p>
+<pre><code>ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
 country=&lt;Insert 2 letter ISO 3166-1 country code here&gt;
 
@@ -12,7 +595,23 @@ network={
  ssid=&quot;&lt;Name of your wireless LAN&gt;&quot;
  psk=&quot;&lt;Password for your wireless LAN&gt;&quot;
 }
-</code></pre><p>(This example is taken directly from this useful page: <a href="https://www.raspberrypi.org/documentation/configuration/wireless/headless.md">Setting up a Raspberry Pi headless</a>).</p><blockquote><p>If you're in the UK and wondering about the ISO-3166-1 country code that you need, it's &quot;GB&quot;.</p></blockquote><p>After that, I unmounted it:</p><pre class="language-shell"><code class="language-shell">-<span class="token operator">></span> <span class="token function">umount</span> /Volumes/boot</code></pre><p>And then created a new zip archive:</p><pre class="language-shell"><code class="language-shell">-<span class="token operator">></span> <span class="token function">zip</span> <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf-ssh.zip <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf.img<br>  adding: <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf.img</code></pre><h2>Using the image</h2><p>I could then use this new image archive file <code>2020-05-27-raspios-buster-lite-armhf-ssh.zip</code> in my use of balena Etcher, creating all four SD cards ready for the Pis in the cluster. Result!</p><p><img src="/images/2020/03/etcher.png" alt="balena Etcher"></p><p>Balena Etcher is great, but if, like me, you're more of a terminal person, you can also perform this step from the command line.</p><p>Whether or not you use balena Etcher or the command line, it's at this stage of course that you insert the SD card.</p><p>The steps are described well in <a href="https://www.raspberrypi.org/documentation/installation/installing-images/mac.md">Copying an operating system image to an SD card using Mac OS</a> so here's a precis:</p><pre><code>-&gt; diskutil list
+</code></pre>
+<p>(This example is taken directly from this useful page: <a href="https://www.raspberrypi.org/documentation/configuration/wireless/headless.md">Setting up a Raspberry Pi headless</a>).</p>
+<blockquote>
+<p>If you're in the UK and wondering about the ISO-3166-1 country code that you need, it's &quot;GB&quot;.</p>
+</blockquote>
+<p>After that, I unmounted it:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">-<span class="token operator">></span> <span class="token function">umount</span> /Volumes/boot</code></pre>
+<p>And then created a new zip archive:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">-<span class="token operator">></span> <span class="token function">zip</span> <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf-ssh.zip <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf.img
+  adding: <span class="token number">2020</span>-05-27-raspios-buster-lite-armhf.img</code></pre>
+<h2 id="using-the-image">Using the image</h2>
+<p>I could then use this new image archive file <code>2020-05-27-raspios-buster-lite-armhf-ssh.zip</code> in my use of balena Etcher, creating all four SD cards ready for the Pis in the cluster. Result!</p>
+<p><img src="/images/2020/03/etcher.png" alt="balena Etcher"></p>
+<p>Balena Etcher is great, but if, like me, you're more of a terminal person, you can also perform this step from the command line.</p>
+<p>Whether or not you use balena Etcher or the command line, it's at this stage of course that you insert the SD card.</p>
+<p>The steps are described well in <a href="https://www.raspberrypi.org/documentation/installation/installing-images/mac.md">Copying an operating system image to an SD card using Mac OS</a> so here's a precis:</p>
+<pre><code>-&gt; diskutil list
 /dev/disk0 (internal, physical):
    #:                       TYPE NAME                    SIZE       IDENTIFIER
    0:      GUID_partition_scheme                        *1.0 TB     disk0
@@ -36,10 +635,30 @@ Unmount of all volumes on disk4 was successful
 1853882368 bytes transferred in 122.702619 secs (15108743 bytes/sec)
 -&gt; sudo diskutil eject /dev/rdisk5
 Disk /dev/rdisk5 ejected
-</code></pre><h2>A note on security</h2><p>You may be wondering why there's no Raspbian image available that already contains the <code>ssh</code> file. That's because it would be a security risk; in other words, you have to explicitly enable SSH through this route if you want it; otherwise, the Pis stay locked down. That's the right approach.</p><h2>Booting and connecting</h2><p>After inserting the SD cards into the Raspberry Pis, and connecting up the Ethernet cables to power them up and have them boot the images for the first time, we can see that this SSH configuration action was successful:</p><pre><code>-&gt; ssh 192.168.86.53
+</code></pre>
+<h2 id="a-note-on-security">A note on security</h2>
+<p>You may be wondering why there's no Raspbian image available that already contains the <code>ssh</code> file. That's because it would be a security risk; in other words, you have to explicitly enable SSH through this route if you want it; otherwise, the Pis stay locked down. That's the right approach.</p>
+<h2 id="booting-and-connecting">Booting and connecting</h2>
+<p>After inserting the SD cards into the Raspberry Pis, and connecting up the Ethernet cables to power them up and have them boot the images for the first time, we can see that this SSH configuration action was successful:</p>
+<pre><code>-&gt; ssh 192.168.86.53
 The authenticity of host '192.168.86.53 (192.168.86.53)' can't be established.
 ECDSA key fingerprint is SHA256:jFgPSwjEQsCSUx+nJcZ6ub9EhoGC1I1vSX5uSvVc1YE.
 Are you sure you want to continue connecting (yes/no)?
-</code></pre><p>In the next post, we'll find out how I discovered the IP address(es) to use to connect, but for now, this is a great start - the SSH service responded to my request to connect (the &quot;authenticity&quot; message is just my machine saying &quot;hey, I don't recognise this remote host - are you sure you want to proceed?&quot;) - we're all ready to start setting up our Pis for some clustering goodness!</p><p>Next post in this series: <a href="/blog/posts/2020/03/22/finding-the-pis-on-the-network/">Finding the Pis on the network</a></p></main><aside class="post__aside"><div class="post__tags"></div><style>.utterances {
-  margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2020/03/22/starting-out-with-raspberry-pi-experiments/"><span>←</span> <span>Starting out with Raspberry Pi experiments</span> </a><a href="/blog/posts/2020/03/22/finding-the-pis-on-the-network/"><span>Finding the Pis on the network</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+</code></pre>
+<p>In the next post, we'll find out how I discovered the IP address(es) to use to connect, but for now, this is a great start - the SSH service responded to my request to connect (the &quot;authenticity&quot; message is just my machine saying &quot;hey, I don't recognise this remote host - are you sure you want to proceed?&quot;) - we're all ready to start setting up our Pis for some clustering goodness!</p>
+<p>Next post in this series: <a href="/blog/posts/2020/03/22/finding-the-pis-on-the-network/">Finding the Pis on the network</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2020/03/22/finding-the-pis-on-the-network/">Finding the Pis on the network</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2020/03/22/starting-out-with-raspberry-pi-experiments/">Starting out with Raspberry Pi experiments</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2020/03/22/preparing-the-os-image/` was built on 2025-09-15T15:58:49.599Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

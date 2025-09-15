@@ -1,21 +1,603 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2020/06/07/remote-mount-setup-on-the-raspberry-pi/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Remote mount setup on the Raspberry Pi | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Remote mount setup on the Raspberry Pi"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2020/06/07/remote-mount-setup-on-the-raspberry-pi/"><meta name="description" content="Remote mount setup on the Raspberry Pi 07 Jun 2020 | 3 min read This post documents what I did to set up mount points for, and connect to,..."><meta property="og:description" content="Remote mount setup on the Raspberry Pi 07 Jun 2020 | 3 min read This post documents what I did to set up mount points for, and connect to,..."><meta name="description" content="Remote mount setup on the Raspberry Pi 07 Jun 2020 | 3 min read This post documents what I did to set up mount points for, and connect to,..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Remote mount setup on the Raspberry Pi</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Remote mount setup on the Raspberry Pi</h1><div class="post__details"><time datetime="2020-06-07">07 Jun 2020 </time><span>| </span><span>3 min read</span></div></header><main class="post__content"><p><em>This post documents what I did to set up mount points for, and connect to, an Apple Airport Time Capsule here on my homelab network and also my Google Drive.</em></p><p>My interest in Raspberry Pis has increased over the last few months, and I've taken delivery of a couple of Pi Zero W models and another Pi 4, all from <a href="https://thepihut.com/">The Pi Hut</a>, which I can heartily recommend. Using the Pis more often, I wanted to connect them to some remote storage, specifically my old but still relevant network storage device - an Airport Time Capsule from Apple - and also be able to seamlessly read and write files on my Google Drive. This short post documents what I did, so I can refer back to it if I need to do it again. Perhaps it might be useful for you too.</p><p>Here's the relevant section from a <code>tree -L 2</code> in my home directory:</p><pre><code>.
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="remote-mount-setup-on-the-raspberry-pi">Remote mount setup on the Raspberry Pi</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2020-06-07">07 June 2020</time></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p><em>This post documents what I did to set up mount points for, and connect to, an Apple Airport Time Capsule here on my homelab network and also my Google Drive.</em></p>
+<p>My interest in Raspberry Pis has increased over the last few months, and I've taken delivery of a couple of Pi Zero W models and another Pi 4, all from <a href="https://thepihut.com/">The Pi Hut</a>, which I can heartily recommend. Using the Pis more often, I wanted to connect them to some remote storage, specifically my old but still relevant network storage device - an Airport Time Capsule from Apple - and also be able to seamlessly read and write files on my Google Drive. This short post documents what I did, so I can refer back to it if I need to do it again. Perhaps it might be useful for you too.</p>
+<p>Here's the relevant section from a <code>tree -L 2</code> in my home directory:</p>
+<pre><code>.
 └── mnt
     ├── gdrive
     └── timecapsule
-</code></pre><h2>Mounting the Time Capsule</h2><p>This was pretty straightforward and involves adding a new line in <code>/etc/fstab</code> to represent the mount. This is the line:</p><pre><code>//timecapsule/Data /home/pi/mnt/timecapsule cifs vers=1.0,password=sekrit,rw,uid=1000,iocharset=utf8,sec=ntlm 0 0
-</code></pre><p>Broken down bit by bit, we have:</p><ul><li><code>//timecapsule/Data</code>: The mount device, which is the Data share on the Time Capsule itself, which is identified here as the hostname <code>timecapsule</code>. I could have used an IP address but I'm happily running a local DNS setup on this homelab (on one of the Pi Zero W devices) using <a href="https://pi-hole.net/">Pi-hole</a></li><li><code>/home/pi/mnt/timecapsule</code>: The mount point, where I want the Data share to be mounted</li><li><code>cifs</code>: The file system type; Common Internet File System (CIFS) is a dialect of the more Windows specific Server Message Block (SMB) network protocol</li><li><code>vers=1.0,password=sekrit,rw,uid=1000,iocharset=utf8,sec=ntlm</code>: There a few options specified here, such as the protocol version number, that the mount should be read-write, and so on (it seems as though the security mode 'ntlm', which was the default for a while, now must be specified explicitly)</li><li><code>0</code>: Dump (disabled), i.e. no backing up of this partition</li><li><code>0</code>: Boot time fsck (disabled), i.e. no file system check at boot time for this file system</li></ul><p>A short note on the password (which isn't actually 'sekrit', obviously) - via the airport utility on my macOS device, I connected to the Time Capsule and set up the security for the disks with a &quot;disk password&quot;, i.e. there is no user. This seemed simpler and good enough for what I need.</p><p><img src="/images/2020/06/diskconfig.png" alt="Disk configuration on the Time Capsule"></p><p>And that's it. After adding the line, a <code>mount -a</code> (as root) did the trick, and of course the mount is performed on (re)boot too.</p><h2>Mounting Google Drive</h2><p>This was a bit more involved, but still worked first time. It involves the use of <a href="https://rclone.org/">rclone</a>, which is described as &quot;a command line program to manage files on cloud storage&quot;, and support for Google Drive is included.</p><p>Basically, I followed this excellent tutorial from Artur Klauser - <a href="https://medium.com/@artur.klauser/mounting-google-drive-on-raspberry-pi-f5002c7095c2">Mounting Google Drive on Raspberry Pi</a>, so I won't repeat all the details; instead, I'll list the commands and activities I went through here.</p><h3>Installed rclone</h3><p>I installed <code>rclone</code> from the standard repositories, and got version 1.45; in other words, I didn't bother with trying to get the latest through a <code>wget</code> pull of something newer - I think I'm happy with 1.45 (and it's worked well so far for me).</p><pre><code>sudo apt install rclone
-</code></pre><h3>Set up a Google API project</h3><p>In order to use my own access configuration, I need a client ID and client secret pair for OAuth based authentication to the Google Drive API, and so I needed to get those from Google. I set up a fresh project &quot;homelab-rclone&quot;, enabled the Google Drive API, and generated some OAuth 2.0 client credentials.</p><p><img src="/images/2020/06/googleapiclient.png" alt="The OAuth 2.0 Client ID"></p><h3>Configured rclone</h3><p>After generating the credentials, I went back to the command line and fired up <code>rclone config</code>, following the guide in Artur's post mentioned earlier. Next, a simple test (<code>rclone ls --max-depth 1 gdrive:</code>) showed that I could indeed see the contents of my Google Drive. The configuration procedure caused a file <code>rclone.conf</code> to be created in <code>~/.config/rclone/</code> too, this is what the contents look like (I've elided the credential details of course):</p><pre><code>[gdrive]
+</code></pre>
+<h2 id="mounting-the-time-capsule">Mounting the Time Capsule</h2>
+<p>This was pretty straightforward and involves adding a new line in <code>/etc/fstab</code> to represent the mount. This is the line:</p>
+<pre><code>//timecapsule/Data /home/pi/mnt/timecapsule cifs vers=1.0,password=sekrit,rw,uid=1000,iocharset=utf8,sec=ntlm 0 0
+</code></pre>
+<p>Broken down bit by bit, we have:</p>
+<ul>
+<li><code>//timecapsule/Data</code>: The mount device, which is the Data share on the Time Capsule itself, which is identified here as the hostname <code>timecapsule</code>. I could have used an IP address but I'm happily running a local DNS setup on this homelab (on one of the Pi Zero W devices) using <a href="https://pi-hole.net/">Pi-hole</a></li>
+<li><code>/home/pi/mnt/timecapsule</code>: The mount point, where I want the Data share to be mounted</li>
+<li><code>cifs</code>: The file system type; Common Internet File System (CIFS) is a dialect of the more Windows specific Server Message Block (SMB) network protocol</li>
+<li><code>vers=1.0,password=sekrit,rw,uid=1000,iocharset=utf8,sec=ntlm</code>: There a few options specified here, such as the protocol version number, that the mount should be read-write, and so on (it seems as though the security mode 'ntlm', which was the default for a while, now must be specified explicitly)</li>
+<li><code>0</code>: Dump (disabled), i.e. no backing up of this partition</li>
+<li><code>0</code>: Boot time fsck (disabled), i.e. no file system check at boot time for this file system</li>
+</ul>
+<p>A short note on the password (which isn't actually 'sekrit', obviously) - via the airport utility on my macOS device, I connected to the Time Capsule and set up the security for the disks with a &quot;disk password&quot;, i.e. there is no user. This seemed simpler and good enough for what I need.</p>
+<p><img src="/images/2020/06/diskconfig.png" alt="Disk configuration on the Time Capsule"></p>
+<p>And that's it. After adding the line, a <code>mount -a</code> (as root) did the trick, and of course the mount is performed on (re)boot too.</p>
+<h2 id="mounting-google-drive">Mounting Google Drive</h2>
+<p>This was a bit more involved, but still worked first time. It involves the use of <a href="https://rclone.org/">rclone</a>, which is described as &quot;a command line program to manage files on cloud storage&quot;, and support for Google Drive is included.</p>
+<p>Basically, I followed this excellent tutorial from Artur Klauser - <a href="https://medium.com/@artur.klauser/mounting-google-drive-on-raspberry-pi-f5002c7095c2">Mounting Google Drive on Raspberry Pi</a>, so I won't repeat all the details; instead, I'll list the commands and activities I went through here.</p>
+<h3 id="installed-rclone">Installed rclone</h3>
+<p>I installed <code>rclone</code> from the standard repositories, and got version 1.45; in other words, I didn't bother with trying to get the latest through a <code>wget</code> pull of something newer - I think I'm happy with 1.45 (and it's worked well so far for me).</p>
+<pre><code>sudo apt install rclone
+</code></pre>
+<h3 id="set-up-a-google-api-project">Set up a Google API project</h3>
+<p>In order to use my own access configuration, I need a client ID and client secret pair for OAuth based authentication to the Google Drive API, and so I needed to get those from Google. I set up a fresh project &quot;homelab-rclone&quot;, enabled the Google Drive API, and generated some OAuth 2.0 client credentials.</p>
+<p><img src="/images/2020/06/googleapiclient.png" alt="The OAuth 2.0 Client ID"></p>
+<h3 id="configured-rclone">Configured rclone</h3>
+<p>After generating the credentials, I went back to the command line and fired up <code>rclone config</code>, following the guide in Artur's post mentioned earlier. Next, a simple test (<code>rclone ls --max-depth 1 gdrive:</code>) showed that I could indeed see the contents of my Google Drive. The configuration procedure caused a file <code>rclone.conf</code> to be created in <code>~/.config/rclone/</code> too, this is what the contents look like (I've elided the credential details of course):</p>
+<pre><code>[gdrive]
 type = drive
 client_id = 693105092413-sv17[...].apps.googleusercontent.com
 client_secret = dQwG[...]
 scope = drive
 token = {&quot;access_token&quot;:&quot;ya29[...]&quot;,&quot;token_type&quot;:&quot;Bearer&quot;,&quot;refresh_token&quot;:&quot;1ae03[...]&quot;,&quot;expiry&quot;:&quot;2020-06-07T16:58:38.185331858+01:00&quot;}
-</code></pre><p>Note that the permissions for this config file are appropriately set to 0600 (read-write for the owner, i.e. me, only).</p><h3>Set up automatic mounting</h3><p>Using Artur's instructions, I set up a user mode service to execute <code>rclone</code>, including the use of <a href="https://wiki.archlinux.org/index.php/Systemd/User#Automatic_start-up_of_systemd_user_instances">lingering</a>. Here, briefly, are the commands I used:</p><p>Create a new directory for this new user mode service:</p><pre><code>mkdir -p ~/.config/systemd/user/
-</code></pre><p>Add the <code>[Unit]</code> and <code>[Service]</code> entries as directed in the blog post, with a little modification as some of the options to <code>rclone</code> did't work for me:</p><pre><code>cat &lt;&lt;EOF &gt; ~/.config/systemd/user/rclone@.service
+</code></pre>
+<p>Note that the permissions for this config file are appropriately set to 0600 (read-write for the owner, i.e. me, only).</p>
+<h3 id="set-up-automatic-mounting">Set up automatic mounting</h3>
+<p>Using Artur's instructions, I set up a user mode service to execute <code>rclone</code>, including the use of <a href="https://wiki.archlinux.org/index.php/Systemd/User#Automatic_start-up_of_systemd_user_instances">lingering</a>. Here, briefly, are the commands I used:</p>
+<p>Create a new directory for this new user mode service:</p>
+<pre><code>mkdir -p ~/.config/systemd/user/
+</code></pre>
+<p>Add the <code>[Unit]</code> and <code>[Service]</code> entries as directed in the blog post, with a little modification as some of the options to <code>rclone</code> did't work for me:</p>
+<pre><code>cat &lt;&lt;EOF &gt; ~/.config/systemd/user/rclone@.service
 [Unit]
 Description=rclone: Remote FUSE filesystem for cloud storage config %i
 Documentation=man:rclone(1)
@@ -31,9 +613,27 @@ ExecStart= \
 [Install]
 WantedBy=default.target
 EOF
-</code></pre><p>Enable &amp; start the service:</p><pre><code>systemctl --user enable rclone@gdrive
+</code></pre>
+<p>Enable &amp; start the service:</p>
+<pre><code>systemctl --user enable rclone@gdrive
 systemctl --user start rclone@gdrive
-</code></pre><p>Set up lingering:</p><pre><code>loginctl enable-linger $USER
-</code></pre><p>And that's it. After rebooting (to test), I can see the contents of my Google Drive at <code>~/mnt/gdrive/</code>. Success!</p></main><aside class="post__aside"><div class="post__tags"></div><style>.utterances {
-  margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2020/06/08/sap-community-coding-challenge-2-contestants/"><span>←</span> <span>SAP Community Coding Challenge 2 - Contestants</span> </a><a href="/blog/posts/2020/05/26/sap-community-coding-challenge-2-update/"><span>SAP Community Coding Challenge 2 - Update</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+</code></pre>
+<p>Set up lingering:</p>
+<pre><code>loginctl enable-linger $USER
+</code></pre>
+<p>And that's it. After rebooting (to test), I can see the contents of my Google Drive at <code>~/mnt/gdrive/</code>. Success!</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2020/05/26/sap-community-coding-challenge-2-update/">SAP Community Coding Challenge 2 - Update</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2020/06/08/sap-community-coding-challenge-2-contestants/">SAP Community Coding Challenge 2 - Contestants</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2020/06/07/remote-mount-setup-on-the-raspberry-pi/` was built on 2025-09-15T15:58:49.600Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

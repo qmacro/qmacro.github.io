@@ -1,7 +1,742 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2024/01/26/exploring-codespaces-as-temporary-dev-containers/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Exploring codespaces as temporary dev containers | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Exploring codespaces as temporary dev containers"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2024/01/26/exploring-codespaces-as-temporary-dev-containers/"><meta name="description" content="Exploring codespaces as temporary dev containers 26 Jan 2024 | 5 min read Codespaces seem to be at the intersection of a number of things..."><meta property="og:description" content="Exploring codespaces as temporary dev containers 26 Jan 2024 | 5 min read Codespaces seem to be at the intersection of a number of things..."><meta name="description" content="Exploring codespaces as temporary dev containers 26 Jan 2024 | 5 min read Codespaces seem to be at the intersection of a number of things..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Exploring codespaces as temporary dev containers</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Exploring codespaces as temporary dev containers</h1><div class="post__details"><time datetime="2024-01-26">26 Jan 2024 </time><span>| </span><span>5 min read</span></div></header><main class="post__content"><p>Codespaces seem to be at the intersection of a number of things I'm interested in, including containers in general, dev containers in particular, ephemeral environments, the command line, thin clients and remote servers, SSH, the GitHub CLI, and more.</p><p>I had a task to complete this morning that involved managing some changes to a large repo on GitHub, and my Internet connection where I am right now was not conducive for cloning the repo, given its size. So I thought I'd try out doing it in a GitHub codespace, which would have much better connectivity to the rest of the Internet and to which I'd only need a thin connection for my actual remote terminal session.</p><p>While most folks will likely manage, access and use codespaces directly on the Web, or remotely via VS Code and the <a href="https://marketplace.visualstudio.com/items?itemName=GitHub.codespaces">GitHub Codespaces extension</a>, they're also available directly from the command line, i.e. you can attach to the container via SSH. And that's what I wanted to do.</p><p>I thought I'd document my exploratory journey here, mostly for my future self. The basis for the exploration was this resource: <a href="https://docs.github.com/en/codespaces/developing-in-a-codespace/using-github-codespaces-with-github-cli">Using GitHub Codespaces with GitHub CLI</a>, which describes using the GitHub CLI (<code>gh</code>), with the new command <code>codespace</code>, which has various subcommands:</p><pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> gh codespace<br>Connect to and manage codespaces<br><br>USAGE<br>  gh codespace <span class="token punctuation">[</span>flags<span class="token punctuation">]</span><br><br>AVAILABLE COMMANDS<br>  code:        Open a codespace <span class="token keyword">in</span> Visual Studio Code<br>  cp:          Copy files between <span class="token builtin class-name">local</span> and remote <span class="token function">file</span> systems<br>  create:      Create a codespace<br>  delete:      Delete codespaces<br>  edit:        Edit a codespace<br>  jupyter:     Open a codespace <span class="token keyword">in</span> JupyterLab<br>  list:        List codespaces<br>  logs:        Access codespace logs<br>  ports:       List ports <span class="token keyword">in</span> a codespace<br>  rebuild:     Rebuild a codespace<br>  ssh:         SSH into a codespace<br>  stop:        Stop a running codespace<br>  view:        View details about a codespace<br><br>INHERITED FLAGS<br>  <span class="token parameter variable">--help</span>   Show <span class="token builtin class-name">help</span> <span class="token keyword">for</span> <span class="token builtin class-name">command</span><br><br>LEARN MORE<br>  Use <span class="token variable"><span class="token variable">`</span>gh <span class="token operator">&lt;</span>command<span class="token operator">></span> <span class="token operator">&lt;</span>subcommand<span class="token operator">></span> <span class="token parameter variable">--help</span><span class="token variable">`</span></span> <span class="token keyword">for</span> <span class="token function">more</span> information about a command.<br>  Read the manual at https://cli.github.com/manual</code></pre><blockquote><p>I'm a big fan of the GitHub CLI. It has some great interactive features, so you can invoke a command, supplying little to no parameter information, and it will prompt you interactively as required. But here I wanted to be able to invoke each command completely, with values for all appropriate parameters.</p></blockquote><h2>Creating a repo</h2><p>Codespaces seem to be primarily repo specific (although it looks like they can be org-wide too), so in order to be able to create a new codespace in this experiment I first created a new repo, adding a README as I think I saw somewhere that you can't create a codespace based on a completely empty repo (which sort of makes sense):</p><pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> gh repo create --add-readme <span class="token parameter variable">--public</span> codespacetest<br>✓ Created repository qmacro/codespacetest on GitHub</code></pre><h2>Creating a codespace</h2><p>Now I can think about creating a codespace. In addition to the repo with which the codespace should be associated, I need to specify the machine type. I could of course fall back to the comfortable UI in the CLI:</p><pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> gh codespace create <span class="token parameter variable">--repo</span> qmacro/codespacetest<br>  ✓ Codespaces usage <span class="token keyword">for</span> this repository is paid <span class="token keyword">for</span> by qmacro<br>? Choose Machine Type:  <span class="token punctuation">[</span>Use arrows to move, <span class="token builtin class-name">type</span> to filter<span class="token punctuation">]</span><br><span class="token operator">></span> <span class="token number">2</span> cores, <span class="token number">8</span> GB RAM, <span class="token number">32</span> GB storage<br>  <span class="token number">4</span> cores, <span class="token number">16</span> GB RAM, <span class="token number">32</span> GB storage<br>  <span class="token number">8</span> cores, <span class="token number">32</span> GB RAM, <span class="token number">64</span> GB storage<br>  <span class="token number">16</span> cores, <span class="token number">64</span> GB RAM, <span class="token number">128</span> GB storage</code></pre><p>but I wanted to be able to use the <code>--machine</code> parameter directly. But for that I needed to know what value to specify for that parameter.</p><p>With the <a href="https://docs.github.com/en/rest/codespaces/machines?apiVersion=2022-11-28">Codespace Machines</a> section of the GitHub API, I can find this out.</p><p>Making this call (note the API path includes the repo specification, underlining that relationship I mentioned earlier):</p><pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> gh api /repos/qmacro/codespacetest/codespaces/machines</code></pre><p>returns this JSON dataset:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"machines"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"basicLinux32gb"</span><span class="token punctuation">,</span><br>      <span class="token property">"display_name"</span><span class="token operator">:</span> <span class="token string">"2 cores, 8 GB RAM, 32 GB storage"</span><span class="token punctuation">,</span><br>      <span class="token property">"operating_system"</span><span class="token operator">:</span> <span class="token string">"linux"</span><span class="token punctuation">,</span><br>      <span class="token property">"storage_in_bytes"</span><span class="token operator">:</span> <span class="token number">34359738368</span><span class="token punctuation">,</span><br>      <span class="token property">"memory_in_bytes"</span><span class="token operator">:</span> <span class="token number">8589934592</span><span class="token punctuation">,</span><br>      <span class="token property">"cpus"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span><br>      <span class="token property">"prebuild_availability"</span><span class="token operator">:</span> <span class="token null keyword">null</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"standardLinux32gb"</span><span class="token punctuation">,</span><br>      <span class="token property">"display_name"</span><span class="token operator">:</span> <span class="token string">"4 cores, 16 GB RAM, 32 GB storage"</span><span class="token punctuation">,</span><br>      <span class="token property">"operating_system"</span><span class="token operator">:</span> <span class="token string">"linux"</span><span class="token punctuation">,</span><br>      <span class="token property">"storage_in_bytes"</span><span class="token operator">:</span> <span class="token number">34359738368</span><span class="token punctuation">,</span><br>      <span class="token property">"memory_in_bytes"</span><span class="token operator">:</span> <span class="token number">17179869184</span><span class="token punctuation">,</span><br>      <span class="token property">"cpus"</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span><br>      <span class="token property">"prebuild_availability"</span><span class="token operator">:</span> <span class="token null keyword">null</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"premiumLinux"</span><span class="token punctuation">,</span><br>      <span class="token property">"display_name"</span><span class="token operator">:</span> <span class="token string">"8 cores, 32 GB RAM, 64 GB storage"</span><span class="token punctuation">,</span><br>      <span class="token property">"operating_system"</span><span class="token operator">:</span> <span class="token string">"linux"</span><span class="token punctuation">,</span><br>      <span class="token property">"storage_in_bytes"</span><span class="token operator">:</span> <span class="token number">68719476736</span><span class="token punctuation">,</span><br>      <span class="token property">"memory_in_bytes"</span><span class="token operator">:</span> <span class="token number">34359738368</span><span class="token punctuation">,</span><br>      <span class="token property">"cpus"</span><span class="token operator">:</span> <span class="token number">8</span><span class="token punctuation">,</span><br>      <span class="token property">"prebuild_availability"</span><span class="token operator">:</span> <span class="token null keyword">null</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"largePremiumLinux"</span><span class="token punctuation">,</span><br>      <span class="token property">"display_name"</span><span class="token operator">:</span> <span class="token string">"16 cores, 64 GB RAM, 128 GB storage"</span><span class="token punctuation">,</span><br>      <span class="token property">"operating_system"</span><span class="token operator">:</span> <span class="token string">"linux"</span><span class="token punctuation">,</span><br>      <span class="token property">"storage_in_bytes"</span><span class="token operator">:</span> <span class="token number">137438953472</span><span class="token punctuation">,</span><br>      <span class="token property">"memory_in_bytes"</span><span class="token operator">:</span> <span class="token number">68719476736</span><span class="token punctuation">,</span><br>      <span class="token property">"cpus"</span><span class="token operator">:</span> <span class="token number">16</span><span class="token punctuation">,</span><br>      <span class="token property">"prebuild_availability"</span><span class="token operator">:</span> <span class="token null keyword">null</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token property">"total_count"</span><span class="token operator">:</span> <span class="token number">4</span><br><span class="token punctuation">}</span></code></pre><p>I decided on a minimal footprint codespace with <code>basicLinux32gb</code> and also specified that it should be deleted soon (1h) after being shut down, and it was created in a matter of seconds:</p><pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> gh codespace create <span class="token punctuation">\</span><br>  <span class="token parameter variable">--repo</span> qmacro/codespacetest <span class="token punctuation">\</span><br>  <span class="token parameter variable">--machine</span> basicLinux32gb <span class="token punctuation">\</span><br>  --retention-period 1h<br>  ✓ Codespaces usage <span class="token keyword">for</span> this repository is paid <span class="token keyword">for</span> by qmacro<br>potential-space-pancake-g4x4j75vg2vr42</code></pre><p>And there it is:</p><pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> gh codespace list<br>NAME             <span class="token environment constant">DISPLAY</span> NAME  REPOSITORY    BRANCH  STATE      CREATED AT<br>potential-sp<span class="token punctuation">..</span>.  potential<span class="token punctuation">..</span>.  qmacro/co<span class="token punctuation">..</span>.  main    Available  about <span class="token number">4</span> m<span class="token punctuation">..</span>.</code></pre><h3>A note on default container image definitions</h3><p>A codespace is essentially a dev container, and there's a default image from which such dev containers are instantiated when a codespace is summoned into being. It's possible to specify a different definition via a custom <code>devcontainer.json</code> definition to which you can point via the <code>--devcontainer-path</code> option for the <code>gh codespace create</code> invocation, but I didn't do that here.</p><p>One of the reasons I didn't do that is I wanted to take the happy and simple path. Another reason though was what I read in the <a href="https://docs.github.com/en/codespaces/developing-in-a-codespace/using-github-codespaces-with-github-cli#ssh-into-a-codespace">SSH into a codespace</a> section of the aforementioned document (bold emphasis mine):</p><blockquote><p>Note: The codespace you connect to must be running an SSH server. <strong>The default dev container image includes an SSH server, which is started automatically</strong>. If your codespaces are not created from the default image, you can install and start an SSH server by adding the following to the <code>features</code> object in your <code>devcontainer.json</code> file:</p><pre class="language-json"><code class="language-json"><span class="token property">"features"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token comment">// ...</span><br>    <span class="token property">"ghcr.io/devcontainers/features/sshd:1"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>        <span class="token property">"version"</span><span class="token operator">:</span> <span class="token string">"latest"</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token comment">// ...</span><br><span class="token punctuation">}</span></code></pre></blockquote><h2>Connecting to the codespace</h2><p>OK, now to connect, using the <code>ssh</code> subcommand of <code>gh</code>'s <code>codespace</code> command.</p><p>First, what's the full name of the codespace?</p><pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> gh codespace list <span class="token parameter variable">--json</span> name<br><span class="token punctuation">[</span><br>  <span class="token punctuation">{</span><br>    <span class="token string">"name"</span><span class="token builtin class-name">:</span> <span class="token string">"potential-space-pancake-g4x4j75vg2vr42"</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">]</span></code></pre><p>OK, let me save that for future reference in this shell session ...</p><pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> <span class="token builtin class-name">export</span> <span class="token assign-left variable">CODESPACE</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span>gh codespace list <span class="token parameter variable">--json</span> name <span class="token parameter variable">--jq</span> first.name<span class="token variable">)</span></span></code></pre><p>... and now connect:</p><pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> gh codespace <span class="token function">ssh</span> <span class="token parameter variable">--codespace</span> <span class="token variable">$CODESPACE</span><br>Welcome to Ubuntu <span class="token number">20.04</span>.6 LTS <span class="token punctuation">(</span>GNU/Linux <span class="token number">6.2</span>.0-1018-azure x86_64<span class="token punctuation">)</span><br><br> * Documentation:  https://help.ubuntu.com<br> * Management:     https://landscape.canonical.com<br> * Support:        https://ubuntu.com/advantage<br><br>The programs included with the Ubuntu system are <span class="token function">free</span> software<span class="token punctuation">;</span><br>the exact distribution terms <span class="token keyword">for</span> each program are described <span class="token keyword">in</span> the<br>individual files <span class="token keyword">in</span> /usr/share/doc/*/copyright.<br><br>Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by<br>applicable law.<br><br>@qmacro ➜ /workspaces/codespacetest <span class="token punctuation">(</span>main<span class="token punctuation">)</span> $</code></pre><p>Well that was easy!</p><h2>Exploring the codespace</h2><p>I feel immediately at home, for a number of reasons. First, the basics:</p><pre class="language-shell"><code class="language-shell">@qmacro ➜ /workspaces/codespacetest <span class="token punctuation">(</span>main<span class="token punctuation">)</span> $ <span class="token builtin class-name">echo</span> <span class="token environment constant">$SHELL</span><span class="token punctuation">;</span> <span class="token function">uname</span> -a<span class="token punctuation">;</span> <span class="token function">cat</span> /etc/lsb-release<br>/bin/bash<br>Linux codespaces-30d4d8 <span class="token number">6.2</span>.0-1018-azure <span class="token comment">#18~22.04.1-Ubuntu SMP Tue Nov 21 19:25:02 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux</span><br><span class="token assign-left variable">DISTRIB_ID</span><span class="token operator">=</span>Ubuntu<br><span class="token assign-left variable">DISTRIB_RELEASE</span><span class="token operator">=</span><span class="token number">20.04</span><br><span class="token assign-left variable">DISTRIB_CODENAME</span><span class="token operator">=</span>focal<br><span class="token assign-left variable">DISTRIB_DESCRIPTION</span><span class="token operator">=</span><span class="token string">"Ubuntu 20.04.6 LTS"</span><br>@qmacro ➜ /workspaces/codespacetest <span class="token punctuation">(</span>main<span class="token punctuation">)</span> $</code></pre><p>Second, the repo is available in a familiar place, in a <code>/workspaces/</code> directory, following the pattern we see in VS Code when opening a container, for example.</p><p>Third, there are familiar and useful tools that I use every day:</p><pre class="language-shell"><code class="language-shell">@qmacro ➜ /workspaces/codespacetest <span class="token punctuation">(</span>main<span class="token punctuation">)</span> $ <span class="token builtin class-name">type</span> <span class="token function">vi</span> gh jq <span class="token function">git</span> <span class="token function">curl</span><br><span class="token function">vi</span> is /usr/bin/vi<br>gh is /usr/bin/gh<br>jq is /usr/bin/jq<br><span class="token function">git</span> is /usr/local/bin/git<br><span class="token function">curl</span> is /usr/bin/curl</code></pre><p>So the container (err, codespace) has <code>gh</code>? I wonder if ...</p><pre class="language-shell"><code class="language-shell">@qmacro ➜ /workspaces/codespacetest <span class="token punctuation">(</span>main<span class="token punctuation">)</span> $ <span class="token builtin class-name">echo</span> <span class="token variable">$GITHUB_TOKEN</span><br>ghu_gVPiEjCkhwDgr<span class="token punctuation">[</span><span class="token punctuation">..</span>.<span class="token punctuation">]</span></code></pre><p>Yes!</p><p>Nice - looks like it's time to explore! I can issue a <code>gh codespace stop</code> (and <code>gh codespace delete</code> if I don't want to wait that 1h I specified earlier) when I'm done.</p><h2>Further reading</h2><p>You may also be interested in <a href="/blog/posts/2024/01/15/developing-cap-in-containers-three-ways/">Developing CAP in containers - three ways</a> and also the general <a href="/tags/containers">containers tag</a>. And of course, you should visit <a href="https://containers.dev">containers.dev</a> for much more on this area.</p><hr><p>A note on capitalisation of &quot;codespace&quot;. While the product name is &quot;GitHub Codespaces&quot; where the word is plural and capitalised, GitHub documentation refers to codespaces themselves with a lowercase &quot;c&quot;, so I have tried to do that too here.</p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/devcontainer/">#devcontainer</a> <a href="/tags/codespaces/">#codespaces</a> <a href="/tags/containers/">#containers</a> <a href="/tags/gh/">#gh</a> <a href="/tags/github/">#github</a> <a href="/tags/cli/">#cli</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2024/01/31/ghost-cratch-fitted/"><span>←</span> <span>Ghost cratch fitted</span> </a><a href="/blog/posts/2024/01/22/accuracy-and-precision-in-language/"><span>Accuracy and precision in language</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="exploring-codespaces-as-temporary-dev-containers">Exploring codespaces as temporary dev containers</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2024-01-26">26 January 2024</time></li>
+	<li><a href="/tags/devcontainer/" class="post-tag">devcontainer</a>, </li>
+	<li><a href="/tags/codespaces/" class="post-tag">codespaces</a>, </li>
+	<li><a href="/tags/containers/" class="post-tag">containers</a>, </li>
+	<li><a href="/tags/gh/" class="post-tag">gh</a>, </li>
+	<li><a href="/tags/github/" class="post-tag">github</a>, </li>
+	<li><a href="/tags/cli/" class="post-tag">cli</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>Codespaces seem to be at the intersection of a number of things I'm interested in, including containers in general, dev containers in particular, ephemeral environments, the command line, thin clients and remote servers, SSH, the GitHub CLI, and more.</p>
+<p>I had a task to complete this morning that involved managing some changes to a large repo on GitHub, and my Internet connection where I am right now was not conducive for cloning the repo, given its size. So I thought I'd try out doing it in a GitHub codespace, which would have much better connectivity to the rest of the Internet and to which I'd only need a thin connection for my actual remote terminal session.</p>
+<p>While most folks will likely manage, access and use codespaces directly on the Web, or remotely via VS Code and the <a href="https://marketplace.visualstudio.com/items?itemName=GitHub.codespaces">GitHub Codespaces extension</a>, they're also available directly from the command line, i.e. you can attach to the container via SSH. And that's what I wanted to do.</p>
+<p>I thought I'd document my exploratory journey here, mostly for my future self. The basis for the exploration was this resource: <a href="https://docs.github.com/en/codespaces/developing-in-a-codespace/using-github-codespaces-with-github-cli">Using GitHub Codespaces with GitHub CLI</a>, which describes using the GitHub CLI (<code>gh</code>), with the new command <code>codespace</code>, which has various subcommands:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> gh codespace
+Connect to and manage codespaces
+
+USAGE
+  gh codespace <span class="token punctuation">[</span>flags<span class="token punctuation">]</span>
+
+AVAILABLE COMMANDS
+  code:        Open a codespace <span class="token keyword">in</span> Visual Studio Code
+  cp:          Copy files between <span class="token builtin class-name">local</span> and remote <span class="token function">file</span> systems
+  create:      Create a codespace
+  delete:      Delete codespaces
+  edit:        Edit a codespace
+  jupyter:     Open a codespace <span class="token keyword">in</span> JupyterLab
+  list:        List codespaces
+  logs:        Access codespace logs
+  ports:       List ports <span class="token keyword">in</span> a codespace
+  rebuild:     Rebuild a codespace
+  ssh:         SSH into a codespace
+  stop:        Stop a running codespace
+  view:        View details about a codespace
+
+INHERITED FLAGS
+  <span class="token parameter variable">--help</span>   Show <span class="token builtin class-name">help</span> <span class="token keyword">for</span> <span class="token builtin class-name">command</span>
+
+LEARN MORE
+  Use <span class="token variable"><span class="token variable">`</span>gh <span class="token operator">&lt;</span>command<span class="token operator">></span> <span class="token operator">&lt;</span>subcommand<span class="token operator">></span> <span class="token parameter variable">--help</span><span class="token variable">`</span></span> <span class="token keyword">for</span> <span class="token function">more</span> information about a command.
+  Read the manual at https://cli.github.com/manual</code></pre>
+<blockquote>
+<p>I'm a big fan of the GitHub CLI. It has some great interactive features, so you can invoke a command, supplying little to no parameter information, and it will prompt you interactively as required. But here I wanted to be able to invoke each command completely, with values for all appropriate parameters.</p>
+</blockquote>
+<h2 id="creating-a-repo">Creating a repo</h2>
+<p>Codespaces seem to be primarily repo specific (although it looks like they can be org-wide too), so in order to be able to create a new codespace in this experiment I first created a new repo, adding a README as I think I saw somewhere that you can't create a codespace based on a completely empty repo (which sort of makes sense):</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> gh repo create --add-readme <span class="token parameter variable">--public</span> codespacetest
+✓ Created repository qmacro/codespacetest on GitHub</code></pre>
+<h2 id="creating-a-codespace">Creating a codespace</h2>
+<p>Now I can think about creating a codespace. In addition to the repo with which the codespace should be associated, I need to specify the machine type. I could of course fall back to the comfortable UI in the CLI:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> gh codespace create <span class="token parameter variable">--repo</span> qmacro/codespacetest
+  ✓ Codespaces usage <span class="token keyword">for</span> this repository is paid <span class="token keyword">for</span> by qmacro
+? Choose Machine Type:  <span class="token punctuation">[</span>Use arrows to move, <span class="token builtin class-name">type</span> to filter<span class="token punctuation">]</span>
+<span class="token operator">></span> <span class="token number">2</span> cores, <span class="token number">8</span> GB RAM, <span class="token number">32</span> GB storage
+  <span class="token number">4</span> cores, <span class="token number">16</span> GB RAM, <span class="token number">32</span> GB storage
+  <span class="token number">8</span> cores, <span class="token number">32</span> GB RAM, <span class="token number">64</span> GB storage
+  <span class="token number">16</span> cores, <span class="token number">64</span> GB RAM, <span class="token number">128</span> GB storage</code></pre>
+<p>but I wanted to be able to use the <code>--machine</code> parameter directly. But for that I needed to know what value to specify for that parameter.</p>
+<p>With the <a href="https://docs.github.com/en/rest/codespaces/machines?apiVersion=2022-11-28">Codespace Machines</a> section of the GitHub API, I can find this out.</p>
+<p>Making this call (note the API path includes the repo specification, underlining that relationship I mentioned earlier):</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> gh api /repos/qmacro/codespacetest/codespaces/machines</code></pre>
+<p>returns this JSON dataset:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"machines"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"basicLinux32gb"</span><span class="token punctuation">,</span>
+      <span class="token property">"display_name"</span><span class="token operator">:</span> <span class="token string">"2 cores, 8 GB RAM, 32 GB storage"</span><span class="token punctuation">,</span>
+      <span class="token property">"operating_system"</span><span class="token operator">:</span> <span class="token string">"linux"</span><span class="token punctuation">,</span>
+      <span class="token property">"storage_in_bytes"</span><span class="token operator">:</span> <span class="token number">34359738368</span><span class="token punctuation">,</span>
+      <span class="token property">"memory_in_bytes"</span><span class="token operator">:</span> <span class="token number">8589934592</span><span class="token punctuation">,</span>
+      <span class="token property">"cpus"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+      <span class="token property">"prebuild_availability"</span><span class="token operator">:</span> <span class="token null keyword">null</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"standardLinux32gb"</span><span class="token punctuation">,</span>
+      <span class="token property">"display_name"</span><span class="token operator">:</span> <span class="token string">"4 cores, 16 GB RAM, 32 GB storage"</span><span class="token punctuation">,</span>
+      <span class="token property">"operating_system"</span><span class="token operator">:</span> <span class="token string">"linux"</span><span class="token punctuation">,</span>
+      <span class="token property">"storage_in_bytes"</span><span class="token operator">:</span> <span class="token number">34359738368</span><span class="token punctuation">,</span>
+      <span class="token property">"memory_in_bytes"</span><span class="token operator">:</span> <span class="token number">17179869184</span><span class="token punctuation">,</span>
+      <span class="token property">"cpus"</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
+      <span class="token property">"prebuild_availability"</span><span class="token operator">:</span> <span class="token null keyword">null</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"premiumLinux"</span><span class="token punctuation">,</span>
+      <span class="token property">"display_name"</span><span class="token operator">:</span> <span class="token string">"8 cores, 32 GB RAM, 64 GB storage"</span><span class="token punctuation">,</span>
+      <span class="token property">"operating_system"</span><span class="token operator">:</span> <span class="token string">"linux"</span><span class="token punctuation">,</span>
+      <span class="token property">"storage_in_bytes"</span><span class="token operator">:</span> <span class="token number">68719476736</span><span class="token punctuation">,</span>
+      <span class="token property">"memory_in_bytes"</span><span class="token operator">:</span> <span class="token number">34359738368</span><span class="token punctuation">,</span>
+      <span class="token property">"cpus"</span><span class="token operator">:</span> <span class="token number">8</span><span class="token punctuation">,</span>
+      <span class="token property">"prebuild_availability"</span><span class="token operator">:</span> <span class="token null keyword">null</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"largePremiumLinux"</span><span class="token punctuation">,</span>
+      <span class="token property">"display_name"</span><span class="token operator">:</span> <span class="token string">"16 cores, 64 GB RAM, 128 GB storage"</span><span class="token punctuation">,</span>
+      <span class="token property">"operating_system"</span><span class="token operator">:</span> <span class="token string">"linux"</span><span class="token punctuation">,</span>
+      <span class="token property">"storage_in_bytes"</span><span class="token operator">:</span> <span class="token number">137438953472</span><span class="token punctuation">,</span>
+      <span class="token property">"memory_in_bytes"</span><span class="token operator">:</span> <span class="token number">68719476736</span><span class="token punctuation">,</span>
+      <span class="token property">"cpus"</span><span class="token operator">:</span> <span class="token number">16</span><span class="token punctuation">,</span>
+      <span class="token property">"prebuild_availability"</span><span class="token operator">:</span> <span class="token null keyword">null</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">"total_count"</span><span class="token operator">:</span> <span class="token number">4</span>
+<span class="token punctuation">}</span></code></pre>
+<p>I decided on a minimal footprint codespace with <code>basicLinux32gb</code> and also specified that it should be deleted soon (1h) after being shut down, and it was created in a matter of seconds:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> gh codespace create <span class="token punctuation">\</span>
+  <span class="token parameter variable">--repo</span> qmacro/codespacetest <span class="token punctuation">\</span>
+  <span class="token parameter variable">--machine</span> basicLinux32gb <span class="token punctuation">\</span>
+  --retention-period 1h
+  ✓ Codespaces usage <span class="token keyword">for</span> this repository is paid <span class="token keyword">for</span> by qmacro
+potential-space-pancake-g4x4j75vg2vr42</code></pre>
+<p>And there it is:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> gh codespace list
+NAME             <span class="token environment constant">DISPLAY</span> NAME  REPOSITORY    BRANCH  STATE      CREATED AT
+potential-sp<span class="token punctuation">..</span>.  potential<span class="token punctuation">..</span>.  qmacro/co<span class="token punctuation">..</span>.  main    Available  about <span class="token number">4</span> m<span class="token punctuation">..</span>.</code></pre>
+<h3 id="a-note-on-default-container-image-definitions">A note on default container image definitions</h3>
+<p>A codespace is essentially a dev container, and there's a default image from which such dev containers are instantiated when a codespace is summoned into being. It's possible to specify a different definition via a custom <code>devcontainer.json</code> definition to which you can point via the <code>--devcontainer-path</code> option for the <code>gh codespace create</code> invocation, but I didn't do that here.</p>
+<p>One of the reasons I didn't do that is I wanted to take the happy and simple path. Another reason though was what I read in the <a href="https://docs.github.com/en/codespaces/developing-in-a-codespace/using-github-codespaces-with-github-cli#ssh-into-a-codespace">SSH into a codespace</a> section of the aforementioned document (bold emphasis mine):</p>
+<blockquote>
+<p>Note: The codespace you connect to must be running an SSH server. <strong>The default dev container image includes an SSH server, which is started automatically</strong>. If your codespaces are not created from the default image, you can install and start an SSH server by adding the following to the <code>features</code> object in your <code>devcontainer.json</code> file:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token property">"features"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ...</span>
+    <span class="token property">"ghcr.io/devcontainers/features/sshd:1"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"version"</span><span class="token operator">:</span> <span class="token string">"latest"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token comment">// ...</span>
+<span class="token punctuation">}</span></code></pre>
+</blockquote>
+<h2 id="connecting-to-the-codespace">Connecting to the codespace</h2>
+<p>OK, now to connect, using the <code>ssh</code> subcommand of <code>gh</code>'s <code>codespace</code> command.</p>
+<p>First, what's the full name of the codespace?</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> gh codespace list <span class="token parameter variable">--json</span> name
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token string">"name"</span><span class="token builtin class-name">:</span> <span class="token string">"potential-space-pancake-g4x4j75vg2vr42"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>OK, let me save that for future reference in this shell session ...</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> <span class="token builtin class-name">export</span> <span class="token assign-left variable">CODESPACE</span><span class="token operator">=</span><span class="token variable"><span class="token variable">$(</span>gh codespace list <span class="token parameter variable">--json</span> name <span class="token parameter variable">--jq</span> first.name<span class="token variable">)</span></span></code></pre>
+<p>... and now connect:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> gh codespace <span class="token function">ssh</span> <span class="token parameter variable">--codespace</span> <span class="token variable">$CODESPACE</span>
+Welcome to Ubuntu <span class="token number">20.04</span>.6 LTS <span class="token punctuation">(</span>GNU/Linux <span class="token number">6.2</span>.0-1018-azure x86_64<span class="token punctuation">)</span>
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+The programs included with the Ubuntu system are <span class="token function">free</span> software<span class="token punctuation">;</span>
+the exact distribution terms <span class="token keyword">for</span> each program are described <span class="token keyword">in</span> the
+individual files <span class="token keyword">in</span> /usr/share/doc/*/copyright.
+
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+@qmacro ➜ /workspaces/codespacetest <span class="token punctuation">(</span>main<span class="token punctuation">)</span> $</code></pre>
+<p>Well that was easy!</p>
+<h2 id="exploring-the-codespace">Exploring the codespace</h2>
+<p>I feel immediately at home, for a number of reasons. First, the basics:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">@qmacro ➜ /workspaces/codespacetest <span class="token punctuation">(</span>main<span class="token punctuation">)</span> $ <span class="token builtin class-name">echo</span> <span class="token environment constant">$SHELL</span><span class="token punctuation">;</span> <span class="token function">uname</span> -a<span class="token punctuation">;</span> <span class="token function">cat</span> /etc/lsb-release
+/bin/bash
+Linux codespaces-30d4d8 <span class="token number">6.2</span>.0-1018-azure <span class="token comment">#18~22.04.1-Ubuntu SMP Tue Nov 21 19:25:02 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux</span>
+<span class="token assign-left variable">DISTRIB_ID</span><span class="token operator">=</span>Ubuntu
+<span class="token assign-left variable">DISTRIB_RELEASE</span><span class="token operator">=</span><span class="token number">20.04</span>
+<span class="token assign-left variable">DISTRIB_CODENAME</span><span class="token operator">=</span>focal
+<span class="token assign-left variable">DISTRIB_DESCRIPTION</span><span class="token operator">=</span><span class="token string">"Ubuntu 20.04.6 LTS"</span>
+@qmacro ➜ /workspaces/codespacetest <span class="token punctuation">(</span>main<span class="token punctuation">)</span> $</code></pre>
+<p>Second, the repo is available in a familiar place, in a <code>/workspaces/</code> directory, following the pattern we see in VS Code when opening a container, for example.</p>
+<p>Third, there are familiar and useful tools that I use every day:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">@qmacro ➜ /workspaces/codespacetest <span class="token punctuation">(</span>main<span class="token punctuation">)</span> $ <span class="token builtin class-name">type</span> <span class="token function">vi</span> gh jq <span class="token function">git</span> <span class="token function">curl</span>
+<span class="token function">vi</span> is /usr/bin/vi
+gh is /usr/bin/gh
+jq is /usr/bin/jq
+<span class="token function">git</span> is /usr/local/bin/git
+<span class="token function">curl</span> is /usr/bin/curl</code></pre>
+<p>So the container (err, codespace) has <code>gh</code>? I wonder if ...</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">@qmacro ➜ /workspaces/codespacetest <span class="token punctuation">(</span>main<span class="token punctuation">)</span> $ <span class="token builtin class-name">echo</span> <span class="token variable">$GITHUB_TOKEN</span>
+ghu_gVPiEjCkhwDgr<span class="token punctuation">[</span><span class="token punctuation">..</span>.<span class="token punctuation">]</span></code></pre>
+<p>Yes!</p>
+<p>Nice - looks like it's time to explore! I can issue a <code>gh codespace stop</code> (and <code>gh codespace delete</code> if I don't want to wait that 1h I specified earlier) when I'm done.</p>
+<h2 id="further-reading">Further reading</h2>
+<p>You may also be interested in <a href="/blog/posts/2024/01/15/developing-cap-in-containers-three-ways/">Developing CAP in containers - three ways</a> and also the general <a href="/tags/containers">containers tag</a>. And of course, you should visit <a href="https://containers.dev">containers.dev</a> for much more on this area.</p>
+<hr>
+<p>A note on capitalisation of &quot;codespace&quot;. While the product name is &quot;GitHub Codespaces&quot; where the word is plural and capitalised, GitHub documentation refers to codespaces themselves with a lowercase &quot;c&quot;, so I have tried to do that too here.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2024/01/22/accuracy-and-precision-in-language/">Accuracy and precision in language</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2024/01/31/ghost-cratch-fitted/">Ghost cratch fitted</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2024/01/26/exploring-codespaces-as-temporary-dev-containers/` was built on 2025-09-15T15:58:49.621Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

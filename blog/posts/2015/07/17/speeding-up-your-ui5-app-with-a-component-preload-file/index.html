@@ -1,7 +1,637 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2015/07/17/speeding-up-your-ui5-app-with-a-component-preload-file/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Speeding up your UI5 app with a Component preload file | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Speeding up your UI5 app with a Component preload file"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2015/07/17/speeding-up-your-ui5-app-with-a-component-preload-file/"><meta name="description" content="Speeding up your UI5 app with a Component preload file 17 Jul 2015 | 4 min read 30 Days of UI5 — Day 14 by John Murray In this post we’ll be..."><meta property="og:description" content="Speeding up your UI5 app with a Component preload file 17 Jul 2015 | 4 min read 30 Days of UI5 — Day 14 by John Murray In this post we’ll be..."><meta name="description" content="Speeding up your UI5 app with a Component preload file 17 Jul 2015 | 4 min read 30 Days of UI5 — Day 14 by John Murray In this post we’ll be..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Speeding up your UI5 app with a Component preload file</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Speeding up your UI5 app with a Component preload file</h1><div class="post__details"><time datetime="2015-07-17">17 Jul 2015 </time><span>| </span><span>4 min read</span></div></header><main class="post__content"><p><strong><a href="/blog/posts/2015/07/04/30-days-of-ui5/">30 Days of UI5</a> — Day 14 by <a href="http://jmurray.me/">John Murray</a></strong></p><p>In this post we’ll be looking at how you can speed up the load times of your UI5 applications by using a Component preload file. Those of you who are familiar with SAP Fiori applications will probably already know what a Component preload file is, however those of you who aren’t will almost definitely have all seen a reference to this file before. This file is referenced in an error message that appears in the console whenever you load a UI5 app, which is lacking a Component preload file.</p><p><img src="/images/2018/02/Screen-Shot-2015-07-14-at-20.54.47-624x31.png" alt="Chrome preload error"></p><p><strong>So just what is this preload file and why should I care?</strong></p><p>The preload file is essentially all of the files which make up your application, so that’s the Component itself, Controllers, Views, Fragments and so on, all compressed and inserted into one file, the preload file. If this file exists then UI5 will only load that file, and it won’t load of all of the other various files which it ordinarily would have done. The error we saw earlier is caused because UI5 looks for a preload file early in the execution flow, but of course did not find one, and so carried on loading all of the files individually.</p><p>Now that we’ve cleared up what the file actually is, and why that error appears, just why should exactly should we worry about it? After all we’ve ignored that error up until now and all our apps have worked just fine. Well, the reason we should care is that it dramatically decreases page load time. This is due to the app only having to make one call to get the preload file, rather than all of the individual calls for each file, but also because in the preload file the code is “minified”, which means the file size is also very small relative to the full size individual files. This is especially important when developing UI5 applications which are to be used over a mobile data connection, where size has a very large impact on initial load performance. As an anecdotal example, on the simple UI5 app which I have just created a preload file for my initial load time went from 8-9 seconds down to 3-4 seconds, which is tremendous improvement!</p><p><strong>Sounds great! So how can I make a preload file for my UI5 app?</strong></p><p>For this next section you will need to have installed on your machine <a href="https://nodejs.org/">NodeJS</a>, <a href="https://www.npmjs.com/">npm</a> and <a href="http://gruntjs.com/">Grunt</a>. If you don’t know how to install and use these things then do <a href="http://twitter.com/johnbmurray">reach out to me on Twitter</a>.</p><p>After you have all of the above installed, you’ll need to create a <code>package.json</code> file in your UI5 app’s root directory. Open the file up and paste in the contents below and don’t forget to edit them accordingly:</p><pre class="language-javascript"><code class="language-javascript"><span class="token punctuation">{</span><br>  <span class="token string-property property">"name"</span><span class="token operator">:</span> <span class="token string">"barcode-test"</span><span class="token punctuation">,</span><br>  <span class="token string-property property">"version"</span><span class="token operator">:</span> <span class="token string">"0.0.1"</span><span class="token punctuation">,</span><br>  <span class="token string-property property">"description"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span><br>  <span class="token string-property property">"main"</span><span class="token operator">:</span> <span class="token string">"index.html"</span><span class="token punctuation">,</span><br>  <span class="token string-property property">"author"</span><span class="token operator">:</span> <span class="token string">"John Murray"</span><span class="token punctuation">,</span><br>  <span class="token string-property property">"license"</span><span class="token operator">:</span> <span class="token string">"Apache License, Version 2.0"</span><span class="token punctuation">,</span><br>  <span class="token string-property property">"devDependencies"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token string-property property">"grunt"</span><span class="token operator">:</span> <span class="token string">"^0.4.5"</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span></code></pre><p>After creating and saving this file, install the <a href="https://github.com/SAP/grunt-openui5">Grunt OpenUI5 tools</a> which are made by the UI5 team at SAP. To install these tools open a terminal session in your UI5 root directory and run this command ‘npm install grunt-openui5 –save-dev’. This will download and install the tools, and also add them to the “devDependencies” section of your ‘package.json’ file.</p><p>Next, again in the UI5 app root directory, create a file called ‘Gruntfile.js’. Into this file copy and paste the contents below, and we’ll go through what it all means in a moment.</p><pre class="language-javascript"><code class="language-javascript">module<span class="token punctuation">.</span><span class="token function-variable function">exports</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">grunt</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br><br>  <span class="token comment">// Project configuration.</span><br>  grunt<span class="token punctuation">.</span><span class="token function">initConfig</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>    <span class="token literal-property property">pkg</span><span class="token operator">:</span> grunt<span class="token punctuation">.</span>file<span class="token punctuation">.</span><span class="token function">readJSON</span><span class="token punctuation">(</span><span class="token string">'package.json'</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">openui5_preload</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token literal-property property">component</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>        <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>          <span class="token literal-property property">resources</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>            <span class="token literal-property property">cwd</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span><br>            <span class="token literal-property property">prefix</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span><br>            <span class="token literal-property property">src</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>              <span class="token string">'webapp/**/*.js'</span><span class="token punctuation">,</span><br>              <span class="token string">'webapp/**/*.fragment.html'</span><span class="token punctuation">,</span><br>              <span class="token string">'webapp/**/*.fragment.json'</span><span class="token punctuation">,</span><br>              <span class="token string">'webapp/**/*.fragment.xml'</span><span class="token punctuation">,</span><br>              <span class="token string">'webapp/**/*.view.html'</span><span class="token punctuation">,</span><br>              <span class="token string">'webapp/**/*.view.json'</span><span class="token punctuation">,</span><br>              <span class="token string">'webapp/**/*.view.xml'</span><span class="token punctuation">,</span><br>              <span class="token string">'webapp/**/*.properties'</span><br>            <span class="token punctuation">]</span><br>          <span class="token punctuation">}</span><span class="token punctuation">,</span><br>          <span class="token literal-property property">dest</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span><br>          <span class="token literal-property property">compress</span><span class="token operator">:</span> <span class="token boolean">true</span><br>        <span class="token punctuation">}</span><span class="token punctuation">,</span><br>        <span class="token literal-property property">components</span><span class="token operator">:</span> <span class="token boolean">true</span><br>      <span class="token punctuation">}</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br>  grunt<span class="token punctuation">.</span><span class="token function">loadNpmTasks</span><span class="token punctuation">(</span><span class="token string">'grunt-openui5'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><br><br><span class="token punctuation">}</span></code></pre><p>This is quite a simple example but it will suffice in most use cases. What we are doing here first of all is reading in the ‘package.json’ file created earlier which provides the dependency list. Then we are setting the configuration options for ‘openui5_preload’ which is the specific tool we are going to be using from the OpenUI5 toolset.</p><ul><li>The ‘cwd’ parameter allows you to provide a base directory for finding the files and the ‘prefix’ parameter lets you prefix all files with a path of your choosing; in this instance we are not using either of these parameters so we are leaving them blank.</li><li>The ‘src’ parameter lets you provide an array of paths, which it will use to try and match files in your directory and then for those matches it will minify and add them to the preload. I have all of my UI5 application files within a subdirectory called ‘webapp’ which is why my paths all begin with ‘webapp’. I have all my UI5 files located in this directory because I can then keep all of my other files and folders such as ‘node_modules’, PhoneGap config files, IDE folders, etc back in the root directory. I do this because it allows me to use this simple “get everything” approach you see above in the ‘src’ without worrying about accidentally including non-UI5 app files.</li><li>The ‘dest’ parameter specifies the path to the destination you wish to save the preload file. In this case we just want to save it in the same place as the <code>Component.js</code> file and therefore can leave it blank.</li><li>The ‘compress’ parameter sets whether or not you wish to minify the files as well as add them to the preload file. I would personally recommend always setting this to ‘true’ unless you have a good reason not to.</li><li>The ‘components’ parameter here with a value of ‘true’ sets the tool to automatically find all components and create a preload for each.</li></ul><p>Finally, we load the ‘grunt-openui5′ toolkit from the plugin as previously installed and specified in ‘package.json’.</p><p><em>For the full documentation and parameter list I’d recommend looking at the <a href="https://github.com/SAP/grunt-openui5">Grunt OpenUI5 tools</a> GitHub page.</em></p><p>That’s all the configuration set up, now it’s time to generate our preload file! Fire up a terminal session in the same directory as your ‘Gruntfile.js’ and run the following command ‘grunt openui5_preload’ and you should see the following output along with a ‘Component-preload.js’ file alongside your ‘Component.js’ file.</p><p><img src="/images/2018/02/Screen-Shot-2015-07-15-at-00.48.10-624x88.png" alt="preload generation output"></p><p><strong>Final thoughts</strong></p><p>Congratulations, you’ve just made your first preload file and are now well on the way to creating even better apps with UI5!</p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/grunt/">#grunt</a> <a href="/tags/openui5/">#openui5</a> <a href="/tags/performance/">#performance</a> <a href="/tags/preload/">#preload</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2015/07/18/the-ui5-support-tool-help-yourself!/"><span>←</span> <span>The UI5 Support Tool - Help Yourself!</span> </a><a href="/blog/posts/2015/07/16/multi-language-support-out-of-the-box-ui5&#39;s-pedigree/"><span>Multi language support out of the box - UI5&#39;s pedigree</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="speeding-up-your-ui5-app-with-a-component-preload-file">Speeding up your UI5 app with a Component preload file</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2015-07-17">17 July 2015</time></li>
+	<li><a href="/tags/grunt/" class="post-tag">grunt</a>, </li>
+	<li><a href="/tags/openui5/" class="post-tag">openui5</a>, </li>
+	<li><a href="/tags/performance/" class="post-tag">performance</a>, </li>
+	<li><a href="/tags/preload/" class="post-tag">preload</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p><strong><a href="/blog/posts/2015/07/04/30-days-of-ui5/">30 Days of UI5</a> — Day 14 by <a href="http://jmurray.me/">John Murray</a></strong></p>
+<p>In this post we’ll be looking at how you can speed up the load times of your UI5 applications by using a Component preload file. Those of you who are familiar with SAP Fiori applications will probably already know what a Component preload file is, however those of you who aren’t will almost definitely have all seen a reference to this file before. This file is referenced in an error message that appears in the console whenever you load a UI5 app, which is lacking a Component preload file.</p>
+<p><img src="/images/2018/02/Screen-Shot-2015-07-14-at-20.54.47-624x31.png" alt="Chrome preload error"></p>
+<p><strong>So just what is this preload file and why should I care?</strong></p>
+<p>The preload file is essentially all of the files which make up your application, so that’s the Component itself, Controllers, Views, Fragments and so on, all compressed and inserted into one file, the preload file. If this file exists then UI5 will only load that file, and it won’t load of all of the other various files which it ordinarily would have done. The error we saw earlier is caused because UI5 looks for a preload file early in the execution flow, but of course did not find one, and so carried on loading all of the files individually.</p>
+<p>Now that we’ve cleared up what the file actually is, and why that error appears, just why should exactly should we worry about it? After all we’ve ignored that error up until now and all our apps have worked just fine. Well, the reason we should care is that it dramatically decreases page load time. This is due to the app only having to make one call to get the preload file, rather than all of the individual calls for each file, but also because in the preload file the code is “minified”, which means the file size is also very small relative to the full size individual files. This is especially important when developing UI5 applications which are to be used over a mobile data connection, where size has a very large impact on initial load performance. As an anecdotal example, on the simple UI5 app which I have just created a preload file for my initial load time went from 8-9 seconds down to 3-4 seconds, which is tremendous improvement!</p>
+<p><strong>Sounds great! So how can I make a preload file for my UI5 app?</strong></p>
+<p>For this next section you will need to have installed on your machine <a href="https://nodejs.org/">NodeJS</a>, <a href="https://www.npmjs.com/">npm</a> and <a href="http://gruntjs.com/">Grunt</a>. If you don’t know how to install and use these things then do <a href="http://twitter.com/johnbmurray">reach out to me on Twitter</a>.</p>
+<p>After you have all of the above installed, you’ll need to create a <code>package.json</code> file in your UI5 app’s root directory. Open the file up and paste in the contents below and don’t forget to edit them accordingly:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token punctuation">{</span>
+  <span class="token string-property property">"name"</span><span class="token operator">:</span> <span class="token string">"barcode-test"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"version"</span><span class="token operator">:</span> <span class="token string">"0.0.1"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"description"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"main"</span><span class="token operator">:</span> <span class="token string">"index.html"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"author"</span><span class="token operator">:</span> <span class="token string">"John Murray"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"license"</span><span class="token operator">:</span> <span class="token string">"Apache License, Version 2.0"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"devDependencies"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token string-property property">"grunt"</span><span class="token operator">:</span> <span class="token string">"^0.4.5"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>After creating and saving this file, install the <a href="https://github.com/SAP/grunt-openui5">Grunt OpenUI5 tools</a> which are made by the UI5 team at SAP. To install these tools open a terminal session in your UI5 root directory and run this command ‘npm install grunt-openui5 –save-dev’. This will download and install the tools, and also add them to the “devDependencies” section of your ‘package.json’ file.</p>
+<p>Next, again in the UI5 app root directory, create a file called ‘Gruntfile.js’. Into this file copy and paste the contents below, and we’ll go through what it all means in a moment.</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript">module<span class="token punctuation">.</span><span class="token function-variable function">exports</span> <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">grunt</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+  <span class="token comment">// Project configuration.</span>
+  grunt<span class="token punctuation">.</span><span class="token function">initConfig</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">pkg</span><span class="token operator">:</span> grunt<span class="token punctuation">.</span>file<span class="token punctuation">.</span><span class="token function">readJSON</span><span class="token punctuation">(</span><span class="token string">'package.json'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">openui5_preload</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token literal-property property">component</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          <span class="token literal-property property">resources</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token literal-property property">cwd</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span>
+            <span class="token literal-property property">prefix</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span>
+            <span class="token literal-property property">src</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+              <span class="token string">'webapp/**/*.js'</span><span class="token punctuation">,</span>
+              <span class="token string">'webapp/**/*.fragment.html'</span><span class="token punctuation">,</span>
+              <span class="token string">'webapp/**/*.fragment.json'</span><span class="token punctuation">,</span>
+              <span class="token string">'webapp/**/*.fragment.xml'</span><span class="token punctuation">,</span>
+              <span class="token string">'webapp/**/*.view.html'</span><span class="token punctuation">,</span>
+              <span class="token string">'webapp/**/*.view.json'</span><span class="token punctuation">,</span>
+              <span class="token string">'webapp/**/*.view.xml'</span><span class="token punctuation">,</span>
+              <span class="token string">'webapp/**/*.properties'</span>
+            <span class="token punctuation">]</span>
+          <span class="token punctuation">}</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">dest</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">compress</span><span class="token operator">:</span> <span class="token boolean">true</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">components</span><span class="token operator">:</span> <span class="token boolean">true</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  grunt<span class="token punctuation">.</span><span class="token function">loadNpmTasks</span><span class="token punctuation">(</span><span class="token string">'grunt-openui5'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span></code></pre>
+<p>This is quite a simple example but it will suffice in most use cases. What we are doing here first of all is reading in the ‘package.json’ file created earlier which provides the dependency list. Then we are setting the configuration options for ‘openui5_preload’ which is the specific tool we are going to be using from the OpenUI5 toolset.</p>
+<ul>
+<li>The ‘cwd’ parameter allows you to provide a base directory for finding the files and the ‘prefix’ parameter lets you prefix all files with a path of your choosing; in this instance we are not using either of these parameters so we are leaving them blank.</li>
+<li>The ‘src’ parameter lets you provide an array of paths, which it will use to try and match files in your directory and then for those matches it will minify and add them to the preload. I have all of my UI5 application files within a subdirectory called ‘webapp’ which is why my paths all begin with ‘webapp’. I have all my UI5 files located in this directory because I can then keep all of my other files and folders such as ‘node_modules’, PhoneGap config files, IDE folders, etc back in the root directory. I do this because it allows me to use this simple “get everything” approach you see above in the ‘src’ without worrying about accidentally including non-UI5 app files.</li>
+<li>The ‘dest’ parameter specifies the path to the destination you wish to save the preload file. In this case we just want to save it in the same place as the <code>Component.js</code> file and therefore can leave it blank.</li>
+<li>The ‘compress’ parameter sets whether or not you wish to minify the files as well as add them to the preload file. I would personally recommend always setting this to ‘true’ unless you have a good reason not to.</li>
+<li>The ‘components’ parameter here with a value of ‘true’ sets the tool to automatically find all components and create a preload for each.</li>
+</ul>
+<p>Finally, we load the ‘grunt-openui5′ toolkit from the plugin as previously installed and specified in ‘package.json’.</p>
+<p><em>For the full documentation and parameter list I’d recommend looking at the <a href="https://github.com/SAP/grunt-openui5">Grunt OpenUI5 tools</a> GitHub page.</em></p>
+<p>That’s all the configuration set up, now it’s time to generate our preload file! Fire up a terminal session in the same directory as your ‘Gruntfile.js’ and run the following command ‘grunt openui5_preload’ and you should see the following output along with a ‘Component-preload.js’ file alongside your ‘Component.js’ file.</p>
+<p><img src="/images/2018/02/Screen-Shot-2015-07-15-at-00.48.10-624x88.png" alt="preload generation output"></p>
+<p><strong>Final thoughts</strong></p>
+<p>Congratulations, you’ve just made your first preload file and are now well on the way to creating even better apps with UI5!</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2015/07/16/multi-language-support-out-of-the-box-ui5s-pedigree/">Multi language support out of the box - UI5&#39;s pedigree</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2015/07/18/the-ui5-support-tool-help-yourself/">The UI5 Support Tool - Help Yourself!</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2015/07/17/speeding-up-your-ui5-app-with-a-component-preload-file/` was built on 2025-09-15T15:58:49.580Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

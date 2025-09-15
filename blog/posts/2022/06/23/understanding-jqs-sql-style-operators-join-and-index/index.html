@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Understanding jq&#39;s SQL style operators JOIN and INDEX</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="understanding-jqs-sql-style-operators-join-and-index">Understanding jq&#39;s SQL style operators JOIN and INDEX</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2022-06-23">23 June 2022</time></li>
+	<li><a href="/tags/jq/" class="post-tag">jq</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>In this post I explore a couple of new (to me) operators in jq's arsenal: <code>JOIN</code> and <code>INDEX</code>, based on an answer to a question that I came across on Stack Overflow.</p>
+<p>The <a href="https://stackoverflow.com/a/72725480/384366">answer</a> was in response to a question (<a href="https://stackoverflow.com/q/72723706/384366">JQ: How to join arrays by key?</a>) about how to merge two arrays of related information. I found it interesting and it also introduced me to a couple of operators in <code>jq</code> that I'd hitherto not come across. There's a section in the manual titled <a href="https://stedolan.github.io/jq/manual/#SQL-StyleOperators">SQL-Style Operators</a> that describe them.</p>
+<p>I could have sworn I'd never seen this section before, so had instead looked to see if they were defined in the <a href="https://github.com/stedolan/jq/blob/a9f97e9e61a910a374a5d768244e8ad63f407d3e/src/builtin.jq">builtin.jq</a> file, where <code>jq</code> functions, filters and operators are defined ... in <code>jq</code>. I did come across them there, and their definitions helped me understand them too. I thought I'd explore them in this blog post, &quot;out loud&quot;, as it were.</p>
+<h2 id="test-data">Test data</h2>
+<p>Throughout this post I'm going to use the data described in the Stack Overflow question, which (after a bit of tidying up) looks like this (and which I've put into a file called <code>data.json</code>):</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"weights"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"apple"</span><span class="token punctuation">,</span>
+      <span class="token property">"weight"</span><span class="token operator">:</span> <span class="token number">200</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"tomato"</span><span class="token punctuation">,</span>
+      <span class="token property">"weight"</span><span class="token operator">:</span> <span class="token number">100</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">"categories"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"apple"</span><span class="token punctuation">,</span>
+      <span class="token property">"category"</span><span class="token operator">:</span> <span class="token string">"fruit"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"tomato"</span><span class="token punctuation">,</span>
+      <span class="token property">"category"</span><span class="token operator">:</span> <span class="token string">"vegetable"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="starting-with-the-definitions-in-builtin-jq">Starting with the definitions in builtin.jq</h2>
+<p>I want to start by staring at the definitions of the two operators in <code>builtin.jq</code>. Here's the section of code, with a few empty lines added for readability:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token keyword">def</span> <span class="token function">INDEX</span><span class="token punctuation">(</span>stream<span class="token punctuation">;</span> idx_expr<span class="token punctuation">)</span><span class="token punctuation">:</span>
+  <span class="token keyword">reduce</span> stream <span class="token keyword">as</span> <span class="token variable">$row</span> <span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token variable">$row</span><span class="token operator pipe">|</span>idx_expr<span class="token operator pipe">|</span>tostring<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token variable">$row</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">def</span> <span class="token function">INDEX</span><span class="token punctuation">(</span>idx_expr<span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token c-style-function function">INDEX</span><span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span> idx_expr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">def</span> <span class="token function">JOIN</span><span class="token punctuation">(</span><span class="token variable">$idx</span><span class="token punctuation">;</span> idx_expr<span class="token punctuation">)</span><span class="token punctuation">:</span>
+  <span class="token punctuation">[</span><span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator pipe">|</span> <span class="token punctuation">[</span><span class="token dot important">.</span><span class="token punctuation">,</span> <span class="token variable">$idx</span><span class="token punctuation">[</span>idx_expr<span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+<span class="token keyword">def</span> <span class="token function">JOIN</span><span class="token punctuation">(</span><span class="token variable">$idx</span><span class="token punctuation">;</span> stream<span class="token punctuation">;</span> idx_expr<span class="token punctuation">)</span><span class="token punctuation">:</span>
+  stream <span class="token operator pipe">|</span> <span class="token punctuation">[</span><span class="token dot important">.</span><span class="token punctuation">,</span> <span class="token variable">$idx</span><span class="token punctuation">[</span>idx_expr<span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+<span class="token keyword">def</span> <span class="token function">JOIN</span><span class="token punctuation">(</span><span class="token variable">$idx</span><span class="token punctuation">;</span> stream<span class="token punctuation">;</span> idx_expr<span class="token punctuation">;</span> join_expr<span class="token punctuation">)</span><span class="token punctuation">:</span>
+  stream <span class="token operator pipe">|</span> <span class="token punctuation">[</span><span class="token dot important">.</span><span class="token punctuation">,</span> <span class="token variable">$idx</span><span class="token punctuation">[</span>idx_expr<span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator pipe">|</span> join_expr<span class="token punctuation">;</span></code></pre>
+<p>The first thing I see is that there are multiple definitions of both <code>INDEX</code> and <code>JOIN</code>, each with different numbers of parameters. In various discussions, I've seen this represented in the way folks refer to them. For example, there are three definitions of <code>JOIN</code>, one with two parameters (<code>JOIN($idx; idx_expr)</code>), one with three (<code>JOIN($idx; stream; idx_expr)</code>) and one with four (<code>JOIN($idx; stream; idx_expr; join_expr)</code>). These are referred to, respectively, like this: <code>JOIN/2</code>, <code>JOIN/3</code> and <code>JOIN/4</code>, where the number represents the <a href="https://en.wikipedia.org/wiki/Arity">arity</a>.</p>
+<h3 id="index-definitions">INDEX definitions</h3>
+<p>So I set off on my exploration, looking at the two definitions of <code>INDEX</code>.</p>
+<h4 id="index-2">INDEX/2</h4>
+<p>Starting with <code>INDEX/2</code>, I see:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token keyword">def</span> <span class="token function">INDEX</span><span class="token punctuation">(</span>stream<span class="token punctuation">;</span> idx_expr<span class="token punctuation">)</span><span class="token punctuation">:</span>
+  <span class="token keyword">reduce</span> stream <span class="token keyword">as</span> <span class="token variable">$row</span> <span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">;</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token variable">$row</span><span class="token operator pipe">|</span>idx_expr<span class="token operator pipe">|</span>tostring<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token variable">$row</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>Earlier this year I managed to get to grips with the <code>reduce</code> function in <code>jq</code>, and wrote about it in this post: <a href="/blog/posts/2022/03/25/understanding-jq's-reduce-function/">Understanding jq's reduce function</a>. With that understanding, the call to <code>reduce</code> here doesn't seem as impenetrable. Here's how I understand it, in pseudo-JS:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript">stream<span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">accumulator<span class="token punctuation">,</span> row</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  accumulator<span class="token punctuation">[</span><span class="token operator">&lt;</span>result <span class="token keyword">of</span> determining the idx_expr<span class="token operator">></span><span class="token punctuation">]</span> <span class="token operator">=</span> row
+  <span class="token keyword">return</span> accumulator
+<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre>
+<p>In other words, this <code>reduce</code> invocation iterates through the elements of <code>stream</code>, and for each one, represented by <code>$row</code> each time, adds a new entry to an object, which is empty to start with (<code>{}</code>), where the value of the entry is the element itself (<code>$row</code>) and the key is determined by applying the <code>idx_expr</code> expression to the row, and then stringifying the result (<code>tostring</code>).</p>
+<p>What happens if I invoke such an <code>INDEX</code> operator on the test data above? How about:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token string">'INDEX(.categories[]; .name)'</span> data.json</code></pre>
+<p>First, <code>.categories[]</code> is used as the &quot;stream&quot;, i.e. a stream of values - in this case the values are objects each with <code>name</code> and <code>category</code> keys, like this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"apple"</span><span class="token punctuation">,</span>
+  <span class="token property">"category"</span><span class="token operator">:</span> <span class="token string">"fruit"</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"tomato"</span><span class="token punctuation">,</span>
+  <span class="token property">"category"</span><span class="token operator">:</span> <span class="token string">"vegetable"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>In this invocation of <code>INDEX</code>, <code>.name</code> is set as the <code>idx_expr</code> (the expression for determining what the index, or key, is going to be). So for the first element (the object with the &quot;apple&quot; details) the <code>idx_expr</code> of <code>.name</code> gives &quot;apple&quot;.</p>
+<p>The result of invoking <code>INDEX(.categories[], .name)</code> then, is this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"apple"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"apple"</span><span class="token punctuation">,</span>
+    <span class="token property">"category"</span><span class="token operator">:</span> <span class="token string">"fruit"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"tomato"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"tomato"</span><span class="token punctuation">,</span>
+    <span class="token property">"category"</span><span class="token operator">:</span> <span class="token string">"vegetable"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>So this has turned a stream of objects into a single object with keys (&quot;indices&quot;, I guess) built from values in the original objects.</p>
+<h4 id="index-1">INDEX/1</h4>
+<p>And <code>INDEX/1</code> is just a call to <code>INDEX/2</code> with the first parameter set to <code>.[]</code>:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token keyword">def</span> <span class="token function">INDEX</span><span class="token punctuation">(</span>idx_expr<span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token c-style-function function">INDEX</span><span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span> idx_expr<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>This feels like a nice convenience redefinition, and I get the feeling that this version might see more use in a pipeline context. Looking at how it might be used, with the same data, I get this:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token string">'.categories | INDEX(.name)'</span> data.json</code></pre>
+<p>This produces the same thing:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"apple"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"apple"</span><span class="token punctuation">,</span>
+    <span class="token property">"category"</span><span class="token operator">:</span> <span class="token string">"fruit"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"tomato"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"tomato"</span><span class="token punctuation">,</span>
+    <span class="token property">"category"</span><span class="token operator">:</span> <span class="token string">"vegetable"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Implicitly what's piped into <code>INDEX/1</code> has to be an array, I guess, which is why the left hand side of the pipe here is <code>.categories</code>, rather than <code>.categories[]</code> which would have caused multiple invocations of <code>INDEX</code>, one for every array element. Moreover, <code>.categories</code> is more appropriate because the first thing that <code>INDEX/1</code> does is invoke the <a href="https://stedolan.github.io/jq/manual/#Array/ObjectValueIterator:.%5B%5D">array iterator</a>  on it (i.e. the <code>.[]</code> in <code>INDEX(.[]; idx_expr)</code>).</p>
+<p>So in summary, <code>INDEX</code> can be used to create a &quot;lookup&quot; object where the keys are determined based on what you specify to pick out of the incoming stream.</p>
+<h3 id="join-definitions">JOIN definitions</h3>
+<p>Now I can turn my attention to each of the definitions of <code>JOIN</code>, and there are three: <code>JOIN/2</code>, <code>JOIN/3</code> and <code>JOIN/4</code>:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token keyword">def</span> <span class="token function">JOIN</span><span class="token punctuation">(</span><span class="token variable">$idx</span><span class="token punctuation">;</span> idx_expr<span class="token punctuation">)</span><span class="token punctuation">:</span>
+  <span class="token punctuation">[</span><span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator pipe">|</span> <span class="token punctuation">[</span><span class="token dot important">.</span><span class="token punctuation">,</span> <span class="token variable">$idx</span><span class="token punctuation">[</span>idx_expr<span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+<span class="token keyword">def</span> <span class="token function">JOIN</span><span class="token punctuation">(</span><span class="token variable">$idx</span><span class="token punctuation">;</span> stream<span class="token punctuation">;</span> idx_expr<span class="token punctuation">)</span><span class="token punctuation">:</span>
+  stream <span class="token operator pipe">|</span> <span class="token punctuation">[</span><span class="token dot important">.</span><span class="token punctuation">,</span> <span class="token variable">$idx</span><span class="token punctuation">[</span>idx_expr<span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+
+<span class="token keyword">def</span> <span class="token function">JOIN</span><span class="token punctuation">(</span><span class="token variable">$idx</span><span class="token punctuation">;</span> stream<span class="token punctuation">;</span> idx_expr<span class="token punctuation">;</span> join_expr<span class="token punctuation">)</span><span class="token punctuation">:</span>
+  stream <span class="token operator pipe">|</span> <span class="token punctuation">[</span><span class="token dot important">.</span><span class="token punctuation">,</span> <span class="token variable">$idx</span><span class="token punctuation">[</span>idx_expr<span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator pipe">|</span> join_expr<span class="token punctuation">;</span></code></pre>
+<p>I'll start by examining <code>JOIN/4</code>.</p>
+<h4 id="join-4">JOIN/4</h4>
+<p>As the arity identification suggests, this version takes four parameters. Even though the definition is just above, it's worth repeating it here, to be able to stare at for a minute or two:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token keyword">def</span> <span class="token function">JOIN</span><span class="token punctuation">(</span><span class="token variable">$idx</span><span class="token punctuation">;</span> stream<span class="token punctuation">;</span> idx_expr<span class="token punctuation">;</span> join_expr<span class="token punctuation">)</span><span class="token punctuation">:</span>
+  stream <span class="token operator pipe">|</span> <span class="token punctuation">[</span><span class="token dot important">.</span><span class="token punctuation">,</span> <span class="token variable">$idx</span><span class="token punctuation">[</span>idx_expr<span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator pipe">|</span> join_expr<span class="token punctuation">;</span></code></pre>
+<p>It's described in the manual thus (emphasis mine, to refer to the parameters):</p>
+<blockquote>
+<p>This builtin joins the values from the <strong>given stream</strong> to the <strong>given index</strong>. The index's keys are computed by applying the given <strong>index expression</strong> to each value from the given stream. An array of the value in the stream and the corresponding value from the index is fed to the given <strong>join expression</strong> to produce each result.</p>
+</blockquote>
+<p>Here's an example call that I'll run shortly:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token c-style-function function">INDEX</span><span class="token punctuation">(</span><span class="token punctuation">.</span>categories<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token punctuation">.</span>name<span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token variable">$categories</span>
+<span class="token operator pipe">|</span> <span class="token c-style-function function">JOIN</span><span class="token punctuation">(</span><span class="token variable">$categories</span><span class="token punctuation">;</span> <span class="token punctuation">.</span>weights<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token punctuation">.</span>name<span class="token punctuation">;</span> add<span class="token punctuation">)</span></code></pre>
+<p>Examining each of the parameters in turn, in the context of this description, we have the following values provided for the following parameters:</p>
+<p><strong><code>$idx &lt;-- $categories</code> (&quot;the given index&quot;)</strong></p>
+<p>An example of such an index is what's produced by the <code>INDEX</code> builtin we looked at earlier:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"apple"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"apple"</span><span class="token punctuation">,</span>
+    <span class="token property">"category"</span><span class="token operator">:</span> <span class="token string">"fruit"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"tomato"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"tomato"</span><span class="token punctuation">,</span>
+    <span class="token property">"category"</span><span class="token operator">:</span> <span class="token string">"vegetable"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>In the example call, this is referred to via <code>$categories</code> which is a symbolic binding to the result of <code>INDEX(.categories[]; .name)</code>.</p>
+<p><strong><code>stream &lt;-- .weights[]</code> (the &quot;given stream&quot;)</strong></p>
+<p>This is a sequence, usually of objects. In the example call, I'm using <code>.weights[]</code> as the stream, i.e. the objects describing food and their respective weights:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"apple"</span><span class="token punctuation">,</span>
+  <span class="token property">"weight"</span><span class="token operator">:</span> <span class="token number">200</span>
+<span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"tomato"</span><span class="token punctuation">,</span>
+  <span class="token property">"weight"</span><span class="token operator">:</span> <span class="token number">100</span>
+<span class="token punctuation">}</span></code></pre>
+<p><strong><code>idx_expr &lt;-- .name</code> (the &quot;given index expression&quot;)</strong></p>
+<p>This is effectively what to use, in the stream, to look up the corresponding data in the index. In this case, <code>.name</code> is appropriate, as it has the values which are used as keys (&quot;apple&quot; and &quot;tomato&quot;) in the index.</p>
+<p><strong><code>join_expr &lt;-- add</code> (the &quot;given join expression&quot;)</strong></p>
+<p>In order to understand why this parameter exists, it's necessary to have in mind what would be produced before such a join. For every stream object, after a successful lookup of a corresponding object in the index based on the index expression that points to a value in that stream object, what's produced is an array of two objects.</p>
+<p>Here's an example, again based on the call I'll make, which is:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token c-style-function function">INDEX</span><span class="token punctuation">(</span><span class="token punctuation">.</span>categories<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token punctuation">.</span>name<span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token variable">$categories</span>
+<span class="token operator pipe">|</span> <span class="token c-style-function function">JOIN</span><span class="token punctuation">(</span><span class="token variable">$categories</span><span class="token punctuation">;</span> <span class="token punctuation">.</span>weights<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token punctuation">.</span>name<span class="token punctuation">;</span> add<span class="token punctuation">)</span></code></pre>
+<p>The first object in the <code>.weights[]</code> stream is:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"apple"</span><span class="token punctuation">,</span>
+  <span class="token property">"weight"</span><span class="token operator">:</span> <span class="token number">200</span>
+<span class="token punctuation">}</span></code></pre>
+<p>From this, the value of <code>.name</code> is &quot;apple&quot;, and this is used to look for an entry in the <code>$categories</code> index, and one is found - this one:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token property">"apple"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"apple"</span><span class="token punctuation">,</span>
+  <span class="token property">"category"</span><span class="token operator">:</span> <span class="token string">"fruit"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Note that what's returned is not that entire structure, but just the value that &quot;apple&quot; points to:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"apple"</span><span class="token punctuation">,</span>
+  <span class="token property">"category"</span><span class="token operator">:</span> <span class="token string">"fruit"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>What happens now is described in the last sentence from the manual description:</p>
+<blockquote>
+<p>An array of the value in the stream and the corresponding value from the index is fed to the given join expression to produce each result.</p>
+</blockquote>
+<p>So looking at the first part of that sentence, this is what's produced - an array like this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"apple"</span><span class="token punctuation">,</span>
+    <span class="token property">"weight"</span><span class="token operator">:</span> <span class="token number">200</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"apple"</span><span class="token punctuation">,</span>
+    <span class="token property">"category"</span><span class="token operator">:</span> <span class="token string">"fruit"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>With the knowledge of what's produced before the <code>join_expr</code> is employed, it is now clearer as to why such a join expression exists as a parameter.</p>
+<p>In this example case it makes most sense to merge the two objects, and the multi-faceted <a href="https://stedolan.github.io/jq/manual/#add">add</a> filter is perfect for this, producing - from that array of two objects - this single object:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"apple"</span><span class="token punctuation">,</span>
+  <span class="token property">"weight"</span><span class="token operator">:</span> <span class="token number">200</span><span class="token punctuation">,</span>
+  <span class="token property">"category"</span><span class="token operator">:</span> <span class="token string">"fruit"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Joining the pairs of objects in one way or another is very likely to be what one desires.</p>
+<h4 id="join-3">JOIN/3</h4>
+<p>Following on from <code>JOIN/4</code>, it's easier to examine the other arity versions, starting with this one:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token keyword">def</span> <span class="token function">JOIN</span><span class="token punctuation">(</span><span class="token variable">$idx</span><span class="token punctuation">;</span> stream<span class="token punctuation">;</span> idx_expr<span class="token punctuation">)</span><span class="token punctuation">:</span>
+  stream <span class="token operator pipe">|</span> <span class="token punctuation">[</span><span class="token dot important">.</span><span class="token punctuation">,</span> <span class="token variable">$idx</span><span class="token punctuation">[</span>idx_expr<span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span></code></pre>
+<p>From the definition, the difference to <code>JOIN/4</code> is just that the <code>join_expr</code> parameter is omitted, and there's no pipe into such an expression at the end. The equivalent of this in a <code>JOIN/4</code> context would be to specify <code>.</code> as the <code>join_expr</code>. I guess it's nicer not have to specify that if you don't want any special joining of the pairs of elements in your result.</p>
+<h4 id="join-2">JOIN/2</h4>
+<p>This is an even more cut down version, in that not only is there no <code>join_expr</code> but there's also no explicit parameter for specifying the stream. Instead, one is expected to pipe that into such a call to <code>JOIN/2</code>. This is what the definition looks like, and one can see the <code>.[]</code> at the start which unwraps an assumed array to produce a stream that is then piped into the main definition:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token keyword">def</span> <span class="token function">JOIN</span><span class="token punctuation">(</span><span class="token variable">$idx</span><span class="token punctuation">;</span> idx_expr<span class="token punctuation">)</span><span class="token punctuation">:</span>
+  <span class="token punctuation">[</span><span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator pipe">|</span> <span class="token punctuation">[</span><span class="token dot important">.</span><span class="token punctuation">,</span> <span class="token variable">$idx</span><span class="token punctuation">[</span>idx_expr<span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span></code></pre>
+<p>Note also in this arity version that the results are returned within an outer array via the <code>[...]</code> array construction that wraps the entire definition.</p>
+<h2 id="walking-through-the-entire-call">Walking through the entire call</h2>
+<p>Now I've examined the different definitions, it's time to finish off with putting the new knowledge to work, to better understand the <a href="https://stackoverflow.com/questions/72723706/jq-how-to-join-arrays-by-key/72725480#72725480">answer</a> given, which centres around this <code>jq</code> expression and operates on the same test data I described earlier:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">{</span><span class="token property-literal property">weights</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token c-style-function function">JOIN</span><span class="token punctuation">(</span><span class="token c-style-function function">INDEX</span><span class="token punctuation">(</span><span class="token punctuation">.</span>categories<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token punctuation">.</span>name<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token punctuation">.</span>weights<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token punctuation">.</span>name<span class="token punctuation">;</span> add<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">}</span></code></pre>
+<p>With some whitespace, that expression looks like this, which might help us read it more easily and see that there's nothing we don't now know about:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">{</span>
+  <span class="token property-literal property">weights</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>
+    <span class="token c-style-function function">JOIN</span><span class="token punctuation">(</span>
+      <span class="token c-style-function function">INDEX</span><span class="token punctuation">(</span> <span class="token punctuation">.</span>categories<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token punctuation">.</span>name <span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">.</span>weights<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+      <span class="token punctuation">.</span>name<span class="token punctuation">;</span>
+      add
+    <span class="token punctuation">)</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<p>The expression contains a call to <code>JOIN/4</code>, and the first parameter (the &quot;index&quot;) is actually a call to <code>INDEX/2</code>, which, as we know, given the test data, produces this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"apple"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"apple"</span><span class="token punctuation">,</span>
+    <span class="token property">"category"</span><span class="token operator">:</span> <span class="token string">"fruit"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"tomato"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"tomato"</span><span class="token punctuation">,</span>
+    <span class="token property">"category"</span><span class="token operator">:</span> <span class="token string">"vegetable"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Then there's <code>.weights[]</code> specified for the &quot;stream&quot;, from which values for the &quot;index expression&quot; <code>.name</code> are used to look up data in the index. Finally, <code>add</code> is specified as what to use as the &quot;join expression&quot;. What's produced is a stream of values which are then enclosed in an array (<code>[...]</code>). This array is then returned as the value of a <code>weights</code> property inside an object that's constructed just to hold that property.</p>
+<p>This entire <code>jq</code> filter, when applied to the test data, produces the following:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"weights"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"apple"</span><span class="token punctuation">,</span>
+      <span class="token property">"weight"</span><span class="token operator">:</span> <span class="token number">200</span><span class="token punctuation">,</span>
+      <span class="token property">"category"</span><span class="token operator">:</span> <span class="token string">"fruit"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"tomato"</span><span class="token punctuation">,</span>
+      <span class="token property">"weight"</span><span class="token operator">:</span> <span class="token number">100</span><span class="token punctuation">,</span>
+      <span class="token property">"category"</span><span class="token operator">:</span> <span class="token string">"vegetable"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>Again, I've probably used too many words in my exploration, but perhaps it will help you in your understanding as you explore this area too.</p>
+<p>This exploration was inspired by the great <a href="https://stackoverflow.com/a/72725480/384366">answer</a> by Stack Overflow user <a href="https://stackoverflow.com/users/2158479/pmf">pmf</a>.</p>
+<p>If you're looking for another angle, and another example, there's <a href="https://stackoverflow.com/a/71107203/384366">another great answer</a> from the same user, to a related question <a href="https://stackoverflow.com/q/71106595/384366">Understanding jq JOIN()</a>.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2022/06/16/summing-and-grouping-values-with-jq/">Summing and grouping values with jq</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2022/10/28/untappd-data-with-jq-my-top-brewery-countries/">Untappd data with jq - my top brewery countries</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2022/06/23/understanding-jqs-sql-style-operators-join-and-index/` was built on 2025-09-15T15:58:49.615Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

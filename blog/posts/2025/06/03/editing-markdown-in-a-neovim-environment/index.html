@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Editing Markdown in a Neovim environment</title>
+		<meta name="description" content="Here are some notes I made when digging into my tools for editing Markdown source.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="editing-markdown-in-a-neovim-environment">Editing Markdown in a Neovim environment</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2025-06-03">03 June 2025</time></li>
+	<li><a href="/tags/markdown/" class="post-tag">markdown</a>, </li>
+	<li><a href="/tags/marksman/" class="post-tag">marksman</a>, </li>
+	<li><a href="/tags/markdownlint/" class="post-tag">markdownlint</a>, </li>
+	<li><a href="/tags/treesitter/" class="post-tag">treesitter</a>, </li>
+	<li><a href="/tags/lsp/" class="post-tag">lsp</a>, </li>
+	<li><a href="/tags/linting/" class="post-tag">linting</a>, </li>
+	<li><a href="/tags/editorconfig/" class="post-tag">editorconfig</a>, </li>
+	<li><a href="/tags/neovim/" class="post-tag">neovim</a></li>
+</ul>
+
+<p class="post-description-main">Here are some notes I made when digging into my tools for editing Markdown source.</p>
+
+<p>🚧 DRAFT POST 🚧</p>
+<p>I am now feeling more comfortable having made the transition from Vim to Neovim and started reconfiguring in Lua. While I had a Neovim setup that worked fine for me for editing in general, which included Markdown sources, I knew I didn't quite understand how things worked, which tools were doing what, and what features I hadn't either discovered or properly got to grips with.</p>
+<p>This post is simply an attempt to document what I've set up specifically for Markdown, my understanding of it and the components that it comprises. I'm sure I have many gaps in that understanding and in my ability to wield the tools correctly; if you have any suggestions for changes or improvements, or can fix or enhance my understanding, please let me know in the comments!</p>
+<h2 id="caveat-lector">Caveat lector</h2>
+<p>In addition to the gaps in my understanding, one can think of Neovim as an equal if not more extreme companion to Perl in the <a href="https://en.wikipedia.org/wiki/Perl#Philosophy">TMTOWTDI</a> department. The setup I describe in this post is just one way of doing things; one particular combination of tools, one way I have decided to use them, and one way of setting them up.</p>
+<p>There are other options, so don't take what you read here as definitive.</p>
+<p>For example, I know that the Markdownlint tool can <a href="https://github.com/DavidAnson/markdownlint?tab=readme-ov-file#fixing">automatically fix certain issues</a>, such as <a href="https://github.com/markdownlint/markdownlint/blob/main/docs/RULES.md#md004---unordered-list-style">MD004 - Unordered list style</a>, but (a) my approach is to get the tool to nag me so I learn to get things right by having to correct issues myself, and (b) I'm not sure yet how I can use the <code>--fix</code> option in the context of Neovim as <a href="/blog/posts/2021/05/13/notes-on-markdown-linting-part-1/#:~:text=fix%20basic%20errors%20(does%20not%20work%20with%20STDIN)">it doesn't work in the context of STDIN</a>.</p>
+<p>Another example relates to <a href="https://prettier.io/docs/">Prettier</a>, an opinionated code formatter that supports Markdown. I know that folks use Prettier in conjunction with Neovim (often via the <a href="https://github.com/stevearc/conform.nvim">conform plugin</a>) but I will get to that in the next iteration of this Markdown editing setup.</p>
+<h2 id="configuration">Configuration</h2>
+<p>My general Neovim configuration is based on some of the early videos in the excellent <a href="https://www.youtube.com/playlist?list=PLep05UYkc6wTyBe7kPjQFWVXTlhKeQejM">Advent of Neovim</a> series from TJ DeVries, and I'm also using the <a href="https://neovim.io/doc/user/starting.html#%24NVIM_APPNAME">NVIM_APPNAME</a> feature to split up my config and have different experimental instances, which I switch between with a function that <a href="https://github.com/qmacro/dotfiles/blob/73e27bb3e76067e9bf21be873ad7c131a0ddf40b/bashrc.d/70-functions.sh#L95-L114">looks like</a> this:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function-name function">nvc</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+  <span class="token builtin class-name">local</span> <span class="token assign-left variable">configdir</span><span class="token operator">=</span>nvim-configs
+
+  <span class="token builtin class-name">local</span> config
+  <span class="token assign-left variable">config</span><span class="token operator">=</span><span class="token string">"<span class="token variable"><span class="token variable">$(</span>
+    <span class="token function">find</span> <span class="token string">"<span class="token environment constant">$HOME</span>/.config/<span class="token variable">$configdir</span>"</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">-mindepth</span> <span class="token number">1</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">-maxdepth</span> <span class="token number">1</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">-printf</span> <span class="token string">"%f<span class="token entity" title="\n">\n</span>"</span> <span class="token punctuation">\</span>
+    <span class="token operator">|</span> fzf
+  <span class="token variable">)</span></span>"</span>
+
+  <span class="token builtin class-name">export</span> <span class="token assign-left variable">NVIM_APPNAME</span><span class="token operator">=</span><span class="token string">"<span class="token variable">$configdir</span>/<span class="token variable">${config<span class="token operator">:-</span>nvim}</span>"</span>
+  <span class="token function">sed</span> <span class="token parameter variable">-i</span> <span class="token parameter variable">-E</span> <span class="token string">'s#(NVIM_APPNAME)=.*$#\1='</span>"<span class="token variable">$NVIM_APPNAME</span><span class="token string">"'#' <span class="token environment constant">$HOME</span>/dotfiles/bashrc.d/54-globals-nvim.sh
+
+  nvim "</span><span class="token variable">$@</span>"
+
+<span class="token punctuation">}</span></code></pre>
+<p>and track which &quot;flavour&quot; I have set <a href="https://github.com/qmacro/dotfiles/commit/c40e76516ef162b01ad0aee1d7fba45449329888">in my shell prompt</a>.</p>
+<h2 id="the-tools">The tools</h2>
+<p>Beyond Neovim itself, I'm using a number of tools which provide different features and facilities for my Markdown editing needs.</p>
+<h3 id="editorconfig">EditorConfig</h3>
+<p><a href="https://editorconfig.org/">EditorConfig</a> is a file format specification that describes the content of configuration files, the use of which helps to maintain consistent coding styles for multiple developers working on the same files across various editors and IDEs.</p>
+<p>Neovim has <a href="https://neovim.io/doc/user/editorconfig.html">native support for EditorConfig</a> and all that's needed is a configuration file with the required coding style aspects. I think of the EditorConfig tool as one that is built in to Neovim and controlled by configuration.</p>
+<h3 id="marksman">Marksman</h3>
+<p><a href="https://github.com/artempyanykh/marksman">Marksman</a> is a <a href="https://en.wikipedia.org/wiki/Language_Server_Protocol">language server</a> for Markdown that provides various language server protocol (LSP) features for Markdown content, such as completion, goto definition, diagnostics and more.</p>
+<p>Neovim has <a href="https://neovim.io/doc/user/lsp.html">native LSP support</a> in that it can act as a client to various language servers, and exposes a Lua framework (via <code>vim.lsp</code>) that makes the facililities offered by language servers available.</p>
+<p>I think of the Marksman tool as a facility that is separate from Neovim but not anything I would (or can) use directly; rather, something I use &quot;remotely&quot; from within Neovim. Like most language servers, Marksman has features that allow me to navigate and manipulate my Markdown sources, and also can surface issues (in the form of warnings and errors, for example) that can be then displayed in Neovim as <a href="https://neovim.io/doc/user/diagnostic.html">diagnostics</a>.</p>
+<h3 id="markdownlint">Markdownlint</h3>
+<p><a href="https://github.com/markdownlint/markdownlint">Markdownlint</a> is a linting tool to check Markdown content for stylistic and other issues; there are many <a href="https://github.com/markdownlint/markdownlint/blob/main/docs/RULES.md">rules</a> that it will base the checking on, rules that can be customised or turned off entirely, depending on what you want. As an example, I normally turn off the <a href="https://github.com/markdownlint/markdownlint/blob/main/docs/RULES.md#md013---line-length">MD013 - Line length</a> rule as I like to write long lines in my Markdown sources.</p>
+<p>Differing again to EditorConfig and Marksman, Markdownlint is an external tool that I can (and sometimes do) run on the command line directly, pointing it at Markdown files ... but something that I can harness from within Neovim too and capture (and display) the output as <a href="https://neovim.io/doc/user/diagnostic.html">diagnostics</a>. I use the <a href="https://github.com/mfussenegger/nvim-lint">mfussenegger/nvim-lint</a> asynchronous linter plugin for this harness as it (to quote the README) &quot;spawns linters, parses their output, and reports the results via the <code>vim.diagnostic</code> module&quot;.</p>
+<h3 id="treesitter">Treesitter</h3>
+<p>As with EditorConfig, Neovim also has built-in support for [Treesitter], and (beyond the parser for Markdown itself) there's not really anything specific to editing Markdown. That said, I have added configuration for <a href="https://neovim.io/doc/user/treesitter.html">Neovim's built-in support for Treesitter</a> listing the languages for which I want Treesitter parsers automatically installed. This is so I can get <a href="#syntax-highlighting-of-code-within-code-blocks">syntax highlighting in fenced code blocks</a>.</p>
+<h2 id="the-combined-effect">The combined effect</h2>
+<p>The combination of each of these tools comes together for a comfortable overall effect, making my Markdown editing life easier.</p>
+<p>In no particular order, here is a run down of the features I'm taking advantage of, which tool supplies them, and how I use them. Note that beyond those features listed here, the tools offer more.</p>
+<h3 id="automatic-trimming-of-trailing-whitespace">Automatic trimming of trailing whitespace</h3>
+<p>I use EditorConfig on other projects so it was a natural fit here for my Markdown sources. With <code>trim_trailing_whitespace</code> set to <code>true</code> I know that NeoVim will do exactly that for me when I save. Here's the entire content of the <code>.editorconfig</code> file in this blog repository:</p>
+<pre class="language-toml" tabindex="0"><code class="language-toml"><span class="token punctuation">[</span>*<span class="token punctuation">.</span>md<span class="token punctuation">]</span>
+<span class="token key property">trim_trailing_whitespace</span> <span class="token punctuation">=</span> <span class="token boolean">true</span>
+<span class="token key property">insert_final_newline</span> <span class="token punctuation">=</span> <span class="token boolean">true</span></code></pre>
+<h3 id="syntax-highlighting-of-code-within-code-blocks">Syntax highlighting of code within code blocks</h3>
+<p>Often in my Markdown sources I'll use <a href="https://www.markdownguide.org/extended-syntax/#fenced-code-blocks">fenced code blocks</a> to include code samples. If I specify the language of the fenced code block, and have the requisite Treesitter parser installed, I'll get language-aware syntax highlighting for the content within the block, which is really lovely. This is what the relevant section of the Treesitter configuration looks like (in <code>lua/plugins/treesitter.lua</code>):</p>
+<pre class="language-lua" tabindex="0"><code class="language-lua"><span class="token keyword">return</span> <span class="token punctuation">{</span>
+  <span class="token punctuation">{</span>
+    <span class="token string">"nvim-treesitter/nvim-treesitter"</span><span class="token punctuation">,</span>
+    build <span class="token operator">=</span> <span class="token string">":TSUpdate"</span><span class="token punctuation">,</span>
+    config <span class="token operator">=</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      require <span class="token string">'nvim-treesitter.configs'</span><span class="token punctuation">.</span><span class="token function">setup</span> <span class="token punctuation">{</span>
+        ensure_installed <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token string">"c"</span><span class="token punctuation">,</span> <span class="token string">"lua"</span><span class="token punctuation">,</span> <span class="token string">"vim"</span><span class="token punctuation">,</span> <span class="token string">"vimdoc"</span><span class="token punctuation">,</span> <span class="token string">"query"</span><span class="token punctuation">,</span> <span class="token string">"markdown"</span><span class="token punctuation">,</span> <span class="token string">"markdown_inline"</span><span class="token punctuation">,</span> <span class="token string">"bash"</span><span class="token punctuation">,</span> <span class="token string">"javascript"</span><span class="token punctuation">,</span> <span class="token string">"toml"</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        auto_install <span class="token operator">=</span> <span class="token keyword">false</span><span class="token punctuation">,</span>
+        <span class="token comment">-- ...</span>
+      <span class="token punctuation">}</span>
+    <span class="token keyword">end</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>So when for example I add a fenced code block containing Bash, JavaScript or Lua for example, the block contents will be nicely highlighted (I added the <code>&quot;toml&quot;</code> entry just now so I could get syntax highlighting for the TOML block I just added earlier to this post).</p>
+<h3 id="an-overview-of-section-headings">An overview of section headings</h3>
+<p>TODO: add basic use of <code>gO</code> too!</p>
+<p>The Marksman language server presents <a href="https://www.markdownguide.org/basic-syntax/#headings">Markdown headings</a> as <a href="https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_documentSymbol">document symbols</a>. This means I can get a quick overview of the current document's sections, and also jump to them. With the <a href="https://neovim.io/doc/user/lsp.html#vim.lsp.buf.document_symbol()">vim.lsp.buf.document_symbol()</a> function (invoked in command mode with <code>lua vim.lsp.buf.document_symbol()</code>) I can have them displayed in Neovim's location list:</p>
+<p><img src="/images/2025/06/document-symbols-in-location-list.png" alt="screenshot of location list containing three document symbols, each of which is a heading in the document"></p>
+<p>I'm also starting to use <a href="https://github.com/nvim-telescope/telescope.nvim">Telescope</a>, the &quot;highly extendable fuzzy finder over lists&quot;. Telescope has a built-in <a href="https://github.com/nvim-telescope/telescope.nvim?tab=readme-ov-file#pickers">picker</a> for such document symbols too, so I can also invoke <code>Telescope lsp_document_symbols</code> in command mode for a similar result, from the same Marksman language server source:</p>
+<p><img src="/images/2025/06/document-symbols-in-telescope.png" alt="screenshot of a Telescope picker containing three document symbols, each of which is a heading in the document"></p>
+<p>Navigating through these and selecting one will then take me to that selected heading in the document.</p>
+<h3 id="diagnostics-in-general">Diagnostics in general</h3>
+<h3 id="diagnostic-details">Diagnostic details</h3>
+<p><img src="/images/2025/06/diagnostic-link-to-non-existent-document.png" alt="TODO"></p>
+<hr>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2025/05/15/point-free-coding-and-function-composition/">Point free coding and function composition</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node-js-configuration-and-diagnostics/">A modern and clean Neovim setup for CAP Node.js - configuration and diagnostics</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2025/06/03/editing-markdown-in-a-neovim-environment/` was built on 2025-09-15T15:58:49.629Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

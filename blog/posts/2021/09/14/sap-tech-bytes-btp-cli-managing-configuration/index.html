@@ -1,0 +1,766 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>SAP Tech Bytes: btp CLI - managing configuration</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="sap-tech-bytes-btp-cli-managing-configuration">SAP Tech Bytes: btp CLI - managing configuration</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2021-09-14">14 September 2021</time></li>
+	<li><a href="/tags/sapcommunity/" class="post-tag">sapcommunity</a>, </li>
+	<li><a href="/tags/btp/" class="post-tag">btp</a>, </li>
+	<li><a href="/tags/cli/" class="post-tag">cli</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p><em>Understand and manage the btp CLI client configuration.</em></p>
+<p>🚨 Update: See <a href="/blog/posts/2022/02/17/sap-tech-bytes:-btp-cli-new-home-for-configuration/">SAP Tech Bytes: btp CLI - new home for
+configuration</a>
+for new information.</p>
+<p>This is a follow-on post from the previous one: <a href="/blog/posts/2021/09/07/sap-tech-bytes:-btp-cli-logging-in/">SAP Tech Bytes: btp
+CLI - logging
+in</a>
+and starts where we left off there, with you logged in.</p>
+<p>When you connect and authenticate, the connection and login details are
+stored locally, as we noted from staring at the output from our initial
+invocation of <code>btp</code>.</p>
+<pre class="language-text" tabindex="0"><code class="language-text">Configuration:                     /home/user/.cache/.btp/config.json</code></pre>
+<p>This is the default location that <code>btp</code> uses.</p>
+<h2 id="app-studio-lifecycle">App Studio lifecycle</h2>
+<p>This post and the posts in the rest of this SAP Tech Bytes mini-series
+are based on running the btp CLI in the SAP Business Application Studio
+(App Studio). Certain directories in your App Studio dev space's work
+area are cleaned up when a dev space is stopped and restarted.</p>
+<p>One of those directories is the <code>/home/user/.cache/</code> directory.</p>
+<p>If we look at this in detail (with <code>ls -la | grep .cache</code>), it's fairly
+clear that it's ephemeral - here it's a symbolic link to a directory
+in <code>/tmp/</code>:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">lrwxrwxrwx  1 root root    20 Sep  7 09:01 .cache -> /tmp/usertemp/.cache</code></pre>
+<p>In general, in most Unix-like environments, nothing in <code>/tmp/</code> is
+guaranteed to be there after a restart. Given that this is where <code>btp</code>
+stores configuration, what happens when our App Studio dev space is
+stopped and then restarted? Well, let's find out.</p>
+<p>First, let's make sure that we <em>are</em> still logged in, by invoking <code>btp</code>
+with no further parameters. If we're logged in, we should see something
+like this (i.e. <code>btp</code> shows us the details of our connection and
+identity):</p>
+<pre class="language-text" tabindex="0"><code class="language-text">SAP BTP command line interface (client v2.8.0)
+
+Usage: btp [OPTIONS] ACTION [GROUP/OBJECT] [PARAMS]
+
+CLI server URL:                    https://cpcli.cf.eu10.hana.ondemand.com (server v2.8.0)
+User:                              P0003480944 (sapdeveloper@example.com)
+Configuration:                     /home/user/.cache/.btp/config.json
+
+Current target:
+  Global account (subdomain: 82715b8dtrial-ga)
+  └─ Subaccount (ID: b8a33bf9-b155-4736-aadf-582dae8fd65a)
+
+Tips:
+  For information about the targeting mechanism, use 'btp --help target'.
+  To display general help, use 'btp --help'.
+
+OK</code></pre>
+<p>Next, go back to the App Studio &quot;Dev Space Manager&quot;, and stop the dev
+space you created for this btp CLI adventure (in <a href="/blog/posts/2021/09/01/sap-tech-bytes:-btp-cli-installation/">SAP Tech Bytes: btp
+CLI -
+installation</a>).
+Once it's stopped, restart it and re-enter it.</p>
+<blockquote>
+<p>I find the quickest way to get back to the App Studio's &quot;Dev Space
+Manager&quot; is just to remove the hashpath from the URL; in this
+example, it would be by removing <code>#ws-kvhjc</code> from
+<code>https://82715b8dtrial.eu10cf. ... .cloud.sap/index.html#ws-kvhjc</code>
+(this is the dev space's ID).</p>
+</blockquote>
+<h2 id="starting-over">Starting over</h2>
+<p>Now, in a new terminal, first have a look in the <code>.cache/</code> directory (we
+can refer to this relative name as we'll be in our home directory
+<code>/home/user/</code> by default in a newly created terminal anyway):</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">ls</span> <span class="token parameter variable">--all</span> <span class="token parameter variable">--dereference</span> <span class="token parameter variable">--recursive</span> .cache/</code></pre>
+<blockquote>
+<p>the options given to <code>ls</code> here make sure we see hidden files (<code>--all</code>)
+(remember that <code>.btp</code> begins with a dot and is therefore hidden by
+default), that symbolic links are followed (<code>--dereference</code>) and that
+the list descends recursively (<code>--recursive</code>); normally I'd write
+this as <code>ls -aLR .cache/</code>.</p>
+</blockquote>
+<p>You won't see the <code>.btp/</code> directory or anything in it, because it's
+not there any more (any content that is there will have been recreated
+when the dev space was restarted).</p>
+<p>Try <code>btp</code> again. This is the result:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">Welcome to the SAP BTP command line interface (client v2.8.0)
+
+Usage: btp [OPTIONS] ACTION [GROUP/OBJECT] [PARAMS]
+
+CLI server URL:                    not set
+User:                              not set
+Configuration:                     /home/user/.cache/.btp/config.json
+
+You are currently not logged in.
+
+Tips:
+  To log in to a global account of SAP BTP, use 'btp login'. For help on login, use 'btp --help login'.
+  To display general help, use 'btp --help'.
+
+OK</code></pre>
+<p>Uh-oh! But not surprising, given that the configuration is gone.
+Actually, there <em>is</em> some configuration now there, as <code>btp</code> will create
+a <code>config.json</code> file on invocation. Use the <code>ls</code> command again to see,
+and you should see (amongst the other content that was there) this:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">.cache:
+.  ..  .btp
+
+.cache/.btp:
+.  ..  config.json</code></pre>
+<p>What's in <code>config.json</code>? Basically, this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"ServerURL"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token property">"SubDomain"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token property">"UserName"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token property">"RefreshToken"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token property">"Directory"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token property">"Subaccount"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token property">"Version"</span><span class="token operator">:</span> <span class="token string">"2.8.0"</span><span class="token punctuation">,</span>
+  <span class="token property">"Authentication"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"User"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+    <span class="token property">"Mail"</span><span class="token operator">:</span> <span class="token string">""</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"TrustedURLs"</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span>
+  <span class="token property">"Autocomplete"</span><span class="token operator">:</span> <span class="token null keyword">null</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(although it is flat, unformatted - it wasn't prettified like that).</p>
+<p>So now we understand why <code>btp</code> shows nothing, and that we're not logged
+in any more.</p>
+<h2 id="managing-our-configuration">Managing our configuration</h2>
+<p>We need to have the configuration stored in a different place, and used
+from there, so it persists. Personally, I'm a fan of the <a href="https://specifications.freedesktop.org/basedir-spec.latest.html">X Desktop
+Group (XDG) Base Directory
+Specification</a>,
+which defines environment variables that apps can heed.
+<code>XDG_CONFIG_HOME</code> is one of those, and &quot;<em>defines the base directory
+relative to which user-specific configuration files should be
+stored.</em>&quot;. Moreover, it goes on to say: &quot;<em>If $XDG_CONFIG_HOME is
+either not set or empty, a default equal to $HOME/.config should be
+used.</em>&quot;. That works as a nice default for me.</p>
+<p>The btp CLI allows you to <a href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/e57288d7f2aa4e59a8f70b08b82a933d.html">specify the location of the configuration
+file</a>
+either using the <code>--config</code> option, which you'll need to specify on
+each invocation of <code>btp</code>, or using the environment variable
+<code>SAPCP_CLIENTCONFIG</code>.</p>
+<p>Let's tell the btp CLI that we want our configuration in this location
+(relative to our home directory):</p>
+<pre class="language-text" tabindex="0"><code class="language-text">.config/btp/config.json</code></pre>
+<p>Environment variables are best set when a shell session starts, so
+let's add the appropriate assignment to <code>SAPCP_CLIENTCONFIG</code> in the
+same file as we added the <code>bin/</code> directory to our path in the <a href="/blog/posts/2021/09/01/sap-tech-bytes:-btp-cli-installation/">previous
+post</a>.
+This is the <code>.bashrc</code> file in our home directory.</p>
+<p>You can edit this file using App Studio of course. First, open your home
+directory as a folder in the explorer, using the &quot;Open Folder&quot; button
+like this:</p>
+<p><img src="https://raw.githubusercontent.com/SAP-samples/sap-tech-bytes/2021-09-01-btp-cli/draftposts/images/open-home-in-explorer.png" alt=""></p>
+<p>Then find and open the <code>.bashrc</code> file from the Explorer, and at the
+bottom, add content so it looks like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">PATH</span></span><span class="token operator">=</span><span class="token environment constant">$PATH</span><span class="token builtin class-name">:</span><span class="token environment constant">$HOME</span>/bin
+<span class="token builtin class-name">export</span> <span class="token assign-left variable">SAPCP_CLIENTCONFIG</span><span class="token operator">=</span><span class="token environment constant">$HOME</span>/.config/btp/config.json</code></pre>
+<p>Close any existing terminal session and start a new one (Terminal -&gt;
+New Terminal); this will cause the <code>.bashrc</code> file to be processed, and
+you can then check that the <code>SAPCP_CLIENTCONFIG</code> environment variable is
+indeed now set:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token builtin class-name">echo</span> <span class="token variable">$SAPCP_CLIENTCONFIG</span></code></pre>
+<p>It should show you this:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">/home/user/.config/btp/config.json</code></pre>
+<p>Now it's time to log back in with the btp CLI. Follow the same login
+procedure as described in the previous post <a href="/blog/posts/2021/09/07/sap-tech-bytes:-btp-cli-logging-in/">SAP Tech Bytes: btp CLI -
+logging
+in</a>.
+Use the <code>btp target</code> command to specify your trial subaccount too.</p>
+<p>Invoking <code>btp</code> on its own now should show familiar information:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">SAP BTP command line interface (client v2.8.0)
+
+Usage: btp [OPTIONS] ACTION [GROUP/OBJECT] [PARAMS]
+
+CLI server URL:                    https://cpcli.cf.eu10.hana.ondemand.com (server v2.8.0)
+User:                              P0003480944 (sapdeveloper@example.com)
+Configuration:                     /home/user/.config/btp/config.json
+
+Current target:
+  Global account (subdomain: 82715b8dtrial-ga)
+  └─ Subaccount (ID: b8a33bf9-b155-4736-aadf-582dae8fd65a)
+
+Tips:
+  For information about the targeting mechanism, use 'btp --help target'.
+  To display general help, use 'btp --help'.
+
+OK</code></pre>
+<p>But note the location of the configuration - it is honouring where we
+told the btp CLI to keep it, via <code>SAPCP_CLIENTCONFIG</code>. Great!</p>
+<h2 id="final-checks">Final checks</h2>
+<p>Go through the process of restarting your dev space once more. When
+starting a new terminal after that, and invoking <code>btp</code>, you should see
+that your configuration has survived, and you're still logged in.
+Great!</p>
+<p>In the next post, we look at adding a whole ton of comfort to invoking
+commands with the btp CLI: <a href="/blog/posts/2021/09/21/sap-tech-bytes:-btp-cli-autocompletion/">SAP Tech Bytes: btp CLI --
+autocompletion</a>.</p>
+<hr>
+<p><img src="/images/2021/02/screenshot-2021-02-22-at-11.00.25.png" alt=""></p>
+<p>SAP Tech Bytes is an initiative to bring you bite-sized information on
+all manner of topics, in
+<a href="https://www.youtube.com/playlist?list=PL6RpkC85SLQC3HBShmlMaPu_nL--4f20z">video</a>
+and <a href="https://community.sap.com/t5/tag/sap-tech-bytes/tg-p">written</a> format. Enjoy!</p>
+<hr>
+<p><a href="https://community.sap.com/t5/technology-blogs-by-sap/sap-tech-bytes-btp-cli-managing-configuration/ba-p/13496400">Originally published on SAP Community</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2021/09/12/improving-shell-fu-with-practice/">Improving shell fu with practice</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2021/09/15/using-functions-more/">Using functions more</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2021/09/14/sap-tech-bytes-btp-cli-managing-configuration/` was built on 2025-09-15T15:58:49.612Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

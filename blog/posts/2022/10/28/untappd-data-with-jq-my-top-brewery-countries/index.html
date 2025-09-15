@@ -1,7 +1,1019 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2022/10/28/untappd-data-with-jq-my-top-brewery-countries/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Untappd data with jq - my top brewery countries | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Untappd data with jq - my top brewery countries"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2022/10/28/untappd-data-with-jq-my-top-brewery-countries/"><meta name="description" content="Untappd data with jq - my top brewery countries 28 Oct 2022 | 6 min read In this short post I explore my Untappd checkin data with jq,..."><meta property="og:description" content="Untappd data with jq - my top brewery countries 28 Oct 2022 | 6 min read In this short post I explore my Untappd checkin data with jq,..."><meta name="description" content="Untappd data with jq - my top brewery countries 28 Oct 2022 | 6 min read In this short post I explore my Untappd checkin data with jq,..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Untappd data with jq - my top brewery countries</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Untappd data with jq - my top brewery countries</h1><div class="post__details"><time datetime="2022-10-28">28 Oct 2022 </time><span>| </span><span>6 min read</span></div></header><main class="post__content"><p>In this short post I explore my Untappd checkin data with <code>jq</code>, because it's a nice data set to practise my limited filtering fu upon, and also to get my blogging flowing again.</p><p><img src="/images/2022/10/untappd-profile.png" alt="My profile on Untappd"></p><p>I'm an <a href="https://untappd.com/user/qmacro">Untappd supporter</a> and an early adopter, joining in early November 12 years ago in 2010. Recently Untappd <a href="https://twitter.com/untappd/status/1584908973135859717">celebrated 12 years of operation and 10 million users</a>. It got me thinking back to my <a href="https://untappd.com/user/qmacro/checkin/11215/">very first checkin</a> (it was a Leffe Brune, in case you're wondering) and then I remembered that as an Untappd supporter I could get access to my entire checkin history, in JSON.</p><h2>The Untappd checkin data</h2><p>The JSON data is quite simple - it's a single file (I've called it <code>checkins.json</code>) containing an array of checkin objects, where each object looks like this:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Leffe Brune / Bruin"</span><span class="token punctuation">,</span><br>  <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Abbaye de Leffe"</span><span class="token punctuation">,</span><br>  <span class="token property">"beer_type"</span><span class="token operator">:</span> <span class="token string">"Brown Ale - Belgian"</span><span class="token punctuation">,</span><br>  <span class="token property">"beer_abv"</span><span class="token operator">:</span> <span class="token string">"6.5"</span><span class="token punctuation">,</span><br>  <span class="token property">"beer_ibu"</span><span class="token operator">:</span> <span class="token string">"20"</span><span class="token punctuation">,</span><br>  <span class="token property">"comment"</span><span class="token operator">:</span> <span class="token string">"Christening Untappd with this, a fav of mine."</span><span class="token punctuation">,</span><br>  <span class="token property">"venue_name"</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span><br>  <span class="token property">"venue_city"</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span><br>  <span class="token property">"venue_state"</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span><br>  <span class="token property">"venue_country"</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span><br>  <span class="token property">"venue_lat"</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span><br>  <span class="token property">"venue_lng"</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span><br>  <span class="token property">"rating_score"</span><span class="token operator">:</span> <span class="token string">"5"</span><span class="token punctuation">,</span><br>  <span class="token property">"created_at"</span><span class="token operator">:</span> <span class="token string">"2010-11-08 18:52:02"</span><span class="token punctuation">,</span><br>  <span class="token property">"checkin_url"</span><span class="token operator">:</span> <span class="token string">"https://untappd.com/c/11215"</span><span class="token punctuation">,</span><br>  <span class="token property">"beer_url"</span><span class="token operator">:</span> <span class="token string">"https://untappd.com/beer/5941"</span><span class="token punctuation">,</span><br>  <span class="token property">"brewery_url"</span><span class="token operator">:</span> <span class="token string">"https://untappd.com/brewery/5"</span><span class="token punctuation">,</span><br>  <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span><span class="token punctuation">,</span><br>  <span class="token property">"brewery_city"</span><span class="token operator">:</span> <span class="token string">"Leuven"</span><span class="token punctuation">,</span><br>  <span class="token property">"brewery_state"</span><span class="token operator">:</span> <span class="token string">"Vlaanderen"</span><span class="token punctuation">,</span><br>  <span class="token property">"flavor_profiles"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span><br>  <span class="token property">"purchase_venue"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span><br>  <span class="token property">"serving_type"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span><br>  <span class="token property">"checkin_id"</span><span class="token operator">:</span> <span class="token string">"11215"</span><span class="token punctuation">,</span><br>  <span class="token property">"bid"</span><span class="token operator">:</span> <span class="token string">"5941"</span><span class="token punctuation">,</span><br>  <span class="token property">"brewery_id"</span><span class="token operator">:</span> <span class="token string">"5"</span><span class="token punctuation">,</span><br>  <span class="token property">"photo_url"</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span><br>  <span class="token property">"global_rating_score"</span><span class="token operator">:</span> <span class="token number">3.55</span><span class="token punctuation">,</span><br>  <span class="token property">"global_weighted_rating_score"</span><span class="token operator">:</span> <span class="token number">3.55</span><span class="token punctuation">,</span><br>  <span class="token property">"tagged_friends"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span><br>  <span class="token property">"total_toasts"</span><span class="token operator">:</span> <span class="token string">"1"</span><span class="token punctuation">,</span><br>  <span class="token property">"total_comments"</span><span class="token operator">:</span> <span class="token string">"0"</span><br><span class="token punctuation">}</span></code></pre><p>(OK, I put my <code>rating_score</code> of 5 down to excitement at a new beer rating app).</p><h2>My top brewery countries</h2><p>Noting that my first checkin was to a beer from Belgium (see the value for the <code>brewery_country</code> property) I thought it would be a nice exercise to discover the top brewery countries for the beers I've checked in.</p><h3>Reducing the data set</h3><p>To keep the data compact for this blog post, I decided to analyse just the latest 20 checkins, rather than the entire <a href="https://untappd.com/user/qmacro">four thousand plus</a>. And for the purposes of experimentation and illustration, I only really need to see the beer name, brewery name and brewery country.</p><p>So I start my analysis like this:</p><pre class="language-bash"><code class="language-bash"><span class="token operator">&lt;</span> checkins.json jq <span class="token string">'<br>.[-20:]<br>| map({beer_name, brewery_name, brewery_country})<br>'</span></code></pre><blockquote><p>Note the use of a negative index on the <a href="https://stedolan.github.io/jq/manual/#Array/StringSlice:.%5B10:15%5D">array slice</a> here - which causes the slice to start from counting backwards from the end of the array. Note also that I'm invoking <code>jq</code> and passing in the data in a slightly different way than I have done before (such as in <a href="/blog/posts/2022/06/16/summing-and-grouping-values-with-jq/">Summing and grouping values with jq</a>). Instead of specifying a filename (<code>jq filter filename</code>) I'm using redirection to pass the contents of the <code>filename</code> to <code>jq</code>'s STDIN: <code>&lt; filename jq filter</code>.</p></blockquote><p>This gives us a much smaller data set to think about, but which has enough variation to have the analysis also make sense:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Kentucky Breakfast Stout (KBS)"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Founders Brewing Co."</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"United States"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Gueuze Tilquin – Draft Version"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Gueuzerie Tilquin"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Zwanze 2022 - Poivre De Gorilles"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Brasserie Cantillon"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Moeder Imperiale"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"La Source Beer Co."</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Supersonic"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"LERVIG"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Norway"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Illuminati"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Leelanau Brewing Company"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"United States"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Out of Vogue"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Burning Sky Brewery"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"SDIPA Strata"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Vault City Brewing"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Scotland"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Petrus Dubbel"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Brouwerij De Brabandere"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Outlaw"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Distant Hills"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"North X Neon Raptor Imperial Stout + Cacao + Peanut + Banana"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"North Brewing Co."</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Sweet Temptation"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Vocation Brewery"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Turns"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Siren Craft Brew"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Abt 12"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Brouwerij St.Bernardus"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Interference Is Temporary"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Cloudwater Brew Co."</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Liquid Art"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Prizm Brewing Co."</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"France"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Have You Got Cask Or Is It All Craft?"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"DEYA Brewing Company"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"DIVINE FAITH // DIPA (2022)"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Northern Monk"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Silver King"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Ossett Brewery"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"HEATHEN // HAZY IPA"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Northern Monk"</span><span class="token punctuation">,</span><br>    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">]</span></code></pre><h2>Grouping by brewery country</h2><p>Well the first thing I want to do is arrange the checkin objects by brewery country. Using <a href="https://stedolan.github.io/jq/manual/#group_by(path_expression)">group_by</a> produces a set of subarrays, like this:</p><pre class="language-bash"><code class="language-bash"><span class="token operator">&lt;</span> checkins.json jq <span class="token string">'<br>.[-20:]<br>| map({beer_name, brewery_name, brewery_country})<br>| group_by(.brewery_country)<br>'</span></code></pre><p>This results in a set of subarrays, one for each brewery country, as we'd expect. Note the new <code>[ [ ... ], [ ... ], ... ]</code> structure:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Gueuze Tilquin – Draft Version"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Gueuzerie Tilquin"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Zwanze 2022 - Poivre De Gorilles"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Brasserie Cantillon"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Moeder Imperiale"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"La Source Beer Co."</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Petrus Dubbel"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Brouwerij De Brabandere"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Abt 12"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Brouwerij St.Bernardus"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Out of Vogue"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Burning Sky Brewery"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Outlaw"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Distant Hills"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"North X Neon Raptor Imperial Stout + Cacao + Peanut + Banana"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"North Brewing Co."</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Sweet Temptation"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Vocation Brewery"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Turns"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Siren Craft Brew"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Interference Is Temporary"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Cloudwater Brew Co."</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Have You Got Cask Or Is It All Craft?"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"DEYA Brewing Company"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"DIVINE FAITH // DIPA (2022)"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Northern Monk"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Silver King"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Ossett Brewery"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"HEATHEN // HAZY IPA"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Northern Monk"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Liquid Art"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Prizm Brewing Co."</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"France"</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Supersonic"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"LERVIG"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Norway"</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"SDIPA Strata"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Vault City Brewing"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Scotland"</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Kentucky Breakfast Stout (KBS)"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Founders Brewing Co."</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"United States"</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Illuminati"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Leelanau Brewing Company"</span><span class="token punctuation">,</span><br>      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"United States"</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span><br><span class="token punctuation">]</span></code></pre><h2>Arranging by brewery country and count</h2><p>Each of the subarrays has a length equal to the count of checkins for that country, clearly. So I can use this and gather the data into a key/value structure that I can then use further down the line with the <a href="https://stedolan.github.io/jq/manual/#to_entries,from_entries,with_entries">entries</a> family of functions.</p><pre class="language-bash"><code class="language-bash"><span class="token operator">&lt;</span> checkins.json jq <span class="token string">'<br>.[-20:]<br>| map({beer_name, brewery_name, brewery_country})<br>| group_by(.brewery_country)<br>| map({key: first.brewery_country, value: length})<br>'</span></code></pre><p>This has the effect of turning the subarrays into objects:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span><span class="token punctuation">,</span><br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">5</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"England"</span><span class="token punctuation">,</span><br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">10</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"France"</span><span class="token punctuation">,</span><br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">1</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Norway"</span><span class="token punctuation">,</span><br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">1</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Scotland"</span><span class="token punctuation">,</span><br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">1</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"United States"</span><span class="token punctuation">,</span><br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">2</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">]</span></code></pre><p>I could have mapped the subarrays slightly differently, like this:</p><pre class="language-bash"><code class="language-bash"><span class="token operator">&lt;</span> checkins.json jq <span class="token string">'<br>.[-20:]<br>| map({beer_name, brewery_name, brewery_country})<br>| group_by(.brewery_country)<br>| map({(first.brewery_country): length})<br>'</span></code></pre><p>which would have produced an arguably neater result:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"Belgium"</span><span class="token operator">:</span> <span class="token number">5</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"England"</span><span class="token operator">:</span> <span class="token number">10</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"France"</span><span class="token operator">:</span> <span class="token number">1</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"Norway"</span><span class="token operator">:</span> <span class="token number">1</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"Scotland"</span><span class="token operator">:</span> <span class="token number">1</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"United States"</span><span class="token operator">:</span> <span class="token number">2</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">]</span></code></pre><p>The problem with this result is that it's now harder to sort by the count, because there's no stable property to refer to for sorting. So we'll stick with the use of <code>key</code> and <code>value</code> properties.</p><h2>Sorting</h2><p>It's now time to sort, and I want the most popular brewery country at the top, so I'll also need to reverse the sorted output:</p><pre class="language-bash"><code class="language-bash"><span class="token operator">&lt;</span> checkins.json jq <span class="token string">'<br>.[-20:]<br>| map({beer_name, brewery_name, brewery_country})<br>| group_by(.brewery_country)<br>| map({key: first.brewery_country, value: length})<br>| sort_by(.value)<br>| reverse<br>'</span></code></pre><p>This produces what we're expecting:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"England"</span><span class="token punctuation">,</span><br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">10</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span><span class="token punctuation">,</span><br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">5</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"United States"</span><span class="token punctuation">,</span><br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">2</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Scotland"</span><span class="token punctuation">,</span><br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">1</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Norway"</span><span class="token punctuation">,</span><br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">1</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"France"</span><span class="token punctuation">,</span><br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">1</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">]</span></code></pre><h2>Arranging into the final structure</h2><p>Now I have the core data computed and organised as required, I can neaten it up using the <code>from_entries</code> function, which expects <code>key</code> and <code>value</code> property names:</p><pre class="language-bash"><code class="language-bash"><span class="token operator">&lt;</span> checkins.json jq <span class="token string">'<br>.[-20:]<br>| map({beer_name, brewery_name, brewery_country})<br>| group_by(.brewery_country)<br>| map({key: first.brewery_country, value: length})<br>| sort_by(.value)<br>| reverse<br>| from_entries<br>'</span></code></pre><p>And I get an even better version of what I almost went for when I was first arranging by brewery country and count:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"England"</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span><br>  <span class="token property">"Belgium"</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span><br>  <span class="token property">"United States"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span><br>  <span class="token property">"Scotland"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span><br>  <span class="token property">"Norway"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span><br>  <span class="token property">"France"</span><span class="token operator">:</span> <span class="token number">1</span><br><span class="token punctuation">}</span></code></pre><p>That'll do nicely.</p><h2>Running the filter on the entire data set</h2><p>Now I'm happy with the result, I can remove the first two parts of the filter (which were there just for a quick experiment) so that the results reflect my entire history checkin:</p><pre class="language-bash"><code class="language-bash"><span class="token operator">&lt;</span> checkins.json jq <span class="token string">'<br>group_by(.brewery_country)<br>| map({key: first.brewery_country, value: length})<br>| sort_by(.value)<br>| reverse<br>| from_entries<br>'</span></code></pre><p>This gives me the following result:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"England"</span><span class="token operator">:</span> <span class="token number">2518</span><span class="token punctuation">,</span><br>  <span class="token property">"United States"</span><span class="token operator">:</span> <span class="token number">590</span><span class="token punctuation">,</span><br>  <span class="token property">"Belgium"</span><span class="token operator">:</span> <span class="token number">497</span><span class="token punctuation">,</span><br>  <span class="token property">"Scotland"</span><span class="token operator">:</span> <span class="token number">157</span><span class="token punctuation">,</span><br>  <span class="token property">"Netherlands"</span><span class="token operator">:</span> <span class="token number">123</span><span class="token punctuation">,</span><br>  <span class="token property">"Denmark"</span><span class="token operator">:</span> <span class="token number">97</span><span class="token punctuation">,</span><br>  <span class="token property">"Germany"</span><span class="token operator">:</span> <span class="token number">79</span><span class="token punctuation">,</span><br>  <span class="token property">"Wales"</span><span class="token operator">:</span> <span class="token number">70</span><span class="token punctuation">,</span><br>  <span class="token property">"Spain"</span><span class="token operator">:</span> <span class="token number">69</span><span class="token punctuation">,</span><br>  <span class="token property">"Norway"</span><span class="token operator">:</span> <span class="token number">40</span><span class="token punctuation">,</span><br>  <span class="token property">"Ireland"</span><span class="token operator">:</span> <span class="token number">29</span><span class="token punctuation">,</span><br>  <span class="token property">"Sweden"</span><span class="token operator">:</span> <span class="token number">25</span><span class="token punctuation">,</span><br>  <span class="token property">"Italy"</span><span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span><br>  <span class="token property">"France"</span><span class="token operator">:</span> <span class="token number">19</span><span class="token punctuation">,</span><br>  <span class="token property">"Australia"</span><span class="token operator">:</span> <span class="token number">17</span><span class="token punctuation">,</span><br>  <span class="token property">"Estonia"</span><span class="token operator">:</span> <span class="token number">16</span><span class="token punctuation">,</span><br>  <span class="token property">"Poland"</span><span class="token operator">:</span> <span class="token number">13</span><span class="token punctuation">,</span><br>  <span class="token property">"New Zealand"</span><span class="token operator">:</span> <span class="token number">13</span><span class="token punctuation">,</span><br>  <span class="token property">"Latvia"</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span><br>  <span class="token property">"Japan"</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span><br>  <span class="token property">"United Kingdom"</span><span class="token operator">:</span> <span class="token number">6</span><span class="token punctuation">,</span><br>  <span class="token property">"Northern Ireland"</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span><br>  <span class="token property">"India"</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span><br>  <span class="token property">"Austria"</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span><br>  <span class="token property">"Iceland"</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span><br>  <span class="token property">"Greece"</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span><br>  <span class="token property">"Croatia"</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span><br>  <span class="token property">"Canada"</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span><br>  <span class="token property">"Turkey"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span><br>  <span class="token property">"Switzerland"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span><br>  <span class="token property">"South Africa"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span><br>  <span class="token property">"Portugal"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span><br>  <span class="token property">"Lithuania"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span><br>  <span class="token property">"Hungary"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span><br>  <span class="token property">"Channel Islands"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span><br>  <span class="token property">"Romania"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span><br>  <span class="token property">"Malta"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span><br>  <span class="token property">"Hong Kong"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span><br>  <span class="token property">"Finland"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span><br>  <span class="token property">"Czech Republic"</span><span class="token operator">:</span> <span class="token number">1</span><br><span class="token punctuation">}</span></code></pre><p>Given my beer tastes and my location, I don't think that's a surprising result. But nice to have it confirmed. Cheers and happy 12th birthday Untappd! 🍻</p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/jq/">#jq</a> <a href="/tags/untappd/">#untappd</a> <a href="/tags/beer/">#beer</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2022/10/30/more-untappd-data-explorations-with-jq-my-top-ranking-beer-types-(part-1)/"><span>←</span> <span>More Untappd data explorations with jq - my top ranking beer types (part 1)</span> </a><a href="/blog/posts/2022/06/23/understanding-jq&#39;s-sql-style-operators-join-and-index/"><span>Understanding jq&#39;s SQL style operators JOIN and INDEX</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="untappd-data-with-jq-my-top-brewery-countries">Untappd data with jq - my top brewery countries</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2022-10-28">28 October 2022</time></li>
+	<li><a href="/tags/jq/" class="post-tag">jq</a>, </li>
+	<li><a href="/tags/untappd/" class="post-tag">untappd</a>, </li>
+	<li><a href="/tags/beer/" class="post-tag">beer</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>In this short post I explore my Untappd checkin data with <code>jq</code>, because it's a nice data set to practise my limited filtering fu upon, and also to get my blogging flowing again.</p>
+<p><img src="/images/2022/10/untappd-profile.png" alt="My profile on Untappd"></p>
+<p>I'm an <a href="https://untappd.com/user/qmacro">Untappd supporter</a> and an early adopter, joining in early November 12 years ago in 2010. Recently Untappd <a href="https://twitter.com/untappd/status/1584908973135859717">celebrated 12 years of operation and 10 million users</a>. It got me thinking back to my <a href="https://untappd.com/user/qmacro/checkin/11215/">very first checkin</a> (it was a Leffe Brune, in case you're wondering) and then I remembered that as an Untappd supporter I could get access to my entire checkin history, in JSON.</p>
+<h2 id="the-untappd-checkin-data">The Untappd checkin data</h2>
+<p>The JSON data is quite simple - it's a single file (I've called it <code>checkins.json</code>) containing an array of checkin objects, where each object looks like this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Leffe Brune / Bruin"</span><span class="token punctuation">,</span>
+  <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Abbaye de Leffe"</span><span class="token punctuation">,</span>
+  <span class="token property">"beer_type"</span><span class="token operator">:</span> <span class="token string">"Brown Ale - Belgian"</span><span class="token punctuation">,</span>
+  <span class="token property">"beer_abv"</span><span class="token operator">:</span> <span class="token string">"6.5"</span><span class="token punctuation">,</span>
+  <span class="token property">"beer_ibu"</span><span class="token operator">:</span> <span class="token string">"20"</span><span class="token punctuation">,</span>
+  <span class="token property">"comment"</span><span class="token operator">:</span> <span class="token string">"Christening Untappd with this, a fav of mine."</span><span class="token punctuation">,</span>
+  <span class="token property">"venue_name"</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span>
+  <span class="token property">"venue_city"</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span>
+  <span class="token property">"venue_state"</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span>
+  <span class="token property">"venue_country"</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span>
+  <span class="token property">"venue_lat"</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span>
+  <span class="token property">"venue_lng"</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span>
+  <span class="token property">"rating_score"</span><span class="token operator">:</span> <span class="token string">"5"</span><span class="token punctuation">,</span>
+  <span class="token property">"created_at"</span><span class="token operator">:</span> <span class="token string">"2010-11-08 18:52:02"</span><span class="token punctuation">,</span>
+  <span class="token property">"checkin_url"</span><span class="token operator">:</span> <span class="token string">"https://untappd.com/c/11215"</span><span class="token punctuation">,</span>
+  <span class="token property">"beer_url"</span><span class="token operator">:</span> <span class="token string">"https://untappd.com/beer/5941"</span><span class="token punctuation">,</span>
+  <span class="token property">"brewery_url"</span><span class="token operator">:</span> <span class="token string">"https://untappd.com/brewery/5"</span><span class="token punctuation">,</span>
+  <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span><span class="token punctuation">,</span>
+  <span class="token property">"brewery_city"</span><span class="token operator">:</span> <span class="token string">"Leuven"</span><span class="token punctuation">,</span>
+  <span class="token property">"brewery_state"</span><span class="token operator">:</span> <span class="token string">"Vlaanderen"</span><span class="token punctuation">,</span>
+  <span class="token property">"flavor_profiles"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token property">"purchase_venue"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token property">"serving_type"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token property">"checkin_id"</span><span class="token operator">:</span> <span class="token string">"11215"</span><span class="token punctuation">,</span>
+  <span class="token property">"bid"</span><span class="token operator">:</span> <span class="token string">"5941"</span><span class="token punctuation">,</span>
+  <span class="token property">"brewery_id"</span><span class="token operator">:</span> <span class="token string">"5"</span><span class="token punctuation">,</span>
+  <span class="token property">"photo_url"</span><span class="token operator">:</span> <span class="token null keyword">null</span><span class="token punctuation">,</span>
+  <span class="token property">"global_rating_score"</span><span class="token operator">:</span> <span class="token number">3.55</span><span class="token punctuation">,</span>
+  <span class="token property">"global_weighted_rating_score"</span><span class="token operator">:</span> <span class="token number">3.55</span><span class="token punctuation">,</span>
+  <span class="token property">"tagged_friends"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token property">"total_toasts"</span><span class="token operator">:</span> <span class="token string">"1"</span><span class="token punctuation">,</span>
+  <span class="token property">"total_comments"</span><span class="token operator">:</span> <span class="token string">"0"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(OK, I put my <code>rating_score</code> of 5 down to excitement at a new beer rating app).</p>
+<h2 id="my-top-brewery-countries">My top brewery countries</h2>
+<p>Noting that my first checkin was to a beer from Belgium (see the value for the <code>brewery_country</code> property) I thought it would be a nice exercise to discover the top brewery countries for the beers I've checked in.</p>
+<h3 id="reducing-the-data-set">Reducing the data set</h3>
+<p>To keep the data compact for this blog post, I decided to analyse just the latest 20 checkins, rather than the entire <a href="https://untappd.com/user/qmacro">four thousand plus</a>. And for the purposes of experimentation and illustration, I only really need to see the beer name, brewery name and brewery country.</p>
+<p>So I start my analysis like this:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token operator">&lt;</span> checkins.json jq <span class="token string">'
+.[-20:]
+| map({beer_name, brewery_name, brewery_country})
+'</span></code></pre>
+<blockquote>
+<p>Note the use of a negative index on the <a href="https://stedolan.github.io/jq/manual/#Array/StringSlice:.%5B10:15%5D">array slice</a> here - which causes the slice to start from counting backwards from the end of the array. Note also that I'm invoking <code>jq</code> and passing in the data in a slightly different way than I have done before (such as in <a href="/blog/posts/2022/06/16/summing-and-grouping-values-with-jq/">Summing and grouping values with jq</a>). Instead of specifying a filename (<code>jq filter filename</code>) I'm using redirection to pass the contents of the <code>filename</code> to <code>jq</code>'s STDIN: <code>&lt; filename jq filter</code>.</p>
+</blockquote>
+<p>This gives us a much smaller data set to think about, but which has enough variation to have the analysis also make sense:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Kentucky Breakfast Stout (KBS)"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Founders Brewing Co."</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"United States"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Gueuze Tilquin – Draft Version"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Gueuzerie Tilquin"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Zwanze 2022 - Poivre De Gorilles"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Brasserie Cantillon"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Moeder Imperiale"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"La Source Beer Co."</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Supersonic"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"LERVIG"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Norway"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Illuminati"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Leelanau Brewing Company"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"United States"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Out of Vogue"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Burning Sky Brewery"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"SDIPA Strata"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Vault City Brewing"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Scotland"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Petrus Dubbel"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Brouwerij De Brabandere"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Outlaw"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Distant Hills"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"North X Neon Raptor Imperial Stout + Cacao + Peanut + Banana"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"North Brewing Co."</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Sweet Temptation"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Vocation Brewery"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Turns"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Siren Craft Brew"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Abt 12"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Brouwerij St.Bernardus"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Interference Is Temporary"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Cloudwater Brew Co."</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Liquid Art"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Prizm Brewing Co."</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"France"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Have You Got Cask Or Is It All Craft?"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"DEYA Brewing Company"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"DIVINE FAITH // DIPA (2022)"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Northern Monk"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Silver King"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Ossett Brewery"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"HEATHEN // HAZY IPA"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Northern Monk"</span><span class="token punctuation">,</span>
+    <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<h2 id="grouping-by-brewery-country">Grouping by brewery country</h2>
+<p>Well the first thing I want to do is arrange the checkin objects by brewery country. Using <a href="https://stedolan.github.io/jq/manual/#group_by(path_expression)">group_by</a> produces a set of subarrays, like this:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token operator">&lt;</span> checkins.json jq <span class="token string">'
+.[-20:]
+| map({beer_name, brewery_name, brewery_country})
+| group_by(.brewery_country)
+'</span></code></pre>
+<p>This results in a set of subarrays, one for each brewery country, as we'd expect. Note the new <code>[ [ ... ], [ ... ], ... ]</code> structure:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Gueuze Tilquin – Draft Version"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Gueuzerie Tilquin"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Zwanze 2022 - Poivre De Gorilles"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Brasserie Cantillon"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Moeder Imperiale"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"La Source Beer Co."</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Petrus Dubbel"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Brouwerij De Brabandere"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Abt 12"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Brouwerij St.Bernardus"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Out of Vogue"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Burning Sky Brewery"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Outlaw"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Distant Hills"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"North X Neon Raptor Imperial Stout + Cacao + Peanut + Banana"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"North Brewing Co."</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Sweet Temptation"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Vocation Brewery"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Turns"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Siren Craft Brew"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Interference Is Temporary"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Cloudwater Brew Co."</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Have You Got Cask Or Is It All Craft?"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"DEYA Brewing Company"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"DIVINE FAITH // DIPA (2022)"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Northern Monk"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Silver King"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Ossett Brewery"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"HEATHEN // HAZY IPA"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Northern Monk"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"England"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Liquid Art"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Prizm Brewing Co."</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"France"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Supersonic"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"LERVIG"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Norway"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"SDIPA Strata"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Vault City Brewing"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"Scotland"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Kentucky Breakfast Stout (KBS)"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Founders Brewing Co."</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"United States"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"beer_name"</span><span class="token operator">:</span> <span class="token string">"Illuminati"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_name"</span><span class="token operator">:</span> <span class="token string">"Leelanau Brewing Company"</span><span class="token punctuation">,</span>
+      <span class="token property">"brewery_country"</span><span class="token operator">:</span> <span class="token string">"United States"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">]</span></code></pre>
+<h2 id="arranging-by-brewery-country-and-count">Arranging by brewery country and count</h2>
+<p>Each of the subarrays has a length equal to the count of checkins for that country, clearly. So I can use this and gather the data into a key/value structure that I can then use further down the line with the <a href="https://stedolan.github.io/jq/manual/#to_entries,from_entries,with_entries">entries</a> family of functions.</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token operator">&lt;</span> checkins.json jq <span class="token string">'
+.[-20:]
+| map({beer_name, brewery_name, brewery_country})
+| group_by(.brewery_country)
+| map({key: first.brewery_country, value: length})
+'</span></code></pre>
+<p>This has the effect of turning the subarrays into objects:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">5</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"England"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">10</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"France"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">1</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Norway"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">1</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Scotland"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">1</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"United States"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">2</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>I could have mapped the subarrays slightly differently, like this:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token operator">&lt;</span> checkins.json jq <span class="token string">'
+.[-20:]
+| map({beer_name, brewery_name, brewery_country})
+| group_by(.brewery_country)
+| map({(first.brewery_country): length})
+'</span></code></pre>
+<p>which would have produced an arguably neater result:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"Belgium"</span><span class="token operator">:</span> <span class="token number">5</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"England"</span><span class="token operator">:</span> <span class="token number">10</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"France"</span><span class="token operator">:</span> <span class="token number">1</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"Norway"</span><span class="token operator">:</span> <span class="token number">1</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"Scotland"</span><span class="token operator">:</span> <span class="token number">1</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"United States"</span><span class="token operator">:</span> <span class="token number">2</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>The problem with this result is that it's now harder to sort by the count, because there's no stable property to refer to for sorting. So we'll stick with the use of <code>key</code> and <code>value</code> properties.</p>
+<h2 id="sorting">Sorting</h2>
+<p>It's now time to sort, and I want the most popular brewery country at the top, so I'll also need to reverse the sorted output:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token operator">&lt;</span> checkins.json jq <span class="token string">'
+.[-20:]
+| map({beer_name, brewery_name, brewery_country})
+| group_by(.brewery_country)
+| map({key: first.brewery_country, value: length})
+| sort_by(.value)
+| reverse
+'</span></code></pre>
+<p>This produces what we're expecting:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"England"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">10</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Belgium"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">5</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"United States"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">2</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Scotland"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">1</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Norway"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">1</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"France"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">1</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<h2 id="arranging-into-the-final-structure">Arranging into the final structure</h2>
+<p>Now I have the core data computed and organised as required, I can neaten it up using the <code>from_entries</code> function, which expects <code>key</code> and <code>value</code> property names:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token operator">&lt;</span> checkins.json jq <span class="token string">'
+.[-20:]
+| map({beer_name, brewery_name, brewery_country})
+| group_by(.brewery_country)
+| map({key: first.brewery_country, value: length})
+| sort_by(.value)
+| reverse
+| from_entries
+'</span></code></pre>
+<p>And I get an even better version of what I almost went for when I was first arranging by brewery country and count:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"England"</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span>
+  <span class="token property">"Belgium"</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span>
+  <span class="token property">"United States"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+  <span class="token property">"Scotland"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  <span class="token property">"Norway"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  <span class="token property">"France"</span><span class="token operator">:</span> <span class="token number">1</span>
+<span class="token punctuation">}</span></code></pre>
+<p>That'll do nicely.</p>
+<h2 id="running-the-filter-on-the-entire-data-set">Running the filter on the entire data set</h2>
+<p>Now I'm happy with the result, I can remove the first two parts of the filter (which were there just for a quick experiment) so that the results reflect my entire history checkin:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token operator">&lt;</span> checkins.json jq <span class="token string">'
+group_by(.brewery_country)
+| map({key: first.brewery_country, value: length})
+| sort_by(.value)
+| reverse
+| from_entries
+'</span></code></pre>
+<p>This gives me the following result:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"England"</span><span class="token operator">:</span> <span class="token number">2518</span><span class="token punctuation">,</span>
+  <span class="token property">"United States"</span><span class="token operator">:</span> <span class="token number">590</span><span class="token punctuation">,</span>
+  <span class="token property">"Belgium"</span><span class="token operator">:</span> <span class="token number">497</span><span class="token punctuation">,</span>
+  <span class="token property">"Scotland"</span><span class="token operator">:</span> <span class="token number">157</span><span class="token punctuation">,</span>
+  <span class="token property">"Netherlands"</span><span class="token operator">:</span> <span class="token number">123</span><span class="token punctuation">,</span>
+  <span class="token property">"Denmark"</span><span class="token operator">:</span> <span class="token number">97</span><span class="token punctuation">,</span>
+  <span class="token property">"Germany"</span><span class="token operator">:</span> <span class="token number">79</span><span class="token punctuation">,</span>
+  <span class="token property">"Wales"</span><span class="token operator">:</span> <span class="token number">70</span><span class="token punctuation">,</span>
+  <span class="token property">"Spain"</span><span class="token operator">:</span> <span class="token number">69</span><span class="token punctuation">,</span>
+  <span class="token property">"Norway"</span><span class="token operator">:</span> <span class="token number">40</span><span class="token punctuation">,</span>
+  <span class="token property">"Ireland"</span><span class="token operator">:</span> <span class="token number">29</span><span class="token punctuation">,</span>
+  <span class="token property">"Sweden"</span><span class="token operator">:</span> <span class="token number">25</span><span class="token punctuation">,</span>
+  <span class="token property">"Italy"</span><span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span>
+  <span class="token property">"France"</span><span class="token operator">:</span> <span class="token number">19</span><span class="token punctuation">,</span>
+  <span class="token property">"Australia"</span><span class="token operator">:</span> <span class="token number">17</span><span class="token punctuation">,</span>
+  <span class="token property">"Estonia"</span><span class="token operator">:</span> <span class="token number">16</span><span class="token punctuation">,</span>
+  <span class="token property">"Poland"</span><span class="token operator">:</span> <span class="token number">13</span><span class="token punctuation">,</span>
+  <span class="token property">"New Zealand"</span><span class="token operator">:</span> <span class="token number">13</span><span class="token punctuation">,</span>
+  <span class="token property">"Latvia"</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span>
+  <span class="token property">"Japan"</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span>
+  <span class="token property">"United Kingdom"</span><span class="token operator">:</span> <span class="token number">6</span><span class="token punctuation">,</span>
+  <span class="token property">"Northern Ireland"</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span>
+  <span class="token property">"India"</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span>
+  <span class="token property">"Austria"</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span>
+  <span class="token property">"Iceland"</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+  <span class="token property">"Greece"</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+  <span class="token property">"Croatia"</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+  <span class="token property">"Canada"</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+  <span class="token property">"Turkey"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+  <span class="token property">"Switzerland"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+  <span class="token property">"South Africa"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+  <span class="token property">"Portugal"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+  <span class="token property">"Lithuania"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+  <span class="token property">"Hungary"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+  <span class="token property">"Channel Islands"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+  <span class="token property">"Romania"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  <span class="token property">"Malta"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  <span class="token property">"Hong Kong"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  <span class="token property">"Finland"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  <span class="token property">"Czech Republic"</span><span class="token operator">:</span> <span class="token number">1</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Given my beer tastes and my location, I don't think that's a surprising result. But nice to have it confirmed. Cheers and happy 12th birthday Untappd! 🍻</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2022/06/23/understanding-jqs-sql-style-operators-join-and-index/">Understanding jq&#39;s SQL style operators JOIN and INDEX</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2022/10/30/more-untappd-data-explorations-with-jq-my-top-ranking-beer-types-part-1/">More Untappd data explorations with jq - my top ranking beer types (part 1)</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2022/10/28/untappd-data-with-jq-my-top-brewery-countries/` was built on 2025-09-15T15:58:49.616Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

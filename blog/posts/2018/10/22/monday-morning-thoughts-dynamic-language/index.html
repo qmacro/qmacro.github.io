@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Monday morning thoughts: dynamic language</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="monday-morning-thoughts-dynamic-language">Monday morning thoughts: dynamic language</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2018-10-22">22 October 2018</time></li>
+	<li><a href="/tags/sapcommunity/" class="post-tag">sapcommunity</a>, </li>
+	<li><a href="/tags/mondaymorningthoughts/" class="post-tag">mondaymorningthoughts</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p><em>In this post, I think about a particular function definition in
+JavaScript, and how it represents beauty and practicality in equal
+measure.</em></p>
+<p>On Friday evening, I
+<a href="/tweets/qmacro/status/1053322908813148165">tweeted</a>:</p>
+<blockquote>
+<p>Heading to the woodstore with a beer and cigar. I was reminded of this
+little gem just now. Lovely.</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">push</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">xs<span class="token punctuation">,</span> x</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+  <span class="token punctuation">(</span><span class="token parameter">_</span> <span class="token operator">=></span> xs<span class="token punctuation">)</span><span class="token punctuation">(</span>xs<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+</blockquote>
+<p>It was something I'd come across while idly perusing some source code,
+and I thought it was quite beautiful. I had a few responses to the
+tweet. In one of them, someone asked for an explanation, and
+then Julie Plummer <a href="https://twitter.com/JuliePlummer20/status/1053526571745755137">suggested</a> I
+do it in the form of a post in this <a href="/tags/mondaymorningthoughts/">Monday morning thoughts
+series</a>. This was a
+great idea, as I was already on my way to the woodstore.</p>
+<p><img src="/images/2018/10/woodstore.jpg" alt="">
+<em>The woodstore, where I read and think about things (and enjoy a beer or
+two).</em></p>
+<h2 id="the-context">The context</h2>
+<p>The source code in question is a utility program,
+<a href="https://github.com/SAP/cloud-sample-spaceflight/blob/master/db/reuseTableData.js">reuseTableData.js</a>,
+part of the base repository
+<a href="https://github.com/SAP/cloud-sample-spaceflight">SAP/cloud-sample-spaceflight</a>
+which contains the base Core Data &amp; Services data model for the
+Application Programming Model sessions at SAP TechEd this year (see
+&quot;<a href="/blog/posts/2018/10/10/sap-cloud-application-programming-model-(cap)-start-here/">Application Programming Model for SAP Cloud Platform - start
+here</a>&quot;)
+and written by Christian Georgi &amp; my Language
+Ramblings partner in crime Chris Whealy.</p>
+<p>Why was I reading this? Well, out of curiosity, and a desire to learn
+more, of course. I have heard that programmers spend only around 10% of
+their time writing code, and 90% reading it. That sounds extreme, but I
+can imagine it being true in some circumstances. I'm guessing this
+covers not only reading code to work out what it does before extending
+or modifying it, but also reading code for pleasure, to learn how other
+people write.</p>
+<p><img src="/images/books/programmingjabber_large.jpg" alt="Programming
+Jabber"></p>
+<p>I remember researching for my first book &quot;<a href="http://shop.oreilly.com/product/9780596002022.do">Programming
+Jabber</a>&quot; in the early
+2000's. I spent many hours in the local coffee shop reading through the
+source code of the reference implementation of the Jabber (now
+<a href="https://xmpp.org/">XMPP</a>) protocol - the jabberd source code, written
+in C by <a href="https://en.wikipedia.org/wiki/Jeremie_Miller">Jeremie Miller</a>
+and others. I learned a lot from it, and I enjoy reading other people's
+code now and then - not least to see how each author's character gently
+but inevitably leaks through into the code.</p>
+<p>So back to the program in question. To add a little context, here's the
+<a href="https://github.com/SAP/cloud-sample-spaceflight/blob/c3c152e192b1d3dcfea23242681f3521d32b22f2/db/reuseTableData.js#L36-L37">line of
+code</a>
+again, with the comment that accompanies it:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token comment">// A useful version of Array push that returns the modified array </span>
+<span class="token comment">// rather than the index of the newly added item...</span>
+<span class="token keyword">const</span> <span class="token function-variable function">push</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">arr<span class="token punctuation">,</span> newEl</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+  <span class="token punctuation">(</span><span class="token parameter">_</span> <span class="token operator">=></span> arr<span class="token punctuation">)</span><span class="token punctuation">(</span>arr<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>newEl<span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>In JavaScript, Array is a global object used to represent lists, and has
+a number of built-in functions, or methods, that operate on Array object
+instances.</p>
+<p>For example, you can create an array and then use the Array object's
+<code>join()</code> function like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token operator">></span> const colours <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'red'</span>, <span class="token string">'green'</span>, <span class="token string">'blue'</span><span class="token punctuation">]</span>
+undefined
+<span class="token operator">></span> colours.join<span class="token punctuation">(</span><span class="token string">' and '</span><span class="token punctuation">)</span>
+<span class="token string">'red and green and blue'</span></code></pre>
+<p>(Code samples here are from Chrome console sessions, using
+<a href="https://bytearcher.com/articles/es6-vs-es2015-name/">ES6</a>).</p>
+<p>Another built-in function for the Array object is <code>push()</code>, one of a group
+of four functions I mentally think about together as a family, as they
+do very similar things:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">  shift() &lt;---+           +---> pop()
+              |           |
+              |           |
+             [1, 2, 3, 4, 5]
+              ^           ^
+              |           |
+unshift() ----+           +---- push()</code></pre>
+<p>The functions <code>shift()</code> and <code>unshift()</code> operate on the front of an array,
+removing or adding elements respectively. The functions <code>pop()</code> and <code>push()</code>
+operate on the end of an array, removing or adding elements
+respectively.</p>
+<p>There are also other functions for manipulating elements in other places
+in an array, functions such as <code>splice()</code> and <code>slice()</code>, but what we want to
+concentrate on right now is <code>push()</code> and its cousin <code>unshift()</code>. Both add
+elements to the array. And in both cases, what's returned
+is the length of the new array. For example:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token operator">></span> const colours <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token string">'red'</span>, <span class="token string">'green'</span>, <span class="token string">'blue'</span><span class="token punctuation">]</span>
+undefined
+<span class="token operator">></span> colours.push<span class="token punctuation">(</span><span class="token string">'yellow'</span><span class="token punctuation">)</span>
+<span class="token number">4</span></code></pre>
+<p>This is not unreasonable, but it's also less useful than you might
+think.</p>
+<h2 id="practicality">Practicality</h2>
+<p>In many situations, you'll want to create something - an array, a map,
+another higher level object, and manipulate it. One approach to this
+which feels to many quite natural is to use method chaining, which is
+effectively like saying: &quot;do this, then that, then the other&quot;.</p>
+<p>This is common in UI5, where for example standard controls, such as the
+Button control in the <code>sap.m</code> library has methods, many of which return
+the Button instance upon which they're operating, explicitly to allow
+method chaining (see for example
+<a href="https://ui5.sap.com/#/api/sap.m.Button/methods/attachPress">attachPress</a>).
+So we can end up with something like this, where four methods are
+&quot;chained&quot; together:</p>
+<p><img src="/images/2018/10/Screenshot-2018-10-22-at-08.36.39.png" alt=""></p>
+<p>In a similar way, you might want to create a list of elements, rearrange
+it by some means, add something to the end of it, and then map over each
+of the final collection of elements to end up with what you really need.
+Like this, for example:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token punctuation">[</span><span class="token string">'red'</span><span class="token punctuation">,</span> <span class="token string">'white'</span><span class="token punctuation">,</span> <span class="token string">'blue'</span><span class="token punctuation">]</span>
+    <span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token string">'orange'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">sort</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token parameter">x</span> <span class="token operator">=></span> x<span class="token punctuation">.</span><span class="token function">toUpperCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>You'd hope to get this:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token punctuation">[</span><span class="token string">"BLUE"</span><span class="token punctuation">,</span> <span class="token string">"ORANGE"</span><span class="token punctuation">,</span> <span class="token string">"RED"</span><span class="token punctuation">,</span> <span class="token string">"WHITE"</span><span class="token punctuation">]</span> </code></pre>
+<p>However, you'd end up with this:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token property">Uncaught TypeError:</span> <span class="token punctuation">[</span><span class="token string">"red"</span><span class="token punctuation">,</span><span class="token string">"white"</span><span class="token punctuation">,</span><span class="token string">"blue"</span><span class="token punctuation">]</span><span class="token punctuation">.</span>push<span class="token operator">(</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token operator">)</span><span class="token punctuation">.</span>sort is not a function
+at <span class="token operator">&amp;</span>lt<span class="token operator">;</span>anonymous<span class="token operator">></span><span class="token operator">:</span><span class="token number">3</span><span class="token operator">:</span><span class="token number">3</span></code></pre>
+<p>This is because the <code>push()</code> function returns the new length of the array
+(4) rather than the array itself. Not ideal.</p>
+<p>What's perhaps worse is that it makes it cumbersome to employ higher
+level functions like <code>reduce()</code>, in combination with the shorter ES6 based
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions">arrow
+function</a>
+style of function definition. With arrow functions, the function
+definition itself is much shorter and (without curly braces) there's an
+implicit return of whatever is evaluated as a result of that function's
+execution.</p>
+<p>If you're not familiar with using <code>reduce()</code> and taking advantage of the
+new ES6 arrow function style, here's a contrived example:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token operator">></span> <span class="token punctuation">[</span><span class="token number">1,2</span>,3,4,5<span class="token punctuation">]</span>.reduce<span class="token punctuation">((</span>a, x<span class="token punctuation">)</span> <span class="token operator">=</span><span class="token operator">></span> a * x, <span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token number">120</span></code></pre>
+<p>Here, we multiply a list of numbers, and take advantage of the fact that
+the function definition being passed to reduce:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token punctuation">(</span><span class="token parameter">a<span class="token punctuation">,</span> x</span><span class="token punctuation">)</span> <span class="token operator">=></span> a <span class="token operator">*</span> x</code></pre>
+<p><em>implicitly returns</em> the result of the expression <code>a * x</code>, to be fed into
+the next element iteration until the list of elements is exhausted.</p>
+<p>In other words, if you want to use Array's <code>push()</code> function as the
+function definition passed in a <code>reduce()</code> scenario, you can't, or at
+least, what it evaluates to (the new length of the array) is almost
+certainly not what you want fed into the next iteration - you want the
+new (modified) array*.</p>
+<p>*the keen readers amongst you will guess that I'm currently slightly
+uncomfortable at completely ignoring the fact that <code>push()</code> is mutating
+the array, which is generally a Bad Thing(tm) - but I'm ignoring it
+deliberately, as that's a whole other subject for another time.</p>
+<p>If you read further on in the
+<a href="https://github.com/SAP/cloud-sample-spaceflight/blob/master/db/reuseTableData.js">reuseTableData.js</a> program,
+you'll see that there's a <code>reduce()</code> in <a href="https://github.com/SAP/cloud-sample-spaceflight/blob/c3c152e192b1d3dcfea23242681f3521d32b22f2/db/reuseTableData.js#L73">line
+73</a>
+function being employed to gather table names together:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">var</span> tableNames <span class="token operator">=</span> <span class="token function">_getTableDataSync</span><span class="token punctuation">(</span>path<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">'db/src/csv'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span>
+    <span class="token function">reduce</span><span class="token punctuation">(</span>
+    <span class="token punctuation">(</span><span class="token parameter">accOuter<span class="token punctuation">,</span> filePath</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+      <span class="token constant">JSON</span><span class="token punctuation">.</span>
+        <span class="token function">parse</span><span class="token punctuation">(</span>fs<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span>filePath<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span>
+        imports<span class="token punctuation">.</span>
+        <span class="token function">reduce</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">accInner<span class="token punctuation">,</span> entry</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token function">push</span><span class="token punctuation">(</span>accInner<span class="token punctuation">,</span> entry<span class="token punctuation">.</span>target_table<span class="token punctuation">)</span><span class="token punctuation">,</span> accOuter<span class="token punctuation">)</span>
+      <span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span></code></pre>
+<p>This use of</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token function">push</span><span class="token punctuation">(</span>accInner<span class="token punctuation">,</span> entry<span class="token punctuation">.</span>target_table<span class="token punctuation">)</span></code></pre>
+<p>is not the standard <code>push()</code> function from the Array object. Rather, it's
+our <code>push()</code> function defined earlier, the subject of this post:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">push</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">arr<span class="token punctuation">,</span> newEl</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+  <span class="token punctuation">(</span><span class="token parameter">_</span> <span class="token operator">=></span> arr<span class="token punctuation">)</span><span class="token punctuation">(</span>arr<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>newEl<span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>Now we understand the context of where it's used, and why the standard
+<code>push()</code> function is no good, let's dig in to this definition to see how
+it works, and why it can be used.</p>
+<h2 id="beauty">Beauty</h2>
+<p>So first off, we can see it's a function definition using the fat arrow
+(<code>=&gt;</code>) syntax from ES6. We're now already somewhat familiar with that,
+but it still looks a little odd, with that strange looking underscore,
+and what initially looks like a slightly uncomfortable number of
+brackets.</p>
+<p>Remember that contrived example using a <code>reduce()</code> function above? You can
+see that the function passed to <code>reduce()</code> is one with two parameters -
+the accumulator <code>a</code>, and <code>x</code> to represent the elements that are
+passed in, one iteration at a time. So also here we have a function
+definition with two parameters, again, an accumulator <code>arr</code> (array)
+and <code>newEl</code> representing the elements passed to the function as
+<code>reduce</code>'s list mechanics iterate over the array, one element at a time.</p>
+<p>So what's the actual function definition here? Well, it's this bit:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token punctuation">(</span><span class="token parameter">_</span> <span class="token operator">=></span> arr<span class="token punctuation">)</span><span class="token punctuation">(</span>arr<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>newEl<span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>The first part, <code>(_ =&gt; arr)</code> is yet another function definition. What
+the heck does it do?</p>
+<p>Well, it takes one parameter, and promptly ignores it, simply returning
+the value of <code>arr</code>. The use of the underscore for this ignored
+parameter is convention - it tells the reader &quot;we're expecting a
+parameter to be passed to this function, but we're not actually
+interested in it&quot;. (It's often used where there's more than one
+parameter in a function definition signature, and the intention is to
+ignore one or more of them.)</p>
+<p>The body of this function is simply <code>arr</code> which returns whatever value
+<code>arr</code> has. Which is what?</p>
+<p>To answer that, we need to look at the other part of the definition.
+This is the <code>arr.push(newEl)</code> bit, but we can't and shouldn't ignore
+all those brackets. Breaking those brackets down, we have a first pair
+surrounding <code>_ =&gt; arr</code>, a second pair surrounding
+<code>arr.push(newEl)</code> and the pair around <code>newEl</code>.</p>
+<p>We can be happy enough with this last pair, it's just a standard
+invocation of the <code>push()</code> function, where the value of <code>newEl</code> is the
+new element being pushed onto the end of <code>arr</code>.</p>
+<p>So what about the other two pairs of brackets? Well, in JavaScript, you
+can define an anonymous function on the fly, and call it immediately
+(that's called an Immediately Invoked Function Expression, or IIFE).
+When you do this, you wrap the anonymous function definition in
+brackets:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token punctuation">(</span><span class="token parameter">_</span> <span class="token operator">=></span> arr<span class="token punctuation">)</span></code></pre>
+<p>and then call it, passing any arguments in brackets, as normal. In this
+case, there's one argument to pass (to match up with the single <code>_</code>
+parameter the function is expecting). This argument is the result of the
+evaluation of this:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript">arr<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>newEl<span class="token punctuation">)</span></code></pre>
+<p>which, as we know, will be the new length of the <code>arr</code> array. But by
+the time this is evaluated, the <code>arr</code> array will already have had
+<code>newEl</code> added as a new last element, and so we don't have to worry
+about the value returned from this (the new length), as we're going to
+capture it in the <code>_</code> parameter of <code>(_ =&gt; arr)</code> and ignore it
+anyway. The sole purpose of the <code>(_ =&gt; arr)</code> function is to return
+the value of <code>arr</code> - which now has the value of <code>newEl</code> on the
+end.</p>
+<p>The upshot of this definition of a custom <code>push</code> function is that we can
+use it to push an element onto the end of an array, and have it return
+the infinitely more useful modified array, rather than the almost
+useless new length of the array. We can then employ it in higher order
+function invocations such as those with <code>reduce()</code>.</p>
+<p>Beyond the ability to define anonymous functions (to use in higher order
+functions) and generally program in this dynamic way, the mechanic that
+allows this whole idea to work is called a
+<a href="https://en.wikipedia.org/wiki/Closure_(computer_programming)">closure</a>.</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">push</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">arr<span class="token punctuation">,</span> newEl</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+  <span class="token punctuation">(</span><span class="token parameter">_</span> <span class="token operator">=></span> arr<span class="token punctuation">)</span><span class="token punctuation">(</span>arr<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>newEl<span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>The value of <code>arr</code>, initially passed to the outer function definition
+as the accumulator, by <code>reduce</code>'s list mechanics, is available on the
+right hand side of the main fat arrow, both in the inner function
+definition as well as the on-the-fly call to push that is passed as the
+argument to that inner function.</p>
+<p>Dynamic programming in general, and this style of extension in
+particular, is a wonderful thing, and I consider this particular
+definition of push to be quite beautiful.</p>
+<p>There are alternatives, of course - my friend <a href="https://twitter.com/martinrue">Martin
+Rue</a> <a href="https://twitter.com/martinrue/status/1053332526285144064">suggested</a>
+this:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">push</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">xs<span class="token punctuation">,</span> x</span><span class="token punctuation">)</span> <span class="token operator">=></span> xs<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>x<span class="token punctuation">)</span> <span class="token operator">&amp;&amp;</span> xs</code></pre>
+<p>which achieves the same effect by relying on the fact that the last
+value evaluated in the execution of a function (again, without curly
+braces) is the value that is returned. In this case, that is simply
+<code>xs</code>*. Also very elegant.</p>
+<p>* I note that Martin used <code>xs</code> to represent a list of <code>x</code> elements,
+which is a rather nice meme, or at least an idea, that I picked up from
+various functional programming treatises and used, for example, by <a href="https://en.wikipedia.org/wiki/Erik_Meijer_(computer_scientist)">Erik
+Meijer</a> in
+his wonderful series on Haskell and F#. Perhaps more on that another
+time.</p>
+<p>So, here's a hat tip to Chris Whealy who I'm guessing had some
+influence on the distinctive style of this <code>reuseTableData.js</code> code. I
+know Chris and have started to recognise his 'signature' in code. And
+I'll leave you with a recommendation to study other people's code
+every now and then. It can be a lot of fun, and educational to boot.
+Happy reading!</p>
+<hr>
+<p>This post was brought to you by a cold Monday morning, before setting
+off to the airport for Barcelona and the European instance of SAP
+TechEd. If you're there, stop by the Developer Garage for a chat about
+this or anything else!</p>
+<hr>
+<p>Read more posts in this series here: <a href="/tags/mondaymorningthoughts/">Monday morning
+thoughts</a>.</p>
+<hr>
+<p><a href="https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-dynamic-language/ba-p/13383046">Originally published on SAP Community</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2018/10/16/set-up-vs-code-on-chrome-os-for-local-application-programming-model-development/">Set up VS Code on Chrome OS for local Application Programming Model development</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2018/10/29/monday-morning-thoughts-exploring-reuse/">Monday morning thoughts: exploring reuse</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2018/10/22/monday-morning-thoughts-dynamic-language/` was built on 2025-09-15T15:58:49.595Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

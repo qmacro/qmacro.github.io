@@ -1,7 +1,640 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2021/10/29/embracing-jq-and-json/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Embracing jq and JSON | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Embracing jq and JSON"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2021/10/29/embracing-jq-and-json/"><meta name="description" content="Embracing jq and JSON 29 Oct 2021 | 3 min read Finding objects in a complex JSON structure isn&#39;t as scary as I thought with jq. My friend..."><meta property="og:description" content="Embracing jq and JSON 29 Oct 2021 | 3 min read Finding objects in a complex JSON structure isn&#39;t as scary as I thought with jq. My friend..."><meta name="description" content="Embracing jq and JSON 29 Oct 2021 | 3 min read Finding objects in a complex JSON structure isn&#39;t as scary as I thought with jq. My friend..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Embracing jq and JSON</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Embracing jq and JSON</h1><div class="post__details"><time datetime="2021-10-29">29 Oct 2021 </time><span>| </span><span>3 min read</span></div></header><main class="post__content"><p>Finding objects in a complex JSON structure isn't as scary as I thought with jq.</p><p>My friend and colleague Rui was asking today about finding directory information for a given global account on SAP's <a href="https://www.sap.com/uk/products/business-technology-platform.html">Business Technology Platform</a> (BTP). Of course, being an awesome chap, he was asking in the context of the <a href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/7c6df2db6332419ea7a862191525377c.html">BTP CLI tool</a>, <code>btp</code>.</p><p>For a given (fictitious) trial global account, let's say I have a structure that looks like this:</p><p><img src="/images/2021/10/btp-global-account-structure.png" alt="BTP global account structure"></p><p>With the <code>btp</code> tool, I can see this information cleanly in my environment of choice, my Bash shell, with this invocation:</p><pre class="language-bash"><code class="language-bash">btp get accounts/global-account --show-hierarchy</code></pre><p>which shows me something like this:</p><pre class="language-log"><code class="language-log">Showing details for global account <span class="token uuid constant">42bb4252-2b49-4685-bcd7-62c8d85d8b13</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><br><br>├─ 7f81446xtrial <span class="token operator">(</span><span class="token uuid constant">42bb4252-2b49-4685-bcd7-62c8d85d8b13</span> <span class="token operator">-</span> global account<span class="token operator">)</span><br>│  ├─ trial <span class="token operator">(</span><span class="token uuid constant">b3f3b2a3-d96d-4bea-8bbf-57ee84a9fc23</span> <span class="token operator">-</span> subaccount<span class="token operator">)</span><br>│  ├─ mydir <span class="token operator">(</span><span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span> <span class="token operator">-</span> directory<span class="token operator">)</span><br>│  │  ├─ fruit <span class="token operator">(</span><span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span> <span class="token operator">-</span> directory<span class="token operator">)</span><br>│  │  │  ├─ apple <span class="token operator">(</span><span class="token uuid constant">3b4ba347-973f-4571-b4af-7862886104be</span> <span class="token operator">-</span> directory<span class="token operator">)</span><br>│  │  │  ├─ banana <span class="token operator">(</span><span class="token uuid constant">0b58163d-5c49-4eb5-b359-17c9a0d94138</span> <span class="token operator">-</span> directory<span class="token operator">)</span><br>│  │  ├─ this and that <span class="token operator">(</span><span class="token uuid constant">4a050bbe-5c4d-4ac0-9a66-d7e513f8b4c8</span> <span class="token operator">-</span> directory<span class="token operator">)</span><br><br><span class="token property">type:</span>            <span class="token property">id:</span>                                    <span class="token property">display name:</span>   <span class="token property">parent id:</span>                             <span class="token property">parent type:</span><br>global account   <span class="token uuid constant">42bb4252-2b49-4685-bcd7-62c8d85d8b13</span>   7f81446xtrial<br>subaccount       <span class="token uuid constant">b3f3b2a3-d96d-4bea-8bbf-57ee84a9fc23</span>   trial           <span class="token uuid constant">42bb4252-2b49-4685-bcd7-62c8d85d8b13</span>   global account<br>directory        <span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span>   mydir           <span class="token uuid constant">42bb4252-2b49-4685-bcd7-62c8d85d8b13</span>   global account<br>directory        <span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span>   fruit           <span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span>   directory<br>directory        <span class="token uuid constant">3b4ba347-973f-4571-b4af-7862886104be</span>   apple           <span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span>   directory<br>directory        <span class="token uuid constant">0b58163d-5c49-4eb5-b359-17c9a0d94138</span>   banana          <span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span>   directory<br>directory        <span class="token uuid constant">4a050bbe-5c4d-4ac0-9a66-d7e513f8b4c8</span>   this and that   <span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span>   directory</code></pre><p>The directories are hierarchically related, as you can see from the graphical depiction. But they're presented in a nice flat list towards the end, and I'm tempted to use standard *nix tools to parse that information out.</p><p>First, I'm only interested in the data in the second half, in the table that has headers like &quot;type:&quot;, &quot;id:&quot; and so on. So I can remove all the lines up to (and including) that header line like this:</p><pre class="language-bash"><code class="language-bash">btp get accounts/global-account --show-hierarchy <span class="token punctuation">\</span><br>  <span class="token operator">|</span> <span class="token function">sed</span> <span class="token parameter variable">-e</span> <span class="token string">'1,/^type:\s/d'</span></code></pre><p>This gives me the following:</p><pre class="language-log"><code class="language-log">global account   <span class="token uuid constant">42bb4252-2b49-4685-bcd7-62c8d85d8b13</span>   7f81446xtrial<br>subaccount       <span class="token uuid constant">b3f3b2a3-d96d-4bea-8bbf-57ee84a9fc23</span>   trial           <span class="token uuid constant">42bb4252-2b49-4685-bcd7-62c8d85d8b13</span>   global account<br>directory        <span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span>   mydir           <span class="token uuid constant">42bb4252-2b49-4685-bcd7-62c8d85d8b13</span>   global account<br>directory        <span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span>   fruit           <span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span>   directory<br>directory        <span class="token uuid constant">3b4ba347-973f-4571-b4af-7862886104be</span>   apple           <span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span>   directory<br>directory        <span class="token uuid constant">0b58163d-5c49-4eb5-b359-17c9a0d94138</span>   banana          <span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span>   directory<br>directory        <span class="token uuid constant">4a050bbe-5c4d-4ac0-9a66-d7e513f8b4c8</span>   this and that   <span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span>   directory</code></pre><p>Now I can more reliably look for the <code>directory</code> entries, right?</p><pre class="language-bash"><code class="language-bash">btp get accounts/global-account --show-hierarchy <span class="token punctuation">\</span><br>  <span class="token operator">|</span> <span class="token function">sed</span> <span class="token string">'1,/^type:\s/d'</span> <span class="token punctuation">\</span><br>  <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">'^directory\s'</span></code></pre><p>This gives me:</p><pre class="language-log"><code class="language-log">directory        <span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span>   mydir           <span class="token uuid constant">42bb4252-2b49-4685-bcd7-62c8d85d8b13</span>   global account<br>directory        <span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span>   fruit           <span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span>   directory<br>directory        <span class="token uuid constant">3b4ba347-973f-4571-b4af-7862886104be</span>   apple           <span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span>   directory<br>directory        <span class="token uuid constant">0b58163d-5c49-4eb5-b359-17c9a0d94138</span>   banana          <span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span>   directory<br>directory        <span class="token uuid constant">4a050bbe-5c4d-4ac0-9a66-d7e513f8b4c8</span>   this and that   <span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span>   directory</code></pre><p>Now all I need to do is grab the value of the third column ... oh, wait.</p><p>The directory named &quot;this and that&quot; is going to give me a bit of a headache; because it's not tabs that separate the columns, but normal spaces, I can't easily distinguish the spaces separating the columns from the spaces separating the words in the name &quot;this and that&quot;.</p><p>While it's possible I could come up with some solution here, I think it's getting a little complex.</p><p>The BTP CLI sports a <a href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/dcb85b7dea61432cbafaab4ce0ec9b08.html">JSON output mode</a>. This provides me with a more reliable and predictable data structure that I can parse. The natural tool to reach for here is of course <a href="https://stedolan.github.io/jq/">jq</a>, the &quot;lightweight and flexible command-line JSON processor&quot;.</p><p>However, the structure of the JSON in this particular case is not regular; the nesting of parent and child objects reflects the structure of the actual hierarchy in the global account. That makes sense of course, but to be honest, the prospect of wielding some <code>jq</code> incantation to parse an object structure that I cannot know in advance felt a little scary; I had visions of recursive procedures and more.</p><p>Here's a short section of the JSON output, to show you what I mean:</p><p><img src="/images/2021/10/json-output-structure.png" alt="JSON output structure"></p><p>As it turns out, finding the objects in this hierarchy of nested parents and children turned out to be not as scary as I thought. Here's the invocation again, this time passing the option <code>--format json</code> when invoking <code>btp</code>, and parsing the output with <code>jq</code>:</p><pre class="language-bash"><code class="language-bash">btp <span class="token parameter variable">--format</span> json get accounts/global-account --show-hierarchy <span class="token punctuation">\</span><br>  <span class="token operator">|</span> jq <span class="token parameter variable">-r</span> <span class="token string">'recurse | objects | select(.directoryType=="FOLDER") | .displayName'</span></code></pre><p>This produces the following output to STDOUT:</p><pre class="language-log"><code class="language-log">fruit<br>banana<br>apple<br>this and that</code></pre><p>Wonderful!</p><p>Here's a quick summary of what each of the items in the <code>jq</code> pipeline does:</p><ul><li><code>recurse</code>: Recursively descends <code>.</code>, producing every value</li><li><code>objects</code>: Selects only inputs that are objects</li><li><code>select(boolean_expression)</code>: produces its input unchanged if the expression returns true</li></ul><p>The boolean expression used with <code>select</code> ensures that only objects that have a JSON property <code>directoryType</code> with the specific value <code>FOLDER</code> are picked out. From those, just the value of the <code>displayName</code> property is then produced.</p><p>And that's it. Not as scary as I thought.</p><p>I need to improve my <code>jq</code> fu, and using it like this to process output from CLI tools such as <code>btp</code> is one way of doing it.</p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/autodidactics/">#autodidactics</a> <a href="/tags/jq/">#jq</a> <a href="/tags/btp/">#btp</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2021/11/07/exploring-fff-part-2-get_ls_colors/"><span>←</span> <span>Exploring fff part 2 - get_ls_colors</span> </a><a href="/blog/posts/2021/10/14/sourcing-vs-executing-in-bash/"><span>Sourcing vs executing in Bash</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="embracing-jq-and-json">Embracing jq and JSON</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2021-10-29">29 October 2021</time></li>
+	<li><a href="/tags/autodidactics/" class="post-tag">autodidactics</a>, </li>
+	<li><a href="/tags/jq/" class="post-tag">jq</a>, </li>
+	<li><a href="/tags/btp/" class="post-tag">btp</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>Finding objects in a complex JSON structure isn't as scary as I thought with jq.</p>
+<!--excerpt-->
+<p>My friend and colleague Rui was asking today about finding directory information for a given global account on SAP's <a href="https://www.sap.com/uk/products/business-technology-platform.html">Business Technology Platform</a> (BTP). Of course, being an awesome chap, he was asking in the context of the <a href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/7c6df2db6332419ea7a862191525377c.html">BTP CLI tool</a>, <code>btp</code>.</p>
+<p>For a given (fictitious) trial global account, let's say I have a structure that looks like this:</p>
+<p><img src="/images/2021/10/btp-global-account-structure.png" alt="BTP global account structure"></p>
+<p>With the <code>btp</code> tool, I can see this information cleanly in my environment of choice, my Bash shell, with this invocation:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">btp get accounts/global-account --show-hierarchy</code></pre>
+<p>which shows me something like this:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">Showing details for global account <span class="token uuid constant">42bb4252-2b49-4685-bcd7-62c8d85d8b13</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+├─ 7f81446xtrial <span class="token operator">(</span><span class="token uuid constant">42bb4252-2b49-4685-bcd7-62c8d85d8b13</span> <span class="token operator">-</span> global account<span class="token operator">)</span>
+│  ├─ trial <span class="token operator">(</span><span class="token uuid constant">b3f3b2a3-d96d-4bea-8bbf-57ee84a9fc23</span> <span class="token operator">-</span> subaccount<span class="token operator">)</span>
+│  ├─ mydir <span class="token operator">(</span><span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span> <span class="token operator">-</span> directory<span class="token operator">)</span>
+│  │  ├─ fruit <span class="token operator">(</span><span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span> <span class="token operator">-</span> directory<span class="token operator">)</span>
+│  │  │  ├─ apple <span class="token operator">(</span><span class="token uuid constant">3b4ba347-973f-4571-b4af-7862886104be</span> <span class="token operator">-</span> directory<span class="token operator">)</span>
+│  │  │  ├─ banana <span class="token operator">(</span><span class="token uuid constant">0b58163d-5c49-4eb5-b359-17c9a0d94138</span> <span class="token operator">-</span> directory<span class="token operator">)</span>
+│  │  ├─ this and that <span class="token operator">(</span><span class="token uuid constant">4a050bbe-5c4d-4ac0-9a66-d7e513f8b4c8</span> <span class="token operator">-</span> directory<span class="token operator">)</span>
+
+<span class="token property">type:</span>            <span class="token property">id:</span>                                    <span class="token property">display name:</span>   <span class="token property">parent id:</span>                             <span class="token property">parent type:</span>
+global account   <span class="token uuid constant">42bb4252-2b49-4685-bcd7-62c8d85d8b13</span>   7f81446xtrial
+subaccount       <span class="token uuid constant">b3f3b2a3-d96d-4bea-8bbf-57ee84a9fc23</span>   trial           <span class="token uuid constant">42bb4252-2b49-4685-bcd7-62c8d85d8b13</span>   global account
+directory        <span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span>   mydir           <span class="token uuid constant">42bb4252-2b49-4685-bcd7-62c8d85d8b13</span>   global account
+directory        <span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span>   fruit           <span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span>   directory
+directory        <span class="token uuid constant">3b4ba347-973f-4571-b4af-7862886104be</span>   apple           <span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span>   directory
+directory        <span class="token uuid constant">0b58163d-5c49-4eb5-b359-17c9a0d94138</span>   banana          <span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span>   directory
+directory        <span class="token uuid constant">4a050bbe-5c4d-4ac0-9a66-d7e513f8b4c8</span>   this and that   <span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span>   directory</code></pre>
+<p>The directories are hierarchically related, as you can see from the graphical depiction. But they're presented in a nice flat list towards the end, and I'm tempted to use standard *nix tools to parse that information out.</p>
+<p>First, I'm only interested in the data in the second half, in the table that has headers like &quot;type:&quot;, &quot;id:&quot; and so on. So I can remove all the lines up to (and including) that header line like this:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">btp get accounts/global-account --show-hierarchy <span class="token punctuation">\</span>
+  <span class="token operator">|</span> <span class="token function">sed</span> <span class="token parameter variable">-e</span> <span class="token string">'1,/^type:\s/d'</span></code></pre>
+<p>This gives me the following:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">global account   <span class="token uuid constant">42bb4252-2b49-4685-bcd7-62c8d85d8b13</span>   7f81446xtrial
+subaccount       <span class="token uuid constant">b3f3b2a3-d96d-4bea-8bbf-57ee84a9fc23</span>   trial           <span class="token uuid constant">42bb4252-2b49-4685-bcd7-62c8d85d8b13</span>   global account
+directory        <span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span>   mydir           <span class="token uuid constant">42bb4252-2b49-4685-bcd7-62c8d85d8b13</span>   global account
+directory        <span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span>   fruit           <span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span>   directory
+directory        <span class="token uuid constant">3b4ba347-973f-4571-b4af-7862886104be</span>   apple           <span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span>   directory
+directory        <span class="token uuid constant">0b58163d-5c49-4eb5-b359-17c9a0d94138</span>   banana          <span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span>   directory
+directory        <span class="token uuid constant">4a050bbe-5c4d-4ac0-9a66-d7e513f8b4c8</span>   this and that   <span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span>   directory</code></pre>
+<p>Now I can more reliably look for the <code>directory</code> entries, right?</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">btp get accounts/global-account --show-hierarchy <span class="token punctuation">\</span>
+  <span class="token operator">|</span> <span class="token function">sed</span> <span class="token string">'1,/^type:\s/d'</span> <span class="token punctuation">\</span>
+  <span class="token operator">|</span> <span class="token function">grep</span> <span class="token string">'^directory\s'</span></code></pre>
+<p>This gives me:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">directory        <span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span>   mydir           <span class="token uuid constant">42bb4252-2b49-4685-bcd7-62c8d85d8b13</span>   global account
+directory        <span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span>   fruit           <span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span>   directory
+directory        <span class="token uuid constant">3b4ba347-973f-4571-b4af-7862886104be</span>   apple           <span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span>   directory
+directory        <span class="token uuid constant">0b58163d-5c49-4eb5-b359-17c9a0d94138</span>   banana          <span class="token uuid constant">4cc2e8f8-8cef-4828-82af-9b5adae387de</span>   directory
+directory        <span class="token uuid constant">4a050bbe-5c4d-4ac0-9a66-d7e513f8b4c8</span>   this and that   <span class="token uuid constant">e6cde265-5d78-4e7c-a8cb-8625a4daaa04</span>   directory</code></pre>
+<p>Now all I need to do is grab the value of the third column ... oh, wait.</p>
+<p>The directory named &quot;this and that&quot; is going to give me a bit of a headache; because it's not tabs that separate the columns, but normal spaces, I can't easily distinguish the spaces separating the columns from the spaces separating the words in the name &quot;this and that&quot;.</p>
+<p>While it's possible I could come up with some solution here, I think it's getting a little complex.</p>
+<p>The BTP CLI sports a <a href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/dcb85b7dea61432cbafaab4ce0ec9b08.html">JSON output mode</a>. This provides me with a more reliable and predictable data structure that I can parse. The natural tool to reach for here is of course <a href="https://stedolan.github.io/jq/">jq</a>, the &quot;lightweight and flexible command-line JSON processor&quot;.</p>
+<p>However, the structure of the JSON in this particular case is not regular; the nesting of parent and child objects reflects the structure of the actual hierarchy in the global account. That makes sense of course, but to be honest, the prospect of wielding some <code>jq</code> incantation to parse an object structure that I cannot know in advance felt a little scary; I had visions of recursive procedures and more.</p>
+<p>Here's a short section of the JSON output, to show you what I mean:</p>
+<p><img src="/images/2021/10/json-output-structure.png" alt="JSON output structure"></p>
+<p>As it turns out, finding the objects in this hierarchy of nested parents and children turned out to be not as scary as I thought. Here's the invocation again, this time passing the option <code>--format json</code> when invoking <code>btp</code>, and parsing the output with <code>jq</code>:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">btp <span class="token parameter variable">--format</span> json get accounts/global-account --show-hierarchy <span class="token punctuation">\</span>
+  <span class="token operator">|</span> jq <span class="token parameter variable">-r</span> <span class="token string">'recurse | objects | select(.directoryType=="FOLDER") | .displayName'</span></code></pre>
+<p>This produces the following output to STDOUT:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">fruit
+banana
+apple
+this and that</code></pre>
+<p>Wonderful!</p>
+<p>Here's a quick summary of what each of the items in the <code>jq</code> pipeline does:</p>
+<ul>
+<li><code>recurse</code>: Recursively descends <code>.</code>, producing every value</li>
+<li><code>objects</code>: Selects only inputs that are objects</li>
+<li><code>select(boolean_expression)</code>: produces its input unchanged if the expression returns true</li>
+</ul>
+<p>The boolean expression used with <code>select</code> ensures that only objects that have a JSON property <code>directoryType</code> with the specific value <code>FOLDER</code> are picked out. From those, just the value of the <code>displayName</code> property is then produced.</p>
+<p>And that's it. Not as scary as I thought.</p>
+<p>I need to improve my <code>jq</code> fu, and using it like this to process output from CLI tools such as <code>btp</code> is one way of doing it.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2021/10/14/sourcing-vs-executing-in-bash/">Sourcing vs executing in Bash</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2021/11/07/exploring-fff-part-2-get-ls-colors/">Exploring fff part 2 - get_ls_colors</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2021/10/29/embracing-jq-and-json/` was built on 2025-09-15T15:58:49.612Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

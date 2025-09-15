@@ -1,0 +1,829 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Reshaping data values using jq&#39;s with_entries</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="reshaping-data-values-using-jqs-with-entries">Reshaping data values using jq&#39;s with_entries</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2022-05-30">30 May 2022</time></li>
+	<li><a href="/tags/jq/" class="post-tag">jq</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>Receipt of a JSON file containing valid tags for tutorial metadata gave me the perfect opportunity to explore it and learn a bit more jq in the process.</p>
+<p>For each of our <a href="https://github.com/SAP-tutorials">tutorials</a> in SAP's <a href="https://developers.sap.com/tutorial-navigator.html">Tutorial Navigator</a>, we have metadata in the frontmatter. Here's <a href="https://github.com/sap-tutorials/Tutorials/blob/5c282ddec1cb15f3d8d5c6e0814ad9a8c94ee0f2/tutorials/odata-01-intro-origins/odata-01-intro-origins.md">an example</a> from the <a href="https://developers.sap.com/tutorials/odata-01-intro-origins.html">Learn About OData Fundamentals</a> tutorial:</p>
+<pre class="language-markdown" tabindex="0"><code class="language-markdown">author_name: DJ Adams
+author_profile: https://github.com/qmacro
+title: Learn about OData Fundamentals
+description: Discover OData's origins and learn about the fundamentals of OData by exploring a public OData service.
+auto_validation: false
+primary_tag: software-product>sap-business-technology-platform
+tags: [ software-product>sap-business-technology-platform, topic>cloud, programming-tool>odata, tutorial>beginner ]
+time: 15</code></pre>
+<p>I received a JSON file with updated valid tags, against which I could check the values for the <code>primary_tag</code> and <code>tags</code> properties. The tags were arranged like this (drastically reduced to save space here):</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"level"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Beginner"</span><span class="token punctuation">,</span>
+      <span class="token property">"value"</span><span class="token operator">:</span> <span class="token string">" tutorial>beginner"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Intermediate"</span><span class="token punctuation">,</span>
+      <span class="token property">"value"</span><span class="token operator">:</span> <span class="token string">" tutorial>intermediate"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Advanced"</span><span class="token punctuation">,</span>
+      <span class="token property">"value"</span><span class="token operator">:</span> <span class="token string">" tutorial>advanced"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">"common"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"ABAP Connectivity"</span><span class="token punctuation">,</span>
+      <span class="token property">"value"</span><span class="token operator">:</span> <span class="token string">"topic>abap-connectivity"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"ABAP Development"</span><span class="token punctuation">,</span>
+      <span class="token property">"value"</span><span class="token operator">:</span> <span class="token string">"programming-tool>abap-development"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"ABAP Extensibility"</span><span class="token punctuation">,</span>
+      <span class="token property">"value"</span><span class="token operator">:</span> <span class="token string">"programming-tool>abap-extensibility"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Android"</span><span class="token punctuation">,</span>
+      <span class="token property">"value"</span><span class="token operator">:</span> <span class="token string">"operating-system>android"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Artificial Intelligence"</span><span class="token punctuation">,</span>
+      <span class="token property">"value"</span><span class="token operator">:</span> <span class="token string">"topic>artificial-intelligence"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Big Data"</span><span class="token punctuation">,</span>
+      <span class="token property">"value"</span><span class="token operator">:</span> <span class="token string">"topic>big-data"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<p>I wanted to explore the tags by &quot;category&quot;, the part before the <code>&gt;</code> symbol in the <code>value</code> properties. In the above excerpt (in the <code>common</code> object, which is where the main list of tags are), there are the following categories: <code>topic</code>, <code>programming-tool</code> and <code>operating-system</code>.</p>
+<h2 id="separating-tags-from-categories-with-split">Separating tags from categories with split</h2>
+<p>First, I used <a href="https://stedolan.github.io/jq/manual/#split(str)">split</a> to separate out the categories and tags by splitting on the <code>&gt;</code> symbol in each of the values.</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span>common
+<span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">.</span>value <span class="token operator pipe">|</span> <span class="token c-style-function function">split</span><span class="token punctuation">(</span><span class="token string">">"</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>This produces an array of arrays. The outer array is the result of running <code>map</code> (which takes an array and produces an array) and the inner arrays are the result of running <code>split</code> on each <code>category&gt;tag</code> pattern in the <code>value</code> properties:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">[</span>
+    <span class="token string">"topic"</span><span class="token punctuation">,</span>
+    <span class="token string">"abap-connectivity"</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token string">"programming-tool"</span><span class="token punctuation">,</span>
+    <span class="token string">"abap-development"</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token string">"programming-tool"</span><span class="token punctuation">,</span>
+    <span class="token string">"abap-extensibility"</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token string">"operating-system"</span><span class="token punctuation">,</span>
+    <span class="token string">"android"</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token string">"topic"</span><span class="token punctuation">,</span>
+    <span class="token string">"artificial-intelligence"</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token string">"topic"</span><span class="token punctuation">,</span>
+    <span class="token string">"big-data"</span>
+<span class="token punctuation">]</span></code></pre>
+<h2 id="grouping-by-categories-with-group-by">Grouping by categories with group_by</h2>
+<p>The categories are the first values in each of the inner arrays, so next is to group the inner arrays by those categories:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span>common
+<span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">.</span>value <span class="token operator pipe">|</span> <span class="token c-style-function function">split</span><span class="token punctuation">(</span><span class="token string">">"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token operator pipe">|</span> <span class="token c-style-function function">group_by</span><span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span></code></pre>
+<p>The <code>.[0]</code> supplied to <code>group_by</code> specifies that it's the first element of each inner array that should be the basis of grouping (i.e. the categories <code>topic</code>, <code>programming-tool</code>, <code>programming-tool</code>, etc).</p>
+<p>This produces a differently shaped nesting of arrays, one for each of the categories:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">[</span>
+    <span class="token punctuation">[</span>
+      <span class="token string">"operating-system"</span><span class="token punctuation">,</span>
+      <span class="token string">"android"</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token punctuation">[</span>
+      <span class="token string">"programming-tool"</span><span class="token punctuation">,</span>
+      <span class="token string">"abap-development"</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">[</span>
+      <span class="token string">"programming-tool"</span><span class="token punctuation">,</span>
+      <span class="token string">"abap-extensibility"</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token punctuation">[</span>
+      <span class="token string">"topic"</span><span class="token punctuation">,</span>
+      <span class="token string">"abap-connectivity"</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">[</span>
+      <span class="token string">"topic"</span><span class="token punctuation">,</span>
+      <span class="token string">"artificial-intelligence"</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">[</span>
+      <span class="token string">"topic"</span><span class="token punctuation">,</span>
+      <span class="token string">"big-data"</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">]</span></code></pre>
+<h2 id="reforming-the-structure-with-the-entries-functions">Reforming the structure with the entries functions</h2>
+<p>Now comes the task to reform that essential structure into something a little less &quot;noisy&quot;. Using the <a href="https://stedolan.github.io/jq/manual/#to_entries,from_entries,with_entries">entries family</a> of functions, this turned out to be quite straightforward. That said, I'll explain the intermediate steps I went through on the way.</p>
+<h3 id="getting-from-an-array-based-to-an-object-based-structure-with-to-entries">Getting from an array-based to an object-based structure with to_entries</h3>
+<p>As I wanted an object, with the keys being categories, and the values being arrays of tag strings, it felt right to reach for the <code>to_entries</code> function:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span>common
+<span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">.</span>value <span class="token operator pipe">|</span> <span class="token c-style-function function">split</span><span class="token punctuation">(</span><span class="token string">">"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token operator pipe">|</span> <span class="token c-style-function function">group_by</span><span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token operator pipe">|</span> to_entries</code></pre>
+<p>This produced the following:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">[</span>
+        <span class="token string">"operating-system"</span><span class="token punctuation">,</span>
+        <span class="token string">"android"</span>
+      <span class="token punctuation">]</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">[</span>
+        <span class="token string">"programming-tool"</span><span class="token punctuation">,</span>
+        <span class="token string">"abap-development"</span>
+      <span class="token punctuation">]</span><span class="token punctuation">,</span>
+      <span class="token punctuation">[</span>
+        <span class="token string">"programming-tool"</span><span class="token punctuation">,</span>
+        <span class="token string">"abap-extensibility"</span>
+      <span class="token punctuation">]</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">[</span>
+        <span class="token string">"topic"</span><span class="token punctuation">,</span>
+        <span class="token string">"abap-connectivity"</span>
+      <span class="token punctuation">]</span><span class="token punctuation">,</span>
+      <span class="token punctuation">[</span>
+        <span class="token string">"topic"</span><span class="token punctuation">,</span>
+        <span class="token string">"artificial-intelligence"</span>
+      <span class="token punctuation">]</span><span class="token punctuation">,</span>
+      <span class="token punctuation">[</span>
+        <span class="token string">"topic"</span><span class="token punctuation">,</span>
+        <span class="token string">"big-data"</span>
+      <span class="token punctuation">]</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<h3 id="tidying-up-with-object-construction-in-a-map">Tidying up with object construction in a map</h3>
+<p>That is sort of the direction I want to go, but there's some tidying up to do, to get cleaner values for <code>key</code> and <code>value</code>. So I reached for <code>map</code> to do this:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span>common
+<span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">.</span>value <span class="token operator pipe">|</span> <span class="token c-style-function function">split</span><span class="token punctuation">(</span><span class="token string">">"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token operator pipe">|</span> <span class="token c-style-function function">group_by</span><span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token operator pipe">|</span> to_entries
+<span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token property-literal property">key</span><span class="token punctuation">:</span> <span class="token punctuation">.</span>value<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token property-literal property">value</span><span class="token punctuation">:</span> <span class="token punctuation">.</span>value<span class="token operator pipe">|</span><span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre>
+<p>The expression passed to <code>map</code> is the <a href="https://stedolan.github.io/jq/manual/#ObjectConstruction:%7B%7D">object construction</a> (<code>{...}</code>), creating objects each with two properties, <code>key</code> and <code>value</code>. The reason for staying with these property names will become clear shortly.</p>
+<p>The value for <code>key</code> is expressed as <code>.value[0][0]</code>, i.e. the first (zeroth) element of the inner array that is the first (zeroth) element of the array that is the value of the <code>value</code> property.</p>
+<p>In other words, given the last object in the above most recent intermediate results:</p>
+<pre class="language-json" tabindex="0"><code class="language-json">  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">[</span>
+        <span class="token string">"topic"</span><span class="token punctuation">,</span>
+        <span class="token string">"abap-connectivity"</span>
+      <span class="token punctuation">]</span><span class="token punctuation">,</span>
+      <span class="token punctuation">[</span>
+        <span class="token string">"topic"</span><span class="token punctuation">,</span>
+        <span class="token string">"artificial-intelligence"</span>
+      <span class="token punctuation">]</span><span class="token punctuation">,</span>
+      <span class="token punctuation">[</span>
+        <span class="token string">"topic"</span><span class="token punctuation">,</span>
+        <span class="token string">"big-data"</span>
+      <span class="token punctuation">]</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span></code></pre>
+<p>Then <code>.value[0][0]</code> will return <code>&quot;topic&quot;</code> (specifically, the first instance of that string in the above JSON).</p>
+<p>Similarly, to build the value for the new <code>value</code> property in the object being constructed, I used this expression: <code>.value|map(.[1])</code>. The current value of the <code>value</code> property is an array, so using <code>map</code> on that will produce another array. Of what? Well, of these values: <code>.[1]</code>.</p>
+<p>In other words, the second (index 1) value in each of the sub arrays. Given this same last object example above, <code>.value|map(.[1])</code> produces <code>[&quot;abap-connectivity&quot;, &quot;artificial-intelligence&quot;, &quot;big-data&quot;]</code>.</p>
+<p>Running this latest iteration with the <code>map</code> function produces this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"operating-system"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">"android"</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"programming-tool"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">"abap-development"</span><span class="token punctuation">,</span>
+      <span class="token string">"abap-extensibility"</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"topic"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">"abap-connectivity"</span><span class="token punctuation">,</span>
+      <span class="token string">"artificial-intelligence"</span><span class="token punctuation">,</span>
+      <span class="token string">"big-data"</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>Almost there!</p>
+<h2 id="creating-a-neat-structure-with-from-entries">Creating a neat structure with from_entries</h2>
+<p><a href="https://stedolan.github.io/jq/manual/#to_entries,from_entries,with_entries">According to the manual</a>, the <code>to_entries</code> and <code>from_entries</code> &quot;convert between an object and array of key-value pairs&quot;. In each case, the name for the key and value properties are <code>key</code> and <code>value</code> respectively. I had an inkling I would probably want to use <code>from_entries</code> at some stage, and this is the reason why I kept the names of the properties earlier.</p>
+<p>Let's have a look what passing the above structure into <code>from_entries</code> produces:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span>common
+<span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">.</span>value <span class="token operator pipe">|</span> <span class="token c-style-function function">split</span><span class="token punctuation">(</span><span class="token string">">"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token operator pipe">|</span> <span class="token c-style-function function">group_by</span><span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token operator pipe">|</span> to_entries
+<span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token property-literal property">key</span><span class="token punctuation">:</span> <span class="token punctuation">.</span>value<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token property-literal property">value</span><span class="token punctuation">:</span> <span class="token punctuation">.</span>value<span class="token operator pipe">|</span><span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token operator pipe">|</span> from_entries</code></pre>
+<p>It's this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"operating-system"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token string">"android"</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">"programming-tool"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token string">"abap-development"</span><span class="token punctuation">,</span>
+    <span class="token string">"abap-extensibility"</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">"topic"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token string">"abap-connectivity"</span><span class="token punctuation">,</span>
+    <span class="token string">"artificial-intelligence"</span><span class="token punctuation">,</span>
+    <span class="token string">"big-data"</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<p>That's very nice, and pretty much exactly what I want. A neat and low-noise representation of the category and tag structure.</p>
+<h2 id="refactoring-with-with-entries">Refactoring with with_entries</h2>
+<p>It turns out that the pattern:</p>
+<pre><code>to_entries -&gt; map(...) -&gt; from_entries
+</code></pre>
+<p>is common enough to have a function expression all of its own, and it's <code>with_entries</code>. As detailed in the <a href="https://stedolan.github.io/jq/manual/#to_entries,from_entries,with_entries">entries section of the manual</a>:</p>
+<blockquote>
+<p><code>with_entries(foo)</code> is shorthand for <code>to_entries | map(foo) | from_entries</code></p>
+</blockquote>
+<p>In fact, we can see how it's defined (which is exactly as described in the manual) <a href="https://github.com/stedolan/jq/tree/a9f97e9e61a910a374a5d768244e8ad63f407d3e">in builtin.jq</a>, along with <code>to_entries</code> and <code>from_entries</code>.</p>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>While I've played around a little with the <a href="https://stedolan.github.io/jq/manual/#to_entries,from_entries,with_entries">entries family</a>, this is the first time I've used it for real. Going through the intermediate process of finding myself using <code>map</code> actually has helped me reflect on <code>with_entries</code> very well.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2022/05/28/multiple-level-filters-in-jq/">Multiple level filters in jq</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2022/06/16/summing-and-grouping-values-with-jq/">Summing and grouping values with jq</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2022/05/30/reshaping-data-values-using-jqs-with-entries/` was built on 2025-09-15T15:58:49.615Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

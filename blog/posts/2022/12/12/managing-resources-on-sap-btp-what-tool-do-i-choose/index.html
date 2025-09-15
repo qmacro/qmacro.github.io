@@ -1,7 +1,736 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2022/12/12/managing-resources-on-sap-btp-what-tool-do-i-choose/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Managing resources on SAP BTP - what tool do I choose? | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Managing resources on SAP BTP - what tool do I choose?"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2022/12/12/managing-resources-on-sap-btp-what-tool-do-i-choose/"><meta name="description" content="Managing resources on SAP BTP - what tool do I choose? 12 Dec 2022 | 6 min read There are myriad resources on the SAP Business Technology..."><meta property="og:description" content="Managing resources on SAP BTP - what tool do I choose? 12 Dec 2022 | 6 min read There are myriad resources on the SAP Business Technology..."><meta name="description" content="Managing resources on SAP BTP - what tool do I choose? 12 Dec 2022 | 6 min read There are myriad resources on the SAP Business Technology..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Managing resources on SAP BTP - what tool do I choose?</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Managing resources on SAP BTP - what tool do I choose?</h1><div class="post__details"><time datetime="2022-12-12">12 Dec 2022 </time><span>| </span><span>6 min read</span></div></header><main class="post__content"><p><em>There are myriad resources on the SAP Business Technology Platform, and different ways to manage them. In this post I outline a way to think about the different tools and when to use what.</em></p><p><strong>Update: The BTP Setup Automator described in this post has been superseded by the <a href="https://registry.terraform.io/providers/SAP/btp/latest/docs">Terraform Provider for SAP BTP</a>, which fulfils similar functions, and more, in the same space. The rest of the information in this post remains the same.</strong></p><p>The life and work of developers, Basis folks and operations specialists and those with similar roles are heavily intertwined, especially in this era of hybrid cloud, on-premises and DevOps-centric enterprise computing. One result of this is that it isn't necessarily obvious which tools are for which roles, because the range of activities across those roles overlap quite a bit. This in turn means that folks might be scratching their head over what tools are available, relevant and appropriate in different circumstances.</p><p>In other words, with all these tools, when should I use what?</p><h2>The tools</h2><p>In no particular order, here are the tools that come to mind when thinking of managing resources on SAP BTP:</p><ul><li>The <a href="https://account.hana.ondemand.com/cockpit">SAP BTP Cockpit</a> is the main user interface that affords a comfortable and graphical overview of SAP BTP account resources, and the ability to create and generally manage those resources with a minimum of structural understanding.</li><li>The <a href="https://help.sap.com/docs/BTP/65de2977205c403bbc107264b8eccf4b/7c6df2db6332419ea7a862191525377c.html">btp CLI</a> is a command line interface that offers a very similar set of facilities as in the Cockpit, but at the command line. Management (and reporting) is achieved through the combination of ACTIONS and OBJECTS, organised into GROUPS (such as accounts, services and security).</li><li>There are APIs available for looking at and managing SAP BTP resources, in the API Package <a href="https://api.sap.com/package/SAPCloudPlatformCoreServices/rest">Core Services for SAP BTP</a>. This package contains APIs for a similar set of grouped resources to the btp CLI, such as accounts, entitlements, events, provisioning, and so on.</li><li>The <a href="https://github.com/SAP-samples/btp-setup-automator">BTP Setup Automator</a>, an Apache 2.0 licensed project on GitHub, provides two main features. First, a complete ready-to-go container image with all of the command line tools you'll need for administering SAP BTP resources and much more. But more relevant to this post is what it also provides, which is a way of defining, declaratively, combinations of resources that you want to set up on SAP BTP. The setup process can then be run in an automated fashion, repeatedly if required.</li></ul><p>There are more tools of course; when you drill down from a subaccount and in particular into a runtime (such as a Kyma or Cloud Foundry environment instance) you'll need environment specific tools such as the cf CLI or kubectl for Kyma (Kubernetes). There are also other peripheral CLIs such as the <a href="https://help.sap.com/docs/PRODUCT_ID/09cc82baadc542a688176dce601398de/93532bd72117429bb823a46ef2ddd003.html?state=PRODUCTION&amp;version=Cloud&amp;locale=en-US">Service Manager Control CLI</a> smctl, but the functions of this one in particular are also now available within the btp CLI. So given this, let's focus on the &quot;top level tools&quot;, because it's more obvious when you need cf and when you need kubectl, but less obvious at this top level.</p><h2>What the tools are good for</h2><p>I tend to think about these tools, from a use perspective, in a sort of inverted Y shape. Before drawing that shape, I'll describe how I think of these tools and for what I think they're ideally suited.</p><h3>The SAP BTP Cockpit</h3><p>The SAP BTP Cockpit is 100% human-centric, appropriate for the occasional user and perhaps even the regular user, especially for ad hoc tasks. It doesn't require any investment in learning, you can just sort of click around and find your way to what you need to do.</p><p>The native interface (yes, I said native, Web is the true native platform, fight me) is comfortable, but it would be madness, not to mention rather difficult, to try to automate any activities using it. It's just not built with that use case in mind. Nor is it designed primarily for power users. Nothing wrong with that, it just isn't.</p><h3>The btp CLI</h3><p>The btp CLI is also for the occasional user, but with a path that runs right through competent all the way to power user. The command line is the dialtone of the cloud so it's right for us to embrace it. And by embracing the btp CLI you get a consistent and uniform way of viewing, interacting with and generally managing the lifecycle of SAP BTP resources.</p><p>What's more, being a CLI tool, which is used in the context of a shell environment (be that Bash, Zsh, or even PowerShell), you get all the advantages of being a friction-free single step away from automating what you do. If you find yourself doing something on a regular basis, you can wrap the btp CLI command(s) in a small shell script and run that instead, adding logic, testing, tracking and whatever else you required.</p><p>The power of the shell is almost immeasurable.Even more, the pipeline nature of the shell environment means you have a wealth of tools to prepare data for, and interpret data resulting from, calls to SAP BTP via the btp CLI.</p><h3>The Core Services for SAP BTP APIs</h3><p>The Core Services for SAP BTP APIs, in contrast to the SAP BTP Cockpit and btp CLI, are like precision knives. There is an important preparation cost to using them (the resources you manipulate with the APIs are protected via OAuth 2.0) but once you're past that, you have a set of very sharp blades with which to precisely manage your resources on SAP BTP.</p><p>Being of this nature, they're at the opposite end of the spectrum to the SAP BTP Cockpit, for example, from a usability perspective. Not for the faint-hearted or occasional user, quite the opposite.The APIs lend themselves to being embedded in more permanent (less ad hoc) custom automation scenarios; regardless of your choice of infrastructure / DevOps language (be that Python, Go, or something else) you can create custom tools that suit your exact needs by employing the APIs using your language's standard HTTP libraries.</p><h3>The BTP Setup Automator</h3><p>The BTP Setup Automator shines for scenarios where you need automation as a core feature, are wanting to set up more shareable and extendable resource setup scenarios (think of the BTP Setup Automator as an &quot;open source version of SAP BTP Boosters).</p><p>Moreover, it's for the non-programmers, in that the definitions are declarative, in JSON (with a comfortable assistive aspect thanks to a JSON Schema sourced from its sibling the BTP Service Metadata project).</p><h2>The decision tree</h2><p>Ok, let's get to that inverted Y shape.</p><p><img src="/images/2022/12/Screenshot-2022-12-12-11.14.39.png" alt=""></p><p>Note that while I'm referring to this as a decision tree, it's not a tree as such, it's more of a map, because it's perfectly valid (and recommended) to move around according to what you're trying to do, and according to the context of your task, what you need to do, how often it needs to be done, and whether or not it needs to have humans or no humans involved.</p><p>The top half of the tree represents a potentially continuous movement between the SAP BTP Cockpit and the btp CLI. This of course will depend on how occasionally or how regularly your tasks bring you to the platform, and how comfortable you become with the command line (or how uncomfortable you eventually become being restricted to a graphical user interface, for that matter). It also depends on your skill level and confidence.</p><p>There's absolutely nothing wrong with oscillating between the two boxes here; use the advantages of the excellent 10,000 metre view that the cockpit affords you, and then dig in for some real and more permanent work with the btp CLI. While at the btp CLI level, think about whether you want to automate some of what you do on a regular basis, with shell scripting.</p><p>At some point you'll realise that you need to level up (or down in the case of this tree diagram).</p><p>It might be that you've come to the stage where you have a collection of related resources that you need to set up on a regular basis. For this, you'll want to move to the more focused BTP Setup Automator. It's great to be able to encode your requirements once and use that declaration going forward (and share it with others if needed too).</p><p>But is also might be that during your &quot;main line&quot; journey moving back and forth between the SAP BTP Cockpit and the btp CLI, you identify that there's some specific activity that needs to be performed on a regular basis, perhaps as part of some sort of CI/CD pipeline. Or you might see that there's a set of related activities that are very specific and that your organisation would benefit from a new custom program that makes that narrow set of operations available, either in a lights-out scenario or for use by others. For this, you can turn then to the APIs in the Core Services for SAP BTP API package.</p><h2>In conclusion</h2><p>For a platform as wide and diverse as SAP BTP, it's clear that no one tool will be appropriate. For the various operations, administration and interactions with that platform, different tools with different approaches will be more or less suitable. And for the different levels of skills, regularity or interests, there are different tools that are appropriate.</p><p>Hopefully this post will make you aware of the different tools and facilities, and give you a better appreciation and understanding of what's there for you.</p><p>Embrace them all, take some time to learn what works for you, and don't be afraid to experiment. There are plenty of resources available, not least on the <a href="https://www.youtube.com/user/sapdevs">SAP Developers YouTube channel</a>.</p><p>Let me know in the comments what your preferences are, what tools you use on a regular basis, and whether I've missed anything.</p><hr><p><a href="https://community.sap.com/t5/technology-blogs-by-sap/managing-resources-on-sap-btp-what-tool-do-i-choose/ba-p/13549500">Originally published on SAP Community</a></p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/sapcommunity/">#sapcommunity</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2022/12/13/array-push-with-autovivification-in-jq/"><span>←</span> <span>Array push with autovivification in jq</span> </a><a href="/blog/posts/2022/11/08/extracting-blog-post-dates-from-urls-with-jq/"><span>Extracting blog post dates from URLs with jq</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="managing-resources-on-sap-btp-what-tool-do-i-choose">Managing resources on SAP BTP - what tool do I choose?</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2022-12-12">12 December 2022</time></li>
+	<li><a href="/tags/sapcommunity/" class="post-tag">sapcommunity</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p><em>There are myriad resources on the SAP Business Technology Platform, and
+different ways to manage them. In this post I outline a way to think
+about the different tools and when to use what.</em></p>
+<p><strong>Update: The BTP Setup Automator described in this post has been superseded by the
+<a href="https://registry.terraform.io/providers/SAP/btp/latest/docs">Terraform Provider for SAP BTP</a>,
+which fulfils similar functions, and more, in the same space.
+The rest of the information in this post remains the same.</strong></p>
+<p>The life and work of developers, Basis folks and operations specialists
+and those with similar roles are heavily intertwined, especially in this
+era of hybrid cloud, on-premises and DevOps-centric enterprise
+computing. One result of this is that it isn't necessarily obvious which
+tools are for which roles, because the range of activities across those
+roles overlap quite a bit. This in turn means that folks might be
+scratching their head over what tools are available, relevant and
+appropriate in different circumstances.</p>
+<p>In other words, with all these tools, when should I use what?</p>
+<h2 id="the-tools">The tools</h2>
+<p>In no particular order, here are the tools that come to mind when
+thinking of managing resources on SAP BTP:</p>
+<ul>
+<li>The <a href="https://account.hana.ondemand.com/cockpit">SAP BTP Cockpit</a> is
+the main user interface that affords a comfortable and graphical
+overview of SAP BTP account resources, and the ability to create and
+generally manage those resources with a minimum of structural
+understanding.</li>
+<li>The <a href="https://help.sap.com/docs/BTP/65de2977205c403bbc107264b8eccf4b/7c6df2db6332419ea7a862191525377c.html">btp
+CLI</a>
+is a command line interface that offers a very similar set of
+facilities as in the Cockpit, but at the command line. Management
+(and reporting) is achieved through the combination of ACTIONS and
+OBJECTS, organised into GROUPS (such as accounts, services and
+security).</li>
+<li>There are APIs available for looking at and managing SAP BTP
+resources, in the API Package <a href="https://api.sap.com/package/SAPCloudPlatformCoreServices/rest">Core Services for SAP
+BTP</a>.
+This package contains APIs for a similar set of grouped resources to
+the btp CLI, such as accounts, entitlements, events, provisioning,
+and so on.</li>
+<li>The <a href="https://github.com/SAP-samples/btp-setup-automator">BTP Setup
+Automator</a>, an
+Apache 2.0 licensed project on GitHub, provides two main features.
+First, a complete ready-to-go container image with all of the
+command line tools you'll need for administering SAP BTP resources
+and much more. But more relevant to this post is what it also
+provides, which is a way of defining, declaratively, combinations of
+resources that you want to set up on SAP BTP. The setup process can
+then be run in an automated fashion, repeatedly if required.</li>
+</ul>
+<p>There are more tools of course; when you drill down from a subaccount
+and in particular into a runtime (such as a Kyma or Cloud Foundry
+environment instance) you'll need environment specific tools such as the
+cf CLI or kubectl for Kyma (Kubernetes). There are also other peripheral
+CLIs such as the <a href="https://help.sap.com/docs/PRODUCT_ID/09cc82baadc542a688176dce601398de/93532bd72117429bb823a46ef2ddd003.html?state=PRODUCTION&amp;version=Cloud&amp;locale=en-US">Service Manager Control
+CLI</a>
+smctl, but the functions of this one in particular are also now
+available within the btp CLI. So given this, let's focus on the &quot;top
+level tools&quot;, because it's more obvious when you need cf and when you
+need kubectl, but less obvious at this top level.</p>
+<h2 id="what-the-tools-are-good-for">What the tools are good for</h2>
+<p>I tend to think about these tools, from a use perspective, in a sort of
+inverted Y shape. Before drawing that shape, I'll describe how I think
+of these tools and for what I think they're ideally suited.</p>
+<h3 id="the-sap-btp-cockpit">The SAP BTP Cockpit</h3>
+<p>The SAP BTP Cockpit is 100% human-centric, appropriate for the
+occasional user and perhaps even the regular user, especially for ad
+hoc tasks. It doesn't require any investment in learning, you can
+just sort of click around and find your way to what you need to do.</p>
+<p>The native interface (yes, I said native, Web is the true native
+platform, fight me) is comfortable, but it would be madness, not to
+mention rather difficult, to try to automate any activities using
+it. It's just not built with that use case in mind. Nor is it
+designed primarily for power users. Nothing wrong with that, it just
+isn't.</p>
+<h3 id="the-btp-cli">The btp CLI</h3>
+<p>The btp CLI is also for the occasional user, but with a path that
+runs right through competent all the way to power user. The command
+line is the dialtone of the cloud so it's right for us to embrace
+it. And by embracing the btp CLI you get a consistent and uniform
+way of viewing, interacting with and generally managing the
+lifecycle of SAP BTP resources.</p>
+<p>What's more, being a CLI tool, which is used in the context of a
+shell environment (be that Bash, Zsh, or even PowerShell), you get
+all the advantages of being a friction-free single step away from
+automating what you do. If you find yourself doing something on a
+regular basis, you can wrap the btp CLI command(s) in a small shell
+script and run that instead, adding logic, testing, tracking and
+whatever else you required.</p>
+<p>The power of the shell is almost immeasurable.Even more, the
+pipeline nature of the shell environment means you have a wealth of
+tools to prepare data for, and interpret data resulting from, calls
+to SAP BTP via the btp CLI.</p>
+<h3 id="the-core-services-for-sap-btp-apis">The Core Services for SAP BTP APIs</h3>
+<p>The Core Services for SAP BTP APIs, in contrast to the SAP BTP
+Cockpit and btp CLI, are like precision knives. There is an
+important preparation cost to using them (the resources you
+manipulate with the APIs are protected via OAuth 2.0) but once
+you're past that, you have a set of very sharp blades with which to
+precisely manage your resources on SAP BTP.</p>
+<p>Being of this nature, they're at the opposite end of the spectrum to
+the SAP BTP Cockpit, for example, from a usability perspective. Not
+for the faint-hearted or occasional user, quite the opposite.The
+APIs lend themselves to being embedded in more permanent (less ad
+hoc) custom automation scenarios; regardless of your choice of
+infrastructure / DevOps language (be that Python, Go, or something
+else) you can create custom tools that suit your exact needs by
+employing the APIs using your language's standard HTTP libraries.</p>
+<h3 id="the-btp-setup-automator">The BTP Setup Automator</h3>
+<p>The BTP Setup Automator shines for scenarios where you need
+automation as a core feature, are wanting to set up more shareable
+and extendable resource setup scenarios (think of the BTP Setup
+Automator as an &quot;open source version of SAP BTP Boosters).</p>
+<p>Moreover, it's for the non-programmers, in that the definitions are
+declarative, in JSON (with a comfortable assistive aspect thanks to
+a JSON Schema sourced from its sibling the BTP Service Metadata
+project).</p>
+<h2 id="the-decision-tree">The decision tree</h2>
+<p>Ok, let's get to that inverted Y shape.</p>
+<p><img src="/images/2022/12/Screenshot-2022-12-12-11.14.39.png" alt=""></p>
+<p>Note that while I'm referring to this as a decision tree, it's not a
+tree as such, it's more of a map, because it's perfectly valid (and
+recommended) to move around according to what you're trying to do, and
+according to the context of your task, what you need to do, how often it
+needs to be done, and whether or not it needs to have humans or no
+humans involved.</p>
+<p>The top half of the tree represents a potentially continuous movement
+between the SAP BTP Cockpit and the btp CLI. This of course will depend
+on how occasionally or how regularly your tasks bring you to the
+platform, and how comfortable you become with the command line (or how
+uncomfortable you eventually become being restricted to a graphical user
+interface, for that matter). It also depends on your skill level and
+confidence.</p>
+<p>There's absolutely nothing wrong with oscillating between the two boxes
+here; use the advantages of the excellent 10,000 metre view that the
+cockpit affords you, and then dig in for some real and more permanent
+work with the btp CLI. While at the btp CLI level, think about whether
+you want to automate some of what you do on a regular basis, with shell
+scripting.</p>
+<p>At some point you'll realise that you need to level up (or down in the
+case of this tree diagram).</p>
+<p>It might be that you've come to the stage where you have a collection of
+related resources that you need to set up on a regular basis. For this,
+you'll want to move to the more focused BTP Setup Automator. It's great
+to be able to encode your requirements once and use that declaration
+going forward (and share it with others if needed too).</p>
+<p>But is also might be that during your &quot;main line&quot; journey moving back
+and forth between the SAP BTP Cockpit and the btp CLI, you identify that
+there's some specific activity that needs to be performed on a regular
+basis, perhaps as part of some sort of CI/CD pipeline. Or you might see
+that there's a set of related activities that are very specific and that
+your organisation would benefit from a new custom program that makes
+that narrow set of operations available, either in a lights-out scenario
+or for use by others. For this, you can turn then to the APIs in the
+Core Services for SAP BTP API package.</p>
+<h2 id="in-conclusion">In conclusion</h2>
+<p>For a platform as wide and diverse as SAP BTP, it's clear that no one
+tool will be appropriate. For the various operations, administration and
+interactions with that platform, different tools with different
+approaches will be more or less suitable. And for the different levels
+of skills, regularity or interests, there are different tools that are
+appropriate.</p>
+<p>Hopefully this post will make you aware of the different tools and
+facilities, and give you a better appreciation and understanding of
+what's there for you.</p>
+<p>Embrace them all, take some time to learn what works for you, and don't
+be afraid to experiment. There are plenty of resources available, not
+least on the <a href="https://www.youtube.com/user/sapdevs">SAP Developers YouTube
+channel</a>.</p>
+<p>Let me know in the comments what your preferences are, what tools you
+use on a regular basis, and whether I've missed anything.</p>
+<hr>
+<p><a href="https://community.sap.com/t5/technology-blogs-by-sap/managing-resources-on-sap-btp-what-tool-do-i-choose/ba-p/13549500">Originally published on SAP Community</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2022/11/08/extracting-blog-post-dates-from-urls-with-jq/">Extracting blog post dates from URLs with jq</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2022/12/13/array-push-with-autovivification-in-jq/">Array push with autovivification in jq</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2022/12/12/managing-resources-on-sap-btp-what-tool-do-i-choose/` was built on 2025-09-15T15:58:49.617Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

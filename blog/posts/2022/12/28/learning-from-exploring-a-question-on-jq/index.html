@@ -1,7 +1,787 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2022/12/28/learning-from-exploring-a-question-on-jq/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Learning from exploring a question on jq | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Learning from exploring a question on jq"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2022/12/28/learning-from-exploring-a-question-on-jq/"><meta name="description" content="Learning from exploring a question on jq 28 Dec 2022 | 5 min read In this post I explore different ways of achieving a simple goal in..."><meta property="og:description" content="Learning from exploring a question on jq 28 Dec 2022 | 5 min read In this post I explore different ways of achieving a simple goal in..."><meta name="description" content="Learning from exploring a question on jq 28 Dec 2022 | 5 min read In this post I explore different ways of achieving a simple goal in..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Learning from exploring a question on jq</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Learning from exploring a question on jq</h1><div class="post__details"><time datetime="2022-12-28">28 Dec 2022 </time><span>| </span><span>5 min read</span></div></header><main class="post__content"><p>In this post I explore different ways of achieving a simple goal in reformulating some JSON, with jq, and explain my thinking as I go.</p><p>Occasionally I browse the <a href="https://stackoverflow.com/questions/tagged/jq?tab=Newest">Newest 'jq' questions on Stack Overflow</a> and try to gently expand my jq knowledge, or at least exercise my young jq muscles. This morning I came across this one: <a href="https://stackoverflow.com/questions/74937237/jq-extracting-the-name-and-the-value-of-objects-as-an-array">Jq extracting the name and the value of objects as an array</a>. Sometimes the questions are hard, sometimes less so. This one didn't seem too difficult, so I thought I'd take a quick coffee break to see what I could come up with (the question had <a href="https://stackoverflow.com/a/74937461/384366">already been answered</a> but I didn't look until later).</p><h2>The requirement</h2><p>The OP had this JSON:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"filterFeatureGroup"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token property">"Hauttyp"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>      <span class="token string">"Normal"</span><br>    <span class="token punctuation">]</span><span class="token punctuation">,</span><br>    <span class="token property">"Deckkraft"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>      <span class="token string">"Mittlere Deckkraft"</span><br>    <span class="token punctuation">]</span><span class="token punctuation">,</span><br>    <span class="token property">"Grundfarbe"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>      <span class="token string">"Grau"</span><br>    <span class="token punctuation">]</span><span class="token punctuation">,</span><br>    <span class="token property">"Produkteigenschaften"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>      <span class="token string">"Vegan"</span><br>    <span class="token punctuation">]</span><span class="token punctuation">,</span><br>    <span class="token property">"Textur / Konsistenz / Applikation"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>      <span class="token string">"Stift"</span><br>    <span class="token punctuation">]</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span></code></pre><p>and wanted to turn it into this:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token string">"Hauttyp: Normal"</span><span class="token punctuation">,</span><br>  <span class="token string">"Deckkraft: Mittlere Deckkraft"</span><span class="token punctuation">,</span><br>  <span class="token string">"Grundfarbe: Grau"</span><span class="token punctuation">,</span><br>  <span class="token string">"Produkteigenschaften: Vegan"</span><span class="token punctuation">,</span><br>  <span class="token string">"Textur / Konsistenz / Applikation: Stift"</span><br><span class="token punctuation">]</span></code></pre><blockquote><p>As a bonus, I learned that &quot;Deckkraft&quot; means opacity in German. I don't think I've ever seen that word before, or had occasion to use that concept in a conversation. I'm guessing that this data perhaps relates to make-up or something similar. Anyway.</p></blockquote><p>In thinking about an approach for this data transformation, it struck me that the Perl adage <a href="https://en.wikipedia.org/wiki/There%27s_more_than_one_way_to_do_it">There's more than one way to do it</a> (often shortened to &quot;TIMTOWDI&quot; and pronounced &quot;Tim Toady&quot;) is often at play with jq, too.</p><h2>First approach</h2><p>I fired up my favourite interactive jq explorer, <a href="https://git.sr.ht/~gpanders/ijq">ijq</a>, and loaded the data. Clearly the first parts of the output strings were the keys within the object that was the value of the <code>filterFeatureGroup</code> property, i.e. <code>Hauttyp</code>, <code>Deckkraft</code>, <code>Grundfarbe</code> and so on. So my immediate approach was to look at them using <a href="https://stedolan.github.io/jq/manual/#keys,keys_unsorted">keys</a>:</p><pre class="language-jq"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup <span class="token operator pipe">|</span> keys</code></pre><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token string">"Deckkraft"</span><span class="token punctuation">,</span><br>  <span class="token string">"Grundfarbe"</span><span class="token punctuation">,</span><br>  <span class="token string">"Hauttyp"</span><span class="token punctuation">,</span><br>  <span class="token string">"Produkteigenschaften"</span><span class="token punctuation">,</span><br>  <span class="token string">"Textur / Konsistenz / Applikation"</span><br><span class="token punctuation">]</span></code></pre><p>This already looked quite close to the target output, so I forced my way forwards, pulling the values from the input that I had to squirrel away first via a <a href="https://stedolan.github.io/jq/manual/#Variable/SymbolicBindingOperator:...as$identifier%7C...">symbolic binding</a> to <code>$x</code>:</p><pre class="language-jq"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup <span class="token keyword">as</span> <span class="token variable">$x</span><br><span class="token operator pipe">|</span> <span class="token variable">$x</span><br><span class="token operator pipe">|</span> keys <br><span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token string">"<span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token dot important">.</span></span><span class="token punctuation">)</span></span>: <span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token variable">$x</span><span class="token punctuation">[</span><span class="token dot important">.</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span></span><span class="token punctuation">)</span></span>"</span><span class="token punctuation">)</span></code></pre><p>The string expression <code>&quot;...&quot;</code> includes the string interpolation construct (<code>\(...)</code>) to include the value of an expression.</p><p>This produced the right output:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token string">"Deckkraft: Mittlere Deckkraft"</span><span class="token punctuation">,</span><br>  <span class="token string">"Grundfarbe: Grau"</span><span class="token punctuation">,</span><br>  <span class="token string">"Hauttyp: Normal"</span><span class="token punctuation">,</span><br>  <span class="token string">"Produkteigenschaften: Vegan"</span><span class="token punctuation">,</span><br>  <span class="token string">"Textur / Konsistenz / Applikation: Stift"</span><br><span class="token punctuation">]</span></code></pre><p>but felt a little cumbersome, and perhaps not idiomatic. Here are the problems I saw:</p><ul><li>having to regurgitate what was just captured (<code>.filterFeatureGroup as $x | $x</code>) felt a little clunky</li><li>mapping over the keys and constructing a string for each one was OK, but the <code>$x[.][0]</code> bothered me a bit</li></ul><h2>Subsequent approaches</h2><p>I noticed that the output required values that exist as property names in the input: <code>Hauttyp</code>, <code>Deckkraft</code> and other values. More generally, when that is the case (as now) -- when property names are &quot;values&quot; -- my jq &quot;antennae&quot; are directed towards the <a href="https://stedolan.github.io/jq/manual/#to_entries,from_entries,with_entries">to_entries, from_entries, with_entries</a> family.</p><p>These functions convert back and forth between objects and arrays of key/value pairs, and in particular, <code>to_entries</code> will reshape an object so it's more straightforward programmatically to get at those property name values. Here's an example. If we have this input:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"DJ Adams"</span><span class="token punctuation">,</span><br>  <span class="token property">"website"</span><span class="token operator">:</span> <span class="token string">"https://qmacro.org"</span><br><span class="token punctuation">}</span></code></pre><p>then passing this through <code>to_entries</code> will produce this:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span>                                <br>  <span class="token punctuation">{</span>                              <br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"name"</span><span class="token punctuation">,</span>               <br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token string">"DJ Adams"</span>          <br>  <span class="token punctuation">}</span><span class="token punctuation">,</span>                             <br>  <span class="token punctuation">{</span>                              <br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"website"</span><span class="token punctuation">,</span>            <br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token string">"https://qmacro.org"</span><br>  <span class="token punctuation">}</span>                              <br><span class="token punctuation">]</span></code></pre><p>Now each of the property name values (<code>name</code> and <code>website</code> here) are addressable via a consistent property name <code>key</code>, across the objects that represent each of the original property name and value pairs.</p><p>Applying <code>to_entries</code> to the object which is the value of the <code>filterFeatureGroup</code> property, like this:</p><pre class="language-jq"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup <br><span class="token operator pipe">|</span> to_entries</code></pre><p>we get this:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Hauttyp"</span><span class="token punctuation">,</span><br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>      <span class="token string">"Normal"</span><br>    <span class="token punctuation">]</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Deckkraft"</span><span class="token punctuation">,</span><br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>      <span class="token string">"Mittlere Deckkraft"</span><br>    <span class="token punctuation">]</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Grundfarbe"</span><span class="token punctuation">,</span><br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>      <span class="token string">"Grau"</span><br>    <span class="token punctuation">]</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Produkteigenschaften"</span><span class="token punctuation">,</span><br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>      <span class="token string">"Vegan"</span><br>    <span class="token punctuation">]</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Textur / Konsistenz / Applikation"</span><span class="token punctuation">,</span><br>    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>      <span class="token string">"Stift"</span><br>    <span class="token punctuation">]</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">]</span></code></pre><p>The data itself now feels a little more &quot;pedestrian&quot;, perhaps, but it also feels a little easier to worth with because of that.</p><p>The subsequent approaches are all based on this initial reshaping of the data.</p><h3>Second approach</h3><p>Given the ability to more easily and more directly (explicitly) access the first part of what's required in the output, I moved forward like this:</p><pre class="language-jq"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup <br><span class="token operator pipe">|</span> to_entries<br><span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">.</span>key<span class="token punctuation">,</span> <span class="token punctuation">.</span>value<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">)</span></code></pre><p>This produced the following, which feels a little closer:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token punctuation">[</span><br>    <span class="token string">"Hauttyp"</span><span class="token punctuation">,</span><br>    <span class="token string">"Normal"</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token punctuation">[</span><br>    <span class="token string">"Deckkraft"</span><span class="token punctuation">,</span><br>    <span class="token string">"Mittlere Deckkraft"</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token punctuation">[</span><br>    <span class="token string">"Grundfarbe"</span><span class="token punctuation">,</span><br>    <span class="token string">"Grau"</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token punctuation">[</span><br>    <span class="token string">"Produkteigenschaften"</span><span class="token punctuation">,</span><br>    <span class="token string">"Vegan"</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token punctuation">[</span><br>    <span class="token string">"Textur / Konsistenz / Applikation"</span><span class="token punctuation">,</span><br>    <span class="token string">"Stift"</span><br>  <span class="token punctuation">]</span><br><span class="token punctuation">]</span></code></pre><p>I could then just map over these inner arrays and use <a href="https://stedolan.github.io/jq/manual/#join(str)">join</a> to create a string from the values in them, which I did, like this:</p><pre class="language-jq"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup <br><span class="token operator pipe">|</span> to_entries<br><span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">.</span>key<span class="token punctuation">,</span> <span class="token punctuation">.</span>value<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">)</span><br><span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token c-style-function function">join</span><span class="token punctuation">(</span><span class="token string">": "</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre><p>This produced the desired output:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token string">"Hauttyp: Normal"</span><span class="token punctuation">,</span><br>  <span class="token string">"Deckkraft: Mittlere Deckkraft"</span><span class="token punctuation">,</span><br>  <span class="token string">"Grundfarbe: Grau"</span><span class="token punctuation">,</span><br>  <span class="token string">"Produkteigenschaften: Vegan"</span><span class="token punctuation">,</span><br>  <span class="token string">"Textur / Konsistenz / Applikation: Stift"</span><br><span class="token punctuation">]</span></code></pre><p>This approach felt a little better, not only because of the cleaner use of <code>to_entries</code> but also because I wasn't constructing a string manually with string interpolation (instead, using <code>join</code> with an array).</p><p>But there were a couple of new things that didn't feel quite right:</p><ul><li>I was using a sequence of two <code>map</code> calls; this feels OK to some extent, expecially in the context of more literate (or explicit) chains of functions in Ramda's <a href="https://ramdajs.com/docs/#pipe">pipe</a> or <a href="https://ramdajs.com/docs/#compose">compose</a> context (see <a href="https://qmacro.org/blog/posts/2019/04/08/es6-reduce-and-pipe/">ES6, reduce and pipe</a> for an example) but perhaps it could be neater in jq</li><li>the explicit use of the <a href="https://stedolan.github.io/jq/manual/#ArrayIndex:.%5B2%5D">array index</a> <code>[0]</code> to get the first (and only) values (such as <code>Normal</code> and <code>Grau</code>) out of each of the innermost arrays was OK but made me feel as though I could perhaps transform the input into something even cleaner and simpler earlier in the process</li></ul><h3>Third approach</h3><p>To address the point about the sequence of two <code>map</code> calls, it was just a matter of rearranging the construction so that the call to <code>join</code> was in the same loop, so it looked like this:</p><pre class="language-jq"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup <br><span class="token operator pipe">|</span> to_entries<br><span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">.</span>key<span class="token punctuation">,</span> <span class="token punctuation">.</span>value<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator pipe">|</span> <span class="token c-style-function function">join</span><span class="token punctuation">(</span><span class="token string">": "</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre><p>This produces the same output:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token string">"Hauttyp: Normal"</span><span class="token punctuation">,</span><br>  <span class="token string">"Deckkraft: Mittlere Deckkraft"</span><span class="token punctuation">,</span><br>  <span class="token string">"Grundfarbe: Grau"</span><span class="token punctuation">,</span><br>  <span class="token string">"Produkteigenschaften: Vegan"</span><span class="token punctuation">,</span><br>  <span class="token string">"Textur / Konsistenz / Applikation: Stift"</span><br><span class="token punctuation">]</span></code></pre><h3>Fourth approach</h3><p>After addressing the <code>map</code> sequence issue, I was happy enough, but I wanted to go back to see if I could address the use of the <code>[0]</code> array index, by simplifying the data earlier in the filter pipeline.</p><p>Examining the first entry in the now-simplified <code>filterFeatureGroup</code> object, like this:</p><pre class="language-jq"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup <span class="token operator pipe">|</span> to_entries <span class="token operator pipe">|</span> first</code></pre><p>we get this:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Hauttyp"</span><span class="token punctuation">,</span><br>  <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>    <span class="token string">"Normal"</span><br>  <span class="token punctuation">]</span><br><span class="token punctuation">}</span></code></pre><p>What we really want from this particular entry is just the <code>Hauttyp</code> and <code>Normal</code> strings (to become <code>&quot;Hauttyp: Normal&quot;</code>).</p><p>There's a function called <a href="https://stedolan.github.io/jq/manual/#flatten,flatten(depth)">flatten</a> which, according to the manual, operates on arrays and does what you sort of expect it to do (again, jusing Ramda's <a href="https://ramdajs.com/docs/#flatten">flatten</a> as a reference). Given an array such as <code>[1, [2, 3]]</code>, then <code>flatten</code> will produce this: <code>[1, 2, 3]</code>.</p><p>What the manual doesn't mention is that it also operates, in a sensible way, on objects. Given the object entry above, if we add <code>flatten</code> to the filter pipeline, like this:</p><pre class="language-jq"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup <span class="token operator pipe">|</span> to_entries <span class="token operator pipe">|</span> first <span class="token operator pipe">|</span> flatten</code></pre><p>we get this:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token string">"Hauttyp"</span><span class="token punctuation">,</span><br>  <span class="token string">"Normal"</span><br><span class="token punctuation">]</span></code></pre><p>Nice! In a way, this for me feels like another philosopical approach that I also learned about in my Perl days (although it goes back way beyond that): <a href="https://en.wikipedia.org/wiki/DWIM">Do What I Mean</a> also known as &quot;DWIM&quot;. Given the data context and what <code>flatten</code> does in general, I'm not surprised at the result, and it's what I would want, or mean, when I invoke it on an object.</p><p>Given this, I can do away with a lot of the mechanics for extracting the values, and just write this:</p><pre class="language-jq"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup<br><span class="token operator pipe">|</span> to_entries<br><span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span>flatten <span class="token operator pipe">|</span> <span class="token c-style-function function">join</span><span class="token punctuation">(</span><span class="token string">": "</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre><p>I'm happy to report that this also produces the desired output:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token string">"Hauttyp: Normal"</span><span class="token punctuation">,</span><br>  <span class="token string">"Deckkraft: Mittlere Deckkraft"</span><span class="token punctuation">,</span><br>  <span class="token string">"Grundfarbe: Grau"</span><span class="token punctuation">,</span><br>  <span class="token string">"Produkteigenschaften: Vegan"</span><span class="token punctuation">,</span><br>  <span class="token string">"Textur / Konsistenz / Applikation: Stift"</span><br><span class="token punctuation">]</span></code></pre><p>I think I like this approach the most.</p><h2>Wrapping up</h2><p>Working through simple questions like this help me think about jq more, and as I do so, I learn to think more about data structures, which I did in Perl too, but I am learning also to think about how data structures change as they are sent through pipelines of filters.</p><p>Incidentally, the accepted answer is a combination of some of what I explored in this post:</p><pre class="language-jq"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup <span class="token operator pipe">|</span> to_entries <span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token string">"<span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token punctuation">.</span>key</span><span class="token punctuation">)</span></span>: <span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token punctuation">.</span>value<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span></span><span class="token punctuation">)</span></span>"</span><span class="token punctuation">)</span></code></pre><p>Hopefully this has also helped you think a bit more about processing JSON with jq.</p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/jq/">#jq</a> <a href="/tags/timtowdi/">#timtowdi</a> <a href="/tags/stackoverflow/">#stackoverflow</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2023/01/02/i&#39;m-moving-onto-a-narrowboat/"><span>←</span> <span>I&#39;m moving onto a narrowboat</span> </a><a href="/blog/posts/2022/12/13/array-push-with-autovivification-in-jq/"><span>Array push with autovivification in jq</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="learning-from-exploring-a-question-on-jq">Learning from exploring a question on jq</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2022-12-28">28 December 2022</time></li>
+	<li><a href="/tags/jq/" class="post-tag">jq</a>, </li>
+	<li><a href="/tags/timtowdi/" class="post-tag">timtowdi</a>, </li>
+	<li><a href="/tags/stackoverflow/" class="post-tag">stackoverflow</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>In this post I explore different ways of achieving a simple goal in reformulating some JSON, with jq, and explain my thinking as I go.</p>
+<p>Occasionally I browse the <a href="https://stackoverflow.com/questions/tagged/jq?tab=Newest">Newest 'jq' questions on Stack Overflow</a> and try to gently expand my jq knowledge, or at least exercise my young jq muscles. This morning I came across this one: <a href="https://stackoverflow.com/questions/74937237/jq-extracting-the-name-and-the-value-of-objects-as-an-array">Jq extracting the name and the value of objects as an array</a>. Sometimes the questions are hard, sometimes less so. This one didn't seem too difficult, so I thought I'd take a quick coffee break to see what I could come up with (the question had <a href="https://stackoverflow.com/a/74937461/384366">already been answered</a> but I didn't look until later).</p>
+<h2 id="the-requirement">The requirement</h2>
+<p>The OP had this JSON:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"filterFeatureGroup"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"Hauttyp"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">"Normal"</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token property">"Deckkraft"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">"Mittlere Deckkraft"</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token property">"Grundfarbe"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">"Grau"</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token property">"Produkteigenschaften"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">"Vegan"</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token property">"Textur / Konsistenz / Applikation"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">"Stift"</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>and wanted to turn it into this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token string">"Hauttyp: Normal"</span><span class="token punctuation">,</span>
+  <span class="token string">"Deckkraft: Mittlere Deckkraft"</span><span class="token punctuation">,</span>
+  <span class="token string">"Grundfarbe: Grau"</span><span class="token punctuation">,</span>
+  <span class="token string">"Produkteigenschaften: Vegan"</span><span class="token punctuation">,</span>
+  <span class="token string">"Textur / Konsistenz / Applikation: Stift"</span>
+<span class="token punctuation">]</span></code></pre>
+<blockquote>
+<p>As a bonus, I learned that &quot;Deckkraft&quot; means opacity in German. I don't think I've ever seen that word before, or had occasion to use that concept in a conversation. I'm guessing that this data perhaps relates to make-up or something similar. Anyway.</p>
+</blockquote>
+<p>In thinking about an approach for this data transformation, it struck me that the Perl adage <a href="https://en.wikipedia.org/wiki/There%27s_more_than_one_way_to_do_it">There's more than one way to do it</a> (often shortened to &quot;TIMTOWDI&quot; and pronounced &quot;Tim Toady&quot;) is often at play with jq, too.</p>
+<h2 id="first-approach">First approach</h2>
+<p>I fired up my favourite interactive jq explorer, <a href="https://git.sr.ht/~gpanders/ijq">ijq</a>, and loaded the data. Clearly the first parts of the output strings were the keys within the object that was the value of the <code>filterFeatureGroup</code> property, i.e. <code>Hauttyp</code>, <code>Deckkraft</code>, <code>Grundfarbe</code> and so on. So my immediate approach was to look at them using <a href="https://stedolan.github.io/jq/manual/#keys,keys_unsorted">keys</a>:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup <span class="token operator pipe">|</span> keys</code></pre>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token string">"Deckkraft"</span><span class="token punctuation">,</span>
+  <span class="token string">"Grundfarbe"</span><span class="token punctuation">,</span>
+  <span class="token string">"Hauttyp"</span><span class="token punctuation">,</span>
+  <span class="token string">"Produkteigenschaften"</span><span class="token punctuation">,</span>
+  <span class="token string">"Textur / Konsistenz / Applikation"</span>
+<span class="token punctuation">]</span></code></pre>
+<p>This already looked quite close to the target output, so I forced my way forwards, pulling the values from the input that I had to squirrel away first via a <a href="https://stedolan.github.io/jq/manual/#Variable/SymbolicBindingOperator:...as$identifier%7C...">symbolic binding</a> to <code>$x</code>:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup <span class="token keyword">as</span> <span class="token variable">$x</span>
+<span class="token operator pipe">|</span> <span class="token variable">$x</span>
+<span class="token operator pipe">|</span> keys 
+<span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token string">"<span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token dot important">.</span></span><span class="token punctuation">)</span></span>: <span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token variable">$x</span><span class="token punctuation">[</span><span class="token dot important">.</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span></span><span class="token punctuation">)</span></span>"</span><span class="token punctuation">)</span></code></pre>
+<p>The string expression <code>&quot;...&quot;</code> includes the string interpolation construct (<code>\(...)</code>) to include the value of an expression.</p>
+<p>This produced the right output:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token string">"Deckkraft: Mittlere Deckkraft"</span><span class="token punctuation">,</span>
+  <span class="token string">"Grundfarbe: Grau"</span><span class="token punctuation">,</span>
+  <span class="token string">"Hauttyp: Normal"</span><span class="token punctuation">,</span>
+  <span class="token string">"Produkteigenschaften: Vegan"</span><span class="token punctuation">,</span>
+  <span class="token string">"Textur / Konsistenz / Applikation: Stift"</span>
+<span class="token punctuation">]</span></code></pre>
+<p>but felt a little cumbersome, and perhaps not idiomatic. Here are the problems I saw:</p>
+<ul>
+<li>having to regurgitate what was just captured (<code>.filterFeatureGroup as $x | $x</code>) felt a little clunky</li>
+<li>mapping over the keys and constructing a string for each one was OK, but the <code>$x[.][0]</code> bothered me a bit</li>
+</ul>
+<h2 id="subsequent-approaches">Subsequent approaches</h2>
+<p>I noticed that the output required values that exist as property names in the input: <code>Hauttyp</code>, <code>Deckkraft</code> and other values. More generally, when that is the case (as now) -- when property names are &quot;values&quot; -- my jq &quot;antennae&quot; are directed towards the <a href="https://stedolan.github.io/jq/manual/#to_entries,from_entries,with_entries">to_entries, from_entries, with_entries</a> family.</p>
+<p>These functions convert back and forth between objects and arrays of key/value pairs, and in particular, <code>to_entries</code> will reshape an object so it's more straightforward programmatically to get at those property name values. Here's an example. If we have this input:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"DJ Adams"</span><span class="token punctuation">,</span>
+  <span class="token property">"website"</span><span class="token operator">:</span> <span class="token string">"https://qmacro.org"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>then passing this through <code>to_entries</code> will produce this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>                                
+  <span class="token punctuation">{</span>                              
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"name"</span><span class="token punctuation">,</span>               
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token string">"DJ Adams"</span>          
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>                             
+  <span class="token punctuation">{</span>                              
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"website"</span><span class="token punctuation">,</span>            
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token string">"https://qmacro.org"</span>
+  <span class="token punctuation">}</span>                              
+<span class="token punctuation">]</span></code></pre>
+<p>Now each of the property name values (<code>name</code> and <code>website</code> here) are addressable via a consistent property name <code>key</code>, across the objects that represent each of the original property name and value pairs.</p>
+<p>Applying <code>to_entries</code> to the object which is the value of the <code>filterFeatureGroup</code> property, like this:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup 
+<span class="token operator pipe">|</span> to_entries</code></pre>
+<p>we get this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Hauttyp"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">"Normal"</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Deckkraft"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">"Mittlere Deckkraft"</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Grundfarbe"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">"Grau"</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Produkteigenschaften"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">"Vegan"</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Textur / Konsistenz / Applikation"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">"Stift"</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>The data itself now feels a little more &quot;pedestrian&quot;, perhaps, but it also feels a little easier to worth with because of that.</p>
+<p>The subsequent approaches are all based on this initial reshaping of the data.</p>
+<h3 id="second-approach">Second approach</h3>
+<p>Given the ability to more easily and more directly (explicitly) access the first part of what's required in the output, I moved forward like this:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup 
+<span class="token operator pipe">|</span> to_entries
+<span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">.</span>key<span class="token punctuation">,</span> <span class="token punctuation">.</span>value<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">)</span></code></pre>
+<p>This produced the following, which feels a little closer:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">[</span>
+    <span class="token string">"Hauttyp"</span><span class="token punctuation">,</span>
+    <span class="token string">"Normal"</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token string">"Deckkraft"</span><span class="token punctuation">,</span>
+    <span class="token string">"Mittlere Deckkraft"</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token string">"Grundfarbe"</span><span class="token punctuation">,</span>
+    <span class="token string">"Grau"</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token string">"Produkteigenschaften"</span><span class="token punctuation">,</span>
+    <span class="token string">"Vegan"</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token string">"Textur / Konsistenz / Applikation"</span><span class="token punctuation">,</span>
+    <span class="token string">"Stift"</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">]</span></code></pre>
+<p>I could then just map over these inner arrays and use <a href="https://stedolan.github.io/jq/manual/#join(str)">join</a> to create a string from the values in them, which I did, like this:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup 
+<span class="token operator pipe">|</span> to_entries
+<span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">.</span>key<span class="token punctuation">,</span> <span class="token punctuation">.</span>value<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token c-style-function function">join</span><span class="token punctuation">(</span><span class="token string">": "</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>This produced the desired output:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token string">"Hauttyp: Normal"</span><span class="token punctuation">,</span>
+  <span class="token string">"Deckkraft: Mittlere Deckkraft"</span><span class="token punctuation">,</span>
+  <span class="token string">"Grundfarbe: Grau"</span><span class="token punctuation">,</span>
+  <span class="token string">"Produkteigenschaften: Vegan"</span><span class="token punctuation">,</span>
+  <span class="token string">"Textur / Konsistenz / Applikation: Stift"</span>
+<span class="token punctuation">]</span></code></pre>
+<p>This approach felt a little better, not only because of the cleaner use of <code>to_entries</code> but also because I wasn't constructing a string manually with string interpolation (instead, using <code>join</code> with an array).</p>
+<p>But there were a couple of new things that didn't feel quite right:</p>
+<ul>
+<li>I was using a sequence of two <code>map</code> calls; this feels OK to some extent, expecially in the context of more literate (or explicit) chains of functions in Ramda's <a href="https://ramdajs.com/docs/#pipe">pipe</a> or <a href="https://ramdajs.com/docs/#compose">compose</a> context (see <a href="https://qmacro.org/blog/posts/2019/04/08/es6-reduce-and-pipe/">ES6, reduce and pipe</a> for an example) but perhaps it could be neater in jq</li>
+<li>the explicit use of the <a href="https://stedolan.github.io/jq/manual/#ArrayIndex:.%5B2%5D">array index</a> <code>[0]</code> to get the first (and only) values (such as <code>Normal</code> and <code>Grau</code>) out of each of the innermost arrays was OK but made me feel as though I could perhaps transform the input into something even cleaner and simpler earlier in the process</li>
+</ul>
+<h3 id="third-approach">Third approach</h3>
+<p>To address the point about the sequence of two <code>map</code> calls, it was just a matter of rearranging the construction so that the call to <code>join</code> was in the same loop, so it looked like this:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup 
+<span class="token operator pipe">|</span> to_entries
+<span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">.</span>key<span class="token punctuation">,</span> <span class="token punctuation">.</span>value<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator pipe">|</span> <span class="token c-style-function function">join</span><span class="token punctuation">(</span><span class="token string">": "</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>This produces the same output:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token string">"Hauttyp: Normal"</span><span class="token punctuation">,</span>
+  <span class="token string">"Deckkraft: Mittlere Deckkraft"</span><span class="token punctuation">,</span>
+  <span class="token string">"Grundfarbe: Grau"</span><span class="token punctuation">,</span>
+  <span class="token string">"Produkteigenschaften: Vegan"</span><span class="token punctuation">,</span>
+  <span class="token string">"Textur / Konsistenz / Applikation: Stift"</span>
+<span class="token punctuation">]</span></code></pre>
+<h3 id="fourth-approach">Fourth approach</h3>
+<p>After addressing the <code>map</code> sequence issue, I was happy enough, but I wanted to go back to see if I could address the use of the <code>[0]</code> array index, by simplifying the data earlier in the filter pipeline.</p>
+<p>Examining the first entry in the now-simplified <code>filterFeatureGroup</code> object, like this:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup <span class="token operator pipe">|</span> to_entries <span class="token operator pipe">|</span> first</code></pre>
+<p>we get this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"Hauttyp"</span><span class="token punctuation">,</span>
+  <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token string">"Normal"</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<p>What we really want from this particular entry is just the <code>Hauttyp</code> and <code>Normal</code> strings (to become <code>&quot;Hauttyp: Normal&quot;</code>).</p>
+<p>There's a function called <a href="https://stedolan.github.io/jq/manual/#flatten,flatten(depth)">flatten</a> which, according to the manual, operates on arrays and does what you sort of expect it to do (again, jusing Ramda's <a href="https://ramdajs.com/docs/#flatten">flatten</a> as a reference). Given an array such as <code>[1, [2, 3]]</code>, then <code>flatten</code> will produce this: <code>[1, 2, 3]</code>.</p>
+<p>What the manual doesn't mention is that it also operates, in a sensible way, on objects.  Given the object entry above, if we add <code>flatten</code> to the filter pipeline, like this:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup <span class="token operator pipe">|</span> to_entries <span class="token operator pipe">|</span> first <span class="token operator pipe">|</span> flatten</code></pre>
+<p>we get this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token string">"Hauttyp"</span><span class="token punctuation">,</span>
+  <span class="token string">"Normal"</span>
+<span class="token punctuation">]</span></code></pre>
+<p>Nice! In a way, this for me feels like another philosopical approach that I also learned about in my Perl days (although it goes back way beyond that): <a href="https://en.wikipedia.org/wiki/DWIM">Do What I Mean</a> also known as &quot;DWIM&quot;. Given the data context and what <code>flatten</code> does in general, I'm not surprised at the result, and it's what I would want, or mean, when I invoke it on an object.</p>
+<p>Given this, I can do away with a lot of the mechanics for extracting the values, and just write this:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup
+<span class="token operator pipe">|</span> to_entries
+<span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span>flatten <span class="token operator pipe">|</span> <span class="token c-style-function function">join</span><span class="token punctuation">(</span><span class="token string">": "</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>I'm happy to report that this also produces the desired output:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token string">"Hauttyp: Normal"</span><span class="token punctuation">,</span>
+  <span class="token string">"Deckkraft: Mittlere Deckkraft"</span><span class="token punctuation">,</span>
+  <span class="token string">"Grundfarbe: Grau"</span><span class="token punctuation">,</span>
+  <span class="token string">"Produkteigenschaften: Vegan"</span><span class="token punctuation">,</span>
+  <span class="token string">"Textur / Konsistenz / Applikation: Stift"</span>
+<span class="token punctuation">]</span></code></pre>
+<p>I think I like this approach the most.</p>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>Working through simple questions like this help me think about jq more, and as I do so, I learn to think more about data structures, which I did in Perl too, but I am learning also to think about how data structures change as they are sent through pipelines of filters.</p>
+<p>Incidentally, the accepted answer is a combination of some of what I explored in this post:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span>filterFeatureGroup <span class="token operator pipe">|</span> to_entries <span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token string">"<span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token punctuation">.</span>key</span><span class="token punctuation">)</span></span>: <span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token punctuation">.</span>value<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span></span><span class="token punctuation">)</span></span>"</span><span class="token punctuation">)</span></code></pre>
+<p>Hopefully this has also helped you think a bit more about processing JSON with jq.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2022/12/13/array-push-with-autovivification-in-jq/">Array push with autovivification in jq</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2023/01/02/i-m-moving-onto-a-narrowboat/">I&#39;m moving onto a narrowboat</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2022/12/28/learning-from-exploring-a-question-on-jq/` was built on 2025-09-15T15:58:49.617Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

@@ -1,0 +1,804 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Monday morning thoughts: more on ABAP in the cloud</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="monday-morning-thoughts-more-on-abap-in-the-cloud">Monday morning thoughts: more on ABAP in the cloud</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2018-10-08">08 October 2018</time></li>
+	<li><a href="/tags/sapcommunity/" class="post-tag">sapcommunity</a>, </li>
+	<li><a href="/tags/mondaymorningthoughts/" class="post-tag">mondaymorningthoughts</a>, </li>
+	<li><a href="/tags/abap/" class="post-tag">abap</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p><em>In this post, following my <a href="https://blogs.sap.com/2018/09/10/monday-morning-thoughts-abap-in-the-cloud/">previous post on the
+subject</a>,
+I think a bit more about the SAP Cloud Platform ABAP Environment,
+inspired by the conversations around the subject at SAP TechEd in Las
+Vegas last week.</em></p>
+<p>Last month, Harald Kuck published a post &quot;<a href="https://blogs.sap.com/2018/09/04/sap-cloud-platform-abap-environment/">SAP Cloud Platform ABAP
+Environment</a>&quot;
+which many of us had been eagerly anticipating. The post has already had
+around 24K views and over 60 likes, which says something for the
+popularity of the subject matter. I followed up with a Monday morning
+thoughts post &quot;<a href="/blog/posts/2018/09/10/monday-morning-thoughts:-abap-in-the-cloud/">ABAP in the
+cloud</a>&quot;
+a few days later.</p>
+<p>Last week at SAP TechEd, Bernd Leukert included references to this new
+ABAP environment in his keynote, which was wonderful to hear. (There
+were a lot of other great things in the keynote, such as SAP Cloud
+Platform Functions, but that's a subject for another time). And so the
+conversations that started last month were reinvigorated, which is
+always a good thing. There's a lot of different opinions out there, so
+I thought in this posts I'd share some of my own thinking on the
+subject.</p>
+<p>To set the scene, though, I first wanted to share a couple of tweets
+from our <a href="https://events.sap.com/teched-2018-usa/en/developer_garage">Developer
+Garage</a> at
+SAP TechEd last week*. One of the areas offered workstations and a
+number of tutorial missions for attendees to come and work through (and
+win prizes, hurray!).</p>
+<p>*The Developer Garage will of course also be at SAP TechEd in Barcelona
+later this month!</p>
+<p>This year there are four
+<a href="https://developers.sap.com/app-space.html">missions</a>:</p>
+<ul>
+<li>SAP Cloud Platform (Application Programming Model)</li>
+<li>SAP Cloud Platform ABAP Environment</li>
+<li>S/4HANA</li>
+<li>SAP Cloud Platform Portal</li>
+</ul>
+<p>Throughout most of the week, not surprisingly, the SAP Cloud Platform
+ABAP Environment mission was leading the pack, in terms of number of
+tutorials completed. There is huge interest in the offering! In a fun
+bit of technology rivalry, however, at one stage the SAP Cloud Platform
+(Application Programming Model) took the lead, as you can see from this
+<a href="/tweets/qmacro/status/1047882500528209921">tweet</a>:</p>
+<p><img src="/tweets/qmacro/tweets_media/1047882500528209921-DorTk2xVsAAFotg.jpg" alt=""></p>
+<p>But in the end, the sheer weight of enthusiasm and desire to get a first
+hands-on experience meant that the SAP Cloud Platform ABAP Environment
+mission ended up on top, as you can see from this
+<a href="https://twitter.com/anfisc/status/1048009973320404992">tweet</a>
+from Andre Fischer (the total number of tutorials completed finished a
+little bit over 2000 by the time SAP TechEd finished last week):</p>
+<p><img src="/images/2018/10/Screen-Shot-2018-10-08-at-11.01.25.png" alt=""></p>
+<p>Although I'm a huge fan of the new <a href="https://blogs.sap.com/tag/applicationprogrammingmodel/">Application Programming
+Model</a> (which
+also drew great interest last week), I have to say that the new SAP
+Cloud Platform ABAP Environment was a worthy winner in this case.</p>
+<h2 id="abap-paas">ABAP PaaS</h2>
+<p>I'm going to refer to the SAP Cloud Platform ABAP Environment in the
+rest of this post unofficially as &quot;ABAP PaaS&quot;, as that's what others
+are calling it too. In fact, that's already sparked some interesting
+conversation, as some folks are not convinced that the moniker is
+appropriate.</p>
+<p>I remember the first release of Google's <a href="https://cloud.google.com/appengine/">App
+Engine</a>, quite a few years ago now.
+What that offered at the outset was a cloud based runtime for Python
+based apps. There was a particular deployment process, and you had to
+think in a certain way if you wanted to take advantage of the features
+offered, especially when it came to using facilities such as the
+persistence layer or message queues. This was fine, and sort of part of
+the point of the &quot;platform&quot; part of PaaS - the platform offered
+certain features and required you to think in certain ways and employ
+certain approaches.</p>
+<p>To me, ABAP PaaS is similar, in that it allows me to write in a language
+with which I'm familiar, take advantage of certain platform level
+features -- such as a HANA-backed persistence layer -- and also causes
+me to think in a particular way (more on this shortly). Like App Engine,
+I don't have to worry about the maintenance, operation or upkeep of the
+ABAP platform - it just happens. New features are rolled out and
+available to me as they appear. I don't have to concern myself with
+differing releases of differing target runtimes - unlike in the on-prem
+world.</p>
+<h2 id="the-abap-language">The ABAP language</h2>
+<p>ABAP appeared on the scene in the late 1980's, and I have fond memories
+of trying early versions of this new &quot;report writing&quot; language, as an
+alternative to the 370 assembly language in which R/2 was written by the
+SAP developers themselves, but which was also used by customers who
+needed extensions and custom reports.</p>
+<p>The language has grown over the decades, taking on significant new
+features along the way (such as support for SQL and object orientation)
+and today enjoying rather <a href="https://blogs.sap.com/2016/11/04/abap-news-for-release-7.51/">modern
+features</a>,
+not only as part of the language itself but also within the layers of
+the greater ABAP environment as a whole - I'm thinking of Core Data
+Services (CDS), for example. The article &quot;<a href="https://sapinsider.wispubs.com/Assets/Articles/2017/November/SPI-ABAP-and-the-Cloud">ABAP and the
+Cloud</a>&quot;
+by Karl Kessler gives a good overview of what today's ABAP looks like.</p>
+<p>And this is something that I think about a lot, in the context of the
+modernisation of ABAP as we move to the cloud. Some language features
+are being deprecated, perhaps those that should have been deprecated a
+long time ago if it hadn't been for the requirement for backward
+compatibility - again, on-prem legacy challenges which disappear in the
+ABAP PaaS context.</p>
+<h2 id="the-abap-environment">The ABAP environment</h2>
+<p>But ABAP in general, and ABAP in the cloud in particular, is more than
+just a language. It's a whole set of building blocks that together
+present a rich set of features for building business apps - whether
+they're new apps or extensions to existing functionality. Some of the
+building blocks are themselves written in ABAP (rather than at kernel
+level). One notable example that comes to mind immediately is the layer
+supporting the development of HTTP based services in general, and
+supporting the development of OData services in particular. That layer
+itself is written in ABAP.</p>
+<p>So I find it more useful to think about the &quot;ABAP environment&quot; rather
+than the &quot;ABAP language&quot;. It's greater than the sum of its parts. And
+with the advent of excellent initiatives from the community
+(<a href="https://github.com/larshp/abapGit">abapGit</a> from Lars Hvam immediately
+comes to mind) it's becoming even greater.</p>
+<p>When we think of the ABAP language itself, there is sometimes the
+objection that it's proprietary. But for me, that's not the point.
+Open sourcing the language would be one thing, but is it really what we
+should be focusing on right now? As I've already mentioned, ABAP is
+more than a language. Moreover, there are other environments with their
+own language. An example that immediately comes to mind is
+<a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_intro_what_is_apex.htm">Apex</a>,
+a language specific to Salesforce for developing flow and transaction
+control in conjunction with calls to various APIs. And that's OK too.</p>
+<h2 id="abap-paass-focus">ABAP PaaS's focus</h2>
+<p>That mention of APIs brings me to the primary focus for ABAP PaaS. There
+are many reasons why I think ABAP PaaS is important.</p>
+<p>One is that we have a rich intellectual ocean of knowledge and
+experience in ABAP, amongst customers, partners and of course developers
+inside SAP too. To ignore that would be to effectively discard a vast
+skill base as we move to a cloud-first solutions paradigm.</p>
+<p>I do think that developers should master more than one language, but not
+everyone agrees with me, and that's OK. Moreover, considering that ABAP
+is more than just a language, as I've mentioned, there's plenty of
+scope for individuals to focus on an ABAP flavoured career and do very
+well. With ABAP PaaS, these individuals get to extend their career and
+their skills, and customers benefit from that. ABAP PaaS presents modern
+possibilities for these individuals, and for others who are deliberately
+and consciously versed in other languages, ABAP PaaS represents choice.</p>
+<p>That said, I think an even more important focus for ABAP PaaS is the use
+case which is one that is general to the cloud environment and a major
+raison d'être for the initiative. That is the ability to stop
+customising the core and <em>build out extensions and new apps in a
+separate environment</em>.</p>
+<p>Business solutions these days span entire cloud and on-prem landscapes.
+We're moving away from monolithic runtimes for business applications,
+due to the distributed nature of apps and services in a cloud-first
+context. Implicit in that nature is the concept one level up from PaaS,
+which is SaaS (Software-as-a-Service) - business solution software that
+to all intents and purposes only has a consumption surface layer, rather
+than any depth into which we can dig.</p>
+<p>That surface layer consists of two types of interface - a user interface
+(UI) that is usually web-based, and a machine interface that is API
+(application programming interface) based. We can't see inside these
+systems, and it's not possible to extend or customise them directly.
+The massive advantage of this is that we don't have to worry about
+their operation, much less their maintenance or upkeep. But we need to
+differentiate ourselves somehow - to extend the solutions to meet our
+own business needs, to give us that competitive advantage or to solve an
+organisation-specific challenge.</p>
+<p>That's where ABAP PaaS comes in, as one of a set of environments
+perfectly suited for building these extensions (another is of course the
+Application Programming Model and the Cloud Foundry environment).</p>
+<p>But it's not just extensions to SaaS solutions (like SuccessFactors or
+S/4HANA Cloud), it's extensions for existing on-prem solutions, whether
+that's S/4HANA, Business Suite or something else R/3 based. Yes, there
+are plenty of these on-prem systems that have been customised, but
+that's not a reason to continue doing so. We need to think about making
+the journey to separate these concerns out - standard software and
+extensions to that standard software. And when I look at how ABAP PaaS
+has been designed, with the focus on CDS based and API focused service
+solutions, it starts to make a lot of sense to me.</p>
+<p><img src="/images/2018/09/sap-cloud-platform-abap-environment.png" alt="">
+<em>From &quot;<a href="https://blogs.sap.com/2018/09/04/sap-cloud-platform-abap-environment/">SAP Cloud Platform ABAP
+Environment</a>&quot;
+by Harald Kuck</em></p>
+<p>There's no concept of UI as we understand it from the traditional
+on-prem R/3-based world. No dynpros, no transactions, no reports, no
+SAPGUI. Thinking back to the reference to Google's App Engine earlier,
+it's very similar - that PaaS offering doesn't have a UI either. The
+focus of a PaaS is to provide facilities for &quot;headless&quot; solutions that
+both present and consume APIs that partake in landscape-wide solutions.
+The UI is separate - whether that UI follows the Fiori design language
+and is built with UI5, or whether it's with another Web UI framework
+altogether. There may not even be a UI in the traditional sense - one
+thing today's computing fabric is bringing us is a wider choice of how
+one interacts with solutions - think custom Internet of Things (IoT)
+devices and conversational UI such as bots in Slack and speech
+recognition in the form of the Google Assistant platform or Alexa (and
+of course there's SAP CoPilot too).</p>
+<p>What we miss from from the &quot;legacy&quot; ABAP platform is replaced by a
+sharp focus on openness - using <a href="https://en.wikipedia.org/wiki/Git">git</a>
+for software versioning and logistics, a RESTful programming model as
+the de facto approach to building solutions, and the use of HTTP in
+general to consume services from (and offer services to) other parts of
+the landscape.</p>
+<h2 id="the-near-future">The near future</h2>
+<p>There's so much more to think about on this subject, but this post is
+already long enough. I think it's a rather exciting time for SAP's
+cloud-first initiatives in general, and for the ABAP community in
+particular. Many of us have already been learning about the programming
+model that is key to building solutions on ABAP PaaS, and that is
+the ABAP RESTful Programming Model. If you haven't yet had chance to
+dig in, I'd recommend this SAP TechEd session, which is available
+online already: &quot;<a href="https://events.sap.com/teched/en/session/41240">CNA215 - See the Big Picture of the ABAP RESTful
+Programming Model, 2018 Las
+Vegas</a>&quot; by Marcel
+Hermanns. If you're coming to SAP TechEd in Barcelona later this month,
+drop in to the Developer Garage to work through the SAP Cloud Platform
+ABAP Environment tutorials (access to an ABAP PaaS system will be
+provided).</p>
+<p>It's early days for ABAP PaaS. The team is taking a &quot;<a href="https://en.wikipedia.org/wiki/Release_early,_release_often">release early,
+release
+often</a>&quot;
+approach to delivery, so I'm seeing today's ABAP PaaS offering as a
+minimum viable product. Over time I expect to see the environment grow -
+in terms of whitelisting, in terms of comprehension and of course in
+terms of developer access.</p>
+<p>For me, ABAP PaaS is full of potential and I for one welcome the
+prospect of building extensions and net new apps using this modern
+environment. I'd love to hear from you too. Let me know what you think
+in the comments section below.</p>
+<hr>
+<p>This post was brought to you by <a href="https://www.pactcoffee.com/coffees/el-silencio-espresso">Pact Coffee's El
+Silencio</a> which
+is helping me battle the jet lag after returning home from Las Vegas, by
+the hashtag <a href="https://twitter.com/hashtag/abapsnotdead">#ABAPsNotDead</a>,
+and by the clackety-clack of the Cherry MX Blue switches in the
+mechanical keyboard I'm trying out, as I embark upon a new
+<s><a href="https://www.reddit.com/r/MechanicalKeyboards">obsession</a></s>
+hobby.</p>
+<hr>
+<p>Read more posts in this series here: <a href="/tags/mondaymorningthoughts/">Monday morning
+thoughts</a>.</p>
+<hr>
+<p><a href="https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-more-on-abap-in-the-cloud/ba-p/13365539">Originally published on SAP Community</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2018/10/01/monday-morning-thoughts-impostor-syndrome/">Monday morning thoughts: impostor syndrome</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2018/10/10/sap-cloud-application-programming-model-cap-start-here/">SAP Cloud Application Programming Model (CAP) - start here</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2018/10/08/monday-morning-thoughts-more-on-abap-in-the-cloud/` was built on 2025-09-15T15:58:49.594Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

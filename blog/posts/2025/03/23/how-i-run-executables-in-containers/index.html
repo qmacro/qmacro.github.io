@@ -1,7 +1,626 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2025/03/23/how-i-run-executables-in-containers/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>How I run executables in containers | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="How I run executables in containers"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2025/03/23/how-i-run-executables-in-containers/"><meta name="description" content="How I run executables in containers 23 Mar 2025 | 3 min read Here&#39;s a quick post explaining how I might typically containerise an..."><meta property="og:description" content="How I run executables in containers 23 Mar 2025 | 3 min read Here&#39;s a quick post explaining how I might typically containerise an..."><meta name="description" content="How I run executables in containers 23 Mar 2025 | 3 min read Here&#39;s a quick post explaining how I might typically containerise an..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>How I run executables in containers</title>
+		<meta name="description" content="Here&#39;s a quick post explaining how I might typically containerise an executable. This is in the context of my aim to not &quot;pollute&quot; my base OS (at the bare metal level) with any installs, as far as I can, as well as to remain platform independent and abstract.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>How I run executables in containers</h1><div class="post__details"><time datetime="2025-03-23">23 Mar 2025 </time><span>| </span><span>3 min read</span></div></header><main class="post__content"><p><em>Here's a quick post explaining how I might typically containerise an executable. This is in the context of my aim to not &quot;pollute&quot; my base OS (at the bare metal level) with any installs, as far as I can, as well as to remain platform independent and abstract.</em></p><h2>Background</h2><p>Last Friday saw the second <a href="https://sitmadrid.com/">SAP Inside Track Madrid</a> event, which was excellent. My good friend and colleague <a href="https://ajmaradiaga.com/">Antonio</a>, one of the core event organisers, kicked things off, and then I <a href="https://www.youtube.com/live/TXy-s1Kk3c0?si=ddzIYWYfQvRl4Qwg&amp;t=621">started with my talk</a>, &quot;Level up your CAP skills by learning how to use the cds REPL&quot;.</p><p>I'd written my talk also <a href="/blog/posts/2025/03/21/level-up-your-cap-skills-by-learning-how-to-use-the-cds-repl/">in blog post form</a>, for folks who might also be interested but couldn't attend the event in person, but also for the folks in the room, especially as I wanted to make clear that everything I was about to demonstrate (I conducted my talk as a live REPL session in the terminal) was easily repeatable, and they could follow the examples at home afterwards by reading the post.</p><h2>Generating and displaying a QR code in the terminal</h2><p>So I decided to be ready to share a link to the <a href="/blog/posts/2025/03/21/level-up-your-cap-skills-by-learning-how-to-use-the-cds-repl/">blog post</a> right at the start of the talk, and thought I'd have a bit of fun trying to generate a QR code in the terminal, large enough for the attendees to scan on their phones from where they were sat in the audience. For this, I found a great tool called <a href="https://github.com/mdp/qrterminal">QRCode Terminal</a>, in the form of a binary called <code>qrterminal</code>.</p><p>Here's a very grainy screen grab from <a href="https://www.youtube.com/live/TXy-s1Kk3c0?si=Gkvcd77F408usOFN&amp;t=670">a small picture-in-picture window of me presenting</a>:</p><p><img src="/images/2025/03/qr-code-on-screen.png" alt="QR code on screen"></p><h2>Abstracting all the things</h2><p>I am trying to avoid installing anything on this macOS laptop other than the basics, i.e. Docker. In previous times I would have typically had <a href="https://brew.sh/">Homebrew</a> installed and then used that to install various software packages, but I'm actively avoiding that, choosing instead to run everything in containers, either locally (i.e. on the container engine running on my laptop) or remotely (on my &quot;homeops&quot; server or on my <a href="/blog/posts/2021/06/12/remote-access-to-docker-on-my-synology-nas/">Synology NAS</a>).</p><p>I didn't have QRCode Terminal installed in my <a href="https://www.youtube.com/watch?v=QMVIJhC9Veg">PDE</a> (Personal Development Environment) which is also a container (based on Debian and running <code>tmux</code>, <code>neovim</code>, <code>bash</code> and so on), so I could have just <code>apt install</code>ed it and executed it there, but I wanted to take the opportunity to improve my Dockerfile fu (one <a href="http://codekata.com/">kata</a> at a time).</p><h2>The Dockerfile</h2><p>So I created a simple Dockerfile, trying to use some best practices with respect to multi-stage builds and minimising image size. Here it is:</p><pre class="language-dockerfile"><code class="language-dockerfile"><span class="token instruction"><span class="token keyword">FROM</span> alpine:3.21 <span class="token keyword">AS</span> base</span><br><br><span class="token instruction"><span class="token keyword">ARG</span> ARCH=arm64</span><br><span class="token instruction"><span class="token keyword">ARG</span> QRTERMINALVER=3.2.1</span><br><br><span class="token instruction"><span class="token keyword">RUN</span> wget <span class="token operator">\</span><br>  -O - <span class="token operator">\</span><br>  -q \ </span><br>  https://github.com/mdp/qrterminal/releases/download/v${QRTERMINALVER}/qrterminal_Linux_${ARCH}.tar.gz \<br>  | tar xzf - -C / qrterminal<br><br><span class="token instruction"><span class="token keyword">FROM</span> scratch</span><br><span class="token instruction"><span class="token keyword">COPY</span> <span class="token options"><span class="token property">--from</span><span class="token punctuation">=</span><span class="token string">base</span></span> /qrterminal /</span><br><span class="token instruction"><span class="token keyword">ENTRYPOINT</span> [<span class="token string">"/qrterminal"</span>]</span></code></pre><p>Here are some notes:</p><ul><li>It's a two stage build</li><li>The first stage is based on the small Linux distro Alpine, which has <code>wget</code> and <code>tar</code> - all I need to download and extract the executable</li><li>The second stage is based on the &quot;minimal image&quot; <a href="https://hub.docker.com/_/scratch">scratch</a> which seems ideal for this sort of containerised executable</li><li>The <code>qrterminal</code> executable, extracted in the first stage, is copied to the second stage (see the <code>--from=base</code> option to the <code>COPY</code> instruction)</li><li>I used the <code>ENTRYPOINT</code> instruction to set the default executable for the container image (see <a href="https://www.docker.com/blog/docker-best-practices-choosing-between-run-cmd-and-entrypoint/">Docker Best Practices: Choosing Between RUN, CMD, and ENTRYPOINT</a> for more info on this) - this means that I can then execute single shot containers, passing whatever QRCode Terminal options I need</li><li>My macOS laptop is Apple Silicon based which means a different native architecture (<code>arm64</code>) to my &quot;homeops&quot; server (<code>amd64</code>), and even though I can cross-build thanks to QEMU/Rosetta, building for native is always preferable, but I'd like to have the option of building for <code>amd64</code> too</li></ul><blockquote><p>On this last point, I'd like to dig in more to see how I might improve this, especially with respect to those circumstances (like here) where I'm downloading a particular tool's binary release which has been built for a specific architecture which is also in the tarball URL name.</p></blockquote><p>Here's the (cached) build output:</p><pre class="language-shell"><code class="language-shell">$ <span class="token function">docker</span> build --build-arg <span class="token assign-left variable">QRTERMINALVER</span><span class="token operator">=</span><span class="token number">3.2</span>.1 <span class="token parameter variable">-t</span> qmacro/qrt <span class="token builtin class-name">.</span><br><span class="token punctuation">[</span>+<span class="token punctuation">]</span> Building <span class="token number">1</span>.9s <span class="token punctuation">(</span><span class="token number">7</span>/7<span class="token punctuation">)</span> FINISHED                                     docker:default<br> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">[</span>internal<span class="token punctuation">]</span> load build definition from Dockerfile                           <span class="token number">0</span>.0s<br> <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">=</span><span class="token operator">></span> transferring dockerfile: 448B                                           <span class="token number">0</span>.0s<br> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">[</span>internal<span class="token punctuation">]</span> load metadata <span class="token keyword">for</span> docker.io/library/alpine:3.21                 <span class="token number">1</span>.9s<br> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">[</span>internal<span class="token punctuation">]</span> load .dockerignore                                              <span class="token number">0</span>.0s<br> <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">=</span><span class="token operator">></span> transferring context: 2B                                                <span class="token number">0</span>.0s<br> <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">[</span>base <span class="token number">1</span>/2<span class="token punctuation">]</span> FROM docker.io/library/alpine:3.21@sha256:a8560b36e8b8210634f7  <span class="token number">0</span>.0s<br> <span class="token operator">=</span><span class="token operator">></span> CACHED <span class="token punctuation">[</span>base <span class="token number">2</span>/2<span class="token punctuation">]</span> RUN <span class="token function">wget</span>   <span class="token parameter variable">-O</span> -   <span class="token parameter variable">-q</span>   https://github.com/mdp/qrtermina  <span class="token number">0</span>.0s<br> <span class="token operator">=</span><span class="token operator">></span> CACHED <span class="token punctuation">[</span>stage-1 <span class="token number">1</span>/1<span class="token punctuation">]</span> COPY <span class="token parameter variable">--from</span><span class="token operator">=</span>base /qrterminal /                        <span class="token number">0</span>.0s<br> <span class="token operator">=</span><span class="token operator">></span> exporting to image                                                         <span class="token number">0</span>.0s<br> <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">=</span><span class="token operator">></span> exporting layers                                                        <span class="token number">0</span>.0s<br> <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">=</span><span class="token operator">></span> writing image sha256:7731e4687c0a4272f2a06002c2bc933fdb5fe3e7c6f0b6f53  <span class="token number">0</span>.0s<br> <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">=</span><span class="token operator">></span> naming to docker.io/qmacro/qrt                                          <span class="token number">0</span>.0s</code></pre><p>I was happy with the result, shown here via <code>docker image ls</code>:</p><pre class="language-text"><code class="language-text">IMAGE ID       REPOSITORY  TAG      SIZE<br>7731e4687c0a   qmacro/qrt  latest   1.64MB</code></pre><p>And the best part was - it worked!</p><pre class="language-shell"><code class="language-shell">$ <span class="token function">docker</span> run <span class="token parameter variable">--rm</span> qmacro/qrt https://qmacro.org/blog/posts/2025/03/21/level-up-your-cap-skills-by-learning-how-to-use-the-cds-repl/</code></pre><p><img src="/images/2025/03/qr-code-screenshot.png" alt="QR code screenshot"></p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/containers/">#containers</a> <a href="/tags/sitmad/">#sitmad</a> <a href="/tags/docker/">#docker</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2025/03/24/functional-programming-resources/"><span>←</span> <span>Functional programming resources</span> </a><a href="/blog/posts/2025/03/21/level-up-your-cap-skills-by-learning-how-to-use-the-cds-repl/"><span>Level up your CAP skills by learning how to use the cds REPL</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="how-i-run-executables-in-containers">How I run executables in containers</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2025-03-23">23 March 2025</time></li>
+	<li><a href="/tags/containers/" class="post-tag">containers</a>, </li>
+	<li><a href="/tags/sitmad/" class="post-tag">sitmad</a>, </li>
+	<li><a href="/tags/docker/" class="post-tag">docker</a></li>
+</ul>
+
+<p class="post-description-main">Here's a quick post explaining how I might typically containerise an executable. This is in the context of my aim to not "pollute" my base OS (at the bare metal level) with any installs, as far as I can, as well as to remain platform independent and abstract.</p>
+
+<h2 id="background">Background</h2>
+<p>Last Friday saw the second <a href="https://sitmadrid.com/">SAP Inside Track Madrid</a> event, which was excellent. My good friend and colleague <a href="https://ajmaradiaga.com/">Antonio</a>, one of the core event organisers, kicked things off, and then I <a href="https://www.youtube.com/live/TXy-s1Kk3c0?si=ddzIYWYfQvRl4Qwg&amp;t=621">started with my talk</a>, &quot;Level up your CAP skills by learning how to use the cds REPL&quot;.</p>
+<p>I'd written my talk also <a href="/blog/posts/2025/03/21/level-up-your-cap-skills-by-learning-how-to-use-the-cds-repl/">in blog post form</a>, for folks who might also be interested but couldn't attend the event in person, but also for the folks in the room, especially as I wanted to make clear that everything I was about to demonstrate (I conducted my talk as a live REPL session in the terminal) was easily repeatable, and they could follow the examples at home afterwards by reading the post.</p>
+<h2 id="generating-and-displaying-a-qr-code-in-the-terminal">Generating and displaying a QR code in the terminal</h2>
+<p>So I decided to be ready to share a link to the <a href="/blog/posts/2025/03/21/level-up-your-cap-skills-by-learning-how-to-use-the-cds-repl/">blog post</a> right at the start of the talk, and thought I'd have a bit of fun trying to generate a QR code in the terminal, large enough for the attendees to scan on their phones from where they were sat in the audience. For this, I found a great tool called <a href="https://github.com/mdp/qrterminal">QRCode Terminal</a>, in the form of a binary called <code>qrterminal</code>.</p>
+<p>Here's a very grainy screen grab from <a href="https://www.youtube.com/live/TXy-s1Kk3c0?si=Gkvcd77F408usOFN&amp;t=670">a small picture-in-picture window of me presenting</a>:</p>
+<p><img src="/images/2025/03/qr-code-on-screen.png" alt="QR code on screen"></p>
+<h2 id="abstracting-all-the-things">Abstracting all the things</h2>
+<p>I am trying to avoid installing anything on this macOS laptop other than the basics, i.e. Docker. In previous times I would have typically had <a href="https://brew.sh/">Homebrew</a> installed and then used that to install various software packages, but I'm actively avoiding that, choosing instead to run everything in containers, either locally (i.e. on the container engine running on my laptop) or remotely (on my &quot;homeops&quot; server or on my <a href="/blog/posts/2021/06/12/remote-access-to-docker-on-my-synology-nas/">Synology NAS</a>).</p>
+<p>I didn't have QRCode Terminal  installed in my <a href="https://www.youtube.com/watch?v=QMVIJhC9Veg">PDE</a> (Personal Development Environment) which is also a container (based on Debian and running <code>tmux</code>, <code>neovim</code>, <code>bash</code> and so on), so I could have just <code>apt install</code>ed it and executed it there, but I wanted to take the opportunity to improve my Dockerfile fu (one <a href="http://codekata.com/">kata</a> at a time).</p>
+<h2 id="the-dockerfile">The Dockerfile</h2>
+<p>So I created a simple Dockerfile, trying to use some best practices with respect to multi-stage builds and minimising image size. Here it is:</p>
+<pre class="language-dockerfile" tabindex="0"><code class="language-dockerfile"><span class="token instruction"><span class="token keyword">FROM</span> alpine:3.21 <span class="token keyword">AS</span> base</span>
+
+<span class="token instruction"><span class="token keyword">ARG</span> ARCH=arm64</span>
+<span class="token instruction"><span class="token keyword">ARG</span> QRTERMINALVER=3.2.1</span>
+
+<span class="token instruction"><span class="token keyword">RUN</span> wget <span class="token operator">\</span>
+  -O - <span class="token operator">\</span>
+  -q <span class="token operator">\</span>
+  https://github.com/mdp/qrterminal/releases/download/v<span class="token variable">${QRTERMINALVER}</span>/qrterminal_Linux_<span class="token variable">${ARCH}</span>.tar.gz <span class="token operator">\</span>
+  | tar xzf - -C / qrterminal</span>
+
+<span class="token instruction"><span class="token keyword">FROM</span> scratch</span>
+<span class="token instruction"><span class="token keyword">COPY</span> <span class="token options"><span class="token property">--from</span><span class="token punctuation">=</span><span class="token string">base</span></span> /qrterminal /</span>
+<span class="token instruction"><span class="token keyword">ENTRYPOINT</span> [<span class="token string">"/qrterminal"</span>]</span></code></pre>
+<p>Here are some notes:</p>
+<ul>
+<li>It's a two stage build</li>
+<li>The first stage is based on the small Linux distro Alpine, which has <code>wget</code> and <code>tar</code> - all I need to download and extract the executable</li>
+<li>The second stage is based on the &quot;minimal image&quot; <a href="https://hub.docker.com/_/scratch">scratch</a> which seems ideal for this sort of containerised executable</li>
+<li>The <code>qrterminal</code> executable, extracted in the first stage, is copied to the second stage (see the <code>--from=base</code> option to the <code>COPY</code> instruction)</li>
+<li>I used the <code>ENTRYPOINT</code> instruction to set the default executable for the container image (see <a href="https://www.docker.com/blog/docker-best-practices-choosing-between-run-cmd-and-entrypoint/">Docker Best Practices: Choosing Between RUN, CMD, and ENTRYPOINT</a> for more info on this) - this means that I can then execute single shot containers, passing whatever QRCode Terminal options I need</li>
+<li>My macOS laptop is Apple Silicon based which means a different native architecture (<code>arm64</code>) to my &quot;homeops&quot; server (<code>amd64</code>), and even though I can cross-build thanks to QEMU/Rosetta, building for native is always preferable, but I'd like to have the option of building for <code>amd64</code> too</li>
+</ul>
+<blockquote>
+<p>On this last point, I'd like to dig in more to see how I might improve this, especially with respect to those circumstances (like here) where I'm downloading a particular tool's binary release which has been built for a specific architecture which is also in the tarball URL name.</p>
+</blockquote>
+<p>Here's the (cached) build output:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">$ <span class="token function">docker</span> build --build-arg <span class="token assign-left variable">QRTERMINALVER</span><span class="token operator">=</span><span class="token number">3.2</span>.1 <span class="token parameter variable">-t</span> qmacro/qrt <span class="token builtin class-name">.</span>
+<span class="token punctuation">[</span>+<span class="token punctuation">]</span> Building <span class="token number">1</span>.9s <span class="token punctuation">(</span><span class="token number">7</span>/7<span class="token punctuation">)</span> FINISHED                                     docker:default
+ <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">[</span>internal<span class="token punctuation">]</span> load build definition from Dockerfile                           <span class="token number">0</span>.0s
+ <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">=</span><span class="token operator">></span> transferring dockerfile: 448B                                           <span class="token number">0</span>.0s
+ <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">[</span>internal<span class="token punctuation">]</span> load metadata <span class="token keyword">for</span> docker.io/library/alpine:3.21                 <span class="token number">1</span>.9s
+ <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">[</span>internal<span class="token punctuation">]</span> load .dockerignore                                              <span class="token number">0</span>.0s
+ <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">=</span><span class="token operator">></span> transferring context: 2B                                                <span class="token number">0</span>.0s
+ <span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">[</span>base <span class="token number">1</span>/2<span class="token punctuation">]</span> FROM docker.io/library/alpine:3.21@sha256:a8560b36e8b8210634f7  <span class="token number">0</span>.0s
+ <span class="token operator">=</span><span class="token operator">></span> CACHED <span class="token punctuation">[</span>base <span class="token number">2</span>/2<span class="token punctuation">]</span> RUN <span class="token function">wget</span>   <span class="token parameter variable">-O</span> -   <span class="token parameter variable">-q</span>   https://github.com/mdp/qrtermina  <span class="token number">0</span>.0s
+ <span class="token operator">=</span><span class="token operator">></span> CACHED <span class="token punctuation">[</span>stage-1 <span class="token number">1</span>/1<span class="token punctuation">]</span> COPY <span class="token parameter variable">--from</span><span class="token operator">=</span>base /qrterminal /                        <span class="token number">0</span>.0s
+ <span class="token operator">=</span><span class="token operator">></span> exporting to image                                                         <span class="token number">0</span>.0s
+ <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">=</span><span class="token operator">></span> exporting layers                                                        <span class="token number">0</span>.0s
+ <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">=</span><span class="token operator">></span> writing image sha256:7731e4687c0a4272f2a06002c2bc933fdb5fe3e7c6f0b6f53  <span class="token number">0</span>.0s
+ <span class="token operator">=</span><span class="token operator">></span> <span class="token operator">=</span><span class="token operator">></span> naming to docker.io/qmacro/qrt                                          <span class="token number">0</span>.0s</code></pre>
+<p>I was happy with the result, shown here via <code>docker image ls</code>:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">IMAGE ID       REPOSITORY  TAG      SIZE
+7731e4687c0a   qmacro/qrt  latest   1.64MB</code></pre>
+<p>And the best part was - it worked!</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">docker</span> run <span class="token parameter variable">--rm</span> qmacro/qrt https://qmacro.org/blog/posts/2025/03/21/level-up-your-cap-skills-by-learning-how-to-use-the-cds-repl/</code></pre>
+<p><img src="/images/2025/03/qr-code-screenshot.png" alt="QR code screenshot"></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2025/03/21/level-up-your-cap-skills-by-learning-how-to-use-the-cds-repl/">Level up your CAP skills by learning how to use the cds REPL</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2025/03/24/functional-programming-resources/">Functional programming resources</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2025/03/23/how-i-run-executables-in-containers/` was built on 2025-09-15T15:58:49.628Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

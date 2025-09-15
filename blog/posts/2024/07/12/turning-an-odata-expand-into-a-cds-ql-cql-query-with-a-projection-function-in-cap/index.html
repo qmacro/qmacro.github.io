@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Turning an OData expand into a cds.ql CQL query with a projection function in CAP</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="turning-an-odata-expand-into-a-cds-ql-cql-query-with-a-projection-function-in-cap">Turning an OData expand into a cds.ql CQL query with a projection function in CAP</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2024-07-12">12 July 2024</time></li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/cds/" class="post-tag">cds</a>, </li>
+	<li><a href="/tags/sql/" class="post-tag">sql</a>, </li>
+	<li><a href="/tags/cql/" class="post-tag">cql</a>, </li>
+	<li><a href="/tags/nodejs/" class="post-tag">nodejs</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>If, while serving a call to your provided CAP service, you want to construct some CQL to perform on your database in a similar way to how <code>$expand</code> works in OData, this post may help.</p>
+<blockquote>
+<p>Before I start, note that I'll be using my cut-down version of the classic Northwind service, called Northbreeze, to illustrate things in this post. There's a <a href="https://github.com/qmacro/northbreeze">repo</a> available with this Northbreeze service, which you can clone and use to try out the Node.js calls to functions in the <code>cds.ql</code> module.</p>
+<p>There's also a <a href="https://qmacro.cfapps.eu10.hana.ondemand.com/northbreeze">Northbreeze OData V4 service available</a> where you can try out the OData queries.</p>
+</blockquote>
+<h2 id="background">Background</h2>
+<p>A friend asked me the other day how to make a request across the entities in his CDS model, equivalent to how he'd do it in OData, which would be like this:</p>
+<pre class="language-txt" tabindex="0"><code class="language-txt">/Categories?$expand=Products</code></pre>
+<p>In other words, how to retrieve Categories plus all the related Products for each one.</p>
+<p>In the context of CAP Node.js, the <a href="https://cap.cloud.sap/docs/node.js/cds-ql">cds.ql module</a> comes into play, and for selecting what should be retrieved, we have the <a href="https://cap.cloud.sap/docs/node.js/cds-ql#columns">columns() method of SELECT</a>.</p>
+<p>The choices presented to the reader in the documentation here, combined with the terminology, can be a little overwhelming at first. The key is to kick the tyres by trying some of the examples out as well as read, re-read, and then re-read again. This is my strategy, at least.</p>
+<p>Anyway, I'll use the <a href="https://github.com/qmacro/northbreeze/blob/26f071775a55c37da929e7e26a2435845337ebca/db/schema.cds#L3-L14">Products</a> and <a href="https://github.com/qmacro/northbreeze/blob/26f071775a55c37da929e7e26a2435845337ebca/db/schema.cds#L33-L39">Categories</a> entities in the Northbreeze CDS model. These entities are related with:</p>
+<ul>
+<li>a to-one association from <code>Products</code> to <code>Categories</code> via a <code>Category</code> element</li>
+<li>a to-many association from <code>Categories</code> to <code>Products</code> via a <code>Products</code> element</li>
+</ul>
+<h2 id="setting-up">Setting up</h2>
+<p>Setting up for trying things out, I've cloned the <a href="https://github.com/qmacro/northbreeze">Northbreeze repo</a> and run an <code>npm install</code> there.</p>
+<p>I've then started up the <a href="https://www.youtube.com/shorts/c5flAP_b12E">cds REPL</a> and entered</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">await</span> cds<span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+<p>and then</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token punctuation">{</span> Categories<span class="token punctuation">,</span> Products <span class="token punctuation">}</span> <span class="token operator">=</span> cds<span class="token punctuation">.</span>entities</code></pre>
+<p>to set things up. It's in this REPL that I can now try out all my <code>SELECT</code> statements below.</p>
+<p>I've presented the statements across multiple lines for readability; that said, you can copy these statements as they are and paste them into the REPL via the <a href="https://nodejs.org/en/learn/command-line/how-to-use-the-nodejs-repl#dot-commands">.editor facility</a>. In addition, I'm <a href="https://cap.cloud.sap/docs/node.js/cds-ql#limit">limiting</a> the amount of data returned for some of the <code>SELECT</code> calls just for brevity.</p>
+<h2 id="starting-simple-column-expressions-within-a-single-entity">Starting simple - column expressions within a single entity</h2>
+<p>Following the examples in use the <code>columns()</code> method documentation, I can try some individual column expressions like this:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql">await <span class="token keyword">SELECT</span> 
+  <span class="token punctuation">.</span><span class="token keyword">from</span><span class="token punctuation">(</span>Categories<span class="token punctuation">)</span> 
+  <span class="token punctuation">.</span><span class="token keyword">columns</span><span class="token punctuation">(</span> <span class="token string">'CategoryName'</span><span class="token punctuation">,</span> <span class="token string">'Description'</span> <span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token keyword">limit</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span></code></pre>
+<p>This produces:</p>
+<pre class="language-txt" tabindex="0"><code class="language-txt">[
+  {
+    CategoryName: 'Beverages',
+    Description: 'Soft drinks, coffees, teas, beers, and ales'
+  },
+  {
+    CategoryName: 'Condiments',
+    Description: 'Sweet and savory sauces, relishes, spreads, and seasonings'
+  },
+  {
+    CategoryName: 'Confections',
+    Description: 'Desserts, candies, and sweet breads'
+  }
+]</code></pre>
+<p>So far so good. No surprises there.</p>
+<h2 id="more-confident-path-expressions-to-include-data-from-a-related-entity">More confident - path expressions to include data from a related entity</h2>
+<p>I can now try a <a href="https://cap.cloud.sap/docs/cds/cql#path-expressions">path expression</a> to bring in data from the related entity (<code>Products</code>), like this:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql">await <span class="token keyword">SELECT</span> 
+  <span class="token punctuation">.</span><span class="token keyword">from</span><span class="token punctuation">(</span>Categories<span class="token punctuation">)</span> 
+  <span class="token punctuation">.</span><span class="token keyword">columns</span><span class="token punctuation">(</span> <span class="token string">'CategoryName'</span><span class="token punctuation">,</span> <span class="token string">'Products.ProductName as Product'</span> <span class="token punctuation">)</span>
+  <span class="token punctuation">.</span><span class="token keyword">limit</span><span class="token punctuation">(</span><span class="token number">15</span><span class="token punctuation">)</span></code></pre>
+<p>This produces:</p>
+<pre class="language-txt" tabindex="0"><code class="language-txt">[
+  { CategoryName: 'Beverages', Product: 'Chai' },
+  { CategoryName: 'Beverages', Product: 'Chang' },
+  { CategoryName: 'Beverages', Product: 'Chartreuse verte' },
+  { CategoryName: 'Beverages', Product: 'Côte de Blaye' },
+  { CategoryName: 'Beverages', Product: 'Guaraná Fantástica' },
+  { CategoryName: 'Beverages', Product: 'Ipoh Coffee' },
+  { CategoryName: 'Beverages', Product: 'Lakkalikööri' },
+  { CategoryName: 'Beverages', Product: 'Laughing Lumberjack Lager' },
+  { CategoryName: 'Beverages', Product: 'Outback Lager' },
+  { CategoryName: 'Beverages', Product: 'Rhönbräu Klosterbier' },
+  { CategoryName: 'Beverages', Product: 'Sasquatch Ale' },
+  { CategoryName: 'Beverages', Product: 'Steeleye Stout' },
+  { CategoryName: 'Condiments', Product: 'Aniseed Syrup' },
+  { CategoryName: 'Condiments', Product: "Chef Anton's Cajun Seasoning" },
+  { CategoryName: 'Condiments', Product: "Chef Anton's Gumbo Mix" }
+]</code></pre>
+<p>What's interesting about this is that the data is still &quot;flat&quot; - there's a record for each <code>CategoryName</code> and <code>Products.ProductName</code> combination. This is moving towards, but not quite the &quot;expand&quot; that my friend wanted.</p>
+<h2 id="achievement-unlocked-using-projection-functions">Achievement unlocked - using projection functions</h2>
+<p>I'm now ready to try out projection functions as described in the <a href="https://cap.cloud.sap/docs/node.js/cds-ql#columns">columns() section in Capire</a>, especially as they are recommended due to the advantages they have, which includes support for nested projections, otherwise known as &quot;expands&quot;.</p>
+<p>But first, I'll try a simple projection function, to get the general &quot;feel&quot; for them:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql">await <span class="token keyword">SELECT</span> 
+  <span class="token punctuation">.</span><span class="token keyword">from</span><span class="token punctuation">(</span>Categories<span class="token punctuation">)</span> 
+  <span class="token punctuation">.</span><span class="token keyword">columns</span><span class="token punctuation">(</span> c <span class="token operator">=</span><span class="token operator">></span> { c<span class="token punctuation">.</span>CategoryName }<span class="token punctuation">)</span></code></pre>
+<p>This produces:</p>
+<pre class="language-txt" tabindex="0"><code class="language-txt">[
+  { CategoryName: 'Beverages' },
+  { CategoryName: 'Condiments' },
+  { CategoryName: 'Confections' },
+  { CategoryName: 'Dairy Products' },
+  { CategoryName: 'Grains/Cereals' },
+  { CategoryName: 'Meat/Poultry' },
+  { CategoryName: 'Produce' },
+  { CategoryName: 'Seafood' }
+]</code></pre>
+<p>So far, it's just a different way of expressing the column(s) that I want.</p>
+<p>Now I'll nest another projection function in there, to achieve what my friend wants - the equivalent of the OData <code>$expand</code> system query option, as in the example from earlier (modified here to restrict the elements to just <code>CategoryName</code> and <code>ProductName</code>):</p>
+<pre class="language-txt" tabindex="0"><code class="language-txt">/Categories?$select=CategoryName&amp;$expand=Products($select=ProductName)</code></pre>
+<p>Here goes:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql">await <span class="token keyword">SELECT</span> 
+  <span class="token punctuation">.</span><span class="token keyword">from</span><span class="token punctuation">(</span>Categories<span class="token punctuation">)</span> 
+  <span class="token punctuation">.</span><span class="token keyword">columns</span><span class="token punctuation">(</span> c <span class="token operator">=</span><span class="token operator">></span> { c<span class="token punctuation">.</span>CategoryName<span class="token punctuation">,</span> c<span class="token punctuation">.</span>Products <span class="token punctuation">(</span>p <span class="token operator">=</span><span class="token operator">></span> { p<span class="token punctuation">.</span>ProductName }<span class="token punctuation">)</span> }<span class="token punctuation">)</span></code></pre>
+<p>This produces what we want:</p>
+<pre class="language-txt" tabindex="0"><code class="language-txt">[
+  {
+    CategoryName: 'Beverages',
+    Products: [
+      { ProductName: 'Chai' },
+      { ProductName: 'Chang' },
+      { ProductName: 'Guaraná Fantástica' },
+      { ProductName: 'Sasquatch Ale' },
+      { ProductName: 'Steeleye Stout' },
+      { ProductName: 'Côte de Blaye' },
+      { ProductName: 'Chartreuse verte' },
+      { ProductName: 'Ipoh Coffee' },
+      { ProductName: 'Laughing Lumberjack Lager' },
+      { ProductName: 'Outback Lager' },
+      { ProductName: 'Rhönbräu Klosterbier' },
+      { ProductName: 'Lakkalikööri' }
+    ]
+  },
+  {
+    CategoryName: 'Condiments',
+    Products: [
+      { ProductName: 'Aniseed Syrup' },
+      { ProductName: "Chef Anton's Cajun Seasoning" },
+      { ProductName: "Chef Anton's Gumbo Mix" },
+      { ProductName: "Grandma's Boysenberry Spread" },
+      { ProductName: 'Northwoods Cranberry Sauce' },
+      { ProductName: 'Genen Shouyu' },
+      { ProductName: 'Gula Malacca' },
+      { ProductName: "Sirop d'érable" },
+      { ProductName: 'Vegie-spread' },
+      { ProductName: 'Louisiana Fiery Hot Pepper Sauce' },
+      { ProductName: 'Louisiana Hot Spiced Okra' },
+      { ProductName: 'Original Frankfurter grüne Soße' }
+    ]
+  },
+  {
+    CategoryName: 'Confections',
+    Products: [
+      { ProductName: 'Pavlova' },
+      { ProductName: 'Teatime Chocolate Biscuits' },
+      { ProductName: "Sir Rodney's Marmalade" },
+      { ProductName: "Sir Rodney's Scones" },
+      { ProductName: 'NuNuCa Nuß-Nougat-Creme' },
+      { ProductName: 'Gumbär Gummibärchen' },
+      { ProductName: 'Schoggi Schokolade' },
+      { ProductName: 'Zaanse koeken' },
+      { ProductName: 'Chocolade' },
+      { ProductName: 'Maxilaku' },
+      { ProductName: 'Valkoinen suklaa' },
+      { ProductName: 'Tarte au sucre' },
+      { ProductName: 'Scottish Longbreads' }
+    ]
+  },
+  {
+    CategoryName: 'Dairy Products',
+    Products: [
+      { ProductName: 'Queso Cabrales' },
+      { ProductName: 'Queso Manchego La Pastora' },
+      { ProductName: 'Gorgonzola Telino' },
+      { ProductName: 'Mascarpone Fabioli' },
+      { ProductName: 'Geitost' },
+      { ProductName: 'Raclette Courdavault' },
+      { ProductName: 'Camembert Pierrot' },
+      { ProductName: 'Gudbrandsdalsost' },
+      { ProductName: 'Flotemysost' },
+      { ProductName: 'Mozzarella di Giovanni' }
+    ]
+  },
+  {
+    CategoryName: 'Grains/Cereals',
+    Products: [
+      { ProductName: "Gustaf's Knäckebröd" },
+      { ProductName: 'Tunnbröd' },
+      { ProductName: 'Singaporean Hokkien Fried Mee' },
+      { ProductName: 'Filo Mix' },
+      { ProductName: 'Gnocchi di nonna Alice' },
+      { ProductName: 'Ravioli Angelo' },
+      { ProductName: 'Wimmers gute Semmelknödel' }
+    ]
+  },
+  {
+    CategoryName: 'Meat/Poultry',
+    Products: [
+      { ProductName: 'Mishi Kobe Niku' },
+      { ProductName: 'Alice Mutton' },
+      { ProductName: 'Thüringer Rostbratwurst' },
+      { ProductName: 'Perth Pasties' },
+      { ProductName: 'Tourtière' },
+      { ProductName: 'Pâté chinois' }
+    ]
+  },
+  {
+    CategoryName: 'Produce',
+    Products: [
+      { ProductName: "Uncle Bob's Organic Dried Pears" },
+      { ProductName: 'Tofu' },
+      { ProductName: 'Rössle Sauerkraut' },
+      { ProductName: 'Manjimup Dried Apples' },
+      { ProductName: 'Longlife Tofu' }
+    ]
+  },
+  {
+    CategoryName: 'Seafood',
+    Products: [
+      { ProductName: 'Ikura' },
+      { ProductName: 'Konbu' },
+      { ProductName: 'Carnarvon Tigers' },
+      { ProductName: 'Nord-Ost Matjeshering' },
+      { ProductName: 'Inlagd Sill' },
+      { ProductName: 'Gravad lax' },
+      { ProductName: 'Boston Crab Meat' },
+      { ProductName: "Jack's New England Clam Chowder" },
+      { ProductName: 'Rogede sild' },
+      { ProductName: 'Spegesild' },
+      { ProductName: 'Escargots de Bourgogne' },
+      { ProductName: 'Röd Kaviar' }
+    ]
+  }
+]</code></pre>
+<p>Excellent! Note how the path expression nesting makes sense; here is the value passed to the <code>columns()</code> method, with more whitespace:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token parameter">c</span> <span class="token operator">=></span> <span class="token punctuation">{</span> 
+    c<span class="token punctuation">.</span>CategoryName<span class="token punctuation">,</span>
+    c<span class="token punctuation">.</span><span class="token function">Products</span> <span class="token punctuation">(</span><span class="token parameter">p</span> <span class="token operator">=></span> <span class="token punctuation">{</span> 
+        p<span class="token punctuation">.</span>ProductName
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre>
+<p>To anyone familiar with JavaScript and ES6 fat arrow functions (and if you're building services with CAP Node.js you're likely to be somewhat acquainted, at least), this &quot;shape&quot; should feels very comfortable. Or at least not alarming.</p>
+<p>Hope this was helpful!</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2024/07/09/enabling-document-fragment-links-for-headings-in-sap-community-blog-posts/">Enabling document fragment links for headings in SAP Community blog posts</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2024/07/23/highest-value-in-js-different-ways/">Highest value in JS - different ways</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2024/07/12/turning-an-odata-expand-into-a-cds-ql-cql-query-with-a-projection-function-in-cap/` was built on 2025-09-15T15:58:49.624Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>&#39;Conneg&#39; and the duality of weblogs</title>
+		<meta name="description" content="Philosophy triggered by the lowly but essential connection negotiation aspect of HTTP.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="conneg-and-the-duality-of-weblogs">&#39;Conneg&#39; and the duality of weblogs</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2003-02-28">28 February 2003</time></li>
+	<li><a href="/tags/blosxom/" class="post-tag">blosxom</a>, </li>
+	<li><a href="/tags/conneg/" class="post-tag">conneg</a>, </li>
+	<li><a href="/tags/http/" class="post-tag">http</a>, </li>
+	<li><a href="/tags/rss-tag/" class="post-tag">rss-tag</a>, </li>
+	<li><a href="/tags/weblogs/" class="post-tag">weblogs</a></li>
+</ul>
+
+<p class="post-description-main">Philosophy triggered by the lowly but essential connection negotiation aspect of HTTP.</p>
+
+<p>Q: <em>When is a blog not a blog?</em></p>
+<p>A: <em>When it’s an <acronym title="Rich Site Summary">RSS</acronym> feed.</em></p>
+<p>I’ve <a href="/blog/posts/2002/10/05/notes-to-self-what-should-the-rdfabout-point-to/">pondered the relationship between weblog and RSS before</a>, and in an <a href="http://www.oldspeckledhen.co.uk/introduction.htm">Old Speckled Hen</a>-induced philosophical state of mind, have decided for experimental purposes that for all URI intents and purposes they are one and the same.</p>
+<p>With that in mind, my thoughts turned (naturally) to connection negotiation, or ‘conneg’. My weblog, whether HTML or RSS, is my weblog. Same thing, different representation. So perhaps both representations should actually have the same URI, <a href="/">/</a>. Clients could use conneg to specify which representation they wanted, for example:</p>
+<p><acronym title="Rich Site Summary">RSS</acronym> 0.91:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">[</span>dj@cicero dj<span class="token punctuation">]</span>$ GET -H<span class="token string">"Accept: application/rss+xml"</span> <span class="token parameter variable">-Use</span> /
+GET //qmacro.org/about
+Accept: application/rss+xml
+<span class="token number">200</span> OK
+Content-Type: application/rss+xml
+<span class="token operator">&lt;</span>?xml <span class="token assign-left variable">version</span><span class="token operator">=</span><span class="token string">"1.0"</span>?<span class="token operator">></span>
+<span class="token operator">&lt;</span><span class="token operator">!</span>-- <span class="token assign-left variable">name</span><span class="token operator">=</span><span class="token string">"generator"</span> <span class="token assign-left variable">content</span><span class="token operator">=</span><span class="token string">"bloxsom"</span> --<span class="token operator">></span>
+<span class="token operator">&lt;</span>rss <span class="token assign-left variable">version</span><span class="token operator">=</span><span class="token string">"0.91"</span><span class="token operator">></span>
+<span class="token operator">&lt;</span>channel<span class="token operator">></span> <span class="token operator">&lt;</span>title<span class="token operator">></span>DJ's Weblog<span class="token operator">&lt;</span>/title<span class="token operator">></span> <span class="token punctuation">..</span>.
+<span class="token punctuation">[</span>dj@cicero dj<span class="token punctuation">]</span>$</code></pre>
+<p>Or <acronym title="Rich Site Summary">RSS</acronym> 1.0:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">[</span>dj@cicero dj<span class="token punctuation">]</span>$ <span class="token function">curl</span> -H<span class="token string">"Accept:application/rdf+xml"</span> /
+<span class="token operator">&lt;</span>?xml <span class="token assign-left variable">version</span><span class="token operator">=</span><span class="token string">"1.0"</span>?<span class="token operator">></span>
+<span class="token operator">&lt;</span>rdf:RDF <span class="token assign-left variable">xmlns</span><span class="token operator">=</span><span class="token string">"http://purl.org/rss/1.0/"</span> <span class="token punctuation">..</span>. <span class="token operator">></span>
+<span class="token operator">&lt;</span>channel rdf:about<span class="token operator">=</span><span class="token string">"//qmacro.org/about"</span><span class="token operator">></span>
+<span class="token operator">&lt;</span>title<span class="token operator">></span>DJ's Weblog<span class="token operator">&lt;</span>/title<span class="token operator">></span> <span class="token punctuation">..</span>.
+<span class="token punctuation">[</span>dj@cicero dj<span class="token punctuation">]</span>$</code></pre>
+<p>Or even simply HTML:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">[</span>dj@cicero dj<span class="token punctuation">]</span>$ GET <span class="token parameter variable">-Use</span> /
+<span class="token number">200</span> OK
+Content-Type: text/html<span class="token punctuation">;</span> <span class="token assign-left variable">charset</span><span class="token operator">=</span>ISO-8859-1
+<span class="token operator">&lt;</span>title<span class="token operator">></span>DJ's Weblog<span class="token operator">&lt;</span>/title<span class="token operator">></span> <span class="token punctuation">..</span>.
+<span class="token punctuation">[</span>dj@cicero dj<span class="token punctuation">]</span>$</code></pre>
+<p>In other words, specify what representation you want in the <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1">Accept</a> header. Here’s a quick summary of how (90% of) the Accept: header is used:</p>
+<blockquote>
+<p>As an HTTP client, you say what media types (which roughly translates to ‘representations’ here) you’re willing to accept for a given resource (URI). You can specify multiple media types, and with the aid of a sort of ranking mechanism, you can say which media types you prefer over others, if given the choice. You do this by assigning values, so that “<em>application/rdf+xml, application/rss+xml;q=0.5, <em>/</em>;q=0.1</em>” means “I’d love application/rdf+xml, but if you haven’t got that, then send me application/rss+xml; failing that, anything will do. The values used are between 0 and 1 (in ascending preference), any media type without a value is assumed to have a value of 1.</p>
+</blockquote>
+<p>So, as a first offering to the <a href="http://www.raelity.org/apps/blosxom/plugin.shtml#registry">Blosxom plugin love-in</a>, I wrote <a href="/~dj/2003/02/conneg">conneg</a>, a plugin with which you can determine the flavour required according to the HTTP Accept header. Here’s how it works:</p>
+<ol>
+<li>You define the flavours you want to have ‘available’ via connection negotiation in a configurable variable</li>
+<li>In a new plugin event, ‘flavour’, control is given to the <a href="/~dj/2003/02/conneg">conneg</a> plugin to determine the flavour according to the connection negotiation</li>
+<li>The content types are determined for each flavour specified, and ‘scored’ according to the client’s Accept preferences</li>
+<li>They are then ranked, and the flavour is overridden with the ‘winner’</li>
+</ol>
+<p>As you can see from the code, the plugin takes into account what content-types you’ve specified in the ‘content_type.<em>flavour</em>‘ files in your blog hierarchy.</p>
+<p>Note I said ‘new plugin event’. There are a number of <a href="http://www.raelity.org/apps/blosxom/plugin.shtml">standard plugin hooks</a> in Blosxom (2.0 beta3). For this ‘flavour’ plugin to work, I’ve added another hook thus:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">[</span>dj@cicero blosxom_2_0_beta<span class="token punctuation">]</span>$ <span class="token function">diff</span> blosxom_2_0_b3.cgi blosxom_2_0_b3.cgi.dj
+208a209,211
+<span class="token operator">></span> <span class="token comment"># Plugins: Flavour</span>
+<span class="token operator">></span> map <span class="token punctuation">{</span> <span class="token variable">$_</span>-<span class="token operator">></span>can<span class="token punctuation">(</span><span class="token string">'flavour'</span><span class="token punctuation">)</span> and <span class="token variable">$_</span>-<span class="token operator">></span>flavour<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">}</span> @plugins<span class="token punctuation">;</span>
+<span class="token operator">></span>
+<span class="token punctuation">[</span>dj@cicero dj<span class="token punctuation">]</span>$</code></pre>
+<p>This is in the ‘Dynamic’ section of the code.</p>
+<p>I’ll run this new plugin hook past Rael shortly. It’s a sort of chicken and egg situation – I can’t explain the reason for the patch until I’ve done it and written about it. Rather like conneg and weblogs, perhaps. <acronym title="Rich Site Summary">RSS</acronym> <a href="http://www.oreillynet.com/%7Erael/lang/perl/blagg">aggregators</a> might not start doing conneg until weblog RSS content is available by that method, and there’s little incentive if no-one’s asking for it. So I thought I’d make a move. Experimental, mind you.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2003/02/22/tiki-parser-for-moinmoin/">Tiki parser for MoinMoin</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2003/03/05/new-blosxom-plugin-submission/">New Blosxom plugin &#39;submission&#39;</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2003/02/28/conneg-and-the-duality-of-weblogs/` was built on 2025-09-15T15:58:49.551Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

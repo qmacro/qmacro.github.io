@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Monday morning thoughts: considering GraphQL</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="monday-morning-thoughts-considering-graphql">Monday morning thoughts: considering GraphQL</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2018-09-03">03 September 2018</time></li>
+	<li><a href="/tags/sapcommunity/" class="post-tag">sapcommunity</a>, </li>
+	<li><a href="/tags/mondaymorningthoughts/" class="post-tag">mondaymorningthoughts</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p><em>In this post, I think about GraphQL, and its relationship with existing
+ideas for managing data and structured exposure to that data over a wire
+protocol.</em></p>
+<p><strong>Update: This post is now available in audio format too - see <a href="https://anchor.fm/tech-aloud/episodes/Monday-morning-thoughts-considering-GraphQL---DJ-Adams---3-Sep-2018-e5h54s">the
+episode on Tech Aloud</a>.</strong></p>
+<p>Last week, Chris Paine shared with us on Twitter some comments about
+GraphQL and how it compared with OData. It was an intriguing thought and
+led to all sorts of discussions. I didn't know much about GraphQL so I
+took a bit of time to look into it. Not too much time so far, so please
+take these thoughts as coming from someone with a very limited exposure
+to GraphQL itself.</p>
+<h2 id="what-is-graphql">What is GraphQL?</h2>
+<p>GraphQL is an open sourced specification that originated from one of
+Facebook's engineering teams. One of the pieces I consumed was a talk
+by one of GraphQL's creators, Lee Byron: &quot;<a href="https://www.youtube.com/watch?v=zVNrqo9XGOs">Lessons from 4 years of
+GraphQL</a>&quot;, and one of the
+takeaways for me was the clear passion that has provided GraphQL with
+the early success it has been seeing. Beyond the specification, there's
+a reference implementation in JavaScript, and over time, more than a
+dozen implementations have emerged, in different languages.</p>
+<p><img src="/images/2018/09/Screenshot-2018-09-03-at-09.39.22.png" alt=""></p>
+<p><em>The sample on GraphQL's homepage is a nice overview of what it looks
+and feels like</em></p>
+<p>GraphQL is a query language for APIs and a runtime for fulfilling those
+queries with your existing data. Like many combinations of specification
+and implementation, it's also a community, with developers creating
+implementations of server-side components as well as client-side
+libraries.</p>
+<p>One of the pieces of software you'll see everywhere is Graphiql, a
+browser-based REPL*-like explorer where you can enter GraphQL queries
+on the left hand side (see the &quot;Ask for what you want&quot; in the image
+above) and see the results of those queries on the right hand side (see
+the &quot;Get predictable results&quot; in the image above). Queries and
+response are in the form of JSON-like structures, which is nice.</p>
+<p>*REPL stands for Read Evaluate Print Loop and in many languages is a
+simple realtime environment in which you can interact with the language
+or service directly, to manually program or explore the possibilities it
+offers.</p>
+<h2 id="a-fundamentally-different-data-store">A fundamentally different data store</h2>
+<p>One of the core features of GraphQL is the shape of the data store.
+It's not hierarchical, it's not relational, it's graphical. Entities
+persisted are generally either nodes - things - or arcs - relationships
+between things. I'm using the words &quot;nodes&quot; and &quot;arcs&quot; because the
+data store is nothing new - certainly not in my experience.</p>
+<p>Back in the day, even before the SAP Community Network was born (which
+was in 2003), there was a lot of activity and thinking around the theme
+of the Semantic Web, the idea that the content of what was stored and
+retrieved via HTTP could be described in a separate, rich, semantic
+layer that could bring meaning to entities on the Web. Meaning in terms
+of what types of things the resources represented, and meaning in terms
+of how they were related.</p>
+<p>This meaning was expressed in terms of nodes (the resources) and arcs
+(the relationships between those nodes), and the language that was used
+to describe these nodes and arcs was the Resource Description Framework
+(RDF), and the various ontological languages that were based on and used
+in conjunction with RDF (<a href="https://www.w3.org/OWL/">OWL</a> - the &quot;Web
+Ontology Language&quot; is one of the more well known of those, along with
+<a href="http://dublincore.org/">Dublin Core</a>).</p>
+<p><img src="https://www.w3.org/2001/sw/RDFCore/Schema/200203/intro-example.jpg" alt="Image result for RDF example nodes
+arcs">
+<em>RDF nodes and arcs</em></p>
+<p>I have been fascinated by RDF for a long time, and dabbled in various
+aspects in the early 2000's - see <a href="https://www.google.com/search?q=site%3Aqmacro.org+rdf">the RDF related posts on my
+blog</a> for some
+ramblings on that subject. Of course, RDF can be seen as one of the
+ancestors* of OData, which in a way is rather ironic.</p>
+<p>*RSS was originally an RDF-based language (RSS stood for RDF Site
+Summary at the time), Atom was a successor to RSS, and OData was an
+extension of Atom (along with the Atom Publishing Protocol). But that's
+a story for another time.</p>
+<h2 id="rdf-and-graph-databases">RDF and graph databases</h2>
+<p>RDF information is expressed in so-called &quot;triples&quot; in the form:</p>
+<p>[subject] ---[predicate]---&gt; [object]</p>
+<p>where &quot;subject&quot; and &quot;object&quot; entities are nodes and &quot;predicates&quot;
+are arcs - the lines between them. Triples are stored in
+&quot;triplestores&quot;, and a more generalised form of a triplestore is ...
+wait for it ... a graph database.</p>
+<p>To me, there is a fundamental beauty in the tension between the simple
+structure of triples, and the unstructured, or perhaps unrestricted
+nature of what you can store with triples. It's quite far from the
+schema-restrained model of relational data stores. With a graph data
+store you can store information you hadn't planned for, and ask
+questions of the data that you could have never foreseen at the outset.
+You can imagine an ever-growing network of arcs and nodes, of differing
+types and properties, being added to a graph database, and new queries
+being made on that database, filtering on properties and relationships
+that weren't even around at the outset.</p>
+<p>GraphQL, as a data store, then, is rather powerful. There are of course
+other examples of graph data stores - one that comes to mind immediately
+is <a href="https://neo4j.com/">Neo4j</a>, which has been around for a long time.</p>
+<h2 id="irony">Irony</h2>
+<p>Why is it ironic that RDF, with its closely related graph data store
+concept and link to GraphQL, is an ancestor of OData?</p>
+<p>Because when you move up the stack from the data store to the protocol,
+things could hardly be more different. Here's a quick summary of the
+major differences I see between OData and GraphQL, at a protocol level.</p>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>OData</th>
+<th>GraphQL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protocol</td>
+<td>Treats HTTP as an application protocol and aims for rough parity between OData operations and HTTP methods</td>
+<td>Treats HTTP mainly as a transport protocol</td>
+</tr>
+<tr>
+<td>Operations</td>
+<td>Operations are transparent at an HTTP level</td>
+<td>Operations are opaque at an HTTP level</td>
+</tr>
+<tr>
+<td>Schema</td>
+<td>Static schema-based data structures at design time</td>
+<td>Dynamic schema-less data structures</td>
+</tr>
+<tr>
+<td>Queries</td>
+<td>Fixed query options</td>
+<td>Powerful query options</td>
+</tr>
+<tr>
+<td>Reasoning</td>
+<td>Easy to reason about from a security perspective</td>
+<td>Harder to reason about because of the opaque nature of the protocol implementation</td>
+</tr>
+<tr>
+<td>Endpoints</td>
+<td>Endpoints represent the business data</td>
+<td>Single endpoint that represents the query &quot;socket&quot;</td>
+</tr>
+</tbody>
+</table>
+<p>In some ways GraphQL at the protocol level reminds me of web services.
+Not the entire WS-Deathstar panoply of specifications -- rather, the
+way that there's a single endpoint for all operations and all queries.
+This makes me somewhat uncomfortable. Not because it feels like a return
+to the bad old days of web services, but because it just doesn't feel
+right to me, as an advocate of what HTTP is (an application protocol and
+arguably the best example of a powerful, distributed web service, but
+that's a story for another time).</p>
+<h2 id="comparing-and-contrasting">Comparing and contrasting</h2>
+<p>The OData protocol treats data (entities) as first class citizens,  in
+that it gives each resource a URL, a URL that can then be semantically
+described, a URL that is part of a near infinite set of resources
+(nouns), with a very finite and predictable set of methods (verbs).
+Moreover, it comes with a built-in metadata and annotation layer, which
+can be used by consuming clients to great effect.</p>
+<p>GraphQL, on the other hand, seems to treat data as merely the by-product
+of a query. If I want to point to some data which I want to describe
+with its own address, and then further annotate that (even at the RDF
+level, but perhaps that's going too far), I'm not sure how I'd do it
+with the GraphQL protocol.</p>
+<p>Talking of GraphQL queries, it would also seem that there's a URL
+encoding of the query which to my eyes is rather unappealing. Yes, URLs
+should be opaque, we've touched on that in a previous <a href="/tags/mondaymorningthoughts/">Monday morning
+thoughts</a> post, but I
+still maintain that there's a pragmatic aspect that means, at least for
+me, human readable URLs are super useful at the practical level.</p>
+<p>And talking of pragmatism and practicality, there's been a question
+about GraphQL implementation in SAP systems. The SAP systems with which
+I'm most acquainted -- the successors to the R/2 and R/3 line of
+products -- are based on a hierarchical database design, not a graph
+design. That's not to say that things can't change ... indeed, we
+moved from hierarchical to relational in the late 1980's when SAP
+introduced the support for IBM's (then) new relational data store DB/2,
+which eventually superseded IMS DB's hierarchical data store DL/1.
+Moreover, the power and simplicity that HANA brings is not graph store
+based, it's column store based. So I can't imagine any straightforward
+conversion any time soon, even if it was the right decision.</p>
+<p>That doesn't mean, however, that we can't embrace the ideas of GraphQL
+in different areas. While I can't imagine a straightforward replacement
+at the enterprise data store level, I can, for example, more easily
+imagine an annotation model in UI5 that would support data driven UIs
+with Fiori elements, based on a GraphQL powered backend.</p>
+<p>As I said at the start of this post, it's still very early days for me
+with GraphQL, and I have a lot more to learn. Rather than see GraphQL as
+any sort of competitor to the status quo, or as simply the new kid on
+the block that's better than anything that's been before, by default,
+I see GraphQL as something wonderful in how it challenges our thinking,
+reminds us of our past, and adds to the richness of how we consider data
+and protocol architecture at a high level.</p>
+<p>What are your thoughts about GraphQL and what it can bring to our
+architectural and development landscape? I'd love to hear what they
+are.</p>
+<p><img src="/images/2018/09/Screenshot-2018-09-03-at-11.00.56.png" alt=""></p>
+<p><em>Our canal boat, moored this morning between Altrincham and Dunham
+Massey</em></p>
+<hr>
+<p>This post was brought to you from the peace and quiet of a Monday
+morning here on the <a href="http://www.bridgewatercanal.co.uk/">Bridgewater
+Canal</a>, where I'm spending time on
+a canal boat with M on my birthday today.</p>
+<hr>
+<p>Read more posts in this series here: <a href="/tags/mondaymorningthoughts/">Monday morning
+thoughts</a>.</p>
+<hr>
+<p><strong>Update 07 Sep 2018</strong>: This is the tweet from Chris Paine that started
+it off: <a href="https://twitter.com/wombling/status/1034949320519245824">https://twitter.com/wombling/status/1034949320519245824</a>,
+referring to a tweet by <a href="https://twitter.com/jeffhandley">Jeff
+Handley</a>.</p>
+<p><strong>Update 14 Sep 2018</strong>: Jeff published a very interesting blog post
+yesterday: <a href="https://jeffhandley.com/2018-09-13/graphql-is-not-odata">GraphQL is not
+OData</a>. It's a
+super read, with lots of history and balanced thoughts, and I enjoyed it
+very much. I will have to read it at least one more time for the
+thoughts to sink in. I'd recommend it heartily.</p>
+<p>I certainly agree with the post's premise - GraphQL is certainly not
+OData, as you can see from Jeff's post, but perhaps also from this one.
+The key takeaway for me so far from Jeff's post (apart from the title)
+is that GraphQL and OData can actually live side by side, as GraphQL's
+fit seems to be as an intermediary. I need to think about that some
+more, but for now, let the conversation and education continue!</p>
+<hr>
+<p><a href="https://community.sap.com/t5/additional-blogs-by-sap/monday-morning-thoughts-considering-graphql/ba-p/13366720">Originally published on SAP Community</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2018/08/27/monday-morning-thoughts-a-good-blog-post/">Monday morning thoughts: a good blog post</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2018/09/06/my-take-on-wireds-google-and-urls-article/">My take on Wired&#39;s Google &amp; URLs article</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2018/09/03/monday-morning-thoughts-considering-graphql/` was built on 2025-09-15T15:58:49.594Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

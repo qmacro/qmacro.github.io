@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Monday morning thoughts: longevity and loose coupling</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="monday-morning-thoughts-longevity-and-loose-coupling">Monday morning thoughts: longevity and loose coupling</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2018-11-12">12 November 2018</time></li>
+	<li><a href="/tags/sapcommunity/" class="post-tag">sapcommunity</a>, </li>
+	<li><a href="/tags/mondaymorningthoughts/" class="post-tag">mondaymorningthoughts</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p><em>In this post, I think about the importance of core technologies, and
+how the arrival of functions-as-a-service might be merely the next
+incarnation of an idea that's existed for a while.</em></p>
+<p>This weekend I picked up on a conversation about RSS (alternatively
+standing for RDF Site Summary, Really Simple Syndication and Rich Site
+Summary) and how authors should include the whole blog post contents in
+the RSS feed. There was some wonder within the conversation thread that
+RSS was still being used; despite the disappearance a few years ago of
+arguably the pre-eminent RSS reader, <a href="https://en.wikipedia.org/wiki/Google_Reader">Google
+Reader</a>, RSS is alive and well and
+powering syndication &amp; sharing on the web even today. (If you want to
+know more about RSS, its history and its relation to OData, you might
+want to read &quot;<a href="/blog/posts/2018/08/20/monday-morning-thoughts:-odata/">Monday morning thoughts:
+OData</a>&quot;.)</p>
+<p>That got me thinking of the protocol upon which RSS relies - the
+venerable HyperText Transfer Protocol (HTTP). HTTP has been around for a
+long time, and in the same way that email has become a sort of universal
+mechanism for asynchronous communication, HTTP is a universal mechanism
+for all sorts of things. Why is that? Well, I think one reason is its
+beautiful simplicity. When HTTP first arrived on the scene, I remember
+being delighted by it and indeed by the similarities with email.</p>
+<h2 id="the-beautiful-simplicity-of-email-and-http">The beautiful simplicity of email and HTTP</h2>
+<p>The official <a href="https://en.wikipedia.org/wiki/Request_for_Comments">request for
+comments</a> (RFC)
+document number <a href="https://www.ietf.org/rfc/rfc0822.txt">822</a>, from the
+Internet Engineering Task Force (IETF) describes, amongst other things,
+what an email looks like. There are headers, and a body - the email
+message, effectively. Headers are name:value pairs, and the headers are
+separated from the body by an empty line. Here's a simplified example:</p>
+<p>Message-ID: <a href="mailto:23944892.154212220.SomeMail.root@2ea9232e1">23944892.154212220.SomeMail.root@2ea9232e1</a>
+From: Sender <a href="mailto:sender@example.com">sender@example.com</a>
+To: recipient@example.com
+Subject: The email subject line
+Date: Sat, 10 Nov 2018 14:25:13 +0000 (UTC)
+Content-Type: text/plain; charset=UTF-8</p>
+<p>Greetings, earthling!</p>
+<p>In HTTP, described in RFC <a href="https://www.ietf.org/rfc/rfc2616.txt">2616</a>,
+messages are either requests or responses, and in both cases, the
+structure is the same: headers in the form of name:value pairs, an empty
+line, then the payload of the request or the response. Here's a
+simplified example of an HTTP request (this one doesn't have a payload)
+and the corresponding HTTP response:</p>
+<p>Request:</p>
+<p>GET /qmacro/blog/ HTTP/1.1
+User-Agent: Mozilla/5.0 (X11; CrOS x86_64 11151.17.0)
+Host: pipetree.com
+Accept-Language: en-gb
+Accept-Encoding: gzip, deflate
+Connection: Keep-Alive</p>
+<p>Response:</p>
+<p>HTTP/1.1 200 OK
+Date: Mon, 12 Nov 2018 06:43:07 GMT
+Server: Apache/2.4.18 (Ubuntu)
+Content-Type: text/html; charset=utf-8
+Content-Length: 10557</p>
+<p><!DOCTYPE HTML>
+<html>
+<head>
+<title>DJ's Weblog</title></head></html></p>
+<p>There's a beauty in the simplicity and similarity across all these
+different examples - they follow the same pattern, even sharing some
+headers (such as Date and Content-Type), and above all they are
+human-readable*.</p>
+<p>*the advent of HTML email has made that a little more challenging, and
+brought about the death of many excellent text-only email clients such
+as (my favourite email client of all time)
+<a href="https://en.wikipedia.org/wiki/Mutt_(email_client)">mutt</a>, but that's a
+story for another time.</p>
+<p>There have been attempts at improving upon today's HTTP, and you can
+see those attempts in the form of <a href="https://www.chromium.org/spdy">SPDY</a>
+and HTTP/2.0. And of course we have web sockets and the WS protocol
+prefix being utilised between server and client (browser) ... but
+ultimately the core of HTTP remains strong and ubiquitous. Indeed, in
+the Las Vegas and Barcelona editions of one of my SAP TechEd sessions
+this year - LT106 &quot;<a href="https://sessioncatalog.sapevents.com/go/agendabuilder.sessions/?l=192&amp;sid=62863&amp;locale=en_US">Understanding the Available Paths for Developers
+Throughout
+SAP</a>&quot;,
+I have exhorted the attendees to learn core technologies regardless of
+the path they take. One of these core technologies that I think everyone
+should learn is HTTP.</p>
+<h2 id="probot-and-webhooks">Probot and Webhooks</h2>
+<p>Something else I looked into this weekend was a result of my attendance
+last week at <a href="https://web.archive.org/web/20190112064724/https://london-2018.devrel.net/">DevRelCon 2018 London</a>,
+where, amongst other things, I learned about all sorts of tools that
+<a href="https://github.com/">GitHub</a> has to offer above and beyond what I
+consider core (social coding via repository &amp; project management based
+around the distributed source code control system &quot;git&quot;). One of these
+tools is <a href="https://probot.github.io/">Probot</a>, which allows you to use
+apps to extend processes managed within GitHub.</p>
+<p><img src="/images/2018/11/probot-logo.png" alt="Probot logo">
+<em>The Probot character</em></p>
+<p>The apps can be pre-built, or you can create your own. Essentially
+Probot is a layer built on top of a couple of fundamental mechanisms -
+<a href="https://developer.github.com/webhooks/">webhooks and the GitHub event
+API</a>, making it easier for these
+apps to be constructed.</p>
+<p>Let's look at webhooks for a minute. What are they? Think of webhooks
+as an architectural pattern based usage of HTTP. The concept of webhooks
+has been around for more than a decade - first invented and popularised
+by Jeff Lindsay - see his post &quot;<a href="https://web.archive.org/web/20180928201955/http://progrium.com/blog/2007/05/03/web-hooks-to-revolutionize-the-web/">Web hooks to revolutionize the
+web</a>&quot;
+from 2007. He describes them as &quot;user defined callbacks made with HTTP
+POST&quot;*, and a core use case for webhooks at the time was to address
+the challenges of polling - the repeated requests one piece of software
+makes to another, asking, over and over again: &quot;anything new?&quot;, &quot;have
+you finished it yet?&quot;, &quot;do you have anything for me?&quot; and similar
+requests. The polling pattern is often the simplest to think about and
+implement, but it's rather wasteful and inefficient.</p>
+<p>*Interestingly, Jeff likens webhooks to <em>pingbacks</em>, which I wrote
+about in last week's post: &quot;<a href="/blog/posts/2018/11/05/monday-morning-thoughts:-on-starting-blogging/">Monday morning thoughts: on starting
+blogging</a>&quot;.</p>
+<p>Back in 2007 when Jeff described this architectural pattern, we
+immediately saw the possibilities of a web of event-driven services,
+loosely connected via HTTP. At that time, HTTP was the lingua franca of
+inter-application communication.</p>
+<p>Today, it still is. Look at the other half of what Probot is built
+upon - GitHub's event API. Want to have some checks automatically
+carried out when source code is updated? Want to trigger a process in
+your organisation when a pull request is made to a specific repository?
+Register a callback, to be executed when these events happen. The form
+of that execution is simply some code, somewhere, that responds to an
+HTTP request, a request that is made by the system that is raising the
+event (GitHub in this case), and making that HTTP POST to the callback
+endpoint you registered. Again, this is where knowing about the HTTP
+protocol in general, and understanding the nature of how HTTP server
+frameworks function, is an essential skill, in my opinion*.</p>
+<p>*one of the ideas that drove me originally to create the Alternative
+Dispatcher Layer (ADL) for the ABAP stack was the lovely similarity
+between HTTP server frameworks large and small, across different
+languages and environments. See &quot;<a href="/blog/posts/2009/09/21/a-new-rest-handler-dispatcher-for-the-icf/">A new REST handler / dispatcher for
+the
+ICF</a>&quot;
+and Nigel James's presentation &quot;<a href="https://www.slideshare.net/squarecloud/alternative-dispatcher-layer-overview-12170192">Alternative Dispatcher Layer
+Overview</a>&quot;
+for a little bit of background reading.</p>
+<h2 id="functions-as-a-service-faas">Functions-as-a-Service (FaaS)</h2>
+<p>Today's serverless paradigm is a utility computing model where cloud
+vendors (such as SAP) provide compute resources, dynamically managing
+the allocation according to load, and charging based directly (and only)
+on resources consumed, rather than on pre-allocated units. This is a
+perfect example of cloud native computing, and amongst other things, it
+allows, even encourages us to think in terms of small computational
+executions, and to construct solutions out of loosely coupled building
+blocks.</p>
+<p>I've written about FaaS in a previous post: &quot;<a href="/blog/posts/2018/05/14/monday-morning-thoughts:-functions-what-functions/">Monday morning thoughts:
+functions - what
+functions?</a>&quot;
+but I thought it was worth continuing the &quot;loosely coupled&quot; idea in
+this direction. The appeal of SAP's FaaS offering is especially
+interesting to us as folks who build enterprise business solutions
+because the serverless fabric extends into the business processes
+themselves, as we saw for example in the SAP TechEd 2018 Las Vegas
+keynote demo from Jana Richter and Ian Kimbell (see &quot;<a href="https://www.youtube.com/watch?v=JDVDY1jMsuQ">Speed with
+Serverless Apps: SAP Cloud Platform Functions at SAP TechEd
+2018</a>&quot;).</p>
+<p>Essentially we can see that there are commonalities between various FaaS
+solutions, not only with SAP but with the hyperscale providers too, on
+how code is invoked:</p>
+<ul>
+<li>Triggers: you can invoke a function directly with an HTTP call</li>
+<li>Events: functions can be invoked as and when appropriate, based on
+the occurrence of various events, whether those events are <a href="https://help.sap.com/viewer/788fa4c7585e415187e347e904010cee/1808.500/en-US/82e97d5329044732af1efd996bfdc2ab.html">business
+related</a> or
+service related (for example - <a href="https://cloud.google.com/functions/docs/concepts/events-triggers">Google Cloud Functions offer
+events</a>
+based upon Cloud Storage and Cloud Pub/Sub)</li>
+<li>Timers: in a wonderful acknowledgement of the enduring nature of
+various Unix designs, you can use the language
+of <a href="https://en.wikipedia.org/wiki/Cron">cron</a> to <a href="https://help.sap.com/viewer/94fafb5bcf8f4c5cbdd0cdd8e358183c/Cloud/en-US/e5d2c92959b94b7e98612ca577cbba2e.html">schedule
+time-based
+invocations</a>
+of functions on SAP Cloud Platform</li>
+</ul>
+<p>Moreover, the commonality doesn't stop at the invocation level. At the
+end of the day, what are being invoked are functions, and the API is
+HTTP flavoured. Discrete functions with a well-defined, (well-loved,
+perhaps?) interface: The function receives the call and its context, in
+the form of an object representing the HTTP request, with the method,
+the URL path of the resource, the headers and any payload that is sent.
+It also receives an empty object representing the HTTP response, and it
+can and should populate that object appropriately, before &quot;letting go&quot;
+and allowing the server infrastructure take care of what happens after
+that.</p>
+<p>Note that the primary purpose of these loosely coupled HTTP-invoked
+functions is not always to return a rich response, but to perhaps
+perform some computation, store some data, change some state, as an
+appropriate reaction to the original event. These are not pure
+functions - many will have side effects (so it's appropriate for the
+method to be POST). But now I'm (semi-deliberately) mixing in
+functional programming concepts, which is a valid thing to think about
+here too, but perhaps I'll leave that for another time.</p>
+<h2 id="loose-coupling-and-management">Loose coupling and management</h2>
+<p>I'd like to end this post by encouraging you to think about the nature
+of this idea of loose coupling of functions, and event-based invocation.
+There's a huge amount of potential, and of flexibility, especially in
+the context of trying to keep the core clean (see &quot;<a href="https://blogs.sap.com/2018/11/08/keep-the-core-clean-clarifying-points-from-bjorn-goerkes-keynote/">Keep the Core
+Clean: Clarifying Points from Björn Goerke's
+Keynote</a>&quot;
+by Jerry Janda) by extending computation for business services in the
+cloud.</p>
+<p>One challenge is the management of the events and the functions written
+to be invoked at the events' occurrences. In a similar way to how we
+have to think about managing a large software project, with modules and
+libraries, we have to think about how we will go about managing this new
+style of resources.</p>
+<p>How will we retain an overview of what we have, and what is invoked
+when? Our tools should help us there to some extent. How do we manage
+the intersection of business process requirements and the triggering of
+actions and reactions? Perhaps that's more of a human-led activity that
+is only assisted by tools. I don't know yet. It's something
+that dahowlett and I touched upon at SAP TechEd 2018 Barcelona (see the
+audio content &quot;<a href="https://www.youtube.com/watch?v=cFN5OQ2D9R8">Towards a more open
+SAP?</a>&quot; that Den and I
+recorded at the event), and a topic that we should explore more
+together.</p>
+<p>If you learn about one thing this week, I hope I can make an argument
+for it to be about HTTP, and how you write HTTP services in the
+framework relating to your favourite language. As well as being a
+meditation on a now-venerable protocol, it will help you step into this
+new era of cloud computing.</p>
+<hr>
+<p>This post was brought to you by the prospect of a relaxing week off, by
+the distraction of the falling leaves outside, and by <a href="https://www.pactcoffee.com/coffees/asomuprisma">Pact Coffee's
+Asomuprisma</a>.</p>
+<hr>
+<p>Read more posts in this series here: <a href="/tags/mondaymorningthoughts/">Monday morning
+thoughts</a>.</p>
+<hr>
+<p><em>Update 20 Nov 2018: See James Governor's post &quot;<a href="https://redmonk.com/jgovernor/2018/11/07/github-universe-2018-low-key-revolutionary/">GitHub Universe 2018:
+Low Key
+Revolutionary</a>&quot;
+on the recent GitHub conference and more on serverless in relation to
+the recently released <a href="https://github.com/features/actions">GitHub
+Actions</a>.</em></p>
+<hr>
+<p><a href="https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-longevity-and-loose-coupling/ba-p/13365146">Originally published on SAP Community</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2018/11/05/monday-morning-thoughts-on-starting-blogging/">Monday morning thoughts: on starting blogging</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2018/11/19/monday-morning-thoughts-rethinking-like-the-web/">Monday morning thoughts: rethinking like the web</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2018/11/12/monday-morning-thoughts-longevity-and-loose-coupling/` was built on 2025-09-15T15:58:49.595Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Obtaining auth code grant type OAuth 2.0 tokens for Google APIs with a script</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="obtaining-auth-code-grant-type-oauth-2-0-tokens-for-google-apis-with-a-script">Obtaining auth code grant type OAuth 2.0 tokens for Google APIs with a script</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2024-05-08">08 May 2024</time></li>
+	<li><a href="/tags/api/" class="post-tag">api</a>, </li>
+	<li><a href="/tags/google/" class="post-tag">google</a>, </li>
+	<li><a href="/tags/oauth/" class="post-tag">oauth</a>, </li>
+	<li><a href="/tags/bash/" class="post-tag">bash</a>, </li>
+	<li><a href="/tags/shell/" class="post-tag">shell</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>I wanted to programmatically append rows to a Google Spreadsheet recently. For this I needed to use the <a href="https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/append">spreadsheets.values.append</a> method in the Sheets API v4. The API resources are protected, and according to the main page one can use an API Key or OAuth 2.0.</p>
+<h2 id="oauth-2-0-authorisation-code-grant-type">OAuth 2.0 authorisation code grant type</h2>
+<p>I tried in vain to find a way to get an API Key for this API, so went for the OAuth 2.0 approach. After all, I've used OAuth a lot and felt fairly comfortable with the concepts. However, I struggled with Google's documentation on this, so ended up writing a reusable script that encapsulates the steps, partly to provide myself with some structure into which to slot the requirements.</p>
+<p>This post is about that script and also about the steps - mostly for my own benefit, but you may find it useful too. The script itself doesn't make the call to the spreadsheet API, it just performs the appropriate OAuth 2.0 activities and then emits an access token<a href="#footnotes"><sup>1</sup></a> that can then be used in an HTTP header to authenticate the API call.</p>
+<p>The OAuth 2.0 <a href="https://github.com/SAP-archive/cloud-apis-virtual-event/tree/main/exercises/02#3-understand-oauth-20-grant-types">grant type</a> used here is the &quot;authorisation code&quot; grant type which makes sense as the resource is owned by me, a human (mostly).</p>
+<h2 id="token-request-modes-and-a-quick-demo">Token request modes and a quick demo</h2>
+<p>In OAuth 2.0 there are different parties or actors involved. In this particular grant type, or &quot;flow&quot;, we have:</p>
+<ul>
+<li>Client: the script or program wanting to access a protected resource</li>
+<li>Resource Owner: the (usually human) owner of the protected resource</li>
+<li>Authorisation Server: coordinator of access requests and grants</li>
+<li>Resource Server: where the protected resource is</li>
+</ul>
+<p>And to obtain and emit an access token, the script must navigate the flow between these parties, from a &quot;cold start&quot; where no communication with the Resource Owner has even been made, through a &quot;warm start&quot; where such communication has already taken place resulting in access being granted, but the access token previously obtained has expired.</p>
+<p>These different starting points are handled with different token request modes, modes to which I refer in the script as &quot;exchange&quot; and &quot;refresh&quot;.</p>
+<h3 id="exchange-mode">Exchange mode</h3>
+<p>This mode is relevant at the outset where no request has been made of the Resource Owner to grant access, and (thus) no token yet exists. What must happen here is that a request must be sent to the Resource Owner for them to grant (or deny) the request. If the request is granted, an authorisation code (hence the name of this grant type) is returned.</p>
+<p>Then, that authorisation code must be exchanged for an access token. The access token itself is usually supplied along with related data, including for how long the token is valid, and a refresh token (to be used in &quot;refresh&quot; mode).</p>
+<h3 id="refresh-mode">Refresh mode</h3>
+<p>This mode is relevant when an access token previously obtained has expired, and needs to be refreshed. A refresh token, which would have been supplied along with the access token, is required to authenticate such a refresh request.</p>
+<h3 id="script-demo">Script demo</h3>
+<p>Here's the script in action, showing the different modes, from a cold start, then a re-request of the token, and through a warm start where the token needs to be refreshed:</p>
+<p><img src="/images/2024/05/2024-05-08-google-auth-script.gif" alt="Demo"></p>
+<h2 id="a-breakdown-of-the-script">A breakdown of the script</h2>
+<p>The script, called <code>google-oauth</code>, is <a href="https://gist.github.com/qmacro/db7c51acc00abf3c5391b586d91fd807">available as a Gist on GitHub</a> in its entirety. Here are some notes on what's there, to help you read through it and (more importantly) understand the intricacies of the OAuth 2.0 authorisation code grant type. Line numbers refer to the version of the script in the Gist.</p>
+<h3 id="setup-lines-3-13">Setup (lines 3-13)</h3>
+<p>With OAuth 2.0, certain secure values are required. Here <code>CLIENT_ID</code> and <code>CLIENT_SECRET</code> credentialise the script as the Client in the flow's context. The values are stored in a <code>.env</code> file rather than in the script itself, and are sourced at runtime.</p>
+<p>Here are the constants declared in this section:</p>
+<ul>
+<li><code>REDIRECT_URI</code>: In exchange mode, once the Resource Owner has granted access (in a Web browser), they are redirected to another URL, usually one relating to and / or served by the Client. In this redirect, the authorisation code that is granted by the Authorisation Server is provided, and can be read and used by the Client. In this case - adopting <a href="https://podcasters.spotify.com/pod/show/tech-aloud/episodes/The-Simplest-Thing-that-Could-Possibly-Work--A-conversation-with-Ward-Cunningham--Part-V---Bill-Venners-e5dpts">the simplest thing that could possibly work</a> approach - we just redirect to localhost (<code>127.0.0.1</code>) and grab the value of the code from the redirected URL<a href="#footnotes"><sup>2</sup></a>.</li>
+<li><code>SCOPE</code>: This is a constant defined by the Google API for the particular type of request that I want to make (appending to a spreadsheet).</li>
+<li><code>OAUTH_BASE_URL</code>: The base URL of Authorisation Server where the OAuth 2.0 token requests are made.</li>
+<li><code>MY_NAME</code> and <code>TOKEN_DATA_FILE</code>: This is the base name of the script itself, used to then form the name for a JSON file where the OAuth 2.0 token data received can be stored. This will be, by default, <code>google-oauth.json</code>.</li>
+<li><code>GRACE_MINS</code>: The use case for the script is to be embedded within another script that needs an access token. But sometimes I will use it on the command line and then copy/paste the token emitted to use in a subsequent step. In this particular case, the possibility of the token expiring before I actually use it is small, but exists. The value is used to calculate a slightly shorter length of time than the actual lifetime of the token so that there's less of a risk of it expiring mere seconds after I have it in my paste buffer.</li>
+</ul>
+<h3 id="get-value-lines-16-21">get_value() (lines 16-21)</h3>
+<p>This is a helper function that returns the value of a given property from the JSON data in the token file, i.e. the data that's returned from the Authorisation Server. See the section below on the <code>request_token</code> function to get an idea of what that data looks like.</p>
+<h3 id="request-token-lines-23-72">request_token() (lines 23-72)</h3>
+<p>This function is the one that requests a token, whether that's in a cold start or warm start situation. It expects two values:</p>
+<ul>
+<li><code>mode</code>: the token request mode which will be either <code>exchange</code> or <code>refresh</code></li>
+<li><code>value</code>: if the <code>mode</code> is <code>exchange</code> then this value will be the authorisation code received from the cold start interaction with the Resource Owner, to be exchanged for an access token; otherwise, for the <code>refresh</code> mode, this value will be the refresh token to be used in that situation</li>
+</ul>
+<p>There are three main parts to this function.</p>
+<h4 id="making-a-request-to-the-authorisation-server">Making a request to the Authorisation Server</h4>
+<p>The two <code>curl</code> invocations are for the two different modes. Notice the differences and similarities between them:</p>
+<ul>
+<li>both invocations are made to the same <code>/token</code> endpoint of the Authorisation Server</li>
+<li>both requests are just seen as different grant types<a href="#footnotes"><sup>3</sup></a></li>
+<li>the Client's credentials are sent in both cases</li>
+<li>depending on the mode (grant type), there is different data required, sent via different parameters <code>refresh_token</code> and <code>code</code></li>
+<li>the URL to which to redirect the Resource Owner must also be supplied in the cold start exchange mode, via the <code>redirect_uri</code> parameter</li>
+</ul>
+<h4 id="calculating-an-expiry-value">Calculating an expiry value</h4>
+<p>When an authorisation code is successfully exchanged for an access token, the data that is sent back by the Authorisation Server includes not only the access token but also other information. This is what that data looks like (with the tokens truncated for brevity) - a JSON object:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"access_token"</span><span class="token operator">:</span> <span class="token string">"ya29.a0AXooCgvtL3LSfIj-qtQ3W6OolJuvUNvNJ..."</span><span class="token punctuation">,</span>
+  <span class="token property">"expires_in"</span><span class="token operator">:</span> <span class="token number">3599</span><span class="token punctuation">,</span>
+  <span class="token property">"refresh_token"</span><span class="token operator">:</span> <span class="token string">"1//03aYGc3iqwp6kCgYIARAAGAMSNwF-L9IrdwQ..."</span><span class="token punctuation">,</span>
+  <span class="token property">"scope"</span><span class="token operator">:</span> <span class="token string">"https://www.googleapis.com/auth/spreadsheets"</span><span class="token punctuation">,</span>
+  <span class="token property">"token_type"</span><span class="token operator">:</span> <span class="token string">"Bearer"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>The <code>expires_in</code> value is a number of seconds, often (and here) one less than a round number. Here that round number of <code>3600</code> seconds equals 1 hour - the lifetime of the access token granted, after which a new one must be requested via the &quot;refresh&quot; mode.</p>
+<p>This is of course just a relative value and is of no use on its own. So a bit of jq is used:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token dot important">.</span> <span class="token operator">+</span> <span class="token punctuation">{</span> 
+        <span class="token property-literal property">refresh_after</span><span class="token punctuation">:</span> 
+            <span class="token punctuation">(</span>now 
+                <span class="token operator">+</span> <span class="token punctuation">.</span>expires_in
+                <span class="token operator">-</span> <span class="token punctuation">(</span><span class="token variable">$grace_mins</span> <span class="token operator pipe">|</span> tonumber <span class="token operator">*</span> <span class="token number">60</span><span class="token punctuation">)</span>
+            <span class="token punctuation">)</span> <span class="token operator pipe">|</span> floor
+    <span class="token punctuation">}</span></code></pre>
+<p>to add a new property <code>refresh_after</code> to the JSON object, the value of which is simply the absolute time (in <a href="https://en.wikipedia.org/wiki/Unix_time">Unix time</a>) after which the token needs to be refreshed (this is where the <code>GRACE_MINS</code> value mentioned earlier is used to give a bit of breathing space to the usage). This value can then be simply compared to the current time whenever required (and it is, in the <code>main</code> function).</p>
+<h4 id="storage-and-emission">Storage and emission</h4>
+<p>The data is then stored in the token data file and the value of the access token itself is emitted.</p>
+<h3 id="main-lines-71-101">main() (lines 71-101)</h3>
+<p>The <code>main</code> function simply works out what mode is required and calls the <code>request_token</code> function accordingly.</p>
+<p>If there's a token data file already present, then this is a warm start, and the access token in there is emitted if it's not yet expired, otherwise the <code>request_token</code> function is called in refresh mode, where the value of the refresh token is supplied.</p>
+<p>If there isn't a token data file present, then this is a cold start and a URL is generated for the human Resource Owner to follow, which ultimately results in a redirection to <code>127.0.0.1</code> with an authorisation code in the URL, which should be copied and pasted into the <code>Code received:</code> prompt. Then the <code>request_token</code> function is called in exchange mode, where the value of the authorisation code is supplied.</p>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>And that's pretty much it! While this script may be useful to someone other than me, I hope that this explanation has helped you understand OAuth 2.0, and in particular the authorisation code grant type, a little more.</p>
+<hr>
+<p><a name="footnotes"></a></p>
+<h2 id="footnotes">Footnotes</h2>
+<p>(1) Some terminology. In this context there are two different token types. The &quot;main&quot; type, the one which can be used to authenticate a request to retrieve a protected resource, is an &quot;access token&quot;. This is also referred to as a &quot;bearer token&quot; as the token is sent in an HTTP <code>Authorization</code> header with the prefix word &quot;Bearer&quot;<a href="#footnotes"><sup>4</sup></a>, indicating that this token is being supplied in the context of HTTP's <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#bearer">Bearer authentication scheme</a>. The other token type in this context is the &quot;refresh token&quot;. This token cannot be used to authenticate requests; it is used to request a fresh access token from the Authorisation Server for when the current access token has expired. This refresh procedure can take place without the involvement of the human Resource Owner. Generally, the use of the single word &quot;token&quot; usually refers to an access token here.</p>
+<p>(2) I have actually experimented with using <code>netcat</code> as part of the script, to listen out for and handle the HTTP redirect to catch the authorisation code supplied, in a similar context for the Strava API, in <a href="https://github.com/qmacro/dotfiles/blob/main/scripts/strava-api/oauthflow-local">oauthflow-local</a>.</p>
+<p>(3) This is in itself also fascinating, in that the <a href="https://oauth.net/2/grant-types/refresh-token/">refreshing of an access token</a> is in fact a separately recognised OAuth 2.0 flow.</p>
+<p>(4) The word &quot;bearer&quot; here implies that it is a token that the requester is &quot;bearing&quot;, i.e. &quot;carrying&quot; with them. Note also that the <code>token_type</code> in the token data received from the Authorisation Server declares the token to indeed be of type <code>Bearer</code>.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2024/05/03/controlling-automatic-http-requests-in-cap-node-js-design-time-loops/">Controlling automatic HTTP requests in CAP Node.js design time loops</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2024/05/09/defining-a-custom-after-handler-in-cap-with-each/">Defining a custom &#39;after&#39; handler in CAP with &#39;each&#39;</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2024/05/08/obtaining-auth-code-grant-type-oauth-2-0-tokens-for-google-apis-with-a-script/` was built on 2025-09-15T15:58:49.623Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

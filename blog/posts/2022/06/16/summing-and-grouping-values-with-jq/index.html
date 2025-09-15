@@ -1,8 +1,826 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2022/06/16/summing-and-grouping-values-with-jq/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Summing and grouping values with jq | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Summing and grouping values with jq"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2022/06/16/summing-and-grouping-values-with-jq/"><meta name="description" content="Summing and grouping values with jq 16 Jun 2022 | 6 min read Here&#39;s yet another note-to-self on using jq, this time to transform a flat list..."><meta property="og:description" content="Summing and grouping values with jq 16 Jun 2022 | 6 min read Here&#39;s yet another note-to-self on using jq, this time to transform a flat list..."><meta name="description" content="Summing and grouping values with jq 16 Jun 2022 | 6 min read Here&#39;s yet another note-to-self on using jq, this time to transform a flat list..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Summing and grouping values with jq</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Summing and grouping values with jq</h1><div class="post__details"><time datetime="2022-06-16">16 Jun 2022 </time><span>| </span><span>6 min read</span></div></header><main class="post__content"><p>Here's yet another note-to-self on using jq, this time to transform a flat list of order totals and dates into a summary of total order values by year.</p><p>In doing some research for an <a href="https://qmacro.org/talks/#odata-basics-4-all-things-filter">upcoming live stream</a> I was looking at the <a href="https://services.odata.org/v4/northwind/northwind.svc/">Northwind OData v4 service</a> and in particular at the <a href="https://services.odata.org/v4/northwind/northwind.svc/Summary_of_Sales_by_Years">Summary_of_Sales_by_Years</a> entity set. It is not what I initially expected; rather than be a summary of sales by year, it was a list of orders each with a shipping date, order ID and order total. There are <a href="https://services.odata.org/v4/northwind/northwind.svc/Summary_of_Sales_by_Years/$count">over 800</a> entries, and I grabbed all of them and stored them in a single JSON file <code>Summary_of_Sales_by_Years.json</code> using a Bash shell script <a href="https://github.com/SAP-samples/odata-basics-handsonsapdev/blob/ecf9f4f4c378428e936dfbd80bbcefcaebfbfb8b/bin/slurp">slurp</a> that auto-follows the <a href="http://docs.oasis-open.org/odata/odata-json-format/v4.0/errata03/os/odata-json-format-v4.0-errata03-os-complete.html#_Toc453766632">@odata.nextLink annotation</a> trail on each chunk response.</p><p>I wanted to group the list by year and get grand totals for each year. This blog post describes how I went about it, and also describes a sort of preparation stage too where I created an initially much smaller dataset to experiment with.</p><p>I've created snippets on <a href="https://jqplay.org">jqplay</a> for each of the stages here - you'll see the links at the relevant points in this post.</p><h2>Preparing the sample data</h2><p>For the sake of brevity in this post, I cut the data down to just 6 entries, two for each of the years represented (1996, 1997 and 1998). I did this with <code>jq</code> too, redirecting the output into a new file <code>subset.json</code>, thus:</p><pre class="language-bash"><code class="language-bash">jq <span class="token punctuation">\</span><br>  <span class="token string">'.value |= (<br>    group_by(.ShippedDate[:4])<br>    | map(.[:2])<br>    | flatten<br>  )'</span> <span class="token punctuation">\</span><br>  Summary_of_Sales_by_Years.json <span class="token punctuation">\</span><br>  <span class="token operator">></span> subset.json</code></pre><p>This resulted in the following content in <code>subset.json</code>, which I can now use to more easily illustrate the summing and grouping.</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1996-07-16T00:00:00Z"</span><span class="token punctuation">,</span><br>      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10248</span><span class="token punctuation">,</span><br>      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">440</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1996-07-10T00:00:00Z"</span><span class="token punctuation">,</span><br>      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10249</span><span class="token punctuation">,</span><br>      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">1863.4</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1997-01-16T00:00:00Z"</span><span class="token punctuation">,</span><br>      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10380</span><span class="token punctuation">,</span><br>      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">1313.82</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1997-01-01T00:00:00Z"</span><span class="token punctuation">,</span><br>      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10392</span><span class="token punctuation">,</span><br>      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">1440</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1998-01-02T00:00:00Z"</span><span class="token punctuation">,</span><br>      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10771</span><span class="token punctuation">,</span><br>      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">344</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1998-01-21T00:00:00Z"</span><span class="token punctuation">,</span><br>      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10777</span><span class="token punctuation">,</span><br>      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">224</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span><br><span class="token punctuation">}</span></code></pre><p>Before we move on, let's briefly examine the <code>jq</code> used to produce this.</p><h3>Examining the preparation phase</h3><p>Here's that <code>jq</code> program again:</p><pre class="language-jq"><code class="language-jq"><span class="token punctuation">.</span>value <span class="token operator pipe">|=</span> <span class="token punctuation">(</span><br>  <span class="token c-style-function function">group_by</span><span class="token punctuation">(</span><span class="token punctuation">.</span>ShippedDate<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">)</span><br>  <span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><br>  <span class="token operator pipe">|</span> flatten<br><span class="token punctuation">)</span></code></pre><p>First, there's this construct: <code>.value |= (...)</code>. The <code>|=</code> is the <a href="https://stedolan.github.io/jq/manual/#Update-assignment:%7C=">update assignment</a> operator and whatever the filter on the right hand side produces becomes the new value for the <code>value</code> property. The parentheses in this particular instance ensure that the output from the entire expression within is used. It's needed here because the expression contains pipes (<code>|</code>) which would otherwise short circuit.</p><p>With <code>group_by(.ShippedDate[:4])</code> the <a href="https://stedolan.github.io/jq/manual/#group_by(path_expression)">group_by</a> function collects objects by the <code>ShippedDate</code> property - but not the entire property value, just the first four characters, which represent the year, for example &quot;1996&quot; in &quot;1996-07-16T00:00:00Z&quot; (there's the <code>strptime</code> function too, which will parse a date into its component parts, but knowledge of the data and laziness won through here). Note that the <code>[:4]</code> construct (which is short for <code>[0:4]</code>) is the <a href="https://stedolan.github.io/jq/manual/#Array/StringSlice:.%5B10:15%5D">array/string slice</a> filter operating on a string value in this case, which will return a substring.</p><p>The use of <code>group_by</code> produces an array of arrays, with one subarray for each year.</p><p>This is then piped into <code>map(.[:2])</code>. The <code>[:2]</code> (again, short for <code>[0:2]</code>) is the array/string slice filter again, but this time, it's operating on an array rather than a string. I'm using <code>map</code> to run the filter <code>.[:2]</code> against each element of the input array, which contains a subarray for each of the years. And the <code>.[:2]</code> filter, in an array context, will return the first two elements.</p><p>The result of this is still an array of arrays, but now each subarray has only two objects each. Now they can all be merged, i.e. taken out of their respective subarrays and collected together. This is done with the <a href="https://stedolan.github.io/jq/manual/#flatten,flatten(depth)">flatten</a> filter.</p><p>▶ You can see how this <code>jq</code> program reduces the input data to the subset in this jqplay snippet: <a href="https://jqplay.org/s/7fwbQqvjluG">Initial input data reduction</a>.</p><h2>Producing the totals by year</h2><p>So, (now based on the subset of data above), what I actually want is a summary of total order value for each year, something like this:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token punctuation">[</span><br>    <span class="token string">"1996"</span><span class="token punctuation">,</span><br>    <span class="token number">2303</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token punctuation">[</span><br>    <span class="token string">"1997"</span><span class="token punctuation">,</span><br>    <span class="token number">2753</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token punctuation">[</span><br>    <span class="token string">"1998"</span><span class="token punctuation">,</span><br>    <span class="token number">568</span><br>  <span class="token punctuation">]</span><br><span class="token punctuation">]</span></code></pre><h3>Grouping by year</h3><p>It makes sense that the approach required will also employ the <a href="https://stedolan.github.io/jq/manual/#group_by(path_expression)">group_by</a> function as we want total order values for each year, and we can determine the years in the same way as we've seen in the preparation stage, i.e. with the <a href="https://stedolan.github.io/jq/manual/#Array/StringSlice:.%5B10:15%5D">array/string slice</a> filter (<code>[:4]</code>).</p><p>Let's start to explore:</p><pre class="language-bash"><code class="language-bash">jq <span class="token punctuation">\</span><br>  <span class="token string">'.value<br>  | group_by(.ShippedDate[:4])'</span> <span class="token punctuation">\</span><br>  subset.json</code></pre><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1996-07-16T00:00:00Z"</span><span class="token punctuation">,</span><br>      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10248</span><span class="token punctuation">,</span><br>      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">440</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1996-07-10T00:00:00Z"</span><span class="token punctuation">,</span><br>      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10249</span><span class="token punctuation">,</span><br>      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">1863.4</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1997-01-16T00:00:00Z"</span><span class="token punctuation">,</span><br>      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10380</span><span class="token punctuation">,</span><br>      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">1313.82</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1997-01-01T00:00:00Z"</span><span class="token punctuation">,</span><br>      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10392</span><span class="token punctuation">,</span><br>      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">1440</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1998-01-02T00:00:00Z"</span><span class="token punctuation">,</span><br>      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10771</span><span class="token punctuation">,</span><br>      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">344</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1998-01-21T00:00:00Z"</span><span class="token punctuation">,</span><br>      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10777</span><span class="token punctuation">,</span><br>      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">224</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span><br><span class="token punctuation">]</span></code></pre><p>This is a nice illustration of the array of arrays structure we talked about earlier. There's a subarray for the objects for each year.</p><h3>Totalling the values</h3><p>Now the data is in the right &quot;shape&quot;, it's time to focus on summing the <code>Subtotal</code> values within each subarray.</p><pre class="language-bash"><code class="language-bash">jq <span class="token punctuation">\</span><br>  <span class="token string">'.value<br>  | group_by(.ShippedDate[:4])<br>  | map(map(.Subtotal))'</span> <span class="token punctuation">\</span><br>  subset.json</code></pre><p>This produces the following:</p><pre class="language-bash"><code class="language-bash"><span class="token punctuation">[</span><br>  <span class="token punctuation">[</span><br>    <span class="token number">440</span>,<br>    <span class="token number">1863.4</span><br>  <span class="token punctuation">]</span>,<br>  <span class="token punctuation">[</span><br>    <span class="token number">1313.82</span>,<br>    <span class="token number">1440</span><br>  <span class="token punctuation">]</span>,<br>  <span class="token punctuation">[</span><br>    <span class="token number">344</span>,<br>    <span class="token number">224</span><br>  <span class="token punctuation">]</span><br><span class="token punctuation">]</span></code></pre><p>Note the nested calls to <code>map</code>, i.e. <code>map(map(...)</code>. This is because the outer <code>map</code> processes the outer array, and passes each element (each of which are also arrays - the by-year subarrays) to the function specified, which is also <code>map</code>, which processes (in turn) each inner array, which contain the objects. The simple filter <code>.Subtotal</code> will just return the value of the <code>Subtotal</code> property, so we see a list of lists of subtotals, remembering that we've got two for each of the three years.</p><p>So we have an array of arrays of subtotal values. As a next step let's add these grouped subtotal values together, using <a href="https://stedolan.github.io/jq/manual/#add">add</a> (which is a filter that operates on arrays). While we're at it, we'll use <a href="https://stedolan.github.io/jq/manual/#floor">floor</a> to hard round down to the nearest whole number:</p><pre class="language-bash"><code class="language-bash">jq <span class="token punctuation">\</span><br>  <span class="token string">'.value<br>  | group_by(.ShippedDate[:4])<br>  | map(map(.Subtotal) | add | floor)'</span> <span class="token punctuation">\</span><br>  subset.json</code></pre><p>This produces the following:</p><pre class="language-bash"><code class="language-bash"><span class="token punctuation">[</span><br>  <span class="token number">2303</span>,<br>  <span class="token number">2753</span>,<br>  <span class="token number">568</span><br><span class="token punctuation">]</span></code></pre><h3>Adding the year</h3><p>Almost there - but it's not that useful without the year. To get the structure we want, which is an array of arrays each containing the year and total, we'll need to add the year, and enclose that, with the total, in an array:</p><pre class="language-bash"><code class="language-bash">jq <span class="token punctuation">\</span><br>  <span class="token string">'.value<br>  | group_by(.ShippedDate[:4])<br>  | map([<br>      first.ShippedDate[:4],<br>      (map(.Subtotal) | add | floor)<br>    ])'</span> <span class="token punctuation">\</span><br>  subset.json</code></pre><p>We've expanded what's passed to the outer <code>map</code> function to the following:</p><pre class="language-jq"><code class="language-jq"><span class="token punctuation">[</span><br>  first<span class="token punctuation">.</span>ShippedDate<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token punctuation">(</span><span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">.</span>Subtotal<span class="token punctuation">)</span> <span class="token operator pipe">|</span> add <span class="token operator pipe">|</span> floor<span class="token punctuation">)</span><br><span class="token punctuation">]</span></code></pre><p>What's happening here is that we're using <a href="https://stedolan.github.io/jq/manual/#Arrayconstruction:%5B%5D">array construction</a> (<code>[...]</code>) to produce an array, with two elements, starting with the value of <code>first.ShippedDate[:4]</code>.</p><p>Each of the expressions in this array construction receives an array (one of the year-specific subarrays), but for our first element we only want the value from one of the elements in the incoming array, so we can use the <a href="https://stedolan.github.io/jq/manual/#first,last,nth(n)">first</a> function to do that. This is a lovely bit of syntactic sugar through a definition, along with definitions for its siblings <code>last</code> and <code>nth</code>, in <a href="https://github.com/stedolan/jq/blob/a9f97e9e61a910a374a5d768244e8ad63f407d3e/src/builtin.jq#L187-L189">builtin.jq</a>:</p><pre class="language-jq"><code class="language-jq"><span class="token keyword">def</span> <span class="token function">first</span><span class="token punctuation">:</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span><br><span class="token keyword">def</span> <span class="token function">last</span><span class="token punctuation">:</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span><br><span class="token keyword">def</span> <span class="token function">nth</span><span class="token punctuation">(</span><span class="token variable">$n</span><span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token variable">$n</span><span class="token punctuation">]</span><span class="token punctuation">;</span></code></pre><p>I'm tempted to want to define another function <code>rest</code> thus:</p><pre class="language-jq"><code class="language-jq"><span class="token keyword">def</span> <span class="token function">rest</span><span class="token punctuation">:</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">:</span>length<span class="token punctuation">]</span><span class="token punctuation">;</span></code></pre><p>See <a href="https://qmacro.org/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/">The beauty of recursion and list machinery</a> for why - in particular, a slight obsession about <code>x:xs</code>, first and rest, head and tail, and so on.</p><p>But I digress.</p><p>The second element in the constructed array, i.e. <code>(map(.Subtotal) | add | floor)</code>, is the same as before, except that it's now surrounded in parentheses to ensure the whole thing is evaluated in one go (specifically, so that it's only the <code>map(.Subtotal)</code> that gets passed through those pipes to <code>add</code> and <code>floor</code>, and not anything else).</p><p>So this is where we've ended up:</p><pre class="language-bash"><code class="language-bash">jq <span class="token punctuation">\</span><br>  <span class="token string">'.value<br>  | group_by(.ShippedDate[:4])<br>  | map([<br>      first.ShippedDate[:4],<br>      (map(.Subtotal) | add | floor)<br>    ])'</span> <span class="token punctuation">\</span><br>  subset.json</code></pre><p>Running this produces the desired result:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token punctuation">[</span><br>    <span class="token string">"1996"</span><span class="token punctuation">,</span><br>    <span class="token number">2303</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token punctuation">[</span><br>    <span class="token string">"1997"</span><span class="token punctuation">,</span><br>    <span class="token number">2753</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token punctuation">[</span><br>    <span class="token string">"1998"</span><span class="token punctuation">,</span><br>    <span class="token number">568</span><br>  <span class="token punctuation">]</span><br><span class="token punctuation">]</span></code></pre><p>Very nice!</p><p>▶ You can see how this result is achieved in this jqplay snippet: <a href="https://jqplay.org/s/TRVd7ttVjmc">Producing the 'array' style final result</a>.</p><h3>An alternative result structure</h3><p>As alternative way of representing the totals by year, and knowing that the year values are stable enough to be property names in objects, we could instead go for something like this:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"1996"</span><span class="token operator">:</span> <span class="token number">2303</span><span class="token punctuation">,</span><br>  <span class="token property">"1997"</span><span class="token operator">:</span> <span class="token number">2753</span><span class="token punctuation">,</span><br>  <span class="token property">"1998"</span><span class="token operator">:</span> <span class="token number">568</span><br><span class="token punctuation">}</span></code></pre><p>To get this, it's not much of a departure from what we previously ended up with. First, instead of using array construction (<code>[...]</code>) we can use <a href="https://stedolan.github.io/jq/manual/#Objectconstruction:%5B%5D">object construction</a>. As expected, we need to specify the property name and value, in this form:</p><pre><code>property: value
-</code></pre><p>Let's make that change, noting that because the expression for the property (the key) is not &quot;identifier-like&quot;, i.e. it's an expression to be evaluated, we need to enclose it in parentheses like this: <code>(first.ShippedDate[:4])</code>. Here we go:</p><pre class="language-bash"><code class="language-bash">jq <span class="token punctuation">\</span><br>  <span class="token string">'.value<br>  | group_by(.ShippedDate[:4])<br>  | map({<br>      (first.ShippedDate[:4]): map(.Subtotal)|add|floor<br>    })'</span> <span class="token punctuation">\</span><br>  subset.json</code></pre><p>This produces almost but not quite what we want:</p><pre class="language-bash"><code class="language-bash"><span class="token punctuation">[</span><br>  <span class="token punctuation">{</span><br>    <span class="token string">"1996"</span><span class="token builtin class-name">:</span> <span class="token number">2303</span><br>  <span class="token punctuation">}</span>,<br>  <span class="token punctuation">{</span><br>    <span class="token string">"1997"</span><span class="token builtin class-name">:</span> <span class="token number">2753</span><br>  <span class="token punctuation">}</span>,<br>  <span class="token punctuation">{</span><br>    <span class="token string">"1998"</span><span class="token builtin class-name">:</span> <span class="token number">568</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">]</span></code></pre><p>But that's OK, because the more you get the feel for how <code>jq</code> behaves, the more you'll likely guess that there'll be a simple way to merge these objects. And there is - the versatile <a href="https://stedolan.github.io/jq/manual/#add">add</a> filter. We've used <code>add</code> already to sum up an array of numeric values (the subtotals) but &quot;adding&quot; an array of objects together merges them.</p><p>So let's pipe the output of the <code>map({...})</code> into add:</p><pre class="language-bash"><code class="language-bash">jq <span class="token punctuation">\</span><br>  <span class="token string">'.value<br>  | group_by(.ShippedDate[:4])<br>  | map({<br>      (first.ShippedDate[:4]): map(.Subtotal)|add|floor<br>    }) | add'</span> <span class="token punctuation">\</span><br>  subset.json</code></pre><p>This merges the three year:total pairs from the three objects into a single object, and thus gives us what we want:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"1996"</span><span class="token operator">:</span> <span class="token number">2303</span><span class="token punctuation">,</span><br>  <span class="token property">"1997"</span><span class="token operator">:</span> <span class="token number">2753</span><span class="token punctuation">,</span><br>  <span class="token property">"1998"</span><span class="token operator">:</span> <span class="token number">568</span><br><span class="token punctuation">}</span></code></pre><p>Lovely!</p><p>▶ You can see how this alternative result is achieved in this jqplay snippet: <a href="https://jqplay.org/s/LJzeX3oH64M">Producing the 'array' style final result</a>.</p><h2>Summing up</h2><p>This turned out (again) to be a slightly longer post than expected, but in writing it, and in manipulating the source data, I've learned more about <code>jq</code>. So that's a result. I hope this helps you too.</p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/jq/">#jq</a> <a href="/tags/odata/">#odata</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2022/06/23/understanding-jq&#39;s-sql-style-operators-join-and-index/"><span>←</span> <span>Understanding jq&#39;s SQL style operators JOIN and INDEX</span> </a><a href="/blog/posts/2022/05/30/reshaping-data-values-using-jq&#39;s-with_entries/"><span>Reshaping data values using jq&#39;s with_entries</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="summing-and-grouping-values-with-jq">Summing and grouping values with jq</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2022-06-16">16 June 2022</time></li>
+	<li><a href="/tags/jq/" class="post-tag">jq</a>, </li>
+	<li><a href="/tags/odata/" class="post-tag">odata</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>Here's yet another note-to-self on using jq, this time to transform a flat list of order totals and dates into a summary of total order values by year.</p>
+<p>In doing some research for an <a href="https://qmacro.org/talks/#odata-basics-4-all-things-filter">upcoming live stream</a> I was looking at the <a href="https://services.odata.org/v4/northwind/northwind.svc/">Northwind OData v4 service</a> and in particular at the <a href="https://services.odata.org/v4/northwind/northwind.svc/Summary_of_Sales_by_Years">Summary_of_Sales_by_Years</a> entity set. It is not what I initially expected; rather than be a summary of sales by year, it was a list of orders each with a shipping date, order ID and order total. There are <a href="https://services.odata.org/v4/northwind/northwind.svc/Summary_of_Sales_by_Years/$count">over 800</a> entries, and I grabbed all of them and stored them in a single JSON file <code>Summary_of_Sales_by_Years.json</code> using a Bash shell script <a href="https://github.com/SAP-samples/odata-basics-handsonsapdev/blob/ecf9f4f4c378428e936dfbd80bbcefcaebfbfb8b/bin/slurp">slurp</a> that auto-follows the <a href="http://docs.oasis-open.org/odata/odata-json-format/v4.0/errata03/os/odata-json-format-v4.0-errata03-os-complete.html#_Toc453766632">@odata.nextLink annotation</a> trail on each chunk response.</p>
+<p>I wanted to group the list by year and get grand totals for each year. This blog post describes how I went about it, and also describes a sort of preparation stage too where I created an initially much smaller dataset to experiment with.</p>
+<p>I've created snippets on <a href="https://jqplay.org">jqplay</a> for each of the stages here - you'll see the links at the relevant points in this post.</p>
+<h2 id="preparing-the-sample-data">Preparing the sample data</h2>
+<p>For the sake of brevity in this post, I cut the data down to just 6 entries, two for each of the years represented (1996, 1997 and 1998). I did this with <code>jq</code> too, redirecting the output into a new file <code>subset.json</code>, thus:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token punctuation">\</span>
+  <span class="token string">'.value |= (
+    group_by(.ShippedDate[:4])
+    | map(.[:2])
+    | flatten
+  )'</span> <span class="token punctuation">\</span>
+  Summary_of_Sales_by_Years.json <span class="token punctuation">\</span>
+  <span class="token operator">></span> subset.json</code></pre>
+<p>This resulted in the following content in <code>subset.json</code>, which I can now use to more easily illustrate the summing and grouping.</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1996-07-16T00:00:00Z"</span><span class="token punctuation">,</span>
+      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10248</span><span class="token punctuation">,</span>
+      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">440</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1996-07-10T00:00:00Z"</span><span class="token punctuation">,</span>
+      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10249</span><span class="token punctuation">,</span>
+      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">1863.4</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1997-01-16T00:00:00Z"</span><span class="token punctuation">,</span>
+      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10380</span><span class="token punctuation">,</span>
+      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">1313.82</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1997-01-01T00:00:00Z"</span><span class="token punctuation">,</span>
+      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10392</span><span class="token punctuation">,</span>
+      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">1440</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1998-01-02T00:00:00Z"</span><span class="token punctuation">,</span>
+      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10771</span><span class="token punctuation">,</span>
+      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">344</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1998-01-21T00:00:00Z"</span><span class="token punctuation">,</span>
+      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10777</span><span class="token punctuation">,</span>
+      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">224</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Before we move on, let's briefly examine the <code>jq</code> used to produce this.</p>
+<h3 id="examining-the-preparation-phase">Examining the preparation phase</h3>
+<p>Here's that <code>jq</code> program again:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span>value <span class="token operator pipe">|=</span> <span class="token punctuation">(</span>
+  <span class="token c-style-function function">group_by</span><span class="token punctuation">(</span><span class="token punctuation">.</span>ShippedDate<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+  <span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+  <span class="token operator pipe">|</span> flatten
+<span class="token punctuation">)</span></code></pre>
+<p>First, there's this construct: <code>.value |= (...)</code>. The <code>|=</code> is the <a href="https://stedolan.github.io/jq/manual/#Update-assignment:%7C=">update assignment</a> operator and whatever the filter on the right hand side produces becomes the new value for the <code>value</code> property. The parentheses in this particular instance ensure that the output from the entire expression within is used. It's needed here because the expression contains pipes (<code>|</code>) which would otherwise short circuit.</p>
+<p>With <code>group_by(.ShippedDate[:4])</code> the <a href="https://stedolan.github.io/jq/manual/#group_by(path_expression)">group_by</a> function collects objects by the <code>ShippedDate</code> property - but not the entire property value, just the first four characters, which represent the year, for example &quot;1996&quot; in &quot;1996-07-16T00:00:00Z&quot; (there's the <code>strptime</code> function too, which will parse a date into its component parts, but knowledge of the data and laziness won through here). Note that the <code>[:4]</code> construct (which is short for <code>[0:4]</code>) is the <a href="https://stedolan.github.io/jq/manual/#Array/StringSlice:.%5B10:15%5D">array/string slice</a> filter operating on a string value in this case, which will return a substring.</p>
+<p>The use of <code>group_by</code> produces an array of arrays, with one subarray for each year.</p>
+<p>This is then piped into <code>map(.[:2])</code>. The <code>[:2]</code> (again, short for <code>[0:2]</code>) is the array/string slice filter again, but this time, it's operating on an array rather than a string. I'm using <code>map</code> to run the filter <code>.[:2]</code> against each element of the input array, which contains a subarray for each of the years. And the <code>.[:2]</code> filter, in an array context, will return the first two elements.</p>
+<p>The result of this is still an array of arrays, but now each subarray has only two objects each. Now they can all be merged, i.e. taken out of their respective subarrays and collected together. This is done with the <a href="https://stedolan.github.io/jq/manual/#flatten,flatten(depth)">flatten</a> filter.</p>
+<p>▶ You can see how this <code>jq</code> program reduces the input data to the subset in this jqplay snippet: <a href="https://jqplay.org/s/7fwbQqvjluG">Initial input data reduction</a>.</p>
+<h2 id="producing-the-totals-by-year">Producing the totals by year</h2>
+<p>So, (now based on the subset of data above), what I actually want is a summary of total order value for each year, something like this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">[</span>
+    <span class="token string">"1996"</span><span class="token punctuation">,</span>
+    <span class="token number">2303</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token string">"1997"</span><span class="token punctuation">,</span>
+    <span class="token number">2753</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token string">"1998"</span><span class="token punctuation">,</span>
+    <span class="token number">568</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">]</span></code></pre>
+<h3 id="grouping-by-year">Grouping by year</h3>
+<p>It makes sense that the approach required will also employ the <a href="https://stedolan.github.io/jq/manual/#group_by(path_expression)">group_by</a> function as we want total order values for each year, and we can determine the years in the same way as we've seen in the preparation stage, i.e. with the <a href="https://stedolan.github.io/jq/manual/#Array/StringSlice:.%5B10:15%5D">array/string slice</a> filter (<code>[:4]</code>).</p>
+<p>Let's start to explore:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token punctuation">\</span>
+  <span class="token string">'.value
+  | group_by(.ShippedDate[:4])'</span> <span class="token punctuation">\</span>
+  subset.json</code></pre>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1996-07-16T00:00:00Z"</span><span class="token punctuation">,</span>
+      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10248</span><span class="token punctuation">,</span>
+      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">440</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1996-07-10T00:00:00Z"</span><span class="token punctuation">,</span>
+      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10249</span><span class="token punctuation">,</span>
+      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">1863.4</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1997-01-16T00:00:00Z"</span><span class="token punctuation">,</span>
+      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10380</span><span class="token punctuation">,</span>
+      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">1313.82</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1997-01-01T00:00:00Z"</span><span class="token punctuation">,</span>
+      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10392</span><span class="token punctuation">,</span>
+      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">1440</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1998-01-02T00:00:00Z"</span><span class="token punctuation">,</span>
+      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10771</span><span class="token punctuation">,</span>
+      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">344</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"ShippedDate"</span><span class="token operator">:</span> <span class="token string">"1998-01-21T00:00:00Z"</span><span class="token punctuation">,</span>
+      <span class="token property">"OrderID"</span><span class="token operator">:</span> <span class="token number">10777</span><span class="token punctuation">,</span>
+      <span class="token property">"Subtotal"</span><span class="token operator">:</span> <span class="token number">224</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">]</span></code></pre>
+<p>This is a nice illustration of the array of arrays structure we talked about earlier. There's a subarray for the objects for each year.</p>
+<h3 id="totalling-the-values">Totalling the values</h3>
+<p>Now the data is in the right &quot;shape&quot;, it's time to focus on summing the <code>Subtotal</code> values within each subarray.</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token punctuation">\</span>
+  <span class="token string">'.value
+  | group_by(.ShippedDate[:4])
+  | map(map(.Subtotal))'</span> <span class="token punctuation">\</span>
+  subset.json</code></pre>
+<p>This produces the following:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token punctuation">[</span>
+  <span class="token punctuation">[</span>
+    <span class="token number">440</span>,
+    <span class="token number">1863.4</span>
+  <span class="token punctuation">]</span>,
+  <span class="token punctuation">[</span>
+    <span class="token number">1313.82</span>,
+    <span class="token number">1440</span>
+  <span class="token punctuation">]</span>,
+  <span class="token punctuation">[</span>
+    <span class="token number">344</span>,
+    <span class="token number">224</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">]</span></code></pre>
+<p>Note the nested calls to <code>map</code>, i.e. <code>map(map(...)</code>. This is because the outer <code>map</code> processes the outer array, and passes each element (each of which are also arrays - the by-year subarrays) to the function specified, which is also <code>map</code>, which processes (in turn) each inner array, which contain the objects. The simple filter <code>.Subtotal</code> will just return the value of the <code>Subtotal</code> property, so we see a list of lists of subtotals, remembering that we've got two for each of the three years.</p>
+<p>So we have an array of arrays of subtotal values. As a next step let's add these grouped subtotal values together, using <a href="https://stedolan.github.io/jq/manual/#add">add</a> (which is a filter that operates on arrays). While we're at it, we'll use <a href="https://stedolan.github.io/jq/manual/#floor">floor</a> to hard round down to the nearest whole number:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token punctuation">\</span>
+  <span class="token string">'.value
+  | group_by(.ShippedDate[:4])
+  | map(map(.Subtotal) | add | floor)'</span> <span class="token punctuation">\</span>
+  subset.json</code></pre>
+<p>This produces the following:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token punctuation">[</span>
+  <span class="token number">2303</span>,
+  <span class="token number">2753</span>,
+  <span class="token number">568</span>
+<span class="token punctuation">]</span></code></pre>
+<h3 id="adding-the-year">Adding the year</h3>
+<p>Almost there - but it's not that useful without the year. To get the structure we want, which is an array of arrays each containing the year and total, we'll need to add the year, and enclose that, with the total, in an array:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token punctuation">\</span>
+  <span class="token string">'.value
+  | group_by(.ShippedDate[:4])
+  | map([
+      first.ShippedDate[:4],
+      (map(.Subtotal) | add | floor)
+    ])'</span> <span class="token punctuation">\</span>
+  subset.json</code></pre>
+<p>We've expanded what's passed to the outer <code>map</code> function to the following:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">[</span>
+  first<span class="token punctuation">.</span>ShippedDate<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">(</span><span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">.</span>Subtotal<span class="token punctuation">)</span> <span class="token operator pipe">|</span> add <span class="token operator pipe">|</span> floor<span class="token punctuation">)</span>
+<span class="token punctuation">]</span></code></pre>
+<p>What's happening here is that we're using <a href="https://stedolan.github.io/jq/manual/#Arrayconstruction:%5B%5D">array construction</a> (<code>[...]</code>) to produce an array, with two elements, starting with the value of <code>first.ShippedDate[:4]</code>.</p>
+<p>Each of the expressions in this array construction receives an array (one of the year-specific subarrays), but for our first element we only want the value from one of the elements in the incoming array, so we can use the <a href="https://stedolan.github.io/jq/manual/#first,last,nth(n)">first</a> function to do that. This is a lovely bit of syntactic sugar through a definition, along with definitions for its siblings <code>last</code> and <code>nth</code>, in <a href="https://github.com/stedolan/jq/blob/a9f97e9e61a910a374a5d768244e8ad63f407d3e/src/builtin.jq#L187-L189">builtin.jq</a>:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token keyword">def</span> <span class="token function">first</span><span class="token punctuation">:</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">def</span> <span class="token function">last</span><span class="token punctuation">:</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token keyword">def</span> <span class="token function">nth</span><span class="token punctuation">(</span><span class="token variable">$n</span><span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token variable">$n</span><span class="token punctuation">]</span><span class="token punctuation">;</span></code></pre>
+<p>I'm tempted to want to define another function <code>rest</code> thus:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token keyword">def</span> <span class="token function">rest</span><span class="token punctuation">:</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">:</span>length<span class="token punctuation">]</span><span class="token punctuation">;</span></code></pre>
+<p>See <a href="https://qmacro.org/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/">The beauty of recursion and list machinery</a> for why - in particular, a slight obsession about <code>x:xs</code>, first and rest, head and tail, and so on.</p>
+<p>But I digress.</p>
+<p>The second element in the constructed array, i.e. <code>(map(.Subtotal) | add | floor)</code>, is the same as before, except that it's now surrounded in parentheses to ensure the whole thing is evaluated in one go (specifically, so that it's only the <code>map(.Subtotal)</code> that gets passed through those pipes to <code>add</code> and <code>floor</code>, and not anything else).</p>
+<p>So this is where we've ended up:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token punctuation">\</span>
+  <span class="token string">'.value
+  | group_by(.ShippedDate[:4])
+  | map([
+      first.ShippedDate[:4],
+      (map(.Subtotal) | add | floor)
+    ])'</span> <span class="token punctuation">\</span>
+  subset.json</code></pre>
+<p>Running this produces the desired result:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">[</span>
+    <span class="token string">"1996"</span><span class="token punctuation">,</span>
+    <span class="token number">2303</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token string">"1997"</span><span class="token punctuation">,</span>
+    <span class="token number">2753</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span>
+    <span class="token string">"1998"</span><span class="token punctuation">,</span>
+    <span class="token number">568</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">]</span></code></pre>
+<p>Very nice!</p>
+<p>▶ You can see how this result is achieved in this jqplay snippet: <a href="https://jqplay.org/s/TRVd7ttVjmc">Producing the 'array' style final result</a>.</p>
+<h3 id="an-alternative-result-structure">An alternative result structure</h3>
+<p>As alternative way of representing the totals by year, and knowing that the year values are stable enough to be property names in objects, we could instead go for something like this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"1996"</span><span class="token operator">:</span> <span class="token number">2303</span><span class="token punctuation">,</span>
+  <span class="token property">"1997"</span><span class="token operator">:</span> <span class="token number">2753</span><span class="token punctuation">,</span>
+  <span class="token property">"1998"</span><span class="token operator">:</span> <span class="token number">568</span>
+<span class="token punctuation">}</span></code></pre>
+<p>To get this, it's not much of a departure from what we previously ended up with. First, instead of using array construction (<code>[...]</code>) we can use <a href="https://stedolan.github.io/jq/manual/#Objectconstruction:%5B%5D">object construction</a>. As expected, we need to specify the property name and value, in this form:</p>
+<pre><code>property: value
+</code></pre>
+<p>Let's make that change, noting that because the expression for the property (the key) is not &quot;identifier-like&quot;, i.e. it's an expression to be evaluated, we need to enclose it in parentheses like this: <code>(first.ShippedDate[:4])</code>. Here we go:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token punctuation">\</span>
+  <span class="token string">'.value
+  | group_by(.ShippedDate[:4])
+  | map({
+      (first.ShippedDate[:4]): map(.Subtotal)|add|floor
+    })'</span> <span class="token punctuation">\</span>
+  subset.json</code></pre>
+<p>This produces almost but not quite what we want:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token string">"1996"</span><span class="token builtin class-name">:</span> <span class="token number">2303</span>
+  <span class="token punctuation">}</span>,
+  <span class="token punctuation">{</span>
+    <span class="token string">"1997"</span><span class="token builtin class-name">:</span> <span class="token number">2753</span>
+  <span class="token punctuation">}</span>,
+  <span class="token punctuation">{</span>
+    <span class="token string">"1998"</span><span class="token builtin class-name">:</span> <span class="token number">568</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>But that's OK, because the more you get the feel for how <code>jq</code> behaves, the more you'll likely guess that there'll be a simple way to merge these objects. And there is - the versatile <a href="https://stedolan.github.io/jq/manual/#add">add</a> filter. We've used <code>add</code> already to sum up an array of numeric values (the subtotals) but &quot;adding&quot; an array of objects together merges them.</p>
+<p>So let's pipe the output of the <code>map({...})</code> into add:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token punctuation">\</span>
+  <span class="token string">'.value
+  | group_by(.ShippedDate[:4])
+  | map({
+      (first.ShippedDate[:4]): map(.Subtotal)|add|floor
+    }) | add'</span> <span class="token punctuation">\</span>
+  subset.json</code></pre>
+<p>This merges the three year:total pairs from the three objects into a single object, and thus gives us what we want:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"1996"</span><span class="token operator">:</span> <span class="token number">2303</span><span class="token punctuation">,</span>
+  <span class="token property">"1997"</span><span class="token operator">:</span> <span class="token number">2753</span><span class="token punctuation">,</span>
+  <span class="token property">"1998"</span><span class="token operator">:</span> <span class="token number">568</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Lovely!</p>
+<p>▶ You can see how this alternative result is achieved in this jqplay snippet: <a href="https://jqplay.org/s/LJzeX3oH64M">Producing the 'array' style final result</a>.</p>
+<h2 id="summing-up">Summing up</h2>
+<p>This turned out (again) to be a slightly longer post than expected, but in writing it, and in manipulating the source data, I've learned more about <code>jq</code>. So that's a result. I hope this helps you too.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2022/05/30/reshaping-data-values-using-jqs-with-entries/">Reshaping data values using jq&#39;s with_entries</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2022/06/23/understanding-jqs-sql-style-operators-join-and-index/">Understanding jq&#39;s SQL style operators JOIN and INDEX</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2022/06/16/summing-and-grouping-values-with-jq/` was built on 2025-09-15T15:58:49.615Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

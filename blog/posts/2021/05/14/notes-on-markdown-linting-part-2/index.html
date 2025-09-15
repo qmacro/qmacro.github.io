@@ -1,7 +1,768 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2021/05/14/notes-on-markdown-linting-part-2/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Notes on Markdown linting - part 2 | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Notes on Markdown linting - part 2"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2021/05/14/notes-on-markdown-linting-part-2/"><meta name="description" content="Notes on Markdown linting - part 2 14 May 2021 | 4 min read More on Markdown linting, this time in the context of GitHub Actions. Yesterday..."><meta property="og:description" content="Notes on Markdown linting - part 2 14 May 2021 | 4 min read More on Markdown linting, this time in the context of GitHub Actions. Yesterday..."><meta name="description" content="Notes on Markdown linting - part 2 14 May 2021 | 4 min read More on Markdown linting, this time in the context of GitHub Actions. Yesterday..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Notes on Markdown linting - part 2</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Notes on Markdown linting - part 2</h1><div class="post__details"><time datetime="2021-05-14">14 May 2021 </time><span>| </span><span>4 min read</span></div></header><main class="post__content"><p><em>More on Markdown linting, this time in the context of GitHub Actions.</em></p><p>Yesterday I <a href="/blog/posts/2021/05/13/notes-on-markdown-linting-part-1/">wrote up some initial notes on my foray into Markdown linting</a>. Today I continue my journey of learning and discovery by attempting to get the Markdown linting working in a GitHub Action workflow, so I can have the checks done on pull requests.</p><p>Beyond creating the workflow definition itself, there are only a few parts to getting Markdown content linted in the context of a pull request:</p><ul><li>getting the content of the pull request, to be able to perform linting upon it</li><li>setting up an association between any linting output messages with the lines of Markdown to which they relate</li><li>installing the <code>markdownlint</code> tool and any custom rule packages</li><li>performing the linting</li></ul><h2>Creating the workflow definition</h2><p>Since being able to quickly look at previous examples of GitHub Actions workflow definitions using my <a href="/blog/posts/2021/04/24/github-actions-workflow-browser/">workflow browser</a>, it was quite easy to create a simple workflow definition. Here's what the start looks like:</p><pre class="language-yaml"><code class="language-yaml"><span class="token key atrule">name</span><span class="token punctuation">:</span> Markdown checks<br><br><span class="token key atrule">on</span><span class="token punctuation">:</span><br>  <span class="token key atrule">pull_request</span><span class="token punctuation">:</span><br>    <span class="token key atrule">branches</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>main<span class="token punctuation">,</span> master<span class="token punctuation">]</span><br><br><span class="token key atrule">jobs</span><span class="token punctuation">:</span><br>  <span class="token key atrule">lint-markdown</span><span class="token punctuation">:</span><br>    <span class="token key atrule">runs-on</span><span class="token punctuation">:</span> ubuntu<span class="token punctuation">-</span><span class="token number">20.04</span><br><br>    <span class="token key atrule">steps</span><span class="token punctuation">:</span><br><br>    <span class="token punctuation">...</span></code></pre><blockquote><p>I've moved from specifying <code>ubuntu-latest</code> to <code>ubuntu-nn.nn</code> for a more stable (or perhaps &quot;predictable&quot;) runner experience.</p></blockquote><p>Nothing exciting in this workflow definition so far; I've included both <code>main</code> and <code>master</code> in the list of branches because I've been testing with an older repository that still has <code>master</code> as the default branch.</p><h2>Getting the pull request content</h2><p>To run <code>markdownlint</code> on the content of the pull request, we need that in the runner workspace, and the usual use of the standard <a href="https://github.com/actions/checkout">actions/checkout</a> action does the job here:</p><pre class="language-yaml"><code class="language-yaml">    <span class="token punctuation">-</span> <span class="token key atrule">uses</span><span class="token punctuation">:</span> actions/checkout@v2</code></pre><h2>Setting up an output association</h2><p>While the whole process will work without this step, it provides an extra level of comfort for those involved in the pull request review.</p><p>The linting is performed in the runner, and the output (from <code>markdownlint</code>) is available in the workflow execution detail:</p><p><img src="/images/2021/05/execution-detail-messages.png" alt="workflow execution detail showing markdown lint output"></p><p>However, there's a small disconnect between the place of change and discussion (the pull request) and this workflow output.</p><p>There's a special, slightly mysterious feature that can help address this disconnection. This is the &quot;matcher&quot; feature, and is mysterious in that it's not particularly prominent in the main <a href="https://docs.github.com/en/actions">GitHub Actions documentation</a> ... although it is explained in the Actions Toolkit documentation, specifically <a href="https://github.com/actions/toolkit/blob/master/docs/commands.md#problem-matchers">in the ::Commands section</a>.</p><p>The general idea is that matchers can be added to a workflow execution. Matchers take the form of configuration that uses a regular expression to pick out parts of output messages and work out which bits are what. In other words, work out which file, line number and column each message applies to, as well as the message code and text.</p><p>This is what a matcher looks like, and it's the one I'm using to match the <code>markdownlint</code> output:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"problemMatcher"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"owner"</span><span class="token operator">:</span> <span class="token string">"markdownlint"</span><span class="token punctuation">,</span><br>      <span class="token property">"pattern"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>        <span class="token punctuation">{</span><br>          <span class="token property">"regexp"</span><span class="token operator">:</span> <span class="token string">"^([^:]*):(\\d+):?(\\d+)?\\s([\\w-\\/]*)\\s(.*)$"</span><span class="token punctuation">,</span><br>          <span class="token property">"file"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span><br>          <span class="token property">"line"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span><br>          <span class="token property">"column"</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span><br>          <span class="token property">"code"</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span><br>          <span class="token property">"message"</span><span class="token operator">:</span> <span class="token number">5</span><br>        <span class="token punctuation">}</span><br>      <span class="token punctuation">]</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span><br><span class="token punctuation">}</span></code></pre><blockquote><p>The regular expression actually appears slightly more complex than it is, because the backslashes that are used to introduce the metacharacters <code>\d</code> (digit), <code>\s</code> (whitespace) and <code>\w</code> (alphanumeric) are escaped with backslashes in the JSON string value (so e.g. <code>\d</code> becomes <code>\\d</code>). This is so they don't get interpreted as escape characters themselves.</p></blockquote><p>If we stare at the output earlier, we see this:</p><pre class="language-text"><code class="language-text">docs/b.md:5 MD022/blanks-around-headings/blanks-around-headers Headings should be surrounded by blank lines [Expected: 1; Actual: 0; Below] [Context: "### Something Else"]<br>docs/b.md:6 MD032/blanks-around-lists Lists should be surrounded by blank lines [Context: "- one"]<br>docs/b.md:10:10 MD011/no-reversed-links Reversed link syntax [(reversed)[]]</code></pre><p>Applying the regular expression, we can see that it will indeed pick out the values as desired. Taking the last message line as an example, we get:</p><table><thead><tr><th>Regular expression part</th><th>Matched text</th><th>Value for</th></tr></thead><tbody><tr><td><code>^</code></td><td>(start of line)</td><td></td></tr><tr><td><code>([^:]*)</code></td><td><code>docs/b.md</code></td><td><code>file</code></td></tr><tr><td><code>:</code></td><td><code>:</code></td><td></td></tr><tr><td><code>(\d+)</code></td><td><code>10</code></td><td><code>line</code></td></tr><tr><td><code>:?</code></td><td><code>:</code></td><td></td></tr><tr><td><code>(\d+)?</code></td><td><code>10</code></td><td><code>column</code></td></tr><tr><td><code>\s</code></td><td>(a space)</td><td></td></tr><tr><td><code>([\w-\/]*)</code></td><td><code>MD011/no-reversed-links</code></td><td><code>code</code></td></tr><tr><td><code>\s</code></td><td>(a space)</td><td></td></tr><tr><td><code>(.*)</code></td><td><code>Reversed link syntax [...]</code></td><td><code>message</code></td></tr><tr><td><code>$</code></td><td>(end of line)</td><td></td></tr></tbody></table><blockquote><p>In this table, the escaping backslashes have been removed, as they're only there to make the JSON string happy.</p></blockquote><p>The result of having a matcher like this is that as well as having the messages available in the workflow execution detail, we get the messages in context too, which is far more comfortable. They appear in the workflow execution summary, like this (see the &quot;Annotations&quot; section):</p><p><img src="/images/2021/05/execution-summary-messages.png" alt="workflow execution summary showing markdown lint output"></p><p>Moreover, each message appears directly below the line to which it applies, like this:</p><p><img src="/images/2021/05/messages-in-pr.png" alt="markdown linting messages next to the relevant lines"></p><p>To get this to work, the matcher configuration needs to be added with the <code>add-matcher</code> directive, in a step, like this:</p><pre class="language-yaml"><code class="language-yaml">    <span class="token punctuation">-</span> <span class="token key atrule">run</span><span class="token punctuation">:</span> <span class="token string">"echo ::add-matcher::.qmacro/workflows/markdownlint/problem-matcher.json"</span></code></pre><p>There is actually a GitHub Action, <a href="https://github.com/xt0rted/markdownlint-problem-matcher">xt0rted/markdownlint-problem-matcher</a> that does this for you, but I'm still in two minds as to whether to use a &quot;black box&quot; action or something direct for things like this. Only time will tell.</p><h2>Installing the tool and custom rules packages</h2><p>Next, it's time to install the actual <code>markdownlint</code> tool, along with the custom rule package I mentioned in <a href="/blog/posts/2021/05/13/notes-on-markdown-linting-part-1/">part 1</a>. While I installed <code>markdownlint</code> on my macOS machine with <code>brew</code>, it seems fine here to install it with <code>npm</code>, along with the rule too:</p><pre class="language-yaml"><code class="language-yaml">    <span class="token punctuation">-</span> <span class="token key atrule">run</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string"><br>        npm install \<br>          --no-package-lock \<br>          --no-save \<br>          markdownlint-cli markdownlint-rule-titlecase</span></code></pre><p>Using the <code>--no-package-lock</code> and <code>--no-save</code> options makes for a slightly cleaner environment, given what we're doing here (i.e. we are only really interested in NPM metadata for this current job's execution).</p><h2>Performing the linting</h2><p>Now everything is ready, we can run the linter. I am invoking the <code>markdownlint</code> tool, just installed with <code>npm</code>, using the <code>npx</code> package runner as it seems the cleanest way to do it:</p><pre class="language-yaml"><code class="language-yaml">    <span class="token punctuation">-</span> <span class="token key atrule">run</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string"><br>        npx markdownlint \<br>          --config .qmacro/workflows/markdownlint/config.yaml \<br>          --rules markdownlint-rule-titlecase \<br>          docs/</span></code></pre><p>Without configuration, <code>markdownlint</code> will apply <a href="https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md">all the rules</a> by default. I don't want that to happen, so I've used the <code>--config</code> option to point to a rules file <code>.qmacro/workflows/markdownlint/config.yaml</code>. This is what's in that file:</p><pre class="language-yaml"><code class="language-yaml"><span class="token comment"># All rules are inactive by default.</span><br><span class="token key atrule">default</span><span class="token punctuation">:</span> <span class="token boolean important">false</span><br><br><span class="token comment"># These specific rules are active.</span><br><span class="token comment"># See https://github.com/DavidAnson/markdownlint#rules--aliases for details.</span><br><span class="token key atrule">heading-increment</span><span class="token punctuation">:</span> <span class="token boolean important">true</span><br><span class="token key atrule">no-reversed-links</span><span class="token punctuation">:</span> <span class="token boolean important">true</span><br><span class="token key atrule">no-missing-space-atx</span><span class="token punctuation">:</span> <span class="token boolean important">true</span><br><span class="token key atrule">no-multiple-space-atx</span><span class="token punctuation">:</span> <span class="token boolean important">true</span><br><span class="token key atrule">blanks-around-headings</span><span class="token punctuation">:</span> <span class="token boolean important">true</span><br><span class="token key atrule">blanks-around-lists</span><span class="token punctuation">:</span> <span class="token boolean important">true</span><br><span class="token key atrule">no-alt-text</span><span class="token punctuation">:</span> <span class="token boolean important">true</span></code></pre><p>In other words, with this configuration, only those rules in that second stanza will be applied. Plus of course the explicit NPM package based title-case rule I've specified with the <code>--rules</code> option.</p><blockquote><p>I've been <a href="https://github.community/t/best-practices-for-storing-organising-shell-scripts-for-workflow-steps/176822">thinking about</a> where to store workflow related artifacts in a repository. I don't want to use <code>.github/workflows</code> for anything other than actual workflow definition files. So right now, I'm thinking along the lines of a hidden user/organisation based directory name -- <code>.qmacro</code> in this example -- to parallel <code>.github</code>.</p></blockquote><p>The final thing to note in this invocation is that I'm passing a specific directory to be linted: <code>docs/</code>. This means only content there will be linted. I will probably want some sort of <code>.markdownlintignore</code> file at some stage, but for now this will do.</p><h2>Wrapping up</h2><p>Here's the workflow definition in its entirety:</p><pre class="language-yaml"><code class="language-yaml"><span class="token key atrule">name</span><span class="token punctuation">:</span> Markdown checks<br><br><span class="token key atrule">on</span><span class="token punctuation">:</span><br>  <span class="token key atrule">pull_request</span><span class="token punctuation">:</span><br>    <span class="token key atrule">branches</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>main<span class="token punctuation">,</span> master<span class="token punctuation">]</span><br><br><span class="token key atrule">jobs</span><span class="token punctuation">:</span><br>  <span class="token key atrule">main</span><span class="token punctuation">:</span><br>    <span class="token key atrule">runs-on</span><span class="token punctuation">:</span> ubuntu<span class="token punctuation">-</span><span class="token number">20.04</span><br>    <span class="token key atrule">steps</span><span class="token punctuation">:</span><br><br>    <span class="token punctuation">-</span> <span class="token key atrule">uses</span><span class="token punctuation">:</span> actions/checkout@v2<br><br>    <span class="token punctuation">-</span> <span class="token key atrule">run</span><span class="token punctuation">:</span> <span class="token string">"echo ::add-matcher::.qmacro/workflows/markdownlint/problem-matcher.json"</span><br><br>    <span class="token punctuation">-</span> <span class="token key atrule">run</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string"><br>        npm install \<br>          --no-package-lock \<br>          --no-save \<br>          markdownlint-cli markdownlint-rule-titlecase</span><br><br>    <span class="token punctuation">-</span> <span class="token key atrule">run</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string"><br>        npx markdownlint \<br>          --config .qmacro/workflows/markdownlint/config.yaml \<br>          --rules markdownlint-rule-titlecase \<br>          docs/</span></code></pre><p>Everything works nicely, and I'm happy with the local and remote linting process.</p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/markdown/">#markdown</a> <a href="/tags/linting/">#linting</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2021/05/19/supporting-developers-with-sponsorship/"><span>←</span> <span>Supporting developers with sponsorship</span> </a><a href="/blog/posts/2021/05/13/notes-on-markdown-linting-part-1/"><span>Notes on Markdown linting - part 1</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="notes-on-markdown-linting-part-2">Notes on Markdown linting - part 2</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2021-05-14">14 May 2021</time></li>
+	<li><a href="/tags/markdown/" class="post-tag">markdown</a>, </li>
+	<li><a href="/tags/linting/" class="post-tag">linting</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p><em>More on Markdown linting, this time in the context of GitHub Actions.</em></p>
+<p>Yesterday I <a href="/blog/posts/2021/05/13/notes-on-markdown-linting-part-1/">wrote up some initial notes on my foray into Markdown linting</a>. Today I continue my journey of learning and discovery by attempting to get the Markdown linting working in a GitHub Action workflow, so I can have the checks done on pull requests.</p>
+<p>Beyond creating the workflow definition itself, there are only a few parts to getting Markdown content linted in the context of a pull request:</p>
+<ul>
+<li>getting the content of the pull request, to be able to perform linting upon it</li>
+<li>setting up an association between any linting output messages with the lines of Markdown to which they relate</li>
+<li>installing the <code>markdownlint</code> tool and any custom rule packages</li>
+<li>performing the linting</li>
+</ul>
+<h2 id="creating-the-workflow-definition">Creating the workflow definition</h2>
+<p>Since being able to quickly look at previous examples of GitHub Actions workflow definitions using my <a href="/blog/posts/2021/04/24/github-actions-workflow-browser/">workflow browser</a>, it was quite easy to create a simple workflow definition. Here's what the start looks like:</p>
+<pre class="language-yaml" tabindex="0"><code class="language-yaml"><span class="token key atrule">name</span><span class="token punctuation">:</span> Markdown checks
+
+<span class="token key atrule">on</span><span class="token punctuation">:</span>
+  <span class="token key atrule">pull_request</span><span class="token punctuation">:</span>
+    <span class="token key atrule">branches</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>main<span class="token punctuation">,</span> master<span class="token punctuation">]</span>
+
+<span class="token key atrule">jobs</span><span class="token punctuation">:</span>
+  <span class="token key atrule">lint-markdown</span><span class="token punctuation">:</span>
+    <span class="token key atrule">runs-on</span><span class="token punctuation">:</span> ubuntu<span class="token punctuation">-</span><span class="token number">20.04</span>
+
+    <span class="token key atrule">steps</span><span class="token punctuation">:</span>
+
+    <span class="token punctuation">...</span></code></pre>
+<blockquote>
+<p>I've moved from specifying <code>ubuntu-latest</code> to <code>ubuntu-nn.nn</code> for a more stable (or perhaps &quot;predictable&quot;) runner experience.</p>
+</blockquote>
+<p>Nothing exciting in this workflow definition so far; I've included both <code>main</code> and <code>master</code> in the list of branches because I've been testing with an older repository that still has <code>master</code> as the default branch.</p>
+<h2 id="getting-the-pull-request-content">Getting the pull request content</h2>
+<p>To run <code>markdownlint</code> on the content of the pull request, we need that in the runner workspace, and the usual use of the standard <a href="https://github.com/actions/checkout">actions/checkout</a> action does the job here:</p>
+<pre class="language-yaml" tabindex="0"><code class="language-yaml">    <span class="token punctuation">-</span> <span class="token key atrule">uses</span><span class="token punctuation">:</span> actions/checkout@v2</code></pre>
+<h2 id="setting-up-an-output-association">Setting up an output association</h2>
+<p>While the whole process will work without this step, it provides an extra level of comfort for those involved in the pull request review.</p>
+<p>The linting is performed in the runner, and the output (from <code>markdownlint</code>) is available in the workflow execution detail:</p>
+<p><img src="/images/2021/05/execution-detail-messages.png" alt="workflow execution detail showing markdown lint output"></p>
+<p>However, there's a small disconnect between the place of change and discussion (the pull request) and this workflow output.</p>
+<p>There's a special, slightly mysterious feature that can help address this disconnection. This is the &quot;matcher&quot; feature, and is mysterious in that it's not particularly prominent in the main <a href="https://docs.github.com/en/actions">GitHub Actions documentation</a> ... although it is explained in the Actions Toolkit documentation, specifically <a href="https://github.com/actions/toolkit/blob/master/docs/commands.md#problem-matchers">in the ::Commands section</a>.</p>
+<p>The general idea is that matchers can be added to a workflow execution. Matchers take the form of configuration that uses a regular expression to pick out parts of output messages and work out which bits are what. In other words, work out which file, line number and column each message applies to, as well as the message code and text.</p>
+<p>This is what a matcher looks like, and it's the one I'm using to match the <code>markdownlint</code> output:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"problemMatcher"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"owner"</span><span class="token operator">:</span> <span class="token string">"markdownlint"</span><span class="token punctuation">,</span>
+      <span class="token property">"pattern"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span>
+          <span class="token property">"regexp"</span><span class="token operator">:</span> <span class="token string">"^([^:]*):(\\d+):?(\\d+)?\\s([\\w-\\/]*)\\s(.*)$"</span><span class="token punctuation">,</span>
+          <span class="token property">"file"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+          <span class="token property">"line"</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+          <span class="token property">"column"</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+          <span class="token property">"code"</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
+          <span class="token property">"message"</span><span class="token operator">:</span> <span class="token number">5</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<blockquote>
+<p>The regular expression actually appears slightly more complex than it is, because the backslashes that are used to introduce the metacharacters <code>\d</code> (digit), <code>\s</code> (whitespace) and <code>\w</code> (alphanumeric) are escaped with backslashes in the JSON string value (so e.g. <code>\d</code> becomes <code>\\d</code>). This is so they don't get interpreted as escape characters themselves.</p>
+</blockquote>
+<p>If we stare at the output earlier, we see this:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">docs/b.md:5 MD022/blanks-around-headings/blanks-around-headers Headings should be surrounded by blank lines [Expected: 1; Actual: 0; Below] [Context: "### Something Else"]
+docs/b.md:6 MD032/blanks-around-lists Lists should be surrounded by blank lines [Context: "- one"]
+docs/b.md:10:10 MD011/no-reversed-links Reversed link syntax [(reversed)[]]</code></pre>
+<p>Applying the regular expression, we can see that it will indeed pick out the values as desired. Taking the last message line as an example, we get:</p>
+<table>
+<thead>
+<tr>
+<th>Regular expression part</th>
+<th>Matched text</th>
+<th>Value for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>^</code></td>
+<td>(start of line)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>([^:]*)</code></td>
+<td><code>docs/b.md</code></td>
+<td><code>file</code></td>
+</tr>
+<tr>
+<td><code>:</code></td>
+<td><code>:</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>(\d+)</code></td>
+<td><code>10</code></td>
+<td><code>line</code></td>
+</tr>
+<tr>
+<td><code>:?</code></td>
+<td><code>:</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>(\d+)?</code></td>
+<td><code>10</code></td>
+<td><code>column</code></td>
+</tr>
+<tr>
+<td><code>\s</code></td>
+<td>(a space)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>([\w-\/]*)</code></td>
+<td><code>MD011/no-reversed-links</code></td>
+<td><code>code</code></td>
+</tr>
+<tr>
+<td><code>\s</code></td>
+<td>(a space)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>(.*)</code></td>
+<td><code>Reversed link syntax [...]</code></td>
+<td><code>message</code></td>
+</tr>
+<tr>
+<td><code>$</code></td>
+<td>(end of line)</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>In this table, the escaping backslashes have been removed, as they're only there to make the JSON string happy.</p>
+</blockquote>
+<p>The result of having a matcher like this is that as well as having the messages available in the workflow execution detail, we get the messages in context too, which is far more comfortable. They appear in the workflow execution summary, like this (see the &quot;Annotations&quot; section):</p>
+<p><img src="/images/2021/05/execution-summary-messages.png" alt="workflow execution summary showing markdown lint output"></p>
+<p>Moreover, each message appears directly below the line to which it applies, like this:</p>
+<p><img src="/images/2021/05/messages-in-pr.png" alt="markdown linting messages next to the relevant lines"></p>
+<p>To get this to work, the matcher configuration needs to be added with the <code>add-matcher</code> directive, in a step, like this:</p>
+<pre class="language-yaml" tabindex="0"><code class="language-yaml">    <span class="token punctuation">-</span> <span class="token key atrule">run</span><span class="token punctuation">:</span> <span class="token string">"echo ::add-matcher::.qmacro/workflows/markdownlint/problem-matcher.json"</span></code></pre>
+<p>There is actually a GitHub Action, <a href="https://github.com/xt0rted/markdownlint-problem-matcher">xt0rted/markdownlint-problem-matcher</a> that does this for you, but I'm still in two minds as to whether to use a &quot;black box&quot; action or something direct for things like this. Only time will tell.</p>
+<h2 id="installing-the-tool-and-custom-rules-packages">Installing the tool and custom rules packages</h2>
+<p>Next, it's time to install the actual <code>markdownlint</code> tool, along with the custom rule package I mentioned in <a href="/blog/posts/2021/05/13/notes-on-markdown-linting-part-1/">part 1</a>. While I installed <code>markdownlint</code> on my macOS machine with <code>brew</code>, it seems fine here to install it with <code>npm</code>, along with the rule too:</p>
+<pre class="language-yaml" tabindex="0"><code class="language-yaml">    <span class="token punctuation">-</span> <span class="token key atrule">run</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+        npm install \
+          --no-package-lock \
+          --no-save \
+          markdownlint-cli markdownlint-rule-titlecase</span></code></pre>
+<p>Using the <code>--no-package-lock</code> and <code>--no-save</code> options makes for a slightly cleaner environment, given what we're doing here (i.e. we are only really interested in NPM metadata for this current job's execution).</p>
+<h2 id="performing-the-linting">Performing the linting</h2>
+<p>Now everything is ready, we can run the linter. I am invoking the <code>markdownlint</code> tool, just installed with <code>npm</code>, using the <code>npx</code> package runner as it seems the cleanest way to do it:</p>
+<pre class="language-yaml" tabindex="0"><code class="language-yaml">    <span class="token punctuation">-</span> <span class="token key atrule">run</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+        npx markdownlint \
+          --config .qmacro/workflows/markdownlint/config.yaml \
+          --rules markdownlint-rule-titlecase \
+          docs/</span></code></pre>
+<p>Without configuration, <code>markdownlint</code> will apply <a href="https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md">all the rules</a> by default. I don't want that to happen, so I've used the <code>--config</code> option to point to a rules file <code>.qmacro/workflows/markdownlint/config.yaml</code>. This is what's in that file:</p>
+<pre class="language-yaml" tabindex="0"><code class="language-yaml"><span class="token comment"># All rules are inactive by default.</span>
+<span class="token key atrule">default</span><span class="token punctuation">:</span> <span class="token boolean important">false</span>
+
+<span class="token comment"># These specific rules are active.</span>
+<span class="token comment"># See https://github.com/DavidAnson/markdownlint#rules--aliases for details.</span>
+<span class="token key atrule">heading-increment</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+<span class="token key atrule">no-reversed-links</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+<span class="token key atrule">no-missing-space-atx</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+<span class="token key atrule">no-multiple-space-atx</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+<span class="token key atrule">blanks-around-headings</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+<span class="token key atrule">blanks-around-lists</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+<span class="token key atrule">no-alt-text</span><span class="token punctuation">:</span> <span class="token boolean important">true</span></code></pre>
+<p>In other words, with this configuration, only those rules in that second stanza will be applied. Plus of course the explicit NPM package based title-case rule I've specified with the <code>--rules</code> option.</p>
+<blockquote>
+<p>I've been <a href="https://github.community/t/best-practices-for-storing-organising-shell-scripts-for-workflow-steps/176822">thinking about</a> where to store workflow related artifacts in a repository. I don't want to use <code>.github/workflows</code> for anything other than actual workflow definition files. So right now, I'm thinking along the lines of a hidden user/organisation based directory name -- <code>.qmacro</code> in this example -- to parallel <code>.github</code>.</p>
+</blockquote>
+<p>The final thing to note in this invocation is that I'm passing a specific directory to be linted: <code>docs/</code>. This means only content there will be linted. I will probably want some sort of <code>.markdownlintignore</code> file at some stage, but for now this will do.</p>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>Here's the workflow definition in its entirety:</p>
+<pre class="language-yaml" tabindex="0"><code class="language-yaml"><span class="token key atrule">name</span><span class="token punctuation">:</span> Markdown checks
+
+<span class="token key atrule">on</span><span class="token punctuation">:</span>
+  <span class="token key atrule">pull_request</span><span class="token punctuation">:</span>
+    <span class="token key atrule">branches</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>main<span class="token punctuation">,</span> master<span class="token punctuation">]</span>
+
+<span class="token key atrule">jobs</span><span class="token punctuation">:</span>
+  <span class="token key atrule">main</span><span class="token punctuation">:</span>
+    <span class="token key atrule">runs-on</span><span class="token punctuation">:</span> ubuntu<span class="token punctuation">-</span><span class="token number">20.04</span>
+    <span class="token key atrule">steps</span><span class="token punctuation">:</span>
+
+    <span class="token punctuation">-</span> <span class="token key atrule">uses</span><span class="token punctuation">:</span> actions/checkout@v2
+
+    <span class="token punctuation">-</span> <span class="token key atrule">run</span><span class="token punctuation">:</span> <span class="token string">"echo ::add-matcher::.qmacro/workflows/markdownlint/problem-matcher.json"</span>
+
+    <span class="token punctuation">-</span> <span class="token key atrule">run</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+        npm install \
+          --no-package-lock \
+          --no-save \
+          markdownlint-cli markdownlint-rule-titlecase</span>
+
+    <span class="token punctuation">-</span> <span class="token key atrule">run</span><span class="token punctuation">:</span> <span class="token punctuation">|</span><span class="token scalar string">
+        npx markdownlint \
+          --config .qmacro/workflows/markdownlint/config.yaml \
+          --rules markdownlint-rule-titlecase \
+          docs/</span></code></pre>
+<p>Everything works nicely, and I'm happy with the local and remote linting process.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2021/05/13/notes-on-markdown-linting-part-1/">Notes on Markdown linting - part 1</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2021/05/19/supporting-developers-with-sponsorship/">Supporting developers with sponsorship</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2021/05/14/notes-on-markdown-linting-part-2/` was built on 2025-09-15T15:58:49.610Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

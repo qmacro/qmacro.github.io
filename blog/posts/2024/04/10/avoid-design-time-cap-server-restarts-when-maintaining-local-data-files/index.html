@@ -1,7 +1,654 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2024/04/10/avoid-design-time-cap-server-restarts-when-maintaining-local-data-files/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Avoid design time CAP server restarts when maintaining local data files | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Avoid design time CAP server restarts when maintaining local data files"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2024/04/10/avoid-design-time-cap-server-restarts-when-maintaining-local-data-files/"><meta name="description" content="Avoid design time CAP server restarts when maintaining local data files 10 Apr 2024 | 2 min read Starting the CAP server with cds watch is..."><meta property="og:description" content="Avoid design time CAP server restarts when maintaining local data files 10 Apr 2024 | 2 min read Starting the CAP server with cds watch is..."><meta name="description" content="Avoid design time CAP server restarts when maintaining local data files 10 Apr 2024 | 2 min read Starting the CAP server with cds watch is..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Avoid design time CAP server restarts when maintaining local data files</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Avoid design time CAP server restarts when maintaining local data files</h1><div class="post__details"><time datetime="2024-04-10">10 Apr 2024 </time><span>| </span><span>2 min read</span></div></header><main class="post__content"><p>Starting the CAP server with <code>cds watch</code> is great for tight development loops at design time, especially with the built-in in-memory SQLite persistence layer, seeded by data in CSV files. When the server notices files have changed, it automatically restarts, which is great.</p><p>But sometimes you want to maintain files and <em>not</em> have the server restart, perhaps because you have made modifications or additions to the data set that's being served, and don't want to lose that by such a restart.</p><p>Here's a quick hack to achieve that.</p><h2>Behind the scenes</h2><p>If you set the <a href="https://cap.cloud.sap/docs/node.js/cds-log#debug-env-variable">DEBUG environment variable</a> appropriately when running <code>cds watch</code>, like this:</p><pre class="language-shell"><code class="language-shell"><span class="token assign-left variable">DEBUG</span><span class="token operator">=</span>cli cds <span class="token function">watch</span></code></pre><p>then you see a little bit more of what's going on behind the scenes:</p><pre class="language-text"><code class="language-text">[cds] - @sap/cds 7.6.3 loaded: /usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds<br>[cds] - Command resolved: /usr/lib/node_modules/@sap/cds-dk/bin/watch.js<br>[cli] - live reload available at http://127.0.0.1:35729/livereload.js?snipver=1<br><br>cds serve all --with-mocks --in-memory?<br>9734 watching: cds,csn,csv,ts,mjs,cjs,js,json,properties,edmx,xml,env ...<br>ignoring: (node_modules|_out|@types|@cds-models)\/|app(\/.+)?\/((webapp|dist|target)\/|tsconfig\.json$|.*\.tsbuildinfo$)<br>live reload enabled for browsers<br>[cli] - livereload ignored: .vscode<br><br>...<br><br>[cds] - @sap/cds 7.6.3 loaded: /usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds<br>[cds] - Command resolved: /usr/lib/node_modules/@sap/cds-dk/bin/serve.js<br>[cds] - loaded model from 2 file(s):<br><br>  srv/cat-service.cds<br>  db/data-model.cds<br><br>[cds] - connect using bindings from: { registry: '~/.cds-services.json' }<br>[cds] - connect to db > sqlite { database: ':memory:' }<br>  > init from db/data/my.bookshop-Books.csv<br>/> successfully deployed to in-memory database.<br><br>[cds] - using auth strategy {<br>  kind: 'mocked',<br>  impl: '../../usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds/lib/auth/basic-auth'<br>}<br><br>[cds] - serving CatalogService { path: '/odata/v4/catalog' }<br><br>[cds] - server listening on { url: 'http://localhost:4004' }<br>[cds] - launched at 4/10/2024, 8:55:34 AM, version: 7.6.3, in: 736.516ms<br>[cds] - [ terminate with ^C ]<br><br>[cli] - live reload for . 0 ws clients</code></pre><blockquote><p>It's the &quot;ignored&quot; lines that we're interested in, rather than any containing &quot;livereload&quot;, which is related, but <a href="https://cap.cloud.sap/docs/releases/archive/2021/mar21#live-reload-with-cds-watch">separate</a>.</p></blockquote><p>It's these two log lines that are interesting here:</p><pre class="language-text"><code class="language-text">9734 watching: cds,csn,csv,ts,mjs,cjs,js,json,properties,edmx,xml,env ...<br>ignoring: (node_modules|_out|@types|@cds-models)\/|app(\/.+)?\/((webapp|dist|target)\/|tsconfig\.json$|.*\.tsbuildinfo$)</code></pre><p>The CAP server uses <a href="https://github.com/yuanchuan/node-watch">node-watch</a> behind the scenes providing the watch-and-restart mechanism. And it has a default regular expression, which we can see here, to describe file and directory name patterns that this mechanism should ignore.</p><h2>Normal behaviour</h2><p>Sometimes when marshalling data for an OData CREATE operation, for example, I'll use a file to store the JSON payload for such an operation. If I were to create or maintain the contents of a file called <code>data.json</code> in the project root, for example, like this:</p><pre class="language-shell"><code class="language-shell"><span class="token function">touch</span> data.json</code></pre><p>then the CAP server would be restarted:</p><pre class="language-text"><code class="language-text">[cli] - Restart { events: [ { type: 'update', name: '/tmp/watchme/data.json' } ] }<br>[cli] - ⚡️ SIGTERM 15 received by cds serve<br>[cli] - ⚡️ cds serve - cds.shutdown<br>[cli] - ⚡️ cds serve - server.close(d)<br>[cli] - ⚡️ cds serve - process.beforeExit<br>[cli] - ⚡️ cds serve - process.exit<br>[cli] - ⚡️ cds watch - child exited 9745<br><br>        ___________________________<br><br>[cds] - @sap/cds 7.6.3 loaded: /usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds<br>[cds] - Command resolved: /usr/lib/node_modules/@sap/cds-dk/bin/serve.js<br><br>...<br><br>[cds] - serving CatalogService { path: '/odata/v4/catalog' }<br><br>[cds] - server listening on { url: 'http://localhost:4004' }<br>[cli] - live reload for /tmp/watchme/data.json. 0 ws clients<br>[cds] - launched at 4/10/2024, 8:58:31 AM, version: 7.6.3, in: 732.947ms<br>[cds] - [ terminate with ^C ]</code></pre><p>This would mean that the state of the in-memory data set served by my services would be lost and reset to the original CSV data file based state through the normal restart process.</p><h2>Avoiding normal behaviour</h2><p>If I wanted to avoid that happening, I could create a directory whose name was matched by the &quot;ignore&quot; regular expression. For example, If I could create a directory called <code>_out/</code> in the project root:</p><pre class="language-shell"><code class="language-shell"><span class="token function">mkdir</span> _out/</code></pre><p>And then any creation or maintenance of files in that directory:</p><pre class="language-shell"><code class="language-shell"><span class="token function">touch</span> _out/data.json</code></pre><p>would <em>not</em> result in the server being restarted:</p><pre class="language-text"><code class="language-text">[cli] - ignored: _out<br>[cli] - livereload ignored: _out<br>[cli] - ignored: _out<br>[cli] - ignored: _out/data.json</code></pre><p>Good to know!</p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/cap/">#cap</a> <a href="/tags/node-watch/">#node-watch</a> <a href="/tags/good-to-know/">#good-to-know</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2024/04/11/improve-your-cap-dev-container-shell-prompt/"><span>←</span> <span>Improve your CAP dev container shell prompt</span> </a><a href="/blog/posts/2024/04/05/cap-cds-cdl-csn-and-jq-finding-associations/"><span>CAP, CDS, CDL, CSN and jq - finding associations</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="avoid-design-time-cap-server-restarts-when-maintaining-local-data-files">Avoid design time CAP server restarts when maintaining local data files</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2024-04-10">10 April 2024</time></li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/node-watch/" class="post-tag">node-watch</a>, </li>
+	<li><a href="/tags/good-to-know/" class="post-tag">good-to-know</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>Starting the CAP server with <code>cds watch</code> is great for tight development loops at design time, especially with the built-in in-memory SQLite persistence layer, seeded by data in CSV files. When the server notices files have changed, it automatically restarts, which is great.</p>
+<p>But sometimes you want to maintain files and <em>not</em> have the server restart, perhaps because you have made modifications or additions to the data set that's being served, and don't want to lose that by such a restart.</p>
+<p>Here's a quick hack to achieve that.</p>
+<h2 id="behind-the-scenes">Behind the scenes</h2>
+<p>If you set the <a href="https://cap.cloud.sap/docs/node.js/cds-log#debug-env-variable">DEBUG environment variable</a> appropriately when running <code>cds watch</code>, like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token assign-left variable">DEBUG</span><span class="token operator">=</span>cli cds <span class="token function">watch</span></code></pre>
+<p>then you see a little bit more of what's going on behind the scenes:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">[cds] - @sap/cds 7.6.3 loaded: /usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds
+[cds] - Command resolved: /usr/lib/node_modules/@sap/cds-dk/bin/watch.js
+[cli] - live reload available at http://127.0.0.1:35729/livereload.js?snipver=1
+
+cds serve all --with-mocks --in-memory?
+9734 watching: cds,csn,csv,ts,mjs,cjs,js,json,properties,edmx,xml,env ...
+ignoring: (node_modules|_out|@types|@cds-models)\/|app(\/.+)?\/((webapp|dist|target)\/|tsconfig\.json$|.*\.tsbuildinfo$)
+live reload enabled for browsers
+[cli] - livereload ignored: .vscode
+
+...
+
+[cds] - @sap/cds 7.6.3 loaded: /usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds
+[cds] - Command resolved: /usr/lib/node_modules/@sap/cds-dk/bin/serve.js
+[cds] - loaded model from 2 file(s):
+
+  srv/cat-service.cds
+  db/data-model.cds
+
+[cds] - connect using bindings from: { registry: '~/.cds-services.json' }
+[cds] - connect to db > sqlite { database: ':memory:' }
+  > init from db/data/my.bookshop-Books.csv
+/> successfully deployed to in-memory database.
+
+[cds] - using auth strategy {
+  kind: 'mocked',
+  impl: '../../usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds/lib/auth/basic-auth'
+}
+
+[cds] - serving CatalogService { path: '/odata/v4/catalog' }
+
+[cds] - server listening on { url: 'http://localhost:4004' }
+[cds] - launched at 4/10/2024, 8:55:34 AM, version: 7.6.3, in: 736.516ms
+[cds] - [ terminate with ^C ]
+
+[cli] - live reload for . 0 ws clients</code></pre>
+<blockquote>
+<p>It's the &quot;ignored&quot; lines that we're interested in, rather than any containing &quot;livereload&quot;, which is related, but <a href="https://cap.cloud.sap/docs/releases/archive/2021/mar21#live-reload-with-cds-watch">separate</a>.</p>
+</blockquote>
+<p>It's these two log lines that are interesting here:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">9734 watching: cds,csn,csv,ts,mjs,cjs,js,json,properties,edmx,xml,env ...
+ignoring: (node_modules|_out|@types|@cds-models)\/|app(\/.+)?\/((webapp|dist|target)\/|tsconfig\.json$|.*\.tsbuildinfo$)</code></pre>
+<p>The CAP server uses <a href="https://github.com/yuanchuan/node-watch">node-watch</a> behind the scenes providing the watch-and-restart mechanism. And it has a default regular expression, which we can see here, to describe file and directory name patterns that this mechanism should ignore.</p>
+<h2 id="normal-behaviour">Normal behaviour</h2>
+<p>Sometimes when marshalling data for an OData CREATE operation, for example, I'll use a file to store the JSON payload for such an operation. If I were to create or maintain the contents of a file called <code>data.json</code> in the project root, for example, like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">touch</span> data.json</code></pre>
+<p>then the CAP server would be restarted:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">[cli] - Restart { events: [ { type: 'update', name: '/tmp/watchme/data.json' } ] }
+[cli] - ⚡️ SIGTERM 15 received by cds serve
+[cli] - ⚡️ cds serve - cds.shutdown
+[cli] - ⚡️ cds serve - server.close(d)
+[cli] - ⚡️ cds serve - process.beforeExit
+[cli] - ⚡️ cds serve - process.exit
+[cli] - ⚡️ cds watch - child exited 9745
+
+        ___________________________
+
+[cds] - @sap/cds 7.6.3 loaded: /usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds
+[cds] - Command resolved: /usr/lib/node_modules/@sap/cds-dk/bin/serve.js
+
+...
+
+[cds] - serving CatalogService { path: '/odata/v4/catalog' }
+
+[cds] - server listening on { url: 'http://localhost:4004' }
+[cli] - live reload for /tmp/watchme/data.json. 0 ws clients
+[cds] - launched at 4/10/2024, 8:58:31 AM, version: 7.6.3, in: 732.947ms
+[cds] - [ terminate with ^C ]</code></pre>
+<p>This would mean that the state of the in-memory data set served by my services would be lost and reset to the original CSV data file based state through the normal restart process.</p>
+<h2 id="avoiding-normal-behaviour">Avoiding normal behaviour</h2>
+<p>If I wanted to avoid that happening, I could create a directory whose name was matched by the &quot;ignore&quot; regular expression. For example, If I could create a directory called <code>_out/</code> in the project root:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">mkdir</span> _out/</code></pre>
+<p>And then any creation or maintenance of files in that directory:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">touch</span> _out/data.json</code></pre>
+<p>would <em>not</em> result in the server being restarted:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">[cli] - ignored: _out
+[cli] - livereload ignored: _out
+[cli] - ignored: _out
+[cli] - ignored: _out/data.json</code></pre>
+<p>Good to know!</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2024/04/05/cap-cds-cdl-csn-and-jq-finding-associations/">CAP, CDS, CDL, CSN and jq - finding associations</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2024/04/11/improve-your-cap-dev-container-shell-prompt/">Improve your CAP dev container shell prompt</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2024/04/10/avoid-design-time-cap-server-restarts-when-maintaining-local-data-files/` was built on 2025-09-15T15:58:49.622Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

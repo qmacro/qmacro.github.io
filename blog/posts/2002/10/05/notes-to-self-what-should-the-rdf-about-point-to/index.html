@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Notes to self: What should the rdf:about point to?</title>
+		<meta name="description" content="If nothing else, RSS 1.0 is a great source of contemplation and wondering. This morning, I’ve been considering the thoughts surrounding the rdf:about attribute in the channel element.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="notes-to-self-what-should-the-rdf-about-point-to">Notes to self: What should the rdf:about point to?</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2002-10-05">05 October 2002</time></li>
+	<li><a href="/tags/rdf/" class="post-tag">rdf</a>, </li>
+	<li><a href="/tags/rss-tag/" class="post-tag">rss-tag</a></li>
+</ul>
+
+<p class="post-description-main">If nothing else, RSS 1.0 is a great source of contemplation and wondering. This morning, I’ve been considering the thoughts surrounding the rdf:about attribute in the channel element.</p>
+
+<p>This is what the channel element looks like:</p>
+<pre class="language-xml" tabindex="0"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>channel</span> <span class="token attr-name"><span class="token namespace">rdf:</span>about</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>...<span class="token punctuation">"</span></span><span class="token punctuation">></span></span> ... <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>channel</span><span class="token punctuation">></span></span></code></pre>
+<p>What should the value of the <strong>rdf:about</strong> be? The URI of the RSS file itself or the URI of the document that the RSS is describing? This is not a new question – it’s been debated already, and I’m not trying to dredge up the issues in any particular way now; I just want to get my (seemingly random) thoughts down here (weblogging for me is a great framework in which to marshall my thinking, which I’m trying to make the most of in this period of infrequent connectivity).</p>
+<p>There are some arguments for the value of <strong>rdf:about</strong> to be the URI of HTML document (I’m using HTML examples in this post for simplicity’s sake), and others for it to be the URI of the RSS document itself. Here’s what I’ve been thinking:</p>
+<h3 id="thoughts-against-the-value-being-the-rss-uri">Thoughts against the value being the RSS URI</h3>
+<ul>
+<li>In every case that I’ve seen, the URI for the RSS data and the URI for the HTML are different. There are two separate documents. If the value of <strong>rdf:about</strong> is the RSS URI, what is going to describe the HTML URI?</li>
+<li>There have been arguments put forward that the RSS and the HTML that it described are really just two representations of the same thing. But I thought it was Not Good Practice to identify a single resource (the thing) with two (or more) different URIs? [On the other hand, if RSS was retrieved via content negotiation, we <em>could</em> use a single URI and just state in the HTTP request that we wanted (to <strong>Accept</strong>) the data or the metadata.]</li>
+<li>If RSS ‘is just another representation’ of the HTML, and RSS is RDF, does it follow that all RDF descriptions of single URIs are to be considered as just other representations of said URIs? (This is clearly extreme and provocative)</li>
+</ul>
+<h2 id="thoughts-in-favour-of-the-value-being-the-rss-uri">Thoughts in favour of the value being the RSS URI</h2>
+<ul>
+<li>Some RSS documents exist without any equivalent ‘describee’. For example, RSS feeds of aggregated items related by category are automatically constructed for further consumption. There are no equivalent HTML documents that these RSS documents are describing. So having to specify a URI of the HTML in the <strong>rdf:about</strong> attribute in these cases doesn’t make sense.</li>
+<li>Often HTML pages have content above and beyond the news (or whatever) items being described in the RSS. As the RSS is not describing this other content, stating that the description is about the HTML URI is not entirely accurate, or at least not entirely representative.</li>
+</ul>
+<p>One interesting thing to note concerning the ‘representation’ question, and in relation to the HTML &lt;link rel=”…” … /&gt; construction to</p>
+<ol>
+<li><a href="../../2002/Jun/03#newlinks">point to the RSS feed from a weblog</a> (in collaborative weblog activities earlier this year)</li>
+<li><a href="http://www.w3.org/TR/1999/REC-rdf-syntax-19990222/">point to RDF from HTML in general</a> (in the RDF M&amp;S)</li>
+</ol>
+<p>is that different possible values for the <link>’s <strong>type</strong> attribute show both alternatives: for example the value “alt” suggests an <em>alternative representation</em>, whereas the value “home” suggests a <em>separate resource altogether</em></p>
+<p>Regarding the content negotiation comments, and the HTTP headers that are employed, I am reminded of other thoughts about RDF and resources in general. A question I had (well, still have) is “<em>Where are the statements about the statements?</em>” Yes, I guess I’m talking about reification, but not in the specific technical sense. I’m more interested in this: given a resource, how do I know where the (RDF) statements are that describe it? <a href="http://www.w3.org/TR/1999/REC-rdf-syntax-19990222/#transport">Appendix B “Transporting RDF</a> in the RDF Model and Syntax (M&amp;S) Specification describes four ways of associating descriptions with the resource they describe – “embedded”, “along-with”, “service bureau”, and “wrapped”. I’ve been thinking of the pros and cons of supplying an HTTP header when the resource is retrieved, like this:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">X-RDF: (URI-of-RDF-file)</code></pre>
+<p>Now this isn’t a statement about a statement in the RDF sense, but it sure tells you where the statements about a resource are to be found. Hmmm…</p>
+<p>Anyway, back to what the value of <strong>rdf:about</strong> should be. I think the difficulties and questions arise because of the special relationship between RDF and RSS that I <a href="../../2002/Oct/02#tech/rss/significance">mentioned last time</a>. Perhaps because other (non-RDF) RSS formats exist, the RDF and RSS are seen as separate things, so the RSS is a valid candidate for description (by RDF). This becomes meta meta data – a description of the description. Hmmm. One perverse extrapolation of this (taking the fact that <a href="http://www.purl.org/rss/1.0/" title="RSS (RDF Site Summary)">RSS</a><em>is</em> RDF, and considering <strong>rdf:about</strong>=”URI-of-RSS”) is that all RDF files would be written to describe themselves, and not the actual original resource. Perhaps what I’m trying to say is that this crazy scenario is an argument against having the RSS URI in the <strong>rdf:about</strong>.</p>
+<p>So, what’s the answer?</p>
+<p>I don’t think there is a definitive one, apart from “whatever makes more sense for your particular instance”. I don’t know if this is right or not, but it sure is stimulating.</p>
+<p>One last question to bring this rambling to an end. What’s the semantic difference between specifying the RSS URI for <strong>rdf:about</strong> in an RSS file, and specifying blank (i.e. <strong>rdf:about=””</strong>)? About the same difference as there is between “self reference” and “self reflection”? ;-)</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2002/10/02/a-moment-of-clarity-the-significance-of-rss-1-0-as-an-rdf-application/">A moment of clarity: The significance of RSS 1.0 as an RDF application</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2002/10/14/practical-rdf-book-up-for-public-review/">&#39;Practical RDF&#39; book up for public review</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2002/10/05/notes-to-self-what-should-the-rdf-about-point-to/` was built on 2025-09-15T15:58:49.548Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

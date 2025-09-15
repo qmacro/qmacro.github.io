@@ -1,7 +1,790 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2020/01/29/mini-adventures-with-mtas-and-the-cloud-foundry-cli/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Mini adventures with MTAs and the Cloud Foundry CLI | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Mini adventures with MTAs and the Cloud Foundry CLI"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2020/01/29/mini-adventures-with-mtas-and-the-cloud-foundry-cli/"><meta name="description" content="Mini adventures with MTAs and the Cloud Foundry CLI 29 Jan 2020 | 5 min read A few more small adventures using the cf command line client,..."><meta property="og:description" content="Mini adventures with MTAs and the Cloud Foundry CLI 29 Jan 2020 | 5 min read A few more small adventures using the cf command line client,..."><meta name="description" content="Mini adventures with MTAs and the Cloud Foundry CLI 29 Jan 2020 | 5 min read A few more small adventures using the cf command line client,..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Mini adventures with MTAs and the Cloud Foundry CLI</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Mini adventures with MTAs and the Cloud Foundry CLI</h1><div class="post__details"><time datetime="2020-01-29">29 Jan 2020 </time><span>| </span><span>5 min read</span></div></header><main class="post__content"><p><em>A few more small adventures using the cf command line client, as well as some shell pipeline goodness and that nifty tip from Marius Obert about radically reducing the size of your deployment archive.</em></p><p>Further to my blog post yesterday on <a href="/blog/posts/2020/01/28/scripting-cloud-foundry-activities-in-trial/">scripting Cloud Foundry activities</a> I extended my experiments into using the <code>cf</code> command line interface (CLI) tool to quickly remove the Business Rules Editor app and supporting services.</p><p>Along the way I tweaked a couple of existing command pipelines to display the lists of services and apps on Cloud Foundry (CF), and tried out Marius Obert's <a href="https://twitter.com/IObert_/status/1220321066029142018">great tip</a> on reducing the size of your deployment archive.</p><p><a name="tldr"></a></p><h2>TL;DR</h2><p>If you're like me, and want (in the immortal words of Boycie in the Only Fools And Horses episode &quot;Chain Gang&quot;) to &quot;<a href="https://www.youtube.com/watch?v=WcrsW8CAC5s">let the dog see the rabbit</a>&quot; to see what this is all about, you can watch this little Asciinema recording of what I describe in the rest of this post.</p><p><a href="https://asciinema.org/a/296532"><img src="https://asciinema.org/a/296532.svg" alt=""></a></p><p>Still around and want the nitty-gritty? Read on!</p><h2>The app and supporting services</h2><p>The Business Rules Editor runs in a space in my CF org connected to my SAP Cloud Platform (SCP) trial subaccount. There's the app itself (which is actually just an approuter fronting the actual editor app artifacts) named <code>businessruleseditor_appRouter</code>.</p><p>This app is bound to service instances, thus:</p><ul><li>an instance of the 'business-rules' service called <code>businessrules</code> that I created shortly after re-creating my SCP subaccount and CF org and space</li><li>an instance of the 'xsuaa' service called <code>businessrules_uaa</code></li><li>an instance of the 'html5-apps-repo' service (to serve the actual app artifacts) called <code>businessruleseditor_html5_repo_runtime</code></li></ul><h2>Checking the running app and services</h2><p>At the start, the app is running, along with the bound services. I check this with the <code>cf</code> command line client, combined with a bit of shell pipeline to massage the output. The output from <code>cf</code> is relatively messy and <a href="https://github.com/cloudfoundry/cli/issues/604#issuecomment-562571995">harder than it should be to parse</a> (yes, there's the <code>cf curl</code> approach but that's a sledgehammer solution to a problem that should be addressed with better text-based output), so I have to pass it through some classic Unix command line tools to get what I want.</p><p>For parsing and displaying service information, I have a small shell script <code>service_status</code>, which looks like this:</p><pre class="language-shell"><code class="language-shell">cf s<br><span class="token operator">|</span> <span class="token function">sed</span> <span class="token string">'/^OK$/d'</span><br><span class="token operator">|</span> <span class="token function">awk</span> <span class="token string">'NR>3 { printf "%s ", $1; $1=$2=$3=$NF=""; printf "\n%s\n\n", $0 }'</span><br><span class="token operator">|</span> <span class="token function">awk</span> <span class="token string">'{$1=$1};1'</span></code></pre><p>This runs the 'cf s' command to retrieve the service information. The output from 'cf s' looks like this:</p><pre class="language-shell"><code class="language-shell">Getting services <span class="token keyword">in</span> org I347491trial_qmacrosubdomain / space dev as dj.adams@sap.com<span class="token punctuation">..</span>.<br><br>name                                     <span class="token function">service</span>           plan          bound apps                      last operation     broker                                                       upgrade available<br>businessrules                            business-rules    lite          businessruleseditor_appRouter   create succeeded   sm-businessrules-e73ec4d2-a715-4849-a5e9-77b521e7a086<br>businessrules_uaa                        xsuaa             application   businessruleseditor_appRouter   create succeeded   sm-xsuaa-9ef36350-f975-4194-a399-54db361e79b5<br>businessruleseditor_html5_repo_runtime   html5-apps-repo   app-runtime   businessruleseditor_appRouter   create succeeded   sm-html5-apps-repo-sb-ebcb2b69-24a5-408e-be00-02066b302b78</code></pre><p>You might think that looks quite neat, but don't be deceived - if there are no bound apps, the column is empty, which makes parsing of the output more unpredictable that it should be (why can't something like 'none' be emitted for this column so it has a consistent value?). Moreover, the contents of the column showing the last operation is also unpredictable, in that the value or values can contain spaces, which makes text-based parsing harder than it should be.</p><p>Anyway, before I go on a mini-rant about this, let me explain what I do to reduce this output down to the essentials.</p><p>The second line of the <code>service_status</code> script removes any line that is simply 'OK'. When retrieving the app information (with <code>cf a</code>) you get an 'OK', but when retrieving service information, you don't. Again, unpredictable. So let's just get rid of it anyway.</p><p>The third line uses the venerable <a href="https://en.wikipedia.org/wiki/AWK">awk</a> language to print the first column of the actual output, which is a single value on each line (in this case 'businessrules', 'businessrules_uaa' and 'businessruleseditor_html5_repo_runtime'). With 'NR&gt;3' it skips over the first three lines of output so that only the actual service lines are processed.</p><p>Finally, the last line uses <code>awk</code> again to strip spaces from the start and end of the lines.</p><p>So running this script produces this output:</p><pre class="language-log"><code class="language-log">businessrules<br>businessruleseditor_appRouter create succeeded<br><br>businessrules_uaa<br>businessruleseditor_appRouter create succeeded<br><br>businessruleseditor_html5_repo_runtime<br>businessruleseditor_appRouter create succeeded</code></pre><p>This is much nicer and what I want for a display in my terminal. Note that I take advantage of the poor formatting from the output of <code>cf s</code> by (inadvertently) grabbing the value of the 'bound apps' column if it contains values. This is what the output looks like when the services have just been created but before they've been bound to the <code>businessruleseditor_appRouter</code> app:</p><pre class="language-log"><code class="language-log">businessrules<br>create succeeded<br><br>businessrules_uaa<br>create succeeded<br><br>businessruleseditor_html5_repo_runtime<br>create succeeded</code></pre><p>I have another script to display the apps information, called <code>app_status</code>, which looks very similar:</p><pre class="language-shell"><code class="language-shell">cf a<br><span class="token operator">|</span> <span class="token function">sed</span> <span class="token string">'/^OK$/d'</span><br><span class="token operator">|</span> a<span class="token variable"><span class="token variable">`</span>k <span class="token string">'NR>3 { printf "%s\n%s\n\n", $1, $2 }'</span><br><span class="token operator">|</span> a<span class="token variable">`</span></span>k <span class="token string">'{$1=$1};1'</span></code></pre><p>There's just a bit of difference in the main <code>awk</code> invocation - I simply want to print the first and second columns, on separate lines. Here's what the output looks like when the 'businessruleseditor_appRouter' app is running:</p><pre class="language-log"><code class="language-log">businessruleseditor_appRouter<br>started</code></pre><p>I use the terminal multiplexor app '<a href="https://en.wikipedia.org/wiki/Tmux">tmux</a>' to manage individual windows and panes (sub-windows) in my terminal, and divide up the space to show the output of my <code>service_status</code> and <code>app_status</code> scripts in separate areas. The output is always up-to-date as I drive the execution of these scripts with the excellent '<a href="https://en.wikipedia.org/wiki/Watch_(Unix)">watch</a>' command, which by default will re-execute the specified script every 2 seconds.</p><p>This is what it looks like in action:</p><p><img src="/images/2020/01/Screenshot-2020-01-29-at-10.22.42.png" alt=""></p><h2>Removing the app and supporting services</h2><p>I wanted to remove the running app and the services it was bound directly to, i.e. the <code>businessrules_uaa</code> and <code>businessruleseditor_html5_repo_runtime</code> services. Of course, I could have simply used a combination of the <code>cf delete</code> and <code>cf delete-service</code> commands (<code>cf d</code> and <code>cf ds</code> in short form). But there's a neater way, with '<a href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/fab96a603a004bd992822c83d4b01370.html">cf undeploy</a>'.</p><p>The <code>cf undeploy</code> command requires the MTA ID, which can be retrieved with the 'cf mtas' command, which shows output like this:</p><pre class="language-log"><code class="language-log">Getting multi<span class="token operator">-</span>target apps in org I347491trial_qmacrosubdomain <span class="token operator">/</span> space dev as dj<span class="token punctuation">.</span>adams<span class="token operator">@</span>sap<span class="token punctuation">.</span>com<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><br>OK<br>mta id                version<br>businessruleseditor   <span class="token number">0.0.1</span></code></pre><p>In this case, the ID is <code>businessruleseditor</code>.</p><p>Now I can use the <code>cf undeploy</code>, along with the <code>-delete-services</code> option, to clean out exactly the right parts, in the right order, too. If there's any issue with deleting services, there's a number of times the operation will be retried, too:</p><pre class="language-shell"><code class="language-shell">cf undeploy businessruleseditor -delete-services <span class="token parameter variable">-f</span></code></pre><p>This is what the output looks like:</p><pre class="language-log"><code class="language-log">Undeploying multi<span class="token operator">-</span>target app businessruleseditor in org I347491trial_qmacrosubdomain <span class="token operator">/</span> space dev as dj<span class="token punctuation">.</span>adams<span class="token operator">@</span>sap<span class="token punctuation">.</span>com<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><br>Detected deployed MTA with ID <span class="token string">"businessruleseditor"</span> and version <span class="token string">"0.0.1"</span><br>Deleting routes for application <span class="token string">"businessruleseditor_appRouter"</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><br>Deleting route <span class="token string">"i347491trial-qmacrosubdomain-dev-businessruleseditor-approuter.cfapps.eu10.hana.ondemand.com"</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><br>Stopping application <span class="token string">"businessruleseditor_appRouter"</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><br>Deleting application <span class="token string">"businessruleseditor_appRouter"</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><br>Deleting service <span class="token string">"businessrules_uaa"</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><br>Deleting service <span class="token string">"businessruleseditor_html5_repo_runtime"</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><br><span class="token property">Error deleting services:</span> Error deleting service <span class="token string">"businessruleseditor_html5_repo_runtime"</span> from offering <span class="token string">"html5-apps-repo"</span> and plan <span class="token string">"app-runtime"</span><span class="token operator">:</span> Service broker operation failed<span class="token operator">:</span> <span class="token number">502</span> Bad Gateway<span class="token operator">:</span> CF<span class="token operator">-</span>ServiceBrokerBadResponse<span class="token operator">(</span><span class="token number">10001</span><span class="token operator">)</span><span class="token operator">:</span> Service instance businessruleseditor_html5_repo_runtime<span class="token operator">:</span> Service broker error<span class="token operator">:</span> Service broker html5<span class="token operator">-</span>apps<span class="token operator">-</span>repo<span class="token operator">-</span>sb failed with<span class="token operator">:</span> Internal Server Error<br>Proceeding with automatic retry<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token operator">(</span><span class="token number">3</span> of <span class="token number">3</span> attempts left<span class="token operator">)</span><br>Services <span class="token string">"[businessrules_uaa]"</span> are already deleted<br>Deleting service <span class="token string">"businessruleseditor_html5_repo_runtime"</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span><br><span class="token number">1</span> of <span class="token number">1</span> done<br>Process finished<span class="token punctuation">.</span><br>Use <span class="token string">"cf dmol -i aad5f179-4286-11ea-be81-eeee0a930fbf"</span> to download the logs of the process<span class="token punctuation">.</span></code></pre><h2>Redeploying, with a reduced size MTA archive</h2><p>When I'm ready to redeploy I can do so, following the flow I described in yesterday's post &quot;<a href="/blog/posts/2020/01/28/scripting-cloud-foundry-activities-in-trial/">Scripting Cloud Foundry activities in trial</a>&quot;.</p><p>However, there's a <a href="https://twitter.com/IObert_/status/1220321066029142018">lovely bit of advice</a> from my friend and colleague mariusobert that can be used to reduce the size of the MTA deployment archive. Shown in a <a href="https://gist.github.com/IObert/220cb211a63a4030c25b31d912243d6a">Gist</a>, there's a '<a href="https://gist.github.com/IObert/220cb211a63a4030c25b31d912243d6a#file-mta-yaml-L18-L19">build-parameters' setting</a> that can be added to a module definition, so that the <code>node_modules/</code> directory, which is often the bulk of the archive, can be omitted (it will be created in the cloud once deployed). This is what the parameter looks like:</p><pre class="language-yaml"><code class="language-yaml"><span class="token key atrule">build-parameters</span><span class="token punctuation">:</span><br>  <span class="token key atrule">ignore</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"node_modules/"</span><span class="token punctuation">]</span></code></pre><p>Adding this to the definition of the <code>businessruleseditor_appRouter</code> module (effectively the definition for the app itself) like this, greatly reduces the archive file size.</p><pre class="language-yaml"><code class="language-yaml"> <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> businessruleseditor_appRouter<br>   <span class="token key atrule">type</span><span class="token punctuation">:</span> approuter.nodejs<br>   <span class="token key atrule">path</span><span class="token punctuation">:</span> businessruleseditor_appRouter<br>   <span class="token key atrule">parameters</span><span class="token punctuation">:</span><br>      <span class="token key atrule">disk-quota</span><span class="token punctuation">:</span> 256M<br>      <span class="token key atrule">memory</span><span class="token punctuation">:</span> 256M<br>   <span class="token key atrule">build-parameters</span><span class="token punctuation">:</span><br>       <span class="token key atrule">ignore</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"node_modules/"</span><span class="token punctuation">]</span><br>   <span class="token key atrule">requires</span><span class="token punctuation">:</span><br>    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> businessruleseditor_html5_repo_runtime<br>    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> businessrules_uaa<br>    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> businessrules</code></pre><p>Without this setting, the size of the <code>businessruleseditor_0.0.1.mtar</code> archive is 12 megabytes:</p><pre class="language-shell"><code class="language-shell">-<span class="token operator">></span> <span class="token function">ls</span> <span class="token parameter variable">-l</span> --block-size<span class="token operator">=</span>M mta_archives/<br>total 12M<br>-rw-r--r-- <span class="token number">1</span> qmacro qmacro 12M Jan <span class="token number">29</span> <span class="token number">11</span>:09 businessruleseditor_0.0.1.mtar</code></pre><p>With this setting, the size is only 17 kilobytes!</p><pre class="language-shell"><code class="language-shell">-<span class="token operator">></span> <span class="token function">ls</span> <span class="token parameter variable">-l</span> --block-size<span class="token operator">=</span>K mta_archives/<br>total 20K<br>-rw-r--r-- <span class="token number">1</span> qmacro qmacro 17K Jan <span class="token number">29</span> <span class="token number">11</span>:13 businessruleseditor_0.0.1.mtar</code></pre><p>As a bonus, the build is slightly quicker, and the deploy is definitely quicker!</p><p>Take a look at the Asciinema recording (<a href="#tldr">above</a>) to see this in action - where you can also see the appearance of the binding information in the service output, as the app is created and bindings are made.</p><h2>Wrapping up</h2><p>When I started hacking around with the <code>cf</code> command earlier this morning, I didn't intend to write a blog post, but I thought it was worthwhile in the end to share some of my learnings. I hope you found it interesting - and more importantly, I'd love to know what sort of automation and convenience tools you have set up for yourself. Let me know in the comments. And as always, happy hacking!</p><hr><p><a href="https://community.sap.com/t5/technology-blogs-by-sap/mini-adventures-with-mtas-and-the-cloud-foundry-cli/ba-p/13439593">Originally published on SAP Community</a></p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/sapcommunity/">#sapcommunity</a> <a href="/tags/cloudfoundry/">#cloudfoundry</a> <a href="/tags/cli/">#cli</a> <a href="/tags/businessrules/">#businessrules</a> <a href="/tags/cf/">#cf</a> <a href="/tags/mtar/">#mtar</a> <a href="/tags/awk/">#awk</a> <a href="/tags/onlyfoolsandhorses/">#onlyfoolsandhorses</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2020/03/22/brambleweeny-cluster-experiments/"><span>←</span> <span>Brambleweeny Cluster Experiments</span> </a><a href="/blog/posts/2020/01/28/scripting-cloud-foundry-activities-in-trial/"><span>Scripting Cloud Foundry activities in trial</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="mini-adventures-with-mtas-and-the-cloud-foundry-cli">Mini adventures with MTAs and the Cloud Foundry CLI</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2020-01-29">29 January 2020</time></li>
+	<li><a href="/tags/sapcommunity/" class="post-tag">sapcommunity</a>, </li>
+	<li><a href="/tags/cloudfoundry/" class="post-tag">cloudfoundry</a>, </li>
+	<li><a href="/tags/cli/" class="post-tag">cli</a>, </li>
+	<li><a href="/tags/businessrules/" class="post-tag">businessrules</a>, </li>
+	<li><a href="/tags/cf/" class="post-tag">cf</a>, </li>
+	<li><a href="/tags/mtar/" class="post-tag">mtar</a>, </li>
+	<li><a href="/tags/awk/" class="post-tag">awk</a>, </li>
+	<li><a href="/tags/onlyfoolsandhorses/" class="post-tag">onlyfoolsandhorses</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p><em>A few more small adventures using the cf command line client, as well
+as some shell pipeline goodness and that nifty tip from Marius Obert
+about radically reducing the size of your deployment archive.</em></p>
+<p>Further to my blog post yesterday on <a href="/blog/posts/2020/01/28/scripting-cloud-foundry-activities-in-trial/">scripting Cloud Foundry
+activities</a>
+I extended my experiments into using the <code>cf</code> command line interface
+(CLI) tool to quickly remove the Business Rules Editor app and
+supporting services.</p>
+<p>Along the way I tweaked a couple of existing command pipelines to
+display the lists of services and apps on Cloud Foundry (CF), and tried
+out Marius Obert's <a href="https://twitter.com/IObert_/status/1220321066029142018">great
+tip</a> on reducing
+the size of your deployment archive.</p>
+<p><a name="tldr"></a></p>
+<h2 id="tl-dr">TL;DR</h2>
+<p>If you're like me, and want (in the immortal words of Boycie in the
+Only Fools And Horses episode &quot;Chain Gang&quot;) to &quot;<a href="https://www.youtube.com/watch?v=WcrsW8CAC5s">let the dog see
+the rabbit</a>&quot; to see what
+this is all about, you can watch this little Asciinema recording of what
+I describe in the rest of this post.</p>
+<p><a href="https://asciinema.org/a/296532"><img src="https://asciinema.org/a/296532.svg" alt=""></a></p>
+<p>Still around and want the nitty-gritty? Read on!</p>
+<h2 id="the-app-and-supporting-services">The app and supporting services</h2>
+<p>The Business Rules Editor runs in a space in my CF org connected to my
+SAP Cloud Platform (SCP) trial subaccount. There's the app itself
+(which is actually just an approuter fronting the actual editor app
+artifacts) named <code>businessruleseditor_appRouter</code>.</p>
+<p>This app is bound to service instances, thus:</p>
+<ul>
+<li>an instance of the 'business-rules' service called
+<code>businessrules</code> that I created shortly after re-creating my SCP
+subaccount and CF org and space</li>
+<li>an instance of the 'xsuaa' service called <code>businessrules_uaa</code></li>
+<li>an instance of the 'html5-apps-repo' service (to serve the actual
+app artifacts) called <code>businessruleseditor_html5_repo_runtime</code></li>
+</ul>
+<h2 id="checking-the-running-app-and-services">Checking the running app and services</h2>
+<p>At the start, the app is running, along with the bound services. I check
+this with the <code>cf</code> command line client, combined with a bit of shell
+pipeline to massage the output. The output from <code>cf</code> is relatively
+messy and <a href="https://github.com/cloudfoundry/cli/issues/604#issuecomment-562571995">harder than it should be to
+parse</a>
+(yes, there's the <code>cf curl</code> approach but that's a sledgehammer
+solution to a problem that should be addressed with better text-based
+output), so I have to pass it through some classic Unix command line
+tools to get what I want.</p>
+<p>For parsing and displaying service information, I have a small shell
+script <code>service_status</code>, which looks like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf s
+<span class="token operator">|</span> <span class="token function">sed</span> <span class="token string">'/^OK$/d'</span>
+<span class="token operator">|</span> <span class="token function">awk</span> <span class="token string">'NR>3 { printf "%s ", $1; $1=$2=$3=$NF=""; printf "\n%s\n\n", $0 }'</span>
+<span class="token operator">|</span> <span class="token function">awk</span> <span class="token string">'{$1=$1};1'</span></code></pre>
+<p>This runs the 'cf s' command to retrieve the service information. The
+output from 'cf s' looks like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">Getting services <span class="token keyword">in</span> org I347491trial_qmacrosubdomain / space dev as dj.adams@sap.com<span class="token punctuation">..</span>.
+
+name                                     <span class="token function">service</span>           plan          bound apps                      last operation     broker                                                       upgrade available
+businessrules                            business-rules    lite          businessruleseditor_appRouter   create succeeded   sm-businessrules-e73ec4d2-a715-4849-a5e9-77b521e7a086
+businessrules_uaa                        xsuaa             application   businessruleseditor_appRouter   create succeeded   sm-xsuaa-9ef36350-f975-4194-a399-54db361e79b5
+businessruleseditor_html5_repo_runtime   html5-apps-repo   app-runtime   businessruleseditor_appRouter   create succeeded   sm-html5-apps-repo-sb-ebcb2b69-24a5-408e-be00-02066b302b78</code></pre>
+<p>You might think that looks quite neat, but don't be deceived - if there
+are no bound apps, the column is empty, which makes parsing of the
+output more unpredictable that it should be (why can't something like
+'none' be emitted for this column so it has a consistent value?).
+Moreover, the contents of the column showing the last operation is also
+unpredictable, in that the value or values can contain spaces, which
+makes text-based parsing harder than it should be.</p>
+<p>Anyway, before I go on a mini-rant about this, let me explain what I do
+to reduce this output down to the essentials.</p>
+<p>The second line of the <code>service_status</code> script removes any line that
+is simply 'OK'. When retrieving the app information (with <code>cf a</code>)
+you get an 'OK', but when retrieving service information, you don't.
+Again, unpredictable. So let's just get rid of it anyway.</p>
+<p>The third line uses the venerable
+<a href="https://en.wikipedia.org/wiki/AWK">awk</a> language to print the first
+column of the actual output, which is a single value on each line (in
+this case 'businessrules', 'businessrules_uaa' and
+'businessruleseditor_html5_repo_runtime'). With 'NR&gt;3' it skips
+over the first three lines of output so that only the actual service
+lines are processed.</p>
+<p>Finally, the last line uses <code>awk</code> again to strip spaces from the start and
+end of the lines.</p>
+<p>So running this script produces this output:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">businessrules
+businessruleseditor_appRouter create succeeded
+
+businessrules_uaa
+businessruleseditor_appRouter create succeeded
+
+businessruleseditor_html5_repo_runtime
+businessruleseditor_appRouter create succeeded</code></pre>
+<p>This is much nicer and what I want for a display in my terminal. Note
+that I take advantage of the poor formatting from the output of <code>cf s</code>
+by (inadvertently) grabbing the value of the 'bound apps' column if it
+contains values. This is what the output looks like when the services
+have just been created but before they've been bound to the
+<code>businessruleseditor_appRouter</code> app:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">businessrules
+create succeeded
+
+businessrules_uaa
+create succeeded
+
+businessruleseditor_html5_repo_runtime
+create succeeded</code></pre>
+<p>I have another script to display the apps information, called
+<code>app_status</code>, which looks very similar:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf a
+<span class="token operator">|</span> <span class="token function">sed</span> <span class="token string">'/^OK$/d'</span>
+<span class="token operator">|</span> a<span class="token variable"><span class="token variable">`</span>k <span class="token string">'NR>3 { printf "%s\n%s\n\n", $1, $2 }'</span>
+<span class="token operator">|</span> a<span class="token variable">`</span></span>k <span class="token string">'{$1=$1};1'</span></code></pre>
+<p>There's just a bit of difference in the main <code>awk</code> invocation - I simply
+want to print the first and second columns, on separate lines. Here's
+what the output looks like when the 'businessruleseditor_appRouter'
+app is running:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">businessruleseditor_appRouter
+started</code></pre>
+<p>I use the terminal multiplexor app
+'<a href="https://en.wikipedia.org/wiki/Tmux">tmux</a>' to manage individual
+windows and panes (sub-windows) in my terminal, and divide up the space
+to show the output of my <code>service_status</code> and <code>app_status</code> scripts
+in separate areas. The output is always up-to-date as I drive the
+execution of these scripts with the excellent
+'<a href="https://en.wikipedia.org/wiki/Watch_(Unix)">watch</a>' command, which
+by default will re-execute the specified script every 2 seconds.</p>
+<p>This is what it looks like in action:</p>
+<p><img src="/images/2020/01/Screenshot-2020-01-29-at-10.22.42.png" alt=""></p>
+<h2 id="removing-the-app-and-supporting-services">Removing the app and supporting services</h2>
+<p>I wanted to remove the running app and the services it was bound
+directly to, i.e. the <code>businessrules_uaa</code> and
+<code>businessruleseditor_html5_repo_runtime</code> services. Of course, I
+could have simply used a combination of the <code>cf delete</code> and <code>cf delete-service</code> commands (<code>cf d</code> and <code>cf ds</code> in short form). But
+there's a neater way, with '<a href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/fab96a603a004bd992822c83d4b01370.html">cf
+undeploy</a>'.</p>
+<p>The <code>cf undeploy</code> command requires the MTA ID, which can be retrieved
+with the 'cf mtas' command, which shows output like this:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">Getting multi<span class="token operator">-</span>target apps in org I347491trial_qmacrosubdomain <span class="token operator">/</span> space dev as dj<span class="token punctuation">.</span>adams<span class="token operator">@</span>sap<span class="token punctuation">.</span>com<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+OK
+mta id                version
+businessruleseditor   <span class="token number">0.0.1</span></code></pre>
+<p>In this case, the ID is <code>businessruleseditor</code>.</p>
+<p>Now I can use the <code>cf undeploy</code>, along with the <code>-delete-services</code>
+option, to clean out exactly the right parts, in the right order, too.
+If there's any issue with deleting services, there's a number of times
+the operation will be retried, too:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf undeploy businessruleseditor -delete-services <span class="token parameter variable">-f</span></code></pre>
+<p>This is what the output looks like:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">Undeploying multi<span class="token operator">-</span>target app businessruleseditor in org I347491trial_qmacrosubdomain <span class="token operator">/</span> space dev as dj<span class="token punctuation">.</span>adams<span class="token operator">@</span>sap<span class="token punctuation">.</span>com<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+Detected deployed MTA with ID <span class="token string">"businessruleseditor"</span> and version <span class="token string">"0.0.1"</span>
+Deleting routes for application <span class="token string">"businessruleseditor_appRouter"</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+Deleting route <span class="token string">"i347491trial-qmacrosubdomain-dev-businessruleseditor-approuter.cfapps.eu10.hana.ondemand.com"</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+Stopping application <span class="token string">"businessruleseditor_appRouter"</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+Deleting application <span class="token string">"businessruleseditor_appRouter"</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+Deleting service <span class="token string">"businessrules_uaa"</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+Deleting service <span class="token string">"businessruleseditor_html5_repo_runtime"</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token property">Error deleting services:</span> Error deleting service <span class="token string">"businessruleseditor_html5_repo_runtime"</span> from offering <span class="token string">"html5-apps-repo"</span> and plan <span class="token string">"app-runtime"</span><span class="token operator">:</span> Service broker operation failed<span class="token operator">:</span> <span class="token number">502</span> Bad Gateway<span class="token operator">:</span> CF<span class="token operator">-</span>ServiceBrokerBadResponse<span class="token operator">(</span><span class="token number">10001</span><span class="token operator">)</span><span class="token operator">:</span> Service instance businessruleseditor_html5_repo_runtime<span class="token operator">:</span> Service broker error<span class="token operator">:</span> Service broker html5<span class="token operator">-</span>apps<span class="token operator">-</span>repo<span class="token operator">-</span>sb failed with<span class="token operator">:</span> Internal Server Error
+Proceeding with automatic retry<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token operator">(</span><span class="token number">3</span> of <span class="token number">3</span> attempts left<span class="token operator">)</span>
+Services <span class="token string">"[businessrules_uaa]"</span> are already deleted
+Deleting service <span class="token string">"businessruleseditor_html5_repo_runtime"</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token number">1</span> of <span class="token number">1</span> done
+Process finished<span class="token punctuation">.</span>
+Use <span class="token string">"cf dmol -i aad5f179-4286-11ea-be81-eeee0a930fbf"</span> to download the logs of the process<span class="token punctuation">.</span></code></pre>
+<h2 id="redeploying-with-a-reduced-size-mta-archive">Redeploying, with a reduced size MTA archive</h2>
+<p>When I'm ready to redeploy I can do so, following the flow I described
+in yesterday's post &quot;<a href="/blog/posts/2020/01/28/scripting-cloud-foundry-activities-in-trial/">Scripting Cloud Foundry activities in
+trial</a>&quot;.</p>
+<p>However, there's a <a href="https://twitter.com/IObert_/status/1220321066029142018">lovely bit of
+advice</a> from my
+friend and colleague mariusobert that can be used to reduce the size of
+the MTA deployment archive. Shown in a
+<a href="https://gist.github.com/IObert/220cb211a63a4030c25b31d912243d6a">Gist</a>,
+there's a '<a href="https://gist.github.com/IObert/220cb211a63a4030c25b31d912243d6a#file-mta-yaml-L18-L19">build-parameters'
+setting</a>
+that can be added to a module definition, so that the <code>node_modules/</code>
+directory, which is often the bulk of the archive, can be omitted (it
+will be created in the cloud once deployed). This is what the parameter
+looks like:</p>
+<pre class="language-yaml" tabindex="0"><code class="language-yaml"><span class="token key atrule">build-parameters</span><span class="token punctuation">:</span>
+  <span class="token key atrule">ignore</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"node_modules/"</span><span class="token punctuation">]</span></code></pre>
+<p>Adding this to the definition of the <code>businessruleseditor_appRouter</code>
+module (effectively the definition for the app itself) like this,
+greatly reduces the archive file size.</p>
+<pre class="language-yaml" tabindex="0"><code class="language-yaml"> <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> businessruleseditor_appRouter
+   <span class="token key atrule">type</span><span class="token punctuation">:</span> approuter.nodejs
+   <span class="token key atrule">path</span><span class="token punctuation">:</span> businessruleseditor_appRouter
+   <span class="token key atrule">parameters</span><span class="token punctuation">:</span>
+      <span class="token key atrule">disk-quota</span><span class="token punctuation">:</span> 256M
+      <span class="token key atrule">memory</span><span class="token punctuation">:</span> 256M
+   <span class="token key atrule">build-parameters</span><span class="token punctuation">:</span>
+       <span class="token key atrule">ignore</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">"node_modules/"</span><span class="token punctuation">]</span>
+   <span class="token key atrule">requires</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> businessruleseditor_html5_repo_runtime
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> businessrules_uaa
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> businessrules</code></pre>
+<p>Without this setting, the size of the <code>businessruleseditor_0.0.1.mtar</code>
+archive is 12 megabytes:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">-<span class="token operator">></span> <span class="token function">ls</span> <span class="token parameter variable">-l</span> --block-size<span class="token operator">=</span>M mta_archives/
+total 12M
+-rw-r--r-- <span class="token number">1</span> qmacro qmacro 12M Jan <span class="token number">29</span> <span class="token number">11</span>:09 businessruleseditor_0.0.1.mtar</code></pre>
+<p>With this setting, the size is only 17 kilobytes!</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">-<span class="token operator">></span> <span class="token function">ls</span> <span class="token parameter variable">-l</span> --block-size<span class="token operator">=</span>K mta_archives/
+total 20K
+-rw-r--r-- <span class="token number">1</span> qmacro qmacro 17K Jan <span class="token number">29</span> <span class="token number">11</span>:13 businessruleseditor_0.0.1.mtar</code></pre>
+<p>As a bonus, the build is slightly quicker, and the deploy is definitely
+quicker!</p>
+<p>Take a look at the Asciinema recording (<a href="#tldr">above</a>) to see this in
+action - where you can also see the appearance of the binding
+information in the service output, as the app is created and bindings
+are made.</p>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>When I started hacking around with the <code>cf</code> command earlier this
+morning, I didn't intend to write a blog post, but I thought it was
+worthwhile in the end to share some of my learnings. I hope you found it
+interesting - and more importantly, I'd love to know what sort of
+automation and convenience tools you have set up for yourself. Let me
+know in the comments. And as always, happy hacking!</p>
+<hr>
+<p><a href="https://community.sap.com/t5/technology-blogs-by-sap/mini-adventures-with-mtas-and-the-cloud-foundry-cli/ba-p/13439593">Originally published on SAP Community</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2020/01/28/scripting-cloud-foundry-activities-in-trial/">Scripting Cloud Foundry activities in trial</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2020/03/22/brambleweeny-cluster-experiments/">Brambleweeny Cluster Experiments</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2020/01/29/mini-adventures-with-mtas-and-the-cloud-foundry-cli/` was built on 2025-09-15T15:58:49.599Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

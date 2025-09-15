@@ -1,0 +1,878 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Using @cap-js/sqlite in CF for your CAP services</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="using-cap-js-sqlite-in-cf-for-your-cap-services">Using @cap-js/sqlite in CF for your CAP services</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2024-04-15">15 April 2024</time></li>
+	<li><a href="/tags/good-to-know/" class="post-tag">good-to-know</a>, </li>
+	<li><a href="/tags/sqlite/" class="post-tag">sqlite</a>, </li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/cf/" class="post-tag">cf</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>I published a couple of short posts recently:</p>
+<ul>
+<li><a href="/blog/posts/2024/04/15/running-non-production-cap-services-in-cf/">Running non-production CAP services in CF</a></li>
+<li><a href="/blog/posts/2024/04/14/easily-add-an-explicit-cds.requires.db-to-your-cap-project's-package.json/">Easily add an explicit cds.requires.db to your CAP project's package.json</a></li>
+</ul>
+<p>Both of them are related to going from zero to cloud, while still in design time, as quickly as possible. Partly to learn about the differences and similarities, but also simply because you can, and it elicits very interesting insights into how things work.</p>
+<p>If you're going to take this approach of pushing a newly initialised CAP project to CF, and want to continue enjoying the default CAP server approach of using SQLite in-memory for the data layer, then you probably want to read those two blog posts, but also this one, because there's a fascinating combination of circumstances which means that unless you take steps to avoid it, you'll encounter an error when performing OData operations.</p>
+<h2 id="the-error">The error</h2>
+<p>While the CAP service in CF will start, and will serve you the landing page, the OData service document and even the OData metadata document, when it comes to serving actual entities (such as in response to a OData QUERY operation on a <code>Books</code> entity set, for example), you'll get this:</p>
+<pre class="language-xml" tabindex="0"><code class="language-xml"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>error</span> <span class="token attr-name">xmlns</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>http://docs.oasis-open.org/odata/ns/metadata<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>code</span><span class="token punctuation">></span></span>500<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>code</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>message</span><span class="token punctuation">></span></span>No database connection<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>message</span><span class="token punctuation">></span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>annotation</span> <span class="token attr-name">term</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Common.numericSeverity<span class="token punctuation">"</span></span> <span class="token attr-name">type</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>Edm.Decimal<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>4<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>annotation</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>error</span><span class="token punctuation">></span></span></code></pre>
+<p>Oops! Let's see why this happens, and what we can do to prevent it happening. We'll do that with a simple example very similar to the ones in the two posts mentioned earlier.</p>
+<h2 id="setup">Setup</h2>
+<p>I love how I can <a href="https://cap.cloud.sap/docs/get-started/jumpstart#jumpstart-cap-projects">get up and running</a> with a basic but fully operational OData service with CAP in about 10 seconds. I'll do that now<a href="#footnotes"><sup>1</sup></a>, and immediately also ask (with <code>tree</code>) for a quick overview of the files and directories created:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cds init <span class="token parameter variable">--add</span> tiny-sample qmacro-test <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> <span class="token variable">$_</span> <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> tree</code></pre>
+<p>The output looks something like this:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">Creating new CAP project in ./qmacro-test
+
+Adding feature 'nodejs'...
+Adding feature 'tiny-sample'...
+
+Successfully created project. Continue with 'cd qmacro-test'.
+Find samples on https://github.com/SAP-samples/cloud-cap-samples
+Learn about next steps at https://cap.cloud.sap
+.
+|-- README.md
+|-- app
+|-- db
+|   |-- data
+|   |   `-- my.bookshop-Books.csv
+|   `-- data-model.cds
+|-- package.json
+`-- srv
+    `-- cat-service.cds
+
+5 directories, 5 files</code></pre>
+<p>Lovely. Key for us here is what's in <code>package.json</code>:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"qmacro-test"</span><span class="token punctuation">,</span>
+  <span class="token property">"version"</span><span class="token operator">:</span> <span class="token string">"1.0.0"</span><span class="token punctuation">,</span>
+  <span class="token property">"description"</span><span class="token operator">:</span> <span class="token string">"A simple CAP project."</span><span class="token punctuation">,</span>
+  <span class="token property">"repository"</span><span class="token operator">:</span> <span class="token string">"&lt;Add your repository here>"</span><span class="token punctuation">,</span>
+  <span class="token property">"license"</span><span class="token operator">:</span> <span class="token string">"UNLICENSED"</span><span class="token punctuation">,</span>
+  <span class="token property">"private"</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  <span class="token property">"dependencies"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"@sap/cds"</span><span class="token operator">:</span> <span class="token string">"^7"</span><span class="token punctuation">,</span>
+    <span class="token property">"express"</span><span class="token operator">:</span> <span class="token string">"^4"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"devDependencies"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"@cap-js/sqlite"</span><span class="token operator">:</span> <span class="token string">"^1"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"scripts"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"start"</span><span class="token operator">:</span> <span class="token string">"cds-serve"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="dependencies-vs-devdependencies">Dependencies vs devDependencies</h2>
+<p>Note the <code>dependencies</code> and <code>devDependencies</code> sections, to define package requirements in general, and package requirements for when we're in development, or &quot;design time&quot;. In that latter section we have the SQLite package in the form of <code>@cap-js/sqlite</code>. This is the right place for it, as it's very unlikely (apart from in the context of these experimental and throwaway services) that we'll want to use SQLite outside of the design time cycle.</p>
+<p>We can already see this difference in the way that we can run the CAP server.</p>
+<h3 id="design-time-with-cds-watch">Design time with cds watch</h3>
+<p>Running it with <code>cds watch</code>, a design time command, allows us to successfully request the books. Here's some of the log output from <code>cds watch</code>:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">[cds] - connect using bindings from: { registry: '~/.cds-services.json' }
+[cds] - connect to db > sqlite { database: ':memory:' }
+  > init from db/data/my.bookshop-Books.csv
+/> successfully deployed to in-memory database.
+
+[cds] - serving CatalogService { path: '/odata/v4/catalog' }
+
+[cds] - server listening on { url: 'http://localhost:4004' }</code></pre>
+<p>And when a request is made for the Books entity set we can see that the request is served successfully:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> <span class="token function">curl</span> <span class="token parameter variable">-s</span> localhost:4004/odata/v4/catalog/Books <span class="token operator">|</span> jq <span class="token builtin class-name">.</span>
+<span class="token punctuation">{</span>
+  <span class="token string">"@odata.context"</span><span class="token builtin class-name">:</span> <span class="token string">"<span class="token variable">$metadata</span>#Books"</span>,
+  <span class="token string">"value"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token string">"ID"</span><span class="token builtin class-name">:</span> <span class="token number">1</span>,
+      <span class="token string">"title"</span><span class="token builtin class-name">:</span> <span class="token string">"Wuthering Heights"</span>,
+      <span class="token string">"stock"</span><span class="token builtin class-name">:</span> <span class="token number">100</span>
+    <span class="token punctuation">}</span>,
+    <span class="token punctuation">{</span>
+      <span class="token string">"ID"</span><span class="token builtin class-name">:</span> <span class="token number">2</span>,
+      <span class="token string">"title"</span><span class="token builtin class-name">:</span> <span class="token string">"Jane Eyre"</span>,
+      <span class="token string">"stock"</span><span class="token builtin class-name">:</span> <span class="token number">500</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<h3 id="runtime-with-cds-serve">Runtime with cds serve</h3>
+<p>In contrast, <code>cds serve</code>, a runtime (not design time) command, will not successfully respond to such a request. Here's the equivalent log output from <code>cds serve</code>:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">[cds] - loaded model from 2 file(s):
+
+  srv/cat-service.cds
+  db/data-model.cds
+
+[cds] - serving CatalogService { path: '/odata/v4/catalog' }
+
+[cds] - server listening on { url: 'http://localhost:4004' }</code></pre>
+<p>These following log lines, that we saw when we ran <code>cds watch</code>, are conspicuous by their absence:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">[cds] - connect to db > sqlite { database: ':memory:' }
+  > init from db/data/my.bookshop-Books.csv
+/> successfully deployed to in-memory database.</code></pre>
+<p>Moreover, a similar OData QUERY made on the Books entity set results in an error:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> <span class="token function">curl</span> <span class="token parameter variable">-s</span> localhost:4004/odata/v4/catalog/Books <span class="token operator">|</span> jq <span class="token builtin class-name">.</span>
+<span class="token punctuation">{</span>
+  <span class="token string">"error"</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
+    <span class="token string">"code"</span><span class="token builtin class-name">:</span> <span class="token string">"500"</span>,
+    <span class="token string">"message"</span><span class="token builtin class-name">:</span> <span class="token string">"No database connection"</span>,
+    <span class="token string">"@Common.numericSeverity"</span><span class="token builtin class-name">:</span> <span class="token number">4</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<blockquote>
+<p>The difference between the JSON output here, and the XML output shown earlier, is that the XML output earlier was from a web browser, which sends different values in the content negotiation part of the HTTP request made, compared to what is sent by curl<a href="#footnotes"><sup>2</sup></a>.</p>
+</blockquote>
+<p>As well as the error being surfaced to the requester, we also have this output in the CAP server log:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">[odata] - GET /odata/v4/catalog/Books
+[cds] - Error: No database connection
+    at ApplicationService.<anonymous> (/usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds/libx/_runtime/common/generic/crud.js:31:22)
+    at next (/usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds/lib/srv/srv-dispatch.js:68:36)
+    at ApplicationService.handle (/usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds/lib/srv/srv-dispatch.js:72:6)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async _readCollection (/usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds/libx/_runtime/cds-services/adapter/odata-v4/handlers/read.js:246:19)
+    at async /usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds/libx/_runtime/cds-services/adapter/odata-v4/handlers/read.js:538:16 {
+  numericSeverity: 4,
+  id: '1041709',
+  level: 'ERROR',
+  timestamp: 1713181867229
+}</anonymous></code></pre>
+<p>That's fine, I hear you say. Not unexpected! That's right. But it's also a clue as to the difference between design time and runtime.</p>
+<h2 id="addressing-the-behaviour-locally">Addressing the behaviour - locally</h2>
+<p>Under normal circumstances, this is correct behaviour, and doesn't need &quot;fixing&quot;. But I find it fascinating to understand why things happen like this, and how they relate to other related areas.</p>
+<p>So let's try to hack thing so they work in this runtime context.</p>
+<p>Actually, all one needs to do is to get <code>npm</code> to install the <code>@cap-js/sqlite</code> package so that it appears in the runtime (<code>dependencies</code>) section, rather than the design time (<code>devDependencies</code>) section.</p>
+<p>So, in the project's root, running:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">npm</span> <span class="token function">install</span> --save-prod @cap-js/sqlite</code></pre>
+<blockquote>
+<p>Use of the <a href="https://docs.npmjs.com/specifying-dependencies-and-devdependencies-in-a-package-json-file#adding-dependencies-to-a-packagejson-file-from-the-command-line">--save-prod</a> option is crucial here.</p>
+</blockquote>
+<p>will result in something very interesting - the <code>@cap-js/sqlite</code> entry we saw earlier (in <code>package.json</code>) moves from the <code>devDependencies</code> section into the <code>dependencies</code> section. What's more, the (now empty) <code>devDependencies</code> section disappears!</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"qmacro-test"</span><span class="token punctuation">,</span>
+  <span class="token property">"version"</span><span class="token operator">:</span> <span class="token string">"1.0.0"</span><span class="token punctuation">,</span>
+  <span class="token property">"description"</span><span class="token operator">:</span> <span class="token string">"A simple CAP project."</span><span class="token punctuation">,</span>
+  <span class="token property">"repository"</span><span class="token operator">:</span> <span class="token string">"&lt;Add your repository here>"</span><span class="token punctuation">,</span>
+  <span class="token property">"license"</span><span class="token operator">:</span> <span class="token string">"UNLICENSED"</span><span class="token punctuation">,</span>
+  <span class="token property">"private"</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  <span class="token property">"dependencies"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"@cap-js/sqlite"</span><span class="token operator">:</span> <span class="token string">"^1.6.0"</span><span class="token punctuation">,</span>
+    <span class="token property">"@sap/cds"</span><span class="token operator">:</span> <span class="token string">"^7"</span><span class="token punctuation">,</span>
+    <span class="token property">"express"</span><span class="token operator">:</span> <span class="token string">"^4"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"scripts"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"start"</span><span class="token operator">:</span> <span class="token string">"cds-serve"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Now even <code>cds serve</code> will use SQLite, emitting this in the log output on startup:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">[cds] - connect to db > sqlite { database: ':memory:' }
+  > init from db/data/my.bookshop-Books.csv
+/> successfully deployed to in-memory database.</code></pre>
+<p>and will response successfully to OData QUERY operations.</p>
+<h2 id="the-behaviour-in-cf">The behaviour - in CF</h2>
+<p>It turns out that exactly the same thing would happen if we push our CAP service, in its raw design time form, to the cloud. And it's for the same reason - the invocation of the CAP server in a deployment scenario like this is <code>cds-serve</code>, as we can see from the <code>package.json#scripts.start</code> property.</p>
+<p>So performing the <code>npm install --save-prod</code> before pushing to CF will in fact bring about the same effect.</p>
+<p>Note that when pushing, you'll still need to set the <code>NODE_ENV</code> to something other than production, using the approach described in <a href="/blog/posts/2024/04/15/running-non-production-cap-services-in-cf/">Running non-production CAP services in CF</a>, in other words:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf push qmacro-test --no-start <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> cf set-env qmacro-test NODE_ENV testing <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> cf restage qmacro-test</code></pre>
+<p>which will bring about this in the log output:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">Restaging app qmacro-test in org ...
+   ...
+   -----> Creating runtime environment
+   NODE_ENV=testing
+   NODE_HOME=/tmp/contents2269148642/deps/0/node
+   NODE_MODULES_CACHE=true
+   NODE_VERBOSE=false
+   NPM_CONFIG_LOGLEVEL=error
+   NPM_CONFIG_PRODUCTION=true
+   npm scripts will see NODE_ENV=production (not 'testing')
+   https://docs.npmjs.com/misc/config#production
+   ...
+
+Restarting app qmacro-test in org ...
+...
+     state     since                  cpu    memory     disk       logging        details
+#0   running   2024-04-15T12:33:54Z   0.0%   0B of 0B   0B of 0B   0B/s of 0B/s</code></pre>
+<h2 id="using-npm-config-production-in-cf">Using NPM_CONFIG_PRODUCTION in CF</h2>
+<p>That's all well and good, but perhaps as hacks go, a little blunt. However, there's another way. As a result of digging into this in a slightly wider context, my focus was eventually directed to this part of the log output:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">NODE_ENV=testing
+NODE_HOME=/tmp/contents2269148642/deps/0/node
+NODE_MODULES_CACHE=true
+NODE_VERBOSE=false
+NPM_CONFIG_LOGLEVEL=error
+NPM_CONFIG_PRODUCTION=true
+npm scripts will see NODE_ENV=production (not 'testing')
+https://docs.npmjs.com/misc/config#production</code></pre>
+<p>First, <code>NODE_ENV</code> is set as we want it, to <code>testing</code> (i.e. something other than <code>production</code>). This means that we can have our basic -- effectively still design time flavoured -- CAP server run fine in CF, without requiring production grade facilities.</p>
+<p>But notice these two lines:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">NPM_CONFIG_PRODUCTION=true
+npm scripts will see NODE_ENV=production (not 'testing')</code></pre>
+<p>What's that?!</p>
+<p>It <a href="https://medium.com/@pere.solaclaver/set-up-staging-environment-in-heroku-374376cd40c">turns out</a> that there's a difference between <code>NODE_ENV</code> and everything that implies (and consequently everything that behaves according to the value that is set for it), and how the Node.js package installer tool <code>npm</code> sees the world in CF.</p>
+<p>The value of <code>NPM_CONFIG_PRODUCTION</code> affects how <code>npm</code> behaves. Which in turn affects how the CAP project is set up once pushed to CF (because Node.js packages are installed in situ in CF, rather than transferred with the &quot;push&quot; operation, of course).</p>
+<p>And if <code>NPM_CONFIG_PRODUCTION</code> is set to <code>true</code>, which it is by default here, then any packages listed in the <code>package.json#devDependencies</code> are NOT installed.</p>
+<p>So, for example, if I start from scratch, with:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cds init <span class="token parameter variable">--add</span> tiny-sample qmacro-test <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> <span class="token variable">$_</span> <span class="token punctuation">\</span></code></pre>
+<p>and therefore have this in the project's <code>package.json</code> again:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+
+  <span class="token property">"dependencies"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"@sap/cds"</span><span class="token operator">:</span> <span class="token string">"^7"</span><span class="token punctuation">,</span>
+    <span class="token property">"express"</span><span class="token operator">:</span> <span class="token string">"^4"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"devDependencies"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"@cap-js/sqlite"</span><span class="token operator">:</span> <span class="token string">"^1"</span>
+  <span class="token punctuation">}</span>
+
+<span class="token punctuation">}</span></code></pre>
+<p>Then I can achieve a successful push to, and execution within, CF, of my still &quot;design time&quot; CAP service, by also modifying the value for <code>NPM_CONFIG_PRODUCTION</code> while I'm there modifying <code>NODE_ENV</code> already.</p>
+<p>Beginning with the push <a href="/blog/posts/2024/04/15/running-non-production-cap-services-in-cf/#--no-start">with the <code>--no-start</code> option</a>:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf push qmacro-test --no-start</code></pre>
+<p>Then modifying the values of the two environment variables:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf set-env qmacro-test NODE_ENV testing
+cf set-env qmacro-test NPM_CONFIG_PRODUCTION <span class="token boolean">false</span></code></pre>
+<p>While we're here, let's enable remote access to the app, like this (so we can <a href="#trust-but-verify">verify</a> things shortly):</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf enable-ssh qmacro-test</code></pre>
+<p>And finally the restage to start things up:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf restage qmacro-test</code></pre>
+<p>And in the log output for the restage, we see lines like this:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">Restaging app qmacro-test in org
+   ...
+   NODE_ENV=testing
+   NPM_CONFIG_PRODUCTION=false
+   NODE_HOME=/tmp/contents28472526/deps/0/node
+   NODE_MODULES_CACHE=true
+   NODE_VERBOSE=false
+   NPM_CONFIG_LOGLEVEL=error
+   -----> Building dependencies
+   Installing node modules (package.json)
+   added 114 packages, and audited 115 packages in 4s
+   ...
+
+Restarting app qmacro-test in org 
+...
+
+     state     since                  cpu    memory     disk       logging        details
+#0   running   2024-04-15T13:41:30Z   0.0%   0B of 0B   0B of 0B   0B/s of 0B/s</code></pre>
+<p>And the best thing? Everything works as if it were still in design time. OData operations to retrieve data work as expected. And there's been absolutely nothing modified from the pure, just-initialised CAP project.</p>
+<p><a name="trust-but-verify"></a></p>
+<h2 id="trust-but-verify">Trust but verify</h2>
+<p>Embracing that old adage <a href="/blog/posts/2021/06/14/the-apc-smt750ic-ups-works-with-the-synology-nas-ds1621+/#trust-but-verify">trust, but verify</a>, let's take a look. Just before starting the service up in CF, we enabled SSH access. So now we can use that to peek at what's there. First, let's satisfy ourselves that the contents of <code>package.json</code> are as they were, i.e. unchanged from the project initialisation:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf <span class="token function">ssh</span> qmacro-test <span class="token parameter variable">-c</span> <span class="token string">"cat app/package.json"</span> <span class="token punctuation">\</span>
+  <span class="token operator">|</span> jq <span class="token string">'{ dependencies, devDependencies }'</span></code></pre>
+<p>This emits what we expect to see, with <code>@cap-js/sqlite</code> still in the <code>devDependencies</code> section:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"dependencies"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"@sap/cds"</span><span class="token operator">:</span> <span class="token string">"^7"</span><span class="token punctuation">,</span>
+    <span class="token property">"express"</span><span class="token operator">:</span> <span class="token string">"^4"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"devDependencies"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"@cap-js/sqlite"</span><span class="token operator">:</span> <span class="token string">"^1"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Plus, we can see what's been installed, for example like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf <span class="token function">ssh</span> qmacro-test <span class="token parameter variable">--command</span> <span class="token string">'ls app/node_modules/@*'</span></code></pre>
+<p>This will emit:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">app/node_modules/@cap-js:
+cds-types
+db-service
+sqlite
+
+app/node_modules/@sap:
+cds
+cds-compiler
+cds-fiori
+cds-foss</code></pre>
+<p>And there we can see that even in this CF environment, we have the <code>@cap-js/sqlite</code> package installed. All because of the value of <code>false</code> that we set for <code>NPM_CONFIG_PRODUCTION</code>.</p>
+<p>Good to know!</p>
+<hr>
+<p><a name="footnotes"></a></p>
+<h2 id="footnotes">Footnotes</h2>
+<ol>
+<li>The cds version I'm running right now is 7.8, as you can see from the output from <code>cds v</code>:</li>
+</ol>
+<pre class="language-text" tabindex="0"><code class="language-text">@cap-js/cds-types: 0.2.0
+@sap/cds: 7.8.0
+@sap/cds-compiler: 4.8.0
+@sap/cds-dk (global): 7.8.1
+@sap/cds-fiori: 1.2.3
+@sap/cds-foss: 5.0.0
+@sap/cds-mtxs: 1.17.0
+@sap/eslint-plugin-cds: 2.6.7
+Node.js: v20.11.1
+home: /usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds</code></pre>
+<ol start="2">
+<li>A key <a href="/tags/conneg/">content negotiation</a> header in HTTP requests is <code>Accept</code>, describing to the server what representation is desirable or acceptable for the resource being returned. Chrome sends this value (as one string, but split over lines here for readability):</li>
+</ol>
+<pre class="language-text" tabindex="0"><code class="language-text">text/html,
+application/xhtml+xml,
+application/xml;q=0.9,
+image/avif,
+image/webp,
+image/apng,
+*/*;q=0.8,
+application/signed-exchange;v=b3;q=0.7</code></pre>
+<p>and curl sends this value:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">*/*</code></pre>
+<p>by default. So the server (the CAP server, in this case) endeavours to comply to the more specific request from Chrome by supplying the OData entity set resource in XML, while it will be able to &quot;relax&quot; a little bit and just sent the default representation (JSON) in response to the request from curl.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2024/04/15/running-non-production-cap-services-in-cf/">Running non-production CAP services in CF</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2024/04/17/simple-script-for-previewing-cds-models-in-csn-cdsray/">Simple script for previewing CDS models in CSN - cdsray</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2024/04/15/using-cap-js-sqlite-in-cf-for-your-cap-services/` was built on 2025-09-15T15:58:49.623Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

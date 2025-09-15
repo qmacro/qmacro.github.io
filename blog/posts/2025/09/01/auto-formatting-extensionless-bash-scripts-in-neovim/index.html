@@ -1,7 +1,819 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2025/09/01/auto-formatting-extensionless-bash-scripts-in-neovim/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Auto formatting extensionless Bash scripts in Neovim | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Auto formatting extensionless Bash scripts in Neovim"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2025/09/01/auto-formatting-extensionless-bash-scripts-in-neovim/"><meta name="description" content="Here&#39;s what I did to make the combination of the Bash language server and shfmt work with Editorconfig settings for Bash script files that don&#39;t have extensions."><meta property="og:description" content="Here&#39;s what I did to make the combination of the Bash language server and shfmt work with Editorconfig settings for Bash script files that don&#39;t have extensions."><meta name="description" content="Here&#39;s what I did to make the combination of the Bash language server and shfmt work with Editorconfig settings for Bash script files that don&#39;t have extensions."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Auto formatting extensionless Bash scripts in Neovim</title>
+		<meta name="description" content="Here&#39;s what I did to make the combination of the Bash language server and shfmt work with Editorconfig settings for Bash script files that don&#39;t have extensions.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Auto formatting extensionless Bash scripts in Neovim</h1><div class="post__details"><time datetime="2025-09-01">01 Sep 2025 </time><span>| </span><span>9 min read</span></div></header><main class="post__content"><p><em>Here's what I did to make the combination of the Bash language server and shfmt work with Editorconfig settings for Bash script files that don't have extensions.</em></p><h2>TL;DR</h2><p>The Bash language server is easy to install and has support for <code>shfmt</code> which in turn has support for Editorconfig settings.</p><p>For shell scripts without extensions, Editorconfig is no good, except if you use <code>shfmt</code>'s special support in the form of <code>[[shell]]</code> or <code>[[bash]]</code> section globs.</p><p>But that's non-standard, and when invoked via the Bash language server, doesn't work. But you can get it to work by using a wrapper script that strips off options in the call to <code>shfmt</code> with the result that these special Editorconfig sections are recognised.</p><h2>Background</h2><p>In my continuing quest to <a href="/blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node.js-configuration-and-diagnostics/">build out a cleaner and leaner Neovim configuration</a> I turned my attention recently to improving my Bash script editing experience. For Bash there are plenty of facilities that fit into my Personal Development Environment, including <code>shellcheck</code> and <code>shfmt</code>, both of which I have been using for quite a while (see <a href="/blog/posts/2020/10/05/improving-my-shell-scripting/">Improving my shell scripting</a>).</p><p>I decided to give the <a href="https://github.com/bash-lsp/bash-language-server">Bash language server</a> a try. It's a super easy setup <a href="https://github.com/bash-lsp/bash-language-server?tab=readme-ov-file#neovim">for Neovim 0.11+</a> and the <a href="https://github.com/bash-lsp/bash-language-server?tab=readme-ov-file#shfmt-integration">integration with shfmt</a> was a feature that caught my eye in particular. See <a href="#appendix-c-neovim-lsp-configuration-for-the-bash-language-server">Appendix C</a> for the setup configuration details.</p><p>Add to this a desire to also more consciously embrace <a href="https://editorconfig.org/">Editorconfig</a>, especially given <a href="https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#description">shfmt's support for that</a>, and I was set for a great experience.</p><h2>The perfect storm</h2><p>I am of the opinion that the names of shell scripts that are written to be executed on the command line should not have extensions. This follows a <a href="https://google.github.io/styleguide/shellguide.html#s2.1-file-extensions">specific guideline</a> in the <a href="https://google.github.io/styleguide/shellguide.html">Google Shell Style Guide</a>. Interpretation of shell script file[type]s is based on the <a href="https://en.wikipedia.org/wiki/Shebang_(Unix)">shebang</a>.</p><p>This approach, combined with the Bash language server, its support for <code>shfmt</code>, and a custom part of <code>shfmt</code>'s support for Editorconfig, turned out to be a small but perfect storm:</p><ul><li>Editorconfig's approach and configuration (<a href="https://spec.editorconfig.org/">specification</a>) is based on file extensions only and there is no generic provision for specifying editor settings for files without extensions</li><li>As the extensionless shell script is such a common phenomenon, support for Editorconfig within <code>shfmt</code> has been extended to allow for special <a href="https://spec.editorconfig.org/#glob-expressions">section names</a> in Editorconfig configuration files so that such shell scripts can be matched more generically; this support is described in the <a href="https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#examples">Examples</a> section in <code>shfmt</code>'s documentation thus:<blockquote><p>&quot;EditorConfig sections may also use <code>[[shell]]</code> or <code>[[bash]]</code> to match any shell or bash scripts, which is particularly useful when scripts use a shebang but no extension. Note that this feature is outside of the EditorConfig spec and may be changed in the future.&quot;</p></blockquote></li><li>While it's great to have <a href="https://github.com/bash-lsp/bash-language-server?tab=readme-ov-file#shfmt-integration">support for shfmt</a> in the Bash language server, this support does not include this non-standard (but insanely useful) <code>[[bash]]</code> style facility for Editorconfig configuration.</li></ul><p>Consequently, when editing shell scripts with extensionless filenames using Neovim with the Bash language server configured and <code>shfmt</code> installed<a href="#footnotes"><sup>1</sup></a> I got a very odd and confusing experience.</p><p><a name="example-of-the-issue"></a></p><h2>Example of the issue</h2><p>Here's an example, based on three test files called <code>a</code>, <code>b</code> and <code>fixup</code>, and these (reduced) Editorconfig settings in my <code>.editorconfig</code> file:</p><pre class="language-toml"><code class="language-toml"><span class="token key property">root</span> <span class="token punctuation">=</span> <span class="token boolean">true</span><br><br><span class="token punctuation">[</span>*<span class="token punctuation">]</span><br><span class="token key property">indent_style</span> <span class="token punctuation">=</span> tab<br><br><span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token table class-name">bash</span><span class="token punctuation">]</span><span class="token punctuation">]</span><br><span class="token key property">indent_size</span> <span class="token punctuation">=</span> <span class="token number">2</span><br><span class="token key property">indent_style</span> <span class="token punctuation">=</span> space<br><span class="token key property">switch_case_indent</span> <span class="token punctuation">=</span> <span class="token boolean">true</span><br><span class="token key property">binary_next_line</span> <span class="token punctuation">=</span> <span class="token boolean">true</span><br><span class="token key property">space_redirects</span> <span class="token punctuation">=</span> <span class="token boolean">true</span></code></pre><p><em>On the command line</em>, running <code>shfmt</code><a href="#footnotes"><sup>2</sup></a> on each of these three files produced the expected results, in that all were formatted according to the <code>shfmt</code>-specific settings in that <code>[[bash]]</code> section plus of course indented with 2 spaces.</p><p><em>Within Neovim</em>, via the Bash language server<a href="#footnotes"><sup>3</sup></a>, with shell script files <code>a</code> and <code>b</code> everything seemed to work fine and my Bash scripts were indented appropriately with 2 spaces. When I then started to work on real shell scripts such as the one called <code>fixup</code>, things didn't work the same, and the indentation was done with tabs, not spaces (the horror!).</p><p>Yes, you guessed it, this was because in standard Editorconfig procedure, the <code>[bash]</code> part of the <code>[[bash]]</code> section heading is considered a sequence of characters <code>b</code>, <code>a</code>, <code>s</code> and <code>h</code>, matching files of those single-character names; and as <code>fixup</code> was not matched with that sequence, that section (containing <code>indent_style = space</code>) didn't apply, and so <code>indent_style = tab</code> prevailed.</p><p>This is unfortunate, but is not really anyone's fault.</p><h2>Bash language server, shfmt and Editorconfig</h2><p>I dug in to see what was happening in the Bash language server.</p><p>In preparing to call <code>shfmt</code>, properties appropriate for the file in question are determined from the Editorconfig configuration. The <a href="https://www.npmjs.com/package/editorconfig">editorconfig</a> NPM package is used for this determination, and the custom <code>shfmt</code> extension to allow for <code>[[bash]]</code> and <code>[[shell]]</code> does not exist in that package.</p><p>There are generic configuration properties such as <code>indent_style</code>, and <code>shfmt</code>-specific ones such as <code>switch_case_indent</code>. If there are any <code>shfmt</code>-specific ones then the Editorconfig configuration is used. Otherwise, the language server configuration is used. This reflects the approach taken by <code>shfmt</code> itself in using either Editorconfig or its own command line flags, but not both (as we'll see in the next section).</p><p>The configuration is then turned into a series of explicit <code>shfmt</code> command line options, in particular (but not exclusively) from the <a href="https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#printer-flags">Printer flags</a> group. For example, on surfacing a <code>binary_next_line = true</code> setting in <code>.editorconfig</code> it will generate an equivalent <code>-bn</code> flag to pass in the call to <code>shfmt</code>.</p><p>Then the Bash language server invokes <code>shfmt</code> passing these generated options, plus the <code>--filename</code> option to specify the full pathname of the file being formatted.</p><h3>Example for script called 'fixup'</h3><p>Here's an example of that for the script called <code>fixup</code> for which the <code>editorconfig</code> package does <em>not</em> match the <code>[[bash]]</code> section. This is what's invoked:</p><pre class="language-shell"><code class="language-shell">shfmt <span class="token parameter variable">--filename</span><span class="token operator">=</span>/home/dj/test/fixup <span class="token parameter variable">-i0</span> <span class="token parameter variable">-ln</span><span class="token operator">=</span>auto -</code></pre><ul><li>the <code>-i0</code> comes from a default driven by the basic details sent in the request from Neovim's LSP client, which includes <code>insertSpaces = false</code></li><li>the <code>-ln=auto</code> comes from <a href="https://github.com/bash-lsp/bash-language-server/blob/main/server/src/config.ts">a default in the Bash language server itself</a> for <code>languageDialect</code> (see also <a href="#appendix-a-mason-info-for-the-bash-language-server">Appendix A</a>)</li></ul><h3>Example for script called 'a'</h3><p>Here's another example of what the Bash language server ultimately invokes for the script called <code>a</code> which (by chance) <em>was</em> matched by the <code>[[bash]]</code> section:</p><pre class="language-shell"><code class="language-shell">shfmt <span class="token parameter variable">--filename</span><span class="token operator">=</span>/home/dj/test/a <span class="token parameter variable">-i</span><span class="token operator">=</span><span class="token number">2</span> <span class="token parameter variable">-bn</span> <span class="token parameter variable">-ci</span> <span class="token parameter variable">-sr</span></code></pre><ul><li>these options come from the <code>indent_size</code>, <code>binary_next_line</code>, <code>switch_case_indent</code> and <code>space_redirects</code> Editorconfig properties in the <code>[[bash]]</code> section</li></ul><h2>Between a rock and a hard place</h2><p>As mentioned in the previous section, the Bash language server's approach takes its cue from the <a href="https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#description">equivalent approach</a> of <code>shfmt</code> itself:</p><blockquote><p>&quot;If any EditorConfig files are found, they will be used to apply formatting options. If any parser or printer flags are given to the tool, no EditorConfig formatting options will be used. A default like -i=0 can be used for this purpose.&quot;</p></blockquote><p>In other words, <em>either</em> Editorconfig (only), or no Editorconfig.</p><p>But to effect this, Bash language server invokes <code>shfmt</code> with explicit options for <em>both</em> cases (where there's a match, and where there isn't). This can be seen directly in the two example invocations above.</p><p>I want to manage my formatting in my <code>.editorconfig</code> file(s), but if I want the Editorconfig settings to be honoured when formatting my shell scripts, I need to give them names that I can match with the Editorconfig section name globs, for example by giving them extensions. I don't want to do that.</p><p>I want the Bash language server to invoke <code>shfmt</code> without any <a href="https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#parser-flags">parser</a> or <a href="https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#printer-flags">printer</a> options so that <code>shfmt</code> itself, with its special <code>[[bash]]</code> processing ability (rather than the Bash language server with the standard <code>editorconfig</code> package) parses the Editorconfig settings. This would effectively bypass any Bash language server logic for <code>shfmt</code> and just let <code>shfmt</code> do its thing, with (or without) an <code>.editorconfig</code> file present.</p><h2>Forcing the effect</h2><p>To begin with, I debugged what was going on (see the <a href="#useful-debugging-approaches">Useful debugging approaches</a> section) and found that the options for <code>shfmt</code> were being determined and marshalled in <a href="https://github.com/bash-lsp/bash-language-server/blob/6e419dad6fb07bcf269101c8ffe0d47fd11b14db/server/src/shfmt/index.ts">server/src/shfmt/index.ts</a> (yay for open source!):</p><pre class="language-typescript"><code class="language-typescript"><span class="token keyword">private</span> <span class="token keyword">async</span> <span class="token function">runShfmt</span><span class="token punctuation">(</span><br>  document<span class="token operator">:</span> TextDocument<span class="token punctuation">,</span><br>  formatOptions<span class="token operator">?</span><span class="token operator">:</span> <span class="token constant">LSP</span><span class="token punctuation">.</span>FormattingOptions <span class="token operator">|</span> <span class="token keyword">null</span><span class="token punctuation">,</span><br>  shfmtConfig<span class="token operator">?</span><span class="token operator">:</span> Record<span class="token operator">&lt;</span><span class="token builtin">string</span><span class="token punctuation">,</span> <span class="token builtin">string</span> <span class="token operator">|</span> <span class="token builtin">boolean</span><span class="token operator">></span> <span class="token operator">|</span> <span class="token keyword">null</span><span class="token punctuation">,</span><br><span class="token punctuation">)</span><span class="token operator">:</span> <span class="token builtin">Promise</span><span class="token operator">&lt;</span><span class="token builtin">string</span><span class="token operator">></span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> args <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">getShfmtArguments</span><span class="token punctuation">(</span>document<span class="token punctuation">.</span>uri<span class="token punctuation">,</span> formatOptions<span class="token punctuation">,</span> shfmtConfig<span class="token punctuation">)</span><br>  <span class="token operator">...</span><br>  <span class="token keyword">const</span> proc <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name"><span class="token builtin">Promise</span></span><span class="token punctuation">(</span><span class="token punctuation">(</span>resolve<span class="token punctuation">,</span> reject<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span><br>    <span class="token keyword">const</span> proc <span class="token operator">=</span> <span class="token function">spawn</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>executablePath<span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token operator">...</span>args<span class="token punctuation">,</span> <span class="token string">'-'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> cwd<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>cwd <span class="token punctuation">}</span><span class="token punctuation">)</span><br>    <span class="token operator">...</span></code></pre><p>Using brute force<a href="#footnotes"><sup>4</sup></a> I simply truncated <code>args</code> to <code>[]</code>, removing the call to <code>this.getShfmtArguments</code>, and everything worked as planned - <code>shfmt</code> was called without any options at all, with the result that <code>shfmt</code> did the right thing, finding and using the appropriate Editorconfig settings, for all Bash files.</p><p>I didn't want to have to make this modification each time I installed the Bash language server, nor do I think it appropriate to suggest as a modification upstream. So I decided to wrap the call to <code>shfmt</code>.</p><h3>Wrapping shfmt to strip off the options</h3><p>The Bash language server <a href="https://github.com/bash-lsp/bash-language-server/blob/main/server/src/config.ts">configuration</a> includes a section specifically for <code>shfmt</code> (see <a href="#appendix-b-configuration-for-the-bash-language-server">Appendix B</a>). I can use the <code>shfmt.path</code> configuration option to specify an alternate path for the executable, pointing to a simple shell script that removes all the options passed, except for a couple of generic ones.</p><p>Here's the script, called <code>shfmt-wrapper</code>, placed in <code>~/.local/bin/</code> which is listed first in my <code>PATH</code> environment variable:</p><pre class="language-bash"><code class="language-bash"><span class="token shebang important">#!/usr/bin/env bash</span><br><br><span class="token builtin class-name">declare</span> <span class="token parameter variable">-a</span> shfmtargs<br><span class="token keyword">for</span> <span class="token for-or-select variable">i</span> <span class="token keyword">in</span> <span class="token string">"<span class="token variable">$@</span>"</span><span class="token punctuation">;</span> <span class="token keyword">do</span><br>  <span class="token keyword">if</span> <span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token variable">$i</span> <span class="token operator">==</span> <span class="token parameter variable">--filename</span><span class="token operator">=</span>* <span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token variable">$i</span> <span class="token operator">==</span> <span class="token string">"-"</span> <span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span><br>    <span class="token assign-left variable">shfmtargs</span><span class="token operator">=</span><span class="token punctuation">(</span><span class="token string">"<span class="token variable">${shfmtargs<span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span>"</span> <span class="token string">"<span class="token variable">$i</span>"</span><span class="token punctuation">)</span><br>  <span class="token keyword">fi</span><br><span class="token keyword">done</span><br>shfmt <span class="token string">"<span class="token variable">${shfmtargs<span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span>"</span></code></pre><p>All it does is take the options passed to it, removes all but the <code>--filename=...</code> and <code>-</code> ones, and then calls the actual <code>shfmt</code> with what's left.</p><p>And with the <code>shfmt.path</code> option (see <a href="#appendix-c-neovim-lsp-configuration-for-the-bash-language-server">Appendix C</a>) I then told the Bash language server to use this wrapper when invoking <code>shfmt</code>.</p><p>Therefore, because no parser or printer flags are ever present in the <code>shfmt</code> option list, <code>shfmt</code> will use the Editorconfig configuration, interpreting it using the custom support for <code>[[bash]]</code> or <code>[[shell]]</code> sections.</p><p>The result is that this section of my <code>.editorconfig</code> file is interpreted as I intend:</p><pre class="language-toml"><code class="language-toml"><span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token table class-name">bash</span><span class="token punctuation">]</span><span class="token punctuation">]</span><br><span class="token key property">indent_size</span> <span class="token punctuation">=</span> <span class="token number">2</span><br><span class="token key property">indent_style</span> <span class="token punctuation">=</span> space<br><span class="token key property">switch_case_indent</span> <span class="token punctuation">=</span> <span class="token boolean">true</span><br><span class="token key property">binary_next_line</span> <span class="token punctuation">=</span> <span class="token boolean">true</span><br><span class="token key property">space_redirects</span> <span class="token punctuation">=</span> <span class="token boolean">true</span></code></pre><p>and my extensionless Bash script files are formatted appropriately. Not with tabs, and no <code>shfmt</code>-specific configuration, but as I have described in configuration.</p><p>Great!</p><p>This is of course a bit hacky, but I think it is within the boundaries of &quot;small pieces, loosely joined&quot; and doesn't require any modification to any non-user-serviceable parts.</p><p><a name="useful-debugging-approaches"></a></p><h2>Useful debugging approaches</h2><p>In working out what was going on, I used various tools and settings to help me. Here's a quick list of those, mostly to remind my future self.</p><h3>The editorconfig CLI</h3><p>The <a href="https://www.npmjs.com/package/editorconfig">editorconfig</a> package, which I installed globally for these investigations with <code>npm i -g editorconfig</code>, also sports a CLI which can be used to show the &quot;effective configuration&quot;, given a filename. Taking the <code>.editorconfig</code> file contents in the <a href="#example-of-the-issue">example of the issue</a> shown earlier, here's what is output ...</p><p>for the shell script file named <code>a</code>:</p><pre class="language-shell"><code class="language-shell">$ editorconfig a<br><span class="token assign-left variable">indent_style</span><span class="token operator">=</span>space<br><span class="token assign-left variable">indent_size</span><span class="token operator">=</span><span class="token number">2</span><br><span class="token assign-left variable">switch_case_indent</span><span class="token operator">=</span>true<br><span class="token assign-left variable">binary_next_line</span><span class="token operator">=</span>true<br><span class="token assign-left variable">space_redirects</span><span class="token operator">=</span>true<br><span class="token assign-left variable">tab_width</span><span class="token operator">=</span><span class="token number">2</span></code></pre><p>and for the shell script file named <code>fixup</code>:</p><pre class="language-shell"><code class="language-shell">$ editorconfig fixup<br><span class="token assign-left variable">indent_style</span><span class="token operator">=</span>tab<br><span class="token assign-left variable">indent_size</span><span class="token operator">=</span>tab</code></pre><p>Thus I can see first hand what the Bash language server would receive from the <code>editorconfig</code> module, given a filename and some Editorconfig configuration.</p><h3>Language server logging</h3><p>Logs are emitted at various points in the Bash language server's operation, as I could see from browsing the <a href="https://github.com/bash-lsp/bash-language-server/tree/main/server/src">server source code</a>.</p><p>For example, the <a href="https://github.com/bash-lsp/bash-language-server/blob/main/server/src/shfmt/index.ts">shfmt support</a> has many logging lines, including this one:</p><pre class="language-typescript"><code class="language-typescript">logger<span class="token punctuation">.</span><span class="token function">debug</span><span class="token punctuation">(</span><br>  <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Shfmt: found .editorconfig properties: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span><br>    editorconfigProperties<span class="token punctuation">,</span><br>  <span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span><br><span class="token punctuation">)</span></code></pre><p>In the <a href="https://github.com/bash-lsp/bash-language-server/blob/main/server/src/config.ts">configuration section</a> I could see that it was probably possible to set my desired logging level with the environment variable <code>BASH_IDE_LOG_LEVEL</code>.</p><p>But it turns out that the idea is that settings can be specified in the LSP configuration, and the setting property &quot;path&quot; is what's actually shown in the <a href="#appendix-a-mason-info-for-the-bash-language-server">Mason info</a>, starting with <code>bashIde</code> as the first path section. I didn't find that in the Bash language server README or configuration section, perhaps I should have known that implicitly, or known to look elsewhere for it.</p><p>Anyway, once I figured that out, I could set my desired level like this (also shown in <a href="#appendix-c-neovim-lsp-configuration-for-the-bash-language-server">Appendix C</a>):</p><pre class="language-lua"><code class="language-lua"><span class="token keyword">return</span> <span class="token punctuation">{</span><br>  cmd <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token string">'bash-language-server'</span><span class="token punctuation">,</span> <span class="token string">'start'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  filetypes <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token string">'bash'</span><span class="token punctuation">,</span> <span class="token string">'sh'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  settings <span class="token operator">=</span> <span class="token punctuation">{</span><br>    bashIde <span class="token operator">=</span> <span class="token punctuation">{</span><br>      logLevel <span class="token operator">=</span> <span class="token string">'debug'</span><span class="token punctuation">,</span><br>      shfmt <span class="token operator">=</span> <span class="token punctuation">{</span><br>        path <span class="token operator">=</span> vim<span class="token punctuation">.</span>fn<span class="token punctuation">.</span><span class="token function">expand</span><span class="token punctuation">(</span><span class="token string">'$HOME'</span><span class="token punctuation">)</span> <span class="token operator">..</span> <span class="token string">'/.local/bin/shfmt-wrapper'</span><br>      <span class="token punctuation">}</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span></code></pre><p>Where does this log output from the Bash language server show up? Well, now I figured it out, it's obvious - it's all collected in Neovim's general LSP log file at <code>~/.local/state/nvim/lsp.log</code>.</p><p>However, any debug level log output from the Bash language server will only show up there if the general Neovim language server logging level is high enough. Even after adding the <code>logLevel = 'debug'</code> configuration above, nothing showed up ... until I realised I had this in my <code>~/.config/nvim/init.lua</code>:</p><pre class="language-lua"><code class="language-lua"><span class="token comment">-- LSP logging</span><br>vim<span class="token punctuation">.</span>lsp<span class="token punctuation">.</span><span class="token function">set_log_level</span><span class="token punctuation">(</span><span class="token string">"WARN"</span><span class="token punctuation">)</span></code></pre><p>Setting this to <code>DEBUG</code>, either by changing the value in the <code>init.lua</code> file itself, or simply on the fly with:</p><pre class="language-shell"><code class="language-shell">:lua vim.lsp.set_log_level<span class="token punctuation">(</span><span class="token string">"DEBUG"</span><span class="token punctuation">)</span></code></pre><p>does the trick, and output like this appears in the <code>lsp.log</code> file:</p><pre class="language-log"><code class="language-log"><span class="token level debug keyword">DEBUG</span> <span class="token property">Shfmt:</span> found <span class="token punctuation">.</span>editorconfig properties<span class="token operator">:</span> <span class="token operator">{</span><span class="token string">"indent_style"</span><span class="token operator">:</span><span class="token string">"tab"</span><span class="token punctuation">,</span><span class="token string">"indent_size"</span><span class="token operator">:</span><span class="token string">"tab"</span><span class="token operator">}</span>'<br><span class="token level debug keyword">DEBUG</span> <span class="token property">Shfmt:</span> no shfmt properties found in <span class="token punctuation">.</span>editorconfig <span class="token operator">-</span> using language server shfmt config"<br><span class="token level debug keyword">DEBUG</span> <span class="token property">Shfmt:</span> running <span class="token string">"/home/dj/.local/bin/shfmt-wrapper --filename=/tmp/formatting/fixup -i=0 -ln=auto"</span>'</code></pre><p><a name="appendix-a-mason-info-for-the-bash-language-server"></a></p><h2>Appendix A - Mason info for the Bash language server</h2><pre class="language-text"><code class="language-text">Language Filter: press <c-f> to apply filter<br><br>Installed (1)<br>  ◍ bash-language-server<br>    A language server for Bash.<br><br>    installed version 5.6.0<br>    installed purl    pkg:npm/bash-language-server@5.6.0<br>    homepage          https://github.com/bash-lsp/bash-language-server<br>    languages         Bash, Csh, Ksh, Sh, Zsh<br>    categories        LSP<br>    executables       bash-language-server<br><br>    ↓ LSP server configuration schema (press enter to collapse)<br>      This is a read-only overview of the settings this server accepts.<br>      Note that some settings might not apply to neovim.<br><br>      → bashIde.backgroundAnalysisMaxFiles    default: 500<br>      → bashIde.enableSourceErrorDiagnostics  default: false<br>      → bashIde.explainshellEndpoint          default: ""<br>      → bashIde.globPattern                   default: "**/*@(.sh|.inc|.bash|.command)"<br>      → bashIde.includeAllWorkspaceSymbols    default: false<br>      → bashIde.logLevel                      default: "info"<br>      → bashIde.shellcheckArguments           default: ""<br>      → bashIde.shellcheckPath                default: "shellcheck"<br>      → bashIde.shfmt.binaryNextLine          default: false<br>      → bashIde.shfmt.caseIndent              default: false<br>      → bashIde.shfmt.funcNextLine            default: false<br>      → bashIde.shfmt.ignoreEditorconfig      default: false<br>      → bashIde.shfmt.keepPadding             default: false<br>      → bashIde.shfmt.languageDialect         default: "auto"<br>      → bashIde.shfmt.path                    default: "shfmt"<br>      → bashIde.shfmt.simplifyCode            default: false<br>      → bashIde.shfmt.spaceRedirects          default: false</c-f></code></pre><p><a name="appendix-b-configuation-for-the-bash-language-server"></a></p><h2>Appendix B - Configuration for the Bash language server</h2><pre class="language-javascript"><code class="language-javascript"><span class="token keyword">const</span> rawConfig <span class="token operator">=</span> <span class="token punctuation">{</span><br>  <span class="token literal-property property">backgroundAnalysisMaxFiles</span><span class="token operator">:</span> <span class="token function">toNumber</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">BACKGROUND_ANALYSIS_MAX_FILES</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">enableSourceErrorDiagnostics</span><span class="token operator">:</span> <span class="token function">toBoolean</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">ENABLE_SOURCE_ERROR_DIAGNOSTICS</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">explainshellEndpoint</span><span class="token operator">:</span> process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">EXPLAINSHELL_ENDPOINT</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">globPattern</span><span class="token operator">:</span> process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">GLOB_PATTERN</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">includeAllWorkspaceSymbols</span><span class="token operator">:</span> <span class="token function">toBoolean</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">INCLUDE_ALL_WORKSPACE_SYMBOLS</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">logLevel</span><span class="token operator">:</span> process<span class="token punctuation">.</span>env<span class="token punctuation">[</span><span class="token constant">LOG_LEVEL_ENV_VAR</span><span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">shellcheckArguments</span><span class="token operator">:</span> process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHELLCHECK_ARGUMENTS</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">shellcheckPath</span><span class="token operator">:</span> process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHELLCHECK_PATH</span><span class="token punctuation">,</span><br>  <span class="token literal-property property">shfmt</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token literal-property property">path</span><span class="token operator">:</span> process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHFMT_PATH</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">ignoreEditorconfig</span><span class="token operator">:</span> <span class="token function">toBoolean</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHFMT_IGNORE_EDITORCONFIG</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">languageDialect</span><span class="token operator">:</span> process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHFMT_LANGUAGE_DIALECT</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">binaryNextLine</span><span class="token operator">:</span> <span class="token function">toBoolean</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHFMT_BINARY_NEXT_LINE</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">caseIndent</span><span class="token operator">:</span> <span class="token function">toBoolean</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHFMT_CASE_INDENT</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">funcNextLine</span><span class="token operator">:</span> <span class="token function">toBoolean</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHFMT_FUNC_NEXT_LINE</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">keepPadding</span><span class="token operator">:</span> <span class="token function">toBoolean</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHFMT_KEEP_PADDING</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">simplifyCode</span><span class="token operator">:</span> <span class="token function">toBoolean</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHFMT_SIMPLIFY_CODE</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>    <span class="token literal-property property">spaceRedirects</span><span class="token operator">:</span> <span class="token function">toBoolean</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHFMT_SPACE_REDIRECTS</span><span class="token punctuation">)</span><span class="token punctuation">,</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span></code></pre><p><a name="appendix-c-neovim-lsp-configuration-for-the-bash-language-server"></a></p><h2>Appendix C - Neovim LSP configuration for the Bash language server</h2><p>To add the Bash language server to <a href="/blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node.js-configuration-and-diagnostics/">my Neovim 0.11+ setup</a> and configure it, all I needed was to create a new configuration file <code>~/.config/nvim/lsp/bash.lua</code>:</p><pre class="language-lua"><code class="language-lua"><span class="token keyword">return</span> <span class="token punctuation">{</span><br>  cmd <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token string">'bash-language-server'</span><span class="token punctuation">,</span> <span class="token string">'start'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  filetypes <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token string">'bash'</span><span class="token punctuation">,</span> <span class="token string">'sh'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  settings <span class="token operator">=</span> <span class="token punctuation">{</span><br>    bashIde <span class="token operator">=</span> <span class="token punctuation">{</span><br>      logLevel <span class="token operator">=</span> <span class="token string">'debug'</span><span class="token punctuation">,</span><br>      shfmt <span class="token operator">=</span> <span class="token punctuation">{</span><br>        path <span class="token operator">=</span> vim<span class="token punctuation">.</span>fn<span class="token punctuation">.</span><span class="token function">expand</span><span class="token punctuation">(</span><span class="token string">'$HOME'</span><span class="token punctuation">)</span> <span class="token operator">..</span> <span class="token string">'/.local/bin/shfmt-wrapper'</span><br>      <span class="token punctuation">}</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br><span class="token punctuation">}</span></code></pre><p>(The settings will be explained in the course of this post.)</p><p>Then it was just a matter of enabling the server in the list in my main <code>~/config/nvim/init.lua</code> file:</p><pre class="language-lua"><code class="language-lua">vim<span class="token punctuation">.</span>lsp<span class="token punctuation">.</span><span class="token function">enable</span><span class="token punctuation">(</span><span class="token punctuation">{</span><br>  <span class="token string">'javascript'</span><span class="token punctuation">,</span><br>  <span class="token string">'cds'</span><span class="token punctuation">,</span><br>  <span class="token string">'markdown'</span><span class="token punctuation">,</span><br>  <span class="token string">'dockerfile'</span><span class="token punctuation">,</span><br>  <span class="token string">'lua'</span><span class="token punctuation">,</span><br>  <span class="token string">'bash'</span><span class="token punctuation">,</span> <span class="token comment">-- here</span><br><span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre><p><a name="footnotes"></a></p><h2>Footnotes</h2><ol><li>as well as <code>shellcheck</code> which <a href="https://github.com/bash-lsp/bash-language-server?tab=readme-ov-file#dependencies">is also supported</a></li><li>version <a href="https://github.com/mvdan/sh/releases/tag/v3.8.0">3.8.0</a> or higher, as that is when support for Editorconfig sections such as <code>[[shell]]</code> <a href="https://github.com/mvdan/sh/issues/664">was introduced</a></li><li><a href="https://github.com/qmacro/dotfiles/blob/57c7f38e64ef1f59b9c41f6155b0fa350eb030b7/config/nvim/init.lua#L14-L23">configured</a> through a <code>BufWritePre</code> event based call to <code>vim.lsp.buf.format</code></li><li>it was actually in the <a href="https://github.com/mason-org/mason.nvim">Mason</a> installed and managed location at <code>~/.local/share/nvim/mason/packages/bash-language-server/node_modules/bash-language-server/out/shfmt/index.js</code>, i.e. the transpiled JavaScript equivalent file</li></ol></main><aside class="post__aside"><div class="post__tags"><a href="/tags/bash/">#bash</a> <a href="/tags/editorconfig/">#editorconfig</a> <a href="/tags/neovim/">#neovim</a> <a href="/tags/lsp/">#lsp</a> <a href="/tags/shfmt/">#shfmt</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2025/09/10/upcoming-talks-in-autumn-2025/"><span>←</span> <span>Upcoming talks in autumn 2025</span> </a><a href="/blog/posts/2025/08/06/neovim-configuration-for-file-and-module-navigation-in-cds-models/"><span>Neovim configuration for file and module navigation in CDS models</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="auto-formatting-extensionless-bash-scripts-in-neovim">Auto formatting extensionless Bash scripts in Neovim</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2025-09-01">01 September 2025</time></li>
+	<li><a href="/tags/bash/" class="post-tag">bash</a>, </li>
+	<li><a href="/tags/editorconfig/" class="post-tag">editorconfig</a>, </li>
+	<li><a href="/tags/neovim/" class="post-tag">neovim</a>, </li>
+	<li><a href="/tags/lsp/" class="post-tag">lsp</a>, </li>
+	<li><a href="/tags/shfmt/" class="post-tag">shfmt</a></li>
+</ul>
+
+<p class="post-description-main">Here's what I did to make the combination of the Bash language server and shfmt work with Editorconfig settings for Bash script files that don't have extensions.</p>
+
+<h2 id="tl-dr">TL;DR</h2>
+<p>The Bash language server is easy to install and has support for <code>shfmt</code> which in turn has support for Editorconfig settings.</p>
+<p>For shell scripts without extensions, Editorconfig is no good, except if you use <code>shfmt</code>'s special support in the form of <code>[[shell]]</code> or <code>[[bash]]</code> section globs.</p>
+<p>But that's non-standard, and when invoked via the Bash language server, doesn't work. However, you can get it to work by using a wrapper script that strips off options in the call to <code>shfmt</code> with the result that these special Editorconfig sections are recognised.</p>
+<h2 id="background">Background</h2>
+<p>In my continuing quest to <a href="/blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node.js-configuration-and-diagnostics/">build out a cleaner and leaner Neovim configuration</a> I turned my attention recently to improving my Bash script editing experience. For Bash there are plenty of facilities that fit into my Personal Development Environment, including <code>shellcheck</code> and <code>shfmt</code>, both of which I have been using for quite a while (see <a href="/blog/posts/2020/10/05/improving-my-shell-scripting/">Improving my shell scripting</a>).</p>
+<p>I decided to give the <a href="https://github.com/bash-lsp/bash-language-server">Bash language server</a> a try. It's a super easy setup <a href="https://github.com/bash-lsp/bash-language-server?tab=readme-ov-file#neovim">for Neovim 0.11+</a> and the <a href="https://github.com/bash-lsp/bash-language-server?tab=readme-ov-file#shfmt-integration">integration with shfmt</a> was a feature that caught my eye in particular. See <a href="#appendix-c-neovim-lsp-configuration-for-the-bash-language-server">Appendix C</a> for the setup configuration details.</p>
+<p>Add to this a desire to also more consciously embrace <a href="https://editorconfig.org/">Editorconfig</a>, especially given <a href="https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#description">shfmt's support for that</a>, and I was set for a great experience.</p>
+<h2 id="the-perfect-storm">The perfect storm</h2>
+<p>I am of the opinion that the names of shell scripts that are written to be executed on the command line should not have extensions. This follows a <a href="https://google.github.io/styleguide/shellguide.html#s2.1-file-extensions">specific guideline</a> in the <a href="https://google.github.io/styleguide/shellguide.html">Google Shell Style Guide</a>. Interpretation of shell script file[type]s is based on the <a href="https://en.wikipedia.org/wiki/Shebang_(Unix)">shebang</a>.</p>
+<p>This approach, combined with the Bash language server, its support for <code>shfmt</code>, and a custom part of <code>shfmt</code>'s support for Editorconfig, turned out to be a small but perfect storm:</p>
+<ul>
+<li>Editorconfig's approach and configuration (<a href="https://spec.editorconfig.org/">specification</a>) is based on file extensions only and there is no generic provision for specifying editor settings for files without extensions</li>
+<li>As the extensionless shell script is such a common phenomenon, support for Editorconfig within <code>shfmt</code> has been extended to allow for special <a href="https://spec.editorconfig.org/#glob-expressions">section names</a> in Editorconfig configuration files so that such shell scripts can be matched more generically; this support is described in the <a href="https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#examples">Examples</a> section in <code>shfmt</code>'s documentation thus:
+<blockquote>
+<p>&quot;EditorConfig sections may also use <code>[[shell]]</code> or <code>[[bash]]</code> to match any shell or bash scripts, which is particularly useful when scripts use a shebang but no extension. Note that this feature is outside of the EditorConfig spec and may be changed in the future.&quot;</p>
+</blockquote>
+</li>
+<li>While it's great to have <a href="https://github.com/bash-lsp/bash-language-server?tab=readme-ov-file#shfmt-integration">support for shfmt</a> in the Bash language server, this support does not include this non-standard (but insanely useful) <code>[[bash]]</code> style facility for Editorconfig configuration.</li>
+</ul>
+<p>Consequently, when editing shell scripts with extensionless filenames using Neovim with the Bash language server configured and <code>shfmt</code> installed<a href="#footnotes"><sup>1</sup></a>
+I got a very odd and confusing experience.</p>
+<p><a name="example-of-the-issue"></a></p>
+<h2 id="example-of-the-issue">Example of the issue</h2>
+<p>Here's an example, based on three test files called <code>a</code>, <code>b</code> and <code>fixup</code>, and these (reduced) Editorconfig settings in my <code>.editorconfig</code> file:</p>
+<pre class="language-toml" tabindex="0"><code class="language-toml"><span class="token key property">root</span> <span class="token punctuation">=</span> <span class="token boolean">true</span>
+
+<span class="token punctuation">[</span>*<span class="token punctuation">]</span>
+<span class="token key property">indent_style</span> <span class="token punctuation">=</span> tab
+
+<span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token table class-name">bash</span><span class="token punctuation">]</span><span class="token punctuation">]</span>
+<span class="token key property">indent_size</span> <span class="token punctuation">=</span> <span class="token number">2</span>
+<span class="token key property">indent_style</span> <span class="token punctuation">=</span> space
+<span class="token key property">switch_case_indent</span> <span class="token punctuation">=</span> <span class="token boolean">true</span>
+<span class="token key property">binary_next_line</span> <span class="token punctuation">=</span> <span class="token boolean">true</span>
+<span class="token key property">space_redirects</span> <span class="token punctuation">=</span> <span class="token boolean">true</span></code></pre>
+<p><em>On the command line</em>, running <code>shfmt</code><a href="#footnotes"><sup>2</sup></a> on each of these three files produced the expected results, in that all were formatted according to the <code>shfmt</code>-specific settings in that <code>[[bash]]</code> section plus of course indented with 2 spaces.</p>
+<p><em>Within Neovim</em>, via the Bash language server<a href="#footnotes"><sup>3</sup></a>, with shell script files <code>a</code> and <code>b</code> everything seemed to work fine and my Bash scripts were indented appropriately with 2 spaces. When I then started to work on real shell scripts such as the one called <code>fixup</code>, things didn't work the same, and the indentation was done with tabs, not spaces (the horror!).</p>
+<p>Yes, you guessed it, this was because in standard Editorconfig procedure, the <code>[bash]</code> part of the <code>[[bash]]</code> section heading is considered a sequence of characters <code>b</code>, <code>a</code>, <code>s</code> and <code>h</code>, matching files of those single-character names; and as <code>fixup</code> was not matched with that sequence, that section (containing <code>indent_style = space</code>) didn't apply, and so <code>indent_style = tab</code> prevailed.</p>
+<p>This is unfortunate, but is not really anyone's fault.</p>
+<h2 id="bash-language-server-shfmt-and-editorconfig">Bash language server, shfmt and Editorconfig</h2>
+<p>I dug in to see what was happening in the Bash language server.</p>
+<p>In preparing to call <code>shfmt</code>, properties appropriate for the file in question are determined from the Editorconfig configuration. The <a href="https://www.npmjs.com/package/editorconfig">editorconfig</a> NPM package is used for this determination, and the custom <code>shfmt</code> extension to allow for <code>[[bash]]</code> and <code>[[shell]]</code> does not exist in that package.</p>
+<p>There are generic configuration properties such as <code>indent_style</code>, and <code>shfmt</code>-specific ones such as <code>switch_case_indent</code>. If there are any <code>shfmt</code>-specific ones then the Editorconfig configuration is used. Otherwise, the language server configuration is used. This reflects the approach taken by <code>shfmt</code> itself in using either Editorconfig or its own command line flags, but not both (as we'll see in the next section).</p>
+<p>The configuration is then turned into a series of explicit <code>shfmt</code> command line options, in particular (but not exclusively) from the <a href="https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#printer-flags">Printer flags</a> group. For example, on surfacing a <code>binary_next_line = true</code> setting in <code>.editorconfig</code> it will generate an equivalent <code>-bn</code> flag to pass in the call to <code>shfmt</code>.</p>
+<p>Then the Bash language server invokes <code>shfmt</code> passing these generated options, plus the <code>--filename</code> option to specify the full pathname of the file being formatted.</p>
+<h3 id="example-for-script-called-fixup">Example for script called 'fixup'</h3>
+<p>Here's an example of that for the script called <code>fixup</code> for which the <code>editorconfig</code> package does <em>not</em> match the <code>[[bash]]</code> section. This is what's invoked:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">shfmt <span class="token parameter variable">--filename</span><span class="token operator">=</span>/home/dj/test/fixup <span class="token parameter variable">-i0</span> <span class="token parameter variable">-ln</span><span class="token operator">=</span>auto -</code></pre>
+<ul>
+<li>the <code>-i0</code> comes from a default driven by the basic details sent in the request from Neovim's LSP client, which includes <code>insertSpaces = false</code></li>
+<li>the <code>-ln=auto</code> comes from <a href="https://github.com/bash-lsp/bash-language-server/blob/main/server/src/config.ts">a default in the Bash language server itself</a> for <code>languageDialect</code> (see also <a href="#appendix-a-mason-info-for-bash-language-server">Appendix A</a>)</li>
+</ul>
+<h3 id="example-for-script-called-a">Example for script called 'a'</h3>
+<p>Here's another example of what the Bash language server ultimately invokes for the script called <code>a</code> which (by chance) <em>was</em> matched by the <code>[[bash]]</code> section:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">shfmt <span class="token parameter variable">--filename</span><span class="token operator">=</span>/home/dj/test/a <span class="token parameter variable">-i</span><span class="token operator">=</span><span class="token number">2</span> <span class="token parameter variable">-bn</span> <span class="token parameter variable">-ci</span> <span class="token parameter variable">-sr</span></code></pre>
+<ul>
+<li>these options come from the <code>indent_size</code>, <code>binary_next_line</code>, <code>switch_case_indent</code> and <code>space_redirects</code> Editorconfig properties in the <code>[[bash]]</code> section</li>
+</ul>
+<h2 id="between-a-rock-and-a-hard-place">Between a rock and a hard place</h2>
+<p>As mentioned in the previous section, the Bash language server's approach takes its cue from the <a href="https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#description">equivalent approach</a> of <code>shfmt</code> itself:</p>
+<blockquote>
+<p>&quot;If any EditorConfig files are found, they will be used to apply formatting options. If any parser or printer flags are given to the tool, no EditorConfig formatting options will be used. A default like -i=0 can be used for this purpose.&quot;</p>
+</blockquote>
+<p>In other words, <em>either</em> Editorconfig (only), or no Editorconfig.</p>
+<p>But to effect this, Bash language server invokes <code>shfmt</code> with explicit options for <em>both</em> cases (where there's a match, and where there isn't). This can be seen directly in the two example invocations above.</p>
+<p>I want to manage my formatting in my <code>.editorconfig</code> file(s), but if I want the Editorconfig settings to be honoured when formatting my shell scripts, I need to give them names that I can match with the Editorconfig section name globs, for example by giving them extensions. I don't want to do that.</p>
+<p>I want the Bash language server to invoke <code>shfmt</code> without any <a href="https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#parser-flags">parser</a> or <a href="https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#printer-flags">printer</a> options so that <code>shfmt</code> itself, with its special <code>[[bash]]</code> processing ability (rather than the Bash language server with the standard <code>editorconfig</code> package) parses the Editorconfig settings. This would effectively bypass any Bash language server logic for <code>shfmt</code> and just let <code>shfmt</code> do its thing, with (or without) an <code>.editorconfig</code> file present.</p>
+<h2 id="forcing-the-effect">Forcing the effect</h2>
+<p>To begin with, I debugged what was going on (see the <a href="#useful-debugging-approaches">Useful debugging approaches</a> section) and found that the options for <code>shfmt</code> were being determined and marshalled in <a href="https://github.com/bash-lsp/bash-language-server/blob/6e419dad6fb07bcf269101c8ffe0d47fd11b14db/server/src/shfmt/index.ts">server/src/shfmt/index.ts</a> (yay for open source!):</p>
+<pre class="language-typescript" tabindex="0"><code class="language-typescript"><span class="token keyword">private</span> <span class="token keyword">async</span> <span class="token function">runShfmt</span><span class="token punctuation">(</span>
+  document<span class="token operator">:</span> TextDocument<span class="token punctuation">,</span>
+  formatOptions<span class="token operator">?</span><span class="token operator">:</span> <span class="token constant">LSP</span><span class="token punctuation">.</span>FormattingOptions <span class="token operator">|</span> <span class="token keyword">null</span><span class="token punctuation">,</span>
+  shfmtConfig<span class="token operator">?</span><span class="token operator">:</span> Record<span class="token operator">&lt;</span><span class="token builtin">string</span><span class="token punctuation">,</span> <span class="token builtin">string</span> <span class="token operator">|</span> <span class="token builtin">boolean</span><span class="token operator">></span> <span class="token operator">|</span> <span class="token keyword">null</span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span><span class="token operator">:</span> <span class="token builtin">Promise</span><span class="token operator">&lt;</span><span class="token builtin">string</span><span class="token operator">></span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> args <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">getShfmtArguments</span><span class="token punctuation">(</span>document<span class="token punctuation">.</span>uri<span class="token punctuation">,</span> formatOptions<span class="token punctuation">,</span> shfmtConfig<span class="token punctuation">)</span>
+  <span class="token operator">...</span>
+  <span class="token keyword">const</span> proc <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name"><span class="token builtin">Promise</span></span><span class="token punctuation">(</span><span class="token punctuation">(</span>resolve<span class="token punctuation">,</span> reject<span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> proc <span class="token operator">=</span> <span class="token function">spawn</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>executablePath<span class="token punctuation">,</span> <span class="token punctuation">[</span><span class="token operator">...</span>args<span class="token punctuation">,</span> <span class="token string">'-'</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> cwd<span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>cwd <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token operator">...</span></code></pre>
+<p>Using brute force<a href="#footnotes"><sup>4</sup></a> I simply truncated <code>args</code> to <code>[]</code>, removing the call to <code>this.getShfmtArguments</code>, and everything worked as planned - <code>shfmt</code> was called without any options at all, with the result that <code>shfmt</code> did the right thing, finding and using the appropriate Editorconfig settings, for all Bash files.</p>
+<p>I didn't want to have to make this modification each time I installed the Bash language server, nor do I think it appropriate to suggest as a modification upstream. So I decided to wrap the call to <code>shfmt</code>.</p>
+<h3 id="wrapping-shfmt-to-strip-off-the-options">Wrapping shfmt to strip off the options</h3>
+<p>The Bash language server <a href="https://github.com/bash-lsp/bash-language-server/blob/main/server/src/config.ts">configuration</a> includes a section specifically for <code>shfmt</code> (see <a href="#appendix-b-configuration-for-bash-language-server">Appendix B</a>). I can use the <code>shfmt.path</code> configuration option to specify an alternate path for the executable, pointing to a simple shell script that removes all the options passed, except for a couple of generic ones.</p>
+<p>Here's the script, called <code>shfmt-wrapper</code>, placed in <code>~/.local/bin/</code> which is listed first in my <code>PATH</code> environment variable:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token shebang important">#!/usr/bin/env bash</span>
+
+<span class="token builtin class-name">declare</span> <span class="token parameter variable">-a</span> shfmtargs
+<span class="token keyword">for</span> <span class="token for-or-select variable">i</span> <span class="token keyword">in</span> <span class="token string">"<span class="token variable">$@</span>"</span><span class="token punctuation">;</span> <span class="token keyword">do</span>
+  <span class="token keyword">if</span> <span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token variable">$i</span> <span class="token operator">==</span> <span class="token parameter variable">--filename</span><span class="token operator">=</span>* <span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token punctuation">[</span><span class="token punctuation">[</span> <span class="token variable">$i</span> <span class="token operator">==</span> <span class="token string">"-"</span> <span class="token punctuation">]</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token assign-left variable">shfmtargs</span><span class="token operator">=</span><span class="token punctuation">(</span><span class="token string">"<span class="token variable">${shfmtargs<span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span>"</span> <span class="token string">"<span class="token variable">$i</span>"</span><span class="token punctuation">)</span>
+  <span class="token keyword">fi</span>
+<span class="token keyword">done</span>
+shfmt <span class="token string">"<span class="token variable">${shfmtargs<span class="token punctuation">[</span>@<span class="token punctuation">]</span>}</span>"</span></code></pre>
+<p>All it does is take the options passed to it, removes all but the <code>--filename=...</code> and <code>-</code> ones, and then calls the actual <code>shfmt</code> with what's left.</p>
+<p>And with the <code>shfmt.path</code> option (see <a href="#appendix-c-neovim-lsp-configuration-for-the-bash-language-server">Appendix C</a>) I then told the Bash language server to use this wrapper when invoking <code>shfmt</code>.</p>
+<p>Therefore, because no parser or printer flags are ever present in the <code>shfmt</code> option list, <code>shfmt</code> will use the Editorconfig configuration, interpreting it using the custom support for <code>[[bash]]</code> or <code>[[shell]]</code> sections.</p>
+<p>The result is that this section of my <code>.editorconfig</code> file is interpreted as I intend:</p>
+<pre class="language-toml" tabindex="0"><code class="language-toml"><span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token table class-name">bash</span><span class="token punctuation">]</span><span class="token punctuation">]</span>
+<span class="token key property">indent_size</span> <span class="token punctuation">=</span> <span class="token number">2</span>
+<span class="token key property">indent_style</span> <span class="token punctuation">=</span> space
+<span class="token key property">switch_case_indent</span> <span class="token punctuation">=</span> <span class="token boolean">true</span>
+<span class="token key property">binary_next_line</span> <span class="token punctuation">=</span> <span class="token boolean">true</span>
+<span class="token key property">space_redirects</span> <span class="token punctuation">=</span> <span class="token boolean">true</span></code></pre>
+<p>and my extensionless Bash script files are formatted appropriately. Not with tabs, and no <code>shfmt</code>-specific configuration, but as I have described in configuration.</p>
+<p>Great!</p>
+<p>This is of course a bit hacky, but I think it is within the boundaries of &quot;small pieces, loosely joined&quot; and doesn't require any modification to any non-user-serviceable parts.</p>
+<p><a name="useful-debugging-approaches"></a></p>
+<h2 id="useful-debugging-approaches">Useful debugging approaches</h2>
+<p>In working out what was going on, I used various tools and settings to help me. Here's a quick list of those, mostly to remind my future self.</p>
+<h3 id="the-editorconfig-cli">The editorconfig CLI</h3>
+<p>The <a href="https://www.npmjs.com/package/editorconfig">editorconfig</a> package, which I installed globally for these investigations with <code>npm i -g editorconfig</code>, also sports a CLI which can be used to show the &quot;effective configuration&quot;, given a filename. Taking the <code>.editorconfig</code> file contents in the <a href="#example-of-the-issue">example of the issue</a> shown earlier, here's what is output ...</p>
+<p>for the shell script file named <code>a</code>:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">$ editorconfig a
+<span class="token assign-left variable">indent_style</span><span class="token operator">=</span>space
+<span class="token assign-left variable">indent_size</span><span class="token operator">=</span><span class="token number">2</span>
+<span class="token assign-left variable">switch_case_indent</span><span class="token operator">=</span>true
+<span class="token assign-left variable">binary_next_line</span><span class="token operator">=</span>true
+<span class="token assign-left variable">space_redirects</span><span class="token operator">=</span>true
+<span class="token assign-left variable">tab_width</span><span class="token operator">=</span><span class="token number">2</span></code></pre>
+<p>and for the shell script file named <code>fixup</code>:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">$ editorconfig fixup
+<span class="token assign-left variable">indent_style</span><span class="token operator">=</span>tab
+<span class="token assign-left variable">indent_size</span><span class="token operator">=</span>tab</code></pre>
+<p>Thus I can see first hand what the Bash language server would receive from the <code>editorconfig</code> module, given a filename and some Editorconfig configuration.</p>
+<h3 id="language-server-logging">Language server logging</h3>
+<p>Logs are emitted at various points in the Bash language server's operation, as I could see from browsing the <a href="https://github.com/bash-lsp/bash-language-server/tree/main/server/src">server source code</a>.</p>
+<p>For example, the <a href="https://github.com/bash-lsp/bash-language-server/blob/main/server/src/shfmt/index.ts">shfmt support</a> has many logging lines, including this one:</p>
+<pre class="language-typescript" tabindex="0"><code class="language-typescript">logger<span class="token punctuation">.</span><span class="token function">debug</span><span class="token punctuation">(</span>
+  <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Shfmt: found .editorconfig properties: </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>
+    editorconfigProperties<span class="token punctuation">,</span>
+  <span class="token punctuation">)</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span>
+<span class="token punctuation">)</span></code></pre>
+<p>In the <a href="https://github.com/bash-lsp/bash-language-server/blob/main/server/src/config.ts">configuration section</a> I could see that it was probably possible to set my desired logging level with the environment variable <code>BASH_IDE_LOG_LEVEL</code>.</p>
+<p>But it turns out that the idea is that settings can be specified in the LSP configuration, and the setting property &quot;path&quot; is what's actually shown in the <a href="#appendix-a-mason-info-for-bash-language-server">Mason info</a>, starting with <code>bashIde</code> as the first path section. I didn't find that in the Bash language server README or configuration section, perhaps I should have known that implicitly, or known to look elsewhere for it.</p>
+<p>Anyway, once I figured that out, I could set my desired level like this (also shown in <a href="appendix-c-neovim-lsp-configuration-for-the-bash-language-server">Appendix C</a>):</p>
+<pre class="language-lua" tabindex="0"><code class="language-lua"><span class="token keyword">return</span> <span class="token punctuation">{</span>
+  cmd <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token string">'bash-language-server'</span><span class="token punctuation">,</span> <span class="token string">'start'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  filetypes <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token string">'bash'</span><span class="token punctuation">,</span> <span class="token string">'sh'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  settings <span class="token operator">=</span> <span class="token punctuation">{</span>
+    bashIde <span class="token operator">=</span> <span class="token punctuation">{</span>
+      logLevel <span class="token operator">=</span> <span class="token string">'debug'</span><span class="token punctuation">,</span>
+      shfmt <span class="token operator">=</span> <span class="token punctuation">{</span>
+        path <span class="token operator">=</span> <span class="token string">'/home/dj/.local/bin/shfmt-wrapper'</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Where does this log output from the Bash language server show up? Well, now I figured it out, it's obvious - it's all collected in Neovim's general LSP log file at <code>~/.local/state/nvim/lsp.log</code>.</p>
+<p>However, any debug level log output from the Bash language server will only show up there if the general Neovim language server logging level is high enough. Even after adding the <code>logLevel = 'debug'</code> configuration above, nothing showed up ... until I realised I had this in my <code>~/.config/nvim/init.lua</code>:</p>
+<pre class="language-lua" tabindex="0"><code class="language-lua"><span class="token comment">-- LSP logging</span>
+vim<span class="token punctuation">.</span>lsp<span class="token punctuation">.</span><span class="token function">set_log_level</span><span class="token punctuation">(</span><span class="token string">"WARN"</span><span class="token punctuation">)</span></code></pre>
+<p>Setting this to <code>DEBUG</code>, either by changing the value in the <code>init.lua</code> file itself, or simply on the fly with:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">:lua vim.lsp.set_log_level<span class="token punctuation">(</span><span class="token string">"DEBUG"</span><span class="token punctuation">)</span></code></pre>
+<p>does the trick, and output like this appears in the <code>lsp.log</code> file:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token level debug keyword">DEBUG</span> <span class="token property">Shfmt:</span> found <span class="token punctuation">.</span>editorconfig properties<span class="token operator">:</span> <span class="token operator">{</span><span class="token string">"indent_style"</span><span class="token operator">:</span><span class="token string">"tab"</span><span class="token punctuation">,</span><span class="token string">"indent_size"</span><span class="token operator">:</span><span class="token string">"tab"</span><span class="token operator">}</span>'
+<span class="token level debug keyword">DEBUG</span> <span class="token property">Shfmt:</span> no shfmt properties found in <span class="token punctuation">.</span>editorconfig <span class="token operator">-</span> using language server shfmt config"
+<span class="token level debug keyword">DEBUG</span> <span class="token property">Shfmt:</span> running <span class="token string">"/home/dj/.local/bin/shfmt-wrapper --filename=/tmp/formatting/fixup -i=0 -ln=auto"</span>'</code></pre>
+<p><a name="appendix-a-mason-info-for-the-bash-language-server"></a></p>
+<h2 id="appendix-a-mason-info-for-the-bash-language-server">Appendix A - Mason info for the Bash language server</h2>
+<pre class="language-text" tabindex="0"><code class="language-text">Language Filter: press <C-f> to apply filter
+
+Installed (1)
+  ◍ bash-language-server
+    A language server for Bash.
+
+    installed version 5.6.0
+    installed purl    pkg:npm/bash-language-server@5.6.0
+    homepage          https://github.com/bash-lsp/bash-language-server
+    languages         Bash, Csh, Ksh, Sh, Zsh
+    categories        LSP
+    executables       bash-language-server
+
+    ↓ LSP server configuration schema (press enter to collapse)
+      This is a read-only overview of the settings this server accepts.
+      Note that some settings might not apply to neovim.
+
+      → bashIde.backgroundAnalysisMaxFiles    default: 500
+      → bashIde.enableSourceErrorDiagnostics  default: false
+      → bashIde.explainshellEndpoint          default: ""
+      → bashIde.globPattern                   default: "**/*@(.sh|.inc|.bash|.command)"
+      → bashIde.includeAllWorkspaceSymbols    default: false
+      → bashIde.logLevel                      default: "info"
+      → bashIde.shellcheckArguments           default: ""
+      → bashIde.shellcheckPath                default: "shellcheck"
+      → bashIde.shfmt.binaryNextLine          default: false
+      → bashIde.shfmt.caseIndent              default: false
+      → bashIde.shfmt.funcNextLine            default: false
+      → bashIde.shfmt.ignoreEditorconfig      default: false
+      → bashIde.shfmt.keepPadding             default: false
+      → bashIde.shfmt.languageDialect         default: "auto"
+      → bashIde.shfmt.path                    default: "shfmt"
+      → bashIde.shfmt.simplifyCode            default: false
+      → bashIde.shfmt.spaceRedirects          default: false</C-f></code></pre>
+<p><a name="appendix-b-configuation-for-bash-language-server"></a></p>
+<h2 id="appendix-b-configuration-for-bash-language-server">Appendix B - Configuration for Bash language server</h2>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">const</span> rawConfig <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">backgroundAnalysisMaxFiles</span><span class="token operator">:</span> <span class="token function">toNumber</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">BACKGROUND_ANALYSIS_MAX_FILES</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">enableSourceErrorDiagnostics</span><span class="token operator">:</span> <span class="token function">toBoolean</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">ENABLE_SOURCE_ERROR_DIAGNOSTICS</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">explainshellEndpoint</span><span class="token operator">:</span> process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">EXPLAINSHELL_ENDPOINT</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">globPattern</span><span class="token operator">:</span> process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">GLOB_PATTERN</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">includeAllWorkspaceSymbols</span><span class="token operator">:</span> <span class="token function">toBoolean</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">INCLUDE_ALL_WORKSPACE_SYMBOLS</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">logLevel</span><span class="token operator">:</span> process<span class="token punctuation">.</span>env<span class="token punctuation">[</span><span class="token constant">LOG_LEVEL_ENV_VAR</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">shellcheckArguments</span><span class="token operator">:</span> process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHELLCHECK_ARGUMENTS</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">shellcheckPath</span><span class="token operator">:</span> process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHELLCHECK_PATH</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">shfmt</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">path</span><span class="token operator">:</span> process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHFMT_PATH</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">ignoreEditorconfig</span><span class="token operator">:</span> <span class="token function">toBoolean</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHFMT_IGNORE_EDITORCONFIG</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">languageDialect</span><span class="token operator">:</span> process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHFMT_LANGUAGE_DIALECT</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">binaryNextLine</span><span class="token operator">:</span> <span class="token function">toBoolean</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHFMT_BINARY_NEXT_LINE</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">caseIndent</span><span class="token operator">:</span> <span class="token function">toBoolean</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHFMT_CASE_INDENT</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">funcNextLine</span><span class="token operator">:</span> <span class="token function">toBoolean</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHFMT_FUNC_NEXT_LINE</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">keepPadding</span><span class="token operator">:</span> <span class="token function">toBoolean</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHFMT_KEEP_PADDING</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">simplifyCode</span><span class="token operator">:</span> <span class="token function">toBoolean</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHFMT_SIMPLIFY_CODE</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">spaceRedirects</span><span class="token operator">:</span> <span class="token function">toBoolean</span><span class="token punctuation">(</span>process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">SHFMT_SPACE_REDIRECTS</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span></code></pre>
+<p><a name="appendix-c-neovim-lsp-configuration-for-the-bash-language-server"></a></p>
+<h2 id="appendix-c-neovim-lsp-configuration-for-the-bash-language-server">Appendix C - Neovim LSP configuration for the Bash language server</h2>
+<p>To add the Bash language server to <a href="/blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node.js-configuration-and-diagnostics/">my Neovim 0.11+ setup</a> and configure it, all I needed was to create a new configuration file <code>~/.config/nvim/lsp/bash.lua</code>:</p>
+<pre class="language-lua" tabindex="0"><code class="language-lua"><span class="token keyword">return</span> <span class="token punctuation">{</span>
+  cmd <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token string">'bash-language-server'</span><span class="token punctuation">,</span> <span class="token string">'start'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  filetypes <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token string">'bash'</span><span class="token punctuation">,</span> <span class="token string">'sh'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  settings <span class="token operator">=</span> <span class="token punctuation">{</span>
+    bashIde <span class="token operator">=</span> <span class="token punctuation">{</span>
+      logLevel <span class="token operator">=</span> <span class="token string">'debug'</span><span class="token punctuation">,</span>
+      shfmt <span class="token operator">=</span> <span class="token punctuation">{</span>
+        path <span class="token operator">=</span> <span class="token string">'/home/dj/.local/bin/shfmt-wrapper'</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(The settings will be explained in the course of this post.)</p>
+<p>Then it was just a matter of enabling the server in the list in my main <code>~/config/nvim/init.lua</code> file:</p>
+<pre class="language-lua" tabindex="0"><code class="language-lua">vim<span class="token punctuation">.</span>lsp<span class="token punctuation">.</span><span class="token function">enable</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  <span class="token string">'javascript'</span><span class="token punctuation">,</span>
+  <span class="token string">'cds'</span><span class="token punctuation">,</span>
+  <span class="token string">'markdown'</span><span class="token punctuation">,</span>
+  <span class="token string">'dockerfile'</span><span class="token punctuation">,</span>
+  <span class="token string">'lua'</span><span class="token punctuation">,</span>
+  <span class="token string">'bash'</span><span class="token punctuation">,</span> <span class="token comment">-- here</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre>
+<p><a name="footnotes"></a></p>
+<h2 id="footnotes">Footnotes</h2>
+<ol>
+<li>as well as <code>shellcheck</code> which <a href="https://github.com/bash-lsp/bash-language-server?tab=readme-ov-file#dependencies">is also supported</a></li>
+<li>version <a href="https://github.com/mvdan/sh/releases/tag/v3.8.0">3.8.0</a> or higher, as that is when support for Editorconfig sections such as <code>[[shell]]</code> <a href="https://github.com/mvdan/sh/issues/664">was introduced</a></li>
+<li><a href="https://github.com/qmacro/dotfiles/blob/57c7f38e64ef1f59b9c41f6155b0fa350eb030b7/config/nvim/init.lua#L14-L23">configured</a> through a <code>BufWritePre</code> event based call to <code>vim.lsp.buf.format</code></li>
+<li>it was actually in the <a href="https://github.com/mason-org/mason.nvim">Mason</a> installed and managed location at <code>~/.local/share/nvim/mason/packages/bash-language-server/node_modules/bash-language-server/out/shfmt/index.js</code>, i.e. the transpiled JavaScript equivalent file</li>
+</ol>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2025/08/06/neovim-configuration-for-file-and-module-navigation-in-cds-models/">Neovim configuration for file and module navigation in CDS models</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2025/09/10/upcoming-talks-in-autumn-2025/">Upcoming talks in autumn 2025</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2025/09/01/auto-formatting-extensionless-bash-scripts-in-neovim/` was built on 2025-09-15T15:58:49.629Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

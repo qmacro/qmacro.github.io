@@ -1,7 +1,750 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2021/08/26/learning-by-rewriting-bash-jq-and-fzf-details/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Learning by rewriting - bash, jq and fzf details | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Learning by rewriting - bash, jq and fzf details"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2021/08/26/learning-by-rewriting-bash-jq-and-fzf-details/"><meta name="description" content="Learning by rewriting - bash, jq and fzf details 26 Aug 2021 | 7 min read One of the ways I learn is by reading and sometimes rewriting..."><meta property="og:description" content="Learning by rewriting - bash, jq and fzf details 26 Aug 2021 | 7 min read One of the ways I learn is by reading and sometimes rewriting..."><meta name="description" content="Learning by rewriting - bash, jq and fzf details 26 Aug 2021 | 7 min read One of the ways I learn is by reading and sometimes rewriting..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Learning by rewriting - bash, jq and fzf details</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Learning by rewriting - bash, jq and fzf details</h1><div class="post__details"><time datetime="2021-08-26">26 Aug 2021 </time><span>| </span><span>7 min read</span></div></header><main class="post__content"><p><em>One of the ways I learn is by reading and sometimes rewriting other people's scripts. Here I learn more about <code>jq</code> by rewriting a friend's password CLI script.</em></p><p>My friend <a href="https://twitter.com/ceedee666">Christian Drumm</a> published a nice post this week on <a href="https://www.drumm.sh/blog/bw-cli">Adapting the Bitwarden CLI with Shell Scripting</a>, where he shared a script he wrote to conveniently grab passwords into his paste buffer at the command line.</p><p>It's a good read and contains some nice CLI animations too. In the summary, Christian remarks that there may be some areas for improvement. I don't know about that, and I'm certainly no &quot;shell scripting magician&quot; but I thought I'd have a go at modifying the script to perhaps introduce some further Bash shell, <code>jq</code> and <code>fzf</code> features to dig into.</p><h2>Emulating the CLI</h2><p>I don't have Bitwarden, so I created a quick &quot;database&quot; of login information that took the form of what the Bitwarden CLI <code>bw</code> produced. First, then, is the contents of the <code>items.json</code> file:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token punctuation">{</span> <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"E45 S4HANA 2020 Sandbox"</span><span class="token punctuation">,</span> <span class="token property">"login"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"e45user"</span><span class="token punctuation">,</span> <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"sappass"</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span> <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"space user"</span><span class="token punctuation">,</span> <span class="token property">"login"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"spaceuser"</span><span class="token punctuation">,</span> <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"in space"</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span> <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"foo"</span><span class="token punctuation">,</span> <span class="token property">"login"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"foouser"</span><span class="token punctuation">,</span> <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"foopass"</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span> <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"bar"</span><span class="token punctuation">,</span> <span class="token property">"login"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"baruser"</span><span class="token punctuation">,</span> <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"sekrit!"</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span> <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"baz"</span><span class="token punctuation">,</span> <span class="token property">"login"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"bazuser"</span><span class="token punctuation">,</span> <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"hunter2"</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><br><span class="token punctuation">]</span></code></pre><p>Then I needed to emulate the <code>bw list items --search</code> command that Christian uses to search for an entry. As far as I can tell, it returns an array, regardless of whether a single entry is found, or more than one. I'm also assuming it returns an empty array if nothing is found, but that's less important here as you'll see.</p><p>I did this by creating a script <code>bw-list-items-search</code> which looks like this:</p><pre class="language-shell"><code class="language-shell"><span class="token shebang important">#!/usr/bin/env bash</span><br><br><span class="token comment"># Emulates 'bw list items --search $1'</span><br><br>jq <span class="token parameter variable">--arg</span> name <span class="token string">"<span class="token variable">$1</span>"</span> <span class="token string">'map(select(.name | test($name; "i")))'</span> ./items.json</code></pre><p>Perhaps unironically I'm using <code>jq</code> to emulate the behaviour, because the data being searched is a JSON array (in <code>items.json</code>). I map over the entries in the array, and use the <a href="https://stedolan.github.io/jq/manual/#select(boolean_expression)"><code>select</code> function</a> to return only those entries that satisfy the boolean expression passed to it:</p><pre class="language-jq"><code class="language-jq"><span class="token punctuation">.</span>name <span class="token operator pipe">|</span> <span class="token c-style-function function">test</span><span class="token punctuation">(</span><span class="token variable">$name</span><span class="token punctuation">;</span> <span class="token string">"i"</span><span class="token punctuation">)</span></code></pre><p>This pipes the value of the <code>name</code> property (e.g. &quot;E45 S4HANA 2020 Sandbox&quot;, &quot;space user&quot;, &quot;foo&quot; etc) into the <a href="https://stedolan.github.io/jq/manual/#test(val),test(regex;flags)"><code>test</code> function</a> which can take a regular expression, along with one or more flags if required.</p><p>Here, we're just taking the value passed into the script, via the argument that was passed to the <code>jq</code> invocation with <code>--arg name &quot;$1&quot;</code>. This is then available within the <code>jq</code> script as the binding <code>$name</code>. The second parameter supplied here, <code>&quot;i&quot;</code>, is the &quot;case insensitive match&quot; flag.</p><p>The result means that I can emulate what I think <code>bw list items --search</code> does:</p><pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> ./bw-list-items-search e45<br><span class="token punctuation">[</span><br>  <span class="token punctuation">{</span><br>    <span class="token string">"name"</span><span class="token builtin class-name">:</span> <span class="token string">"E45 S4HANA 2020 Sandbox"</span>,<br>    <span class="token string">"login"</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span><br>      <span class="token string">"username"</span><span class="token builtin class-name">:</span> <span class="token string">"e45user"</span>,<br>      <span class="token string">"password"</span><span class="token builtin class-name">:</span> <span class="token string">"sappass"</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">]</span></code></pre><p>Here's an example of where more than one result is found:</p><pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> ./bw-list-items-search ba<br><span class="token punctuation">[</span><br>  <span class="token punctuation">{</span><br>    <span class="token string">"name"</span><span class="token builtin class-name">:</span> <span class="token string">"bar"</span>,<br>    <span class="token string">"login"</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span><br>      <span class="token string">"username"</span><span class="token builtin class-name">:</span> <span class="token string">"baruser"</span>,<br>      <span class="token string">"password"</span><span class="token builtin class-name">:</span> <span class="token string">"sekrit!"</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span>,<br>  <span class="token punctuation">{</span><br>    <span class="token string">"name"</span><span class="token builtin class-name">:</span> <span class="token string">"baz"</span>,<br>    <span class="token string">"login"</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span><br>      <span class="token string">"username"</span><span class="token builtin class-name">:</span> <span class="token string">"bazuser"</span>,<br>      <span class="token string">"password"</span><span class="token builtin class-name">:</span> <span class="token string">"hunter2"</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">]</span></code></pre><h2>The main script</h2><p>Now I could turn my attention to the main script. Here it is in its entirety; I'll describe it section by section.</p><pre class="language-shell"><code class="language-shell"><span class="token shebang important">#!/usr/bin/env bash</span><br><br><span class="token builtin class-name">set</span> <span class="token parameter variable">-e</span><br><br><span class="token function-name function">pbcopy</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token boolean">true</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><br><br><span class="token function-name function">copy_uname_and_passwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br><br>  <span class="token builtin class-name">local</span> <span class="token assign-left variable">login</span><span class="token operator">=</span><span class="token variable">$1</span><br><br>  <span class="token builtin class-name">echo</span> <span class="token string">"> Copying Username"</span><br>  jq <span class="token parameter variable">-r</span> <span class="token string">'.username'</span> <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token variable">$login</span>"</span><br><br>  <span class="token builtin class-name">echo</span> <span class="token string">"> Press any key to copy password..."</span><br>  <span class="token builtin class-name">read</span><br>  <span class="token builtin class-name">echo</span> <span class="token string">"> Copying Password"</span><br>  jq <span class="token parameter variable">-r</span> <span class="token string">'.password'</span> <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token variable">$login</span>"</span><br><br><span class="token punctuation">}</span><br><br><span class="token function-name function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br><br>  <span class="token builtin class-name">local</span> <span class="token assign-left variable">searchterm</span><span class="token operator">=</span><span class="token variable">$1</span><br>  <span class="token builtin class-name">local</span> selection logins<br>  <span class="token assign-left variable">logins</span><span class="token operator">=</span><span class="token string">"<span class="token variable"><span class="token variable">$(</span>./bw-list-items-search $searchterm<span class="token variable">)</span></span>"</span><br><br>  <span class="token assign-left variable">selection</span><span class="token operator">=</span><span class="token string">"$(jq -r '.[] | "\(.name)<span class="token entity" title="\t">\t</span>\(.login)"</span>' <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token variable">$logins</span>"</span> <span class="token punctuation">\</span><br>    <span class="token operator">|</span> fzf <span class="token parameter variable">--reverse</span> --with-nth<span class="token operator">=</span><span class="token number">1</span> <span class="token parameter variable">--delimiter</span><span class="token operator">=</span><span class="token string">"<span class="token entity" title="\t">\t</span>"</span> --select-1 --exit-0<br>  <span class="token punctuation">)</span><span class="token string">"<br><br>  [[ -n <span class="token variable">$selection</span> ]] \<br>    &amp;&amp; echo "</span>Name: <span class="token variable">${selection<span class="token operator">%%</span>$'\t'*}</span><span class="token string">" \<br>    &amp;&amp; copy_uname_and_passwd "</span><span class="token variable">${selection<span class="token operator">#</span>*$'\t'}</span><span class="token string">"<br><br>}<br><br>main "</span><span class="token variable">$@</span>"</code></pre><h3>Overall structure and the main function</h3><p>For the last few months, my preference for laying out non-trivial scripts has been to use the approach that one often finds in other languages, and that is to define a main function, and right at the bottom, call that to start things off.</p><p>This call is <code>main &quot;$@&quot;</code> which just passes on any and all values that were specified in the script's invocation - they're available in the special parameter <code>$@</code> which &quot;expands to the positional parameters, starting from one&quot; (see <a href="https://tiswww.case.edu/php/chet/bash/bashref.html#Special-Parameters">Special Parameters</a>).</p><h3>The main function</h3><p>I like to qualify my variables, so use <code>local</code> here, which is a synonym for <code>declare</code>. I wrote about this in <a href="https://qmacro.org/autodidactics/2020/10/08/understanding-declare/">Understanding declare</a> in case you want to dig in further.</p><p>Because I have my emulator earlier, I can make almost the same-shaped call to the Bitwarden CLI, passing what was specified in <code>searchterm</code> and retrieving the results (a JSON array) in the <code>logins</code> variable.</p><p>Next comes perhaps the most involved part of the script, which results in a value being stored in the <code>selection</code> variable (if nothing is selected or available, then this will be empty, which we'll deal with too).</p><p><strong>Determining the selection part 1 - with <code>jq</code></strong></p><p>The value for <code>selection</code> is determined from a combination of <code>jq</code> and <code>fzf</code>, which are also the two commands that Christian uses.</p><p>This is the invocation:</p><pre class="language-shell"><code class="language-shell">jq <span class="token parameter variable">-r</span> <span class="token string">'.[] | "\(.name)\t\(.login)"'</span> <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token variable">$logins</span>"</span> <span class="token punctuation">\</span><br>    <span class="token operator">|</span> fzf <span class="token parameter variable">--reverse</span> --with-nth<span class="token operator">=</span><span class="token number">1</span> <span class="token parameter variable">--delimiter</span><span class="token operator">=</span><span class="token string">"<span class="token entity" title="\t">\t</span>"</span> --select-1 --exit-0</code></pre><p>The first thing to notice is that I'm using <code>&lt;&lt;&lt;</code> which is a <a href="https://tldp.org/LDP/abs/html/x17837.html">here string</a> - it's like a <a href="https://tldp.org/LDP/abs/html/here-docs.html">here document</a>, but it's just the variable that gets expanded and fed to the STDIN of the command. This means that whatever is in <code>logins</code> gets expanded and passed to the STDIN of <code>jq</code>.</p><p>Given the emulation of the Bitwarden CLI above, a value that might be in <code>logins</code> looks like this:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"bar"</span><span class="token punctuation">,</span><br>    <span class="token property">"login"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"baruser"</span><span class="token punctuation">,</span><br>      <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"sekrit!"</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"baz"</span><span class="token punctuation">,</span><br>    <span class="token property">"login"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"bazuser"</span><span class="token punctuation">,</span><br>      <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"hunter2"</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">]</span></code></pre><p>Let's look at the <code>jq</code> script now, which is this:</p><pre class="language-jq"><code class="language-jq"><span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator pipe">|</span> <span class="token string">"<span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token punctuation">.</span>name</span><span class="token punctuation">)</span></span>\t<span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token punctuation">.</span>login</span><span class="token punctuation">)</span></span>"</span></code></pre><p>This iterates over the items passed in (i.e. it will process the first object containing the details for &quot;bar&quot; and then the second object containing the details for &quot;baz&quot;) and pipes them into the creation of a literal string (enclosed in double quotes). This literal string is two values separated with a tab character (<code>\t</code>) ... but those values are the values of the respective properties, via <code>jq</code>'s <a href="https://stedolan.github.io/jq/manual/#Stringinterpolation-(foo">string interpolation</a>).</p><p>It's worth noting that the value of <code>.name</code> is a scalar, e.g. &quot;bar&quot;, but the value of <code>.login</code> is actually an object:</p><pre class="language-json"><code class="language-json"><span class="token property">"login"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>  <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"baruser"</span><span class="token punctuation">,</span><br>  <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"sekrit!"</span><br><span class="token punctuation">}</span></code></pre><p>but this gets turned into a string. If &quot;bar&quot; is selected, then the value in <code>selection</code> will be:</p><pre class="language-text"><code class="language-text">bar     {"username":"baruser","password":"sekrit!"}</code></pre><p>where the whitespace between the name &quot;bar&quot; and the rest of the line is a tab character.</p><p>So given the two values (for &quot;bar&quot; and &quot;baz&quot;) above which would have been extracted for the search string &quot;ba&quot;, the following would be produced by the <code>jq</code> invocation:</p><pre class="language-text"><code class="language-text">bar     {"username":"baruser","password":"sekrit!"}<br>baz     {"username":"bazuser","password":"hunter2"}</code></pre><p>Note that the <code>-r</code> option is supplied to <code>jq</code> to produce this raw output.</p><p><strong>Determining the selection part 2 - with <code>fzf</code></strong></p><p>This is then passed to <code>fzf</code>, which is passed a few more options than we saw with Christian's script. Taking them one at a time:</p><ul><li><code>--reverse</code> - this is the same as Christian and is a layout option that causes the selection to be displayed from the top of the screen.</li><li><code>--delimiter=&quot;\t&quot;</code> - this tells <code>fzf</code> how the input fields are delimited, and as we're using a tab character to separate the name and login information, we need to tell <code>fzf</code> (using just spaces would give us issues with spaces in the values of the names).</li><li><code>--with-nth=1</code> - this says &quot;only use the value of the first field in the selection list&quot;, where the fields are delimited as instructed (with the tab character here). This means that only the value of the &quot;name&quot; is presented, not the &quot;login&quot; (username and password) details.</li><li><code>--select-1</code> - this tells <code>fzf</code> that if there's only one item in the selection anyway, just automatically select it and don't show any selection dialogue.</li><li><code>--exit-0</code> - this tells <code>fzf</code> to just end if there's nothing to select from at all (which would be the case if the invocation to <code>bw list items --search</code> returned nothing, i.e. an empty array).</li></ul><p>Here's what the selection looks like if no search string is specified, i.e. it's a presentation of all the possible names:</p><p><img src="/images/2021/08/fzf-name-selection.png" alt="selection in fzf"></p><p>Once we're done with determining the selection, we check to see that there is actually a value in <code>selection</code> and proceed to first show the name and then to call the <code>copy_uname_and_passwd</code> function.</p><p><strong>Displaying the name and extracting the login details</strong></p><p>It's worth highlighting that while <code>fzf</code> only <em>presents</em> the names in the selection list, it will <em>return</em> the entire line that was selected, which is what we want. In other words, given the selection in the screenshot above, if the name &quot;E45 S4HANA 2020 Sandbox&quot; is chosen, then <code>fzf</code> will emit this to STDOUT:</p><pre class="language-text"><code class="language-text">E45 S4HANA 2020 Sandbox {"username":"e45user","password":"sappass"}</code></pre><p>(again, remember that there's a tab character between the name &quot;E45 S4HANA 2020 Sandbox&quot; and the JSON object with the login details).</p><p>So to just print the name, we can use <a href="https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html">shell parameter expansion</a> to pick out the part we want. The <code>${parameter%%word}</code> form is appropriate here; this will remove anything with longest matching pattern first.</p><p>In other words, the expression <code>${selection%%$'\t'*}</code> means:</p><ul><li>take the value of the <code>selection</code> variable</li><li>look at the <em>trailing</em> portion of that value</li><li>find the <em>longest</em> match of the pattern <code>$'\t'*</code></li><li>and remove it</li></ul><p>The <code>$'...'</code> way of quoting a string allows us to use special characters such as tab (<code>\t</code>) safely. The <code>*</code> means &quot;anything&quot;. So the pattern is &quot;a tab character and whatever follows it, if anything&quot;.</p><p>So if the value of <code>selection</code> is:</p><pre class="language-text"><code class="language-text">E45 S4HANA 2020 Sandbox {"username":"e45user","password":"sappass"}</code></pre><p>then this expression will yield:</p><pre class="language-text"><code class="language-text">E45 S4HANA 2020 Sandbox</code></pre><p>The expression in the next line, where we invoke the <code>copy_uname_and_passwd</code> function, is <code>${selection#*$'\t'}</code> which is similar. It means:</p><ul><li>take the value of the <code>selection</code> variable</li><li>look at the <em>beginning</em> portion of that value</li><li>find the <em>shortest</em> match of the pattern <code>*$'\t'</code></li><li>and remove it</li></ul><p>This pattern, then, is &quot;anything, up to and including a tab character&quot;.</p><p>Given the same value as above, this expression will yield:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><span class="token property">"username"</span><span class="token operator">:</span><span class="token string">"e45user"</span><span class="token punctuation">,</span><span class="token property">"password"</span><span class="token operator">:</span><span class="token string">"sappass"</span><span class="token punctuation">}</span></code></pre><h3>The copy_uname_and_passwd function</h3><p>This is very similar to Christian's original script, except that we can use a &quot;here string&quot; again to pass the value of the <code>login</code> variable to <code>jq</code> each time. Given what we know from the <code>main</code> function, this value will be something like this:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><span class="token property">"username"</span><span class="token operator">:</span><span class="token string">"e45user"</span><span class="token punctuation">,</span><span class="token property">"password"</span><span class="token operator">:</span><span class="token string">"sappass"</span><span class="token punctuation">}</span></code></pre><p>which makes for a simpler extraction of the values we want (from the <code>username</code> and <code>password</code> properties).</p><h3>The pbcopy function</h3><p>While my main machine is a macOS device, I'm working in a (Linux based) dev container and therefore don't have access right now to the <code>pbcopy</code> command. As I wanted to leave calls to it in the script to reflect where it originally was, this function that does nothing will do the trick.</p><h2>Wrapping up</h2><p>There's always more to learn about Bash scripting and the tools we have at our disposal. And to use one of the sayings from the wonderful Perl community - TMOWTDI - &quot;there's more than one way to do it&quot;. I'm sure you can come up with some alternatives too, and some improvements on what I've written.</p><p>Keep on learning and sharing.</p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/tools/">#tools</a> <a href="/tags/shell/">#shell</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2021/09/01/sap-tech-bytes:-btp-cli-installation/"><span>←</span> <span>SAP Tech Bytes: btp CLI - installation</span> </a><a href="/blog/posts/2021/08/22/today&#39;s-til-trio/"><span>Today&#39;s TIL trio</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="learning-by-rewriting-bash-jq-and-fzf-details">Learning by rewriting - bash, jq and fzf details</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2021-08-26">26 August 2021</time></li>
+	<li><a href="/tags/tools/" class="post-tag">tools</a>, </li>
+	<li><a href="/tags/shell/" class="post-tag">shell</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p><em>One of the ways I learn is by reading and sometimes rewriting other people's scripts. Here I learn more about <code>jq</code> by rewriting a friend's password CLI script.</em></p>
+<p>My friend <a href="https://twitter.com/ceedee666">Christian Drumm</a> published a nice post this week on <a href="https://www.drumm.sh/blog/bw-cli">Adapting the Bitwarden CLI with Shell Scripting</a>, where he shared a script he wrote to conveniently grab passwords into his paste buffer at the command line.</p>
+<p>It's a good read and contains some nice CLI animations too. In the summary, Christian remarks that there may be some areas for improvement. I don't know about that, and I'm certainly no &quot;shell scripting magician&quot; but I thought I'd have a go at modifying the script to perhaps introduce some further Bash shell, <code>jq</code> and <code>fzf</code> features to dig into.</p>
+<h2 id="emulating-the-cli">Emulating the CLI</h2>
+<p>I don't have Bitwarden, so I created a quick &quot;database&quot; of login information that took the form of what the Bitwarden CLI <code>bw</code> produced. First, then, is the contents of the <code>items.json</code> file:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"E45 S4HANA 2020 Sandbox"</span><span class="token punctuation">,</span> <span class="token property">"login"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"e45user"</span><span class="token punctuation">,</span> <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"sappass"</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"space user"</span><span class="token punctuation">,</span> <span class="token property">"login"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"spaceuser"</span><span class="token punctuation">,</span> <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"in space"</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"foo"</span><span class="token punctuation">,</span> <span class="token property">"login"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"foouser"</span><span class="token punctuation">,</span> <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"foopass"</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"bar"</span><span class="token punctuation">,</span> <span class="token property">"login"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"baruser"</span><span class="token punctuation">,</span> <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"sekrit!"</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"baz"</span><span class="token punctuation">,</span> <span class="token property">"login"</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"bazuser"</span><span class="token punctuation">,</span> <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"hunter2"</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>Then I needed to emulate the <code>bw list items --search</code> command that Christian uses to search for an entry. As far as I can tell, it returns an array, regardless of whether a single entry is found, or more than one. I'm also assuming it returns an empty array if nothing is found, but that's less important here as you'll see.</p>
+<p>I did this by creating a script <code>bw-list-items-search</code> which looks like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token shebang important">#!/usr/bin/env bash</span>
+
+<span class="token comment"># Emulates 'bw list items --search $1'</span>
+
+jq <span class="token parameter variable">--arg</span> name <span class="token string">"<span class="token variable">$1</span>"</span> <span class="token string">'map(select(.name | test($name; "i")))'</span> ./items.json</code></pre>
+<p>Perhaps unironically I'm using <code>jq</code> to emulate the behaviour, because the data being searched is a JSON array (in <code>items.json</code>). I map over the entries in the array, and use the <a href="https://stedolan.github.io/jq/manual/#select(boolean_expression)"><code>select</code> function</a> to return only those entries that satisfy the boolean expression passed to it:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span>name <span class="token operator pipe">|</span> <span class="token c-style-function function">test</span><span class="token punctuation">(</span><span class="token variable">$name</span><span class="token punctuation">;</span> <span class="token string">"i"</span><span class="token punctuation">)</span></code></pre>
+<p>This pipes the value of the <code>name</code> property (e.g. &quot;E45 S4HANA 2020 Sandbox&quot;, &quot;space user&quot;, &quot;foo&quot; etc) into the <a href="https://stedolan.github.io/jq/manual/#test(val),test(regex;flags)"><code>test</code> function</a> which can take a regular expression, along with one or more flags if required.</p>
+<p>Here, we're just taking the value passed into the script, via the argument that was passed to the <code>jq</code> invocation with <code>--arg name &quot;$1&quot;</code>. This is then available within the <code>jq</code> script as the binding <code>$name</code>. The second parameter supplied here, <code>&quot;i&quot;</code>, is the &quot;case insensitive match&quot; flag.</p>
+<p>The result means that I can emulate what I think <code>bw list items --search</code> does:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> ./bw-list-items-search e45
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token string">"name"</span><span class="token builtin class-name">:</span> <span class="token string">"E45 S4HANA 2020 Sandbox"</span>,
+    <span class="token string">"login"</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
+      <span class="token string">"username"</span><span class="token builtin class-name">:</span> <span class="token string">"e45user"</span>,
+      <span class="token string">"password"</span><span class="token builtin class-name">:</span> <span class="token string">"sappass"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>Here's an example of where more than one result is found:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> ./bw-list-items-search ba
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token string">"name"</span><span class="token builtin class-name">:</span> <span class="token string">"bar"</span>,
+    <span class="token string">"login"</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
+      <span class="token string">"username"</span><span class="token builtin class-name">:</span> <span class="token string">"baruser"</span>,
+      <span class="token string">"password"</span><span class="token builtin class-name">:</span> <span class="token string">"sekrit!"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>,
+  <span class="token punctuation">{</span>
+    <span class="token string">"name"</span><span class="token builtin class-name">:</span> <span class="token string">"baz"</span>,
+    <span class="token string">"login"</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
+      <span class="token string">"username"</span><span class="token builtin class-name">:</span> <span class="token string">"bazuser"</span>,
+      <span class="token string">"password"</span><span class="token builtin class-name">:</span> <span class="token string">"hunter2"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<h2 id="the-main-script">The main script</h2>
+<p>Now I could turn my attention to the main script. Here it is in its entirety; I'll describe it section by section.</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token shebang important">#!/usr/bin/env bash</span>
+
+<span class="token builtin class-name">set</span> <span class="token parameter variable">-e</span>
+
+<span class="token function-name function">pbcopy</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token boolean">true</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+
+<span class="token function-name function">copy_uname_and_passwd</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+  <span class="token builtin class-name">local</span> <span class="token assign-left variable">login</span><span class="token operator">=</span><span class="token variable">$1</span>
+
+  <span class="token builtin class-name">echo</span> <span class="token string">"> Copying Username"</span>
+  jq <span class="token parameter variable">-r</span> <span class="token string">'.username'</span> <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token variable">$login</span>"</span>
+
+  <span class="token builtin class-name">echo</span> <span class="token string">"> Press any key to copy password..."</span>
+  <span class="token builtin class-name">read</span>
+  <span class="token builtin class-name">echo</span> <span class="token string">"> Copying Password"</span>
+  jq <span class="token parameter variable">-r</span> <span class="token string">'.password'</span> <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token variable">$login</span>"</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token function-name function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+  <span class="token builtin class-name">local</span> <span class="token assign-left variable">searchterm</span><span class="token operator">=</span><span class="token variable">$1</span>
+  <span class="token builtin class-name">local</span> selection logins
+  <span class="token assign-left variable">logins</span><span class="token operator">=</span><span class="token string">"<span class="token variable"><span class="token variable">$(</span>./bw-list-items-search $searchterm<span class="token variable">)</span></span>"</span>
+
+  <span class="token assign-left variable">selection</span><span class="token operator">=</span><span class="token string">"$(jq -r '.[] | "\(.name)<span class="token entity" title="\t">\t</span>\(.login)"</span>' <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token variable">$logins</span>"</span> <span class="token punctuation">\</span>
+    <span class="token operator">|</span> fzf <span class="token parameter variable">--reverse</span> --with-nth<span class="token operator">=</span><span class="token number">1</span> <span class="token parameter variable">--delimiter</span><span class="token operator">=</span><span class="token string">"<span class="token entity" title="\t">\t</span>"</span> --select-1 --exit-0
+  <span class="token punctuation">)</span><span class="token string">"
+
+  [[ -n <span class="token variable">$selection</span> ]] \
+    &amp;&amp; echo "</span>Name: <span class="token variable">${selection<span class="token operator">%%</span>$'\t'*}</span><span class="token string">" \
+    &amp;&amp; copy_uname_and_passwd "</span><span class="token variable">${selection<span class="token operator">#</span>*$'\t'}</span><span class="token string">"
+
+}
+
+main "</span><span class="token variable">$@</span>"</code></pre>
+<h3 id="overall-structure-and-the-main-function">Overall structure and the main function</h3>
+<p>For the last few months, my preference for laying out non-trivial scripts has been to use the approach that one often finds in other languages, and that is to define a main function, and right at the bottom, call that to start things off.</p>
+<p>This call is <code>main &quot;$@&quot;</code> which just passes on any and all values that were specified in the script's invocation - they're available in the special parameter <code>$@</code> which &quot;expands to the positional parameters, starting from one&quot; (see <a href="https://tiswww.case.edu/php/chet/bash/bashref.html#Special-Parameters">Special Parameters</a>).</p>
+<h3 id="the-main-function">The main function</h3>
+<p>I like to qualify my variables, so use <code>local</code> here, which is a synonym for <code>declare</code>. I wrote about this in <a href="https://qmacro.org/autodidactics/2020/10/08/understanding-declare/">Understanding declare</a> in case you want to dig in further.</p>
+<p>Because I have my emulator earlier, I can make almost the same-shaped call to the Bitwarden CLI, passing what was specified in <code>searchterm</code> and retrieving the results (a JSON array) in the <code>logins</code> variable.</p>
+<p>Next comes perhaps the most involved part of the script, which results in a value being stored in the <code>selection</code> variable (if nothing is selected or available, then this will be empty, which we'll deal with too).</p>
+<p><strong>Determining the selection part 1 - with <code>jq</code></strong></p>
+<p>The value for <code>selection</code> is determined from a combination of <code>jq</code> and <code>fzf</code>, which are also the two commands that Christian uses.</p>
+<p>This is the invocation:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">jq <span class="token parameter variable">-r</span> <span class="token string">'.[] | "\(.name)\t\(.login)"'</span> <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token variable">$logins</span>"</span> <span class="token punctuation">\</span>
+    <span class="token operator">|</span> fzf <span class="token parameter variable">--reverse</span> --with-nth<span class="token operator">=</span><span class="token number">1</span> <span class="token parameter variable">--delimiter</span><span class="token operator">=</span><span class="token string">"<span class="token entity" title="\t">\t</span>"</span> --select-1 --exit-0</code></pre>
+<p>The first thing to notice is that I'm using <code>&lt;&lt;&lt;</code> which is a <a href="https://tldp.org/LDP/abs/html/x17837.html">here string</a> - it's like a <a href="https://tldp.org/LDP/abs/html/here-docs.html">here document</a>, but it's just the variable that gets expanded and fed to the STDIN of the command. This means that whatever is in <code>logins</code> gets expanded and passed to the STDIN of <code>jq</code>.</p>
+<p>Given the emulation of the Bitwarden CLI above, a value that might be in <code>logins</code> looks like this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"bar"</span><span class="token punctuation">,</span>
+    <span class="token property">"login"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"baruser"</span><span class="token punctuation">,</span>
+      <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"sekrit!"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"baz"</span><span class="token punctuation">,</span>
+    <span class="token property">"login"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"bazuser"</span><span class="token punctuation">,</span>
+      <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"hunter2"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>Let's look at the <code>jq</code> script now, which is this:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator pipe">|</span> <span class="token string">"<span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token punctuation">.</span>name</span><span class="token punctuation">)</span></span>\t<span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token punctuation">.</span>login</span><span class="token punctuation">)</span></span>"</span></code></pre>
+<p>This iterates over the items passed in (i.e. it will process the first object containing the details for &quot;bar&quot; and then the second object containing the details for &quot;baz&quot;) and pipes them into the creation of a literal string (enclosed in double quotes). This literal string is two values separated with a tab character (<code>\t</code>) ... but those values are the values of the respective properties, via <code>jq</code>'s <a href="https://stedolan.github.io/jq/manual/#Stringinterpolation-(foo">string interpolation</a>).</p>
+<p>It's worth noting that the value of <code>.name</code> is a scalar, e.g. &quot;bar&quot;, but the value of <code>.login</code> is actually an object:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token property">"login"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+  <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"baruser"</span><span class="token punctuation">,</span>
+  <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"sekrit!"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>but this gets turned into a string. If &quot;bar&quot; is selected, then the value in <code>selection</code> will be:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">bar     {"username":"baruser","password":"sekrit!"}</code></pre>
+<p>where the whitespace between the name &quot;bar&quot; and the rest of the line is a tab character.</p>
+<p>So given the two values (for &quot;bar&quot; and &quot;baz&quot;) above which would have been extracted for the search string &quot;ba&quot;, the following would be produced by the <code>jq</code> invocation:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">bar     {"username":"baruser","password":"sekrit!"}
+baz     {"username":"bazuser","password":"hunter2"}</code></pre>
+<p>Note that the <code>-r</code> option is supplied to <code>jq</code> to produce this raw output.</p>
+<p><strong>Determining the selection part 2 - with <code>fzf</code></strong></p>
+<p>This is then passed to <code>fzf</code>, which is passed a few more options than we saw with Christian's script. Taking them one at a time:</p>
+<ul>
+<li><code>--reverse</code> - this is the same as Christian and is a layout option that causes the selection to be displayed from the top of the screen.</li>
+<li><code>--delimiter=&quot;\t&quot;</code> - this tells <code>fzf</code> how the input fields are delimited, and as we're using a tab character to separate the name and login information, we need to tell <code>fzf</code> (using just spaces would give us issues with spaces in the values of the names).</li>
+<li><code>--with-nth=1</code> - this says &quot;only use the value of the first field in the selection list&quot;, where the fields are delimited as instructed (with the tab character here). This means that only the value of the &quot;name&quot; is presented, not the &quot;login&quot; (username and password) details.</li>
+<li><code>--select-1</code> - this tells <code>fzf</code> that if there's only one item in the selection anyway, just automatically select it and don't show any selection dialogue.</li>
+<li><code>--exit-0</code> - this tells <code>fzf</code> to just end if there's nothing to select from at all (which would be the case if the invocation to <code>bw list items --search</code> returned nothing, i.e. an empty array).</li>
+</ul>
+<p>Here's what the selection looks like if no search string is specified, i.e. it's a presentation of all the possible names:</p>
+<p><img src="/images/2021/08/fzf-name-selection.png" alt="selection in fzf"></p>
+<p>Once we're done with determining the selection, we check to see that there is actually a value in <code>selection</code> and proceed to first show the name and then to call the <code>copy_uname_and_passwd</code> function.</p>
+<p><strong>Displaying the name and extracting the login details</strong></p>
+<p>It's worth highlighting that while <code>fzf</code> only <em>presents</em> the names in the selection list, it will <em>return</em> the entire line that was selected, which is what we want. In other words, given the selection in the screenshot above, if the name &quot;E45 S4HANA 2020 Sandbox&quot; is chosen, then <code>fzf</code> will emit this to STDOUT:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">E45 S4HANA 2020 Sandbox {"username":"e45user","password":"sappass"}</code></pre>
+<p>(again, remember that there's a tab character between the name &quot;E45 S4HANA 2020 Sandbox&quot; and the JSON object with the login details).</p>
+<p>So to just print the name, we can use <a href="https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html">shell parameter expansion</a> to pick out the part we want. The <code>${parameter%%word}</code> form is appropriate here; this will remove anything with longest matching pattern first.</p>
+<p>In other words, the expression <code>${selection%%$'\t'*}</code> means:</p>
+<ul>
+<li>take the value of the <code>selection</code> variable</li>
+<li>look at the <em>trailing</em> portion of that value</li>
+<li>find the <em>longest</em> match of the pattern <code>$'\t'*</code></li>
+<li>and remove it</li>
+</ul>
+<p>The <code>$'...'</code> way of quoting a string allows us to use special characters such as tab (<code>\t</code>) safely. The <code>*</code> means &quot;anything&quot;. So the pattern is &quot;a tab character and whatever follows it, if anything&quot;.</p>
+<p>So if the value of <code>selection</code> is:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">E45 S4HANA 2020 Sandbox {"username":"e45user","password":"sappass"}</code></pre>
+<p>then this expression will yield:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">E45 S4HANA 2020 Sandbox</code></pre>
+<p>The expression in the next line, where we invoke the <code>copy_uname_and_passwd</code> function, is <code>${selection#*$'\t'}</code> which is similar. It means:</p>
+<ul>
+<li>take the value of the <code>selection</code> variable</li>
+<li>look at the <em>beginning</em> portion of that value</li>
+<li>find the <em>shortest</em> match of the pattern <code>*$'\t'</code></li>
+<li>and remove it</li>
+</ul>
+<p>This pattern, then, is &quot;anything, up to and including a tab character&quot;.</p>
+<p>Given the same value as above, this expression will yield:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span><span class="token property">"username"</span><span class="token operator">:</span><span class="token string">"e45user"</span><span class="token punctuation">,</span><span class="token property">"password"</span><span class="token operator">:</span><span class="token string">"sappass"</span><span class="token punctuation">}</span></code></pre>
+<h3 id="the-copy-uname-and-passwd-function">The copy_uname_and_passwd function</h3>
+<p>This is very similar to Christian's original script, except that we can use a &quot;here string&quot; again to pass the value of the <code>login</code> variable to <code>jq</code> each time. Given what we know from the <code>main</code> function, this value will be something like this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span><span class="token property">"username"</span><span class="token operator">:</span><span class="token string">"e45user"</span><span class="token punctuation">,</span><span class="token property">"password"</span><span class="token operator">:</span><span class="token string">"sappass"</span><span class="token punctuation">}</span></code></pre>
+<p>which makes for a simpler extraction of the values we want (from the <code>username</code> and <code>password</code> properties).</p>
+<h3 id="the-pbcopy-function">The pbcopy function</h3>
+<p>While my main machine is a macOS device, I'm working in a (Linux based) dev container and therefore don't have access right now to the <code>pbcopy</code> command. As I wanted to leave calls to it in the script to reflect where it originally was, this function that does nothing will do the trick.</p>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>There's always more to learn about Bash scripting and the tools we have at our disposal. And to use one of the sayings from the wonderful Perl community - TMOWTDI - &quot;there's more than one way to do it&quot;. I'm sure you can come up with some alternatives too, and some improvements on what I've written.</p>
+<p>Keep on learning and sharing.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2021/08/22/todays-til-trio/">Today&#39;s TIL trio</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2021/09/01/sap-tech-bytes-btp-cli-installation/">SAP Tech Bytes: btp CLI - installation</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2021/08/26/learning-by-rewriting-bash-jq-and-fzf-details/` was built on 2025-09-15T15:58:49.611Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

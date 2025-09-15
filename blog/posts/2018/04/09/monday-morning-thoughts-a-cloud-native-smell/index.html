@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Monday morning thoughts: a cloud native smell</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="monday-morning-thoughts-a-cloud-native-smell">Monday morning thoughts: a cloud native smell</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2018-04-09">09 April 2018</time></li>
+	<li><a href="/tags/sapcommunity/" class="post-tag">sapcommunity</a>, </li>
+	<li><a href="/tags/mondaymorningthoughts/" class="post-tag">mondaymorningthoughts</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>Continuing on from my earlier <a href="/blog/posts/2018/03/26/monday-morning-thoughts:-cloud-native/">random
+thoughts</a>
+about what cloud native means to me, I was musing this morning on the
+nature of the web, and specifically URIs - or rather their
+specialisation that we see most commonly - URLs.</p>
+<h2 id="the-importance-of-stable-urls">The importance of stable URLs</h2>
+<p>There's a well-known article by Tim Berners-Lee (TBL) entitled &quot;<a href="https://www.w3.org/Provider/Style/URI">Cool
+URIs don't change</a>&quot; which I'd
+encourage you to go and read at some stage over a cup of coffee. It's
+from the World Wide Web Consortium (W3C). There are many implications of
+what he says in this article, which I'll leave you to ponder. There's
+also one particular observation that's worth sharing now - the URL of
+the article hasn't changed since its publication 20 years ago. Now
+that's what I call setting a good example!</p>
+<p>In thinking about the content of this article, I'm reminded of the
+excellent set of productivity tools from Google - known these days as G
+Suite. I say &quot;known these days&quot;, as they've been referred to
+previously as &quot;Google Apps&quot;, and - perhaps colloquially - as &quot;Google
+Docs&quot;. But while the suite's name might have changed, the fundamental
+design that underpins this awesome set of tools has not.</p>
+<p>Because Google get the web, they build their tools &quot;<strong>of</strong> the web&quot;,
+rather than merely &quot;<strong>on</strong> the web&quot;. That means, for example, that the
+URL of a Google spreadsheet, for example, or a Google document, or a
+Google Form, or whatever - is unique and permanent. It doesn't change.
+Even if you change the name of that &quot;document&quot; (we should really say
+&quot;of that resource&quot;), the URL remains the same. And that brings a
+superset of web-based by-products that we take for granted.</p>
+<p>For example,
+I can jump to a document I've been working on recently in literally a
+handful of keystrokes, without having to think of where I stored it or
+what the URL might be, or what the navigation path might be that I have
+to take once if I have to first find some sort of &quot;root&quot; resource.
+This is all I have to do:</p>
+<p>👉 Cmd-T to get a new browser tab and have my cursor placed in the omnibar</p>
+<p>👉 Then three or four characters to identify the working title of the document</p>
+<p>👉 Finally a down-arrow or two and Enter to request that resource</p>
+<p>Bam. In and editing.</p>
+<p>More than can be said for, ahem, certain other online productivity /
+collaboration suites - merely change the title of the document you're
+writing and the URL changes! Ouch! What use is that if I want to share
+the working draft resource with you?</p>
+<p>Anyway, let me tear myself away from this becoming another post
+entirely, and look at a typical G Suite URL to help me get to my next
+point. Here's an example, for a spreadsheet (I've changed the URL
+slightly for security reasons). First, the base:</p>
+<p><code>https://docs.google.com/spreadsheets/d/</code></p>
+<p>Then, an opaque identifier:</p>
+<p><code>1nT4GB85goF34MaxiEZAMJp-aCk0QguyZ6WmlWjMUA42</code></p>
+<p>The structure of the URL is quite simple, and most of it is the unique
+code (<code>1nT4...42</code>) that identifies the individual online spreadsheet
+resource.</p>
+<h2 id="the-opacity-axiom">The Opacity Axiom</h2>
+<p>So that brings me to a parallel thought relating to cloud native, and
+something that (to me) is a &quot;smell&quot; (as in something that just gives
+me a subtle hint about something - not necessarily negative).</p>
+<p>When I first started out exploring the SAP Cloud Platform (SCP), I
+noticed that a lot of the URLs had similar opaque identifiers in them.
+For example, if I created a temporary trial account, or a temporary
+member within a trial account. If I added a subaccount or was given
+access to a new global account, whether in the Neo or (now the) Cloud
+Foundry context ... each time, I saw unique, opaque identifiers.</p>
+<p>Here's another couple of (modified) examples:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">https://account.us2.hana.ondemand.com/cockpit#/acc/dd2758442/services</code></pre>
+<pre class="language-text" tabindex="0"><code class="language-text">https://account.hanatrial.ondemand.com/cockpit#/region/cf-eu10/globalaccount/42461e78-9618-44d8-9c8e-629dc5319b61/subaccount/420c85ab-ecbc-4760-84e6-c1d45dd593b4/details</code></pre>
+<p>Even services within the SCP had parts of their URLs that I couldn't
+control (or initially understand) - provider account identifiers, for
+example. And they looked a little bit ugly to me, initially.</p>
+<p>But then I remembered another W3C article, from even earlier in the
+web's history (1996) - <a href="https://www.w3.org/DesignIssues/Axioms.html">Universal Resource Identifiers - Axioms of Web
+Architecture</a>. This is also
+a great article and worth a read. Of particular interest to us here in
+that article is the section on &quot;<a href="https://www.w3.org/DesignIssues/Axioms.html#opaque">The Opacity
+Axiom</a>&quot;, which
+states:</p>
+<p><em>&quot;The only thing you can use an identifier for is to refer to an
+object. When you are not dereferencing, you should not look at the
+contents of the URI string to gain other information.&quot;</em></p>
+<p>This axiom somewhat goes against the grain of what I like to think, but
+is actually crucial. First from the point of view of the side-effect of
+trying to infer structure from a URL, but more importantly from the
+perspective of where we are today, in the cloud native context of
+resources being spun up, created, instantiated, conjured up ... and
+then after their utility has been spent, being deleted, destroyed,
+disappeared*.</p>
+<p>(*yes I know I'm using this verb transitively, but there you go.
+Talking of unusual words and unusual usages, did you notice TBL using
+the word &quot;disillusion&quot; in the &quot;Cool URIs Don't Change&quot; article -
+also as a transitive verb? That use has been <a href="https://books.google.com/ngrams/graph?year_start=1800&amp;year_end=2008&amp;corpus=15&amp;smoothing=7&amp;case_insensitive=on&amp;content=disillusion&amp;direct_url=t4%3B%2Cdisillusion%3B%2Cc0%3B%2Cs0%3B%3Bdisillusion%3B%2Cc0%3B%3BDisillusion%3B%2Cc0">waning since the early
+C20</a>,
+but still wonderful.)</p>
+<p>Resources, such as those that are spun up on cloud platforms such as
+SAP's and Google's, that are ultimately ephemeral need to be born and
+then die, and in that intervening period, have an identifier that is as
+equally anonymous as it is unique.</p>
+<p><a name="the-cloud-native-smell"></a></p>
+<h2 id="the-cloud-native-smell">The cloud native smell</h2>
+<p>And it's the very presence of these superficially ugly but essentially
+throwaway identifiers in URLs (after all,
+<a href="https://en.wikipedia.org/wiki/URL">URLs</a> *are*
+<a href="https://en.wikipedia.org/wiki/Uniform_Resource_Identifier">URIs</a>,
+aren't they) that to me form a subtle hint, a signpost, a smell, that
+what we're dealing with is something that is cloud native. Resources,
+services, VMs, clusters, subaccounts - they're created and destroyed
+all the time, not just in a web environment but in on-premise contexts
+and sometimes within proprietary architectures.</p>
+<p>The fact that resources -- and I'm using the word &quot;resource&quot; while
+thinking about how that word is used in <a href="https://en.wikipedia.org/wiki/Representational_state_transfer">Representational State
+Transfer</a>
+(REST) -- need identifiers in the context of the web (and yes,
+&quot;cloud&quot; doesn't mean &quot;just web (HTTP)&quot;), but our interface to the
+cloud is predominantly via that protocol) means that the increasing
+occurrence of URLs with long strings of opaque characters often triggers
+a thought in my head that we're moving further towards the age of cloud
+native.</p>
+<p>What are your thoughts?</p>
+<hr>
+<p>This post was brought to you by <a href="https://www.pactcoffee.com/coffees/finca-buenos-aires">Finca Buenos
+Aires</a> coffee and
+some happy memories from the early days of the web.</p>
+<hr>
+<p>Read more posts in this series here: <a href="/tags/mondaymorningthoughts/">Monday morning
+thoughts</a>.</p>
+<hr>
+<p><a href="https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-a-cloud-native-smell/ba-p/13372514">Originally published on SAP Community</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2018/04/05/introduction-to-sap-cloud-platform-workflow-summary/">Introduction to SAP Cloud Platform Workflow - Summary</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2018/04/16/monday-morning-thoughts-upload-download-in-a-cloud-native-world/">Monday morning thoughts: upload / download in a cloud native world</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2018/04/09/monday-morning-thoughts-a-cloud-native-smell/` was built on 2025-09-15T15:58:49.590Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

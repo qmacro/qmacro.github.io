@@ -1,0 +1,708 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Monday morning thoughts: Core Data Services</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="monday-morning-thoughts-core-data-services">Monday morning thoughts: Core Data Services</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2018-06-11">11 June 2018</time></li>
+	<li><a href="/tags/sapcommunity/" class="post-tag">sapcommunity</a>, </li>
+	<li><a href="/tags/mondaymorningthoughts/" class="post-tag">mondaymorningthoughts</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p><em>In this post, I think about what Core Data Services (CDS) is, what it
+does, and why we should make it a priority to learn more about.</em></p>
+<p>Earlier this morning, while following a tutorial, I came across this
+message in the console log of my SAP Web IDE:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">This is CDS 2.3.1, Compiler 1.0.27, Home: node_modules/@sap/cds</code></pre>
+<p>On the surface, it looks like many of the messages we see in process
+output - informational, and part of a series of lines that describe
+what's going on in the background.</p>
+<p>What struck me was the implied significance. What this message tells me
+is that CDS -- a layer that has hitherto been largely understated --
+has an identity, a version, all of its own. Even the CDS compiler has
+its own version. Rather than thinking about CDS as an amorphous blob of
+language that sits implicitly somewhere between the database and UI5
+(especially Fiori Elements, with the annotations that CDS offers), CDS
+is very much something that we should sit up and pay attention to as an
+explicit part of SAP's development technology stack.</p>
+<h2 id="the-origins-of-cds">The origins of CDS</h2>
+<p>CDS was born in the early HANA era, which heralded paradigm changes in
+application programming. Instead of bringing data to code, as we did in
+the classic R/3 + RDBMS approach, the power of HANA suggested that the
+approach should be to bring code to data.</p>
+<p><img src="/images/2018/06/Screen-Shot-2018-06-11-at-08.04.37.png" alt=""></p>
+<p>Some of us older hackers might suggest that this is nothing new, talking
+wistfully about <a href="https://en.wikipedia.org/wiki/Stored_procedure">stored
+procedures</a>, and how
+everything old eventually becomes new again. But we'll leave that for
+another time.</p>
+<p>One thing that SAP has done consistently well over the decades is to
+understand the importance of abstraction. With the advent of HANA and
+the switch to a data centric approach to development, an abstraction
+layer providing language for data definition, access and queries was
+born.</p>
+<p>Initially this layer, named Core Data Services, was used to bridge the
+semantic gap between low level SQL (as a kind of &quot;database assembly
+language&quot;) and the actual data expressions needed to solve business
+problems, bringing declarations at conceptual and implementation levels
+closer together.</p>
+<h2 id="from-strength-to-strength">From strength to strength</h2>
+<p>Initially available in the HANA space, CDS was then made available to
+the ABAP world, and with the advent of Fiori Elements, many of us became
+conscious of CDS as more than just a database abstraction layer.</p>
+<p>The power of CDS annotations and the possibilities of layering
+consumption views upon interface views, with the added facility of
+adding metadata for use in generated user interface (UI) scenarios is a
+heady combination. Add to that the possibilities that metadata
+extensions allow and CDS becomes one powerful layer indeed.</p>
+<h2 id="a-key-ingredient">A key ingredient</h2>
+<p>I'm seeing CDS as a key ingredient that pervades much of what we as
+developers in the SAP ecosphere do now and will be doing tomorrow too.
+It's the glue, the backbone, that binds together multiple layers and
+moving parts.</p>
+<p>In the past, we've talked about &quot;full stack developers&quot;, meaning (in
+our world) folks who can build end-to-end Fiori apps with frontend
+components powered by UI5 and backend components powered by OData on the
+ABAP stack. Perhaps we need to broaden that view and think about the
+reality which might be better described as &quot;multi stack&quot;. As we've
+now established that ABAP as a backend platform and UI5 as a frontend
+platform works well, we can and should consider alternatives at both
+ends.</p>
+<p>The idea of &quot;bring your own language&quot; (BYOL) on the SAP Cloud Platform
+actually extends outwards in all directions to &quot;bring your own
+[database|frontend|backend]&quot; and dilutes the meaning of &quot;full
+stack developer&quot; because few, if any, developers will be skilled in all
+the possible combinations.</p>
+<p>That said, CDS is a front runner for being a constant in this multi
+stack world and something we should all know about. I've mentioned
+already that CDS binds multiple layers and moving parts together.
+Perhaps more significantly it binds people together, being a language
+that's used and understood by technicians up and down the stack(s) and
+that has meaning and significance to all of them.</p>
+<h2 id="the-new-canonical-example">The new canonical example</h2>
+<p>In last week's <a href="/tags/mondaymorningthoughts/">Monday morning
+thoughts</a>, on the
+<a href="/blog/posts/2018/06/04/monday-morning-thoughts:-the-learning-continuum/">learning
+continuum</a>,
+I mentioned the new <a href="https://blogs.sap.com/2018/06/05/introducing-the-new-application-programming-model-for-sap-cloud-platform/">Application Programming Model for the SAP Cloud
+Platform</a>,
+which appeared to me in the form of a wonderful early <a href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/5ec8c983a0bf43b4a13186fcf59015fc.html">&quot;Getting
+Started&quot;
+tutorial</a> that
+hints of a tantalising richness and depth that only multiple repeated
+journeys will start to extract.</p>
+<p>The tutorial is about building a full stack application on the SAP Cloud
+Platform (significantly as a Cloud Foundry app) using a variety of
+technology components: Fiori Elements and UI5 on the frontend, HANA as
+the persistency layer, and Java as the application service layer.</p>
+<p>A key point is that these are just examples of technology components.
+For example, the application service layer is, in this tutorial
+instance, Java, mainly because it's the runtime supported right now.
+But perhaps for the next incarnation of the Application Programming
+Model, there'll be support a NodeJS stack for an alternative
+application service layer. It's early days and I for one am glad that
+<a href="https://courses.cs.duke.edu/common/compsci092/papers/govern/consensus.pdf">rough consensus and running
+code</a> has meant
+that we're seeing a first glimpse of the entire model with a single
+runtime example, earlier than we might have done if multiple runtimes
+had been supported from day one.</p>
+<p>Most significantly, however, there's a notion that becomes clear as
+soon as you've run through the tutorial even just once. That notion is
+the extreme importance of CDS. CDS is used as a business level data
+definition source, and to generate the artifacts at the (HANA)
+persistence layer. It's used to define visual aspects relating to the
+data, with those definitions (annotations) making their way to the
+frontend to influence what the app looks like and how it behaves. Last
+but not least, it's used to generate the application service layer.
+There's even a top-level item in the project contextual menu for builds
+based on CDS.</p>
+<p><img src="/images/2018/06/Screen-Shot-2018-06-11-at-08.47.57.png" alt=""></p>
+<h2 id="next-steps">Next steps</h2>
+<p>CDS has become a powerful set of languages: Data Definition Language
+(DDL), Query Language (QL) and Data Control Language (DCL). The
+<a href="https://help.sap.com/viewer/cc0c305d2fab47bd808adcad3ca7ee9d/7.5.9/en-US/630ce9b386b84e80bfade96779fbaeec.html">annotations are many and
+complex</a>
+(my CDS journey has introduced me to some, but there are others that
+I've yet to come across and understand). But in my view it's a
+technology, a layer, that we'd be foolish to ignore. Last month I even
+went so far as to suggest that CDS is one of <a href="/blog/posts/2018/05/21/monday-morning-thoughts:-milestones/#todays-milestones">today's
+milestones</a>.</p>
+<p>If you do only one thing this week to advance along your learning
+continuum, may I suggest it's to look into CDS. Start by looking into
+the <a href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/5ec8c983a0bf43b4a13186fcf59015fc.html">Getting Started
+Tutorial</a>
+for the Application Programming Model. If you're only fleetingly
+familiar with CDS, let the tutorial wash over you, there will be parts
+that either don't make sense, or seem like magic. That doesn't matter
+at this stage. Just get to the stage where you've experienced CDS first
+hand, felt it under your fingertips, and grokked where and how it fits
+in as a lingua franca across the different territories of a single,
+multi stack application. Then you can branch out and sideways to other
+CDS tutorials on database facilities, annotations and metadata
+extensions.</p>
+<p>You won't regret it.</p>
+<hr>
+<p>This post was brought to you from a damp but warm early morning in
+Manchester, <a href="https://www.pactcoffee.com/coffees/nyarusiza-peaberry">Pact Coffee's Nyarusiza
+Peaberry</a> coffee
+and the lingering tiredness of transatlantic jet-lag.</p>
+<hr>
+<p>Read more posts in this series here: <a href="/tags/mondaymorningthoughts/">Monday morning
+thoughts</a>.</p>
+<hr>
+<p><a href="https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-core-data-services/ba-p/13358970">Originally published on SAP Community</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2018/06/04/monday-morning-thoughts-the-learning-continuum/">Monday morning thoughts: the learning continuum</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2018/06/18/monday-morning-thoughts-community-engagement/">Monday morning thoughts: community engagement</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2018/06/11/monday-morning-thoughts-core-data-services/` was built on 2025-09-15T15:58:49.592Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

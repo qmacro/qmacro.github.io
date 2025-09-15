@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Monday morning thoughts: OData</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="monday-morning-thoughts-odata">Monday morning thoughts: OData</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2018-08-20">20 August 2018</time></li>
+	<li><a href="/tags/sapcommunity/" class="post-tag">sapcommunity</a>, </li>
+	<li><a href="/tags/mondaymorningthoughts/" class="post-tag">mondaymorningthoughts</a>, </li>
+	<li><a href="/tags/odata/" class="post-tag">odata</a>, </li>
+	<li><a href="/tags/atom/" class="post-tag">atom</a>, </li>
+	<li><a href="/tags/atompublishingprotocol/" class="post-tag">atompublishingprotocol</a>, </li>
+	<li><a href="/tags/rss/" class="post-tag">rss</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>In this post, I think about OData, in particular where it came from and why it looks and acts like it does. I also consider why I think it was a good protocol for an organisation like SAP to embrace.</p>
+<p>🔊 This post is also <a href="https://anchor.fm/tech-aloud/episodes/Monday-morning-thoughts-OData---20-Aug-2018---DJ-Adams-et0aot">available in audio format</a> on the <a href="https://podcasters.spotify.com/pod/show/tech-aloud">Tech Aloud podcast</a>.</p>
+<p>OData. Or as some people write it (which causes me to gnash my teeth) &quot;oData&quot;. Not as bad as &quot;O'Data&quot; as Brenton O'Callaghan writes it, just to annoy me, though. Anyway, on a more serious note, I've been thinking about OData recently in the context of the fully formed and extensible CRUD+Q server that you can get for free with a small incantation of what seems to be magic in the form of the tools of the <a href="https://web.archive.org/web/20240120052337/https://blogs.sap.com/tag/applicationprogrammingmodel/">Application Programming Model for SAP Cloud Platform</a>. I was also thinking about OData because of Holger Bruchelt's recent post <a href="https://community.sap.com/t5/technology-blogs-by-members/beauty-of-odata/ba-p/13384175">Beauty of OData</a> - nice one Holger.</p>
+<h2 id="odata-fundamentals">OData fundamentals</h2>
+<p>OData is a protocol and a set of formats. It is strongly resource oriented, as opposed to service oriented, which to me as a fan of simplicity and RESTfulness is a very good thing. Consider Representational State Transfer (REST) as an architectural style, which it is, rather than a specific protocol (which it isn't), and you'll come across various design features that this style encompasses. For me, though, the key feature is the uniform interface - there are a small fixed number of verbs (OData operations) and an infinite set of nouns (resources) upon which the verbs operate. These OData operations map quite cleanly onto the HTTP methods that we know &amp; love, and understand at a semantic level:</p>
+<table>
+<thead>
+<tr>
+<th>OData operation</th>
+<th>HTTP method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C - Create</td>
+<td>POST</td>
+</tr>
+<tr>
+<td>R - Read</td>
+<td>GET</td>
+</tr>
+<tr>
+<td>U - Update</td>
+<td>PUT</td>
+</tr>
+<tr>
+<td>D - Delete</td>
+<td>DELETE</td>
+</tr>
+<tr>
+<td>Q - Query</td>
+<td>GET</td>
+</tr>
+</tbody>
+</table>
+<p>There's more to this (e.g. the use of PATCH for merge semantics, or the batching of multiple operations within an HTTP POST request) but basically that's it. We have a standard set of CRUD+Q operations that cover the majority of use cases when thinking about the manipulation of resources. And for the edge cases where thinking in terms of resources and relationships between them would be too cumbersome, there's the function import mechanism (with which I have a love-hate relationship, as it's useful but also rather service oriented and therefore opaque).</p>
+<p>Beyond the protocol itself, there's the the shape of the data upon which the OData operations are carried out. I don't mean the format - that's separate, and multi-faceted too. OData formats, which relates to the RESTful idea of multiple possible <a href="https://qmacro.org/blog/posts/2009/08/20/coffeeshop-screencast:-http-conneg-resource-representations-and-json/">representations</a> of a resource, come in different flavours - predominantly XML and JSON based. What I mean with &quot;shape&quot; is how the data in OData resources is represented.</p>
+<p>One of the things I used to say a lot was that if something was important enough it should be addressable. More particularly, business data should be addressable in that elements should have addresses, not hidden behind some sort of opaque web services endpoint. In the case of an HTTP protocol like OData, these addresses are URLs. And the shape of the data can be seen in the way those URL addresses are made up*.</p>
+<p>*some absolute RESTful purists might argue that URLs should be opaque, that we should not imply meaning from their structure. That to me is a valid but extreme position, and there has to be a balance between the beautiful theory of absolute purity and the wonderful utility of real life pragmatism.</p>
+<p>And the shape of the data, which itself is uniform and predictable, allows this to happen. To understand what this shape is and how it works, I wanted to take a brief look at OData's origins.</p>
+<h2 id="odatas-origins">OData's origins</h2>
+<p>OData goes back further than you might think. Here's an image from a session on OData that I gave a few years ago:</p>
+<p><img src="/images/2018/08/odata-origins.png" alt="The protohistory of OData"></p>
+<p><em>The protohistory of OData</em></p>
+<p>I'd suggest that if one looks at the big picture, OData's origins go back to 1995, with the advent of the Meta Content Framework (MCF). This was a format that was created by Ramanthan V Guha while working in Apple's Advanced Technology Group, and its application was in providing structured metadata about websites and other web-based data, providing a machine-readable version of information that humans dealt with.</p>
+<p>A few years later in 1999 Dan Libby worked with Guha at Netscape to produce the first version of a format that many of us still remember and perhaps a good portion of us still use, directly or indirectly - RSS. This first version of RSS built on the ideas of MCF and was specifically designed to be able to describe websites and in particular weblog style content - entries that were published over time, entries that had generally had a timestamp, a title, and some content. RSS was originally written to work with Netscape's &quot;My Netscape Network&quot; - to allow the combination of content from different sources (see <a href="https://github.com/simplepie/simplepie-ng/wiki/Spec:-RSS-0.9-(Netscape)">Spec: RSS 0.9 (Netscape)</a> for some background). RSS stood then for RDF Site Summary, as it used the Resource Description Framework (RDF) to provide the metadata language itself. (I have been <a href="https://qmacro.org/tags/rdf/">fascinated by RDF</a> over the years, but I'll leave that for another time.)</p>
+<p>I'll fast-forward through the period directly following this, as it involved changes to RSS as it suffered at the hands of competing factions, primarily caused by some parties unwilling to cooperate in an open process, and it wasn't particularly an altogether pleasant time (I remember, as I was around, close to the ongoing activities and knew some of the folks involved). But what did come out of this period was the almost inevitable fresh start at a new initiative, called Atom. Like RSS, the key to Atom was the structure with which weblog content was described, and actually the structure was very close indeed to what RSS looked like.</p>
+<p>An Atom feed, just like an RSS feed, was made up of some header information describing the weblog in general, and then a series of items representing the weblog posts themselves:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">header
+  item
+  item
+  ...</code></pre>
+<p>And like RSS feeds, Atom feeds - also for machine consumption - were made available in XML, in parallel to the HTML-based weblogs themselves, which of course were for human consumption.</p>
+<p>A few years later, in 2005, the Atom format became an Internet Engineering Task Force (IETF) standard, specifically <a href="https://tools.ietf.org/html/rfc4287">RFC 4287</a>, and became known as the Atom Syndication Format:</p>
+<p>&quot;Atom is an XML-based document format that describes lists of related information known as &quot;feeds&quot;. Feeds are composed of a number of items, known as &quot;entries&quot;, each with an extensible set of attached metadata. For example, each entry has a title.&quot;</p>
+<p>And like RSS feeds, Atom feeds - also for machine consumption - were made available in XML, in parallel to the HTML-based weblogs themselves, which of course were for human consumption.</p>
+<p>A few years later, in 2005, the Atom format became an Internet Engineering Task Force (IETF) standard, specifically RFC 4287, and became known as the Atom Syndication Format:</p>
+<p>&quot;Atom is an XML-based document format that describes lists of related information known as &quot;feeds&quot;. Feeds are composed of a number of items, known as &quot;entries&quot;, each with an extensible set of attached metadata. For example, each entry has a title.&quot;</p>
+<p>What was magic, though, was that in addition to this format, there was a fledgling protocol that was used to manipulate data described in this format. It was first created to enable remote authoring and maintenance of weblog posts - back in the day some folks liked to <a href="https://codex.wordpress.org/AtomPub">draft and publish posts in dedicated weblog clients</a>, which then needed to interact with the server that stored and served the weblogs themselves. This protocol was the Atom Publishing Protocol, &quot;AtomPub&quot; or APP for short, and a couple of years later in 2007 this also became an IETF standard, <a href="https://tools.ietf.org/html/rfc5023">RFC 5023</a>:</p>
+<blockquote>
+<p>The Atom Publishing Protocol is an application-level protocol for publishing and editing Web Resources using HTTP [RFC2616] and XML 1.0 [REC-xml]. The protocol supports the creation of Web Resources and provides facilities for:</p>
+<ul>
+<li>Collections: Sets of Resources, which can be retrieved in whole or
+in part.</li>
+<li>Services: Discovery and description of Collections.</li>
+<li>Editing: Creating, editing, and deleting Resources.</li>
+</ul>
+</blockquote>
+<p>Is this starting to sound familiar, OData friends?</p>
+<p>Well, yes, of course it is. OData is exactly this - sets of resources, service discovery, and manipulation of individual entries.</p>
+<p>AtomPub and the Atom Syndication Format was <a href="https://bitworking.org/news/2006/04/Google_Data_APIs_Protocol">adopted by Google in its Google Data (GData) APIs Protocol</a> while this IETF formalisation was going on and the publish/subscribe protocol known as PubSubHubbub (now called <a href="https://en.wikipedia.org/wiki/WebSub">WebSub</a>) originally used Atom as a basis. And as we know, <a href="https://blogs.msdn.microsoft.com/odatateam/2007/07/18/welcome/">Microsoft embraced AtomPub</a> in the year it became an IETF standard and OData was born.</p>
+<p>Microsoft released the first three major versions of OData under the Open Specification Promise, and then OData was transferred to the guardianship of the Organization for the Advancement of Structured Information Standards (OASIS) and the rest is <a href="https://www.odata.org/">history</a>.</p>
+<h2 id="adoption-at-sap">Adoption at SAP</h2>
+<p>I remember an TechEd event quite a few years back (it may have been ten or more) where I had a conversation with a chap at SAP who had been one of the members of a group that had been searching for a data protocol to adopt to take SAP into a new era of interoperability and integration. After a lot of technical research they decided upon OData. It was an open standard, a standard with which they could get involved, alongside Microsoft, IBM and others. For example, in 2014 OData version 4.0 was announced as an OASIS standard.</p>
+<p>It was clear to me why such a standard was needed. In the aftermath of the <a href="https://en.wikipedia.org/wiki/List_of_web_service_specifications">WS-deathstar</a> implosion there was clearly a desire for simplicity, standardisation, openness, interoperability and perhaps above all (at least in my view) a need for something that humans could understand, as well as machines. The resource orientation approach has a combination of simplicity, power, utility and beauty that is reflected in (or by) the web as a whole. One could argue that the World Wide Web is the best example of a hugely distributed web service, but that's a discussion for another time.</p>
+<p>OData has constraints that make for consistent and predictable service designs - if you've seen one OData service you've seen them all. And it passes the tyre-kicking test, in that the tyres are there for you to kick - to explore an OData service using read and query operations all you need is your browser.</p>
+<p>OData's adoption at SAP is paying off big time. From the consistencies in what we see across various SAP system surfaces, especially in the SAP Cloud Platform environment, through the simple ability to eschew the OData flavour itself and navigate OData resources as simple HTTP resources (how often have I seen UI5 apps retrieving OData resources and plonking the results into a JSON model?) to the crazy (but cool) ability to consume OData from other tools such as Excel. (Why you'd want to use these tools is a complete mystery to me, but that's yet another story for another time, one best told down the pub.)</p>
+<p>If you do one thing before your next coffee, have a quick look at an OData service. The Northwind service maintained by OASIS will do nicely. Have a look at the <a href="https://services.odata.org/V2/Northwind/Northwind.svc/">service document</a>:</p>
+<p><img src="/images/2018/08/service-document.png" alt="service document"></p>
+<p>and, say, the <a href="https://services.odata.org/V2/Northwind/Northwind.svc/Products">Products collection</a>.</p>
+<p><img src="/images/2018/08/products-collection.png" alt="Products collection"></p>
+<p>Notice how rich and present Atom's ancestry is in OData today. In the service document, entity sets are described as collections, and the Atom standard is referenced directly in the &quot;atom&quot; XML namespace prefix. In the Products entity set, notice that the root XML element is &quot;feed&quot;, an Atom construct (we refer to weblog Atom and RSS &quot;feeds&quot;) and the product entities are &quot;entry&quot; elements, also a direct Atom construct.</p>
+<p>Today's business API interoperability and open standards are built upon a long history of collaboration and invention.</p>
+<p>This post was brought to you by <a href="https://www.pactcoffee.com/coffees/planalto">Pact Coffee's Planalto</a> and the delivery of the milk by the milkman even earlier than usual.</p>
+<hr>
+<p>Read more posts in this series here: <a href="/tags/mondaymorningthoughts/">Monday morning thoughts</a>.</p>
+<hr>
+<p><a href="https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-odata/ba-p/13351220">Originally published on SAP Community</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2018/08/13/monday-morning-thoughts-the-cloud-is-the-computer/">Monday morning thoughts: the cloud is the computer</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2018/08/27/monday-morning-thoughts-a-good-blog-post/">Monday morning thoughts: a good blog post</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2018/08/20/monday-morning-thoughts-odata/` was built on 2025-09-15T15:58:49.593Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

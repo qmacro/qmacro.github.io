@@ -1,8 +1,593 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2020/04/05/initial-pi-configuration-via-ansible/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Initial Pi configuration via Ansible | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Initial Pi configuration via Ansible"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2020/04/05/initial-pi-configuration-via-ansible/"><meta name="description" content="Initial Pi configuration via Ansible 05 Apr 2020 | 8 min read In the previous post we identified the freshly booted Pis on the network; now..."><meta property="og:description" content="Initial Pi configuration via Ansible 05 Apr 2020 | 8 min read In the previous post we identified the freshly booted Pis on the network; now..."><meta name="description" content="Initial Pi configuration via Ansible 05 Apr 2020 | 8 min read In the previous post we identified the freshly booted Pis on the network; now..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Initial Pi configuration via Ansible</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Initial Pi configuration via Ansible</h1><div class="post__details"><time datetime="2020-04-05">05 Apr 2020 </time><span>| </span><span>8 min read</span></div></header><main class="post__content"><p><em>In the previous post we identified the freshly booted Pis on the network; now it's time to perform some initial configuration, using Ansible.</em></p><p>This is a post in the &quot;<a href="/blog/posts/2020/03/22/brambleweeny-cluster-experiments/">Brambleweeny Cluster Experiments</a>&quot; series of blog posts, which accompanies the <a href="https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe">YouTube live stream recording playlist</a> of the same name. The video linked here is the one that accompanies this blog post.</p><iframe width="560" height="315" src="https://www.youtube.com/embed/vooBccHq6_4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><p>Previous post in this series: <a href="/blog/posts/2020/03/22/finding-the-pis-on-the-network/">Finding the Pis on the network</a></p><h2>Ansible configuration</h2><p>At the end of the previous post, we'd identified the MAC and current IP addresses of the Pis on the network. This information found its way into a couple of files used in a process that follows the general flow described in Jeff Geerling's <a href="https://github.com/geerlingguy/raspberry-pi-dramble/tree/master/setup/networking">Raspberry Pi Networking Setup</a>.</p><p>First, we have the <code>inventory</code> file defining the current (&quot;as-is&quot;) IP addresses of the Pis:</p><pre class="language-yml"><code class="language-yml"><span class="token punctuation">[</span>brambleweeny<span class="token punctuation">]</span><br>192.168.86.47<br>192.168.86.15<br>192.168.86.158<br>192.168.86.125<br><br><span class="token punctuation">[</span>brambleweeny<span class="token punctuation">:</span>vars<span class="token punctuation">]</span><br>ansible_ssh_user=pi</code></pre><p>Note that we've also got the definition of the default user <code>pi</code> also in there.</p><p>Then, we also have the <code>vars.yml</code> file which is used by the <a href="https://github.com/geerlingguy/raspberry-pi-dramble/blob/master/setup/networking/main.yml"><code>main.yml</code></a> Ansible script to set things up. While we saw the contents in the previous post, it's worth looking at them again here:</p><pre class="language-yaml"><code class="language-yaml"><span class="token punctuation">---</span><br><span class="token comment"># Mapping of what hardware MAC addresses should be configured with specific IPs.</span><br><span class="token key atrule">mac_address_mapping</span><span class="token punctuation">:</span><br><br>  <span class="token key atrule">"dc:a6:32:60:60:95"</span><span class="token punctuation">:</span><br>    <span class="token key atrule">name</span><span class="token punctuation">:</span> brambleweeny1.lan<br>    <span class="token key atrule">ip</span><span class="token punctuation">:</span> <span class="token string">"192.168.86.12"</span><br>  <span class="token key atrule">"dc:a6:32:60:60:77"</span><span class="token punctuation">:</span><br>    <span class="token key atrule">name</span><span class="token punctuation">:</span> brambleweeny2.lan<br>    <span class="token key atrule">ip</span><span class="token punctuation">:</span> <span class="token string">"192.168.86.13"</span><br>  <span class="token key atrule">"dc:a6:32:60:60:44"</span><span class="token punctuation">:</span><br>    <span class="token key atrule">name</span><span class="token punctuation">:</span> brambleweeny3.lan<br>    <span class="token key atrule">ip</span><span class="token punctuation">:</span> <span class="token string">"192.168.86.14"</span><br>  <span class="token key atrule">"dc:a6:32:60:60:e3"</span><span class="token punctuation">:</span><br>    <span class="token key atrule">name</span><span class="token punctuation">:</span> brambleweeny4.lan<br>    <span class="token key atrule">ip</span><span class="token punctuation">:</span> <span class="token string">"192.168.86.15"</span><br><br><span class="token comment"># Nameservers to use in resolv.conf.</span><br><span class="token key atrule">dns_nameservers</span><span class="token punctuation">:</span><br>  <span class="token punctuation">-</span> <span class="token string">"192.168.86.5"</span></code></pre><p>This is the &quot;to-be&quot; state of the Pis, via configuration of specific hostnames and IP addresses, as well as what to use for domain name resolution, for each of the Pis that are to be identified by their MAC addresses. More explicitly, I want to move from dynamically allocated IP addresses (which are currently 47, 15, 158 and 125) to statically allocated IP addresses 12, 13, 14 and 15.</p><h2>Strict host key checking</h2><p>Running the Ansible <code>main.yml</code> playbook as it stands right now presents us with a problem:</p><pre><code>-&gt; ansible-playbook -i inventory main.yml
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="initial-pi-configuration-via-ansible">Initial Pi configuration via Ansible</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2020-04-05">05 April 2020</time></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p><em>In the previous post we identified the freshly booted Pis on the network; now it's time to perform some initial configuration, using Ansible.</em></p>
+<p>This is a post in the &quot;<a href="/blog/posts/2020/03/22/brambleweeny-cluster-experiments/">Brambleweeny Cluster Experiments</a>&quot; series of blog posts, which accompanies the <a href="https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe">YouTube live stream recording playlist</a> of the same name. The video linked here is the one that accompanies this blog post.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/vooBccHq6_4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+<p>Previous post in this series: <a href="/blog/posts/2020/03/22/finding-the-pis-on-the-network/">Finding the Pis on the network</a></p>
+<h2 id="ansible-configuration">Ansible configuration</h2>
+<p>At the end of the previous post, we'd identified the MAC and current IP addresses of the Pis on the network. This information found its way into a couple of files used in a process that follows the general flow described in Jeff Geerling's <a href="https://github.com/geerlingguy/raspberry-pi-dramble/tree/master/setup/networking">Raspberry Pi Networking Setup</a>.</p>
+<p>First, we have the <code>inventory</code> file defining the current (&quot;as-is&quot;) IP addresses of the Pis:</p>
+<pre class="language-yml" tabindex="0"><code class="language-yml"><span class="token punctuation">[</span>brambleweeny<span class="token punctuation">]</span>
+192.168.86.47
+192.168.86.15
+192.168.86.158
+192.168.86.125
+
+<span class="token punctuation">[</span>brambleweeny<span class="token punctuation">:</span>vars<span class="token punctuation">]</span>
+ansible_ssh_user=pi</code></pre>
+<p>Note that we've also got the definition of the default user <code>pi</code> also in there.</p>
+<p>Then, we also have the <code>vars.yml</code> file which is used by the <a href="https://github.com/geerlingguy/raspberry-pi-dramble/blob/master/setup/networking/main.yml"><code>main.yml</code></a> Ansible script to set things up. While we saw the contents in the previous post, it's worth looking at them again here:</p>
+<pre class="language-yaml" tabindex="0"><code class="language-yaml"><span class="token punctuation">---</span>
+<span class="token comment"># Mapping of what hardware MAC addresses should be configured with specific IPs.</span>
+<span class="token key atrule">mac_address_mapping</span><span class="token punctuation">:</span>
+
+  <span class="token key atrule">"dc:a6:32:60:60:95"</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> brambleweeny1.lan
+    <span class="token key atrule">ip</span><span class="token punctuation">:</span> <span class="token string">"192.168.86.12"</span>
+  <span class="token key atrule">"dc:a6:32:60:60:77"</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> brambleweeny2.lan
+    <span class="token key atrule">ip</span><span class="token punctuation">:</span> <span class="token string">"192.168.86.13"</span>
+  <span class="token key atrule">"dc:a6:32:60:60:44"</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> brambleweeny3.lan
+    <span class="token key atrule">ip</span><span class="token punctuation">:</span> <span class="token string">"192.168.86.14"</span>
+  <span class="token key atrule">"dc:a6:32:60:60:e3"</span><span class="token punctuation">:</span>
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> brambleweeny4.lan
+    <span class="token key atrule">ip</span><span class="token punctuation">:</span> <span class="token string">"192.168.86.15"</span>
+
+<span class="token comment"># Nameservers to use in resolv.conf.</span>
+<span class="token key atrule">dns_nameservers</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token string">"192.168.86.5"</span></code></pre>
+<p>This is the &quot;to-be&quot; state of the Pis, via configuration of specific hostnames and IP addresses, as well as what to use for domain name resolution, for each of the Pis that are to be identified by their MAC addresses. More explicitly, I want to move from dynamically allocated IP addresses (which are currently 47, 15, 158 and 125) to statically allocated IP addresses 12, 13, 14 and 15.</p>
+<h2 id="strict-host-key-checking">Strict host key checking</h2>
+<p>Running the Ansible <code>main.yml</code> playbook as it stands right now presents us with a problem:</p>
+<pre><code>-&gt; ansible-playbook -i inventory main.yml
 PLAY [brambleweeny] ***
 
 TASK [Gathering Facts] ***
@@ -18,18 +603,28 @@ Are you sure you want to continue connecting (yes/no)?
 The authenticity of host '192.168.86.125 (192.168.86.125)' can't be established.
 ECDSA key fingerprint is SHA256:Tl3t427yXmbPIXjgBNBDHtNuw+MQUS132xhX6DCgo9E.
 Are you sure you want to continue connecting (yes/no)?
-</code></pre><p>We've never connected to these Pis before now, so <code>ssh</code>, which is at the heart of Ansible's connection to them, will appropriately complain that it doesn't recognise them. This &quot;complaint&quot; comes about from <code>ssh</code>'s default approach to <a href="https://www.ibm.com/support/knowledgecenter/SSLTBW_2.2.0/com.ibm.zos.v2r2.foto100/hostch.htm">checking the keys of remote hosts</a>, which is what we normally want (i.e. be strict!).</p><p>But for this particular operation we need to relax this approach, and for that we can use the <code>StrictHostKeyChecking</code> option, which can either be set in the <code>ssh</code> config file (<code>~/.ssh/config</code> at a user level) or on the command line.</p><p>Here's the difference between trying to <code>ssh</code> to one of the Pis without and then with the option turned off:</p><pre><code>-&gt; ssh pi@192.168.86.47
+</code></pre>
+<p>We've never connected to these Pis before now, so <code>ssh</code>, which is at the heart of Ansible's connection to them, will appropriately complain that it doesn't recognise them. This &quot;complaint&quot; comes about from <code>ssh</code>'s default approach to <a href="https://www.ibm.com/support/knowledgecenter/SSLTBW_2.2.0/com.ibm.zos.v2r2.foto100/hostch.htm">checking the keys of remote hosts</a>, which is what we normally want (i.e. be strict!).</p>
+<p>But for this particular operation we need to relax this approach, and for that we can use the <code>StrictHostKeyChecking</code> option, which can either be set in the <code>ssh</code> config file (<code>~/.ssh/config</code> at a user level) or on the command line.</p>
+<p>Here's the difference between trying to <code>ssh</code> to one of the Pis without and then with the option turned off:</p>
+<pre><code>-&gt; ssh pi@192.168.86.47
 The authenticity of host '192.168.86.47 (192.168.86.47)' can't be established.
 ECDSA key fingerprint is SHA256:AJ5628fGhewiqdu/V2+B1LkR2HKGa+nRcwjYiiTGqWg.
 Are you sure you want to continue connecting (yes/no)?
 Host key verification failed.
-</code></pre><pre><code>-&gt; ssh -o StrictHostKeyChecking=no pi@192.168.86.47
+</code></pre>
+<pre><code>-&gt; ssh -o StrictHostKeyChecking=no pi@192.168.86.47
 Warning: Permanently added '192.168.86.47' (ECDSA) to the list of known hosts.
 pi@192.168.86.47's password:
-</code></pre><p>Note that in this second example, even before the password has been entered, the key for this remote Pi has now already been added to <code>~/.ssh/known_hosts</code>.</p><p>Ansible makes it easy for us to add <code>ssh</code> options to the <code>inventory</code> file, via the <code>ansible_ssh_common_args</code> variable, which we do, at the end of the file, like this:</p><pre><code>[brambleweeny:vars]
+</code></pre>
+<p>Note that in this second example, even before the password has been entered, the key for this remote Pi has now already been added to <code>~/.ssh/known_hosts</code>.</p>
+<p>Ansible makes it easy for us to add <code>ssh</code> options to the <code>inventory</code> file, via the <code>ansible_ssh_common_args</code> variable, which we do, at the end of the file, like this:</p>
+<pre><code>[brambleweeny:vars]
 ansible_ssh_user=pi
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
-</code></pre><p>Trying the playbook again, we don't get a problem with the inability of <code>ssh</code> to authenticate the Pi hosts' keys. Great! But this just reveals the next problem, which again we can learn from:</p><pre><code>-&gt; ansible-playbook -i inventory main.yml
+</code></pre>
+<p>Trying the playbook again, we don't get a problem with the inability of <code>ssh</code> to authenticate the Pi hosts' keys. Great! But this just reveals the next problem, which again we can learn from:</p>
+<pre><code>-&gt; ansible-playbook -i inventory main.yml
 
 PLAY [brambleweeny] ***
 
@@ -52,7 +647,24 @@ PLAY RECAP ***
 192.168.86.15              : ok=0    changed=0    unreachable=1    failed=0
 192.168.86.158             : ok=0    changed=0    unreachable=1    failed=0
 192.168.86.47              : ok=0    changed=0    unreachable=1    failed=0
-</code></pre><p>Notice that the <code>-o StrictHostKeyChecking=no</code> did what we wanted it to do, as we can see the following message for each host in the output: &quot;Warning: Permanently added '192.168.86.n' (ECDSA) to the list of known hosts&quot;.</p><p>So we've got <code>ssh</code> to not refuse to connect because it doesn't initially recognise the hosts, but now we're getting a &quot;permission denied&quot; issue.</p><h2>Uploading the ssh key, and sshpass</h2><p>Of course, we're getting a &quot;permission denied&quot; issue because the remote Pis don't have the public key of the user of my current host (i.e. <code>~/.ssh/id_rsa.pub</code>) for public key based authentication, and we haven't supplied a password either (which for each of the freshly booted Pis, is 'raspberry' for the 'pi' user).</p><p>A passwordless based remote access flow is ideal, so this is something we should address now. We need somehow to get my public key across to each of the Pis, in the right place i.e. in the remote user's <code>~/.ssh/authorized_keys</code> file. (If you've not used public key based <code>ssh</code> access before, why not?)</p><p>There's a specific Ansible module for this - the <a href="https://docs.ansible.com/ansible/latest/modules/authorized_key_module.html"><code>authorized_key</code> module</a>, and we can use it in a short playbook like this, which we'll call <code>set_ssh_key.yml</code>:</p><pre class="language-yml"><code class="language-yml"><span class="token punctuation">---</span><br><span class="token punctuation">-</span> <span class="token key atrule">hosts</span><span class="token punctuation">:</span> brambleweeny<br><br>  <span class="token key atrule">tasks</span><span class="token punctuation">:</span><br>    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Set authorized key from file<br>      <span class="token key atrule">authorized_key</span><span class="token punctuation">:</span><br>        <span class="token key atrule">user</span><span class="token punctuation">:</span> pi<br>        <span class="token key atrule">state</span><span class="token punctuation">:</span> present<br>        <span class="token key atrule">key</span><span class="token punctuation">:</span> <span class="token string">"{{ lookup('file', '/home/pi/.ssh/id_rsa.pub') }}"</span></code></pre><p>But of course we can't just run this, as we're still unable to connect, for the same reason:</p><pre><code>-&gt; ansible-playbook -i inventory set_ssh_key.yml
+</code></pre>
+<p>Notice that the <code>-o StrictHostKeyChecking=no</code> did what we wanted it to do, as we can see the following message for each host in the output: &quot;Warning: Permanently added '192.168.86.n' (ECDSA) to the list of known hosts&quot;.</p>
+<p>So we've got <code>ssh</code> to not refuse to connect because it doesn't initially recognise the hosts, but now we're getting a &quot;permission denied&quot; issue.</p>
+<h2 id="uploading-the-ssh-key-and-sshpass">Uploading the ssh key, and sshpass</h2>
+<p>Of course, we're getting a &quot;permission denied&quot; issue because the remote Pis don't have the public key of the user of my current host (i.e. <code>~/.ssh/id_rsa.pub</code>) for public key based authentication, and we haven't supplied a password either (which for each of the freshly booted Pis, is 'raspberry' for the 'pi' user).</p>
+<p>A passwordless based remote access flow is ideal, so this is something we should address now. We need somehow to get my public key across to each of the Pis, in the right place i.e. in the remote user's <code>~/.ssh/authorized_keys</code> file. (If you've not used public key based <code>ssh</code> access before, why not?)</p>
+<p>There's a specific Ansible module for this - the <a href="https://docs.ansible.com/ansible/latest/modules/authorized_key_module.html"><code>authorized_key</code> module</a>, and we can use it in a short playbook like this, which we'll call <code>set_ssh_key.yml</code>:</p>
+<pre class="language-yml" tabindex="0"><code class="language-yml"><span class="token punctuation">---</span>
+<span class="token punctuation">-</span> <span class="token key atrule">hosts</span><span class="token punctuation">:</span> brambleweeny
+
+  <span class="token key atrule">tasks</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> Set authorized key from file
+      <span class="token key atrule">authorized_key</span><span class="token punctuation">:</span>
+        <span class="token key atrule">user</span><span class="token punctuation">:</span> pi
+        <span class="token key atrule">state</span><span class="token punctuation">:</span> present
+        <span class="token key atrule">key</span><span class="token punctuation">:</span> <span class="token string">"{{ lookup('file', '/home/pi/.ssh/id_rsa.pub') }}"</span></code></pre>
+<p>But of course we can't just run this, as we're still unable to connect, for the same reason:</p>
+<pre><code>-&gt; ansible-playbook -i inventory set_ssh_key.yml
 
 PLAY [brambleweeny] ***
 
@@ -72,11 +684,17 @@ PLAY RECAP ***
 192.168.86.15              : ok=0    changed=0    unreachable=1    failed=0
 192.168.86.158             : ok=0    changed=0    unreachable=1    failed=0
 192.168.86.47              : ok=0    changed=0    unreachable=1    failed=0
-</code></pre><p>So we have to authenticate a different way - with the 'raspberry' password (remember, we're already supplying Ansible with the user via the <code>ansible_ssh_user</code> variable in the <code>inventory</code> file). The <code>-k</code> option for <code>ansible-playbook</code> tells it to ask for a connection password, which it will then use on our behalf when connecting to each host.</p><p>It's worth spending a couple of minutes understanding how this actually operates. It uses the <code>sshpass</code> command, which is therefore required (I didn't have this and had to install it with <code>sudo apt install sshpass</code>). <code>sshpass</code> is described by its <a href="https://linux.die.net/man/1/sshpass">man page</a> as a &quot;noninteractive ssh password provider&quot;. Most of the time when we run <code>ssh</code> it's in &quot;keyboard interactive&quot; mode, which means that it can ask the user for a password if required. The man page states that that <code>ssh</code> &quot;uses direct TTY access to make sure that the password is indeed issued by an interactive keyboard user&quot;, and that, fascinatingly, <code>sshpass</code> runs <code>ssh</code> in a dedicated TTY to trick <code>ssh</code> into thinking it is indeed getting the password from an interactive user, when in fact it's not.</p><p>We can see this in action with a simple test:</p><pre><code>-&gt; sshpass -p 'raspberry' ssh pi@192.168.86.47
+</code></pre>
+<p>So we have to authenticate a different way - with the 'raspberry' password (remember, we're already supplying Ansible with the user via the <code>ansible_ssh_user</code> variable in the <code>inventory</code> file). The <code>-k</code> option for <code>ansible-playbook</code> tells it to ask for a connection password, which it will then use on our behalf when connecting to each host.</p>
+<p>It's worth spending a couple of minutes understanding how this actually operates. It uses the <code>sshpass</code> command, which is therefore required (I didn't have this and had to install it with <code>sudo apt install sshpass</code>). <code>sshpass</code> is described by its <a href="https://linux.die.net/man/1/sshpass">man page</a> as a &quot;noninteractive ssh password provider&quot;. Most of the time when we run <code>ssh</code> it's in &quot;keyboard interactive&quot; mode, which means that it can ask the user for a password if required. The man page states that that <code>ssh</code> &quot;uses direct TTY access to make sure that the password is indeed issued by an interactive keyboard user&quot;, and that, fascinatingly, <code>sshpass</code> runs <code>ssh</code> in a dedicated TTY to trick <code>ssh</code> into thinking it is indeed getting the password from an interactive user, when in fact it's not.</p>
+<p>We can see this in action with a simple test:</p>
+<pre><code>-&gt; sshpass -p 'raspberry' ssh pi@192.168.86.47
 Linux raspberrypi 4.19.97-v7l+ #1294 SMP Thu Jan 30 13:21:14 GMT 2020 armv7l
 [...]
 pi@raspberrypi:~ $
-</code></pre><p>Anyway, let's use the <code>-k</code> option with <code>ansible-playbook</code> to make use of this <code>sshpass</code> utility; Ansible will first ask us for the password and then use <code>sshpass</code> to pass it on to each of the <code>ssh</code> connections it makes:</p><pre><code>-&gt; ansible-playbook -k -i inventory set_ssh_key.yml
+</code></pre>
+<p>Anyway, let's use the <code>-k</code> option with <code>ansible-playbook</code> to make use of this <code>sshpass</code> utility; Ansible will first ask us for the password and then use <code>sshpass</code> to pass it on to each of the <code>ssh</code> connections it makes:</p>
+<pre><code>-&gt; ansible-playbook -k -i inventory set_ssh_key.yml
 SSH password: *********
 
 PLAY [brambleweeny] ***
@@ -98,11 +716,16 @@ PLAY RECAP ***
 192.168.86.15              : ok=2    changed=1    unreachable=0    failed=0
 192.168.86.158             : ok=2    changed=1    unreachable=0    failed=0
 192.168.86.47              : ok=2    changed=1    unreachable=0    failed=0
-</code></pre><p>Success! From this point onwards, we can use <code>ssh</code> to connect to each of the Pis, but via our public key, rather than a password:</p><pre><code>-&gt; ssh pi@192.168.86.47
+</code></pre>
+<p>Success! From this point onwards, we can use <code>ssh</code> to connect to each of the Pis, but via our public key, rather than a password:</p>
+<pre><code>-&gt; ssh pi@192.168.86.47
 Linux raspberrypi 4.19.97-v7l+ #1294 SMP Thu Jan 30 13:21:14 GMT 2020 armv7l
 [...]
 pi@raspberrypi:~ $
-</code></pre><h2>Running the main playbook</h2><p>At this point I can retry <code>main.yml</code> playbook, knowing that Ansible will be able to successfully connect to each of the Pis, using the public key we've transferred, and also using the default user defined in the <code>ansible_ssh_user</code> variable in the <code>inventory</code> file:</p><pre><code>-&gt; ansible-playbook -i inventory main.yml
+</code></pre>
+<h2 id="running-the-main-playbook">Running the main playbook</h2>
+<p>At this point I can retry <code>main.yml</code> playbook, knowing that Ansible will be able to successfully connect to each of the Pis, using the public key we've transferred, and also using the default user defined in the <code>ansible_ssh_user</code> variable in the <code>inventory</code> file:</p>
+<pre><code>-&gt; ansible-playbook -i inventory main.yml
 
 PLAY [brambleweeny] ***
 
@@ -163,7 +786,11 @@ PLAY RECAP ***
 192.168.86.15              : ok=6    changed=2    unreachable=0    failed=0
 192.168.86.158             : ok=6    changed=2    unreachable=0    failed=0
 192.168.86.125             : ok=6    changed=2    unreachable=0    failed=0
-</code></pre><p>Very nice indeed!</p><h2>Rebooting and updating the inventory</h2><p>At this stage, as advised in Jeff's <a href="https://github.com/geerlingguy/raspberry-pi-dramble/tree/master/setup/networking">networking setup README</a>, we can reboot the Pis with the following direct shell module based command:</p><pre><code>-&gt; ansible all \
+</code></pre>
+<p>Very nice indeed!</p>
+<h2 id="rebooting-and-updating-the-inventory">Rebooting and updating the inventory</h2>
+<p>At this stage, as advised in Jeff's <a href="https://github.com/geerlingguy/raspberry-pi-dramble/tree/master/setup/networking">networking setup README</a>, we can reboot the Pis with the following direct shell module based command:</p>
+<pre><code>-&gt; ansible all \
 &gt; -i inventory \
 &gt; -m shell \
 &gt; -a &quot;sleep 1s; shutdown -r now&quot; \
@@ -174,7 +801,20 @@ PLAY RECAP ***
 192.168.86.15  | CHANGED | rc=-1 &gt;&gt;
 192.168.86.158 | CHANGED | rc=-1 &gt;&gt;
 192.168.86.125 | CHANGED | rc=-1 &gt;&gt;
-</code></pre><p>Note that this is the last time we'll be using these &quot;as-is&quot; IP addresses; when the Pis restart they'll have the static IP addresses defined in the <code>vars.yml</code> file we saw earlier. So at this point, the addresses in the inventory need to be updated to reflect that, for future Ansible-based management of these machines.</p><p>This is now what's in the updated <code>inventory</code> file:</p><pre class="language-yml"><code class="language-yml"><span class="token punctuation">[</span>brambleweeny<span class="token punctuation">]</span><br>192.168.86.12<br>192.168.86.13<br>192.168.86.14<br>192.168.86.15<br><br><span class="token punctuation">[</span>brambleweeny<span class="token punctuation">:</span>vars<span class="token punctuation">]</span><br>ansible_ssh_user=pi<br>ansible_ssh_common_args='<span class="token punctuation">-</span>o StrictHostKeyChecking=no'</code></pre><p>The <code>ansible_ssh_common_args</code> variable is still there, because we need it one more time. When the IP address of a remote host changes, <code>ssh</code> will complain again, because the key isn't in <code>known_hosts</code>. So a simple connection to each of the Pis with this <code>StrictHostKeyChecking=no</code> option set will cause that complaint to be suppressed, and also cause the new keys to be stored:</p><pre><code>-&gt; ansible -m ping all -i inventory
+</code></pre>
+<p>Note that this is the last time we'll be using these &quot;as-is&quot; IP addresses; when the Pis restart they'll have the static IP addresses defined in the <code>vars.yml</code> file we saw earlier. So at this point, the addresses in the inventory need to be updated to reflect that, for future Ansible-based management of these machines.</p>
+<p>This is now what's in the updated <code>inventory</code> file:</p>
+<pre class="language-yml" tabindex="0"><code class="language-yml"><span class="token punctuation">[</span>brambleweeny<span class="token punctuation">]</span>
+192.168.86.12
+192.168.86.13
+192.168.86.14
+192.168.86.15
+
+<span class="token punctuation">[</span>brambleweeny<span class="token punctuation">:</span>vars<span class="token punctuation">]</span>
+ansible_ssh_user=pi
+ansible_ssh_common_args='<span class="token punctuation">-</span>o StrictHostKeyChecking=no'</code></pre>
+<p>The <code>ansible_ssh_common_args</code> variable is still there, because we need it one more time. When the IP address of a remote host changes, <code>ssh</code> will complain again, because the key isn't in <code>known_hosts</code>. So a simple connection to each of the Pis with this <code>StrictHostKeyChecking=no</code> option set will cause that complaint to be suppressed, and also cause the new keys to be stored:</p>
+<pre><code>-&gt; ansible -m ping all -i inventory
 192.168.86.12 | SUCCESS =&gt; {
     &quot;changed&quot;: false,
     &quot;ping&quot;: &quot;pong&quot;
@@ -191,6 +831,23 @@ PLAY RECAP ***
     &quot;changed&quot;: false,
     &quot;ping&quot;: &quot;pong&quot;
 }
-</code></pre><p>Now we have another four lines in our <code>~/.ssh/known_hosts</code> file, reflecting the four Pis with their new keys, making a total of eight lines (one for each host when we had the DHCP-allocated IP addresses, and then one for each host with the new statically allocated IP addresses). To be thorough, it's probably a good idea to delete the first four lines, but more importantly, it's paramount that we remove the <code>ansible_ssh_common_args</code> line from the inventory file now, to prevent future (and inadvertent) suppression of potentially real key warnings.</p><h2>Wrapping up</h2><p>And that's it for this post. Ansible is indeed a powerful system, but taking the time to understand what's going on has taught me things about basic networking (and in particular some ins and outs of <code>ssh</code>) that I'm glad I know now.</p><p>Moreover, I now have a nice set of four Pis set up from a basic networking perspective, ready for the next steps.</p></main><aside class="post__aside"><div class="post__tags"></div><style>.utterances {
-  margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2020/04/07/terminal-tip:-truncating-cf-output/"><span>←</span> <span>Terminal Tip: truncating CF output</span> </a><a href="/blog/posts/2020/04/02/code-at-home-episodes/"><span>Code at Home episodes</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+</code></pre>
+<p>Now we have another four lines in our <code>~/.ssh/known_hosts</code> file, reflecting the four Pis with their new keys, making a total of eight lines (one for each host when we had the DHCP-allocated IP addresses, and then one for each host with the new statically allocated IP addresses). To be thorough, it's probably a good idea to delete the first four lines, but more importantly, it's paramount that we remove the <code>ansible_ssh_common_args</code> line from the inventory file now, to prevent future (and inadvertent) suppression of potentially real key warnings.</p>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>And that's it for this post. Ansible is indeed a powerful system, but taking the time to understand what's going on has taught me things about basic networking (and in particular some ins and outs of <code>ssh</code>) that I'm glad I know now.</p>
+<p>Moreover, I now have a nice set of four Pis set up from a basic networking perspective, ready for the next steps.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2020/04/02/code-at-home-episodes/">Code at Home episodes</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2020/04/07/terminal-tip-truncating-cf-output/">Terminal Tip: truncating CF output</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2020/04/05/initial-pi-configuration-via-ansible/` was built on 2025-09-15T15:58:49.600Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

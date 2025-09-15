@@ -1,7 +1,795 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2025/05/01/fp-function-chains-and-cap-model-loading/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>FP, function chains and CAP model loading | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="FP, function chains and CAP model loading"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2025/05/01/fp-function-chains-and-cap-model-loading/"><meta name="description" content="FP, function chains and CAP model loading 01 May 2025 | 8 min read Understanding functional programming approaches, no matter how trivial,..."><meta property="og:description" content="FP, function chains and CAP model loading 01 May 2025 | 8 min read Understanding functional programming approaches, no matter how trivial,..."><meta name="description" content="FP, function chains and CAP model loading 01 May 2025 | 8 min read Understanding functional programming approaches, no matter how trivial,..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>FP, function chains and CAP model loading</title>
+		<meta name="description" content="Understanding functional programming approaches, no matter how trivial, can help in other areas. Here I explain how being comfortable with function chains helped in working out why a required (but unused) service was being loaded into the overall CDS model in a CAP project.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>FP, function chains and CAP model loading</h1><div class="post__details"><time datetime="2025-05-01">01 May 2025 </time><span>| </span><span>8 min read</span></div></header><main class="post__content"><p><em>Understanding functional programming approaches, no matter how trivial, can help in other areas. Here I explain how being comfortable with function chains helped in working out why a required (but unused) service was being loaded into the overall CDS model in a CAP project.</em></p><p><a name="introduction"></a></p><h2>Introduction</h2><p>I'm currently running a mini series on the Hands-on SAP Dev show, called <a href="https://www.youtube.com/playlist?list=PL6RpkC85SLQB-0sK7KSRwCc2gdtlZDIkL">Let's explore functional programming</a>. Nothing too heavy; so far we've looked at functions as first class citizens, the concept of higher order functions, closures, dug into reduce, glimpsed the beauty of currying and partial application and set the scene for further investigations in upcoming episodes.</p><p>In tomorrow's episode I hope to find time to start looking at function chaining with the typical JavaScript candidates <code>filter</code>, <code>map</code> and <code>reduce</code>, where we can chain such higher order functions together to process data (I cover this in various blog posts and other resources elsewhere, see <a href="/tags/fp">posts tagged with 'fp'</a> for more details). Being comfortable with a technique like this, which in turn includes a healthy grasp of lambda (anonymous) functions, often in the form of <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions">arrow function expressions</a> and of course the whole premise of higher order functions, allows us to <a href="/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#initialrecognition:~:text=%22If%20you%20stare%20long%20enough%20at%20it%20...%22.">stare at</a> code and understand what's going on.</p><p>Here's a case in point, where I had always been curious as to why a certain CSN source was being loaded into the overall CDS model, and found out by looking at the CAP Node.js server source code, following the logic, and seeing the light. I'd guessed there must be a reason, but my curiosity was always brought out at points where I didn't have the luxury of time to investigate ... while I was standing up in front of a workshop full of people, walking them through hands-on exercise material. This afternoon I decided to remedy that.</p><p><a name="setting-the-scene-and-the-challenge"></a></p><h2>Setting the scene and the challenge</h2><p>In the <a href="https://github.com/SAP-samples/cap-service-integration-codejam">Service integration with SAP Cloud Application Programming Model</a> CodeJam, we <a href="https://github.com/SAP-samples/cap-service-integration-codejam/tree/main/exercises/03-import-odata-api#import-the-api-specification">import an external API definition</a> for the &quot;Business Partner (A2X)&quot; OData V2 service in Exercise 03, like this:</p><pre class="language-shell"><code class="language-shell">cds <span class="token function">import</span> API_BUSINESS_PARTNER.edmx</code></pre><p>In the subsequent exercise, without any further changes or additions, we <a href="https://github.com/SAP-samples/cap-service-integration-codejam/tree/main/exercises/04-understand-service-mocking#start-the-cap-server">start the CAP server</a> like this:</p><pre class="language-shell"><code class="language-shell">cds run</code></pre><p>and see log output that starts off like this:</p><pre class="language-log"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loaded model from <span class="token number">5</span> file<span class="token operator">(</span>s<span class="token operator">)</span><span class="token operator">:</span><br><br>  srv<span class="token operator">/</span>external<span class="token operator">/</span>API_BUSINESS_PARTNER<span class="token punctuation">.</span>csn<br>  app<span class="token operator">/</span>fiori<span class="token punctuation">.</span>cds<br>  srv<span class="token operator">/</span>incidents<span class="token operator">-</span>service<span class="token punctuation">.</span>cds<br>  db<span class="token operator">/</span>schema<span class="token punctuation">.</span>cds<br>  node_modules<span class="token operator">/</span><span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">/</span>common<span class="token punctuation">.</span>cds</code></pre><p>Given what I knew about how resources are loaded to make up the overall CDS model, I was always a little bit curious as to why this file:</p><pre class="language-log"><code class="language-log">srv<span class="token operator">/</span>external<span class="token operator">/</span>API_BUSINESS_PARTNER<span class="token punctuation">.</span>csn</code></pre><p>was included. According to the default set of &quot;roots&quot;, it shouldn't be.</p><p>So the challenge is set: Can I find out <em>why</em> it's being loaded?</p><h2>Some background on CDS roots</h2><p>Briefly, <code>cds run</code> is syntactic sugar for <code>cds serve all</code>, whereupon all the resources in a set of defined roots are loaded.</p><p>What are these roots? Well, we can ask to see them with:</p><pre class="language-shell"><code class="language-shell">cds <span class="token function">env</span> get roots</code></pre><p>which returns:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span> 'db/'<span class="token punctuation">,</span> 'srv/'<span class="token punctuation">,</span> 'app/'<span class="token punctuation">,</span> 'schema'<span class="token punctuation">,</span> 'services' <span class="token punctuation">]</span></code></pre><p>In other words, unless directed otherwise, the compiler will look for files in the <code>db/</code>, <code>srv/</code> and <code>app/</code> directories (the holy model trinity) plus any files specifically named <code>schema</code> or <code>services</code><a href="#footnote-1"><sup>1</sup></a> (with <code>cds</code> or <code>csn</code> extensions).</p><p>It doesn't <em>descend</em> within those three directories, so why does that file, in a directory <em>within</em> <code>srv/</code>, get loaded at all?</p><h2>Use the source Luke</h2><p>Taking heed of a <a href="https://wiki.c2.com/?UseTheSourceLuke">great piece of advice</a> in the original Wiki<a href="#footnote-2"><sup>2</sup></a> - to look at the source code, ideally while it's running, in a debugger - I dug in to the CAP Node.js server source. Here's what I discovered.</p><h3>@sap/cds/server.js</h3><p>This file is loaded when a server is started, and after doing some preparations relating to the <a href="https://expressjs.com/">Express</a> framework upon which it rides, it loads and prepares the models:</p><pre class="language-javascript"><code class="language-javascript"><span class="token comment">// load and prepare models</span><br><span class="token keyword">const</span> csn <span class="token operator">=</span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span><span class="token function">load</span><span class="token punctuation">(</span>o<span class="token punctuation">.</span>from<span class="token operator">||</span><span class="token string">'*'</span><span class="token punctuation">,</span>o<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token function">then</span> <span class="token punctuation">(</span>cds<span class="token punctuation">.</span>minify<span class="token punctuation">)</span></code></pre><h3>@sap/cds/lib/compile/load.js</h3><p>The <code>load</code> function is exported from <code>compile/load.js</code> and looks like this:</p><pre class="language-javascript"><code class="language-javascript">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token function-variable function">exports</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token function">load</span> <span class="token punctuation">(</span><span class="token parameter">files<span class="token punctuation">,</span> options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> any <span class="token operator">=</span> cds<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>files<span class="token punctuation">,</span>options<span class="token punctuation">)</span><br>  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>any<span class="token punctuation">)</span> <span class="token keyword">return</span> Promise<span class="token punctuation">.</span><span class="token function">reject</span> <span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">cds<span class="token punctuation">.</span>error</span> <span class="token punctuation">(</span><span class="token punctuation">{</span><br>    <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Couldn't find a CDS model for '</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>files<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">' in </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>cds<span class="token punctuation">.</span>root<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span><br>    <span class="token literal-property property">code</span><span class="token operator">:</span> <span class="token string">'MODEL_NOT_FOUND'</span><span class="token punctuation">,</span> files<span class="token punctuation">,</span><br>  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><br>  <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">get</span> <span class="token punctuation">(</span>any<span class="token punctuation">,</span>options<span class="token punctuation">,</span><span class="token string">'inferred'</span><span class="token punctuation">)</span><br><span class="token punctuation">}</span></code></pre><p>At this point, the value passed to the function's <code>files</code> parameter is <code>'*'</code>, effectively corresponding to the <code>all</code> in <code>cds serve all</code>, and via some nifty <a href="https://qmacro.org/blog/posts/2024/12/10/tasc-notes-part-4/#lazy-loading-of-the-cds-facades-many-features">lazy loading via getters</a>, in <code>@sap/cds/lib/index.js</code>:</p><pre class="language-javascript"><code class="language-javascript"><span class="token keyword">get</span> <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token punctuation">{</span> <span class="token keyword">return</span> <span class="token keyword">super</span><span class="token punctuation">.</span>resolve <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./compile/resolve'</span><span class="token punctuation">)</span> <span class="token punctuation">}</span></code></pre><p>we end up in <code>@sap/cds/lib/compile/resolve.js</code>.</p><h3>@sap/cds/lib/compile/resolve.js</h3><p>We end up specifically in the <code>_resolve_all</code> function, which looks like this:</p><pre class="language-javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">_resolve_all</span> <span class="token punctuation">(</span><span class="token parameter">o<span class="token punctuation">,</span>cds</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token keyword">const</span> <span class="token punctuation">{</span>roots<span class="token punctuation">}</span> <span class="token operator">=</span> o<span class="token punctuation">.</span>env <span class="token operator">||</span> cds<span class="token punctuation">.</span>env<span class="token punctuation">;</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>o<span class="token punctuation">.</span>dry <span class="token operator">||</span> o <span class="token operator">===</span> <span class="token boolean">false</span><span class="token punctuation">)</span>  <span class="token keyword">return</span> <span class="token punctuation">[</span> <span class="token operator">...</span>roots<span class="token punctuation">,</span> <span class="token operator">...</span><span class="token keyword">new</span> <span class="token class-name">Set</span><span class="token punctuation">(</span><span class="token function">_required</span><span class="token punctuation">(</span>cds<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">flat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">]</span><br>  <span class="token keyword">const</span> cache <span class="token operator">=</span> o<span class="token punctuation">.</span>cache <span class="token operator">||</span> exports<span class="token punctuation">.</span>cache<br>  <span class="token keyword">const</span> cached <span class="token operator">=</span> cache<span class="token punctuation">[</span><span class="token string">'*'</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>cached<span class="token punctuation">)</span> <span class="token keyword">return</span> cached<br>  cache<span class="token punctuation">[</span><span class="token string">'*'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token comment">// important to avoid endless recursion on '*'</span><br>  <span class="token keyword">const</span> sources <span class="token operator">=</span> cds<span class="token punctuation">.</span><span class="token function">resolve</span> <span class="token punctuation">(</span>roots<span class="token punctuation">,</span>o<span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><br>  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token punctuation">(</span>sources<span class="token punctuation">.</span>length <span class="token operator">===</span> <span class="token number">1</span> <span class="token operator">&amp;&amp;</span> sources<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">endsWith</span><span class="token punctuation">(</span><span class="token string">'csn.json'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// REVISIT: why is that? -> pre-compiled gen/csn.json?</span><br>    sources<span class="token punctuation">.</span><span class="token function">push</span> <span class="token punctuation">(</span><span class="token operator">...</span>cds<span class="token punctuation">.</span><span class="token function">resolve</span> <span class="token punctuation">(</span><span class="token function">_required</span><span class="token punctuation">(</span>cds<span class="token punctuation">,</span>o<span class="token punctuation">.</span>env<span class="token punctuation">)</span><span class="token punctuation">,</span>o<span class="token punctuation">)</span><span class="token operator">||</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span><br>  <span class="token keyword">return</span> cache<span class="token punctuation">[</span><span class="token string">'*'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">_resolved</span> <span class="token punctuation">(</span>sources<span class="token punctuation">)</span><br><span class="token punctuation">}</span></code></pre><p>After working through the roots we looked at earlier, this function ends up (in the case of the <a href="https://github.com/SAP-samples/cap-service-integration-codejam/tree/main/incidents">CAP project in the CodeJam</a>) with the following value in <code>sources</code> (the initial part of each path deliberately elided to keep things short), just before the <code>if</code> statement:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token string">"/.../incidents/db/schema.cds"</span><span class="token punctuation">,</span><br>  <span class="token string">"/.../incidents/srv/incidents-service.cds"</span><span class="token punctuation">,</span><br>  <span class="token string">"/.../incidents/app/fiori.cds"</span><br><span class="token punctuation">]</span></code></pre><p>This makes sense given what we know about the roots.</p><p>Just before returning, there's a final line which pushes extra values onto this list; the condition guarding this logic is not met (there are three source items, not just one, for a start) and so this line is executed:</p><pre class="language-javascript"><code class="language-javascript">sources<span class="token punctuation">.</span><span class="token function">push</span> <span class="token punctuation">(</span><span class="token operator">...</span>cds<span class="token punctuation">.</span><span class="token function">resolve</span> <span class="token punctuation">(</span><span class="token function">_required</span><span class="token punctuation">(</span>cds<span class="token punctuation">,</span>o<span class="token punctuation">.</span>env<span class="token punctuation">)</span><span class="token punctuation">,</span>o<span class="token punctuation">)</span><span class="token operator">||</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span></code></pre><p>What is this <code>_required</code> function? Well, it's defined just above the <code>_resolve_all</code> function, like this:</p><pre class="language-javascript"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">_required</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">cds<span class="token punctuation">,</span>env<span class="token operator">=</span>cds<span class="token punctuation">.</span>env</span><span class="token punctuation">)</span> <span class="token operator">=></span> Object<span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span>env<span class="token punctuation">.</span>requires<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token function">map</span> <span class="token punctuation">(</span><span class="token parameter">r</span> <span class="token operator">=></span> r<span class="token punctuation">.</span>model<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">x</span><span class="token operator">=></span>x<span class="token punctuation">)</span></code></pre><p><a name="digging-in-to-the-function-chain"></a></p><h4>Digging in to the function chain</h4><p>That's quite a definition! Let's break it down by adding some whitespace:</p><pre class="language-javascript"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">_required</span> <span class="token operator">=</span> <br>  <span class="token punctuation">(</span><span class="token parameter">cds<span class="token punctuation">,</span>env<span class="token operator">=</span>cds<span class="token punctuation">.</span>env</span><span class="token punctuation">)</span> <span class="token operator">=></span> <br>  Object<span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span>env<span class="token punctuation">.</span>requires<span class="token punctuation">)</span><br>   <span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token parameter">r</span> <span class="token operator">=></span> r<span class="token punctuation">.</span>model<span class="token punctuation">)</span><br>   <span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">x</span> <span class="token operator">=></span> x<span class="token punctuation">)</span></code></pre><p>There's a lot of fat arrows and dots, but staring at it for a moment reveals its actual simplicity - it's a function chain, transforming a list of values through a chain of functions (two in this case) first a call to <code>map</code>, then a call to <code>filter</code>.</p><p>The value of the <code>env</code> parameter (the second one in the <code>_required</code> signature) is an object representing the &quot;effective&quot; environment of the running server, and includes a <code>requires</code> property. It's the value of this property that is passed first to <code>Object.values</code>.</p><p>The value of this <code>requires</code> property looks like this (I've removed some of the entries in <code>auth.users</code> for brevity):</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"middlewares"</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span><br>  <span class="token property">"auth"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token property">"restrict_all_services"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span><br>    <span class="token property">"kind"</span><span class="token operator">:</span> <span class="token string">"mocked"</span><span class="token punctuation">,</span><br>    <span class="token property">"users"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token property">"alice"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>        <span class="token property">"tenant"</span><span class="token operator">:</span> <span class="token string">"t1"</span><span class="token punctuation">,</span><br>        <span class="token property">"roles"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>          <span class="token string">"cds.Subscriber"</span><span class="token punctuation">,</span><br>          <span class="token string">"admin"</span><br>        <span class="token punctuation">]</span><br>      <span class="token punctuation">}</span><span class="token punctuation">,</span><br>      <span class="token property">"bob"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>        <span class="token property">"tenant"</span><span class="token operator">:</span> <span class="token string">"t1"</span><span class="token punctuation">,</span><br>        <span class="token property">"roles"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>          <span class="token string">"cds.ExtensionDeveloper"</span><span class="token punctuation">,</span><br>          <span class="token string">"cds.UIFlexDeveloper"</span><br>        <span class="token punctuation">]</span><br>      <span class="token punctuation">}</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token property">"tenants"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token property">"t1"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>        <span class="token property">"features"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>          <span class="token string">"isbn"</span><br>        <span class="token punctuation">]</span><br>      <span class="token punctuation">}</span><span class="token punctuation">,</span><br>      <span class="token property">"t2"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>        <span class="token property">"features"</span><span class="token operator">:</span> <span class="token string">"*"</span><br>      <span class="token punctuation">}</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token property">"db"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token property">"impl"</span><span class="token operator">:</span> <span class="token string">"@cap-js/sqlite"</span><span class="token punctuation">,</span><br>    <span class="token property">"credentials"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token property">"url"</span><span class="token operator">:</span> <span class="token string">":memory:"</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token property">"kind"</span><span class="token operator">:</span> <span class="token string">"sqlite"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token property">"API_BUSINESS_PARTNER"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token property">"impl"</span><span class="token operator">:</span> <span class="token string">"@sap/cds/libx/_runtime/remote/Service.js"</span><span class="token punctuation">,</span><br>    <span class="token property">"external"</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span><br>    <span class="token property">"kind"</span><span class="token operator">:</span> <span class="token string">"odata-v2"</span><span class="token punctuation">,</span><br>    <span class="token property">"model"</span><span class="token operator">:</span> <span class="token string">"srv/external/API_BUSINESS_PARTNER"</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span></code></pre><p>Some of these &quot;requirements&quot; come from the defined default behaviour of a CAP Node.js server in this context. But look at that last entry:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"API_BUSINESS_PARTNER"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token property">"impl"</span><span class="token operator">:</span> <span class="token string">"@sap/cds/libx/_runtime/remote/Service.js"</span><span class="token punctuation">,</span><br>    <span class="token property">"external"</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span><br>    <span class="token property">"kind"</span><span class="token operator">:</span> <span class="token string">"odata-v2"</span><span class="token punctuation">,</span><br>    <span class="token property">"model"</span><span class="token operator">:</span> <span class="token string">"srv/external/API_BUSINESS_PARTNER"</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span></code></pre><p>That is directly from the <code>cds.requires</code> section of the project's <code>package.json</code> file (which can be neatly expressed as <code>package.json#cds.requires</code>) ... which was added by the actions initiated with the invocation of <code>cds import API_BUSINESS_PARTNER.edmx</code>:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"cds"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>    <span class="token property">"requires"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>      <span class="token property">"API_BUSINESS_PARTNER"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>        <span class="token property">"kind"</span><span class="token operator">:</span> <span class="token string">"odata-v2"</span><span class="token punctuation">,</span><br>        <span class="token property">"model"</span><span class="token operator">:</span> <span class="token string">"srv/external/API_BUSINESS_PARTNER"</span><br>      <span class="token punctuation">}</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">}</span></code></pre><p>OK, so now we know what's in <code>env.requires</code> - an object with entries representing different requirements, in different shaped JSON stanzas.</p><p>Now let's look at the function chain.</p><p>First, we have a call to <code>map</code>, where the callback function is simply:</p><pre class="language-javascript"><code class="language-javascript"><span class="token parameter">r</span> <span class="token operator">=></span> r<span class="token punctuation">.</span>model</code></pre><p>All this does is return the value of the <code>model</code> property for each object passed in. Looking back at the entire <code>env.requires</code> value earlier, we can see that this is going to produce something that looks a little odd:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  undefined<span class="token punctuation">,</span><br>  undefined<span class="token punctuation">,</span><br>  undefined<span class="token punctuation">,</span><br>  <span class="token string">"srv/external/API_BUSINESS_PARTNER"</span><br><span class="token punctuation">]</span></code></pre><p>Only the <code>API_BUSINESS_PARTNER</code> object has a <code>model</code> property.</p><p>This is fine, and also indicative of the simplicity with which function chains can be conceived, constructed and understood.</p><p>All that is wanted here is a reference to any and all CDS model files, and if there are any other items required that aren't directly related to the overall CDS model, then that's OK, they won't have a <code>model</code> property, meaning <code>undefined</code> is returned for those (<code>middlewares</code>, <code>auth</code> and <code>db</code>).</p><p>This simple callback function for <code>map</code> produces a simple structure (<code>map</code> always reads a list and produces a list that is the same length).</p><p>And now this is passed in, to the next (and last) function in this chain, namely to <code>filter</code>, which is another higher order function that takes a predicate function<a href="#footnote-3"><sup>3</sup></a>, which is even simpler than the previous callback function:</p><pre class="language-javascript"><code class="language-javascript"><span class="token parameter">x</span> <span class="token operator">=></span> x</code></pre><p>What the heck is going on here? Well, JavaScript's <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter">filter</a> function takes a list (like <code>map</code> does), and returns a list, but (unlike <code>map</code>) that list may be shorter. Filter removes any elements for which the predicate function, when called with that element, returns something that is false ... or <a href="https://developer.mozilla.org/en-US/docs/Glossary/Falsy">falsey</a>.</p><p>And with <code>x =&gt; x</code>, what is returned is effectively the value of the element passed in. Given that <code>undefined</code> is falsey, all that is emitted from this second and last function in the chain is:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token string">"srv/external/API_BUSINESS_PARTNER"</span><br><span class="token punctuation">]</span></code></pre><p>And that's exactly what is needed - a list of CDS model file references to be pushed onto the end of the <code>sources</code> list that already exists, giving:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token string">"/.../incidents/db/schema.cds"</span><span class="token punctuation">,</span><br>  <span class="token string">"/.../incidents/srv/incidents-service.cds"</span><span class="token punctuation">,</span><br>  <span class="token string">"/.../incidents/app/fiori.cds"</span><span class="token punctuation">,</span><br>  <span class="token string">"/.../incidents/srv/external/API_BUSINESS_PARTNER"</span><br><span class="token punctuation">]</span></code></pre><h2>Conclusion</h2><p>So now it's clear why the <code>srv/external/API_BUSINESS_PARTNER.csn</code> model file is loaded:</p><pre class="language-log"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loaded model from <span class="token number">5</span> file<span class="token operator">(</span>s<span class="token operator">)</span><span class="token operator">:</span><br><br>  srv<span class="token operator">/</span>external<span class="token operator">/</span>API_BUSINESS_PARTNER<span class="token punctuation">.</span>csn<br>  app<span class="token operator">/</span>fiori<span class="token punctuation">.</span>cds<br>  srv<span class="token operator">/</span>incidents<span class="token operator">-</span>service<span class="token punctuation">.</span>cds<br>  db<span class="token operator">/</span>schema<span class="token punctuation">.</span>cds<br>  node_modules<span class="token operator">/</span><span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">/</span>common<span class="token punctuation">.</span>cds</code></pre><p>(In case you're wondering, the <code>node_modules/@sap/cds/common.cds</code> model file is loaded because it's &quot;imported&quot; from within <code>db/schema.cds</code> with <code>using { cuid, managed, sap.common.CodeList } from '@sap/cds/common';</code>).</p><p>But the bigger conclusion here is that reading code is extremely useful. And, going <a href="https://dictionary.cambridge.org/grammar/british-grammar/comparison-adjectives-bigger-biggest-more-interesting">from the comparative to the superlative</a> here, the biggest conclusion is perhaps the yin-yang of learning. Some basic knowledge of functional programming approaches has allowed us to dig into the source and understand what's going on. And conversely, reading that code has increased our understanding and appreciation for such approaches, especially with the simplicity of the callback functions in the function chain here.</p><p>If you're keen to learn more, perhaps I'll see you live in the chat on our <a href="https://www.youtube.com/playlist?list=PL6RpkC85SLQB-0sK7KSRwCc2gdtlZDIkL">series exploring functional programming</a> sometime soon. Until then, happy learning!</p><h2>Notes</h2><p>There's so much other stuff to unpick from what we've seen in the code we've been digging into. Here are a couple of items.</p><p><a name="default-parameter-definition-references"></a></p><h3>Default parameter definition references</h3><p>Did you notice the signature for <code>_required</code>:</p><pre class="language-javascript"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">_required</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">cds<span class="token punctuation">,</span>env<span class="token operator">=</span>cds<span class="token punctuation">.</span>env</span><span class="token punctuation">)</span> <span class="token operator">=></span> Object<span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span>env<span class="token punctuation">.</span>requires<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token function">map</span> <span class="token punctuation">(</span><span class="token parameter">r</span> <span class="token operator">=></span> r<span class="token punctuation">.</span>model<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">x</span><span class="token operator">=></span>x<span class="token punctuation">)</span></code></pre><p>What on earth is going on with <code>(cds,env=cds.env)</code>?</p><p>Well, functions can have default parameters. That's not surprising. The <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Default_parameters">MDN reference page</a> gives this simple example:</p><pre class="language-javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">multiply</span><span class="token punctuation">(</span><span class="token parameter">a<span class="token punctuation">,</span> b <span class="token operator">=</span> <span class="token number">1</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  <span class="token keyword">return</span> a <span class="token operator">*</span> b<span class="token punctuation">;</span><br><span class="token punctuation">}</span></code></pre><p>That's straightforward, in that if no value is supplied for <code>b</code>, the default value of <code>1</code> is used.</p><p>But what about <code>env=cds.env</code>? The default value here ... is referring to a property in the <code>cds</code> object, which itself is the first parameter! Said out loud:</p><p>&quot;<em>If there's no value<a href="#footnote-4"><sup>4</sup></a> for the <code>env</code> parameter, take the value of the <code>env</code> property of the (object) value passed to the first parameter named <code>cds</code></em>&quot;.</p><p>I did a double-take when I first saw that, and thought it worth highlighting.</p><p><a name="callback-function-parameter-names"></a></p><h3>Callback function parameter names</h3><p>There's an innate beauty in abstraction when it comes to functions, and one thing I discovered when digging into Haskell was the consistent and sensible use of the symbols <a href="/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#introduction-via-haskell"><code>x</code> and <code>xs</code></a>. When expressing a function as simple as either of the callback functions we encountered here:</p><pre class="language-javascript"><code class="language-javascript"><span class="token parameter">r</span> <span class="token operator">=></span> r<span class="token punctuation">.</span>model</code></pre><p>and</p><pre class="language-javascript"><code class="language-javascript"><span class="token parameter">x</span> <span class="token operator">=></span> x</code></pre><p>there's a natural tendency to think of such expressions, such operations, in an abstract way.</p><p>In this context, I enjoyed the code author's choice of <code>x</code> here, but also understood the choice of <code>r</code> to perhaps represent &quot;the required thing&quot;. Personally I would have used <code>x</code> here too (i.e. <code>x =&gt; x.model</code>), but all the same, I'm glad they're both just single letter symbols. Long symbol names would detract from the readability here as well as the abstract nature. But that's a longer story for another time, perhaps.</p><hr><p><a name="footnotes"></a></p><h2>Footnotes</h2><p><a name="footnote-1"></a></p><ol><li>That's why my micro starter script <a href="https://github.com/qmacro/dotfiles/blob/main/scripts/cdsnano">cdsnano</a> copies a single CDS file called <code>services.cds</code> from the <a href="https://github.com/qmacro/dotfiles/tree/main/scripts/cdsnano-template">nano template directory</a> because it will be automatically picked up based on the default roots, and has everything in it - the <a href="https://creators.spotify.com/pod/profile/tech-aloud/episodes/The-Simplest-Thing-that-Could-Possibly-Work--A-conversation-with-Ward-Cunningham--Part-V---Bill-Venners-e5dpts">simplest thing that could possibly work</a>.</li></ol><p><a name="footnote-2"></a> 2. This is of course Ward Cunningham's own Wiki &quot;C2&quot;.</p><p><a name="footnote-3"></a> 3. A &quot;predicate function&quot; is a function that returns a boolean value, i.e. <code>true</code> or <code>false</code>, and can therefore be used as callbacks in higher order functions such as <code>filter</code>.</p><p><a name="footnote-4"></a> 4. Or <code>undefined</code>.</p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/fp/">#fp</a> <a href="/tags/cap/">#cap</a> <a href="/tags/filter/">#filter</a> <a href="/tags/map/">#map</a> <a href="/tags/debugging/">#debugging</a> <a href="/tags/abstraction/">#abstraction</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2025/05/04/adjusting-the-preview-width-in-telescope&#39;s-horizontal-picker/"><span>←</span> <span>Adjusting the preview width in Telescope&#39;s horizontal picker</span> </a><a href="/blog/posts/2025/04/29/array.prototype.reduce-and-the-optional-initial-value/"><span>Array.prototype.reduce and the optional initial value</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="fp-function-chains-and-cap-model-loading">FP, function chains and CAP model loading</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2025-05-01">01 May 2025</time></li>
+	<li><a href="/tags/fp/" class="post-tag">fp</a>, </li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/filter/" class="post-tag">filter</a>, </li>
+	<li><a href="/tags/map/" class="post-tag">map</a>, </li>
+	<li><a href="/tags/debugging/" class="post-tag">debugging</a>, </li>
+	<li><a href="/tags/abstraction/" class="post-tag">abstraction</a></li>
+</ul>
+
+<p class="post-description-main">Understanding functional programming approaches, no matter how trivial, can help in other areas. Here I explain how being comfortable with function chains helped in working out why a required (but unused) service was being loaded into the overall CDS model in a CAP project.</p>
+
+<h2 id="introduction">Introduction</h2>
+<p>I'm currently running a mini series on the Hands-on SAP Dev show, called <a href="https://www.youtube.com/playlist?list=PL6RpkC85SLQB-0sK7KSRwCc2gdtlZDIkL">Let's explore functional programming</a>. Nothing too heavy; so far we've looked at functions as first class citizens, the concept of higher order functions, closures, dug into reduce, glimpsed the beauty of currying and partial application and set the scene for further investigations in upcoming episodes.</p>
+<p>In tomorrow's episode I hope to find time to start looking at function chaining with the typical JavaScript candidates <code>filter</code>, <code>map</code> and <code>reduce</code>, where we can chain such higher order functions together to process data (I cover this in various blog posts and other resources elsewhere, see <a href="/tags/fp">posts tagged with 'fp'</a> for more details). Being comfortable with a technique like this, which in turn includes a healthy grasp of lambda (anonymous) functions, often in the form of <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions">arrow function expressions</a> and of course the whole premise of higher order functions, allows us to <a href="/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#initialrecognition:~:text=%22If%20you%20stare%20long%20enough%20at%20it%20...%22.">stare at</a> code and understand what's going on.</p>
+<p>Here's a case in point, where I had always been curious as to why a certain CSN source was being loaded into the overall CDS model, and found out by looking at the CAP Node.js server source code, following the logic, and seeing the light. I'd guessed there must be a reason, but my curiosity was always brought out at points where I didn't have the luxury of time to investigate ... while I was standing up in front of a workshop full of people, walking them through hands-on exercise material. This afternoon I decided to remedy that.</p>
+<h2 id="setting-the-scene-and-the-challenge">Setting the scene and the challenge</h2>
+<p>In the <a href="https://github.com/SAP-samples/cap-service-integration-codejam">Service integration with SAP Cloud Application Programming Model</a> CodeJam, we <a href="https://github.com/SAP-samples/cap-service-integration-codejam/tree/main/exercises/03-import-odata-api#import-the-api-specification">import an external API definition</a> for the &quot;Business Partner (A2X)&quot; OData V2 service in Exercise 03, like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cds <span class="token function">import</span> API_BUSINESS_PARTNER.edmx</code></pre>
+<p>In the subsequent exercise, without any further changes or additions, we <a href="https://github.com/SAP-samples/cap-service-integration-codejam/tree/main/exercises/04-understand-service-mocking#start-the-cap-server">start the CAP server</a> like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cds run</code></pre>
+<p>and see log output that starts off like this:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loaded model from <span class="token number">5</span> file<span class="token operator">(</span>s<span class="token operator">)</span><span class="token operator">:</span>
+
+  srv<span class="token operator">/</span>external<span class="token operator">/</span>API_BUSINESS_PARTNER<span class="token punctuation">.</span>csn
+  app<span class="token operator">/</span>fiori<span class="token punctuation">.</span>cds
+  srv<span class="token operator">/</span>incidents<span class="token operator">-</span>service<span class="token punctuation">.</span>cds
+  db<span class="token operator">/</span>schema<span class="token punctuation">.</span>cds
+  node_modules<span class="token operator">/</span><span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">/</span>common<span class="token punctuation">.</span>cds</code></pre>
+<p>Given what I knew about how resources are loaded to make up the overall CDS model, I was always a little bit curious as to why this file:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">srv<span class="token operator">/</span>external<span class="token operator">/</span>API_BUSINESS_PARTNER<span class="token punctuation">.</span>csn</code></pre>
+<p>was included. According to the default set of &quot;roots&quot;, it shouldn't be.</p>
+<p>So the challenge is set: Can I find out <em>why</em> it's being loaded?</p>
+<h2 id="some-background-on-cds-roots">Some background on CDS roots</h2>
+<p>Briefly, <code>cds run</code> is syntactic sugar for <code>cds serve all</code>, whereupon all the resources in a set of defined roots are loaded.</p>
+<p>What are these roots? Well, we can ask to see them with:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cds <span class="token function">env</span> get roots</code></pre>
+<p>which returns:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span> 'db/'<span class="token punctuation">,</span> 'srv/'<span class="token punctuation">,</span> 'app/'<span class="token punctuation">,</span> 'schema'<span class="token punctuation">,</span> 'services' <span class="token punctuation">]</span></code></pre>
+<p>In other words, unless directed otherwise, the compiler will look for files in the <code>db/</code>, <code>srv/</code> and <code>app/</code> directories (the holy model trinity) plus any files specifically named <code>schema</code> or <code>services</code><a href="#footnote-1"><sup>1</sup></a> (with <code>cds</code> or <code>csn</code> extensions).</p>
+<p>It doesn't <em>descend</em> within those three directories, so why does that file, in a directory <em>within</em> <code>srv/</code>, get loaded at all?</p>
+<h2 id="use-the-source-luke">Use the source Luke</h2>
+<p>Taking heed of a <a href="https://wiki.c2.com/?UseTheSourceLuke">great piece of advice</a> in the original Wiki<a href="#footnote-2"><sup>2</sup></a> - to look at the source code, ideally while it's running, in a debugger - I dug in to the CAP Node.js server source. Here's what I discovered.</p>
+<h3 id="sap-cds-server-js">@sap/cds/server.js</h3>
+<p>This file is loaded when a server is started, and after doing some preparations relating to the <a href="https://expressjs.com/">Express</a> framework upon which it rides, it loads and prepares the models:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token comment">// load and prepare models</span>
+<span class="token keyword">const</span> csn <span class="token operator">=</span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span><span class="token function">load</span><span class="token punctuation">(</span>o<span class="token punctuation">.</span>from<span class="token operator">||</span><span class="token string">'*'</span><span class="token punctuation">,</span>o<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token function">then</span> <span class="token punctuation">(</span>cds<span class="token punctuation">.</span>minify<span class="token punctuation">)</span></code></pre>
+<h3 id="sap-cds-lib-compile-load-js">@sap/cds/lib/compile/load.js</h3>
+<p>The <code>load</code> function is exported from <code>compile/load.js</code> and looks like this:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript">module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token function-variable function">exports</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token function">load</span> <span class="token punctuation">(</span><span class="token parameter">files<span class="token punctuation">,</span> options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> any <span class="token operator">=</span> cds<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span>files<span class="token punctuation">,</span>options<span class="token punctuation">)</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>any<span class="token punctuation">)</span> <span class="token keyword">return</span> Promise<span class="token punctuation">.</span><span class="token function">reject</span> <span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">cds<span class="token punctuation">.</span>error</span> <span class="token punctuation">(</span><span class="token punctuation">{</span>
+    <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Couldn't find a CDS model for '</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>files<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">' in </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>cds<span class="token punctuation">.</span>root<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span>
+    <span class="token literal-property property">code</span><span class="token operator">:</span> <span class="token string">'MODEL_NOT_FOUND'</span><span class="token punctuation">,</span> files<span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">get</span> <span class="token punctuation">(</span>any<span class="token punctuation">,</span>options<span class="token punctuation">,</span><span class="token string">'inferred'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+<p>At this point, the value passed to the function's <code>files</code> parameter is <code>'*'</code>, effectively corresponding to the <code>all</code> in <code>cds serve all</code>, and via some nifty <a href="https://qmacro.org/blog/posts/2024/12/10/tasc-notes-part-4/#lazy-loading-of-the-cds-facades-many-features">lazy loading via getters</a>, in <code>@sap/cds/lib/index.js</code>:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">get</span> <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token punctuation">{</span> <span class="token keyword">return</span> <span class="token keyword">super</span><span class="token punctuation">.</span>resolve <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'./compile/resolve'</span><span class="token punctuation">)</span> <span class="token punctuation">}</span></code></pre>
+<p>we end up in <code>@sap/cds/lib/compile/resolve.js</code>.</p>
+<h3 id="sap-cds-lib-compile-resolve-js">@sap/cds/lib/compile/resolve.js</h3>
+<p>We end up specifically in the <code>_resolve_all</code> function, which looks like this:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">_resolve_all</span> <span class="token punctuation">(</span><span class="token parameter">o<span class="token punctuation">,</span>cds</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> <span class="token punctuation">{</span>roots<span class="token punctuation">}</span> <span class="token operator">=</span> o<span class="token punctuation">.</span>env <span class="token operator">||</span> cds<span class="token punctuation">.</span>env<span class="token punctuation">;</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>o<span class="token punctuation">.</span>dry <span class="token operator">||</span> o <span class="token operator">===</span> <span class="token boolean">false</span><span class="token punctuation">)</span>  <span class="token keyword">return</span> <span class="token punctuation">[</span> <span class="token operator">...</span>roots<span class="token punctuation">,</span> <span class="token operator">...</span><span class="token keyword">new</span> <span class="token class-name">Set</span><span class="token punctuation">(</span><span class="token function">_required</span><span class="token punctuation">(</span>cds<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">flat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">]</span>
+  <span class="token keyword">const</span> cache <span class="token operator">=</span> o<span class="token punctuation">.</span>cache <span class="token operator">||</span> exports<span class="token punctuation">.</span>cache
+  <span class="token keyword">const</span> cached <span class="token operator">=</span> cache<span class="token punctuation">[</span><span class="token string">'*'</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>cached<span class="token punctuation">)</span> <span class="token keyword">return</span> cached
+  cache<span class="token punctuation">[</span><span class="token string">'*'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token comment">// important to avoid endless recursion on '*'</span>
+  <span class="token keyword">const</span> sources <span class="token operator">=</span> cds<span class="token punctuation">.</span><span class="token function">resolve</span> <span class="token punctuation">(</span>roots<span class="token punctuation">,</span>o<span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token punctuation">(</span>sources<span class="token punctuation">.</span>length <span class="token operator">===</span> <span class="token number">1</span> <span class="token operator">&amp;&amp;</span> sources<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">endsWith</span><span class="token punctuation">(</span><span class="token string">'csn.json'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// REVISIT: why is that? -> pre-compiled gen/csn.json?</span>
+    sources<span class="token punctuation">.</span><span class="token function">push</span> <span class="token punctuation">(</span><span class="token operator">...</span>cds<span class="token punctuation">.</span><span class="token function">resolve</span> <span class="token punctuation">(</span><span class="token function">_required</span><span class="token punctuation">(</span>cds<span class="token punctuation">,</span>o<span class="token punctuation">.</span>env<span class="token punctuation">)</span><span class="token punctuation">,</span>o<span class="token punctuation">)</span><span class="token operator">||</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> cache<span class="token punctuation">[</span><span class="token string">'*'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">_resolved</span> <span class="token punctuation">(</span>sources<span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+<p>After working through the roots we looked at earlier, this function ends up (in the case of the <a href="https://github.com/SAP-samples/cap-service-integration-codejam/tree/main/incidents">CAP project in the CodeJam</a>) with the following value in <code>sources</code> (the initial part of each path deliberately elided to keep things short), just before the <code>if</code> statement:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token string">"/.../incidents/db/schema.cds"</span><span class="token punctuation">,</span>
+  <span class="token string">"/.../incidents/srv/incidents-service.cds"</span><span class="token punctuation">,</span>
+  <span class="token string">"/.../incidents/app/fiori.cds"</span>
+<span class="token punctuation">]</span></code></pre>
+<p>This makes sense given what we know about the roots.</p>
+<p>Just before returning, there's a final line which pushes extra values onto this list; the condition guarding this logic is not met (there are three source items, not just one, for a start) and so this line is executed:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript">sources<span class="token punctuation">.</span><span class="token function">push</span> <span class="token punctuation">(</span><span class="token operator">...</span>cds<span class="token punctuation">.</span><span class="token function">resolve</span> <span class="token punctuation">(</span><span class="token function">_required</span><span class="token punctuation">(</span>cds<span class="token punctuation">,</span>o<span class="token punctuation">.</span>env<span class="token punctuation">)</span><span class="token punctuation">,</span>o<span class="token punctuation">)</span><span class="token operator">||</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span></code></pre>
+<p>What is this <code>_required</code> function? Well, it's defined just above the <code>_resolve_all</code> function, like this:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">_required</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">cds<span class="token punctuation">,</span>env<span class="token operator">=</span>cds<span class="token punctuation">.</span>env</span><span class="token punctuation">)</span> <span class="token operator">=></span> Object<span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span>env<span class="token punctuation">.</span>requires<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token function">map</span> <span class="token punctuation">(</span><span class="token parameter">r</span> <span class="token operator">=></span> r<span class="token punctuation">.</span>model<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">x</span><span class="token operator">=></span>x<span class="token punctuation">)</span></code></pre>
+<h4 id="digging-in-to-the-function-chain">Digging in to the function chain</h4>
+<p>That's quite a definition! Let's break it down by adding some whitespace:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">_required</span> <span class="token operator">=</span>
+  <span class="token punctuation">(</span><span class="token parameter">cds<span class="token punctuation">,</span>env<span class="token operator">=</span>cds<span class="token punctuation">.</span>env</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+  Object<span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span>env<span class="token punctuation">.</span>requires<span class="token punctuation">)</span>
+   <span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token parameter">r</span> <span class="token operator">=></span> r<span class="token punctuation">.</span>model<span class="token punctuation">)</span>
+   <span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">x</span> <span class="token operator">=></span> x<span class="token punctuation">)</span></code></pre>
+<p>There's a lot of fat arrows and dots, but staring at it for a moment reveals its actual simplicity - it's a function chain, transforming a list of values through a chain of functions (two in this case) first a call to <code>map</code>, then a call to <code>filter</code>.</p>
+<p>The value of the <code>env</code> parameter (the second one in the <code>_required</code> signature) is an object representing the &quot;effective&quot; environment of the running server, and includes a <code>requires</code> property. It's the value of this property that is passed first to <code>Object.values</code>.</p>
+<p>The value of this <code>requires</code> property looks like this (I've removed some of the entries in <code>auth.users</code> for brevity):</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"middlewares"</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  <span class="token property">"auth"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"restrict_all_services"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">"kind"</span><span class="token operator">:</span> <span class="token string">"mocked"</span><span class="token punctuation">,</span>
+    <span class="token property">"users"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"alice"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"tenant"</span><span class="token operator">:</span> <span class="token string">"t1"</span><span class="token punctuation">,</span>
+        <span class="token property">"roles"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+          <span class="token string">"cds.Subscriber"</span><span class="token punctuation">,</span>
+          <span class="token string">"admin"</span>
+        <span class="token punctuation">]</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token property">"bob"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"tenant"</span><span class="token operator">:</span> <span class="token string">"t1"</span><span class="token punctuation">,</span>
+        <span class="token property">"roles"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+          <span class="token string">"cds.ExtensionDeveloper"</span><span class="token punctuation">,</span>
+          <span class="token string">"cds.UIFlexDeveloper"</span>
+        <span class="token punctuation">]</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"tenants"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"t1"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"features"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+          <span class="token string">"isbn"</span>
+        <span class="token punctuation">]</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token property">"t2"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"features"</span><span class="token operator">:</span> <span class="token string">"*"</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"db"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"impl"</span><span class="token operator">:</span> <span class="token string">"@cap-js/sqlite"</span><span class="token punctuation">,</span>
+    <span class="token property">"credentials"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"url"</span><span class="token operator">:</span> <span class="token string">":memory:"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"kind"</span><span class="token operator">:</span> <span class="token string">"sqlite"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"API_BUSINESS_PARTNER"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"impl"</span><span class="token operator">:</span> <span class="token string">"@sap/cds/libx/_runtime/remote/Service.js"</span><span class="token punctuation">,</span>
+    <span class="token property">"external"</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token property">"kind"</span><span class="token operator">:</span> <span class="token string">"odata-v2"</span><span class="token punctuation">,</span>
+    <span class="token property">"model"</span><span class="token operator">:</span> <span class="token string">"srv/external/API_BUSINESS_PARTNER"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Some of these &quot;requirements&quot; come from the defined default behaviour of a CAP Node.js server in this context. But look at that last entry:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"API_BUSINESS_PARTNER"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"impl"</span><span class="token operator">:</span> <span class="token string">"@sap/cds/libx/_runtime/remote/Service.js"</span><span class="token punctuation">,</span>
+    <span class="token property">"external"</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token property">"kind"</span><span class="token operator">:</span> <span class="token string">"odata-v2"</span><span class="token punctuation">,</span>
+    <span class="token property">"model"</span><span class="token operator">:</span> <span class="token string">"srv/external/API_BUSINESS_PARTNER"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>That is directly from the <code>cds.requires</code> section of the project's <code>package.json</code> file (which can be neatly expressed as <code>package.json#cds.requires</code>) ... which was added by the actions initiated with the invocation of <code>cds import API_BUSINESS_PARTNER.edmx</code>:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"cds"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"requires"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"API_BUSINESS_PARTNER"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"kind"</span><span class="token operator">:</span> <span class="token string">"odata-v2"</span><span class="token punctuation">,</span>
+        <span class="token property">"model"</span><span class="token operator">:</span> <span class="token string">"srv/external/API_BUSINESS_PARTNER"</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>OK, so now we know what's in <code>env.requires</code> - an object with entries representing different requirements, in different shaped JSON stanzas.</p>
+<p>Now let's look at the function chain.</p>
+<p>First, we have a call to <code>map</code>, where the callback function is simply:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token parameter">r</span> <span class="token operator">=></span> r<span class="token punctuation">.</span>model</code></pre>
+<p>All this does is return the value of the <code>model</code> property for each object passed in. Looking back at the entire <code>env.requires</code> value earlier, we can see that this is going to produce something that looks a little odd:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  undefined<span class="token punctuation">,</span>
+  undefined<span class="token punctuation">,</span>
+  undefined<span class="token punctuation">,</span>
+  <span class="token string">"srv/external/API_BUSINESS_PARTNER"</span>
+<span class="token punctuation">]</span></code></pre>
+<p>Only the <code>API_BUSINESS_PARTNER</code> object has a <code>model</code> property.</p>
+<p>This is fine, and also indicative of the simplicity with which function chains can be conceived, constructed and understood.</p>
+<p>All that is wanted here is a reference to any and all CDS model files, and if there are any other items required that aren't directly related to the overall CDS model, then that's OK, they won't have a <code>model</code> property, meaning <code>undefined</code> is returned for those (<code>middlewares</code>, <code>auth</code> and <code>db</code>).</p>
+<p>This simple callback function for <code>map</code> produces a simple structure (<code>map</code> always reads a list and produces a list that is the same length).</p>
+<p>And now this is passed in, to the next (and last) function in this chain, namely to <code>filter</code>, which is another higher order function that takes a predicate function<a href="#footnote-3"><sup>3</sup></a>, which is even simpler than the previous callback function:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token parameter">x</span> <span class="token operator">=></span> x</code></pre>
+<p>What the heck is going on here? Well, JavaScript's <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter">filter</a> function takes a list (like <code>map</code> does), and returns a list, but (unlike <code>map</code>) that list may be shorter. Filter removes any elements for which the predicate function, when called with that element, returns something that is false ... or <a href="https://developer.mozilla.org/en-US/docs/Glossary/Falsy">falsey</a>.</p>
+<p>And with <code>x =&gt; x</code>, what is returned is effectively the value of the element passed in. Given that <code>undefined</code> is falsey, all that is emitted from this second and last function in the chain is:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token string">"srv/external/API_BUSINESS_PARTNER"</span>
+<span class="token punctuation">]</span></code></pre>
+<p>And that's exactly what is needed - a list of CDS model file references to be pushed onto the end of the <code>sources</code> list that already exists, giving:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token string">"/.../incidents/db/schema.cds"</span><span class="token punctuation">,</span>
+  <span class="token string">"/.../incidents/srv/incidents-service.cds"</span><span class="token punctuation">,</span>
+  <span class="token string">"/.../incidents/app/fiori.cds"</span><span class="token punctuation">,</span>
+  <span class="token string">"/.../incidents/srv/external/API_BUSINESS_PARTNER"</span>
+<span class="token punctuation">]</span></code></pre>
+<h2 id="conclusion">Conclusion</h2>
+<p>So now it's clear why the <code>srv/external/API_BUSINESS_PARTNER.csn</code> model file is loaded:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loaded model from <span class="token number">5</span> file<span class="token operator">(</span>s<span class="token operator">)</span><span class="token operator">:</span>
+
+  srv<span class="token operator">/</span>external<span class="token operator">/</span>API_BUSINESS_PARTNER<span class="token punctuation">.</span>csn
+  app<span class="token operator">/</span>fiori<span class="token punctuation">.</span>cds
+  srv<span class="token operator">/</span>incidents<span class="token operator">-</span>service<span class="token punctuation">.</span>cds
+  db<span class="token operator">/</span>schema<span class="token punctuation">.</span>cds
+  node_modules<span class="token operator">/</span><span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">/</span>common<span class="token punctuation">.</span>cds</code></pre>
+<p>(In case you're wondering, the <code>node_modules/@sap/cds/common.cds</code> model file is loaded because it's &quot;imported&quot; from within <code>db/schema.cds</code> with <code>using { cuid, managed, sap.common.CodeList } from '@sap/cds/common';</code>).</p>
+<p>But the bigger conclusion here is that reading code is extremely useful. And, going <a href="https://dictionary.cambridge.org/grammar/british-grammar/comparison-adjectives-bigger-biggest-more-interesting">from the comparative to the superlative</a> here, the biggest conclusion is perhaps the yin-yang of learning. Some basic knowledge of functional programming approaches has allowed us to dig into the source and understand what's going on. And conversely, reading that code has increased our understanding and appreciation for such approaches, especially with the simplicity of the callback functions in the function chain here.</p>
+<p>If you're keen to learn more, perhaps I'll see you live in the chat on our <a href="https://www.youtube.com/playlist?list=PL6RpkC85SLQB-0sK7KSRwCc2gdtlZDIkL">series exploring functional programming</a> sometime soon. Until then, happy learning!</p>
+<h2 id="notes">Notes</h2>
+<p>There's so much other stuff to unpick from what we've seen in the code we've been digging into. Here are a couple of items.</p>
+<h3 id="default-parameter-definition-references">Default parameter definition references</h3>
+<p>Did you notice the signature for <code>_required</code>:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">_required</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">cds<span class="token punctuation">,</span>env<span class="token operator">=</span>cds<span class="token punctuation">.</span>env</span><span class="token punctuation">)</span> <span class="token operator">=></span> Object<span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span>env<span class="token punctuation">.</span>requires<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token function">map</span> <span class="token punctuation">(</span><span class="token parameter">r</span> <span class="token operator">=></span> r<span class="token punctuation">.</span>model<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">x</span><span class="token operator">=></span>x<span class="token punctuation">)</span></code></pre>
+<p>What on earth is going on with <code>(cds,env=cds.env)</code>?</p>
+<p>Well, functions can have default parameters. That's not surprising. The <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Default_parameters">MDN reference page</a> gives this simple example:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">multiply</span><span class="token punctuation">(</span><span class="token parameter">a<span class="token punctuation">,</span> b <span class="token operator">=</span> <span class="token number">1</span></span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> a <span class="token operator">*</span> b<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>That's straightforward, in that if no value is supplied for <code>b</code>, the default value of <code>1</code> is used.</p>
+<p>But what about <code>env=cds.env</code>? The default value here ... is referring to a property in the <code>cds</code> object, which itself is the first parameter! Said out loud:</p>
+<p>&quot;<em>If there's no value<a href="#footnote-4"><sup>4</sup></a> for the <code>env</code> parameter, take the value of the <code>env</code> property of the (object) value passed to the first parameter named <code>cds</code></em>&quot;.</p>
+<p>I did a double-take when I first saw that, and thought it worth highlighting.</p>
+<h3 id="callback-function-parameter-names">Callback function parameter names</h3>
+<p>There's an innate beauty in abstraction when it comes to functions, and one thing I discovered when digging into Haskell was the consistent and sensible use of the symbols <a href="/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#introduction-via-haskell"><code>x</code> and <code>xs</code></a>. When expressing a function as simple as either of the callback functions we encountered here:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token parameter">r</span> <span class="token operator">=></span> r<span class="token punctuation">.</span>model</code></pre>
+<p>and</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token parameter">x</span> <span class="token operator">=></span> x</code></pre>
+<p>there's a natural tendency to think of such expressions, such operations, in an abstract way.</p>
+<p>In this context, I enjoyed the code author's choice of <code>x</code> here, but also understood the choice of <code>r</code> to perhaps represent &quot;the required thing&quot;. Personally I would have used <code>x</code> here too (i.e. <code>x =&gt; x.model</code>), but all the same, I'm glad they're both just single letter symbols. Long symbol names would detract from the readability here as well as the abstract nature. But that's a longer story for another time, perhaps.</p>
+<p><a name="footnotes"></a></p>
+<h2 id="footnotes">Footnotes</h2>
+<ol>
+<li>
+<p>That's why my micro starter script <a href="https://github.com/qmacro/dotfiles/blob/main/scripts/cdsnano">cdsnano</a> copies a single CDS file called <code>services.cds</code> from the <a href="https://github.com/qmacro/dotfiles/tree/main/scripts/cdsnano-template">nano template directory</a> because it will be automatically picked up based on the default roots, and has everything in it - the <a href="https://creators.spotify.com/pod/profile/tech-aloud/episodes/The-Simplest-Thing-that-Could-Possibly-Work--A-conversation-with-Ward-Cunningham--Part-V---Bill-Venners-e5dpts">simplest thing that could possibly work</a>.</p>
+</li>
+<li>
+<p>This is of course Ward Cunningham's own Wiki &quot;C2&quot;.</p>
+</li>
+<li>
+<p>A &quot;predicate function&quot; is a function that returns a boolean value, i.e. <code>true</code> or <code>false</code>, and can therefore be used as callbacks in higher order functions such as <code>filter</code>.</p>
+</li>
+<li>
+<p>Or <code>undefined</code>.</p>
+</li>
+</ol>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2025/04/29/array-prototype-reduce-and-the-optional-initial-value/">Array.prototype.reduce and the optional initial value</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2025/05/04/adjusting-the-preview-width-in-telescopes-horizontal-picker/">Adjusting the preview width in Telescope&#39;s horizontal picker</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2025/05/01/fp-function-chains-and-cap-model-loading/` was built on 2025-09-15T15:58:49.628Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

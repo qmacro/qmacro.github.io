@@ -1,7 +1,650 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2022/11/08/extracting-blog-post-dates-from-urls-with-jq/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Extracting blog post dates from URLs with jq | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Extracting blog post dates from URLs with jq"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2022/11/08/extracting-blog-post-dates-from-urls-with-jq/"><meta name="description" content="Extracting blog post dates from URLs with jq 08 Nov 2022 | 3 min read I had a JSON array of objects from a list of GitHub repo issues. Each..."><meta property="og:description" content="Extracting blog post dates from URLs with jq 08 Nov 2022 | 3 min read I had a JSON array of objects from a list of GitHub repo issues. Each..."><meta name="description" content="Extracting blog post dates from URLs with jq 08 Nov 2022 | 3 min read I had a JSON array of objects from a list of GitHub repo issues. Each..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Extracting blog post dates from URLs with jq</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Extracting blog post dates from URLs with jq</h1><div class="post__details"><time datetime="2022-11-08">08 Nov 2022 </time><span>| </span><span>3 min read</span></div></header><main class="post__content"><p>I had a JSON array of objects from a list of GitHub repo issues. Each object contained a blog post URL and a title. The URL had the post date embedded in the path, and I wanted to sort them all based on the post date. Here's how I did it.</p><p>I have a working list of blog posts, as <a href="https://github.com/qmacro-org/db/issues?q=is%3Aissue">issues in a GitHub repo</a> (as a sort of temporary data store). Each issue has the blog post title as the issue title, and just the blog post URL in the issue body, like this:</p><p><img src="/images/2022/11/exampleissue.png" alt="example blog post issue"></p><h2>The base data</h2><p>I had retrieved the issue data as JSON like this:</p><pre class="language-bash"><code class="language-bash">gh issue list <span class="token punctuation">\</span><br>  <span class="token parameter variable">--limit</span> <span class="token number">500</span> <span class="token punctuation">\</span><br>  <span class="token parameter variable">--label</span> dj-adams-sap <span class="token punctuation">\</span><br>  <span class="token parameter variable">--json</span> number,title,body <span class="token punctuation">\</span><br>  <span class="token operator">></span> dj-adams-sap.json </code></pre><p>Here's what the first and last couple of items in <code>dj-adams-sap.json</code> look like (extracted with <code>jq '.[:2] + .[-2:]' dj-adams-sap.json</code>):</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"body"</span><span class="token operator">:</span> <span class="token string">"https://blogs.sap.com/2018/03/26/monday-morning-thoughts-cloud-native/"</span><span class="token punctuation">,</span><br>    <span class="token property">"number"</span><span class="token operator">:</span> <span class="token number">224</span><span class="token punctuation">,</span><br>    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Monday morning thoughts- cloud native"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"body"</span><span class="token operator">:</span> <span class="token string">"https://blogs.sap.com/2018/03/31/scripting-the-workflow-api-with-bash-and-curl/"</span><span class="token punctuation">,</span><br>    <span class="token property">"number"</span><span class="token operator">:</span> <span class="token number">223</span><span class="token punctuation">,</span><br>    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Scripting the Workflow API with bash and curl"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"body"</span><span class="token operator">:</span> <span class="token string">"https://blogs.sap.com/2022/08/04/introducing-sap-codejam-btp-a-new-group-and-a-first-event/"</span><span class="token punctuation">,</span><br>    <span class="token property">"number"</span><span class="token operator">:</span> <span class="token number">83</span><span class="token punctuation">,</span><br>    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Introducing &amp;#8220;SAP CodeJam BTP&amp;#8221; - a new group, and a first event"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"body"</span><span class="token operator">:</span> <span class="token string">"https://blogs.sap.com/2022/10/06/devtoberfest-2022-week-2/"</span><span class="token punctuation">,</span><br>    <span class="token property">"number"</span><span class="token operator">:</span> <span class="token number">82</span><span class="token punctuation">,</span><br>    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Devtoberfest 2022 Week 2"</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">]</span></code></pre><h2>Extracting the dates</h2><p>The dates of the blog posts can be determined from the first part of the path info in the blog post URLs, clearly. So I decided to map over each object and add a new property <code>postdate</code> which would be a <code>YYYY-MM-DD</code> formatted string worked out from that data.</p><p>First, I decided to define a function to extract the date:</p><pre class="language-jq"><code class="language-jq"><span class="token keyword">def</span> <span class="token function">date</span><span class="token punctuation">:</span> <br>  <span class="token c-style-function function">sub</span><span class="token punctuation">(</span><br>    <span class="token string">"^https.+?com/(?&lt;yyyy>[0-9]{4})/(?&lt;mm>[0-9]{2})/(?&lt;dd>[0-9]{2})/.+$"</span><span class="token punctuation">;</span><br>    <span class="token string">"<span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token punctuation">.</span>yyyy</span><span class="token punctuation">)</span></span>-<span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token punctuation">.</span>mm</span><span class="token punctuation">)</span></span>-<span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token punctuation">.</span>dd</span><span class="token punctuation">)</span></span>"</span><br>  <span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre><p>This uses the <a href="https://stedolan.github.io/jq/manual/#sub(regex;tostring)sub(regex;string;flags)">sub</a> function to perform a regexp based substitution, actually replacing the entire input string (the URL) with a new string made up from the capture groups defined.</p><p>These are named capture groups, here's one of them; this one matches 4 consecutive digits into a capture group named <code>yyyy</code>:</p><pre class="language-text"><code class="language-text">(?<yyyy>[0-9]{4})</yyyy></code></pre><p>Looking at the argument supplied for the second parameter of <code>sub/2</code>, the <code>\( ... )</code> syntax is <a href="https://stedolan.github.io/jq/manual/#Stringinterpolation-(foo">string interpolation</a>), to have an expression (in this example it's <code>.yyyy</code>, <code>.mm</code> and <code>.dd</code>) evaluated and expanded in a string.</p><h2>Adding the postdate property</h2><p>With the <code>date</code> function ready, I could then simply iterate over the items in the array, adding a new <code>postdate</code> property to each object, with the value of whatever the <code>date</code> function extracts from the item's <code>.body</code> property:</p><pre class="language-jq"><code class="language-jq"><span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token dot important">.</span> <span class="token operator">+</span> <span class="token punctuation">{</span> <span class="token property-literal property">postdate</span><span class="token punctuation">:</span> <span class="token punctuation">.</span>body<span class="token operator pipe">|</span>date <span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre><p>Based on the reduced data set above, this then produces:</p><pre class="language-json"><code class="language-json"><span class="token punctuation">[</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"body"</span><span class="token operator">:</span> <span class="token string">"https://blogs.sap.com/2018/03/26/monday-morning-thoughts-cloud-native/"</span><span class="token punctuation">,</span><br>    <span class="token property">"number"</span><span class="token operator">:</span> <span class="token number">224</span><span class="token punctuation">,</span><br>    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Monday morning thoughts- cloud native"</span><span class="token punctuation">,</span><br>    <span class="token property">"postdate"</span><span class="token operator">:</span> <span class="token string">"2018-03-26"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"body"</span><span class="token operator">:</span> <span class="token string">"https://blogs.sap.com/2018/03/31/scripting-the-workflow-api-with-bash-and-curl/"</span><span class="token punctuation">,</span><br>    <span class="token property">"number"</span><span class="token operator">:</span> <span class="token number">223</span><span class="token punctuation">,</span><br>    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Scripting the Workflow API with bash and curl"</span><span class="token punctuation">,</span><br>    <span class="token property">"postdate"</span><span class="token operator">:</span> <span class="token string">"2018-03-31"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"body"</span><span class="token operator">:</span> <span class="token string">"https://blogs.sap.com/2022/08/04/introducing-sap-codejam-btp-a-new-group-and-a-first-event/"</span><span class="token punctuation">,</span><br>    <span class="token property">"number"</span><span class="token operator">:</span> <span class="token number">83</span><span class="token punctuation">,</span><br>    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Introducing &amp;#8220;SAP CodeJam BTP&amp;#8221; - a new group, and a first event"</span><span class="token punctuation">,</span><br>    <span class="token property">"postdate"</span><span class="token operator">:</span> <span class="token string">"2022-08-04"</span><br>  <span class="token punctuation">}</span><span class="token punctuation">,</span><br>  <span class="token punctuation">{</span><br>    <span class="token property">"body"</span><span class="token operator">:</span> <span class="token string">"https://blogs.sap.com/2019/10/06/devtoberfest-2022-week-2/"</span><span class="token punctuation">,</span><br>    <span class="token property">"number"</span><span class="token operator">:</span> <span class="token number">82</span><span class="token punctuation">,</span><br>    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Devtoberfest 2022 Week 2"</span><span class="token punctuation">,</span><br>    <span class="token property">"postdate"</span><span class="token operator">:</span> <span class="token string">"2019-10-06"</span><br>  <span class="token punctuation">}</span><br><span class="token punctuation">]</span></code></pre><h2>Sorting</h2><p>Then it's just a simple case of using <code>sort_by</code> (followed optionally by <code>reverse</code>) to get the post date order I want:</p><pre class="language-jq"><code class="language-jq"><span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token dot important">.</span> <span class="token operator">+</span> <span class="token punctuation">{</span> <span class="token property-literal property">postdate</span><span class="token punctuation">:</span> <span class="token punctuation">.</span>body<span class="token operator pipe">|</span>date <span class="token punctuation">}</span><span class="token punctuation">)</span><br><span class="token operator pipe">|</span> <span class="token c-style-function function">sort_by</span><span class="token punctuation">(</span><span class="token punctuation">.</span>postdate<span class="token punctuation">)</span></code></pre><p>Of course, I could combine the two parts if I didn't want the <code>postdate</code> property to be an explicit fixture in my downstream processing. Something like this:</p><pre class="language-jq"><code class="language-jq"><span class="token c-style-function function">sort_by</span><span class="token punctuation">(</span><span class="token punctuation">.</span>body <span class="token operator pipe">|</span> date<span class="token punctuation">)</span></code></pre><h2>Wrapping up</h2><p>It did occur to me that given the pattern of blog post URLs, I could just sort by them directly. Then again, it wasn't as interesting and I didn't learn anything about named capture groups. Anyway, this post is mostly for me, for when my future self forgets how to use capture groups and the <code>sub</code> function.</p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/jq/">#jq</a> <a href="/tags/json/">#json</a> <a href="/tags/regexp/">#regexp</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2022/12/12/managing-resources-on-sap-btp-what-tool-do-i-choose/"><span>←</span> <span>Managing resources on SAP BTP - what tool do I choose?</span> </a><a href="/blog/posts/2022/11/02/some-notes-on-modular-json-schema-definitions/"><span>Some notes on modular JSON Schema definitions</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="extracting-blog-post-dates-from-urls-with-jq">Extracting blog post dates from URLs with jq</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2022-11-08">08 November 2022</time></li>
+	<li><a href="/tags/jq/" class="post-tag">jq</a>, </li>
+	<li><a href="/tags/json/" class="post-tag">json</a>, </li>
+	<li><a href="/tags/regexp/" class="post-tag">regexp</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>I had a JSON array of objects from a list of GitHub repo issues. Each object contained a blog post URL and a title. The URL had the post date embedded in the path, and I wanted to sort them all based on the post date. Here's how I did it.</p>
+<p>I have a working list of blog posts, as <a href="https://github.com/qmacro-org/db/issues?q=is%3Aissue">issues in a GitHub repo</a> (as a sort of temporary data store). Each issue has the blog post title as the issue title, and just the blog post URL in the issue body, like this:</p>
+<p><img src="/images/2022/11/exampleissue.png" alt="example blog post issue"></p>
+<h2 id="the-base-data">The base data</h2>
+<p>I had retrieved the issue data as JSON like this:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">gh issue list <span class="token punctuation">\</span>
+  <span class="token parameter variable">--limit</span> <span class="token number">500</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--label</span> dj-adams-sap <span class="token punctuation">\</span>
+  <span class="token parameter variable">--json</span> number,title,body <span class="token punctuation">\</span>
+  <span class="token operator">></span> dj-adams-sap.json </code></pre>
+<p>Here's what the first and last couple of items in <code>dj-adams-sap.json</code> look like (extracted with <code>jq '.[:2] + .[-2:]' dj-adams-sap.json</code>):</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"body"</span><span class="token operator">:</span> <span class="token string">"https://blogs.sap.com/2018/03/26/monday-morning-thoughts-cloud-native/"</span><span class="token punctuation">,</span>
+    <span class="token property">"number"</span><span class="token operator">:</span> <span class="token number">224</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Monday morning thoughts- cloud native"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"body"</span><span class="token operator">:</span> <span class="token string">"https://blogs.sap.com/2018/03/31/scripting-the-workflow-api-with-bash-and-curl/"</span><span class="token punctuation">,</span>
+    <span class="token property">"number"</span><span class="token operator">:</span> <span class="token number">223</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Scripting the Workflow API with bash and curl"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"body"</span><span class="token operator">:</span> <span class="token string">"https://blogs.sap.com/2022/08/04/introducing-sap-codejam-btp-a-new-group-and-a-first-event/"</span><span class="token punctuation">,</span>
+    <span class="token property">"number"</span><span class="token operator">:</span> <span class="token number">83</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Introducing &amp;#8220;SAP CodeJam BTP&amp;#8221; - a new group, and a first event"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"body"</span><span class="token operator">:</span> <span class="token string">"https://blogs.sap.com/2022/10/06/devtoberfest-2022-week-2/"</span><span class="token punctuation">,</span>
+    <span class="token property">"number"</span><span class="token operator">:</span> <span class="token number">82</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Devtoberfest 2022 Week 2"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<h2 id="extracting-the-dates">Extracting the dates</h2>
+<p>The dates of the blog posts can be determined from the first part of the path info in the blog post URLs, clearly. So I decided to map over each object and add a new property <code>postdate</code> which would be a <code>YYYY-MM-DD</code> formatted string worked out from that data.</p>
+<p>First, I decided to define a function to extract the date:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token keyword">def</span> <span class="token function">date</span><span class="token punctuation">:</span> 
+  <span class="token c-style-function function">sub</span><span class="token punctuation">(</span>
+    <span class="token string">"^https.+?com/(?&lt;yyyy>[0-9]{4})/(?&lt;mm>[0-9]{2})/(?&lt;dd>[0-9]{2})/.+$"</span><span class="token punctuation">;</span>
+    <span class="token string">"<span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token punctuation">.</span>yyyy</span><span class="token punctuation">)</span></span>-<span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token punctuation">.</span>mm</span><span class="token punctuation">)</span></span>-<span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token punctuation">.</span>dd</span><span class="token punctuation">)</span></span>"</span>
+  <span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>This uses the <a href="https://stedolan.github.io/jq/manual/#sub(regex;tostring)sub(regex;string;flags)">sub</a> function to perform a regexp based substitution, actually replacing the entire input string (the URL) with a new string made up from the capture groups defined.</p>
+<p>These are named capture groups, here's one of them; this one matches 4 consecutive digits into a capture group named <code>yyyy</code>:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">(?<yyyy>[0-9]{4})</yyyy></code></pre>
+<p>Looking at the argument supplied for the second parameter of <code>sub/2</code>, the <code>\( ... )</code> syntax is <a href="https://stedolan.github.io/jq/manual/#Stringinterpolation-(foo">string interpolation</a>), to have an expression (in this example it's <code>.yyyy</code>, <code>.mm</code> and <code>.dd</code>) evaluated and expanded in a string.</p>
+<h2 id="adding-the-postdate-property">Adding the postdate property</h2>
+<p>With the <code>date</code> function ready, I could then simply iterate over the items in the array, adding a new <code>postdate</code> property to each object, with the value of whatever the <code>date</code> function extracts from the item's <code>.body</code> property:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token dot important">.</span> <span class="token operator">+</span> <span class="token punctuation">{</span> <span class="token property-literal property">postdate</span><span class="token punctuation">:</span> <span class="token punctuation">.</span>body<span class="token operator pipe">|</span>date <span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre>
+<p>Based on the reduced data set above, this then produces:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"body"</span><span class="token operator">:</span> <span class="token string">"https://blogs.sap.com/2018/03/26/monday-morning-thoughts-cloud-native/"</span><span class="token punctuation">,</span>
+    <span class="token property">"number"</span><span class="token operator">:</span> <span class="token number">224</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Monday morning thoughts- cloud native"</span><span class="token punctuation">,</span>
+    <span class="token property">"postdate"</span><span class="token operator">:</span> <span class="token string">"2018-03-26"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"body"</span><span class="token operator">:</span> <span class="token string">"https://blogs.sap.com/2018/03/31/scripting-the-workflow-api-with-bash-and-curl/"</span><span class="token punctuation">,</span>
+    <span class="token property">"number"</span><span class="token operator">:</span> <span class="token number">223</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Scripting the Workflow API with bash and curl"</span><span class="token punctuation">,</span>
+    <span class="token property">"postdate"</span><span class="token operator">:</span> <span class="token string">"2018-03-31"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"body"</span><span class="token operator">:</span> <span class="token string">"https://blogs.sap.com/2022/08/04/introducing-sap-codejam-btp-a-new-group-and-a-first-event/"</span><span class="token punctuation">,</span>
+    <span class="token property">"number"</span><span class="token operator">:</span> <span class="token number">83</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Introducing &amp;#8220;SAP CodeJam BTP&amp;#8221; - a new group, and a first event"</span><span class="token punctuation">,</span>
+    <span class="token property">"postdate"</span><span class="token operator">:</span> <span class="token string">"2022-08-04"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"body"</span><span class="token operator">:</span> <span class="token string">"https://blogs.sap.com/2019/10/06/devtoberfest-2022-week-2/"</span><span class="token punctuation">,</span>
+    <span class="token property">"number"</span><span class="token operator">:</span> <span class="token number">82</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Devtoberfest 2022 Week 2"</span><span class="token punctuation">,</span>
+    <span class="token property">"postdate"</span><span class="token operator">:</span> <span class="token string">"2019-10-06"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<h2 id="sorting">Sorting</h2>
+<p>Then it's just a simple case of using <code>sort_by</code> (followed optionally by <code>reverse</code>) to get the post date order I want:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token dot important">.</span> <span class="token operator">+</span> <span class="token punctuation">{</span> <span class="token property-literal property">postdate</span><span class="token punctuation">:</span> <span class="token punctuation">.</span>body<span class="token operator pipe">|</span>date <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token operator pipe">|</span> <span class="token c-style-function function">sort_by</span><span class="token punctuation">(</span><span class="token punctuation">.</span>postdate<span class="token punctuation">)</span></code></pre>
+<p>Of course, I could combine the two parts if I didn't want the <code>postdate</code> property to be an explicit fixture in my downstream processing. Something like this:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token c-style-function function">sort_by</span><span class="token punctuation">(</span><span class="token punctuation">.</span>body <span class="token operator pipe">|</span> date<span class="token punctuation">)</span></code></pre>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>It did occur to me that given the pattern of blog post URLs, I could just sort by them directly. Then again, it wasn't as interesting and I didn't learn anything about named capture groups. Anyway, this post is mostly for me, for when my future self forgets how to use capture groups and the <code>sub</code> function.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2022/11/02/some-notes-on-modular-json-schema-definitions/">Some notes on modular JSON Schema definitions</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2022/12/12/managing-resources-on-sap-btp-what-tool-do-i-choose/">Managing resources on SAP BTP - what tool do I choose?</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2022/11/08/extracting-blog-post-dates-from-urls-with-jq/` was built on 2025-09-15T15:58:49.616Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

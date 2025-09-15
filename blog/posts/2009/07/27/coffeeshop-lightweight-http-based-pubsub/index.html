@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>&#39;Coffeeshop&#39; - lightweight HTTP-based pubsub</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="coffeeshop-lightweight-http-based-pubsub">&#39;Coffeeshop&#39; - lightweight HTTP-based pubsub</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2009-07-27">27 July 2009</time></li>
+	<li><a href="/tags/appengine/" class="post-tag">appengine</a>, </li>
+	<li><a href="/tags/coffeeshop/" class="post-tag">coffeeshop</a>, </li>
+	<li><a href="/tags/http/" class="post-tag">http</a>, </li>
+	<li><a href="/tags/icf/" class="post-tag">icf</a>, </li>
+	<li><a href="/tags/pubsub/" class="post-tag">pubsub</a>, </li>
+	<li><a href="/tags/rest/" class="post-tag">rest</a>, </li>
+	<li><a href="/tags/sap/" class="post-tag">sap</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>‘<em><a href="http://wiki.github.com/qmacro/coffeeshop">Coffeeshop</a></em>‘ is a lightweight, REST-orientated HTTP-based publish/subscribe implementation that I’ve been working on for the last few days. It is a culmination of:</p>
+<ul>
+<li>an <a href="http://www.pipetree.com/jabber/jep-0024.html">early</a> and long-standing interest in pubsub</li>
+<li>a fascination with using HTTP properly, i.e. as an application protocol, not a transport protocol</li>
+<li>an excuse to experiment in the area of <a href="http://blog.webhooks.org/">webhooks<br>
+</a></li>
+<li>a desire to learn more about Google’s <a href="http://code.google.com/appengine/">App Engine</a> as a cloud platform, and more specifically as an HTTP runtime platform, much like SAP’s Internet Communication Framework (ICF)</li>
+</ul>
+<p>There seems to be a growing interest in pubsub and webhooks; one recent article in particular – “<a href="http://dashes.com/anil/2009/07/the-pushbutton-web-realtime-becomes-real.html">The Pushbutton Web: Realtime Becomes Real</a>” conveys a lot of the ideas behind these concepts.</p>
+<p>With <a href="http://wiki.github.com/qmacro/coffeeshop"><em>coffeeshop</em></a>, entities — Channels, Subscribers and Messages — are resources, with URLs. You interact with entities using the appropriate HTTP methods. The implementation, being HTTP, is both browser-based (human-facing), and agent-based (program-facing). You can navigate the resources with your web-browser. You can interact with the resources with <a href="http://curl.haxx.se/">cURL</a>, <a href="http://search.cpan.org/~gaas/libwww-perl-5.830/bin/lwp-request">POST</a>, or your favourite HTTP library.</p>
+<p>Here’s a simple example:</p>
+<blockquote>
+<h1 id="create-channel-echo-test-channel-post-se-http-giant-8888-channel-post-http-giant-8888-channel-201-created-location-channel-5-add-to-channel-a-new-subscriber-with-a-callback-resource-of-http-atom-8081-subscriber-alpha-echo-name-alpha-and-resource-http-giant-8081-subscriber-alpha-post-se-http-giant-8888-channel-1-subscriber-post-http-giant-8888-channel-1-subscriber-201-created-location-channel-1-subscriber-2-publish-a-message-to-the-channel-echo-hello-world-post-se-http-giant-8888-channel-1-post-http-giant-8888-channel-1-302-moved-temporarily-location-http-giant-8888-channel-1-message-ahfxbwfjcm8ty29mzmvlc-rgida">Create Channel: &gt; <strong>echo &quot;Test Channel&quot; | POST -Se http://giant:8888/channel/</strong> POST http://giant:8888/channel/ --&gt; 201 Created Location: /channel/5/ &gt; # Add to Channel a new Subscriber with &gt; # a callback resource of http://atom:8081/subscriber/alpha &gt; **echo &quot;name=alpha&amp;resource=http://giant:8081/subscriber/alpha&quot; ** &gt; <strong>| POST -Se http://giant:8888/channel/1/subscriber/</strong> POST http://giant:8888/channel/1/subscriber/ --&gt; 201 Created Location: /channel/1/subscriber/2/ &gt; # Publish a Message to the Channel &gt; <strong>echo &quot;hello, world&quot; | POST -Se http://giant:8888/channel/1/</strong> POST http://giant:8888/channel/1/ --&gt; 302 Moved Temporarily Location: http://giant:8888/channel/1/message/ahFxbWFjcm8tY29mZmVlc[...]RgIDA</h1>
+</blockquote>
+<p>As you can see from this example, POSTing to the Channel container resource</p>
+<p>/channel/</p>
+<p>creates a new Channel, POSTing to the Channel 1 subscriber container resource</p>
+<p>/channel/1/subscriber/</p>
+<p>creates a new Subscriber, and POSTing to the Channel 1 channel resource</p>
+<p>/channel/1/</p>
+<p>creates a new Message, which is delivered to the Channel’s Subscribers. The resource returned to a Message POST is that Message’s unique address</p>
+<p>/channel/1/message/ahFxbWFjcm8tY29mZmVlc[...]RgIDA</p>
+<p>where the details of that Message, including the Delivery status(es), can be seen.</p>
+<p>For more information on the resources and methods, have a look at the <a href="http://wiki.github.com/qmacro/coffeeshop/resourceplan">ResourcePlan</a> page.</p>
+<p>I’m using Google App Engine’s <a href="http://googleappengine.blogspot.com/2009/06/new-task-queue-api-on-google-app-engine.html">Task Queue API</a> to have the Messages delivered to their (webhook-alike) endpoints <strong>asynchronously</strong>.</p>
+<p>The code is early and rough, and <a href="http://wiki.github.com/qmacro/coffeeshop">available on github</a>. You can download it and try it out for yourself locally or create an app on App Engine cloud domain appspot.com. I’ll probably publish a public-facing instance of this implementation in the next few days. All comments and feedback appreciated.</p>
+<p>One last thing: I know of at least a couple of HTTP-based pubsub implementations: <a href="http://code.google.com/p/pubsubhubbub/">pubsubhubbub</a>, and <a href="http://watercoolr.nuklei.com/">Watercoolr</a>. Both are great, but for me, the former is a little complex (and ATOM-orientated), whereas the latter I thought could be more RESTian in its approach (hence <a href="http://wiki.github.com/qmacro/coffeeshop"><em>coffeeshop</em></a>).</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2009/06/29/information-vs-behaviour/">Information vs Behaviour</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2009/07/28/first-coffeeshop-demo-screencast/">First coffeeshop demo screencast</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2009/07/27/coffeeshop-lightweight-http-based-pubsub/` was built on 2025-09-15T15:58:49.558Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

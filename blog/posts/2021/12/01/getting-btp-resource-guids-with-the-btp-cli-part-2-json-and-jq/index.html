@@ -1,7 +1,1162 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2021/12/01/getting-btp-resource-guids-with-the-btp-cli-part-2-json-and-jq/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Getting BTP resource GUIDs with the btp CLI – part 2 - JSON and jq | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Getting BTP resource GUIDs with the btp CLI – part 2 - JSON and jq"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2021/12/01/getting-btp-resource-guids-with-the-btp-cli-part-2-json-and-jq/"><meta name="description" content="Getting BTP resource GUIDs with the btp CLI – part 2 - JSON and jq 01 Dec 2021 | 10 min read In this second part of a 2-part blog post..."><meta property="og:description" content="Getting BTP resource GUIDs with the btp CLI – part 2 - JSON and jq 01 Dec 2021 | 10 min read In this second part of a 2-part blog post..."><meta name="description" content="Getting BTP resource GUIDs with the btp CLI – part 2 - JSON and jq 01 Dec 2021 | 10 min read In this second part of a 2-part blog post..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Getting BTP resource GUIDs with the btp CLI – part 2 - JSON and jq</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Getting BTP resource GUIDs with the btp CLI – part 2 - JSON and jq</h1><div class="post__details"><time datetime="2021-12-01">01 Dec 2021 </time><span>| </span><span>10 min read</span></div></header><main class="post__content"><p><em>In this second part of a 2-part blog post series on getting BTP resource GUIDs with the btp CLI, we look at how the CLI supports JSON output, why it's a good choice, and how to parse that.</em></p><p>If you haven't done already, take a look at <a href="/blog/posts/2021/09/03/exploring-fff-part-1-main/">part 1</a> before reading this part.</p><h2>The Unix philosophy and alternative output formats</h2><p>The <a href="https://en.wikipedia.org/wiki/Unix_philosophy">Unix philosophy</a> is all about small programs, joined loosely together. It's about composability*, not monolithic constructs.</p><p>* It is not lost on me that composability is also a key feature of the functional programming paradigm, which has a similar beauty to me.</p><p>This approach to executing programs, using the power of <a href="https://tldp.org/LDP/abs/html/io-redirection.html">input / output redirection</a> &amp; pipelines and employing a handful of small, focused &amp; powerful tools has been with us for almost half a century now and is at the heart of the dominant operating system powering the cloud.</p><p>More recently, we've been seeing a need to deal with resources which have structure that is sometimes more complex than can be described in mostly record-oriented plain text. In parallel, we're seeing declarative approaches to devops and system resource management (such as Kubernetes cluster definitions, infrastructure-as-code, and so on), with those declarative constructs expressing complex relationships and interdependencies.</p><p>The approach to encapsulate machine-readable definitions of such resources and definitions has been to employ formats such as JSON and YAML.</p><p>These formats lend themselves well to describing requirements, but also to representing structure. With the myriad resources on SAP Business Technology Platform, there are relationships that need to be expressed, conveying inherent structure that is fundamental to the understanding and operation of those resources.</p><p>And so, like many of today's command line tools, the btp CLI has the ability to express the output in a format that can reliably, predictably and cleanly convey that structure. This ability comes in the form of a general option:</p><pre class="language-shell"><code class="language-shell"><span class="token parameter variable">--format</span> json</code></pre><p>You can read more about this option in the <a href="https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/dcb85b7dea61432cbafaab4ce0ec9b08.html?locale=en-US">Change the Output Format to JSON</a> section in the SAP Help Portal. In our Hands-on SAP Dev show, specifically within the <a href="https://www.youtube.com/playlist?list=PL6RpkC85SLQDXx827kdjKc6HRvdMRZ8P5">SAP btp CLI</a> series, there's an episode <a href="https://www.youtube.com/watch?v=xRmHZGk4QCU&amp;list=PL6RpkC85SLQDXx827kdjKc6HRvdMRZ8P5&amp;index=3">Scripting and JSON output with btp, the SAP Business Technology Platform CLI</a> where we cover exactly this.</p><h2>Plain text vs JSON?</h2><p>The question clearly arises - when should I use this option? In some philosophical ways, JSON output flows against the original Unix Philosophy, but there are most certainly pragmatic reasons why it's employed. If you're interested in reading more, I highly recommend <a href="https://blog.kellybrazil.com/2019/11/26/bringing-the-unix-philosophy-to-the-21st-century/">Bringing the Unix Philosophy to the 21st Century</a> which not only is a good read, but also introduces a generic tool <code>jc</code> that is certainly fascinating and not a little thought provoking.</p><p>So, back to the question. As far as the btp CLI is concerned, let's put it this way:</p><ul><li>if you're using it interactively, as a human, then the plain text output is fine of course</li><li>if you're using it non-interactively, such as in a script, then the recommendation is to use the JSON output format</li></ul><p>For non-interactive use, where you're going to want to extract information from the output of a btp CLI command, this makes sense because the JSON output is going to be more stable, more reliable and more predictable. The plain text output may change over time, but the btp CLI team are making a big effort, and an intentional one, to provide that stability.</p><p>Of course, for quick one-off pipeline constructs on the command line, I may still use the plain text output and some traditional Unix tools to parse and extract information from the output. But for longer lived tasks, scripts and so on, I will more likely reach for the JSON output format.</p><h2>Parsing JSON on the command line</h2><p>The tool of choice for parsing JSON on the command line is <a href="https://stedolan.github.io/jq/">jq</a>, which the author describes as &quot;a lightweight and flexible command-line JSON processor&quot;.</p><p>I've written about <code>jq</code> before in various blog posts and also covered it in some of the Hands-on SAP Dev <a href="/blog/posts/2020/11/09/an-overview-of-sap-developers-video-content/#shows">show</a> episodes - pick one that appeals to you from <a href="https://www.google.com/search?q=site%3Aqmacro.org+json+jq">this quick list of search results for mention of JSON and jq on this site</a> to read more.</p><h2>Revisiting the hierarchy output</h2><p>In <a href="/blog/posts/2021/09/03/exploring-fff-part-1-main/">Getting BTP resource GUIDs with the btp CLI -- part 1</a>, the first part of this two-part series, I explained how I used various tools to extract the GUIDs for resources shown in the output of this command:</p><pre class="language-shell"><code class="language-shell">btp get accounts/global-account --show-hierarchy</code></pre><p>The output that this command produces looks something like this:</p><pre class="language-text"><code class="language-text">Showing details for global account af39080b-1527-40a1-b78a-3b605af7e811...<br><br>├─ c35b11e4trial (af39080b-1527-40a1-b78a-3b605af7e811 - global account)<br>│  ├─ trial (b6501bff-e0ac-4fdf-8898-81f305d25335 - subaccount)<br>│  ├─ techedhouse (e57c5b13-9480-4a68-9c04-a603d7a017a9 - directory)<br><br>type:            id:                                    display name:   parent id:<br>global account   af39080b-1527-40a1-b78a-3b605af7e811   c35b11e4trial<br>subaccount       b6501bff-e0ac-4fdf-8898-81f305d25335   trial           af39080b-...<br>directory        e57c5b13-9480-4a68-9c04-a603d7a017a9   techedhouse     af39080b-...</code></pre><p>While it was definitely possible to consistently extract the GUIDs using the approach I took, there are other similar extraction tasks in this area that might be more troublesome.</p><p>For example, if I wanted to grab the display names of all the subaccounts in my global account, the parsing and extraction would be similar; I'd pull the output apart using whitespace as boundaries and get the job done that way. However, if a display name contained a space, which is valid, I'd start to struggle. How would I know if that space was the column boundary, or just part of the value in that column? I could resort to some sort of column-oriented slicing of the rows, but that's most likely just asking for trouble, making the parsing and extracting more brittle.</p><h2>Parsing brittle plain text output vs complex JSON output</h2><p>Recently I wrote about this very challenge of parsing text output that was brittle in the post <a href="/blog/posts/2021/10/29/embracing-jq-and-json/">Embracing jq and JSON</a>. The subject at hand was the same - the ouptut of <code>btp get account/global-account --show-hierarchy</code>, although what I was trying to extract was slightly different. Most importantly though, it demonstrated that correctly and reliably extracting a value with spaces (the resource display name 'this and that') was not straightforward.</p><blockquote><p>Some of you may think, and I'd agree, that one way that this would normally be tackled is to use tabs as field separators; this would address the situation and is indeed a standard part of how the Unix toolchain operates - look at what the default delimiter is for the <a href="https://man7.org/linux/man-pages/man1/cut.1.html">cut</a> command, for example.</p></blockquote><p>What it also demonstrated was that taking the JSON output approach was preferable. Initially, as I described in that post, the prospect was a little daunting, as the structure represented in JSON consisted of nested arrays of objects. But a little digging into the <a href="https://stedolan.github.io/jq/manual/">jq manual</a> showed me functions that would help out.</p><p>So what I want to do here is find a drop-in replacement for these two lines that we looked at in detail in <a href="/blog/posts/2021/11/24/getting-btp-resource-guids-with-the-btp-cli-part-1/">part 1</a>:</p><pre class="language-shell"><code class="language-shell"><span class="token assign-left variable">hierarchy</span><span class="token operator">=</span><span class="token string">"<span class="token variable"><span class="token variable">$(</span>gethier<span class="token variable">)</span></span>"</span> <span class="token operator">||</span> <span class="token punctuation">{</span> btp login <span class="token operator">&amp;&amp;</span> <span class="token assign-left variable">hierarchy</span><span class="token operator">=</span><span class="token string">"<span class="token variable"><span class="token variable">$(</span>gethier<span class="token variable">)</span></span>"</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><br><span class="token builtin class-name">read</span> <span class="token parameter variable">-r</span> subtype guid <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"$(grep -P -o "^(subaccount|directory)\s+(\S+)(?=\s+<span class="token variable">$displayname</span>)"</span> <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token variable">$hierarchy</span>"</span><span class="token punctuation">)</span>"</code></pre><p>That replacement is to use the JSON format output from the <code>btp</code> command. Let's start by examining what that looks like.</p><h3>The hierarchy in JSON format</h3><p>While we know what the plain text output looks like from <code>btp get accounts/global-account --show-hierarchy</code>, the JSON output looks like this (I've removed some properties that are not relevant, to keep the JSON small enough to stare at in one go):</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"guid"</span><span class="token operator">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span><span class="token punctuation">,</span><br>  <span class="token property">"displayName"</span><span class="token operator">:</span> <span class="token string">"1a99110dtrial"</span><span class="token punctuation">,</span><br>  <span class="token property">"children"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"guid"</span><span class="token operator">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span><span class="token punctuation">,</span><br>      <span class="token property">"parentGuid"</span><span class="token operator">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span><span class="token punctuation">,</span><br>      <span class="token property">"parentType"</span><span class="token operator">:</span> <span class="token string">"ROOT"</span><span class="token punctuation">,</span><br>      <span class="token property">"globalAccountGUID"</span><span class="token operator">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span><span class="token punctuation">,</span><br>      <span class="token property">"displayName"</span><span class="token operator">:</span> <span class="token string">"techedhouse"</span><span class="token punctuation">,</span><br>      <span class="token property">"stateMessage"</span><span class="token operator">:</span> <span class="token string">"Directory created."</span><span class="token punctuation">,</span><br>      <span class="token property">"subdomain"</span><span class="token operator">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span><span class="token punctuation">,</span><br>      <span class="token property">"directoryType"</span><span class="token operator">:</span> <span class="token string">"PROJECT"</span><span class="token punctuation">,</span><br>      <span class="token property">"directoryFeatures"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>        <span class="token string">"DEFAULT"</span><span class="token punctuation">,</span><br>        <span class="token string">"ENTITLEMENTS"</span><span class="token punctuation">,</span><br>        <span class="token string">"AUTHORIZATIONS"</span><br>      <span class="token punctuation">]</span><span class="token punctuation">,</span><br>      <span class="token property">"subaccounts"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>        <span class="token punctuation">{</span><br>          <span class="token property">"guid"</span><span class="token operator">:</span> <span class="token string">"3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</span><span class="token punctuation">,</span><br>          <span class="token property">"displayName"</span><span class="token operator">:</span> <span class="token string">"messaging"</span><span class="token punctuation">,</span><br>          <span class="token property">"globalAccountGUID"</span><span class="token operator">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span><span class="token punctuation">,</span><br>          <span class="token property">"parentGUID"</span><span class="token operator">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span><span class="token punctuation">,</span><br>          <span class="token property">"parentType"</span><span class="token operator">:</span> <span class="token string">"PROJECT"</span><span class="token punctuation">,</span><br>          <span class="token property">"parentFeatures"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>            <span class="token string">"DEFAULT"</span><span class="token punctuation">,</span><br>            <span class="token string">"ENTITLEMENTS"</span><span class="token punctuation">,</span><br>            <span class="token string">"AUTHORIZATIONS"</span><br>          <span class="token punctuation">]</span><span class="token punctuation">,</span><br>          <span class="token property">"region"</span><span class="token operator">:</span> <span class="token string">"us10"</span><span class="token punctuation">,</span><br>          <span class="token property">"subdomain"</span><span class="token operator">:</span> <span class="token string">"20b8636b-af4c-4c42-b79b-780763663fbb"</span><span class="token punctuation">,</span><br>          <span class="token property">"stateMessage"</span><span class="token operator">:</span> <span class="token string">"Subaccount created."</span><br>        <span class="token punctuation">}</span><br>      <span class="token punctuation">]</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token property">"subdomain"</span><span class="token operator">:</span> <span class="token string">"1a99110dtrial-ga"</span><span class="token punctuation">,</span><br>  <span class="token property">"subaccounts"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"guid"</span><span class="token operator">:</span> <span class="token string">"00516298-b174-418e-9824-8824de04bfa3"</span><span class="token punctuation">,</span><br>      <span class="token property">"displayName"</span><span class="token operator">:</span> <span class="token string">"trial"</span><span class="token punctuation">,</span><br>      <span class="token property">"globalAccountGUID"</span><span class="token operator">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span><span class="token punctuation">,</span><br>      <span class="token property">"parentGUID"</span><span class="token operator">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span><span class="token punctuation">,</span><br>      <span class="token property">"parentType"</span><span class="token operator">:</span> <span class="token string">"ROOT"</span><span class="token punctuation">,</span><br>      <span class="token property">"region"</span><span class="token operator">:</span> <span class="token string">"eu10"</span><span class="token punctuation">,</span><br>      <span class="token property">"subdomain"</span><span class="token operator">:</span> <span class="token string">"1a99110dtrial"</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span><span class="token punctuation">,</span><br>  <span class="token property">"licenseType"</span><span class="token operator">:</span> <span class="token string">"TRIAL"</span><br><span class="token punctuation">}</span></code></pre><p>Here are a few interesting points to notice:</p><ul><li>the hierarchy is expressed via sub-nodes via two properties - <code>children</code> (which are directories) and <code>subaccounts</code></li><li>each object that is either a directory or a subaccount has a <code>guid</code> property, which is what we're ultimately looking for</li><li>there's a <code>directoryType</code> property on the directory objects, with a value of <code>PROJECT</code></li><li>the subaccount objects don't have a <code>directoryType</code> property but do have a <code>region</code> property and value</li></ul><p>Moreover, the nesting depth of each of these directory and subaccount objects depends on where they sit in the actual hierarchy. So we have our work cut out to parse this, right?</p><h3>Rolling our jq sleeves up</h3><p>Well, if you took a look at the <a href="/blog/posts/2021/10/29/embracing-jq-and-json/">Embracing jq and JSON</a> post mentioned earlier, you'll know that it's not as bad as it first seems. Let's work through parsing this, step by step. The general idea is to flatten the structure, identify the objects in there, pick out the potential objects that might match, narrow down further, and then we have what we're looking for.</p><p>For the sake of exploration, let's assume we have the JSON above in a file called <code>hierarchy.json</code>.</p><h4>Step 1 - flatten the structure</h4><p>To flatten the struture, I've taken to using the <code>recurse</code> function; here's what it does (a lot of the output has been omitted for brevity):</p><pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> jq <span class="token string">'recurse'</span> hierarchy.json<br><span class="token punctuation">{</span><br>  <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>  <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"1a99110dtrial"</span>,<br>  <span class="token string">"children"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,<br>      <span class="token string">"parentGuid"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>      <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"ROOT"</span>,<br>      <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>      <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"techedhouse"</span>,<br>      <span class="token punctuation">..</span>.<br><span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span><br><span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span><br><span class="token string">"ROOT"</span><br><span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span><br><span class="token string">"techedhouse"</span><br><span class="token string">"Directory created."</span><br><span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span><br><span class="token string">"PROJECT"</span><br><span class="token punctuation">[</span><br>  <span class="token string">"DEFAULT"</span>,<br>  <span class="token string">"ENTITLEMENTS"</span>,<br>  <span class="token string">"AUTHORIZATIONS"</span><br><span class="token punctuation">]</span><br><span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span><br><span class="token string">"ROOT"</span><br><span class="token string">"eu10"</span><br><span class="token string">"1a99110dtrial"</span><br><span class="token string">"TRIAL"</span></code></pre><p>As you can see, it descends the entire structure and emits everything it finds. This is a little too much, as non-objects are also emitted as the recursive descent progresses. Let's address that.</p><h4>Step 2 - identify the objects</h4><p>To narrow down this large amount of output to just the objects, we can use the aptly named <code>objects</code> function which will emit only objects that pass through it, discarding anything else (like those simple strings such as &quot;ROOT&quot;, &quot;eu10&quot; and &quot;1a99110dtrial&quot; we see above). Here we go:</p><pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> jq <span class="token string">'recurse | objects'</span><br><span class="token punctuation">{</span><br>  <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>  <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"1a99110dtrial"</span>,<br>  <span class="token string">"children"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,<br>      <span class="token string">"parentGuid"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>      <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"ROOT"</span>,<br>      <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>      <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"techedhouse"</span>,<br>      <span class="token string">"stateMessage"</span><span class="token builtin class-name">:</span> <span class="token string">"Directory created."</span>,<br>      <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,<br>      <span class="token string">"directoryType"</span><span class="token builtin class-name">:</span> <span class="token string">"PROJECT"</span>,<br>      <span class="token string">"directoryFeatures"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span><br>        <span class="token string">"DEFAULT"</span>,<br>        <span class="token string">"ENTITLEMENTS"</span>,<br>        <span class="token string">"AUTHORIZATIONS"</span><br>      <span class="token punctuation">]</span>,<br>      <span class="token string">"subaccounts"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span><br>        <span class="token punctuation">{</span><br>          <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</span>,<br>          <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"messaging"</span>,<br>          <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>          <span class="token string">"parentGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,<br>          <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"PROJECT"</span>,<br>          <span class="token string">"parentFeatures"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span><br>            <span class="token string">"DEFAULT"</span>,<br>            <span class="token string">"ENTITLEMENTS"</span>,<br>            <span class="token string">"AUTHORIZATIONS"</span><br>          <span class="token punctuation">]</span>,<br>          <span class="token string">"region"</span><span class="token builtin class-name">:</span> <span class="token string">"us10"</span>,<br>          <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"20b8636b-af4c-4c42-b79b-780763663fbb"</span>,<br>          <span class="token string">"stateMessage"</span><span class="token builtin class-name">:</span> <span class="token string">"Subaccount created."</span><br>        <span class="token punctuation">}</span><br>      <span class="token punctuation">]</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span>,<br>  <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"1a99110dtrial-ga"</span>,<br>  <span class="token string">"subaccounts"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"00516298-b174-418e-9824-8824de04bfa3"</span>,<br>      <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"trial"</span>,<br>      <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>      <span class="token string">"parentGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>      <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"ROOT"</span>,<br>      <span class="token string">"region"</span><span class="token builtin class-name">:</span> <span class="token string">"eu10"</span>,<br>      <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"1a99110dtrial"</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span>,<br>  <span class="token string">"licenseType"</span><span class="token builtin class-name">:</span> <span class="token string">"TRIAL"</span><br><span class="token punctuation">}</span><br><span class="token punctuation">{</span><br>  <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,<br>  <span class="token string">"parentGuid"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>  <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"ROOT"</span>,<br>  <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>  <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"techedhouse"</span>,<br>  <span class="token string">"stateMessage"</span><span class="token builtin class-name">:</span> <span class="token string">"Directory created."</span>,<br>  <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,<br>  <span class="token string">"directoryType"</span><span class="token builtin class-name">:</span> <span class="token string">"PROJECT"</span>,<br>  <span class="token string">"directoryFeatures"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span><br>    <span class="token string">"DEFAULT"</span>,<br>    <span class="token string">"ENTITLEMENTS"</span>,<br>    <span class="token string">"AUTHORIZATIONS"</span><br>  <span class="token punctuation">]</span>,<br>  <span class="token string">"subaccounts"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</span>,<br>      <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"messaging"</span>,<br>      <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>      <span class="token string">"parentGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,<br>      <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"PROJECT"</span>,<br>      <span class="token string">"parentFeatures"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span><br>        <span class="token string">"DEFAULT"</span>,<br>        <span class="token string">"ENTITLEMENTS"</span>,<br>        <span class="token string">"AUTHORIZATIONS"</span><br>      <span class="token punctuation">]</span>,<br>      <span class="token string">"region"</span><span class="token builtin class-name">:</span> <span class="token string">"us10"</span>,<br>      <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"20b8636b-af4c-4c42-b79b-780763663fbb"</span>,<br>      <span class="token string">"stateMessage"</span><span class="token builtin class-name">:</span> <span class="token string">"Subaccount created."</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span><br><span class="token punctuation">}</span><br><span class="token punctuation">{</span><br>  <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</span>,<br>  <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"messaging"</span>,<br>  <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>  <span class="token string">"parentGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,<br>  <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"PROJECT"</span>,<br>  <span class="token string">"parentFeatures"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span><br>    <span class="token string">"DEFAULT"</span>,<br>    <span class="token string">"ENTITLEMENTS"</span>,<br>    <span class="token string">"AUTHORIZATIONS"</span><br>  <span class="token punctuation">]</span>,<br>  <span class="token string">"region"</span><span class="token builtin class-name">:</span> <span class="token string">"us10"</span>,<br>  <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"20b8636b-af4c-4c42-b79b-780763663fbb"</span>,<br>  <span class="token string">"stateMessage"</span><span class="token builtin class-name">:</span> <span class="token string">"Subaccount created."</span><br><span class="token punctuation">}</span><br><span class="token punctuation">{</span><br>  <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"00516298-b174-418e-9824-8824de04bfa3"</span>,<br>  <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"trial"</span>,<br>  <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>  <span class="token string">"parentGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>  <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"ROOT"</span>,<br>  <span class="token string">"region"</span><span class="token builtin class-name">:</span> <span class="token string">"eu10"</span>,<br>  <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"1a99110dtrial"</span><br><span class="token punctuation">}</span></code></pre><p>That looks better! While the nested child objects are still expressed, each actual object in the hierarchy now appears at the top level for us to filter through.</p><h4>Step 3 - Pick out potentially matching objects</h4><p>I'm deliberately doing this in a step by step way; there are most likely more efficient ways of performing this parsing but hopefully we learn more by taking each logical piece at a time.</p><p>And here we want to filter the objects down to those that may be a valid match of a subaccount or directory. In other words, we don't want the top level node, the global account. We can achieve this by identifying our potential matches as being objects that contain a pointer to a parent (as the top level node won't have one). Let's do that now.</p><blockquote><p>I'll express the <code>jq</code> incantation across multiple lines now so it remains readable in the narrow width of this blog post rendering.</p></blockquote><pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> jq <span class="token string">'<br>recurse<br>| objects<br>| select(.parentGuid? or .parentGUID?)<br>'</span> hierarchy.json<br><span class="token punctuation">{</span><br>  <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,<br>  <span class="token string">"parentGuid"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>  <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"ROOT"</span>,<br>  <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>  <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"techedhouse"</span>,<br>  <span class="token string">"stateMessage"</span><span class="token builtin class-name">:</span> <span class="token string">"Directory created."</span>,<br>  <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,<br>  <span class="token string">"directoryType"</span><span class="token builtin class-name">:</span> <span class="token string">"PROJECT"</span>,<br>  <span class="token string">"directoryFeatures"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span><br>    <span class="token string">"DEFAULT"</span>,<br>    <span class="token string">"ENTITLEMENTS"</span>,<br>    <span class="token string">"AUTHORIZATIONS"</span><br>  <span class="token punctuation">]</span>,<br>  <span class="token string">"subaccounts"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</span>,<br>      <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"messaging"</span>,<br>      <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>      <span class="token string">"parentGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,<br>      <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"PROJECT"</span>,<br>      <span class="token string">"parentFeatures"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span><br>        <span class="token string">"DEFAULT"</span>,<br>        <span class="token string">"ENTITLEMENTS"</span>,<br>        <span class="token string">"AUTHORIZATIONS"</span><br>      <span class="token punctuation">]</span>,<br>      <span class="token string">"region"</span><span class="token builtin class-name">:</span> <span class="token string">"us10"</span>,<br>      <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"20b8636b-af4c-4c42-b79b-780763663fbb"</span>,<br>      <span class="token string">"stateMessage"</span><span class="token builtin class-name">:</span> <span class="token string">"Subaccount created."</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span><br><span class="token punctuation">}</span><br><span class="token punctuation">{</span><br>  <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</span>,<br>  <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"messaging"</span>,<br>  <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>  <span class="token string">"parentGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,<br>  <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"PROJECT"</span>,<br>  <span class="token string">"parentFeatures"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span><br>    <span class="token string">"DEFAULT"</span>,<br>    <span class="token string">"ENTITLEMENTS"</span>,<br>    <span class="token string">"AUTHORIZATIONS"</span><br>  <span class="token punctuation">]</span>,<br>  <span class="token string">"region"</span><span class="token builtin class-name">:</span> <span class="token string">"us10"</span>,<br>  <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"20b8636b-af4c-4c42-b79b-780763663fbb"</span>,<br>  <span class="token string">"stateMessage"</span><span class="token builtin class-name">:</span> <span class="token string">"Subaccount created."</span><br><span class="token punctuation">}</span><br><span class="token punctuation">{</span><br>  <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"00516298-b174-418e-9824-8824de04bfa3"</span>,<br>  <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"trial"</span>,<br>  <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>  <span class="token string">"parentGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>  <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"ROOT"</span>,<br>  <span class="token string">"region"</span><span class="token builtin class-name">:</span> <span class="token string">"eu10"</span>,<br>  <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"1a99110dtrial"</span><br><span class="token punctuation">}</span></code></pre><p>Using the <code>select</code> function we can filter the objects down to only those that have a property pointing to a parent, i.e. either a <code>parentGuid</code> or <code>parentGUID</code> property, using the optional operator <code>?</code>.</p><blockquote><p>I've connected with the lovely BTP Accounts Service API team asking them about this property name discrepancy for parent GUIDs and have asked them to consider addressing it</p></blockquote><h4>Step 4 - Narrow down to what we're looking for</h4><p>Now we have just a list of subaccount and directory objects, we can comfortably filter further based on the display name given. When invoking <code>jq</code> you can pass arguments with the <code>--arg</code> option, so we can supply the chosen display name dynamically:</p><pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> jq <span class="token parameter variable">--arg</span> displayname <span class="token string">"messaging"</span> <span class="token string">'<br>recurse<br>| objects<br>| select(.parentGuid? or .parentGUID?)<br>| select(.displayName == $displayname)<br>'</span> hierarchy.json<br><span class="token punctuation">{</span><br>  <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</span>,<br>  <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"messaging"</span>,<br>  <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,<br>  <span class="token string">"parentGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,<br>  <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"PROJECT"</span>,<br>  <span class="token string">"parentFeatures"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span><br>    <span class="token string">"DEFAULT"</span>,<br>    <span class="token string">"ENTITLEMENTS"</span>,<br>    <span class="token string">"AUTHORIZATIONS"</span><br>  <span class="token punctuation">]</span>,<br>  <span class="token string">"region"</span><span class="token builtin class-name">:</span> <span class="token string">"us10"</span>,<br>  <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"20b8636b-af4c-4c42-b79b-780763663fbb"</span>,<br>  <span class="token string">"stateMessage"</span><span class="token builtin class-name">:</span> <span class="token string">"Subaccount created."</span><br><span class="token punctuation">}</span></code></pre><p>Now we have exactly the object we're looking for.</p><h4>Step 5 - Pick out the values we need</h4><p>It's just remains for us to determine the values we need:</p><ul><li>whether it's a subaccount or a directory</li><li>what the GUID is</li></ul><p>We can easily pick out the GUID, it's in the <code>guid</code> property. But to determine the type, we need to introduce a bit of logic. Let's based that logic on whether the object has a <code>region</code> property - if it does, we can assume it's a subaccount, otherwise it's a directory (directories are logical constructs only).</p><p>Here's that logic in action and in context:</p><pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> jq <span class="token parameter variable">--arg</span> displayname <span class="token string">"messaging"</span> <span class="token string">'<br>recurse<br>| objects<br>| select(.parentGuid? or .parentGUID?)<br>| select(.displayName == $displayname)<br>| [if .region? then "subaccount" else "directory" end, .guid]<br>'</span> hierarchy.json<br><span class="token punctuation">[</span><br>  <span class="token string">"subaccount"</span>,<br>  <span class="token string">"3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</span><br><span class="token punctuation">]</span></code></pre><p>Getting there!</p><h4>Step 6 - Formatting the output</h4><p>To be a drop-in replacement for the previous logic, we should really be returning these in a whitespace separated construction on the same line, in the same way that they were returned in part 1 - see the <a href="/blog/posts/2021/11/24/getting-btp-resource-guids-with-the-btp-cli-part-1/#determining-the-guids">Determining the GUIDs</a> section for details.</p><p>This can be done with with the <code>@tsv</code> <a href="https://stedolan.github.io/jq/manual/v1.5/#Formatstringsandescaping">format string</a>, which will turn an array like this into a nice tab separated values construct. When invoking this, we want to use the <code>--raw-output</code> option (short form is <code>-r</code>) to have the output written directly to standard output rather than being formatted as a JSON string inside quotes:</p><pre class="language-shell"><code class="language-shell"><span class="token punctuation">;</span> jq --raw-output <span class="token parameter variable">--arg</span> displayname <span class="token string">"messaging"</span> <span class="token string">'<br>recurse<br>| objects<br>| select(.parentGuid? or .parentGUID?)<br>| select(.displayName == $displayname)<br>| [if .region? then "subaccount" else "directory" end, .guid]<br>| @tsv<br>'</span> hierarchy.json<br>subaccount      3ea88c9c-010b-4bf0-9fdb-5c29c9087660</code></pre><p>In case you're wondering what we'd get without the <code>--raw-output</code> option, it's this:</p><pre class="language-text"><code class="language-text">"subaccount\t3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</code></pre><p>And yes, that is valid JSON, which is what <code>jq</code> will try to emit by default.</p><h2>Adjusting the btpguid script</h2><p>It's time to adapt the existing <code>btpguid</code> script to use this new approach, as a drop-in replacement. The existing script in its entirety is listed in part 1, in <a href="/blog/posts/2021/11/24/getting-btp-resource-guids-with-the-btp-cli-part-1/#the-btpguid-script">The btpguid script</a> section. We need to make three alterations:</p><ul><li>modify the <code>gethier</code> function to specify the JSON output format</li><li>add a new function <code>parse</code> to use the <code>jq</code> script to parse the JSON hierarchy and ouptut the subtype and GUID</li><li>modify the <code>read</code> line inside the <code>main</code> function to take input from what this new <code>parse</code> function produces</li></ul><h3>Modifying the gethier function</h3><p>We just need to add <code>--format json</code> to the invocation, so the resulting <code>gethier</code> function now looks like this:</p><pre class="language-shell"><code class="language-shell"><span class="token function-name function">gethier</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br>  btp <span class="token parameter variable">--format</span> json get accounts/global-account --show-hierarchy <span class="token operator"><span class="token file-descriptor important">2</span>></span> /dev/null<br><span class="token punctuation">}</span></code></pre><h3>Adding a new parse function</h3><p>To keep things separate and more readable, the new <code>parse</code> function encapsulates the invocation of <code>jq</code> on the hierarchy data, which will now be in JSON format. The entire function expects a display name for which to search, and the JSON hierarchy data, and looks like this:</p><pre class="language-shell"><code class="language-shell"><span class="token function-name function">parse</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br><br>  <span class="token builtin class-name">local</span> <span class="token assign-left variable">displayname</span><span class="token operator">=</span><span class="token variable">$1</span><br>  <span class="token builtin class-name">local</span> <span class="token assign-left variable">hierarchy</span><span class="token operator">=</span><span class="token variable">$2</span><br><br>  jq --raw-output <span class="token parameter variable">--arg</span> displayname <span class="token string">"<span class="token variable">$displayname</span>"</span> <span class="token string">'<br>    recurse<br>    | objects<br>    | select(.parentGuid? or .parentGUID?)<br>    | select(.displayName == $displayname)<br>    | [if .region? then "subaccount" else "directory" end, .guid]<br>    | @tsv<br>  '</span> <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token variable">$hierarchy</span>"</span><br><br><span class="token punctuation">}</span></code></pre><h3>Adjusting the main function</h3><p>Now all we need to do is adjust the line with <code>read</code> to take input from the invocation of this new <code>parse</code> function. It looks like this (the first line is unchanged, and is just listed here to provide a bit of context):</p><pre class="language-shell"><code class="language-shell"><span class="token assign-left variable">hierarchy</span><span class="token operator">=</span><span class="token string">"<span class="token variable"><span class="token variable">$(</span>gethier<span class="token variable">)</span></span>"</span> <span class="token operator">||</span> <span class="token punctuation">{</span> btp login <span class="token operator">&amp;&amp;</span> <span class="token assign-left variable">hierarchy</span><span class="token operator">=</span><span class="token string">"<span class="token variable"><span class="token variable">$(</span>gethier<span class="token variable">)</span></span>"</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><br><span class="token builtin class-name">read</span> <span class="token parameter variable">-r</span> subtype guid <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token variable"><span class="token variable">$(</span>parse <span class="token string">"<span class="token variable">$displayname</span>"</span> <span class="token string">"<span class="token variable">$hierarchy</span>"</span><span class="token variable">)</span></span>"</span></code></pre><h2>Wrapping up</h2><p>So there we have it. Using the btp CLI's <code>--format json</code> option, with a bit of <code>jq</code> scripting, gives us what we want. The jq language itself is more fully formed than you might think - and given the relevance that JSON has today, both in output from tools like this, responses from API endpoints, and representations of declarative definitions for cloud services and clusters, I'd suggest that it's worth investing a little bit of time into being able to wield a few <code>jq</code> scripts, even if they are one-liners.</p><p>And talking of <code>jq</code> scripts, I'm sure there are other ways of pulling out the information from the JSON using <code>jq</code>. If you've taken a different approach, I'd love to hear about it - please share what you've done in the comments. Thanks, and happy coding!</p><hr><p><a href="https://community.sap.com/t5/technology-blogs-by-sap/getting-btp-resource-guids-with-the-btp-cli-part-2-json-and-jq/ba-p/13517574">Originally published on SAP Community</a></p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/sapcommunity/">#sapcommunity</a> <a href="/tags/btp/">#btp</a> <a href="/tags/cli/">#cli</a> <a href="/tags/json/">#json</a> <a href="/tags/jq/">#jq</a> <a href="/tags/shell/">#shell</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2021/12/09/setting-up-hadolint-a-dockerfile-linter/"><span>←</span> <span>Setting up hadolint - a Dockerfile linter</span> </a><a href="/blog/posts/2021/11/24/getting-btp-resource-guids-with-the-btp-cli-part-1/"><span>Getting BTP resource GUIDs with the btp CLI - part 1</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="getting-btp-resource-guids-with-the-btp-cli-part-2-json-and-jq">Getting BTP resource GUIDs with the btp CLI – part 2 - JSON and jq</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2021-12-01">01 December 2021</time></li>
+	<li><a href="/tags/sapcommunity/" class="post-tag">sapcommunity</a>, </li>
+	<li><a href="/tags/btp/" class="post-tag">btp</a>, </li>
+	<li><a href="/tags/cli/" class="post-tag">cli</a>, </li>
+	<li><a href="/tags/json/" class="post-tag">json</a>, </li>
+	<li><a href="/tags/jq/" class="post-tag">jq</a>, </li>
+	<li><a href="/tags/shell/" class="post-tag">shell</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p><em>In this second part of a 2-part blog post series on getting BTP
+resource GUIDs with the btp CLI, we look at how the CLI supports JSON
+output, why it's a good choice, and how to parse that.</em></p>
+<p>If you haven't done already, take a look at <a href="/blog/posts/2021/09/03/exploring-fff-part-1-main/">part
+1</a>
+before reading this part.</p>
+<h2 id="the-unix-philosophy-and-alternative-output-formats">The Unix philosophy and alternative output formats</h2>
+<p>The <a href="https://en.wikipedia.org/wiki/Unix_philosophy">Unix philosophy</a> is
+all about small programs, joined loosely together. It's about
+composability*, not monolithic constructs.</p>
+<p>* It is not lost on me that composability is also a key feature of the
+functional programming paradigm, which has a similar beauty to me.</p>
+<p>This approach to executing programs, using the power of <a href="https://tldp.org/LDP/abs/html/io-redirection.html">input / output
+redirection</a> &amp;
+pipelines and employing a handful of small, focused &amp; powerful tools has
+been with us for almost half a century now and is at the heart of the
+dominant operating system powering the cloud.</p>
+<p>More recently, we've been seeing a need to deal with resources which
+have structure that is sometimes more complex than can be described in
+mostly record-oriented plain text. In parallel, we're seeing
+declarative approaches to devops and system resource management (such as
+Kubernetes cluster definitions, infrastructure-as-code, and so on), with
+those declarative constructs expressing complex relationships and
+interdependencies.</p>
+<p>The approach to encapsulate machine-readable definitions of such
+resources and definitions has been to employ formats such as JSON and
+YAML.</p>
+<p>These formats lend themselves well to describing requirements, but also
+to representing structure. With the myriad resources on SAP Business
+Technology Platform, there are relationships that need to be expressed,
+conveying inherent structure that is fundamental to the understanding
+and operation of those resources.</p>
+<p>And so, like many of today's command line tools, the btp CLI has the
+ability to express the output in a format that can reliably, predictably
+and cleanly convey that structure. This ability comes in the form of a
+general option:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token parameter variable">--format</span> json</code></pre>
+<p>You can read more about this option in the <a href="https://help.sap.com/products/BTP/65de2977205c403bbc107264b8eccf4b/dcb85b7dea61432cbafaab4ce0ec9b08.html?locale=en-US">Change the Output Format to
+JSON</a>
+section in the SAP Help Portal. In our Hands-on SAP Dev show,
+specifically within the <a href="https://www.youtube.com/playlist?list=PL6RpkC85SLQDXx827kdjKc6HRvdMRZ8P5">SAP btp
+CLI</a>
+series, there's an episode <a href="https://www.youtube.com/watch?v=xRmHZGk4QCU&amp;list=PL6RpkC85SLQDXx827kdjKc6HRvdMRZ8P5&amp;index=3">Scripting and JSON output with btp, the SAP
+Business Technology Platform
+CLI</a>
+where we cover exactly this.</p>
+<h2 id="plain-text-vs-json">Plain text vs JSON?</h2>
+<p>The question clearly arises - when should I use this option? In some
+philosophical ways, JSON output flows against the original Unix
+Philosophy, but there are most certainly pragmatic reasons why it's
+employed. If you're interested in reading more, I highly recommend
+<a href="https://blog.kellybrazil.com/2019/11/26/bringing-the-unix-philosophy-to-the-21st-century/">Bringing the Unix Philosophy to the 21st
+Century</a>
+which not only is a good read, but also introduces a generic tool <code>jc</code>
+that is certainly fascinating and not a little thought provoking.</p>
+<p>So, back to the question. As far as the btp CLI is concerned, let's put
+it this way:</p>
+<ul>
+<li>if you're using it interactively, as a human, then the plain text output is fine of course</li>
+<li>if you're using it non-interactively, such as in a script, then the recommendation is to use the JSON output format</li>
+</ul>
+<p>For non-interactive use, where you're going to want to extract
+information from the output of a btp CLI command, this makes sense
+because the JSON output is going to be more stable, more reliable and
+more predictable. The plain text output may change over time, but the
+btp CLI team are making a big effort, and an intentional one, to provide
+that stability.</p>
+<p>Of course, for quick one-off pipeline constructs on the command line, I
+may still use the plain text output and some traditional Unix tools to
+parse and extract information from the output. But for longer lived
+tasks, scripts and so on, I will more likely reach for the JSON output
+format.</p>
+<h2 id="parsing-json-on-the-command-line">Parsing JSON on the command line</h2>
+<p>The tool of choice for parsing JSON on the command line is
+<a href="https://stedolan.github.io/jq/">jq</a>, which the author describes as &quot;a
+lightweight and flexible command-line JSON processor&quot;.</p>
+<p>I've written about <code>jq</code> before in various blog posts and also covered
+it in some of the Hands-on SAP Dev
+<a href="/blog/posts/2020/11/09/an-overview-of-sap-developers-video-content/#shows">show</a>
+episodes - pick one that appeals to you from <a href="https://www.google.com/search?q=site%3Aqmacro.org+json+jq">this quick list of search
+results for mention of JSON and jq on this
+site</a>
+to read more.</p>
+<h2 id="revisiting-the-hierarchy-output">Revisiting the hierarchy output</h2>
+<p>In <a href="/blog/posts/2021/09/03/exploring-fff-part-1-main/">Getting BTP resource GUIDs with the btp CLI -- part
+1</a>,
+the first part of this two-part series, I explained how I used various
+tools to extract the GUIDs for resources shown in the output of this
+command:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">btp get accounts/global-account --show-hierarchy</code></pre>
+<p>The output that this command produces looks something like this:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">Showing details for global account af39080b-1527-40a1-b78a-3b605af7e811...
+
+├─ c35b11e4trial (af39080b-1527-40a1-b78a-3b605af7e811 - global account)
+│  ├─ trial (b6501bff-e0ac-4fdf-8898-81f305d25335 - subaccount)
+│  ├─ techedhouse (e57c5b13-9480-4a68-9c04-a603d7a017a9 - directory)
+
+type:            id:                                    display name:   parent id:
+global account   af39080b-1527-40a1-b78a-3b605af7e811   c35b11e4trial
+subaccount       b6501bff-e0ac-4fdf-8898-81f305d25335   trial           af39080b-...
+directory        e57c5b13-9480-4a68-9c04-a603d7a017a9   techedhouse     af39080b-...</code></pre>
+<p>While it was definitely possible to consistently extract the GUIDs using
+the approach I took, there are other similar extraction tasks in this
+area that might be more troublesome.</p>
+<p>For example, if I wanted to grab the display names of all the
+subaccounts in my global account, the parsing and extraction would be
+similar; I'd pull the output apart using whitespace as boundaries and
+get the job done that way. However, if a display name contained a space,
+which is valid, I'd start to struggle. How would I know if that space
+was the column boundary, or just part of the value in that column? I
+could resort to some sort of column-oriented slicing of the rows, but
+that's most likely just asking for trouble, making the parsing and
+extracting more brittle.</p>
+<h2 id="parsing-brittle-plain-text-output-vs-complex-json-output">Parsing brittle plain text output vs complex JSON output</h2>
+<p>Recently I wrote about this very challenge of
+parsing text output that was brittle in the post <a href="/blog/posts/2021/10/29/embracing-jq-and-json/">Embracing jq and
+JSON</a>.
+The subject at hand was the same - the ouptut of
+<code>btp get account/global-account --show-hierarchy</code>, although what I was
+trying to extract was slightly different. Most importantly though, it
+demonstrated that correctly and reliably extracting a value with spaces
+(the resource display name 'this and that') was not straightforward.</p>
+<blockquote>
+<p>Some of you may think, and I'd agree, that one way that this would
+normally be tackled is to use tabs as field separators; this would
+address the situation and is indeed a standard part of how the Unix
+toolchain operates - look at what the default delimiter is for the
+<a href="https://man7.org/linux/man-pages/man1/cut.1.html">cut</a> command, for
+example.</p>
+</blockquote>
+<p>What it also demonstrated was that taking the JSON output approach was
+preferable. Initially, as I described in that post, the prospect was a
+little daunting, as the structure represented in JSON consisted of
+nested arrays of objects. But a little digging into the <a href="https://stedolan.github.io/jq/manual/">jq
+manual</a> showed me functions that
+would help out.</p>
+<p>So what I want to do here is find a drop-in replacement for these two
+lines that we looked at in detail in <a href="/blog/posts/2021/11/24/getting-btp-resource-guids-with-the-btp-cli-part-1/">part
+1</a>:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token assign-left variable">hierarchy</span><span class="token operator">=</span><span class="token string">"<span class="token variable"><span class="token variable">$(</span>gethier<span class="token variable">)</span></span>"</span> <span class="token operator">||</span> <span class="token punctuation">{</span> btp login <span class="token operator">&amp;&amp;</span> <span class="token assign-left variable">hierarchy</span><span class="token operator">=</span><span class="token string">"<span class="token variable"><span class="token variable">$(</span>gethier<span class="token variable">)</span></span>"</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token builtin class-name">read</span> <span class="token parameter variable">-r</span> subtype guid <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"$(grep -P -o "^(subaccount|directory)\s+(\S+)(?=\s+<span class="token variable">$displayname</span>)"</span> <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token variable">$hierarchy</span>"</span><span class="token punctuation">)</span>"</code></pre>
+<p>That replacement is to use the JSON format output from the <code>btp</code>
+command. Let's start by examining what that looks like.</p>
+<h3 id="the-hierarchy-in-json-format">The hierarchy in JSON format</h3>
+<p>While we know what the plain text output looks like from
+<code>btp get accounts/global-account --show-hierarchy</code>, the JSON output
+looks like this (I've removed some properties that are not relevant, to
+keep the JSON small enough to stare at in one go):</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"guid"</span><span class="token operator">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span><span class="token punctuation">,</span>
+  <span class="token property">"displayName"</span><span class="token operator">:</span> <span class="token string">"1a99110dtrial"</span><span class="token punctuation">,</span>
+  <span class="token property">"children"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"guid"</span><span class="token operator">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span><span class="token punctuation">,</span>
+      <span class="token property">"parentGuid"</span><span class="token operator">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span><span class="token punctuation">,</span>
+      <span class="token property">"parentType"</span><span class="token operator">:</span> <span class="token string">"ROOT"</span><span class="token punctuation">,</span>
+      <span class="token property">"globalAccountGUID"</span><span class="token operator">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span><span class="token punctuation">,</span>
+      <span class="token property">"displayName"</span><span class="token operator">:</span> <span class="token string">"techedhouse"</span><span class="token punctuation">,</span>
+      <span class="token property">"stateMessage"</span><span class="token operator">:</span> <span class="token string">"Directory created."</span><span class="token punctuation">,</span>
+      <span class="token property">"subdomain"</span><span class="token operator">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span><span class="token punctuation">,</span>
+      <span class="token property">"directoryType"</span><span class="token operator">:</span> <span class="token string">"PROJECT"</span><span class="token punctuation">,</span>
+      <span class="token property">"directoryFeatures"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token string">"DEFAULT"</span><span class="token punctuation">,</span>
+        <span class="token string">"ENTITLEMENTS"</span><span class="token punctuation">,</span>
+        <span class="token string">"AUTHORIZATIONS"</span>
+      <span class="token punctuation">]</span><span class="token punctuation">,</span>
+      <span class="token property">"subaccounts"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span>
+          <span class="token property">"guid"</span><span class="token operator">:</span> <span class="token string">"3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</span><span class="token punctuation">,</span>
+          <span class="token property">"displayName"</span><span class="token operator">:</span> <span class="token string">"messaging"</span><span class="token punctuation">,</span>
+          <span class="token property">"globalAccountGUID"</span><span class="token operator">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span><span class="token punctuation">,</span>
+          <span class="token property">"parentGUID"</span><span class="token operator">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span><span class="token punctuation">,</span>
+          <span class="token property">"parentType"</span><span class="token operator">:</span> <span class="token string">"PROJECT"</span><span class="token punctuation">,</span>
+          <span class="token property">"parentFeatures"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+            <span class="token string">"DEFAULT"</span><span class="token punctuation">,</span>
+            <span class="token string">"ENTITLEMENTS"</span><span class="token punctuation">,</span>
+            <span class="token string">"AUTHORIZATIONS"</span>
+          <span class="token punctuation">]</span><span class="token punctuation">,</span>
+          <span class="token property">"region"</span><span class="token operator">:</span> <span class="token string">"us10"</span><span class="token punctuation">,</span>
+          <span class="token property">"subdomain"</span><span class="token operator">:</span> <span class="token string">"20b8636b-af4c-4c42-b79b-780763663fbb"</span><span class="token punctuation">,</span>
+          <span class="token property">"stateMessage"</span><span class="token operator">:</span> <span class="token string">"Subaccount created."</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">"subdomain"</span><span class="token operator">:</span> <span class="token string">"1a99110dtrial-ga"</span><span class="token punctuation">,</span>
+  <span class="token property">"subaccounts"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"guid"</span><span class="token operator">:</span> <span class="token string">"00516298-b174-418e-9824-8824de04bfa3"</span><span class="token punctuation">,</span>
+      <span class="token property">"displayName"</span><span class="token operator">:</span> <span class="token string">"trial"</span><span class="token punctuation">,</span>
+      <span class="token property">"globalAccountGUID"</span><span class="token operator">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span><span class="token punctuation">,</span>
+      <span class="token property">"parentGUID"</span><span class="token operator">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span><span class="token punctuation">,</span>
+      <span class="token property">"parentType"</span><span class="token operator">:</span> <span class="token string">"ROOT"</span><span class="token punctuation">,</span>
+      <span class="token property">"region"</span><span class="token operator">:</span> <span class="token string">"eu10"</span><span class="token punctuation">,</span>
+      <span class="token property">"subdomain"</span><span class="token operator">:</span> <span class="token string">"1a99110dtrial"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">"licenseType"</span><span class="token operator">:</span> <span class="token string">"TRIAL"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Here are a few interesting points to notice:</p>
+<ul>
+<li>the hierarchy is expressed via sub-nodes via two properties - <code>children</code> (which are directories) and <code>subaccounts</code></li>
+<li>each object that is either a directory or a subaccount has a <code>guid</code> property, which is what we're ultimately looking for</li>
+<li>there's a <code>directoryType</code> property on the directory objects, with a value of <code>PROJECT</code></li>
+<li>the subaccount objects don't have a <code>directoryType</code> property but do have a <code>region</code> property and value</li>
+</ul>
+<p>Moreover, the nesting depth of each of these directory and subaccount
+objects depends on where they sit in the actual hierarchy. So we have
+our work cut out to parse this, right?</p>
+<h3 id="rolling-our-jq-sleeves-up">Rolling our jq sleeves up</h3>
+<p>Well, if you took a look at the <a href="/blog/posts/2021/10/29/embracing-jq-and-json/">Embracing jq and
+JSON</a>
+post mentioned earlier, you'll know that it's not as bad as it first
+seems. Let's work through parsing this, step by step. The general idea
+is to flatten the structure, identify the objects in there, pick out the
+potential objects that might match, narrow down further, and then we
+have what we're looking for.</p>
+<p>For the sake of exploration, let's assume we have the JSON above in a
+file called <code>hierarchy.json</code>.</p>
+<h4 id="step-1-flatten-the-structure">Step 1 - flatten the structure</h4>
+<p>To flatten the struture, I've taken to using the <code>recurse</code> function;
+here's what it does (a lot of the output has been omitted for
+brevity):</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> jq <span class="token string">'recurse'</span> hierarchy.json
+<span class="token punctuation">{</span>
+  <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+  <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"1a99110dtrial"</span>,
+  <span class="token string">"children"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,
+      <span class="token string">"parentGuid"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+      <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"ROOT"</span>,
+      <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+      <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"techedhouse"</span>,
+      <span class="token punctuation">..</span>.
+<span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>
+<span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>
+<span class="token string">"ROOT"</span>
+<span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>
+<span class="token string">"techedhouse"</span>
+<span class="token string">"Directory created."</span>
+<span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>
+<span class="token string">"PROJECT"</span>
+<span class="token punctuation">[</span>
+  <span class="token string">"DEFAULT"</span>,
+  <span class="token string">"ENTITLEMENTS"</span>,
+  <span class="token string">"AUTHORIZATIONS"</span>
+<span class="token punctuation">]</span>
+<span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>
+<span class="token string">"ROOT"</span>
+<span class="token string">"eu10"</span>
+<span class="token string">"1a99110dtrial"</span>
+<span class="token string">"TRIAL"</span></code></pre>
+<p>As you can see, it descends the entire structure and emits everything it
+finds. This is a little too much, as non-objects are also emitted as the
+recursive descent progresses. Let's address that.</p>
+<h4 id="step-2-identify-the-objects">Step 2 - identify the objects</h4>
+<p>To narrow down this large amount of output to just the objects, we can
+use the aptly named <code>objects</code> function which will emit only objects that
+pass through it, discarding anything else (like those simple strings
+such as &quot;ROOT&quot;, &quot;eu10&quot; and &quot;1a99110dtrial&quot; we see above). Here we
+go:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> jq <span class="token string">'recurse | objects'</span>
+<span class="token punctuation">{</span>
+  <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+  <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"1a99110dtrial"</span>,
+  <span class="token string">"children"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,
+      <span class="token string">"parentGuid"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+      <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"ROOT"</span>,
+      <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+      <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"techedhouse"</span>,
+      <span class="token string">"stateMessage"</span><span class="token builtin class-name">:</span> <span class="token string">"Directory created."</span>,
+      <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,
+      <span class="token string">"directoryType"</span><span class="token builtin class-name">:</span> <span class="token string">"PROJECT"</span>,
+      <span class="token string">"directoryFeatures"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+        <span class="token string">"DEFAULT"</span>,
+        <span class="token string">"ENTITLEMENTS"</span>,
+        <span class="token string">"AUTHORIZATIONS"</span>
+      <span class="token punctuation">]</span>,
+      <span class="token string">"subaccounts"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span>
+          <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</span>,
+          <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"messaging"</span>,
+          <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+          <span class="token string">"parentGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,
+          <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"PROJECT"</span>,
+          <span class="token string">"parentFeatures"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+            <span class="token string">"DEFAULT"</span>,
+            <span class="token string">"ENTITLEMENTS"</span>,
+            <span class="token string">"AUTHORIZATIONS"</span>
+          <span class="token punctuation">]</span>,
+          <span class="token string">"region"</span><span class="token builtin class-name">:</span> <span class="token string">"us10"</span>,
+          <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"20b8636b-af4c-4c42-b79b-780763663fbb"</span>,
+          <span class="token string">"stateMessage"</span><span class="token builtin class-name">:</span> <span class="token string">"Subaccount created."</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>,
+  <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"1a99110dtrial-ga"</span>,
+  <span class="token string">"subaccounts"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"00516298-b174-418e-9824-8824de04bfa3"</span>,
+      <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"trial"</span>,
+      <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+      <span class="token string">"parentGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+      <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"ROOT"</span>,
+      <span class="token string">"region"</span><span class="token builtin class-name">:</span> <span class="token string">"eu10"</span>,
+      <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"1a99110dtrial"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>,
+  <span class="token string">"licenseType"</span><span class="token builtin class-name">:</span> <span class="token string">"TRIAL"</span>
+<span class="token punctuation">}</span>
+<span class="token punctuation">{</span>
+  <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,
+  <span class="token string">"parentGuid"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+  <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"ROOT"</span>,
+  <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+  <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"techedhouse"</span>,
+  <span class="token string">"stateMessage"</span><span class="token builtin class-name">:</span> <span class="token string">"Directory created."</span>,
+  <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,
+  <span class="token string">"directoryType"</span><span class="token builtin class-name">:</span> <span class="token string">"PROJECT"</span>,
+  <span class="token string">"directoryFeatures"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+    <span class="token string">"DEFAULT"</span>,
+    <span class="token string">"ENTITLEMENTS"</span>,
+    <span class="token string">"AUTHORIZATIONS"</span>
+  <span class="token punctuation">]</span>,
+  <span class="token string">"subaccounts"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</span>,
+      <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"messaging"</span>,
+      <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+      <span class="token string">"parentGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,
+      <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"PROJECT"</span>,
+      <span class="token string">"parentFeatures"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+        <span class="token string">"DEFAULT"</span>,
+        <span class="token string">"ENTITLEMENTS"</span>,
+        <span class="token string">"AUTHORIZATIONS"</span>
+      <span class="token punctuation">]</span>,
+      <span class="token string">"region"</span><span class="token builtin class-name">:</span> <span class="token string">"us10"</span>,
+      <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"20b8636b-af4c-4c42-b79b-780763663fbb"</span>,
+      <span class="token string">"stateMessage"</span><span class="token builtin class-name">:</span> <span class="token string">"Subaccount created."</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+<span class="token punctuation">{</span>
+  <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</span>,
+  <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"messaging"</span>,
+  <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+  <span class="token string">"parentGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,
+  <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"PROJECT"</span>,
+  <span class="token string">"parentFeatures"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+    <span class="token string">"DEFAULT"</span>,
+    <span class="token string">"ENTITLEMENTS"</span>,
+    <span class="token string">"AUTHORIZATIONS"</span>
+  <span class="token punctuation">]</span>,
+  <span class="token string">"region"</span><span class="token builtin class-name">:</span> <span class="token string">"us10"</span>,
+  <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"20b8636b-af4c-4c42-b79b-780763663fbb"</span>,
+  <span class="token string">"stateMessage"</span><span class="token builtin class-name">:</span> <span class="token string">"Subaccount created."</span>
+<span class="token punctuation">}</span>
+<span class="token punctuation">{</span>
+  <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"00516298-b174-418e-9824-8824de04bfa3"</span>,
+  <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"trial"</span>,
+  <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+  <span class="token string">"parentGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+  <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"ROOT"</span>,
+  <span class="token string">"region"</span><span class="token builtin class-name">:</span> <span class="token string">"eu10"</span>,
+  <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"1a99110dtrial"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>That looks better! While the nested child objects are still expressed,
+each actual object in the hierarchy now appears at the top level for us
+to filter through.</p>
+<h4 id="step-3-pick-out-potentially-matching-objects">Step 3 - Pick out potentially matching objects</h4>
+<p>I'm deliberately doing this in a step by step way; there are most
+likely more efficient ways of performing this parsing but hopefully we
+learn more by taking each logical piece at a time.</p>
+<p>And here we want to filter the objects down to those that may be a valid
+match of a subaccount or directory. In other words, we don't want the
+top level node, the global account. We can achieve this by identifying
+our potential matches as being objects that contain a pointer to a
+parent (as the top level node won't have one). Let's do that now.</p>
+<blockquote>
+<p>I'll express the <code>jq</code> incantation across multiple lines now so it
+remains readable in the narrow width of this blog post rendering.</p>
+</blockquote>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> jq <span class="token string">'
+recurse
+| objects
+| select(.parentGuid? or .parentGUID?)
+'</span> hierarchy.json
+<span class="token punctuation">{</span>
+  <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,
+  <span class="token string">"parentGuid"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+  <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"ROOT"</span>,
+  <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+  <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"techedhouse"</span>,
+  <span class="token string">"stateMessage"</span><span class="token builtin class-name">:</span> <span class="token string">"Directory created."</span>,
+  <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,
+  <span class="token string">"directoryType"</span><span class="token builtin class-name">:</span> <span class="token string">"PROJECT"</span>,
+  <span class="token string">"directoryFeatures"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+    <span class="token string">"DEFAULT"</span>,
+    <span class="token string">"ENTITLEMENTS"</span>,
+    <span class="token string">"AUTHORIZATIONS"</span>
+  <span class="token punctuation">]</span>,
+  <span class="token string">"subaccounts"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</span>,
+      <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"messaging"</span>,
+      <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+      <span class="token string">"parentGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,
+      <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"PROJECT"</span>,
+      <span class="token string">"parentFeatures"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+        <span class="token string">"DEFAULT"</span>,
+        <span class="token string">"ENTITLEMENTS"</span>,
+        <span class="token string">"AUTHORIZATIONS"</span>
+      <span class="token punctuation">]</span>,
+      <span class="token string">"region"</span><span class="token builtin class-name">:</span> <span class="token string">"us10"</span>,
+      <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"20b8636b-af4c-4c42-b79b-780763663fbb"</span>,
+      <span class="token string">"stateMessage"</span><span class="token builtin class-name">:</span> <span class="token string">"Subaccount created."</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+<span class="token punctuation">{</span>
+  <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</span>,
+  <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"messaging"</span>,
+  <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+  <span class="token string">"parentGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,
+  <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"PROJECT"</span>,
+  <span class="token string">"parentFeatures"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+    <span class="token string">"DEFAULT"</span>,
+    <span class="token string">"ENTITLEMENTS"</span>,
+    <span class="token string">"AUTHORIZATIONS"</span>
+  <span class="token punctuation">]</span>,
+  <span class="token string">"region"</span><span class="token builtin class-name">:</span> <span class="token string">"us10"</span>,
+  <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"20b8636b-af4c-4c42-b79b-780763663fbb"</span>,
+  <span class="token string">"stateMessage"</span><span class="token builtin class-name">:</span> <span class="token string">"Subaccount created."</span>
+<span class="token punctuation">}</span>
+<span class="token punctuation">{</span>
+  <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"00516298-b174-418e-9824-8824de04bfa3"</span>,
+  <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"trial"</span>,
+  <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+  <span class="token string">"parentGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+  <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"ROOT"</span>,
+  <span class="token string">"region"</span><span class="token builtin class-name">:</span> <span class="token string">"eu10"</span>,
+  <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"1a99110dtrial"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Using the <code>select</code> function we can filter the objects down to only those
+that have a property pointing to a parent, i.e. either a <code>parentGuid</code> or
+<code>parentGUID</code> property, using the optional operator <code>?</code>.</p>
+<blockquote>
+<p>I've connected with the lovely BTP Accounts Service API team asking
+them about this property name discrepancy for parent GUIDs and have
+asked them to consider addressing it</p>
+</blockquote>
+<h4 id="step-4-narrow-down-to-what-we-re-looking-for">Step 4 - Narrow down to what we're looking for</h4>
+<p>Now we have just a list of subaccount and directory objects, we can
+comfortably filter further based on the display name given. When
+invoking <code>jq</code> you can pass arguments with the <code>--arg</code> option, so we can
+supply the chosen display name dynamically:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> jq <span class="token parameter variable">--arg</span> displayname <span class="token string">"messaging"</span> <span class="token string">'
+recurse
+| objects
+| select(.parentGuid? or .parentGUID?)
+| select(.displayName == $displayname)
+'</span> hierarchy.json
+<span class="token punctuation">{</span>
+  <span class="token string">"guid"</span><span class="token builtin class-name">:</span> <span class="token string">"3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</span>,
+  <span class="token string">"displayName"</span><span class="token builtin class-name">:</span> <span class="token string">"messaging"</span>,
+  <span class="token string">"globalAccountGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"c63c501e-e589-467d-8875-1821927ea713"</span>,
+  <span class="token string">"parentGUID"</span><span class="token builtin class-name">:</span> <span class="token string">"2558794c-f8cd-4422-b071-3b21c2922a02"</span>,
+  <span class="token string">"parentType"</span><span class="token builtin class-name">:</span> <span class="token string">"PROJECT"</span>,
+  <span class="token string">"parentFeatures"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+    <span class="token string">"DEFAULT"</span>,
+    <span class="token string">"ENTITLEMENTS"</span>,
+    <span class="token string">"AUTHORIZATIONS"</span>
+  <span class="token punctuation">]</span>,
+  <span class="token string">"region"</span><span class="token builtin class-name">:</span> <span class="token string">"us10"</span>,
+  <span class="token string">"subdomain"</span><span class="token builtin class-name">:</span> <span class="token string">"20b8636b-af4c-4c42-b79b-780763663fbb"</span>,
+  <span class="token string">"stateMessage"</span><span class="token builtin class-name">:</span> <span class="token string">"Subaccount created."</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Now we have exactly the object we're looking for.</p>
+<h4 id="step-5-pick-out-the-values-we-need">Step 5 - Pick out the values we need</h4>
+<p>It's just remains for us to determine the values we need:</p>
+<ul>
+<li>whether it's a subaccount or a directory</li>
+<li>what the GUID is</li>
+</ul>
+<p>We can easily pick out the GUID, it's in the <code>guid</code> property. But to
+determine the type, we need to introduce a bit of logic. Let's based
+that logic on whether the object has a <code>region</code> property - if it does,
+we can assume it's a subaccount, otherwise it's a directory
+(directories are logical constructs only).</p>
+<p>Here's that logic in action and in context:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> jq <span class="token parameter variable">--arg</span> displayname <span class="token string">"messaging"</span> <span class="token string">'
+recurse
+| objects
+| select(.parentGuid? or .parentGUID?)
+| select(.displayName == $displayname)
+| [if .region? then "subaccount" else "directory" end, .guid]
+'</span> hierarchy.json
+<span class="token punctuation">[</span>
+  <span class="token string">"subaccount"</span>,
+  <span class="token string">"3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</span>
+<span class="token punctuation">]</span></code></pre>
+<p>Getting there!</p>
+<h4 id="step-6-formatting-the-output">Step 6 - Formatting the output</h4>
+<p>To be a drop-in replacement for the previous logic, we should really be
+returning these in a whitespace separated construction on the same line,
+in the same way that they were returned in part 1 - see the <a href="/blog/posts/2021/11/24/getting-btp-resource-guids-with-the-btp-cli-part-1/#determining-the-guids">Determining
+the
+GUIDs</a>
+section for details.</p>
+<p>This can be done with with the <code>@tsv</code> <a href="https://stedolan.github.io/jq/manual/v1.5/#Formatstringsandescaping">format
+string</a>,
+which will turn an array like this into a nice tab separated values
+construct. When invoking this, we want to use the <code>--raw-output</code> option
+(short form is <code>-r</code>) to have the output written directly to standard
+output rather than being formatted as a JSON string inside quotes:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> jq --raw-output <span class="token parameter variable">--arg</span> displayname <span class="token string">"messaging"</span> <span class="token string">'
+recurse
+| objects
+| select(.parentGuid? or .parentGUID?)
+| select(.displayName == $displayname)
+| [if .region? then "subaccount" else "directory" end, .guid]
+| @tsv
+'</span> hierarchy.json
+subaccount      3ea88c9c-010b-4bf0-9fdb-5c29c9087660</code></pre>
+<p>In case you're wondering what we'd get without the <code>--raw-output</code>
+option, it's this:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">"subaccount\t3ea88c9c-010b-4bf0-9fdb-5c29c9087660"</code></pre>
+<p>And yes, that is valid JSON, which is what <code>jq</code> will try to emit by
+default.</p>
+<h2 id="adjusting-the-btpguid-script">Adjusting the btpguid script</h2>
+<p>It's time to adapt the existing <code>btpguid</code> script to use this new
+approach, as a drop-in replacement. The existing script in its entirety
+is listed in part 1, in <a href="/blog/posts/2021/11/24/getting-btp-resource-guids-with-the-btp-cli-part-1/#the-btpguid-script">The btpguid
+script</a>
+section. We need to make three alterations:</p>
+<ul>
+<li>modify the <code>gethier</code> function to specify the JSON output format</li>
+<li>add a new function <code>parse</code> to use the <code>jq</code> script to parse the JSON hierarchy and ouptut the subtype and GUID</li>
+<li>modify the <code>read</code> line inside the <code>main</code> function to take input from what this new <code>parse</code> function produces</li>
+</ul>
+<h3 id="modifying-the-gethier-function">Modifying the gethier function</h3>
+<p>We just need to add <code>--format json</code> to the invocation, so the resulting
+<code>gethier</code> function now looks like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function-name function">gethier</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  btp <span class="token parameter variable">--format</span> json get accounts/global-account --show-hierarchy <span class="token operator"><span class="token file-descriptor important">2</span>></span> /dev/null
+<span class="token punctuation">}</span></code></pre>
+<h3 id="adding-a-new-parse-function">Adding a new parse function</h3>
+<p>To keep things separate and more readable, the new <code>parse</code> function
+encapsulates the invocation of <code>jq</code> on the hierarchy data, which will
+now be in JSON format. The entire function expects a display name for
+which to search, and the JSON hierarchy data, and looks like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function-name function">parse</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+  <span class="token builtin class-name">local</span> <span class="token assign-left variable">displayname</span><span class="token operator">=</span><span class="token variable">$1</span>
+  <span class="token builtin class-name">local</span> <span class="token assign-left variable">hierarchy</span><span class="token operator">=</span><span class="token variable">$2</span>
+
+  jq --raw-output <span class="token parameter variable">--arg</span> displayname <span class="token string">"<span class="token variable">$displayname</span>"</span> <span class="token string">'
+    recurse
+    | objects
+    | select(.parentGuid? or .parentGUID?)
+    | select(.displayName == $displayname)
+    | [if .region? then "subaccount" else "directory" end, .guid]
+    | @tsv
+  '</span> <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token variable">$hierarchy</span>"</span>
+
+<span class="token punctuation">}</span></code></pre>
+<h3 id="adjusting-the-main-function">Adjusting the main function</h3>
+<p>Now all we need to do is adjust the line with <code>read</code> to take input from
+the invocation of this new <code>parse</code> function. It looks like this (the
+first line is unchanged, and is just listed here to provide a bit of
+context):</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token assign-left variable">hierarchy</span><span class="token operator">=</span><span class="token string">"<span class="token variable"><span class="token variable">$(</span>gethier<span class="token variable">)</span></span>"</span> <span class="token operator">||</span> <span class="token punctuation">{</span> btp login <span class="token operator">&amp;&amp;</span> <span class="token assign-left variable">hierarchy</span><span class="token operator">=</span><span class="token string">"<span class="token variable"><span class="token variable">$(</span>gethier<span class="token variable">)</span></span>"</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token builtin class-name">read</span> <span class="token parameter variable">-r</span> subtype guid <span class="token operator">&lt;&lt;&lt;</span> <span class="token string">"<span class="token variable"><span class="token variable">$(</span>parse <span class="token string">"<span class="token variable">$displayname</span>"</span> <span class="token string">"<span class="token variable">$hierarchy</span>"</span><span class="token variable">)</span></span>"</span></code></pre>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>So there we have it. Using the btp CLI's <code>--format json</code> option, with a
+bit of <code>jq</code> scripting, gives us what we want. The jq language itself is
+more fully formed than you might think - and given the relevance that
+JSON has today, both in output from tools like this, responses from API
+endpoints, and representations of declarative definitions for cloud
+services and clusters, I'd suggest that it's worth investing a little
+bit of time into being able to wield a few <code>jq</code> scripts, even if they
+are one-liners.</p>
+<p>And talking of <code>jq</code> scripts, I'm sure there are other ways of pulling
+out the information from the JSON using <code>jq</code>. If you've taken a
+different approach, I'd love to hear about it - please share what
+you've done in the comments. Thanks, and happy coding!</p>
+<hr>
+<p><a href="https://community.sap.com/t5/technology-blogs-by-sap/getting-btp-resource-guids-with-the-btp-cli-part-2-json-and-jq/ba-p/13517574">Originally published on SAP Community</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2021/11/24/getting-btp-resource-guids-with-the-btp-cli-part-1/">Getting BTP resource GUIDs with the btp CLI - part 1</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2021/12/09/setting-up-hadolint-a-dockerfile-linter/">Setting up hadolint - a Dockerfile linter</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2021/12/01/getting-btp-resource-guids-with-the-btp-cli-part-2-json-and-jq/` was built on 2025-09-15T15:58:49.613Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

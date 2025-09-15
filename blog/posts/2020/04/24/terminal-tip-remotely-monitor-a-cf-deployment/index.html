@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Terminal Tip: remotely monitor a CF deployment</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="terminal-tip-remotely-monitor-a-cf-deployment">Terminal Tip: remotely monitor a CF deployment</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2020-04-24">24 April 2020</time></li>
+	<li><a href="/tags/sapcommunity/" class="post-tag">sapcommunity</a>, </li>
+	<li><a href="/tags/terminal/" class="post-tag">terminal</a>, </li>
+	<li><a href="/tags/terminaltip/" class="post-tag">terminaltip</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>In today's <a href="https://bit.ly/handsonsapdev">HandsOnSAPDev</a> live stream,
+<a href="http://bit.ly/handsonsapdev#ep65">Ep.65</a>, we built the SAP Cloud
+Platform Workflow sample application MTA in the SAP Web IDE, and
+deployed it to our Cloud Foundry (CF) space from there too. We noticed
+that the console logging was buffering the deployment log, so we didn't
+see much during the operation:</p>
+<p><a href="https://www.youtube.com/watch?v=ZLtwMSq0DKo"><img src="/images/2020/04/Screenshot-2020-04-24-at-14.38.26.png" alt=""></a></p>
+<p>At the time, I wondered out loud whether it was possible to remotely
+monitor an operation.</p>
+<p>Remember that the
+<a href="https://plugins.cloudfoundry.org/#multiapps">multiapps</a> plugin for the
+<code>cf</code> command line tool gives us lots of options in relation to multi
+target application (MTA) operations. A couple of example are:</p>
+<ul>
+<li>see a summary list of active operations with the <code>mta-ops</code> command</li>
+<li>download the logs of such an operation, with the
+<code>download-mta-op-logs</code> command (which is also available in the form
+of a mercifully shorter alias <code>dmol</code>)</li>
+</ul>
+<p>This latter command is in the right ballpark, but doesn't allow the
+live monitoring (or &quot;tailing&quot;) of log output.</p>
+<p>After the live stream ended, I was pondering this and had a look at the
+documentation on the SAP Help Portal, specifically the <a href="https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/65ddb1b51a0642148c6b468a759a8a2e.html">Multitarget
+Application Commands for the Cloud Foundry
+Environment</a>
+section. There, it describes the <code>-i</code> option to the <code>cf deploy</code> command,
+which allows us to interact with active MTA operations:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf deploy  <span class="token punctuation">[</span>-i <span class="token operator">&lt;</span>OPERATION_ID<span class="token operator">></span><span class="token punctuation">]</span> <span class="token punctuation">[</span>-a <span class="token operator">&lt;</span>ACTION<span class="token operator">></span><span class="token punctuation">]</span> </code></pre>
+<p>Digging a little further, it turns out that one of the actions is
+<code>monitor</code>, and indeed that's exactly what we're looking for!</p>
+<p>So, kicking off a deployment in the SAP Web IDE gives us something in
+the console that looks like what we see above in the screenshot. But we
+can switch to a more comfortable terminal environment and use this
+feature to monitor that very operation that we kicked off in the SAP Web
+IDE.</p>
+<p>Here's how: In the terminal, we can first find out the ID of the MTA
+operation, like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">-<span class="token operator">></span> cf mta-ops                                                                                                                   
+Getting active multi-target app operations <span class="token keyword">in</span> org p2001351149trial / space dev as qmacro+workflowcodejam@example.com<span class="token punctuation">..</span>.           
+OK                                                                                                                              
+<span class="token function">id</span>                                     <span class="token builtin class-name">type</span>     mta <span class="token function">id</span>                  status    started at                      started by    
+f450e444-8632-11ea-abb3-eeee0a8f6ba7   DEPLOY   sample.onboarding.mta   RUNNING   <span class="token number">2020</span>-04-24T13:53:19.367Z<span class="token punctuation">[</span>UTC<span class="token punctuation">]</span>   qmacro+workflowcodejam@example.com </code></pre>
+<p>We can then take the ID and use it like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">-<span class="token operator">></span> cf deploy <span class="token parameter variable">-i</span> f450e444-8632-11ea-abb3-eeee0a8f6ba7 <span class="token parameter variable">-a</span> monitor                                   
+Updating application <span class="token string">"uiDeployer"</span><span class="token punctuation">..</span>.
+Application <span class="token string">"uiDeployer"</span> attributes are not modified and will not be updated                      
+Uploading application <span class="token string">"uiDeployer"</span><span class="token punctuation">..</span>.
+Content of application <span class="token string">"uiDeployer"</span> is not changed - upload will be skipped.                      
+Starting application <span class="token string">"uiDeployer"</span><span class="token punctuation">..</span>.
+Application <span class="token string">"uiDeployer"</span> started
+Deleting discontinued configuration entries <span class="token keyword">for</span> application <span class="token string">"uiDeployer"</span><span class="token punctuation">..</span>.
+Service key <span class="token string">"onboarding-workflow-credentials"</span> <span class="token keyword">for</span> <span class="token function">service</span> <span class="token string">"workflow"</span> already exists
+Uploading content module <span class="token string">"onboarding"</span> <span class="token keyword">in</span> target <span class="token function">service</span> <span class="token string">"workflow"</span><span class="token punctuation">..</span>.
+Deploying content module <span class="token string">"onboarding"</span> <span class="token keyword">in</span> target <span class="token function">service</span> <span class="token string">"workflow"</span><span class="token punctuation">..</span>.
+Skipping deletion of services, because the <span class="token builtin class-name">command</span> line option <span class="token string">"--delete-services"</span> is not specified.
+Process finished.
+Use <span class="token string">"cf dmol -i f450e444-8632-11ea-abb3-eeee0a8f6ba7"</span> to download the logs of the process.</code></pre>
+<p>I'd say that the ability to monitor ongoing MTA operations in the
+terminal, regardless of where the operation was initiated, is pretty
+neat. Wouldn't you?</p>
+<p>If this has whetted your appetite, read the next post in this
+collection: <a href="https://blogs.sap.com/2020/05/01/terminal-tip-a-cf-remote-monitor-script/">Terminal Tip: a CF remote monitor
+script</a>,
+which ties these things together into a neat little script.</p>
+<p>Share &amp; enjoy, and remember,
+<a href="https://twitter.com/search?q=%23TheFutureIsTerminal&amp;src=typed_query">TheFutureIsTerminal</a>!</p>
+<hr>
+<p><a href="https://community.sap.com/t5/technology-blogs-by-sap/terminal-tip-remotely-monitor-a-cf-deployment/ba-p/13453433">Originally published on SAP Community</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2020/04/23/terminal-tip-switching-cf-targets/">Terminal Tip: switching CF targets</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2020/04/27/sap-community-coding-challenge-nr-2/">SAP Community Coding Challenge Nr.2</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2020/04/24/terminal-tip-remotely-monitor-a-cf-deployment/` was built on 2025-09-15T15:58:49.600Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

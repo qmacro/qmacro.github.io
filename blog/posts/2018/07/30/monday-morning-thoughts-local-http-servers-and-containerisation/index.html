@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Monday morning thoughts: local http servers and containerisation</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="monday-morning-thoughts-local-http-servers-and-containerisation">Monday morning thoughts: local http servers and containerisation</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2018-07-30">30 July 2018</time></li>
+	<li><a href="/tags/sapcommunity/" class="post-tag">sapcommunity</a>, </li>
+	<li><a href="/tags/mondaymorningthoughts/" class="post-tag">mondaymorningthoughts</a>, </li>
+	<li><a href="/tags/containers/" class="post-tag">containers</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p><em>In this post, I look back on an idea surfaced by a hero of mine, and
+think about how that idea laid the path for today's containerisation
+initiatives.</em></p>
+<p>One of the periodicals I eagerly anticipated and regularly devoured
+every month, starting in the 1980's, was Byte magazine. From the
+fanciful and inventive artwork on the covers (many pieces by <a href="https://en.wikipedia.org/wiki/Robert_Tinney">Robert
+Tinney</a>), through the
+regular columns to the special subjects that were covered from time to
+time, I enjoyed the pioneering spirit and wonderful ideas that poured
+out of the pages.</p>
+<p><img src="/images/2018/07/Screen-Shot-2018-07-30-at-05.46.58.png" alt=""></p>
+<p>One of my all time tech heroes <a href="http://jonudell.net/">Jon Udell</a> wrote
+regularly for Byte, and I had the honour of meeting him at O'Reilly's
+Open Source Convention (OSCON) back in the early 2000's.</p>
+<h2 id="client-and-server">Client and server</h2>
+<p>The idea in one of the articles Jon wrote (and there were many - see his
+list of <a href="http://jonudell.net/bytecols/">1999-2002 BYTE.com columns</a> for
+example) has stayed with me since I read it. You have to remember that
+it was at a time when the web was young, and there was a clear
+distinction between client and server. On our workstations we ran
+clients - web browsers such as Netscape Navigator, and even <a href="https://arstechnica.com/information-technology/2011/10/before-netscape-forgotten-web-browsers-of-the-early-1990s/">earlier
+examples</a>
+such as Mosaic and Cello.</p>
+<p>It was a given that web servers (very often in the form of
+<a href="https://en.wikipedia.org/wiki/Apache_HTTP_Server">httpd</a> - Apache's
+web server software) ran on, well, servers, and that was that. Our
+traditional mindset was very much oriented around the concepts of client
+and server, not least since SAP released R/3 in 1992, a firmly
+client-server architecture in contrast to what we'd been used to before
+that with R/2.</p>
+<h2 id="local-web-servers">Local web servers</h2>
+<p>So when Jon wrote about the idea of a service running directly on one's
+local workstation, based around a local web server, it was something
+pretty new. The concept of pointing our local web browsers at a web
+server running <em>on the same host</em> - that was a light bulb moment for
+sure. Typing &quot;localhost&quot; into the URL address bar invoked a small
+degree of excitement, as if we were doing something ever so slightly
+futuristic. Sure, we'd used the file scheme (file:///) to load local
+static resources before, but to be able to interact with a service,
+especially a <a href="https://en.wikipedia.org/wiki/Common_Gateway_Interface">Common Gateway
+Interface</a>
+(CGI)* based service that we could control and alter, that was
+something almost magical.</p>
+<p>*I'm reminded of the venerable Internet Transaction Server (ITS) which
+has been the subject of fond reminiscences recently on Twitter. The ITS
+was essentially two components, the &quot;agate&quot; and the &quot;wgate&quot;. The
+&quot;wgate&quot; (web gateway) came in various flavours, according to the web
+server APIs of the day. One was the generic CGI flavour, which was my
+favourite as I'd been building web based interfaces to SAP systems for
+quite a while before the ITS, using CGI and the
+<a href="https://help.sap.com/saphelp_nw73/helpdata/en/48/a88c805134307de10000000a42189b/frameset.htm">RFCSDK</a>.
+But I digress.</p>
+<h2 id="discrete-and-portable-services">Discrete and portable services</h2>
+<p>What that concept of a local web server did was democratise HTTP. Of
+course, the web itself was already pretty democratic - anyone with a
+plain text editor could create content with HTML, and learn how to
+create that content by looking at the source of existing content. But
+the ability, and more so the idea that anyone could run web servers
+locally, to serve up small services, single-purpose user interfaces, was
+rather enlightening.</p>
+<p>The idea of running a web server locally broke down the traditionally
+strict separation of client and server, broke down the conceptual
+barriers between what you ran on your workstation and what ran on
+servers that you couldn't see. Suddenly we were considering services
+that ran locally. Services that we spoke to over HTTP, that nearly
+always had a web-based interface, could now run locally. Once you'd
+seen the word &quot;localhost&quot; in that URL bar, you couldn't unsee it.</p>
+<p>And so began, at least for me, the idea that there was really little
+distinction between client and server. Services that you or others built
+could run locally or remotely. What mattered was that you talked to
+them, in some cases administered them, via your web browser. The only
+difference was that the hostname in the URL was different.</p>
+<p>What's more, running services locally like this became easier as more
+and more software producers and hobbyists offered bundles that were easy
+to install - whether because the target OS made it easy, or that the
+bundle itself was portable. Love or loathe the Java language itself,
+it's hard to deny the early portability of code provided by the real
+triumph of Java - the Java Virtual Machine (JVM). Download a Java
+archive, run it, and connect to the service you've just instantiated by
+specifying &quot;localhost&quot; and some port number* in your browser.</p>
+<p>*the port number was usually above 1024, as getting a service to listen
+on port numbers lower than that <a href="https://www.w3.org/Daemon/User/Installation/PrivilegedPorts.html">requires root
+privileges</a>.</p>
+<h2 id="from-portable-services-to-containers">From portable services to containers</h2>
+<p>I was reminded this weekend of the concept of the near ubiquity of
+portable services fronted by web-based interfaces in a video I was
+watching on <a href="https://www.youtube.com/watch?v=zcC7iwbbEdc">Kafka and PCF
+Dev</a>. PCF Dev is a local
+Cloud Foundry installation for development purposes - I'll leave the
+musing on how this idea adds to the concepts of this post's subject as
+an exercise for the reader.</p>
+<p><img src="/images/2018/07/Screen-Shot-2018-07-30-at-06.41.31.png" alt=""></p>
+<p>The Kafka service had a web interface that displayed stats on schemas,
+topics, connections and more. The fact that I couldn't work out whether
+the address in the URL bar (which you can see in the video) was
+something directly local or in a container (it was at least a <a href="https://www.youtube.com/watch?v=zcC7iwbbEdc">private
+address</a>) drove home the
+idea that discrete services and containers were in this context one and
+the same thing.</p>
+<p>Today we take for granted the concept of containers, whether those
+containers are explicit and managed by a local (or remote) Docker
+system, or whether they're ephemeral and practically conceptual in the
+context of the Cloud Foundry environment on the SAP Cloud Platform. But
+I think that the journey we're taking towards the realisation of an
+enterprise compute fabric has been influenced by fundamental ideas that
+appeared decades ago.</p>
+<p>Moreover, the very existence of tools like PCF Dev underlines the idea
+that there really is no distinction between client and server. Or
+rather, that workstations and cloud resources alike can be platforms to
+run these discrete, modular services. And as we expand the idea of what
+compute means, bringing in concepts such as serverless, that reduce to a
+minimum the idea of a unit of computation, we realise that perhaps the
+journey that started back in the days of Byte is far from over.</p>
+<h2 id="the-new-pioneering-spirit">The new pioneering spirit</h2>
+<p>I for one am genuinely intrigued and excited by the prospect and reality
+of cloud native computing, and what we are doing in the SAP world in
+that area - take a look at Bjoern Goerke's post &quot;<a href="https://blogs.sap.com/2018/07/24/sap-cloud-platform-an-open-enterprise-platform-with-a-cloud-native-core/">SAP Cloud Platform:
+An open enterprise platform with a cloud-native
+core</a>&quot;
+for examples of what open source and partnership initiatives are taking
+place in this area right now. I have a feeling that there's a
+pioneering spirit still very fresh in this age, and am looking forward
+to seeing where it takes us.</p>
+<hr>
+<p>This post was brought to you by <a href="https://www.pactcoffee.com/coffees/ubumwe-kigoma">Pact Coffee's Ubumwe
+Kigoma</a> and the odd
+feeling of not going out on a Monday dawn due to an enforced rest from
+running to give my tired legs a chance to recover.</p>
+<hr>
+<p>Read more posts in this series here: <a href="/tags/mondaymorningthoughts/">Monday morning
+thoughts</a>.</p>
+<hr>
+<p><a href="https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-local-http-servers-and-containerisation/ba-p/13368372">Originally published on SAP Community</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2018/07/23/monday-morning-thoughts-what-not-how/">Monday morning thoughts: what not how</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2018/07/30/sap-codetalk-sessions/">SAP CodeTalk sessions</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2018/07/30/monday-morning-thoughts-local-http-servers-and-containerisation/` was built on 2025-09-15T15:58:49.593Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

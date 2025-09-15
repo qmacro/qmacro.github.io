@@ -1,7 +1,634 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2024/10/26/immutable-layers-file-deletion-and-image-size-in-docker/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Immutable layers, file deletion and image size in Docker | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Immutable layers, file deletion and image size in Docker"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2024/10/26/immutable-layers-file-deletion-and-image-size-in-docker/"><meta name="description" content="Immutable layers, file deletion and image size in Docker 26 Oct 2024 | 3 min read While I&#39;ve been vaguely aware of the idea of immutable..."><meta property="og:description" content="Immutable layers, file deletion and image size in Docker 26 Oct 2024 | 3 min read While I&#39;ve been vaguely aware of the idea of immutable..."><meta name="description" content="Immutable layers, file deletion and image size in Docker 26 Oct 2024 | 3 min read While I&#39;ve been vaguely aware of the idea of immutable..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Immutable layers, file deletion and image size in Docker</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Immutable layers, file deletion and image size in Docker</h1><div class="post__details"><time datetime="2024-10-26">26 Oct 2024 </time><span>| </span><span>3 min read</span></div></header><main class="post__content"><p>While I've been vaguely aware of the idea of immutable layers in Docker images, a recent presentation on Docker images caused me to dig a little deeper into how the immutability of these layers means you have to think a bit about what you're doing when creating and deleting content in the course of building an image. Here's what I found out.</p><p>When describing the construction of an image, in a <code>Dockerfile</code>, most of the commands, such as RUN, COPY and ADD, cause layers to be created (see <a href="https://dockerlabs.collabnix.com/beginners/dockerfile/Layering-Dockerfile.html">Understanding Image Layering Concept with Dockerfile</a>). These layers are immutable, which means that to remove content later in the construction process, special <a href="https://docs.docker.com/engine/storage/drivers/overlayfs-driver/#deleting-files-and-directories">whiteout</a> files are created to mask that content's existence; the content itself remains in the image at the layer it was created.</p><pre class="language-text"><code class="language-text">Result :   file1       file2                   file4<br><br>Layer 4:                           .wh.file3<br>Layer 3:   file1<br>Layer 2:                                       file4<br>Layer 1:   file1       file2       file3</code></pre><p>In this layer example, the resulting image's file system makes 3 files available:</p><ul><li><code>file1</code> in the version from Layer 3</li><li><code>file2</code> in the version from Layer 1</li><li><code>file4</code> in the version from Layer 2</li></ul><p>In constructing Layer 4, <code>file3</code> was removed; this removal was effected by the creation of the whiteout file <code>.wh.file3</code>.</p><p>This has various implications, not least security, but also image size. I put together a simple example to help me understand.</p><p>Here's a <code>Dockerfile</code> to build an image, in the contruction of which there's some work that uses tools in the <code>build-essential</code> package (which contains various compilers and other tools). The contents of the <code>build-essential</code> package are not required in the final image, so are removed after the work is done:</p><pre class="language-dockerfile"><code class="language-dockerfile"><span class="token instruction"><span class="token keyword">FROM</span> debian:12</span><br><span class="token instruction"><span class="token keyword">RUN</span> apt-get update</span><br><span class="token instruction"><span class="token keyword">RUN</span> apt-get install -y build-essential</span><br><span class="token instruction"><span class="token keyword">RUN</span> echo <span class="token string">"do something with build-essential"</span></span><br><span class="token instruction"><span class="token keyword">RUN</span> apt-get autoremove --purge -y build-essential</span></code></pre><blockquote><p>This is a contrived example; this sort of image construction would be far better realised using a multi-stage build approach, for example. But that's a topic for another time.</p></blockquote><p>Assuming we use this <code>Dockerfile</code> to build an image like this:</p><pre class="language-shell"><code class="language-shell"><span class="token function">docker</span> build <span class="token parameter variable">-t</span> sizetest:before <span class="token builtin class-name">.</span></code></pre><p>we can then check the image with:</p><pre class="language-shell"><code class="language-shell"><span class="token function">docker</span> image <span class="token function">ls</span> sizetest</code></pre><p>which reveals an image size of over 500MB:</p><pre class="language-log"><code class="language-log">REPOSITORY   TAG       IMAGE ID       CREATED          SIZE<br>sizetest     before    eed34853c568   <span class="token number">35</span> seconds ago   <span class="token number">534MB</span></code></pre><p>We can also look at the resulting image's layers with:</p><pre class="language-shell"><code class="language-shell"><span class="token function">docker</span> image <span class="token function">history</span> sizetest:before</code></pre><p>which shows us something like this, with each line representing a layer:</p><pre class="language-log"><code class="language-log">IMAGE          CREATED              CREATED BY                                      SIZE      COMMENT<br>eed34853c568   About a minute ago   RUN <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c apt<span class="token operator">-</span>get autoremove <span class="token operator">-</span><span class="token operator">-</span>purge <span class="token operator">-</span>y…   <span class="token number">1.91MB</span>    <span class="token domain constant">buildkit.dockerfile.v0</span><br><span class="token operator">&lt;</span>missing<span class="token operator">></span>      About a minute ago   RUN <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c echo "do something with build…   <span class="token number">0B</span>        <span class="token domain constant">buildkit.dockerfile.v0</span><br><span class="token operator">&lt;</span>missing<span class="token operator">></span>      About a minute ago   RUN <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c apt<span class="token operator">-</span>get install <span class="token operator">-</span>y build<span class="token operator">-</span>esse…   <span class="token number">397MB</span>     <span class="token domain constant">buildkit.dockerfile.v0</span><br><span class="token operator">&lt;</span>missing<span class="token operator">></span>      About a minute ago   RUN <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c apt<span class="token operator">-</span>get update <span class="token operator">#</span> buildkit        <span class="token number">19.5MB</span>    <span class="token domain constant">buildkit.dockerfile.v0</span><br><span class="token operator">&lt;</span>missing<span class="token operator">></span>      <span class="token number">9</span> days ago           <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c <span class="token operator">#</span><span class="token operator">(</span>nop<span class="token operator">)</span>  CMD <span class="token punctuation">[</span><span class="token string">"bash"</span><span class="token punctuation">]</span>                 <span class="token number">0B</span>        <br><span class="token operator">&lt;</span>missing<span class="token operator">></span>      <span class="token number">9</span> days ago           <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c <span class="token operator">#</span><span class="token operator">(</span>nop<span class="token operator">)</span> ADD file<span class="token operator">:</span>b4987bca8c4c4c640…   <span class="token number">117MB</span></code></pre><blockquote><p>The two older layers (&quot;9 days ago&quot;) are from the base image <code>debian:12</code> referred to with <code>FROM</code> in the <code>Dockerfile</code>.</p></blockquote><p>Note that the layer representing the installation of the <code>build-essential</code> package added 397MB ... and the layer representing the removal of that package <em>added</em> an extra 1.91MB - the result of those &quot;whiteout&quot; files being added to mask the <code>build-essential</code> package's content.</p><p>The key observation here is that each and every <code>RUN</code> command in the <code>Dockerfile</code> causes a new immutable layer to be created.</p><p>Consider this alternative <code>Dockerfile</code>:</p><pre class="language-dockerfile"><code class="language-dockerfile"><span class="token instruction"><span class="token keyword">FROM</span> debian:12</span><br><span class="token instruction"><span class="token keyword">RUN</span> apt-get update</span><br><span class="token instruction"><span class="token keyword">RUN</span> apt-get install -y build-essential <span class="token operator">\</span><br>  &amp;&amp; echo <span class="token string">"do something with build-essential"</span> <span class="token operator">\</span><br>  &amp;&amp; apt-get autoremove --purge -y build-essential</span></code></pre><p>The difference is that the installation, use and subsequent removal of the <code>build-essential</code> package happens in the same <code>RUN</code> command, i.e. <em>within the same layer</em>.</p><p>Building an image based on this version of the <code>Dockerfile</code>, thus:</p><pre class="language-shell"><code class="language-shell"><span class="token function">docker</span> build <span class="token parameter variable">-t</span> sizetest:after <span class="token builtin class-name">.</span></code></pre><p>we can then compare the image sizes:</p><pre class="language-shell"><code class="language-shell"><span class="token function">docker</span> image <span class="token function">ls</span> sizetest</code></pre><p>which reveals a drastically smaller image:</p><pre class="language-log"><code class="language-log">REPOSITORY   TAG       IMAGE ID       CREATED          SIZE<br>sizetest     before    eed34853c568   <span class="token number">35</span> seconds ago   <span class="token number">534MB</span><br>sizetest     after     db43075f1e65   <span class="token number">10</span> minutes ago   <span class="token number">139MB</span></code></pre><p>Checking out the layers of this image (with <code>docker image history sizetest:after</code>) shows a contrast in layer make-up:</p><pre class="language-log"><code class="language-log">IMAGE          CREATED          CREATED BY                                      SIZE      COMMENT<br>db43075f1e65   <span class="token number">10</span> minutes ago   RUN <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c apt<span class="token operator">-</span>get install <span class="token operator">-</span>y build<span class="token operator">-</span>esse…   <span class="token number">3.31MB</span>    <span class="token domain constant">buildkit.dockerfile.v0</span><br><span class="token operator">&lt;</span>missing<span class="token operator">></span>      <span class="token number">19</span> hours ago     RUN <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c apt<span class="token operator">-</span>get update <span class="token operator">#</span> buildkit        <span class="token number">19.5MB</span>    <span class="token domain constant">buildkit.dockerfile.v0</span><br><span class="token operator">&lt;</span>missing<span class="token operator">></span>      <span class="token number">9</span> days ago       <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c <span class="token operator">#</span><span class="token operator">(</span>nop<span class="token operator">)</span>  CMD <span class="token punctuation">[</span><span class="token string">"bash"</span><span class="token punctuation">]</span>                 <span class="token number">0B</span>        <br><span class="token operator">&lt;</span>missing<span class="token operator">></span>      <span class="token number">9</span> days ago       <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c <span class="token operator">#</span><span class="token operator">(</span>nop<span class="token operator">)</span> ADD file<span class="token operator">:</span>b4987bca8c4c4c640…   <span class="token number">117MB</span></code></pre><p>So there you have it. That's what I learned - the immutability of layers is important to know about and to consider when constructing <code>Dockerfile</code> instructions.</p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/docker/">#docker</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2024/11/02/keeping-things-simple-in-domain-modelling-with-cds/"><span>←</span> <span>Keeping things simple in domain modelling with CDS</span> </a><a href="/blog/posts/2024/10/05/cap-node.js-plugins-part-1-how-things-work/"><span>CAP Node.js plugins - part 1 - how things work</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="immutable-layers-file-deletion-and-image-size-in-docker">Immutable layers, file deletion and image size in Docker</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2024-10-26">26 October 2024</time></li>
+	<li><a href="/tags/docker/" class="post-tag">docker</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>While I've been vaguely aware of the idea of immutable layers in Docker images, a recent presentation on Docker images caused me to dig a little deeper into how the immutability of these layers means you have to think a bit about what you're doing when creating and deleting content in the course of building an image. Here's what I found out.</p>
+<p>When describing the construction of an image, in a <code>Dockerfile</code>, most of the commands, such as RUN, COPY and ADD, cause layers to be created (see <a href="https://dockerlabs.collabnix.com/beginners/dockerfile/Layering-Dockerfile.html">Understanding Image Layering Concept with Dockerfile</a>). These layers are immutable, which means that to remove content later in the construction process, special <a href="https://docs.docker.com/engine/storage/drivers/overlayfs-driver/#deleting-files-and-directories">whiteout</a> files are created to mask that content's existence; the content itself remains in the image at the layer it was created.</p>
+<pre class="language-text" tabindex="0"><code class="language-text">Result :   file1       file2                   file4
+
+Layer 4:                           .wh.file3
+Layer 3:   file1
+Layer 2:                                       file4
+Layer 1:   file1       file2       file3</code></pre>
+<p>In this layer example, the resulting image's file system makes 3 files available:</p>
+<ul>
+<li><code>file1</code> in the version from Layer 3</li>
+<li><code>file2</code> in the version from Layer 1</li>
+<li><code>file4</code> in the version from Layer 2</li>
+</ul>
+<p>In constructing Layer 4, <code>file3</code> was removed; this removal was effected by the creation of the whiteout file <code>.wh.file3</code>.</p>
+<p>This has various implications, not least security, but also image size. I put together a simple example to help me understand.</p>
+<p>Here's a <code>Dockerfile</code> to build an image, in the contruction of which there's some work that uses tools in the <code>build-essential</code> package (which contains various compilers and other tools). The contents of the <code>build-essential</code> package are not required in the final image, so are removed after the work is done:</p>
+<pre class="language-dockerfile" tabindex="0"><code class="language-dockerfile"><span class="token instruction"><span class="token keyword">FROM</span> debian:12</span>
+<span class="token instruction"><span class="token keyword">RUN</span> apt-get update</span>
+<span class="token instruction"><span class="token keyword">RUN</span> apt-get install -y build-essential</span>
+<span class="token instruction"><span class="token keyword">RUN</span> echo <span class="token string">"do something with build-essential"</span></span>
+<span class="token instruction"><span class="token keyword">RUN</span> apt-get autoremove --purge -y build-essential</span></code></pre>
+<blockquote>
+<p>This is a contrived example; this sort of image construction would be far better realised using a multi-stage build approach, for example. But that's a topic for another time.</p>
+</blockquote>
+<p>Assuming we use this <code>Dockerfile</code> to build an image like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">docker</span> build <span class="token parameter variable">-t</span> sizetest:before <span class="token builtin class-name">.</span></code></pre>
+<p>we can then check the image with:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">docker</span> image <span class="token function">ls</span> sizetest</code></pre>
+<p>which reveals an image size of over 500MB:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+sizetest     before    eed34853c568   <span class="token number">35</span> seconds ago   <span class="token number">534MB</span></code></pre>
+<p>We can also look at the resulting image's layers with:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">docker</span> image <span class="token function">history</span> sizetest:before</code></pre>
+<p>which shows us something like this, with each line representing a layer:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">IMAGE          CREATED              CREATED BY                                      SIZE      COMMENT
+eed34853c568   About a minute ago   RUN <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c apt<span class="token operator">-</span>get autoremove <span class="token operator">-</span><span class="token operator">-</span>purge <span class="token operator">-</span>y…   <span class="token number">1.91MB</span>    <span class="token domain constant">buildkit.dockerfile.v0</span>
+<span class="token operator">&lt;</span>missing<span class="token operator">></span>      About a minute ago   RUN <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c echo "do something with build…   <span class="token number">0B</span>        <span class="token domain constant">buildkit.dockerfile.v0</span>
+<span class="token operator">&lt;</span>missing<span class="token operator">></span>      About a minute ago   RUN <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c apt<span class="token operator">-</span>get install <span class="token operator">-</span>y build<span class="token operator">-</span>esse…   <span class="token number">397MB</span>     <span class="token domain constant">buildkit.dockerfile.v0</span>
+<span class="token operator">&lt;</span>missing<span class="token operator">></span>      About a minute ago   RUN <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c apt<span class="token operator">-</span>get update <span class="token operator">#</span> buildkit        <span class="token number">19.5MB</span>    <span class="token domain constant">buildkit.dockerfile.v0</span>
+<span class="token operator">&lt;</span>missing<span class="token operator">></span>      <span class="token number">9</span> days ago           <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c <span class="token operator">#</span><span class="token operator">(</span>nop<span class="token operator">)</span>  CMD <span class="token punctuation">[</span><span class="token string">"bash"</span><span class="token punctuation">]</span>                 <span class="token number">0B</span>        
+<span class="token operator">&lt;</span>missing<span class="token operator">></span>      <span class="token number">9</span> days ago           <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c <span class="token operator">#</span><span class="token operator">(</span>nop<span class="token operator">)</span> ADD file<span class="token operator">:</span>b4987bca8c4c4c640…   <span class="token number">117MB</span></code></pre>
+<blockquote>
+<p>The two older layers (&quot;9 days ago&quot;) are from the base image <code>debian:12</code> referred to with <code>FROM</code> in the <code>Dockerfile</code>.</p>
+</blockquote>
+<p>Note that the layer representing the installation of the <code>build-essential</code> package added 397MB ... and the layer representing the removal of that package <em>added</em> an extra 1.91MB - the result of those &quot;whiteout&quot; files being added to mask the <code>build-essential</code> package's content.</p>
+<p>The key observation here is that each and every <code>RUN</code> command in the <code>Dockerfile</code> causes a new immutable layer to be created.</p>
+<p>Consider this alternative <code>Dockerfile</code>:</p>
+<pre class="language-dockerfile" tabindex="0"><code class="language-dockerfile"><span class="token instruction"><span class="token keyword">FROM</span> debian:12</span>
+<span class="token instruction"><span class="token keyword">RUN</span> apt-get update</span>
+<span class="token instruction"><span class="token keyword">RUN</span> apt-get install -y build-essential <span class="token operator">\</span>
+  &amp;&amp; echo <span class="token string">"do something with build-essential"</span> <span class="token operator">\</span>
+  &amp;&amp; apt-get autoremove --purge -y build-essential</span></code></pre>
+<p>The difference is that the installation, use and subsequent removal of the <code>build-essential</code> package happens in the same <code>RUN</code> command, i.e. <em>within the same layer</em>.</p>
+<p>Building an image based on this version of the <code>Dockerfile</code>, thus:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">docker</span> build <span class="token parameter variable">-t</span> sizetest:after <span class="token builtin class-name">.</span></code></pre>
+<p>we can then compare the image sizes:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">docker</span> image <span class="token function">ls</span> sizetest</code></pre>
+<p>which reveals a drastically smaller image:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">REPOSITORY   TAG       IMAGE ID       CREATED          SIZE
+sizetest     before    eed34853c568   <span class="token number">35</span> seconds ago   <span class="token number">534MB</span>
+sizetest     after     db43075f1e65   <span class="token number">10</span> minutes ago   <span class="token number">139MB</span></code></pre>
+<p>Checking out the layers of this image (with <code>docker image history sizetest:after</code>) shows a contrast in layer make-up:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">IMAGE          CREATED          CREATED BY                                      SIZE      COMMENT
+db43075f1e65   <span class="token number">10</span> minutes ago   RUN <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c apt<span class="token operator">-</span>get install <span class="token operator">-</span>y build<span class="token operator">-</span>esse…   <span class="token number">3.31MB</span>    <span class="token domain constant">buildkit.dockerfile.v0</span>
+<span class="token operator">&lt;</span>missing<span class="token operator">></span>      <span class="token number">19</span> hours ago     RUN <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c apt<span class="token operator">-</span>get update <span class="token operator">#</span> buildkit        <span class="token number">19.5MB</span>    <span class="token domain constant">buildkit.dockerfile.v0</span>
+<span class="token operator">&lt;</span>missing<span class="token operator">></span>      <span class="token number">9</span> days ago       <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c <span class="token operator">#</span><span class="token operator">(</span>nop<span class="token operator">)</span>  CMD <span class="token punctuation">[</span><span class="token string">"bash"</span><span class="token punctuation">]</span>                 <span class="token number">0B</span>        
+<span class="token operator">&lt;</span>missing<span class="token operator">></span>      <span class="token number">9</span> days ago       <span class="token file-path string">/bin/sh</span> <span class="token operator">-</span>c <span class="token operator">#</span><span class="token operator">(</span>nop<span class="token operator">)</span> ADD file<span class="token operator">:</span>b4987bca8c4c4c640…   <span class="token number">117MB</span></code></pre>
+<p>So there you have it. That's what I learned - the immutability of layers is important to know about and to consider when constructing <code>Dockerfile</code> instructions.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2024/10/05/cap-node-js-plugins-part-1-how-things-work/">CAP Node.js plugins - part 1 - how things work</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2024/11/02/keeping-things-simple-in-domain-modelling-with-cds/">Keeping things simple in domain modelling with CDS</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2024/10/26/immutable-layers-file-deletion-and-image-size-in-docker/` was built on 2025-09-15T15:58:49.625Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Quick conversion of multiple values using with_entries in jq</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="quick-conversion-of-multiple-values-using-with-entries-in-jq">Quick conversion of multiple values using with_entries in jq</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2024-02-28">28 February 2024</time></li>
+	<li><a href="/tags/jq/" class="post-tag">jq</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>This blog post demonstrates how powerful the combination of jq's <code>to_entries</code> and <code>from_entries</code> can be, and show how <code>with_entries</code> is a great extension of that.</p>
+<p>I pulled some stats from the <a href="https://developers.google.com/youtube/v3/docs/?apix=true">YouTube Data API v3</a> for the episodes so far in our <a href="https://www.youtube.com/playlist?list=PL6RpkC85SLQBHPdfHQ0Ry2TMdsT-muECx">Back to basics: CAP Node.js</a> Hands-on SAP Dev live stream series. Surprisingly, the values for numbers of views and likes and so on are in string representation. Here's what the dataset (in a file called <code>series.json</code>) looks like as of right now:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"gu5r1EWSDSU"</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Back to basics with CAP - part 1"</span><span class="token punctuation">,</span>
+    <span class="token property">"statistics"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"viewCount"</span><span class="token operator">:</span> <span class="token string">"8916"</span><span class="token punctuation">,</span>
+      <span class="token property">"likeCount"</span><span class="token operator">:</span> <span class="token string">"247"</span><span class="token punctuation">,</span>
+      <span class="token property">"favoriteCount"</span><span class="token operator">:</span> <span class="token string">"0"</span><span class="token punctuation">,</span>
+      <span class="token property">"commentCount"</span><span class="token operator">:</span> <span class="token string">"15"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"8N2TxgZ9bjY"</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Back to basics with CAP - part 2"</span><span class="token punctuation">,</span>
+    <span class="token property">"statistics"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"viewCount"</span><span class="token operator">:</span> <span class="token string">"4045"</span><span class="token punctuation">,</span>
+      <span class="token property">"likeCount"</span><span class="token operator">:</span> <span class="token string">"91"</span><span class="token punctuation">,</span>
+      <span class="token property">"favoriteCount"</span><span class="token operator">:</span> <span class="token string">"0"</span><span class="token punctuation">,</span>
+      <span class="token property">"commentCount"</span><span class="token operator">:</span> <span class="token string">"5"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"mTvjAthGjBg"</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Back to basics with CAP - part 3"</span><span class="token punctuation">,</span>
+    <span class="token property">"statistics"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"viewCount"</span><span class="token operator">:</span> <span class="token string">"2708"</span><span class="token punctuation">,</span>
+      <span class="token property">"likeCount"</span><span class="token operator">:</span> <span class="token string">"79"</span><span class="token punctuation">,</span>
+      <span class="token property">"favoriteCount"</span><span class="token operator">:</span> <span class="token string">"0"</span><span class="token punctuation">,</span>
+      <span class="token property">"commentCount"</span><span class="token operator">:</span> <span class="token string">"11"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"1ywiOaGVA5w"</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Back to basics with CAP - part 4"</span><span class="token punctuation">,</span>
+    <span class="token property">"statistics"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"viewCount"</span><span class="token operator">:</span> <span class="token string">"2082"</span><span class="token punctuation">,</span>
+      <span class="token property">"likeCount"</span><span class="token operator">:</span> <span class="token string">"72"</span><span class="token punctuation">,</span>
+      <span class="token property">"favoriteCount"</span><span class="token operator">:</span> <span class="token string">"0"</span><span class="token punctuation">,</span>
+      <span class="token property">"commentCount"</span><span class="token operator">:</span> <span class="token string">"8"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"fgqnptEgUW4"</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Back to basics with CAP - part 5"</span><span class="token punctuation">,</span>
+    <span class="token property">"statistics"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"viewCount"</span><span class="token operator">:</span> <span class="token string">"1926"</span><span class="token punctuation">,</span>
+      <span class="token property">"likeCount"</span><span class="token operator">:</span> <span class="token string">"47"</span><span class="token punctuation">,</span>
+      <span class="token property">"favoriteCount"</span><span class="token operator">:</span> <span class="token string">"0"</span><span class="token punctuation">,</span>
+      <span class="token property">"commentCount"</span><span class="token operator">:</span> <span class="token string">"8"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"NZj7Q4LBotA"</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Back to basics with CAP - part 6"</span><span class="token punctuation">,</span>
+    <span class="token property">"statistics"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"viewCount"</span><span class="token operator">:</span> <span class="token string">"1545"</span><span class="token punctuation">,</span>
+      <span class="token property">"likeCount"</span><span class="token operator">:</span> <span class="token string">"43"</span><span class="token punctuation">,</span>
+      <span class="token property">"favoriteCount"</span><span class="token operator">:</span> <span class="token string">"0"</span><span class="token punctuation">,</span>
+      <span class="token property">"commentCount"</span><span class="token operator">:</span> <span class="token string">"11"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>If you look at the <a href="https://developers.google.com/youtube/v3/docs/videos#resource">videos resource documentation</a>, you'll see that the intended representations for these resources are indeed strings:</p>
+<p><img src="/images/2024/02/ytapi-videos-statistics.png" alt="YouTube API v3 - videos resource representation"></p>
+<p>Anyway, for various reasons, including a desire to surface this info in a custom Home Assistant dashboard, and to be able to perform calculations upon the values, I wanted all the figures as numbers rather than strings.</p>
+<h2 id="another-job-for-with-entries">Another job for with_entries</h2>
+<p>While using <code>with_entries</code> is not entirely natural for me yet, I find I'm only a step away, because I know that <code>to_entries</code> brings me from what I am starting with to something a lot closer to a structure that I can automatically manipulate. What I mean is that identifying the four separate properties within the <code>statistics</code> object is difficult to do automatically as they have dynamic names, but using <code>to_entries</code> makes that problem go away, especially with its sibling <code>from_entries</code> to turn things back again to how they were.</p>
+<p>And once I have got that straight in my head, I know I can turn to the cousin of <code>to_entries</code> and <code>from_entries</code>, namely <code>with_entries</code>.</p>
+<h3 id="using-to-entries">Using to_entries</h3>
+<p>Here's an example of what <code>to_entries</code> does to the <code>statistics</code> object in the first object in the array (to keep things brief).</p>
+<blockquote>
+<p>In all the following examples, I'll just show the jq. For example, the <code>first | .statistics</code> jq directly below would actually be invoked like this: <code>jq 'first | .statistics' series.json</code>. Also, longer jq invocations will be wrapped with newlines for readability.</p>
+</blockquote>
+<p>First, let's identify the focus of transformation:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq">first <span class="token operator pipe">|</span> <span class="token punctuation">.</span>statistics</code></pre>
+<p>This shows us:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"viewCount"</span><span class="token operator">:</span> <span class="token string">"8916"</span><span class="token punctuation">,</span>
+  <span class="token property">"likeCount"</span><span class="token operator">:</span> <span class="token string">"247"</span><span class="token punctuation">,</span>
+  <span class="token property">"favoriteCount"</span><span class="token operator">:</span> <span class="token string">"0"</span><span class="token punctuation">,</span>
+  <span class="token property">"commentCount"</span><span class="token operator">:</span> <span class="token string">"15"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Then, applying <code>to_entries</code> like this:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq">first <span class="token operator pipe">|</span> <span class="token punctuation">.</span>statistics <span class="token operator pipe">|</span> to_entries</code></pre>
+<p>we get:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"viewCount"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token string">"8916"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"likeCount"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token string">"247"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"favoriteCount"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token string">"0"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"commentCount"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token string">"15"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>Now each of the properties (e.g. <code>&quot;viewCount&quot;: &quot;8916&quot;</code>) are normalised into objects, each containing static key names <code>key</code> and <code>value</code> (e.g. <code>{ &quot;key&quot;: &quot;viewCount&quot;, &quot;value&quot;: &quot;8916&quot; }</code>), and all these objects are contained in an array.</p>
+<p>This then means we can apply a general transformation over that array. So let's try <code>tonumber</code>, like this:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq">first <span class="token operator pipe">|</span> <span class="token punctuation">.</span>statistics <span class="token operator pipe">|</span> to_entries 
+<span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">.</span>value <span class="token operator pipe">|=</span> tonumber<span class="token punctuation">)</span></code></pre>
+<p>This results in:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"viewCount"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">8916</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"likeCount"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">247</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"favoriteCount"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">0</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"key"</span><span class="token operator">:</span> <span class="token string">"commentCount"</span><span class="token punctuation">,</span>
+    <span class="token property">"value"</span><span class="token operator">:</span> <span class="token number">15</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<h3 id="using-from-entries">Using from_entries</h3>
+<p>And to get back to the structure we started with is a job for <code>from_entries</code>:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq">first <span class="token operator pipe">|</span> <span class="token punctuation">.</span>statistics <span class="token operator pipe">|</span> to_entries
+<span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">.</span>value <span class="token operator pipe">|=</span> tonumber<span class="token punctuation">)</span>
+<span class="token operator pipe">|</span> from_entries</code></pre>
+<p>This results in:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"viewCount"</span><span class="token operator">:</span> <span class="token number">8916</span><span class="token punctuation">,</span>
+  <span class="token property">"likeCount"</span><span class="token operator">:</span> <span class="token number">247</span><span class="token punctuation">,</span>
+  <span class="token property">"favoriteCount"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+  <span class="token property">"commentCount"</span><span class="token operator">:</span> <span class="token number">15</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Nice!</p>
+<h3 id="using-with-entries">Using with_entries</h3>
+<p>Using <code>to_entries</code>, mapping over the entries in the resulting array, then using <code>from_entries</code> is such a common pattern that there's also <code>with_entries</code> which is a <a href="https://github.com/jqlang/jq/blob/master/src/builtin.jq">built-in defined itself in jq</a>:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token keyword">def</span> <span class="token function">with_entries</span><span class="token punctuation">(</span>f<span class="token punctuation">)</span><span class="token punctuation">:</span> to_entries <span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span>f<span class="token punctuation">)</span> <span class="token operator pipe">|</span> from_entries<span class="token punctuation">;</span></code></pre>
+<p>So we can reduce the previous incantation down to:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq">first <span class="token operator pipe">|</span> <span class="token punctuation">.</span>statistics <span class="token operator pipe">|</span> <span class="token c-style-function function">with_entries</span><span class="token punctuation">(</span><span class="token punctuation">.</span>value <span class="token operator pipe">|=</span> tonumber<span class="token punctuation">)</span></code></pre>
+<p>This gives us exactly the same result.</p>
+<h2 id="putting-it-all-together">Putting it all together</h2>
+<p>So using <code>with_entries</code> we can transform the statistics properties of all of the video entries, like this:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">.</span>statistics <span class="token operator pipe">|=</span> <span class="token c-style-function function">with_entries</span><span class="token punctuation">(</span><span class="token punctuation">.</span>value <span class="token operator pipe">|=</span> tonumber<span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"gu5r1EWSDSU"</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Back to basics with CAP - part 1"</span><span class="token punctuation">,</span>
+    <span class="token property">"statistics"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"viewCount"</span><span class="token operator">:</span> <span class="token number">8916</span><span class="token punctuation">,</span>
+      <span class="token property">"likeCount"</span><span class="token operator">:</span> <span class="token number">247</span><span class="token punctuation">,</span>
+      <span class="token property">"favoriteCount"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+      <span class="token property">"commentCount"</span><span class="token operator">:</span> <span class="token number">15</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"8N2TxgZ9bjY"</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Back to basics with CAP - part 2"</span><span class="token punctuation">,</span>
+    <span class="token property">"statistics"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"viewCount"</span><span class="token operator">:</span> <span class="token number">4045</span><span class="token punctuation">,</span>
+      <span class="token property">"likeCount"</span><span class="token operator">:</span> <span class="token number">91</span><span class="token punctuation">,</span>
+      <span class="token property">"favoriteCount"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+      <span class="token property">"commentCount"</span><span class="token operator">:</span> <span class="token number">5</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"mTvjAthGjBg"</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Back to basics with CAP - part 3"</span><span class="token punctuation">,</span>
+    <span class="token property">"statistics"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"viewCount"</span><span class="token operator">:</span> <span class="token number">2708</span><span class="token punctuation">,</span>
+      <span class="token property">"likeCount"</span><span class="token operator">:</span> <span class="token number">79</span><span class="token punctuation">,</span>
+      <span class="token property">"favoriteCount"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+      <span class="token property">"commentCount"</span><span class="token operator">:</span> <span class="token number">11</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"1ywiOaGVA5w"</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Back to basics with CAP - part 4"</span><span class="token punctuation">,</span>
+    <span class="token property">"statistics"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"viewCount"</span><span class="token operator">:</span> <span class="token number">2082</span><span class="token punctuation">,</span>
+      <span class="token property">"likeCount"</span><span class="token operator">:</span> <span class="token number">72</span><span class="token punctuation">,</span>
+      <span class="token property">"favoriteCount"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+      <span class="token property">"commentCount"</span><span class="token operator">:</span> <span class="token number">8</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"fgqnptEgUW4"</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Back to basics with CAP - part 5"</span><span class="token punctuation">,</span>
+    <span class="token property">"statistics"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"viewCount"</span><span class="token operator">:</span> <span class="token number">1926</span><span class="token punctuation">,</span>
+      <span class="token property">"likeCount"</span><span class="token operator">:</span> <span class="token number">47</span><span class="token punctuation">,</span>
+      <span class="token property">"favoriteCount"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+      <span class="token property">"commentCount"</span><span class="token operator">:</span> <span class="token number">8</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"NZj7Q4LBotA"</span><span class="token punctuation">,</span>
+    <span class="token property">"title"</span><span class="token operator">:</span> <span class="token string">"Back to basics with CAP - part 6"</span><span class="token punctuation">,</span>
+    <span class="token property">"statistics"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"viewCount"</span><span class="token operator">:</span> <span class="token number">1545</span><span class="token punctuation">,</span>
+      <span class="token property">"likeCount"</span><span class="token operator">:</span> <span class="token number">43</span><span class="token punctuation">,</span>
+      <span class="token property">"favoriteCount"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+      <span class="token property">"commentCount"</span><span class="token operator">:</span> <span class="token number">11</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>Perfect!</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2024/02/15/opening-files-from-the-terminal-in-bas-dev-spaces/">Opening files from the terminal in BAS dev spaces</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2024/03/12/iso-content-for-common-cap-types/">ISO content for common CAP types</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2024/02/28/quick-conversion-of-multiple-values-using-with-entries-in-jq/` was built on 2025-09-15T15:58:49.622Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

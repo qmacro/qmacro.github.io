@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Understanding jq&#39;s reduce function</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="understanding-jqs-reduce-function">Understanding jq&#39;s reduce function</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2022-03-25">25 March 2022</time></li>
+	<li><a href="/tags/fp/" class="post-tag">fp</a>, </li>
+	<li><a href="/tags/jq/" class="post-tag">jq</a>, </li>
+	<li><a href="/tags/javascript/" class="post-tag">javascript</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>It took me a bit of time to get my head around jq's reduce function. In this post I show how it relates to the equivalent function in JavaScript, which helped me understand it better, and might help you too.</p>
+<!--excerpt-->
+<p>The concept of the reduce function generally is a beautiful thing. I've written about reduce in previous posts on this blog:</p>
+<ul>
+<li><a href="https://qmacro.org/2016/10/02/f3c-part-3-reduce-basics/">F3C Part 3 - Reduce basics</a></li>
+<li><a href="https://qmacro.org/2016/10/02/f3c-part-4-reduce-advanced/">F3C Part 4 - Reduce advanced</a></li>
+<li><a href="https://qmacro.org/2019/04/08/es6-reduce-and-pipe/">ES6, reduce and pipe</a></li>
+</ul>
+<p>Being a predominantly functional language, the fact that <code>jq</code> has a <a href="https://stedolan.github.io/jq/manual/#Reduce">reduce function</a> comes as no surprise. However, its structure and how it is wielded is a little different from what I was used to. I think this is partly due to how <code>jq</code> programs are constructed, as pipelines for JSON data to flow through.</p>
+<p>I decided to write this post after reading an invocation of <code>reduce</code> in an <a href="https://stackoverflow.com/a/71587417/384366">answer to a Stack Overflow question</a>, which had this really interesting approach to achieving what was desired:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token keyword">reduce</span> <span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">,</span><span class="token number">7</span><span class="token punctuation">]</span> <span class="token operator pipe">|</span> to_entries<span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token variable">$i</span> <span class="token punctuation">(</span><span class="token dot important">.</span><span class="token punctuation">;</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token variable">$i</span><span class="token punctuation">.</span>key<span class="token punctuation">]</span><span class="token punctuation">.</span>a <span class="token operator">=</span> <span class="token variable">$i</span><span class="token punctuation">.</span>value<span class="token punctuation">)</span></code></pre>
+<p>Because my reading comprehension of <code>jq</code>'s <code>reduce</code> was a little off, I found this difficult to understand at first. But now it's much clearer to me.</p>
+<h2 id="the-manual-entry-for-reduce">The manual entry for reduce</h2>
+<p>When I first read the entry for <code>reduce</code> in the <code>jq</code> manual, I found myself scratching my head a little. This is what it says:</p>
+<p><em>The reduce syntax in jq allows you to combine all of the results of an expression by accumulating them into a single answer. As an example, we'll pass [3,2,1] to this expression:</em></p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token keyword">reduce</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token keyword">as</span> <span class="token variable">$item</span> <span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">;</span> <span class="token dot important">.</span> <span class="token operator">+</span> <span class="token variable">$item</span><span class="token punctuation">)</span></code></pre>
+<p><em>For each result that .[] produces, . + $item is run to accumulate a running total, starting from 0.</em></p>
+<h2 id="invoking-the-example">Invoking the example</h2>
+<p>In case you're wondering, the complete invocation, supplying the array <code>[3,2,1]</code>, could be done in a number of ways, depending on your preference. Here are two examples:</p>
+<p>Passing in the array as a string for <code>jq</code> to consume via STDIN:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token builtin class-name">echo</span> <span class="token punctuation">[</span><span class="token number">3,2</span>,1<span class="token punctuation">]</span> <span class="token operator">|</span> jq <span class="token string">'reduce .[] as $item (0; . + $item)'</span></code></pre>
+<p>Using <code>jq</code>'s <code>-n</code> option, which tells <code>jq</code> to use 'null' as the single input value (effectively saying &quot;don't expect any input&quot;) and then using a literal array within the <code>jq</code> code:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token parameter variable">-n</span> <span class="token string">'[3,2,1] | reduce .[] as $item (0; . + $item)'</span></code></pre>
+<h2 id="examining-the-pieces-in-javascript">Examining the pieces in JavaScript</h2>
+<p>Regardless of how it is invoked, I wanted to work out which bit of the <code>reduce</code> construct did what. I did so by relating the structure to what I was more familiar with - the <code>reduce</code> function in JavaScript, which, if we were to do the equivalent of the above, would look like this:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">,</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">a<span class="token punctuation">,</span> x</span><span class="token punctuation">)</span> <span class="token operator">=></span> a <span class="token operator">+</span> x<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span></code></pre>
+<p>So here we have:</p>
+<ul>
+<li>the array of values that we're processing with <code>reduce</code> <code>[3,2,1]</code></li>
+<li>the call to the <code>reduce</code> function itself, with two things passed to it:
+<ul>
+<li>the anonymous function <code>(a, x) =&gt; a + x</code> that implements how we want to reduce over the list, often referred to as the &quot;callback&quot; function</li>
+<li>the starting value <code>0</code> for the accumulator</li>
+</ul>
+</li>
+</ul>
+<p>If you want to understand each of these parts better, take a quick look at <a href="https://qmacro.org/2016/10/02/f3c-part-3-reduce-basics/">F3C Part 3 - Reduce basics</a>.</p>
+<p>When the line of JavaScript above is processed, the <code>reduce</code> function first determines the initial value of the accumulator, which is <code>0</code> here (the second of the two parameters passed to it). Then it works through the array, calling the anonymous function for each item, and passing:</p>
+<ul>
+<li>the current value of the accumulator (which is <code>0</code> for the first item), received in parameter <code>a</code></li>
+<li>the value of the array item being processed (which will be <code>3</code> the first time, then <code>2</code>, then <code>1</code>), received in parameter <code>x</code></li>
+</ul>
+<p>Whatever that function produces (which in this case is the value of <code>a + x</code>) becomes the new accumulator value, and the process continues with the next array item, and so on.</p>
+<p>The final value of the accumulator is the final value of the reduction process (the <code>reduce</code> function can produce any shape of data, not just scalar values, but that's an exploration for another time).</p>
+<h2 id="relating-it-to-jqs-reduce">Relating it to jq's reduce</h2>
+<p>So how do we interpret the <code>reduce</code> construct in <code>jq</code>? Let's see, this is what we're looking at:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token keyword">reduce</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token keyword">as</span> <span class="token variable">$item</span> <span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">;</span> <span class="token dot important">.</span> <span class="token operator">+</span> <span class="token variable">$item</span><span class="token punctuation">)</span></code></pre>
+<p>If we modify the <code>$item</code> variable name so it's <code>$x</code>, we can more easily pick out the component parts and relate them to what we've just seen:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token keyword">reduce</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token keyword">as</span> <span class="token variable">$x</span> <span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">;</span> <span class="token dot important">.</span> <span class="token operator">+</span> <span class="token variable">$x</span><span class="token punctuation">)</span></code></pre>
+<p>Here we see:</p>
+<ul>
+<li><code>.[] as $x</code> is the reference to the array we want to process with <code>reduce</code> (remember, this will pass through whatever list is piped into this filter) and the the variable (<code>$x</code>) that will be used to represent each array item as they're processed</li>
+<li>the <code>0</code> is the starting value for the accumulator</li>
+<li>the <code>. + $x</code> is the expression that is executed each time around (equivalent to <code>a + x</code> in the JavaScript example), where the accumulator is passed in to it (i.e. the accumulator is the <code>.</code> in the expression)</li>
+</ul>
+<p>And the final value of the <code>. + $x</code> expression, i.e. the final value of the accumulator, is what then represents the output of this <code>reduce</code> function invocation.</p>
+<p>That's pretty much it!</p>
+<hr>
+<p>I found this post from Roger Lipscombe useful for my understanding too: <a href="https://blog.differentpla.net/blog/2019/01/11/jq-reduce/">jq reduce</a>.</p>
+<p>Finally, you may also be interested in this live stream recording on what <code>reduce</code> is and how it can be used to build related functions:</p>
+<p><a href="https://www.youtube.com/watch?v=4BptIHoRDAk">HandsOnSAPDev Ep.81 - Growing functions in JS from reduce() upwards</a></p>
+<p><img src="/images/2022/03/ep81.jpeg" alt="Episode 81 thumbnail"></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2022/03/14/setting-up-my-own-cloud-foundry/">Setting up my own Cloud Foundry</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2022/04/07/bash-notes/">Bash notes</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2022/03/25/understanding-jqs-reduce-function/` was built on 2025-09-15T15:58:49.614Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

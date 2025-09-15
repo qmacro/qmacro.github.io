@@ -1,7 +1,684 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2024/04/15/running-non-production-cap-services-in-cf/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>Running non-production CAP services in CF | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="Running non-production CAP services in CF"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2024/04/15/running-non-production-cap-services-in-cf/"><meta name="description" content="Running non-production CAP services in CF 15 Apr 2024 | 3 min read Sometimes I want to run test CAP services not only locally, but in the..."><meta property="og:description" content="Running non-production CAP services in CF 15 Apr 2024 | 3 min read Sometimes I want to run test CAP services not only locally, but in the..."><meta name="description" content="Running non-production CAP services in CF 15 Apr 2024 | 3 min read Sometimes I want to run test CAP services not only locally, but in the..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Running non-production CAP services in CF</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>Running non-production CAP services in CF</h1><div class="post__details"><time datetime="2024-04-15">15 Apr 2024 </time><span>| </span><span>3 min read</span></div></header><main class="post__content"><p>Sometimes I want to run test CAP services not only locally, but in the cloud. I don't want the trappings of production (which are of course important ... in production settings) such as a production grade persistence mechanism or authorisation strategy &amp; appropriate security layer. Additionally, I like to take &quot;<a href="https://podcasters.spotify.com/pod/show/tech-aloud/episodes/The-Simplest-Thing-that-Could-Possibly-Work--A-conversation-with-Ward-Cunningham--Part-V---Bill-Venners-e5dpts">the simplest thing that could possibly work</a>&quot; approach.</p><h2>Production mode in Cloud Foundry for CAP services</h2><p>If I use <code>cf push</code> to deploy a CAP service to CF, the environment variable <code>NODE_ENV</code> is set automatically to <code>production</code>. This in turn tells the CAP server that <a href="https://cap.cloud.sap/docs/guides/deployment/to-cf#prepare-for-production">production grade</a> facilities are required.</p><blockquote><p>In what follows, I use &quot;service&quot; to refer to what I'm building with CAP, because that's what it is, but &quot;application&quot; when I'm talking about it in terms of CF, as in CF terms, especially when it comes to the <code>cf</code> commands, it's considered an app not a service.</p></blockquote><p>Here's a simple example. Initialising a new project with a simple CDS model and a couple of data records, and pushing immediately to CF:</p><pre class="language-shell"><code class="language-shell">cds init <span class="token parameter variable">--add</span> tiny-sample non-prod-test <span class="token punctuation">\</span><br>  <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> <span class="token variable">$_</span> <span class="token punctuation">\</span><br>  <span class="token operator">&amp;&amp;</span> cf push <span class="token variable">$_</span></code></pre><p>From the sea of log records, we can pick out some relevant ones:</p><pre class="language-text"><code class="language-text">Creating new CAP project in ./non-prod-test<br><br>Adding feature 'nodejs'...<br>Adding feature 'tiny-sample'...<br><br>Successfully created project. Continue with 'cd non-prod-test'.<br>...<br>Pushing app non-prod-test to org ...<br>   ...<br>   -----> Creating runtime environment<br>   ...<br>   NODE_ENV=production<br>   NODE_HOME=/tmp/contents1028257736/deps/0/node<br>   NODE_MODULES_CACHE=true<br>   NODE_VERBOSE=false<br>   NPM_CONFIG_LOGLEVEL=error<br>   NPM_CONFIG_PRODUCTION=true<br><br>   ...<br><br>Waiting for app non-prod-test to start...<br><br>Instances starting...<br>Instances starting...<br>Instances starting...<br><br>...<br>start command:   npm start<br>     state     since                  cpu    memory     disk       logging        details<br>#0   crashed   2024-04-15T08:18:47Z   0.0%   0B of 1G   0B of 1G   0B/s of 0B/s<br>Start unsuccessful</code></pre><p>Crashed!</p><p>Note that the value of <code>NODE_ENV</code> was set to <code>production</code>.</p><p>Looking at the logs like this:</p><pre class="language-shell"><code class="language-shell">cf logs non-prod-test <span class="token parameter variable">--recent</span></code></pre><p>we can see why:</p><pre class="language-text"><code class="language-text">...<br>[APP/PROC/WEB/0] OUT Invoking start command.<br>[APP/PROC/WEB/0] OUT > non-prod-test@1.0.0 start<br>[APP/PROC/WEB/0] OUT > cds-serve<br>...<br>[APP/PROC/WEB/0] OUT srv/cat-service.cds<br>[APP/PROC/WEB/0] OUT db/data-model.cds<br>[APP/PROC/WEB/0] OUT {..., "msg":"using auth strategy {\n  kind: 'jwt',\n  ..."}<br>[APP/PROC/WEB/0] ERR node:internal/modules/cjs/loader:1134<br>[APP/PROC/WEB/0] ERR const err = new Error(message);<br>[APP/PROC/WEB/0] ERR ^<br>[APP/PROC/WEB/0] ERR Error: Cannot find module '@sap/xssec'. Make sure to install it with 'npm i @sap/xssec'<br>...</code></pre><p>In production mode CAP will (sensibly) require <a href="https://www.npmjs.com/package/@sap/xssec">@sap/xssec</a>.</p><h2>Setting a different value for NODE_ENV</h2><p>The value for <code>NODE_ENV</code> can be set with <code>cf set-env</code>:</p><pre class="language-shell"><code class="language-shell">cf set-env non-prod-test NODE_ENV testing</code></pre><p>After such an action, a <a href="https://cli.cloudfoundry.org/en-US/v8/restage.html">restage</a> is required:</p><pre class="language-shell"><code class="language-shell">cf restage non-prod-test</code></pre><p>This then results in a successful start of our test CAP service:</p><pre class="language-text"><code class="language-text">This action will cause app downtime.<br><br>Restaging app non-prod-test in org ...<br><br>   -----> Creating runtime environment<br>   ...<br>   NODE_ENV=testing<br>   ...<br><br>Restarting app non-prod-test in org ...<br><br>Stopping app...<br><br>Waiting for app to start...<br><br>Instances starting...<br>Instances starting...<br>Instances starting...<br><br>     state     since                  cpu    memory     disk       logging        details<br>#0   running   2024-04-15T08:29:22Z   0.0%   0B of 0B   0B of 0B   0B/s of 0B/s</code></pre><p>It's now running. And we can check the value too of that environment variable, like this:</p><pre class="language-shell"><code class="language-shell">cf <span class="token function">env</span> non-prod-test</code></pre><p>the output of which will include this in the &quot;user-provided&quot; section:</p><pre class="language-text"><code class="language-text">System-Provided:<br>VCAP_SERVICES: {}<br><br>VCAP_APPLICATION: {<br>  "application_id": "7b99b60c-94f3-4757-9928-24a61a510942",<br>  "application_name": "non-prod-test",<br>  ...<br>}<br><br>User-Provided:<br>NODE_ENV: testing<br>...</code></pre><p><a name="--no-start"></a></p><h2>Mitigating the crash from the start</h2><p>Of course, having to deal with an initial crash before sorting things out is a little cumbersome.</p><p>But not to worry, the <code>cf push</code> command has a <code>--no-start</code> option which means that no attempt will be made to start things up initially.</p><p>Here's an example, doing everything in a single line:</p><pre class="language-shell"><code class="language-shell">cds init <span class="token parameter variable">--add</span> tiny-sample non-prod-test <span class="token punctuation">\</span><br>  <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> non-prod-test <span class="token punctuation">\</span><br>  <span class="token operator">&amp;&amp;</span> cf push non-prod-test --no-start <span class="token punctuation">\</span><br>  <span class="token operator">&amp;&amp;</span> cf set-env non-prod-test NODE_ENV testing <span class="token punctuation">\</span><br>  <span class="token operator">&amp;&amp;</span> cf restage non-prod-test</code></pre><p>The effect is that the CAP service is deployed and running in non-production mode from the outset. There may be better ways to achieve this, but that's how I do it.</p><p>Good to know!</p><hr><p>You may want to read <a href="/blog/posts/2024/04/15/using-@cap-jssqlite-in-cf-for-your-cap-services/">Using @cap-js/sqlite in CF for your CAP services</a> which is closely related to this, too, as well as <a href="/blog/posts/2024/04/14/easily-add-an-explicit-cds.requires.db-to-your-cap-project's-package.json/">Easily add an explicit cds.requires.db to your CAP project's package.json</a>.</p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/good-to-know/">#good-to-know</a> <a href="/tags/cap/">#cap</a> <a href="/tags/cf/">#cf</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2024/04/15/using-@cap-jssqlite-in-cf-for-your-cap-services/"><span>←</span> <span>Using @cap-js/sqlite in CF for your CAP services</span> </a><a href="/blog/posts/2024/04/14/easily-add-an-explicit-cds.requires.db-to-your-cap-project&#39;s-package.json/"><span>Easily add an explicit cds.requires.db to your CAP project&#39;s package.json</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="running-non-production-cap-services-in-cf">Running non-production CAP services in CF</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2024-04-15">15 April 2024</time></li>
+	<li><a href="/tags/good-to-know/" class="post-tag">good-to-know</a>, </li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/cf/" class="post-tag">cf</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p>Sometimes I want to run test CAP services not only locally, but in the cloud. I don't want the trappings of production (which are of course important ... in production settings) such as a production grade persistence mechanism or authorisation strategy &amp; appropriate security layer. Additionally, I like to take &quot;<a href="https://podcasters.spotify.com/pod/show/tech-aloud/episodes/The-Simplest-Thing-that-Could-Possibly-Work--A-conversation-with-Ward-Cunningham--Part-V---Bill-Venners-e5dpts">the simplest thing that could possibly work</a>&quot; approach.</p>
+<h2 id="production-mode-in-cloud-foundry-for-cap-services">Production mode in Cloud Foundry for CAP services</h2>
+<p>If I use <code>cf push</code> to deploy a CAP service to CF, the environment variable <code>NODE_ENV</code> is set automatically to <code>production</code>. This in turn tells the CAP server that <a href="https://cap.cloud.sap/docs/guides/deployment/to-cf#prepare-for-production">production grade</a> facilities are required.</p>
+<blockquote>
+<p>In what follows, I use &quot;service&quot; to refer to what I'm building with CAP, because that's what it is, but &quot;application&quot; when I'm talking about it in terms of CF, as in CF terms, especially when it comes to the <code>cf</code> commands, it's considered an app not a service.</p>
+</blockquote>
+<p>Here's a simple example. Initialising a new project with a simple CDS model and a couple of data records, and pushing immediately to CF:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cds init <span class="token parameter variable">--add</span> tiny-sample non-prod-test <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> <span class="token variable">$_</span> <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> cf push <span class="token variable">$_</span></code></pre>
+<p>From the sea of log records, we can pick out some relevant ones:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">Creating new CAP project in ./non-prod-test
+
+Adding feature 'nodejs'...
+Adding feature 'tiny-sample'...
+
+Successfully created project. Continue with 'cd non-prod-test'.
+...
+Pushing app non-prod-test to org ...
+   ...
+   -----> Creating runtime environment
+   ...
+   NODE_ENV=production
+   NODE_HOME=/tmp/contents1028257736/deps/0/node
+   NODE_MODULES_CACHE=true
+   NODE_VERBOSE=false
+   NPM_CONFIG_LOGLEVEL=error
+   NPM_CONFIG_PRODUCTION=true
+
+   ...
+
+Waiting for app non-prod-test to start...
+
+Instances starting...
+Instances starting...
+Instances starting...
+
+...
+start command:   npm start
+     state     since                  cpu    memory     disk       logging        details
+#0   crashed   2024-04-15T08:18:47Z   0.0%   0B of 1G   0B of 1G   0B/s of 0B/s
+Start unsuccessful</code></pre>
+<p>Crashed!</p>
+<p>Note that the value of <code>NODE_ENV</code> was set to <code>production</code>.</p>
+<p>Looking at the logs like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf logs non-prod-test <span class="token parameter variable">--recent</span></code></pre>
+<p>we can see why:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">...
+[APP/PROC/WEB/0] OUT Invoking start command.
+[APP/PROC/WEB/0] OUT > non-prod-test@1.0.0 start
+[APP/PROC/WEB/0] OUT > cds-serve
+...
+[APP/PROC/WEB/0] OUT srv/cat-service.cds
+[APP/PROC/WEB/0] OUT db/data-model.cds
+[APP/PROC/WEB/0] OUT {..., "msg":"using auth strategy {\n  kind: 'jwt',\n  ..."}
+[APP/PROC/WEB/0] ERR node:internal/modules/cjs/loader:1134
+[APP/PROC/WEB/0] ERR const err = new Error(message);
+[APP/PROC/WEB/0] ERR ^
+[APP/PROC/WEB/0] ERR Error: Cannot find module '@sap/xssec'. Make sure to install it with 'npm i @sap/xssec'
+...</code></pre>
+<p>In production mode CAP will (sensibly) require <a href="https://www.npmjs.com/package/@sap/xssec">@sap/xssec</a>.</p>
+<h2 id="setting-a-different-value-for-node-env">Setting a different value for NODE_ENV</h2>
+<p>The value for <code>NODE_ENV</code> can be set with <code>cf set-env</code>:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf set-env non-prod-test NODE_ENV testing</code></pre>
+<p>After such an action, a <a href="https://cli.cloudfoundry.org/en-US/v8/restage.html">restage</a> is required:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf restage non-prod-test</code></pre>
+<p>This then results in a successful start of our test CAP service:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">This action will cause app downtime.
+
+Restaging app non-prod-test in org ...
+
+   -----> Creating runtime environment
+   ...
+   NODE_ENV=testing
+   ...
+
+Restarting app non-prod-test in org ...
+
+Stopping app...
+
+Waiting for app to start...
+
+Instances starting...
+Instances starting...
+Instances starting...
+
+     state     since                  cpu    memory     disk       logging        details
+#0   running   2024-04-15T08:29:22Z   0.0%   0B of 0B   0B of 0B   0B/s of 0B/s</code></pre>
+<p>It's now running. And we can check the value too of that environment variable, like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf <span class="token function">env</span> non-prod-test</code></pre>
+<p>the output of which will include this in the &quot;user-provided&quot; section:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">System-Provided:
+VCAP_SERVICES: {}
+
+VCAP_APPLICATION: {
+  "application_id": "7b99b60c-94f3-4757-9928-24a61a510942",
+  "application_name": "non-prod-test",
+  ...
+}
+
+User-Provided:
+NODE_ENV: testing
+...</code></pre>
+<p><a name="--no-start"></a></p>
+<h2 id="mitigating-the-crash-from-the-start">Mitigating the crash from the start</h2>
+<p>Of course, having to deal with an initial crash before sorting things out is a little cumbersome.</p>
+<p>But not to worry, the <code>cf push</code> command has a <code>--no-start</code> option which means that no attempt will be made to start things up initially.</p>
+<p>Here's an example, doing everything in a single line:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cds init <span class="token parameter variable">--add</span> tiny-sample non-prod-test <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> non-prod-test <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> cf push non-prod-test --no-start <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> cf set-env non-prod-test NODE_ENV testing <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> cf restage non-prod-test</code></pre>
+<p>The effect is that the CAP service is deployed and running in non-production mode from the outset. There may be better ways to achieve this, but that's how I do it.</p>
+<p>Good to know!</p>
+<hr>
+<p>You may want to read <a href="/blog/posts/2024/04/15/using-@cap-jssqlite-in-cf-for-your-cap-services/">Using @cap-js/sqlite in CF for your CAP services</a> which is closely related to this, too, as well as <a href="/blog/posts/2024/04/14/easily-add-an-explicit-cds.requires.db-to-your-cap-project's-package.json/">Easily add an explicit cds.requires.db to your CAP project's package.json</a>.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2024/04/14/easily-add-an-explicit-cds-requires-db-to-your-cap-projects-package-json/">Easily add an explicit cds.requires.db to your CAP project&#39;s package.json</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2024/04/15/using-cap-js-sqlite-in-cf-for-your-cap-services/">Using @cap-js/sqlite in CF for your CAP services</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2024/04/15/running-non-production-cap-services-in-cf/` was built on 2025-09-15T15:58:49.623Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>

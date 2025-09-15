@@ -1,7 +1,842 @@
-<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="canonical" href="https://qmacro.org/blog/posts/2021/04/24/github-actions-workflow-browser/"><link rel="alternate" type="application/atom+xml" title="DJ's Weblog - Feed" href="https://qmacro.org/feed.xml"><link href="/assets/main.54fe08380532f159e78f.css" rel="stylesheet"><link rel="preconnect" href="https://fonts.gstatic.com"><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet"><title>GitHub Actions workflow browser | DJ Adams</title><link rel="icon" type="“image/x-icon”" href="/images/favicon.ico"><meta property="og:title" content="GitHub Actions workflow browser"><meta property="og:site_name" content="DJ Adams"><meta property="og:type" content="website"><meta property="og:url" content="https://qmacro.org/blog/posts/2021/04/24/github-actions-workflow-browser/"><meta name="description" content="GitHub Actions workflow browser 24 Apr 2021 | 10 min read I wrote a simple workflow browser to help me refer to previous workflow..."><meta property="og:description" content="GitHub Actions workflow browser 24 Apr 2021 | 10 min read I wrote a simple workflow browser to help me refer to previous workflow..."><meta name="description" content="GitHub Actions workflow browser 24 Apr 2021 | 10 min read I wrote a simple workflow browser to help me refer to previous workflow..."><meta property="og:image" content="https://qmacro.org/images/site-image.png"><script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script><script>mermaid.initialize({startOnLoad:true});</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script><script>window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>GitHub Actions workflow browser</title>
+		<meta name="description" content="Reserving the right to be wrong.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
 
-      gtag('config', 'G-4WQKBG0L4Y');</script></head><body><div class="layout-wrapper"><header class="header"><div class="header__content"><h1 class="site-title"><a href="/">DJ Adams</a></h1><nav class="nav"><ul class="nav__list"><li class="nav-item"><a href="/about">About Me</a></li><li class="nav-item"><a href="/blog">Blog</a></li><li class="nav-item"><a href="/feed.xml">Feed</a></li></ul></nav></div></header><main class="main"><article class="post"><header class="post__header"><h1>GitHub Actions workflow browser</h1><div class="post__details"><time datetime="2021-04-24">24 Apr 2021 </time><span>| </span><span>10 min read</span></div></header><main class="post__content"><p><em>I wrote a simple workflow browser to help me refer to previous workflow definitions while I'm writing a new one, as I'm still learning the syntax and techniques.</em></p><p>With a programming or definition language, especially one that's new and powerful, it takes me a while to become comfortable writing scripts or definitions from scratch. I have a small amount of auto completion in my editor, but I'm not a fan - I prefer to learn by looking things up and then typing them in, rather than have words automatically completed for me.</p><p>The YAML based syntax for definining GitHub Actions workflows is powerful and there are different ways of achieving similar things. And it's new to me too (although defining jobs and steps isn't - in many ways it's just like writing Job Control Language (JCL) back in the mainframe era, but that's a story for another time).</p><p>While the latest version of the GitHub command line client <code>gh</code> sports lovely new features for workflows and actions, it doesn't quite give me the quick cross-repository overview that I'm looking for. So I decided to combine three of my favourite terminal power tools to help me:</p><ul><li>Bash, for my command line interface and utility scripting, my shell of choice</li><li><a href="https://github.com/cli/cli"><code>gh</code></a>, which is already a very accomplished command line interface (CLI) to GitHub and a really comfortable way of using the API</li><li><a href="https://github.com/junegunn/fzf"><code>fzf</code></a>, which is a powerful fuzzy finder utility and provides just enough features for me to build simple terminal user interfaces (UIs) with</li></ul><p>I combined them to build a &quot;workflow browser&quot;. Here it is in action:</p><script id="asciicast-409638" src="https://asciinema.org/a/409638.js" async></script><p>It consists of three parts:</p><ul><li><p>a new environment variable GH_CACHETIME which I can set globally to be nice to the GitHub API servers (I'm not changing workflows that often so a generous cache time of 1 hour works for me)</p></li><li><p>the main <code>workflowbrowser</code> script which finds workflow definitions across my content on GitHub and presents them in a list to search through</p></li><li><p>a separate <code>showgithubcontent</code> script that displays the content of a resource in one of my GitHub repositories</p></li></ul><p>The <code>showgithubcontent</code> script was initially a function inside of the <code>workflowbrowser</code> script but I separated it out, first because it felt better and second because there was something more I could do once I'd browsed the workflow definitions with <code>workflowbrowser</code> and selected one - more on that later.</p><h2>The workflowbrowser script</h2><p>Here's the script in its entirety, <a href="https://github.com/qmacro/dotfiles/blob/master/scripts/workflowbrowser">as it stands right now</a>:</p><pre class="language-shell"><code class="language-shell"><span class="token shebang important">#!/usr/bin/env bash</span><br><br><span class="token comment"># Find and browse GitHub Actions workflow definitions.</span><br><span class="token comment"># In addition to regular shell tools (such as sed), this</span><br><span class="token comment"># script uses gh and fzf.</span><br><br><span class="token function-name function">workflows</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br><br>  <span class="token comment"># Takes owner type (org or user) and owner name.</span><br>  <span class="token comment"># Returns tab-separated list of owner/repo/workflowfile/path.</span><br><br>  <span class="token builtin class-name">local</span> <span class="token assign-left variable">ownertype</span><span class="token operator">=</span><span class="token variable">$1</span><br>  <span class="token builtin class-name">local</span> <span class="token assign-left variable">owner</span><span class="token operator">=</span><span class="token variable">$2</span><br><br>  gh api <span class="token punctuation">\</span><br>    <span class="token parameter variable">--method</span> GET <span class="token punctuation">\</span><br>    <span class="token parameter variable">--paginate</span> <span class="token punctuation">\</span><br>    <span class="token parameter variable">--cache</span> <span class="token string">"<span class="token variable">${GH_CACHETIME<span class="token operator">:-</span>1h}</span>"</span> <span class="token punctuation">\</span><br>    <span class="token parameter variable">--field</span> <span class="token string">"q=<span class="token variable">$ownertype</span>:<span class="token variable">$owner</span> path:.github/workflows/"</span> <span class="token punctuation">\</span><br>    <span class="token parameter variable">--jq</span> <span class="token string">'.items[] | ["\(.repository.full_name)/\(.name)", .repository.owner.login, .repository.name, .path] | @tsv'</span> <span class="token punctuation">\</span><br>    <span class="token string">"/search/code"</span><br><br><span class="token punctuation">}</span><br><br><span class="token function-name function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><br><br>  <span class="token comment"># Calls workflows for my org and user.</span><br><br>  <span class="token function">cat</span> <span class="token punctuation">\</span><br>    <span class="token operator">&lt;</span><span class="token punctuation">(</span>workflows org qmacro-org<span class="token punctuation">)</span> <span class="token punctuation">\</span><br>    <span class="token operator">&lt;</span><span class="token punctuation">(</span>workflows user qmacro<span class="token punctuation">)</span> <span class="token punctuation">\</span><br>    <span class="token operator">|</span> fzf <span class="token punctuation">\</span><br>      --with-nth<span class="token operator">=</span><span class="token number">1</span> <span class="token punctuation">\</span><br>      <span class="token parameter variable">--delimiter</span><span class="token operator">=</span><span class="token string">'\t'</span> <span class="token punctuation">\</span><br>      <span class="token parameter variable">--preview</span><span class="token operator">=</span><span class="token string">'showgithubcontent {2} {3} {4} yaml always'</span> <span class="token punctuation">\</span><br>      <span class="token operator">|</span> <span class="token function">cut</span> <span class="token parameter variable">-f</span> <span class="token number">2,3</span>,4<br><br><span class="token punctuation">}</span><br><br>main <span class="token string">"<span class="token variable">$@</span>"</span></code></pre><p>There's just a <code>main</code> function and a <code>workflows</code> function.</p><h3>The main function</h3><p>The <code>main</code> function calls the <code>workflows</code> function a couple of times, because I have repositories under my own user <a href="https://github.com/qmacro">qmacro</a> and also under a small experimental organisation <a href="https://github.com/qmacro-org">qmacro-org</a> and I have workflows across both of these owner areas.</p><p>In learning more about Bash I've found it's helpful to know the terms for various aspects, so I'm going to point out one here. I'm calling the <code>workflows</code> function twice, like this:</p><pre class="language-shell"><code class="language-shell">  <span class="token function">cat</span> <span class="token punctuation">\</span><br>    <span class="token operator">&lt;</span><span class="token punctuation">(</span>workflows org qmacro-org<span class="token punctuation">)</span> <span class="token punctuation">\</span><br>    <span class="token operator">&lt;</span><span class="token punctuation">(</span>workflows user qmacro<span class="token punctuation">)</span></code></pre><p>This to me was the simplest way of combining output from two calls into a single stream, using <code>cat</code>. The <code>&lt;(...)</code> is <a href="https://tldp.org/LDP/abs/html/process-sub.html">process substitution</a>. This is very useful when you want to supply some data to a command, which is expecting that data to be in a file, but where you don't have a file, and instead want to generate the data on the fly, and have it provided as the output of some execution. Here I'm using process substitution to call the <code>workflows</code> function a couple of times, and have the output from those calls supplied to <code>cat</code>. As if I did this: <code>cat firstfile secondfile</code>.</p><blockquote><p>I did a 10 minute video on process substitution on Hands-on SAP Dev, in case you're interested: <a href="https://www.youtube.com/watch?v=JF4lGw4Itpk&amp;list=PL6RpkC85SLQAIntm7MkNk78ysDm3Ua8t0&amp;index=41">Ep.39 - Looking at process substitution</a>.</p></blockquote><p>I'll dig into the <code>workflows</code> function shortly, but for now, we need to know what it outputs, to understand better what we do with that output, i.e. what we do downstream from <code>cat</code> in the pipeline.</p><p>The output from <code>workflows</code> are records representing workflow definitions, in the form of lines with tab-separated fields, like this:</p><pre class="language-text"><code class="language-text">qmacro-org/test/dump.yml	qmacro-org	test	.github/workflows/dump.yml<br>qmacro/showntell/main.yml	qmacro	showntell	.github/workflows/main.yml<br>qmacro/qmacro/build.yml	qmacro	qmacro	.github/workflows/build.yml</code></pre><p>In order, the fields represent:</p><ol><li>a combination of repo owner, repo name &amp; workflow definition file name</li><li>the repo owner</li><li>the repo name</li><li>the path in the repository to that workflow definition file</li></ol><p>The lines are piped into <code>fzf</code> which is used to present the workflow definitions and also a preview of their contents. This is done by using various options supplied to <code>fzf</code>.</p><p>The first option deals with what to show in the basic list display that <code>fzf</code> first presents, and that is the contents of the first field above (the combination). This is done using the <code>--with-nth</code> option; we also tell <code>fzf</code> how the fields are delimited:</p><ul><li><code>--with-nth=1</code> - use field 1 in the list display</li><li><code>--delimiter='\t'</code> - fields are tab-delimited</li></ul><p>Then there's what to do from a preview perspective; when a particular entry in the list is selected, <code>fzf</code> can run a preview command to display something in a window:</p><ul><li><code>--preview='showgithubcontent {2} {3} {4} yaml always'</code></li></ul><p>Whatever is produced (via STDOUT) by the incantation supplied with the <code>--preview</code> option is shown in the preview window. Here, we call the <code>showgithubcontent</code> script, supplying that script with 5 arguments. The first three use <code>fzf</code>'s field reference syntax to pass the values of the second, third &amp; fourth field, i.e. the repo owner, the repo name and the workflow file path. The last two arguments control how <code>showgithubcontent</code> displays things (we'll come to that later).</p><p>With <code>fzf</code>, if an item in the list is indeed selected, then the line passed into <code>fzf</code> that represents the line selected is output to STDOUT. This makes <code>fzf</code> a very powerful tool that plays well with other tools, following the Unix philosophy (if no selection is made, e.g. by aborting <code>fzf</code> with Ctrl-C, then nothing is emitted).</p><p>The final part of the <code>main</code> function takes the line emitted from <code>fzf</code> and outputs the same three fields (repo owner, repo name and workflow file path). Basically field 1 is just used as a &quot;display&quot; field for <code>fzf</code>.</p><h3>The workflows function</h3><p>The <code>workflows</code> function is basically a wrapper around a call to the <a href="https://docs.github.com/en/rest/reference/search">GitHub Search API</a>. This is an API that I haven't used before now, and it's pretty powerful. There are different endpoints representing different search approaches. What worked for me, to find workflow definitions, was to use the <a href="https://docs.github.com/en/rest/reference/search#search-code">Search code</a> endpoint with <code>/search/code</code>.</p><p>This endpoint takes the search criteria in the form of a query string parameter <code>q</code>, and it was very easy to use the GUI based search to try out different search parameters to figure out what I needed to specify. <a href="https://github.com/search?q=org%3Aqmacro-org+path%3A.github%2Fworkflows%2F">Here's an example</a>.</p><p>One thing that tripped me up at first was the wrong type of request was being made first of all. I supplied the search criteria value in the <code>q</code> query string parameter correctly, like this (as you can see in the function):</p><ul><li><code>--field &quot;q=$ownertype:$owner path:.github/workflows/&quot;</code></li></ul><p>but the HTTP call that <code>gh</code> then made for me was a POST request, with this search query parameter in the body of the request. That wasn't right. Checking in the API documentation, the <code>q</code> parameter needs to be in the query string. Explicitly setting the method to GET made this right:</p><ul><li><code>--method GET</code></li></ul><p>There are a couple of other &quot;housekeeping&quot; parameters used here too:</p><ul><li><code>--paginate</code></li><li><code>--cache &quot;${GH_CACHETIME:-1h}&quot;</code></li></ul><p>I don't yet have that many workflow definitions, but if it comes to that, <code>gh</code> will work through the responses to get them all for me with <code>--paginate</code>. And the <code>--cache</code> parameter works both ways: my activities are well behaved when it comes to using the API endpoints, and also, after the first time the list of workflow definitions is retrieved, any subsequent uses of the workflow browser are that much snappier (this works also with the similar use of the <code>--cache</code> parameter in the <code>showgithubcontent</code> script we'll see shortly). Note that if there's no value specified for <code>GH_CACHETIME</code>, the default will be 1 hour (<code>1h</code>) through the use of <a href="https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html">shell parameter expansion</a>.</p><p>Next we come to the use of the <code>--field</code> parameter, which allows me to specify the name and value for the search parameter <code>q</code>. I looked at the <a href="https://docs.github.com/en/github/searching-for-information-on-github/searching-code">Searching code</a> documentation to find out about the <code>ownertype:owner</code> specification. The first time around this value will be &quot;org:qmacro-org&quot; and the second time around it will be &quot;user:qmacro&quot;. Moreover, with <code>path</code> I can search for content that appears at a specific location - see <a href="https://docs.github.com/en/github/searching-for-information-on-github/searching-code#search-by-file-location">Search by file location</a>.</p><blockquote><p>For those wondering, GitHub Actions workflow definition files are stored in the <code>.github/workflows/</code> directory within a repository.</p></blockquote><p>Last but not least I use <code>--jq</code> parameter to supply <code>fzf</code> with some <code>jq</code> script that will parse and extract the data I need from the API's JSON output. I think it was in <a href="https://github.com/cli/cli/releases/tag/v1.7.0">release 1.7.0</a> that this feature appeared, and it's a great idea - build in <code>jq</code> to <code>gh</code> so those that don't have <code>jq</code> already installed can still benefit. I guess it also helps to establish <code>jq</code> as the de facto standard for parsing and manipulating JSON.</p><p>If we add some whitespace to the <code>jq</code> script passed with the <code>--jq</code> parameter, we get this:</p><pre class="language-jq"><code class="language-jq"><span class="token punctuation">.</span>items<span class="token punctuation">[</span><span class="token punctuation">]</span><br>  <span class="token operator pipe">|</span> <span class="token punctuation">[</span><br>      <span class="token string">"<span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token punctuation">.</span>repository<span class="token punctuation">.</span>full_name</span><span class="token punctuation">)</span></span>/<span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token punctuation">.</span>name</span><span class="token punctuation">)</span></span>"</span><span class="token punctuation">,</span><br>      <span class="token punctuation">.</span>repository<span class="token punctuation">.</span>owner<span class="token punctuation">.</span>login<span class="token punctuation">,</span><br>      <span class="token punctuation">.</span>repository<span class="token punctuation">.</span>name<span class="token punctuation">,</span><br>      <span class="token punctuation">.</span>path<br>    <span class="token punctuation">]</span><br>  <span class="token operator pipe">|</span> @tsv'</code></pre><p>I think it's always easier to stare at a script like this when we see what it's going to be processing, so here's some sample output from the API call to the search endpoint (reduced for brevity):</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span><br>  <span class="token property">"total_count"</span><span class="token operator">:</span> <span class="token number">7</span><span class="token punctuation">,</span><br>  <span class="token property">"incomplete_results"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span><br>  <span class="token property">"items"</span><span class="token operator">:</span> <span class="token punctuation">[</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"dump.yml"</span><span class="token punctuation">,</span><br>      <span class="token property">"path"</span><span class="token operator">:</span> <span class="token string">".github/workflows/dump.yml"</span><span class="token punctuation">,</span><br>      <span class="token property">"repository"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>        <span class="token property">"id"</span><span class="token operator">:</span> <span class="token number">331995789</span><span class="token punctuation">,</span><br>        <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"test"</span><span class="token punctuation">,</span><br>        <span class="token property">"full_name"</span><span class="token operator">:</span> <span class="token string">"qmacro-org/test"</span><span class="token punctuation">,</span><br>        <span class="token property">"owner"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>          <span class="token property">"login"</span><span class="token operator">:</span> <span class="token string">"qmacro-org"</span><span class="token punctuation">,</span><br>          <span class="token property">"id"</span><span class="token operator">:</span> <span class="token number">75827316</span><span class="token punctuation">,</span><br>          <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"Organization"</span><br>        <span class="token punctuation">}</span><span class="token punctuation">,</span><br>      <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"main.yml"</span><span class="token punctuation">,</span><br>      <span class="token property">"path"</span><span class="token operator">:</span> <span class="token string">".github/workflows/main.yml"</span><span class="token punctuation">,</span><br>      <span class="token property">"repository"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>        <span class="token property">"id"</span><span class="token operator">:</span> <span class="token number">331995789</span><span class="token punctuation">,</span><br>        <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"showntell"</span><span class="token punctuation">,</span><br>        <span class="token property">"full_name"</span><span class="token operator">:</span> <span class="token string">"qmacro/showntell"</span><span class="token punctuation">,</span><br>        <span class="token property">"owner"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>          <span class="token property">"login"</span><span class="token operator">:</span> <span class="token string">"qmacro"</span><span class="token punctuation">,</span><br>          <span class="token property">"id"</span><span class="token operator">:</span> <span class="token number">73068</span><span class="token punctuation">,</span><br>          <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"User"</span><br>        <span class="token punctuation">}</span><span class="token punctuation">,</span><br>      <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">{</span><br>      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"build.yml"</span><span class="token punctuation">,</span><br>      <span class="token property">"path"</span><span class="token operator">:</span> <span class="token string">".github/workflows/build.yml"</span><span class="token punctuation">,</span><br>      <span class="token property">"repository"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>        <span class="token property">"id"</span><span class="token operator">:</span> <span class="token number">165207450</span><span class="token punctuation">,</span><br>        <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"qmacro"</span><span class="token punctuation">,</span><br>        <span class="token property">"full_name"</span><span class="token operator">:</span> <span class="token string">"qmacro/qmacro"</span><span class="token punctuation">,</span><br>        <span class="token property">"owner"</span><span class="token operator">:</span> <span class="token punctuation">{</span><br>          <span class="token property">"login"</span><span class="token operator">:</span> <span class="token string">"qmacro"</span><span class="token punctuation">,</span><br>          <span class="token property">"id"</span><span class="token operator">:</span> <span class="token number">73068</span><span class="token punctuation">,</span><br>          <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"User"</span><br>        <span class="token punctuation">}</span><span class="token punctuation">,</span><br>      <span class="token punctuation">}</span><span class="token punctuation">,</span><br>    <span class="token punctuation">}</span><br>  <span class="token punctuation">]</span><br><span class="token punctuation">}</span></code></pre><p>Now we can understand what the <code>jq</code> script is doing. It's working through the contents of the <code>items</code> array (the search results) and piping each item into an array construction. The array construction is declaring three fields, a literal string and two properties:</p><ul><li><p>the literal string contains two JSON properties <code>.repository.full_name</code> and <code>.name</code>, which are references with the <code>\(...)</code> syntax. They're put into a literal string so I can add a slash (<code>/</code>) between them</p></li><li><p>the two properties are the repository owner name and the repository name</p></li></ul><p>Once constructed, the array is passed to <code>@tsv</code> which puts the values into a nice tab-separated list.</p><blockquote><p>I think it's fair to say that the output from the built-in <code>jq</code> works as if the <code>--raw-output</code> flag has been specified (see the <a href="https://stedolan.github.io/jq/manual/">jq Manual</a>), which is what we want.</p></blockquote><p>This then produces the lines that we've seen earlier, i.e. ones that look like this:</p><pre class="language-text"><code class="language-text">qmacro-org/test/dump.yml	qmacro-org	test	.github/workflows/dump.yml<br>qmacro/showntell/main.yml	qmacro	showntell	.github/workflows/main.yml<br>qmacro/qmacro/build.yml	qmacro	qmacro	.github/workflows/build.yml</code></pre><p>These lines are then ready for piping to <code>fzf</code> in <code>main()</code>. Great!</p><p>Now let's move on to the second script, which is what <code>fzf</code> calls to present the previews (i.e. with <code>--preview='showgithubcontent {2} {3} {4} yaml always'</code>).</p><h2>The showgithubcontent script</h2><p>As I mentioned earlier, this was originally just another function inside the <code>workflowbrowser</code> script, but I extracted it to use outside of that script too. You'll see why in a bit.</p><p>Here's the script in its entirety:</p><pre class="language-shell"><code class="language-shell"><span class="token shebang important">#!/usr/bin/env bash</span><br><br><span class="token comment"># Takes owner, repo and path and shows content of that resource from GitHub.</span><br><span class="token comment"># Also accepts optional language and colour parameter.</span><br><span class="token comment"># Uses gh, base64 and bat.</span><br><br><span class="token builtin class-name">declare</span> <span class="token assign-left variable">owner</span><span class="token operator">=</span><span class="token variable">$1</span><br><span class="token builtin class-name">declare</span> <span class="token assign-left variable">repo</span><span class="token operator">=</span><span class="token variable">$2</span><br><span class="token builtin class-name">declare</span> <span class="token assign-left variable">path</span><span class="token operator">=</span><span class="token variable">$3</span><br><span class="token builtin class-name">declare</span> <span class="token assign-left variable">language</span><span class="token operator">=</span><span class="token string">"<span class="token variable">${4<span class="token operator">:-</span>txt}</span>"</span><br><span class="token builtin class-name">declare</span> <span class="token assign-left variable">color</span><span class="token operator">=</span><span class="token string">"<span class="token variable">${5<span class="token operator">:-</span>never}</span>"</span><br><br>gh api <span class="token punctuation">\</span><br>  <span class="token parameter variable">--cache</span> <span class="token string">"<span class="token variable">${GH_CACHETIME<span class="token operator">:-</span>1h}</span>"</span> <span class="token punctuation">\</span><br>  <span class="token parameter variable">--jq</span> <span class="token string">'.content'</span> <span class="token punctuation">\</span><br>  <span class="token string">"/repos/<span class="token variable">$owner</span>/<span class="token variable">$repo</span>/contents/<span class="token variable">$path</span>"</span> <span class="token punctuation">\</span><br>  <span class="token operator">|</span> base64 <span class="token parameter variable">--decode</span> <span class="token parameter variable">-i</span> - <span class="token punctuation">\</span><br>  <span class="token operator">|</span> bat <span class="token parameter variable">--color</span> <span class="token string">"<span class="token variable">$color</span>"</span> <span class="token parameter variable">--theme</span> gruvbox <span class="token parameter variable">--plain</span> <span class="token parameter variable">--language</span> <span class="token string">"<span class="token variable">$language</span>"</span> -</code></pre><p>This is so simple as to not even warrant the <code>main()</code> function based approach to organisation. At least not yet. So what does it do? It expects five parameters, that we've seen already:</p><ul><li>the repository owner name</li><li>the repository name</li><li>the path to the workflow definition file in the repository</li><li>what language to base any syntax highlighting upon</li><li>whether to show colours</li></ul><p>The last two parameters are specific to the <code>bat</code> tool, which is a posh version of <code>cat</code> - <a href="https://github.com/sharkdp/bat"><code>bat</code>'s home page</a> calls it &quot;a cat clone with wings&quot;.</p><p>The reason we need the first three parameters is because they're required in the call we need to the <a href="https://docs.github.com/en/rest/reference/repos#get-repository-content">GitHub Contents API</a>. With this endpoint:</p><pre class="language-text"><code class="language-text">/repos/{owner}/{repo}/contents/{path}</code></pre><p>we can retrieve the contents of a resource (a file) in a repository.</p><p>Let's have a look what this gives us, in a sample call, for the following values:</p><ul><li>owner: &quot;qmacro&quot;</li><li>repo: &quot;showntell&quot;</li><li>path: &quot;.github/workflows/main.yml&quot;</li></ul><pre class="language-shell"><code class="language-shell">$ gh api /repos/qmacro/showntell/contents/.github/workflows/main.yml<br><br><span class="token punctuation">{</span><br>  <span class="token string">"name"</span><span class="token builtin class-name">:</span> <span class="token string">"main.yml"</span>,<br>  <span class="token string">"path"</span><span class="token builtin class-name">:</span> <span class="token string">".github/workflows/main.yml"</span>,<br>  <span class="token string">"size"</span><span class="token builtin class-name">:</span> <span class="token number">387</span>,<br>  <span class="token string">"url"</span><span class="token builtin class-name">:</span> <span class="token string">"https://api.github.com/repos/qmacro/showntell/contents/.github/workflows/main.yml?ref=master"</span>,<br>  <span class="token string">"type"</span><span class="token builtin class-name">:</span> <span class="token string">"file"</span>,<br>  <span class="token string">"content"</span><span class="token builtin class-name">:</span> <span class="token string">"bmFtZTogYWRkX2FjdGl2aXR5X2NhcmQKCm9uOgogIGlzc3VlczoKICAgIHR5<span class="token entity" title="\n">\n</span>cGVzOiBvcGVuZWQKCmpvYnM6CiAgbGlzdF9wcm9qZWN0czoKICAgIHJ1bnMt<span class="token entity" title="\n">\n</span>b246IHVidW50dS1sYXRlc3QKICAgIG5hbWU6IEFzc2lnbiBuZXcgaXNzdWUg<span class="token entity" title="\n">\n</span>dG8gcHJvamVjdAogICAgc3RlcHM6CiAgICAtIG5hbWU6IENyZWF0ZSBuZXcg<span class="token entity" title="\n">\n</span>cHJvamVjdCBjYXJkIHdpdGggaXNzdWUKICAgICAgaWQ6IGxpc3QKICAgICAg<span class="token entity" title="\n">\n</span>dXNlczogcW1hY3JvL2FjdGlvbi1hZGQtaXNzdWUtdG8tcHJvamVjdC1jb2x1<span class="token entity" title="\n">\n</span>bW5AcmVsZWFzZXMvdjEKICAgICAgd2l0aDoKICAgICAgICB0b2tlbjogJHt7<span class="token entity" title="\n">\n</span>IHNlY3JldHMuR0lUSFVCX1RPS0VOIH19CiAgICAgICAgcHJvamVjdDogJ3Ax<span class="token entity" title="\n">\n</span>JwogICAgICAgIGNvbHVtbjogJ3RoaW5ncycK<span class="token entity" title="\n">\n</span>"</span>,<br>  <span class="token string">"encoding"</span><span class="token builtin class-name">:</span> <span class="token string">"base64"</span><br><span class="token punctuation">}</span></code></pre><p>(Output is reduced for brevity again).</p><p>The content isn't what we might first expect - where's the YAML? It's Base64 encoded, so we need to grab the value of the <code>content</code> property (which we do with <code>--jq '.content'</code>) and decode it. The handy <code>base64</code> command is ideal for that.</p><p>Once decoded, the workflow definition YAML content is piped into <code>bat</code>, with the following parameters:</p><ul><li><code>--color &quot;$color&quot;</code> - do we want colour? In preview mode, always (which is why we pass <code>always</code> in the call from the other script) but unless we're explicit about that, <code>bat</code> won't use colour. This is because of the shell parameter expansion in the declaration of the <code>color</code> variable: <code>&quot;${5:-never}&quot;</code>, where the literal string &quot;never&quot; is used as a default value if none is supplied.</li><li><code>--theme gruvbox</code> - who doesn't like a little <a href="https://github.com/morhetz/gruvbox">gruvbox</a> theming?</li><li><code>--plain</code> - this turns off any of the <code>bat</code> &quot;chrome&quot; like line numbers and headings.</li><li><code>--language &quot;$language&quot;</code> - this tells <code>bat</code> about the content, in the form of a hint as to what language it is and therefore how to syntax highlight it.</li></ul><p>And don't miss the final <code>-</code> passed to <code>bat</code>, that's to tell it to read from STDIN.</p><p><strong>Embracing the Unix philosophy</strong></p><p>That'a about it for the two scripts. I've found them to be useful and have had fun creating them. Really it's just glueing together different tools, that's sort of the point, part of the Unix philosophy in general.</p><p>And talking of that, here's the reason I split out the <code>showgithubcontent</code> function into a separate script. It's because I wanted to be able to browse the workflow definitions, but then if I selected one, I wanted to be taken into an editor with that definition's contents. And with a proper shell (like Bash, or most other Unix shells) this is simple:</p><pre class="language-shell"><code class="language-shell">$ workflowbrowser <span class="token operator">|</span> <span class="token function">xargs</span> showgithubcontent <span class="token operator">|</span> <span class="token function">vim</span> --not-a-term -</code></pre><p>That is:</p><ol><li>call <code>workflowbrowser</code> and take the selected output from <code>workflowbrowser</code> (which will be the three values that <code>fzf</code> emits when I select a workflow definition) and, by piping them through to a call to <code>xargs</code>, send them as parameters to <code>showgithubcontent</code></li><li>this of course is a &quot;second&quot; call to <code>showgithubcontent</code> - it's been used in <code>fzf</code>'s preview window, but now we're calling it explicitly, for the selected definition, without the two extra arguments &quot;yaml&quot; and &quot;always&quot; so that the the workflow definition is output without adornment</li><li>that unadorned workflow definition goes to STDOUT, which is then fed through the pipe to the STDIN of <code>vim</code>, my editor, where I tell it to read from STDIN (that's the use of <code>-</code>) and, using <code>--not-a-term</code>, tell it that its startup context is not a terminal (it's a pipe) so that it won't issue any warnings along those lines</li></ol><p>Here's an example of that pipeline flow in action:</p><p><a name="unix-pipeline-example"></a></p><script id="asciicast-409639" src="https://asciinema.org/a/409639.js" async></script><p>I hope you found this useful and perhaps it will encourage you to create your own utility scripts using <code>gh</code> and <code>fzf</code>.</p></main><aside class="post__aside"><div class="post__tags"><a href="/tags/github-actions/">#github-actions</a> <a href="/tags/tools/">#tools</a></div><style>.utterances {
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
   margin-left: inherit !important;
-}</style><script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async></script><nav class="post__pagination"><a href="/blog/posts/2021/04/28/unpacking-bash-shell-tips-from-a-github-actions-workflow/"><span>←</span> <span>Unpacking Bash shell tips from a GitHub Actions workflow</span> </a><a href="/blog/posts/2021/04/13/producing-json-with-jq-for-appending-issue-titles/"><span>Producing JSON with jq for appending issue titles</span> <span>→</span></a></nav></aside></article></main><footer class="footer"><div class="footer__content"><ul class="hero__social-links"><li><a rel="me" href="https://github.com/qmacro" target="_blank" rel="noopener noreferrer">GitHub</a></li><li><a rel="me" href="https://www.youtube.com/djadams-qmacro" target="_blank" rel="noopener noreferrer">YouTube</a></li><li><a rel="me" href="https://www.linkedin.com/in/djadams/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li><li><a rel="me" href="/tweets/">Tweet Archive</a></li><li><a rel="me" href="https://hachyderm.io/@qmacro" target="_blank" rel="noopener noreferrer">Mastodon</a></li><li><a rel="me" href="https://bsky.app/profile/qmacro.org" target="_blank" rel="noopener noreferrer">Bluesky</a></li><li><a href="/feed.xml" target="_blank" rel="noopener noreferrer">RSS</a></li></ul></div></footer></div><script src="/assets/main.31d6cfe0d16ae931b73c.js"></script></body></html>
+}</style>
+		
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="github-actions-workflow-browser">GitHub Actions workflow browser</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2021-04-24">24 April 2021</time></li>
+	<li><a href="/tags/github-actions/" class="post-tag">github-actions</a>, </li>
+	<li><a href="/tags/tools/" class="post-tag">tools</a></li>
+</ul>
+
+<p class="post-description-main"></p>
+
+<p><em>I wrote a simple workflow browser to help me refer to previous workflow definitions while I'm writing a new one, as I'm still learning the syntax and techniques.</em></p>
+<p>With a programming or definition language, especially one that's new and powerful, it takes me a while to become comfortable writing scripts or definitions from scratch. I have a small amount of auto completion in my editor, but I'm not a fan - I prefer to learn by looking things up and then typing them in, rather than have words automatically completed for me.</p>
+<p>The YAML based syntax for definining GitHub Actions workflows is powerful and there are different ways of achieving similar things. And it's new to me too (although defining jobs and steps isn't - in many ways it's just like writing Job Control Language (JCL) back in the mainframe era, but that's a story for another time).</p>
+<p>While the latest version of the GitHub command line client <code>gh</code> sports lovely new features for workflows and actions, it doesn't quite give me the quick cross-repository overview that I'm looking for. So I decided to combine three of my favourite terminal power tools to help me:</p>
+<ul>
+<li>Bash, for my command line interface and utility scripting, my shell of choice</li>
+<li><a href="https://github.com/cli/cli"><code>gh</code></a>, which is already a very accomplished command line interface (CLI) to GitHub and a really comfortable way of using the API</li>
+<li><a href="https://github.com/junegunn/fzf"><code>fzf</code></a>, which is a powerful fuzzy finder utility and provides just enough features for me to build simple terminal user interfaces (UIs) with</li>
+</ul>
+<p>I combined them to build a &quot;workflow browser&quot;. Here it is in action:</p>
+<script id="asciicast-409638" src="https://asciinema.org/a/409638.js" async=""></script>
+<p>It consists of three parts:</p>
+<ul>
+<li>
+<p>a new environment variable GH_CACHETIME which I can set globally to be nice to the GitHub API servers (I'm not changing workflows that often so a generous cache time of 1 hour works for me)</p>
+</li>
+<li>
+<p>the main <code>workflowbrowser</code> script which finds workflow definitions across my content on GitHub and presents them in a list to search through</p>
+</li>
+<li>
+<p>a separate <code>showgithubcontent</code> script that displays the content of a resource in one of my GitHub repositories</p>
+</li>
+</ul>
+<p>The <code>showgithubcontent</code> script was initially a function inside of the <code>workflowbrowser</code> script but I separated it out, first because it felt better and second because there was something more I could do once I'd browsed the workflow definitions with <code>workflowbrowser</code> and selected one - more on that later.</p>
+<h2 id="the-workflowbrowser-script">The workflowbrowser script</h2>
+<p>Here's the script in its entirety, <a href="https://github.com/qmacro/dotfiles/blob/master/scripts/workflowbrowser">as it stands right now</a>:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token shebang important">#!/usr/bin/env bash</span>
+
+<span class="token comment"># Find and browse GitHub Actions workflow definitions.</span>
+<span class="token comment"># In addition to regular shell tools (such as sed), this</span>
+<span class="token comment"># script uses gh and fzf.</span>
+
+<span class="token function-name function">workflows</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+  <span class="token comment"># Takes owner type (org or user) and owner name.</span>
+  <span class="token comment"># Returns tab-separated list of owner/repo/workflowfile/path.</span>
+
+  <span class="token builtin class-name">local</span> <span class="token assign-left variable">ownertype</span><span class="token operator">=</span><span class="token variable">$1</span>
+  <span class="token builtin class-name">local</span> <span class="token assign-left variable">owner</span><span class="token operator">=</span><span class="token variable">$2</span>
+
+  gh api <span class="token punctuation">\</span>
+    <span class="token parameter variable">--method</span> GET <span class="token punctuation">\</span>
+    <span class="token parameter variable">--paginate</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">--cache</span> <span class="token string">"<span class="token variable">${GH_CACHETIME<span class="token operator">:-</span>1h}</span>"</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">--field</span> <span class="token string">"q=<span class="token variable">$ownertype</span>:<span class="token variable">$owner</span> path:.github/workflows/"</span> <span class="token punctuation">\</span>
+    <span class="token parameter variable">--jq</span> <span class="token string">'.items[] | ["\(.repository.full_name)/\(.name)", .repository.owner.login, .repository.name, .path] | @tsv'</span> <span class="token punctuation">\</span>
+    <span class="token string">"/search/code"</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token function-name function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+
+  <span class="token comment"># Calls workflows for my org and user.</span>
+
+  <span class="token function">cat</span> <span class="token punctuation">\</span>
+    <span class="token operator">&lt;</span><span class="token punctuation">(</span>workflows org qmacro-org<span class="token punctuation">)</span> <span class="token punctuation">\</span>
+    <span class="token operator">&lt;</span><span class="token punctuation">(</span>workflows user qmacro<span class="token punctuation">)</span> <span class="token punctuation">\</span>
+    <span class="token operator">|</span> fzf <span class="token punctuation">\</span>
+      --with-nth<span class="token operator">=</span><span class="token number">1</span> <span class="token punctuation">\</span>
+      <span class="token parameter variable">--delimiter</span><span class="token operator">=</span><span class="token string">'\t'</span> <span class="token punctuation">\</span>
+      <span class="token parameter variable">--preview</span><span class="token operator">=</span><span class="token string">'showgithubcontent {2} {3} {4} yaml always'</span> <span class="token punctuation">\</span>
+      <span class="token operator">|</span> <span class="token function">cut</span> <span class="token parameter variable">-f</span> <span class="token number">2,3</span>,4
+
+<span class="token punctuation">}</span>
+
+main <span class="token string">"<span class="token variable">$@</span>"</span></code></pre>
+<p>There's just a <code>main</code> function and a <code>workflows</code> function.</p>
+<h3 id="the-main-function">The main function</h3>
+<p>The <code>main</code> function calls the <code>workflows</code> function a couple of times, because I have repositories under my own user <a href="https://github.com/qmacro">qmacro</a> and also under a small experimental organisation <a href="https://github.com/qmacro-org">qmacro-org</a> and I have workflows across both of these owner areas.</p>
+<p>In learning more about Bash I've found it's helpful to know the terms for various aspects, so I'm going to point out one here. I'm calling the <code>workflows</code> function twice, like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">  <span class="token function">cat</span> <span class="token punctuation">\</span>
+    <span class="token operator">&lt;</span><span class="token punctuation">(</span>workflows org qmacro-org<span class="token punctuation">)</span> <span class="token punctuation">\</span>
+    <span class="token operator">&lt;</span><span class="token punctuation">(</span>workflows user qmacro<span class="token punctuation">)</span></code></pre>
+<p>This to me was the simplest way of combining output from two calls into a single stream, using <code>cat</code>. The <code>&lt;(...)</code> is <a href="https://tldp.org/LDP/abs/html/process-sub.html">process substitution</a>. This is very useful when you want to supply some data to a command, which is expecting that data to be in a file, but where you don't have a file, and instead want to generate the data on the fly, and have it provided as the output of some execution. Here I'm using process substitution to call the <code>workflows</code> function a couple of times, and have the output from those calls supplied to <code>cat</code>. As if I did this: <code>cat firstfile secondfile</code>.</p>
+<blockquote>
+<p>I did a 10 minute video on process substitution on Hands-on SAP Dev, in case you're interested: <a href="https://www.youtube.com/watch?v=JF4lGw4Itpk&amp;list=PL6RpkC85SLQAIntm7MkNk78ysDm3Ua8t0&amp;index=41">Ep.39 - Looking at process substitution</a>.</p>
+</blockquote>
+<p>I'll dig into the <code>workflows</code> function shortly, but for now, we need to know what it outputs, to understand better what we do with that output, i.e. what we do downstream from <code>cat</code> in the pipeline.</p>
+<p>The output from <code>workflows</code> are records representing workflow definitions, in the form of lines with tab-separated fields, like this:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">qmacro-org/test/dump.yml	qmacro-org	test	.github/workflows/dump.yml
+qmacro/showntell/main.yml	qmacro	showntell	.github/workflows/main.yml
+qmacro/qmacro/build.yml	qmacro	qmacro	.github/workflows/build.yml</code></pre>
+<p>In order, the fields represent:</p>
+<ol>
+<li>a combination of repo owner, repo name &amp; workflow definition file name</li>
+<li>the repo owner</li>
+<li>the repo name</li>
+<li>the path in the repository to that workflow definition file</li>
+</ol>
+<p>The lines are piped into <code>fzf</code> which is used to present the workflow definitions and also a preview of their contents. This is done by using various options supplied to <code>fzf</code>.</p>
+<p>The first option deals with what to show in the basic list display that <code>fzf</code> first presents, and that is the contents of the first field above (the combination). This is done using the <code>--with-nth</code> option; we also tell <code>fzf</code> how the fields are delimited:</p>
+<ul>
+<li><code>--with-nth=1</code> - use field 1 in the list display</li>
+<li><code>--delimiter='\t'</code> - fields are tab-delimited</li>
+</ul>
+<p>Then there's what to do from a preview perspective; when a particular entry in the list is selected, <code>fzf</code> can run a preview command to display something in a window:</p>
+<ul>
+<li><code>--preview='showgithubcontent {2} {3} {4} yaml always'</code></li>
+</ul>
+<p>Whatever is produced (via STDOUT) by the incantation supplied with the <code>--preview</code> option is shown in the preview window. Here, we call the <code>showgithubcontent</code> script, supplying that script with 5 arguments. The first three use <code>fzf</code>'s field reference syntax to pass the values of the second, third &amp; fourth field, i.e. the repo owner, the repo name and the workflow file path. The last two arguments control how <code>showgithubcontent</code> displays things (we'll come to that later).</p>
+<p>With <code>fzf</code>, if an item in the list is indeed selected, then the line passed into <code>fzf</code> that represents the line selected is output to STDOUT. This makes <code>fzf</code> a very powerful tool that plays well with other tools, following the Unix philosophy (if no selection is made, e.g. by aborting <code>fzf</code> with Ctrl-C, then nothing is emitted).</p>
+<p>The final part of the <code>main</code> function takes the line emitted from <code>fzf</code> and outputs the same three fields (repo owner, repo name and workflow file path). Basically field 1 is just used as a &quot;display&quot; field for <code>fzf</code>.</p>
+<h3 id="the-workflows-function">The workflows function</h3>
+<p>The <code>workflows</code> function is basically a wrapper around a call to the <a href="https://docs.github.com/en/rest/reference/search">GitHub Search API</a>. This is an API that I haven't used before now, and it's pretty powerful. There are different endpoints representing different search approaches. What worked for me, to find workflow definitions, was to use the <a href="https://docs.github.com/en/rest/reference/search#search-code">Search code</a> endpoint with <code>/search/code</code>.</p>
+<p>This endpoint takes the search criteria in the form of a query string parameter <code>q</code>, and it was very easy to use the GUI based search to try out different search parameters to figure out what I needed to specify. <a href="https://github.com/search?q=org%3Aqmacro-org+path%3A.github%2Fworkflows%2F">Here's an example</a>.</p>
+<p>One thing that tripped me up at first was the wrong type of request was being made first of all. I supplied the search criteria value in the <code>q</code> query string parameter correctly, like this (as you can see in the function):</p>
+<ul>
+<li><code>--field &quot;q=$ownertype:$owner path:.github/workflows/&quot;</code></li>
+</ul>
+<p>but the HTTP call that <code>gh</code> then made for me was a POST request, with this search query parameter in the body of the request. That wasn't right. Checking in the API documentation, the <code>q</code> parameter needs to be in the query string. Explicitly setting the method to GET made this right:</p>
+<ul>
+<li><code>--method GET</code></li>
+</ul>
+<p>There are a couple of other &quot;housekeeping&quot; parameters used here too:</p>
+<ul>
+<li><code>--paginate</code></li>
+<li><code>--cache &quot;${GH_CACHETIME:-1h}&quot;</code></li>
+</ul>
+<p>I don't yet have that many workflow definitions, but if it comes to that, <code>gh</code> will work through the responses to get them all for me with <code>--paginate</code>.
+And the <code>--cache</code> parameter works both ways: my activities are well behaved when it comes to using the API endpoints, and also, after the first time the list of workflow definitions is retrieved, any subsequent uses of the workflow browser are that much snappier (this works also with the similar use of the <code>--cache</code> parameter in the <code>showgithubcontent</code> script we'll see shortly). Note that if there's no value specified for <code>GH_CACHETIME</code>, the default will be 1 hour (<code>1h</code>) through the use of <a href="https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html">shell parameter expansion</a>.</p>
+<p>Next we come to the use of the <code>--field</code> parameter, which allows me to specify the name and value for the search parameter <code>q</code>. I looked at the <a href="https://docs.github.com/en/github/searching-for-information-on-github/searching-code">Searching code</a> documentation to find out about the <code>ownertype:owner</code> specification. The first time around this value will be &quot;org:qmacro-org&quot; and the second time around it will be &quot;user:qmacro&quot;. Moreover, with <code>path</code> I can search for content that appears at a specific location - see <a href="https://docs.github.com/en/github/searching-for-information-on-github/searching-code#search-by-file-location">Search by file location</a>.</p>
+<blockquote>
+<p>For those wondering, GitHub Actions workflow definition files are stored in the <code>.github/workflows/</code> directory within a repository.</p>
+</blockquote>
+<p>Last but not least I use <code>--jq</code> parameter to supply <code>fzf</code> with some <code>jq</code> script that will parse and extract the data I need from the API's JSON output. I think it was in <a href="https://github.com/cli/cli/releases/tag/v1.7.0">release 1.7.0</a> that this feature appeared, and it's a great idea - build in <code>jq</code> to <code>gh</code> so those that don't have <code>jq</code> already installed can still benefit. I guess it also helps to establish <code>jq</code> as the de facto standard for parsing and manipulating JSON.</p>
+<p>If we add some whitespace to the <code>jq</code> script passed with the <code>--jq</code> parameter, we get this:</p>
+<pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token punctuation">.</span>items<span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token operator pipe">|</span> <span class="token punctuation">[</span>
+      <span class="token string">"<span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token punctuation">.</span>repository<span class="token punctuation">.</span>full_name</span><span class="token punctuation">)</span></span>/<span class="token interpolation"><span class="token punctuation">\(</span><span class="token content"><span class="token punctuation">.</span>name</span><span class="token punctuation">)</span></span>"</span><span class="token punctuation">,</span>
+      <span class="token punctuation">.</span>repository<span class="token punctuation">.</span>owner<span class="token punctuation">.</span>login<span class="token punctuation">,</span>
+      <span class="token punctuation">.</span>repository<span class="token punctuation">.</span>name<span class="token punctuation">,</span>
+      <span class="token punctuation">.</span>path
+    <span class="token punctuation">]</span>
+  <span class="token operator pipe">|</span> @tsv'</code></pre>
+<p>I think it's always easier to stare at a script like this when we see what it's going to be processing, so here's some sample output from the API call to the search endpoint (reduced for brevity):</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"total_count"</span><span class="token operator">:</span> <span class="token number">7</span><span class="token punctuation">,</span>
+  <span class="token property">"incomplete_results"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+  <span class="token property">"items"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"dump.yml"</span><span class="token punctuation">,</span>
+      <span class="token property">"path"</span><span class="token operator">:</span> <span class="token string">".github/workflows/dump.yml"</span><span class="token punctuation">,</span>
+      <span class="token property">"repository"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"id"</span><span class="token operator">:</span> <span class="token number">331995789</span><span class="token punctuation">,</span>
+        <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"test"</span><span class="token punctuation">,</span>
+        <span class="token property">"full_name"</span><span class="token operator">:</span> <span class="token string">"qmacro-org/test"</span><span class="token punctuation">,</span>
+        <span class="token property">"owner"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          <span class="token property">"login"</span><span class="token operator">:</span> <span class="token string">"qmacro-org"</span><span class="token punctuation">,</span>
+          <span class="token property">"id"</span><span class="token operator">:</span> <span class="token number">75827316</span><span class="token punctuation">,</span>
+          <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"Organization"</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"main.yml"</span><span class="token punctuation">,</span>
+      <span class="token property">"path"</span><span class="token operator">:</span> <span class="token string">".github/workflows/main.yml"</span><span class="token punctuation">,</span>
+      <span class="token property">"repository"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"id"</span><span class="token operator">:</span> <span class="token number">331995789</span><span class="token punctuation">,</span>
+        <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"showntell"</span><span class="token punctuation">,</span>
+        <span class="token property">"full_name"</span><span class="token operator">:</span> <span class="token string">"qmacro/showntell"</span><span class="token punctuation">,</span>
+        <span class="token property">"owner"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          <span class="token property">"login"</span><span class="token operator">:</span> <span class="token string">"qmacro"</span><span class="token punctuation">,</span>
+          <span class="token property">"id"</span><span class="token operator">:</span> <span class="token number">73068</span><span class="token punctuation">,</span>
+          <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"User"</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"build.yml"</span><span class="token punctuation">,</span>
+      <span class="token property">"path"</span><span class="token operator">:</span> <span class="token string">".github/workflows/build.yml"</span><span class="token punctuation">,</span>
+      <span class="token property">"repository"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"id"</span><span class="token operator">:</span> <span class="token number">165207450</span><span class="token punctuation">,</span>
+        <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"qmacro"</span><span class="token punctuation">,</span>
+        <span class="token property">"full_name"</span><span class="token operator">:</span> <span class="token string">"qmacro/qmacro"</span><span class="token punctuation">,</span>
+        <span class="token property">"owner"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          <span class="token property">"login"</span><span class="token operator">:</span> <span class="token string">"qmacro"</span><span class="token punctuation">,</span>
+          <span class="token property">"id"</span><span class="token operator">:</span> <span class="token number">73068</span><span class="token punctuation">,</span>
+          <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"User"</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Now we can understand what the <code>jq</code> script is doing. It's working through the contents of the <code>items</code> array (the search results) and piping each item into an array construction. The array construction is declaring three fields, a literal string and two properties:</p>
+<ul>
+<li>
+<p>the literal string contains two JSON properties <code>.repository.full_name</code> and <code>.name</code>, which are references with the <code>\(...)</code> syntax. They're put into a literal string so I can add a slash (<code>/</code>) between them</p>
+</li>
+<li>
+<p>the two properties are the repository owner name and the repository name</p>
+</li>
+</ul>
+<p>Once constructed, the array is passed to <code>@tsv</code> which puts the values into a nice tab-separated list.</p>
+<blockquote>
+<p>I think it's fair to say that the output from the built-in <code>jq</code> works as if the <code>--raw-output</code> flag has been specified (see the <a href="https://stedolan.github.io/jq/manual/">jq Manual</a>), which is what we want.</p>
+</blockquote>
+<p>This then produces the lines that we've seen earlier, i.e. ones that look like this:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">qmacro-org/test/dump.yml	qmacro-org	test	.github/workflows/dump.yml
+qmacro/showntell/main.yml	qmacro	showntell	.github/workflows/main.yml
+qmacro/qmacro/build.yml	qmacro	qmacro	.github/workflows/build.yml</code></pre>
+<p>These lines are then ready for piping to <code>fzf</code> in <code>main()</code>. Great!</p>
+<p>Now let's move on to the second script, which is what <code>fzf</code> calls to present the previews (i.e. with <code>--preview='showgithubcontent {2} {3} {4} yaml always'</code>).</p>
+<h2 id="the-showgithubcontent-script">The showgithubcontent script</h2>
+<p>As I mentioned earlier, this was originally just another function inside the <code>workflowbrowser</code> script, but I extracted it to use outside of that script too. You'll see why in a bit.</p>
+<p>Here's the script in its entirety:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token shebang important">#!/usr/bin/env bash</span>
+
+<span class="token comment"># Takes owner, repo and path and shows content of that resource from GitHub.</span>
+<span class="token comment"># Also accepts optional language and colour parameter.</span>
+<span class="token comment"># Uses gh, base64 and bat.</span>
+
+<span class="token builtin class-name">declare</span> <span class="token assign-left variable">owner</span><span class="token operator">=</span><span class="token variable">$1</span>
+<span class="token builtin class-name">declare</span> <span class="token assign-left variable">repo</span><span class="token operator">=</span><span class="token variable">$2</span>
+<span class="token builtin class-name">declare</span> <span class="token assign-left variable">path</span><span class="token operator">=</span><span class="token variable">$3</span>
+<span class="token builtin class-name">declare</span> <span class="token assign-left variable">language</span><span class="token operator">=</span><span class="token string">"<span class="token variable">${4<span class="token operator">:-</span>txt}</span>"</span>
+<span class="token builtin class-name">declare</span> <span class="token assign-left variable">color</span><span class="token operator">=</span><span class="token string">"<span class="token variable">${5<span class="token operator">:-</span>never}</span>"</span>
+
+gh api <span class="token punctuation">\</span>
+  <span class="token parameter variable">--cache</span> <span class="token string">"<span class="token variable">${GH_CACHETIME<span class="token operator">:-</span>1h}</span>"</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--jq</span> <span class="token string">'.content'</span> <span class="token punctuation">\</span>
+  <span class="token string">"/repos/<span class="token variable">$owner</span>/<span class="token variable">$repo</span>/contents/<span class="token variable">$path</span>"</span> <span class="token punctuation">\</span>
+  <span class="token operator">|</span> base64 <span class="token parameter variable">--decode</span> <span class="token parameter variable">-i</span> - <span class="token punctuation">\</span>
+  <span class="token operator">|</span> bat <span class="token parameter variable">--color</span> <span class="token string">"<span class="token variable">$color</span>"</span> <span class="token parameter variable">--theme</span> gruvbox <span class="token parameter variable">--plain</span> <span class="token parameter variable">--language</span> <span class="token string">"<span class="token variable">$language</span>"</span> -</code></pre>
+<p>This is so simple as to not even warrant the <code>main()</code> function based approach to organisation. At least not yet. So what does it do? It expects five parameters, that we've seen already:</p>
+<ul>
+<li>the repository owner name</li>
+<li>the repository name</li>
+<li>the path to the workflow definition file in the repository</li>
+<li>what language to base any syntax highlighting upon</li>
+<li>whether to show colours</li>
+</ul>
+<p>The last two parameters are specific to the <code>bat</code> tool, which is a posh version of <code>cat</code> - <a href="https://github.com/sharkdp/bat"><code>bat</code>'s home page</a> calls it &quot;a cat clone with wings&quot;.</p>
+<p>The reason we need the first three parameters is because they're required in the call we need to the <a href="https://docs.github.com/en/rest/reference/repos#get-repository-content">GitHub Contents API</a>. With this endpoint:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">/repos/{owner}/{repo}/contents/{path}</code></pre>
+<p>we can retrieve the contents of a resource (a file) in a repository.</p>
+<p>Let's have a look what this gives us, in a sample call, for the following values:</p>
+<ul>
+<li>owner: &quot;qmacro&quot;</li>
+<li>repo: &quot;showntell&quot;</li>
+<li>path: &quot;.github/workflows/main.yml&quot;</li>
+</ul>
+<pre class="language-shell" tabindex="0"><code class="language-shell">$ gh api /repos/qmacro/showntell/contents/.github/workflows/main.yml
+
+<span class="token punctuation">{</span>
+  <span class="token string">"name"</span><span class="token builtin class-name">:</span> <span class="token string">"main.yml"</span>,
+  <span class="token string">"path"</span><span class="token builtin class-name">:</span> <span class="token string">".github/workflows/main.yml"</span>,
+  <span class="token string">"size"</span><span class="token builtin class-name">:</span> <span class="token number">387</span>,
+  <span class="token string">"url"</span><span class="token builtin class-name">:</span> <span class="token string">"https://api.github.com/repos/qmacro/showntell/contents/.github/workflows/main.yml?ref=master"</span>,
+  <span class="token string">"type"</span><span class="token builtin class-name">:</span> <span class="token string">"file"</span>,
+  <span class="token string">"content"</span><span class="token builtin class-name">:</span> <span class="token string">"bmFtZTogYWRkX2FjdGl2aXR5X2NhcmQKCm9uOgogIGlzc3VlczoKICAgIHR5<span class="token entity" title="\n">\n</span>cGVzOiBvcGVuZWQKCmpvYnM6CiAgbGlzdF9wcm9qZWN0czoKICAgIHJ1bnMt<span class="token entity" title="\n">\n</span>b246IHVidW50dS1sYXRlc3QKICAgIG5hbWU6IEFzc2lnbiBuZXcgaXNzdWUg<span class="token entity" title="\n">\n</span>dG8gcHJvamVjdAogICAgc3RlcHM6CiAgICAtIG5hbWU6IENyZWF0ZSBuZXcg<span class="token entity" title="\n">\n</span>cHJvamVjdCBjYXJkIHdpdGggaXNzdWUKICAgICAgaWQ6IGxpc3QKICAgICAg<span class="token entity" title="\n">\n</span>dXNlczogcW1hY3JvL2FjdGlvbi1hZGQtaXNzdWUtdG8tcHJvamVjdC1jb2x1<span class="token entity" title="\n">\n</span>bW5AcmVsZWFzZXMvdjEKICAgICAgd2l0aDoKICAgICAgICB0b2tlbjogJHt7<span class="token entity" title="\n">\n</span>IHNlY3JldHMuR0lUSFVCX1RPS0VOIH19CiAgICAgICAgcHJvamVjdDogJ3Ax<span class="token entity" title="\n">\n</span>JwogICAgICAgIGNvbHVtbjogJ3RoaW5ncycK<span class="token entity" title="\n">\n</span>"</span>,
+  <span class="token string">"encoding"</span><span class="token builtin class-name">:</span> <span class="token string">"base64"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>(Output is reduced for brevity again).</p>
+<p>The content isn't what we might first expect - where's the YAML? It's Base64 encoded, so we need to grab the value of the <code>content</code> property (which we do with <code>--jq '.content'</code>) and decode it. The handy <code>base64</code> command is ideal for that.</p>
+<p>Once decoded, the workflow definition YAML content is piped into <code>bat</code>, with the following parameters:</p>
+<ul>
+<li><code>--color &quot;$color&quot;</code> - do we want colour? In preview mode, always (which is why we pass <code>always</code> in the call from the other script) but unless we're explicit about that, <code>bat</code> won't use colour. This is because of the shell parameter expansion in the declaration of the <code>color</code> variable: <code>&quot;${5:-never}&quot;</code>, where the literal string &quot;never&quot; is used as a default value if none is supplied.</li>
+<li><code>--theme gruvbox</code> - who doesn't like a little <a href="https://github.com/morhetz/gruvbox">gruvbox</a> theming?</li>
+<li><code>--plain</code> - this turns off any of the <code>bat</code> &quot;chrome&quot; like line numbers and headings.</li>
+<li><code>--language &quot;$language&quot;</code> - this tells <code>bat</code> about the content, in the form of a hint as to what language it is and therefore how to syntax highlight it.</li>
+</ul>
+<p>And don't miss the final <code>-</code> passed to <code>bat</code>, that's to tell it to read from STDIN.</p>
+<p><strong>Embracing the Unix philosophy</strong></p>
+<p>That'a about it for the two scripts. I've found them to be useful and have had fun creating them. Really it's just glueing together different tools, that's sort of the point, part of the Unix philosophy in general.</p>
+<p>And talking of that, here's the reason I split out the <code>showgithubcontent</code> function into a separate script. It's because I wanted to be able to browse the workflow definitions, but then if I selected one, I wanted to be taken into an editor with that definition's contents. And with a proper shell (like Bash, or most other Unix shells) this is simple:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">$ workflowbrowser <span class="token operator">|</span> <span class="token function">xargs</span> showgithubcontent <span class="token operator">|</span> <span class="token function">vim</span> --not-a-term -</code></pre>
+<p>That is:</p>
+<ol>
+<li>call <code>workflowbrowser</code> and take the selected output from <code>workflowbrowser</code> (which will be the three values that <code>fzf</code> emits when I select a workflow definition) and, by piping them through to a call to <code>xargs</code>, send them as parameters to <code>showgithubcontent</code></li>
+<li>this of course is a &quot;second&quot; call to <code>showgithubcontent</code> - it's been used in <code>fzf</code>'s preview window, but now we're calling it explicitly, for the selected definition, without the two extra arguments &quot;yaml&quot; and &quot;always&quot; so that the the workflow definition is output without adornment</li>
+<li>that unadorned workflow definition goes to STDOUT, which is then fed through the pipe to the STDIN of <code>vim</code>, my editor, where I tell it to read from STDIN (that's the use of <code>-</code>) and, using <code>--not-a-term</code>, tell it that its startup context is not a terminal (it's a pipe) so that it won't issue any warnings along those lines</li>
+</ol>
+<p>Here's an example of that pipeline flow in action:</p>
+<p><a name="unix-pipeline-example"></a></p>
+<script id="asciicast-409639" src="https://asciinema.org/a/409639.js" async=""></script>
+<p>I hope you found this useful and perhaps it will encourage you to create your own utility scripts using <code>gh</code> and <code>fzf</code>.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2021/04/13/producing-json-with-jq-for-appending-issue-titles/">Producing JSON with jq for appending issue titles</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2021/04/28/unpacking-bash-shell-tips-from-a-github-actions-workflow/">Unpacking Bash shell tips from a GitHub Actions workflow</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2021/04/24/github-actions-workflow-browser/` was built on 2025-09-15T15:58:49.609Z -->
+		<script type="module" src="/dist/xbxy_EL6cU.js"></script>
+	</body>
+</html>
