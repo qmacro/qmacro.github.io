@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+# Fix up old blog post Markdown frontmatter:
+# - remove any layout: post entries
+# - add a date based on the filename
+
+set -eo pipefail
+
+# From a file path like /the/path/1966-09-03-name.ext
+# return just the date i.e. 1966-09-03
+getdate() {
+
+  local file
+  file="${1##*/}"
+  echo "${file:0:10}"
+}
+
+removetrailingemptylines() {
+  # See https://askubuntu.com/questions/656817/remove-any-trailing-blank-lines-or-lines-with-whitespaces-from-end-of-file
+  sed -i ':a;/^[ \n]*$/{$d;N;ba}' "$1"
+}
+
+removepostlayout() {
+  sed -i -E "/^layout: post$/d" "$1"
+}
+
+hasdate() {
+
+  grep --silent -E '^date:\s' "$1"
+
+}
+
+adddate() {
+
+  local file="$1"
+  sed -i -E "0,/^---$/adate: $(getdate "$file")" "$file"
+
+}
+
+main() {
+  for file in "$@"; do
+    removetrailingemptylines "$file"
+    removepostlayout "$file"
+    hasdate "$file" || adddate "$file"
+  done
+}
+
+main "$@"
