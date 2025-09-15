@@ -70,11 +70,11 @@ cds compile . --to yaml
 This is what we get:
 
 ```yaml
-definitions: 
+definitions:
   Bookshop: {kind: service}
-  Bookshop.Books: 
+  Bookshop.Books:
     kind: entity
-    elements: 
+    elements:
       ID: {key: true, type: cds.Integer}
       title: {type: cds.String}
       genre: {'@loud': true, type: cds.String}
@@ -103,7 +103,7 @@ Let's start the REPL with `cds repl` and enter `const test = await cds.test()`. 
 
 ```shell
 $ cds repl
-Welcome to cds repl v 8.6.0 
+Welcome to cds repl v 8.6.0
 > const test = await cds.test()
 [LOUD] - Starting up ...
 [cds] - loaded model from 1 file(s):
@@ -111,13 +111,13 @@ Welcome to cds repl v 8.6.0
   services.cds
 
 [cds] - connect to db > sqlite { url: ':memory:' }
-  > init from data/Bookshop.Books.csv 
-/> successfully deployed to in-memory database. 
+  > init from data/Bookshop.Books.csv
+/> successfully deployed to in-memory database.
 
 [cds] - using auth strategy {
   kind: 'mocked',
   impl: 'node_modules/@sap/cds/lib/srv/middlewares/auth/basic-auth'
-} 
+}
 
 [cds] - using new OData adapter
 [cds] - serving Bookshop { path: '/odata/v4/bookshop' }
@@ -148,7 +148,7 @@ But instead of querying the data, what we really want to do in this session is e
 
 <a name="new-repl-options"></a>
 > Instead of using `cds.test()` there are features introduced to the cds REPL in the December 2024 release which makes this more comfortable; use either of these approaches:
-> * `cds repl --run .` in the project directory (`cds r -r .` is the short version) 
+> * `cds repl --run .` in the project directory (`cds r -r .` is the short version)
 > * `.run .` at the REPL prompt
 
 <a name="exploring-the-cds-facade"></a>
@@ -488,7 +488,7 @@ In [the third and final part][15] to this series we can use the knowledge we've 
 ---
 
 <a name="appendix-a-turning-down-the-logging"></a>
-## Appending A - Turning down the logging
+## Appendix A - Turning down the logging
 
 The reason this line appears each and every time we start up the service, even in the REPL:
 

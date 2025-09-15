@@ -142,12 +142,10 @@ of MVS that is now in the public domain). I powered up an emulated 3033
 IBM mainframe and watched the Initial Program Load (IPL) sequence on the
 console before logging in.
 
-![](/images/2018/08/Screen-Shot-2018-08-06-at-09.12.50.png)
+![Messages in an unattended console of an emulated IBM 3033 mainframe](/images/2018/08/Screen-Shot-2018-08-06-at-09.12.50.png)
 
 *Messages in an unattended console of an emulated IBM 3033 mainframe,
 and a connected 3270 session*
-
- 
 
 Here's a really simple example of what I mean about message
 identification and documentation. Looking at the first two messages at
@@ -155,7 +153,7 @@ the top of the display in the screenshot, we have:
 
 ```text
 IEF236I ALLOC. FOR JES2 JES2
-IEF237I 00E  ALLOCATED TO PRINTER1
+IEF237I 00E  ALLOCATED TO PRINTER1
 ```
 
 Both message identifiers show that the messages belong to the IEF
@@ -169,7 +167,7 @@ documentation room all those decades ago.
 This is the page from the volume that contains documentation for
 IEF236I:
 
-![](/images/2018/08/Screen-Shot-2018-08-06-at-09.22.59.png)
+![an image of a page of documentation for various messages](/images/2018/08/Screen-Shot-2018-08-06-at-09.22.59.png)
 
 Just look at the richness and precise nature of the information on that
 page. That volume (IEF-IGD) is almost 1000 pages in length, by the way.

@@ -24,7 +24,7 @@ My first reaction was to go into the source code of the `skv` script to add a sw
 
 I'm happy to say that a second after having this reaction, I felt almost horrified that I was about to do exactly what those Berkeley authors did, and add an unnecessary switch to a single program. I already have `urlencode` available to me in my environment, so to get a URL encoded value from the JSON dataset, I'd just have to do something like this:
 
-```
+```bash
 skv uaa.clientid | urlencode
 ```
 
@@ -32,7 +32,7 @@ This is only a trivial example, and there's a difference because here I'm just s
 
 What's more, there was nothing stopping me encapsulating the pipeline-based use of these two simple tools (`skv` and `urlencode`) in a little script `skvu`, that I could use to save some keystrokes:
 
-```
+```bash
 urlencode "$(skv "$*")"
 ```
 
