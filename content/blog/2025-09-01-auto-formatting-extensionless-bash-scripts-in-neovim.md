@@ -234,7 +234,7 @@ return {
     bashIde = {
       logLevel = 'debug',
       shfmt = {
-        path = '/home/dj/.local/bin/shfmt-wrapper'
+        path = vim.fn.expand('$HOME') .. '/dotfiles/scripts/shfmt-wrapper'
       }
     },
   },
@@ -343,7 +343,7 @@ return {
     bashIde = {
       logLevel = 'debug',
       shfmt = {
-        path = '/home/dj/.local/bin/shfmt-wrapper'
+        path = vim.fn.expand('$HOME') .. '/dotfiles/scripts/shfmt-wrapper'
       }
     },
   },
