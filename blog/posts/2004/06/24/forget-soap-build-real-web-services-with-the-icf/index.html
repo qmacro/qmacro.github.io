@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Forget SOAP - build real web services with the ICF</title>
+		<meta name="description" content="I don’t like getting into a lather when it comes to data and function integration. Rather than using SOAP, I prefer real web services, built with HTTP.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="forget-soap-build-real-web-services-with-the-icf">Forget SOAP - build real web services with the ICF</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2004-06-24">24 June 2004</time></li>
+	<li><a href="/tags/sapcommunity/" class="post-tag">sapcommunity</a>, </li>
+	<li><a href="/tags/soap/" class="post-tag">soap</a>, </li>
+	<li><a href="/tags/rest/" class="post-tag">rest</a></li>
+</ul>
+
+<p class="post-description-main">I don’t like getting into a lather when it comes to data and function integration. Rather than using SOAP, I prefer real web services, built with HTTP.</p>
+
+<p>As an example of taking the <a href="https://web.archive.org/web/20040907010810/http://rest.blueoxen.net/cgi-bin/wiki.pl">REST</a>ian approach to exposing your SAP data and functionality through services you can build with the excellent Internet Communication Framework (ICF) layer, I thought I’d show you how straightforward and natural data integration can be by using a spreadsheet as an example.</p>
+<p>In my recent SDN article (published this week) <a href="/blog/posts/2004/06/22/real-web-services-with-rest-and-icf/">Real Web Services with REST and ICF</a> I presented a simple ICF handler example that allowed you to directly address various elements of CTS data (I prototyped it in my NW4 system so I thought I’d use data at hand, and build an example that you could try out too). For instance, you could retrieve the username of the person responsible for a transport by addressing precisely that data element like this:</p>
+<pre class="language-url" tabindex="0"><code class="language-url"><span class="token scheme">http<span class="token scheme-delimiter">:</span></span><span class="token authority"><span class="token authority-delimiter">//</span><span class="token host">shrdlu.local.net</span><span class="token port-segment"><span class="token port-delimiter">:</span><span class="token port">8000</span></span></span><span class="token path"><span class="token path-separator">/</span>qmacro<span class="token path-separator">/</span>transport<span class="token path-separator">/</span>NW4K900007<span class="token path-separator">/</span>as4text</span></code></pre>
+<p>The approach of making your SAP data and functionality first class web entities, by giving each element its own URL, has wide and far reaching benefits.</p>
+<p>Take a programmable spreadsheet, for example. You’re managing transports between systems by recording activity in a spreadsheet. You’re mostly handling actual transport numbers, but have also to log onto SAP to pull out information about those transports. You think: “Hmmm, wouldn’t it be useful if I could just specify the address of transport XYZ’s user in this cell here, and then the value would appear automatically?”</p>
+<p>Let’s look at how this is done. My spreadsheet program of choice is the popular <a href="https://web.archive.org/web/20040606141722/http://www.gnome.org/projects/gnumeric/">Gnumeric</a>, available on Linux. If you use another brand, no problem – there’s bound to be similarities enough for you to do the same as what follows. For background reading on extending Gnumeric with Python, you should take a look here.</p>
+<p>With Gnumeric, you can extend the functions available by writing little methods in Python. It’s pretty straightforward. In my home directory, I have a subdirectory structure</p>
+<pre class="language-text" tabindex="0"><code class="language-text">.gnumeric/1.2.1-bonobo/plugins/myfuncs/</code></pre>
+<p>where I keep the Python files that hold my personal extended methods.</p>
+<p>In there, in a file called my-funcs.py, I have a little script that defines a method <code>func_get()</code>. This method takes a URL as an argument, and goes to fetch the value of what that URL represents. In other words, it performs an HTTP GET to retrieve the content. If successful, and if the value is appropriate (it’s just an example here, I’m expecting a text/plain result), then it’s returned … and the cell containing the call to that function is populated with the value.</p>
+<p>Here’s the code.</p>
+<pre class="language-python" tabindex="0"><code class="language-python"><span class="token comment"># The libs needed for this example</span>
+<span class="token keyword">import</span> Gnumeric
+<span class="token keyword">import</span> string
+<span class="token keyword">import</span> urllib
+<span class="token keyword">from</span> re <span class="token keyword">import</span> sub
+
+<span class="token comment"># My version of FancyURLopener to provide basic auth info</span>
+<span class="token keyword">class</span> <span class="token class-name">MyURLopener</span><span class="token punctuation">(</span>urllib<span class="token punctuation">.</span>FancyURLopener<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token keyword">def</span> <span class="token function">prompt_user_passwd</span><span class="token punctuation">(</span>self<span class="token punctuation">,</span> <span class="token operator">*</span>args<span class="token punctuation">)</span><span class="token punctuation">:</span>
+      <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token string">'developer'</span><span class="token punctuation">,</span> <span class="token string">'developer'</span><span class="token punctuation">)</span>
+
+<span class="token comment"># The actual extended function definition</span>
+<span class="token keyword">def</span> <span class="token function">func_get</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span><span class="token punctuation">:</span>
+    urllib<span class="token punctuation">.</span>_urlopener <span class="token operator">=</span> MyURLopener<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    connection <span class="token operator">=</span> urllib<span class="token punctuation">.</span>urlopen<span class="token punctuation">(</span>url<span class="token punctuation">)</span>
+    data <span class="token operator">=</span> connection<span class="token punctuation">.</span>read<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> connection<span class="token punctuation">.</span>info<span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>gettype<span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token string">'text/plain'</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> sub<span class="token punctuation">(</span>"
+$<span class="token string">", "</span>"<span class="token punctuation">,</span> data<span class="token punctuation">)</span>
+    <span class="token keyword">else</span><span class="token punctuation">:</span>
+        <span class="token keyword">return</span> <span class="token string">"#VALUE!"</span>
+
+<span class="token comment"># The link between the extended function name and the method name</span>
+example_functions <span class="token operator">=</span> <span class="token punctuation">{</span>
+        <span class="token string">'py_get'</span><span class="token punctuation">:</span> func_get
+<span class="token punctuation">}</span></code></pre>
+<p>It’s pretty straightforward. Let’s just focus on the main part, <code>func_get()</code>. Because the resource in this example is protected with basic authentication (i.e. you have to supply a username and password), we subclass the standard FancyURLopener to be able to supply the username and password tuple, and then assign an instance of that class to the <code>urllib._urlopener</code> variable before actually making the call to GET.</p>
+<p>If we get some ‘text/plain’ content as a result, we brush it off and return it to be populated into the cell, otherwise we return a ‘warning – something went wrong’ value.</p>
+<p>We add the method definition to a hash that Gnumeric reads, and through the assignment, the <code>func_get()</code> is made available as new custom function <code>py_get</code> in the spreadsheet. (There’s also an extra XML file called plugin.xml, not shown here but described in the Gnumeric programming documentation mentioned earlier, that contains the name of the function so that it can be found when the spreadsheet user browses the list of functions.)</p>
+<p>So, what does that give us? It gives us the ability to type something like this into a spreadsheet cell (split for readability):</p>
+<pre class="language-text" tabindex="0"><code class="language-text">=py_get('http://shrdlu.local.net:8000/qmacro/transport/NW4K900011/as4user')</code></pre>
+<p>and have the cell automagically populated with the appropriate data from SAP. You can see an example of this in action in the screenshot:</p>
+<p><img src="/images/2004/06/py_get.png" alt="screenshot of py_get in Gnumeric"></p>
+<p>As you can see, being able to address information as first class web resources opens up a universe of possibilities for the use of real web services.</p>
+<p>As a final note, I’ve submitted a SAP TechEd talk proposal. It’s titled:</p>
+<p><strong>“The Internet Communication Framework: Into Context and Into Action!”</strong></p>
+<p>If you’re interested in learning more about the ICF, and want to have some fun building and debugging a simple web service with me, you know where to cast your vote if you haven’t already. Hurry though – there’s only a few hours to go!</p>
+<p>Thanks!</p>
+<hr>
+<p><a href="https://blogs.sap.com/2004/06/24/forget-soap-build-real-web-services-with-the-icf/">Originally published on SAP Community</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2004/06/22/real-web-services-with-rest-and-icf/">Real Web Services with REST and ICF</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2004/06/30/teched-talk-winners-congrats/">TechEd talk winners - congrats</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2004/06/24/forget-soap-build-real-web-services-with-the-icf/` was built on 2025-09-17T15:42:08.221Z -->
+		<script type="module" src="/dist/R1izrEYWYW.js"></script>
+	</body>
+</html>
