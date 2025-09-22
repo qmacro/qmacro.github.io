@@ -365,7 +365,7 @@ This time the `console.log` handler showed that:
 
 This `next` vs `_dummy` function is at the heart of one of the key differences between events and requests in CAP. In both contexts one can define multiple handlers that are called in sequence for a given message.
 
-The handling of *requests* is done in the context of a classic [interceptor stack], where any given handler break the chain and effectively declare that the message has been handled (by not calling `next` to pass the processing to the next handler in the stack). But there is no interceptor stack in the handling of *events* - every registered handler is called, regardless (and therefore there's no need for the `next` function).
+The handling of *requests* is done in the context of a classic [interceptor stack], where any given handler can break the chain and effectively declare that the message has been handled (by not calling `next` to pass the processing to the next handler in the stack). But there is no interceptor stack in the handling of *events* - every registered handler is called, regardless (and therefore there's no need for the `next` function).
 
 ## Sending queries to a remote service
 
@@ -444,14 +444,14 @@ cds.ql {
 
 The context here in the post has diverged slightly from the context of the talk, because (as I'd exited the cds REPL back to the shell to show the output of `npm ls`) the cds REPL session at this point was a fresh one in the talk, one where I hadn't re-invoked the CAP server (with `.run .`), and therefore there was no `db` variable injected into the global REPL context like before.
 
-So when I ran this during the talk, this happened, which nicely illustrated the default use of `db.run` when `await`-ing a query:
+So when I ran this during the talk, this happened:
 
 ```javascript
 > await cats
 Uncaught Error: Can't execute query as no primary database is connected.
 ```
 
-But here, while we *do* have a primary database in the form of `db`, we get a different and equally illustrative error:
+But here, while we *do* have a primary database in the form of `db`, we get a different and equally illustrative error, which nicely illustrated the default use of `db.run` when `await`-ing a query - it sent the query to be executed in the context of that local database:
 
 ```javascript
 > await cats
