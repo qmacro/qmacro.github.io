@@ -350,7 +350,7 @@ This is what was shown in the output:
 
 In other words, this is effectively a request/response concept, close to the synchronous ideas in HTTP, for example.
 
-Then, to contrast this with an event message concept, close to the ideas in the asynchronous ideas in event emitters and receivers, I swapped out the `srv.send` and used `srv.emit` instead:
+Then, to contrast this with an event message concept, close to the asynchronous ideas with event emitters and receivers, I swapped out the `srv.send` and used `srv.emit` instead:
 
 ```javascript
 > await srv.emit('recap', { is: "awesome" })
