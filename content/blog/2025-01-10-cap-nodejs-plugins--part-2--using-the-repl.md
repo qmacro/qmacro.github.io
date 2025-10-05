@@ -506,11 +506,11 @@ or even (turning everything up to 11):
 DEBUG=all cds watch
 ```
 
-[1]: /blog/posts/2024/12/30/cap-node.js-plugins/
+[1]: /blog/posts/2024/12/30/cap-node-js-plugins/
 [2]: https://cap.cloud.sap/docs/releases/dec24
 [3]: https://cap.cloud.sap/docs/releases/dec24#cds-repl-enhancements
-[4]: /blog/posts/2024/10/05/cap-node.js-plugins-part-1-how-things-work/#diving-into-the-cap-server-source-code
-[5]: /blog/posts/2024/10/05/cap-node.js-plugins-part-1-how-things-work/#setting-the-scene
+[4]: /blog/posts/2024/10/05/cap-node-js-plugins-part-1-how-things-work/#diving-into-the-cap-server-source-code
+[5]: /blog/posts/2024/10/05/cap-node-js-plugins-part-1-how-things-work/#setting-the-scene
 [6]: https://cap.cloud.sap/docs/tools/cds-cli#cds-repl
 [7]: /blog/posts/2024/12/10/tasc-notes-part-4/#everything-is-a-service
 [8]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/for...in

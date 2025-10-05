@@ -24,9 +24,9 @@ Part|Broadcast|Live Stream / Recording|Blog Post|Community
 [2]: https://www.youtube.com/watch?v=aTEsSdP43a4
 [3]: https://www.youtube.com/watch?v=hi7NXlMl3iU
 
-[11]: /blog/posts/2024/10/05/cap-node.js-plugins-part-1-how-things-work/
-[12]: /blog/posts/2025/01/10/cap-node.js-plugins-part-2-using-the-repl/
-[13]: /blog/posts/2025/01/17/cap-node.js-plugins-part-3-writing-our-own/
+[11]: /blog/posts/2024/10/05/cap-node-js-plugins-part-1-how-things-work/
+[12]: /blog/posts/2025/01/10/cap-node-js-plugins-part-2-using-the-repl/
+[13]: /blog/posts/2025/01/17/cap-node-js-plugins-part-3-writing-our-own/
 
 [21]: https://community.sap.com/t5/sap-community/cap-node-js-plugins-1-of-3-how-things-work/ev-p/13922285
 [22]: https://community.sap.com/t5/sap-community/cap-node-js-plugins-2-of-3-using-the-repl/ev-p/13973724

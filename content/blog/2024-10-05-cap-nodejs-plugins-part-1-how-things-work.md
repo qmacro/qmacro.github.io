@@ -10,7 +10,7 @@ tags:
 ---
 In this first of a three part series of blog posts, we explore the [CDS Plugin](https://cap.cloud.sap/docs/node.js/cds-plugins) mechanism in CAP to find out how it works, so we are well prepared to write our own plugin.
 
-For information on the series and links to all resources, see [CAP Node.js Plugins](/blog/posts/2024/12/30/cap-node.js-plugins/).
+For information on the series and links to all resources, see [CAP Node.js Plugins](/blog/posts/2024/12/30/cap-node-js-plugins/).
 
 > The examples in this post are based on CAP Node.js at release 8.3.0 ([September 2024](https://cap.cloud.sap/docs/releases/sep24)).
 
@@ -48,8 +48,8 @@ Starting the CAP server with `cds watch` gives us what we expect, there's some d
 
 [cds] - connect using bindings from: { registry: '~/.cds-services.json' }
 [cds] - connect to db > sqlite { url: ':memory:' }
-  > init from data/Bookshop.Books.csv 
-/> successfully deployed to in-memory database. 
+  > init from data/Bookshop.Books.csv
+/> successfully deployed to in-memory database.
 ...
 [cds] - using new OData adapter
 [cds] - serving Bookshop { path: '/odata/v4/bookshop' }
@@ -179,7 +179,7 @@ Wanting to know more about `cds.home` and `cds.root` is a perfect opportunity to
 Starting the repl with `cds repl`, we can examine the values of `cds.home` and `cds.root` like this:
 
 ```log
-Welcome to cds repl v 8.3.0 
+Welcome to cds repl v 8.3.0
 > cds.home
 /workspaces/project/node_modules/@sap/cds
 > cds.root
@@ -270,7 +270,13 @@ Wrote to /workspaces/project/loud/package.json:
 added 1 package in 191ms
 ```
 
-And now that our plugin package exists in that workspace context, we can just add it as a dependency as normal, with `npm add loud`, whereupon we see that this is now listed as normal in the `dependencies` section. Here's what the project's `package.json` content looks like now, with the addition of the `workspaces` section and the inclusion of the `loud` package reference in the `dependencies` section:
+And now that our plugin package exists in that workspace context, we can just add it as a dependency as normal, with:
+
+```bash
+npm add loud
+```
+
+whereupon we see that this is now listed as normal in the `dependencies` section. Here's what the project's `package.json` content looks like now, with the addition of the `workspaces` section and the inclusion of the `loud` package reference in the `dependencies` section:
 
 ```json
 {

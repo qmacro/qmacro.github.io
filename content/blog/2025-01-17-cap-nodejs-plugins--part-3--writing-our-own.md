@@ -353,12 +353,12 @@ And that's it for this mini-series too. Of course, this is just scratching the s
 - introspection is straightforward and brings you and your understanding closer to the CAP mechanics and philosophy
 - getting a plugin to do something doesn't require any "special" code, it's just events and handlers all the way down
 
-[1]: /blog/posts/2024/12/30/cap-node.js-plugins/
+[1]: /blog/posts/2024/12/30/cap-node-js-plugins/
 [2]: https://cap.cloud.sap/docs/releases/dec24
-[3]: /blog/posts/2025/01/10/cap-node.js-plugins-part-2-using-the-repl/#identifying-the-elements-annotated-with-loud
+[3]: /blog/posts/2025/01/10/cap-node-js-plugins-part-2-using-the-repl/#identifying-the-elements-annotated-with-loud
 [4]: https://en.wikipedia.org/wiki/Theory_of_forms
 [5]: https://cap.cloud.sap/docs/releases/dec24#cds-repl-enhancements
-[6]: /blog/posts/2025/01/10/cap-node.js-plugins-part-2-using-the-repl/#new-repl-options
+[6]: /blog/posts/2025/01/10/cap-node-js-plugins-part-2-using-the-repl/#new-repl-options
 [7]: https://dcl-prog.stanford.edu/function-predicate.html
 [8]: https://cap.cloud.sap/docs/node.js/cds-server#lifecycle-events
 [9]: https://cap.cloud.sap/docs/node.js/cds-server#served
