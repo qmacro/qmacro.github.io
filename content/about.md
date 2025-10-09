@@ -46,7 +46,7 @@ Follow me on [Mastodon](//hachyderm.io/@qmacro), [Bluesky](https://bsky.app/prof
 
 ### Google Pocket Guide (O'Reilly, 2003)
 
-[![Google Pocket Guide](/images/books/googlepocketguide.png)](http://shop.oreilly.com/product/9780596005504.do)
+[![Google Pocket Guide](/images/books/googlepocketguide.png)](https://books.google.com/books/about/Google_Pocket_Guide.html?id=SQJVAgAAQBAJ)
 
 ### Practical Workflow for SAP (SAP Press, 2014)
 
