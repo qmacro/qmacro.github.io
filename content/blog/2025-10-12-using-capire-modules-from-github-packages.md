@@ -12,7 +12,7 @@ description: Here's how to access and use the @capire namespaced modules that re
 ---
 ## Background
 
-[Recently](https://cap.cloud.sap/docs/releases/aug25) the home for Capire documentation and sample repositories moved into the [capire](https://github.com/capire) organisation on GitHub. This content includes classic modules such as [bookshop](https://github.com/capire/bookshop) which are now maintained as individual repositories, are subject to release schedules and deployments, and are made available as [packages](https://github.com/orgs/capire/packages) that are available in the NPM registry which is part of [GitHub Packages](https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages).
+[Recently](https://cap.cloud.sap/docs/releases/aug25) the home for Capire documentation and sample repositories moved into the [capire](https://github.com/capire) organisation on GitHub. This content includes classic modules such as [bookshop](https://github.com/capire/bookshop) which are now maintained as individual repositories, are subject to release schedules and deployments, and are made available as [packages](https://github.com/orgs/capire/packages) in the NPM registry which is part of [GitHub Packages](https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages).
 
 Retrieving (e.g. via `npm install` or `npm add`) a package such as `@sap/cds-dk` is straightforward as such packages [are available](https://www.npmjs.com/package/@sap/cds-dk) in the default NPM registry at <https://registry.npmjs.org> (with a human centric UI at <https://npmjs.com>).
 
