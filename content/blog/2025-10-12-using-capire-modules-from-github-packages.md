@@ -23,7 +23,7 @@ Retrieving packages from any other registry (such as package `@capire/bookshop` 
 This is done by configuration in an `.npmrc` file in your home directory. The mapping here (for the `@capire` namespaced packages) needs to look like this in that file:
 
 ```text
-@capire:registry=https://npm.pkg.github.com`
+@capire:registry=https://npm.pkg.github.com
 ```
 
 Without this mapping, here's what happens:
