@@ -5,11 +5,176 @@
   <subtitle>Reserving the right to be wrong</subtitle>
   <link href="https://qmacro.org/feed/feed.xml" rel="self" />
   <link href="https://qmacro.org/blog/" />
-  <updated>2025-10-12T00:00:00Z</updated>
+  <updated>2025-10-14T00:00:00Z</updated>
   <id>https://qmacro.org/blog/</id>
   <author>
     <name>DJ Adams</name>
   </author>
+  <entry>
+    <title>Modelling contained-in relationships with compositions in CDS</title>
+    <link href="https://qmacro.org/blog/posts/2025/10/14/modelling-contained-in-relationships-with-compositions-in-cds/" />
+    <updated>2025-10-14T00:00:00Z</updated>
+    <id>https://qmacro.org/blog/posts/2025/10/14/modelling-contained-in-relationships-with-compositions-in-cds/</id>
+    <content type="html">&lt;h2 id=&quot;background&quot;&gt;Background&lt;/h2&gt;
+&lt;p&gt;There&#39;s a classic structure often found representing business data in enterprise software, and that&#39;s the &amp;quot;document&amp;quot;. Purchase requisition, sales order, goods receipt, and so on. Header and items. Most of the time the items don&#39;t make sense existing on their own, independent of their header parent. Such documents are typically modelled using contained-in relationships.&lt;/p&gt;
+&lt;p&gt;There&#39;s a great section of the &lt;a href=&quot;https://cap.cloud.sap/docs/&quot;&gt;Capire&lt;/a&gt; documentation, specifically on &lt;a href=&quot;https://cap.cloud.sap/docs/guides/domain-modeling#compositions&quot;&gt;compositions&lt;/a&gt;, on which I want to expand here.&lt;/p&gt;
+&lt;h2 id=&quot;explicit-modelling&quot;&gt;Explicit modelling&lt;/h2&gt;
+&lt;p&gt;Given a hammer, all problems look like nails. Given the &amp;quot;entity&amp;quot; concept, all business data structures look like they should be modelled using entities.&lt;/p&gt;
+&lt;p&gt;Which does work. To wit:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; S {
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Orders {
+    &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; ID    : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
+        Items : &lt;span class=&quot;token association-composition keyword&quot;&gt;Composition of many OrderItems&lt;/span&gt;
+                  &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; Items.parent = $self;
+  }
+
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; OrderItems {
+    &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; parent : &lt;span class=&quot;token association-composition keyword&quot;&gt;Association to Orders&lt;/span&gt;;
+    &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; pos    : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
+        qty    : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
+  }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;When compiled (with &lt;code&gt;cds compile --to yaml service.cds&lt;/code&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2025/10/14/modelling-contained-in-relationships-with-compositions-in-cds/#footnotes&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;), this results in the following schema notation (in a YAML representation as I find it cleaner and easier to read)&lt;a href=&quot;https://qmacro.org/blog/posts/2025/10/14/modelling-contained-in-relationships-with-compositions-in-cds/#footnotes&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-yaml&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-yaml&quot;&gt;&lt;span class=&quot;token key atrule&quot;&gt;definitions&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;S&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; service
+  &lt;span class=&quot;token key atrule&quot;&gt;S.Orders&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; entity
+    &lt;span class=&quot;token key atrule&quot;&gt;elements&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;token key atrule&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Integer
+      &lt;span class=&quot;token key atrule&quot;&gt;Items&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Composition
+        &lt;span class=&quot;token key atrule&quot;&gt;cardinality&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;*&#39;&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; S.OrderItems
+        &lt;span class=&quot;token key atrule&quot;&gt;&#39;on&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+          &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+              &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; Items
+              &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; parent
+          &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;=&#39;&lt;/span&gt;
+          &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+              &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; $self
+  &lt;span class=&quot;token key atrule&quot;&gt;S.OrderItems&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; entity
+    &lt;span class=&quot;token key atrule&quot;&gt;elements&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;token key atrule&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Association
+        &lt;span class=&quot;token key atrule&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; S.Orders
+        &lt;span class=&quot;token key atrule&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+          &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+              &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; ID
+      &lt;span class=&quot;token key atrule&quot;&gt;pos&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Integer
+      &lt;span class=&quot;token key atrule&quot;&gt;qty&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Integer&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The resulting CSN encompasses the modelling intent - zero or more item children, and a relationship constraint that links back to the parent.&lt;/p&gt;
+&lt;p&gt;But the definitions at the CDS model level are quite explicit and arguably a little &amp;quot;noisy&amp;quot;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;at the parent level, the constraint detail (i.e. &lt;code&gt;on Items.parent = $self&lt;/code&gt;) needs to be expressed explicitly&lt;/li&gt;
+&lt;li&gt;the child requires an explicit (key) element to point back to the parent&lt;/li&gt;
+&lt;li&gt;that child-to-parent relationship needs to be expressed explicitly as a to-one association which is arguably also just a bit too much &amp;quot;machinery&amp;quot; on show&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Remember, domain modelling is the common language for business domain experts and developers, and the CDS model is where they meet. So machinery is to be avoided where possible.&lt;/p&gt;
+&lt;h2 id=&quot;implicit-modelling&quot;&gt;Implicit modelling&lt;/h2&gt;
+&lt;p&gt;Such a classic parent-child structure can be expressed in the CDS model a lot more succinctly, using &lt;a href=&quot;https://cap.cloud.sap/docs/guides/domain-modeling#aspects&quot;&gt;aspects&lt;/a&gt;, specifically &lt;a href=&quot;https://cap.cloud.sap/docs/guides/domain-modeling#composition-of-aspects&quot;&gt;anonymous aspects&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The exact same model can be expressed thus:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; S {
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Orders {
+    &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; ID    : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
+        Items : &lt;span class=&quot;token association-composition keyword&quot;&gt;Composition of many &lt;/span&gt;{
+                  &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; pos : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
+                      qty : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
+                }
+  }
+
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That&#39;s it - that&#39;s the entire equivalent declaration. In using an anonymous aspect (that&#39;s the part expressed as the &lt;code&gt;{ ... }&lt;/code&gt; block) to describe the composition target, we get to NOT have to come up with and define:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;a second entity definition&lt;/li&gt;
+&lt;li&gt;a name for that second entity&lt;/li&gt;
+&lt;li&gt;a composition constraint&lt;/li&gt;
+&lt;li&gt;a pointer from the child back to the parent&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I would go so far as to say that &lt;a href=&quot;https://qmacro.org/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#initial-recognition&quot;&gt;staring at&lt;/a&gt; this structure expression conjures up far more readily what a document (such as those examples mentioned above) &amp;quot;looks like&amp;quot; mentally.&lt;/p&gt;
+&lt;p&gt;And guess what? The equivalent schema notation is logically the same. Here&#39;s what compiling this &amp;quot;quieter&amp;quot; and more compact version to the YAML flavour of CSN gives us&lt;a href=&quot;https://qmacro.org/blog/posts/2025/10/14/modelling-contained-in-relationships-with-compositions-in-cds/#footnotes&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-yaml&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-yaml&quot;&gt;&lt;span class=&quot;token key atrule&quot;&gt;definitions&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;S&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; service
+  &lt;span class=&quot;token key atrule&quot;&gt;S.Orders&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; entity
+    &lt;span class=&quot;token key atrule&quot;&gt;elements&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;token key atrule&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Integer
+      &lt;span class=&quot;token key atrule&quot;&gt;Items&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Composition
+        &lt;span class=&quot;token key atrule&quot;&gt;cardinality&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;*&#39;&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;targetAspect&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;elements&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+            &lt;span class=&quot;token key atrule&quot;&gt;pos&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+              &lt;span class=&quot;token key atrule&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
+              &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Integer
+            &lt;span class=&quot;token key atrule&quot;&gt;qty&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+              &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Integer
+        &lt;span class=&quot;token key atrule&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; S.Orders.Items
+        &lt;span class=&quot;token key atrule&quot;&gt;&#39;on&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+          &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+              &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; Items
+              &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; up_
+          &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;=&#39;&lt;/span&gt;
+          &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+              &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; $self
+  &lt;span class=&quot;token key atrule&quot;&gt;S.Orders.Items&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; entity
+    &lt;span class=&quot;token key atrule&quot;&gt;elements&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;token key atrule&quot;&gt;up_&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Association
+        &lt;span class=&quot;token key atrule&quot;&gt;cardinality&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;min&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;
+          &lt;span class=&quot;token key atrule&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; S.Orders
+        &lt;span class=&quot;token key atrule&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+          &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+              &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; ID
+        &lt;span class=&quot;token key atrule&quot;&gt;notNull&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
+      &lt;span class=&quot;token key atrule&quot;&gt;pos&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Integer
+      &lt;span class=&quot;token key atrule&quot;&gt;qty&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Integer&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;There are some technical differences, which are worth pointing out (there&#39;s always an opportunity to learn):&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;there&#39;s still a composition &lt;code&gt;target&lt;/code&gt; pointing to an entity definition, but here that is &lt;code&gt;S.Orders.Items&lt;/code&gt;, a definition that&#39;s been created on the fly to help satisfy the composition requirements&lt;/li&gt;
+&lt;li&gt;this &lt;code&gt;S.Orders.Items&lt;/code&gt; entity has a key element &lt;code&gt;up_&lt;/code&gt; that points back to the parent&lt;/li&gt;
+&lt;li&gt;there&#39;s additional info at the &lt;code&gt;Items&lt;/code&gt; element in the parent that captures the original anonymous aspect definition (in &lt;code&gt;targetAspect&lt;/code&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;From a naming convention perspective, the name of the generated target entity is creaed using the parent entity as a prefix (&lt;code&gt;S.Orders&lt;/code&gt;) to the composition element&#39;s name (&lt;code&gt;Items&lt;/code&gt;), forming a &lt;a href=&quot;https://cap.cloud.sap/docs/cds/cdl#scoped-names&quot;&gt;scoped&lt;/a&gt; name &lt;code&gt;S.Orders.Items&lt;/code&gt;. And I would wager that it&#39;s unlikely that we as humans would use an underscore-suffixed name for an element, so &lt;code&gt;up_&lt;/code&gt; is a good choice for the automatically generated pointer-to-parent element name.&lt;/p&gt;
+&lt;h2 id=&quot;hybrid&quot;&gt;Hybrid&lt;/h2&gt;
+&lt;p&gt;There is a middle ground, where named, rather than anonymous aspects can be used. You can read more about this in the &lt;a href=&quot;https://cap.cloud.sap/docs/cds/cdl#with-named-targets&quot;&gt;named targets&lt;/a&gt; section of the Domain Modelling topic of Capire.&lt;/p&gt;
+&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
+&lt;p&gt;The CDS modelling language (and CDL specifically) is for humans. CSN is for machines. The distinction is not always top of mind, but if we try to keep it there, we&#39;ll end up with cleaner, simpler model definitions that are easier to reason about, easier to extend and reuse, and easier to maintain.&lt;/p&gt;
+&lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;I piped the resulting YAML through &lt;code&gt;yq -y .&lt;/code&gt; to pretty-print it, as I find the long(er) lines of the raw YAML output a little tough to digest.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;I removed the metadata from the compiled YAML output:&lt;/p&gt;
+&lt;pre class=&quot;language-yaml&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-yaml&quot;&gt;&lt;span class=&quot;token key atrule&quot;&gt;meta&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;creator&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; CDS Compiler v6.4.2
+  &lt;span class=&quot;token key atrule&quot;&gt;flavor&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; inferred
+&lt;span class=&quot;token key atrule&quot;&gt;$version&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;just to keep things a little more compact.&lt;/p&gt;
+</content>
+  </entry>
   <entry>
     <title>Using @capire modules from GitHub Packages</title>
     <link href="https://qmacro.org/blog/posts/2025/10/12/using-capire-modules-from-github-packages/" />
@@ -1667,353 +1832,6 @@ E   &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; ID 
 &lt;h3 id=&quot;diagnostic-details&quot;&gt;Diagnostic details&lt;/h3&gt;
 &lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2025/06/diagnostic-link-to-non-existent-document.png&quot; alt=&quot;TODO&quot;&gt;&lt;/p&gt;
 &lt;hr&gt;
-</content>
-  </entry>
-  <entry>
-    <title>Point free coding and function composition</title>
-    <link href="https://qmacro.org/blog/posts/2025/05/15/point-free-coding-and-function-composition/" />
-    <updated>2025-05-15T00:00:00Z</updated>
-    <id>https://qmacro.org/blog/posts/2025/05/15/point-free-coding-and-function-composition/</id>
-    <content type="html">&lt;p&gt;While preparing for tomorrow&#39;s &lt;a href=&quot;https://www.youtube.com/watch?v=8eKWxP3F6xc&amp;amp;list=PL6RpkC85SLQB-0sK7KSRwCc2gdtlZDIkL&amp;amp;index=5&quot;&gt;fifth and final episode&lt;/a&gt; in our current Hands-on SAP Dev series &lt;a href=&quot;https://www.youtube.com/playlist?list=PL6RpkC85SLQB-0sK7KSRwCc2gdtlZDIkL&quot;&gt;Let&#39;s explore functional programming&lt;/a&gt; I was thinking about how point free coding and composition can be found in many places, not just in functional libraries and languages.&lt;/p&gt;
-&lt;p&gt;We&#39;ve been learning about functional programming concepts mainly with JavaScript, sometimes making use of features from the excellent &lt;a href=&quot;https://ramdajs.com&quot;&gt;Ramda&lt;/a&gt; library. For data, we&#39;ve mostly used &lt;a href=&quot;https://github.com/qmacro/northbreeze&quot;&gt;Northbreeze&lt;/a&gt;, a sort of &amp;quot;reduced&amp;quot; &lt;a href=&quot;https://services.odata.org/V4/Northwind/Northwind.svc/&quot;&gt;Northwind&lt;/a&gt;. There&#39;s an instance of the OData V4 service &lt;a href=&quot;https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze&quot;&gt;available&lt;/a&gt; for the time being, and I&#39;ll use that to explore in this post too, in particular the &lt;a href=&quot;https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/Products&quot;&gt;Products&lt;/a&gt; entityset.&lt;/p&gt;
-&lt;h2 id=&quot;the-basic-concepts&quot;&gt;The basic concepts&lt;/h2&gt;
-&lt;p&gt;With point free coding, also known as &lt;a href=&quot;https://en.wikipedia.org/wiki/Tacit_programming&quot;&gt;tacit programming&lt;/a&gt;, data and behaviour are separate, a fundamental philosophy of the functional programming style. Behaviour is defined in the form of functions, building blocks that are used on their own or composed together.&lt;/p&gt;
-&lt;p&gt;In writing those function declarations, the data that they will operate on is not specified. Instead, when the time is right, data is passed through to the function(s), often in a flowing approach through a series of them which are chained together.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;There are more formal definitions and interpretations of point free coding, but at this level of exploration we can be comfortable thinking of the concepts as described here.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h2 id=&quot;exploring-in-jq&quot;&gt;Exploring in jq&lt;/h2&gt;
-&lt;p&gt;It&#39;s no secret that I&#39;m a &lt;a href=&quot;https://qmacro.org/tags/jq/&quot;&gt;fan&lt;/a&gt; of &lt;a href=&quot;https://jqlang.org&quot;&gt;jq&lt;/a&gt;, a fully formed programming language that exhibits a predominantly functional paradigm, as well as being a powerful way to manipulate JSON with ad hoc expressions.&lt;/p&gt;
-&lt;p&gt;There are &lt;a href=&quot;https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/Products/$count&quot;&gt;77&lt;/a&gt; products in Northbreeze. Let&#39;s have a look at the first one with:&lt;/p&gt;
-&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;jq &lt;span class=&quot;token string&quot;&gt;&#39;.value|first&#39;&lt;/span&gt; products.json&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;which emits:&lt;/p&gt;
-&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;ProductID&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;ProductName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Chai&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;QuantityPerUnit&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;10 boxes x 20 bags&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;UnitPrice&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;18&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;Category_CategoryID&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;Supplier_SupplierID&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;UnitsInStock&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;39&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;UnitsOnOrder&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;ReorderLevel&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;Discontinued&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;blockquote&gt;
-&lt;p&gt;In the &lt;code&gt;jq&lt;/code&gt; filter here (and elsewhere in this post) &lt;code&gt;.value&lt;/code&gt; is an artifact of the OData V4 JSON representation of the data, not anything inherently required by &lt;code&gt;jq&lt;/code&gt;.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h3 id=&quot;discontinued-products&quot;&gt;Discontinued products&lt;/h3&gt;
-&lt;p&gt;Defining a function that discards anything that&#39;s not discontinued, and using that to map over the products, like this:&lt;/p&gt;
-&lt;pre class=&quot;language-jq&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-jq&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;justDiscontinued&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token c-style-function function&quot;&gt;select&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Discontinued&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;value
-&lt;span class=&quot;token operator pipe&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token c-style-function function&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;justDiscontinued&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token operator pipe&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ProductName&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;gives us:&lt;/p&gt;
-&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;&quot;Chef Anton&#39;s Gumbo Mix&quot;
-&quot;Mishi Kobe Niku&quot;
-&quot;Alice Mutton&quot;
-&quot;Guaraná Fantástica&quot;
-&quot;Rössle Sauerkraut&quot;
-&quot;Thüringer Rostbratwurst&quot;
-&quot;Singaporean Hokkien Fried Mee&quot;
-&quot;Perth Pasties&quot;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Already we can start to see how the product data is nowhere to be seen in this &lt;code&gt;jq&lt;/code&gt; filter. It&#39;s implicit, and sent through the chain (by means of the &lt;a href=&quot;https://jqlang.org/manual/#pipe&quot;&gt;pipe operator&lt;/a&gt;) when the expression is evaluated.&lt;/p&gt;
-&lt;p&gt;Even the definition of &lt;code&gt;justDiscontinued&lt;/code&gt; exhibits the idea of tacitness, in that there&#39;s no indication of what this function, or its body, is to work on.&lt;/p&gt;
-&lt;h3 id=&quot;stock-information&quot;&gt;Stock information&lt;/h3&gt;
-&lt;p&gt;Rather than that deliberately simple iterator and property expression at the end (&lt;code&gt;.[].ProductName&lt;/code&gt;), let&#39;s add a further filter to the chain:&lt;/p&gt;
-&lt;pre class=&quot;language-jq&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-jq&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;justDiscontinued&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token c-style-function function&quot;&gt;select&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Discontinued&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;token keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;stockInfo&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ProductName&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;UnitsInStock&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;value
-&lt;span class=&quot;token operator pipe&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token c-style-function function&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;justDiscontinued&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token operator pipe&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token c-style-function function&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;stockInfo&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;This produces:&lt;/p&gt;
-&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token property&quot;&gt;&quot;Chef Anton&#39;s Gumbo Mix&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token property&quot;&gt;&quot;Mishi Kobe Niku&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;29&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token property&quot;&gt;&quot;Alice Mutton&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token property&quot;&gt;&quot;Guaraná Fantástica&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;20&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token property&quot;&gt;&quot;Rössle Sauerkraut&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;26&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token property&quot;&gt;&quot;Thüringer Rostbratwurst&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token property&quot;&gt;&quot;Singaporean Hokkien Fried Mee&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;26&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token property&quot;&gt;&quot;Perth Pasties&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;There are a couple of improvements we can make here. The first is to &lt;a href=&quot;https://jqlang.org/manual/#add&quot;&gt;add&lt;/a&gt; the elements of the array together:&lt;/p&gt;
-&lt;pre class=&quot;language-jq&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-jq&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;justDiscontinued&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token c-style-function function&quot;&gt;select&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Discontinued&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;token keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;stockInfo&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ProductName&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;UnitsInStock&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;value
-&lt;span class=&quot;token operator pipe&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token c-style-function function&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;justDiscontinued&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token operator pipe&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token c-style-function function&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;stockInfo&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token operator pipe&quot;&gt;|&lt;/span&gt; add&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;which reshapes the output to look like this:&lt;/p&gt;
-&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;Chef Anton&#39;s Gumbo Mix&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;Mishi Kobe Niku&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;29&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;Alice Mutton&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;Guaraná Fantástica&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;Rössle Sauerkraut&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;26&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;Thüringer Rostbratwurst&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;Singaporean Hokkien Fried Mee&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;26&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;Perth Pasties&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&quot;an-alternative-way-to-chain-mappings&quot;&gt;An alternative way to chain mappings&lt;/h3&gt;
-&lt;p&gt;The second improvement is to think about how we have two chained &lt;code&gt;map&lt;/code&gt; expressions; this is neat and pleasing on the eye, and helps us understand how data flows through, especially when it forces us to think about what &lt;em&gt;shape&lt;/em&gt; that data is (an array of objects).&lt;/p&gt;
-&lt;p&gt;But we can just as easily (and more efficiently) write the chain like this:&lt;/p&gt;
-&lt;pre class=&quot;language-jq&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-jq&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;justDiscontinued&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token c-style-function function&quot;&gt;select&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Discontinued&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;token keyword&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;stockInfo&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ProductName&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;UnitsInStock&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;value
-&lt;span class=&quot;token operator pipe&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token c-style-function function&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;justDiscontinued&lt;span class=&quot;token operator pipe&quot;&gt;|&lt;/span&gt;stockInfo&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token operator pipe&quot;&gt;|&lt;/span&gt; add&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;which produces exactly the same result, and is possibly an even better visualisation of what tacit expressions look like.&lt;/p&gt;
-&lt;h3 id=&quot;average-calculation&quot;&gt;Average calculation&lt;/h3&gt;
-&lt;p&gt;In fact, talking of &lt;code&gt;add&lt;/code&gt;, how about this succinct way of emitting the average unit price of all products:&lt;/p&gt;
-&lt;pre class=&quot;language-jq&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-jq&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;value
-&lt;span class=&quot;token operator pipe&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token c-style-function function&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;UnitPrice&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token operator pipe&quot;&gt;|&lt;/span&gt; add &lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt; length&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;This produces the value &lt;code&gt;28.866363636363637&lt;/code&gt;.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Incidentally we can check and compare that to what Northbreeze tells us, using an OData V4 &lt;a href=&quot;https://github.com/qmacro/odata-v4-and-cap/blob/main/slides.md#data-aggregation&quot;&gt;data aggregation&lt;/a&gt; feature that is supported out of the box with CAP (see the &lt;a href=&quot;https://cap.cloud.sap/docs/advanced/odata#aggregation-methods&quot;&gt;Aggregation Methods&lt;/a&gt; section of the OData APIs topic in Capire); the resource at &lt;a href=&quot;https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/Products?$apply=aggregate(UnitPrice%20with%20average%20as%20AvgPrice)&quot;&gt;this URL&lt;/a&gt;:&lt;/p&gt;
-&lt;pre class=&quot;language-url&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-url&quot;&gt;&lt;span class=&quot;token scheme&quot;&gt;https&lt;span class=&quot;token scheme-delimiter&quot;&gt;:&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token authority&quot;&gt;&lt;span class=&quot;token authority-delimiter&quot;&gt;//&lt;/span&gt;&lt;span class=&quot;token host&quot;&gt;developer-challenge.cfapps.eu10.hana.ondemand.com&lt;/span&gt;&lt;/span&gt;
- /odata/v4/northbreeze/Products
- &lt;span class=&quot;token query&quot;&gt;&lt;span class=&quot;token query-delimiter&quot;&gt;?&lt;/span&gt;&lt;/span&gt;
- $apply=aggregate(UnitPrice with average as AvgPrice)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;is returned in a JSON representation, like this:&lt;/p&gt;
-&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
- &lt;span class=&quot;token property&quot;&gt;&quot;@odata.context&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;$metadata#Products(AvgPrice)&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
- &lt;span class=&quot;token property&quot;&gt;&quot;value&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
-   &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-     &lt;span class=&quot;token property&quot;&gt;&quot;AvgPrice@odata.type&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;#Decimal&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-     &lt;span class=&quot;token property&quot;&gt;&quot;AvgPrice&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;28.8663636363636&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-     &lt;span class=&quot;token property&quot;&gt;&quot;@odata.id&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token null keyword&quot;&gt;null&lt;/span&gt;
-   &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
- &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;/blockquote&gt;
-&lt;h3 id=&quot;examining-the-data-flow&quot;&gt;Examining the data flow&lt;/h3&gt;
-&lt;p&gt;What&#39;s even more wonderful about this is how &lt;code&gt;jq&lt;/code&gt; flows the data through the final pipe ... both into &lt;code&gt;add&lt;/code&gt; &lt;em&gt;and also into &lt;code&gt;length&lt;/code&gt;&lt;/em&gt;.&lt;/p&gt;
-&lt;p&gt;This is not just a thing of beauty, but also a great reason for us to stop and think for a moment what&#39;s happening here. I&#39;ll use just the first three products to visualise here, and temporarily remove the last part of the chain:&lt;/p&gt;
-&lt;pre class=&quot;language-jq&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-jq&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;value&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;token operator pipe&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token c-style-function function&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;UnitPrice&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;So &lt;code&gt;.value[0:3]&lt;/code&gt; emits an array of the &lt;a href=&quot;https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/Products?$top=3&quot;&gt;first three products&lt;/a&gt; with all their properties, which in turn is piped into &lt;code&gt;map(.UnitPrice)&lt;/code&gt; which produces:&lt;/p&gt;
-&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
-  &lt;span class=&quot;token number&quot;&gt;18&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token number&quot;&gt;19&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token number&quot;&gt;10&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Then with &lt;code&gt;| add / length&lt;/code&gt; this array is then sent to both &lt;code&gt;add&lt;/code&gt; and &lt;code&gt;length&lt;/code&gt;, in parallel, and then the output of each is combined with the &lt;code&gt;/&lt;/code&gt; divide operator:&lt;/p&gt;
-&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;
-                 +--&gt;  add   --&gt; 47 --+
-                 |                    |
-[ 18, 19, 10 ] --+                    +--&gt; / --&gt; 15.6666666
-                 |                    |
-                 +--&gt; length --&gt; 3  --+&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&quot;the-shell&quot;&gt;The shell&lt;/h2&gt;
-&lt;p&gt;Unix shells in general, and in particular &lt;a href=&quot;https://en.wikipedia.org/wiki/Bash_(Unix_shell)&quot;&gt;my favourite flavour&lt;/a&gt;, exhibit similar point free and functional chain features.&lt;/p&gt;
-&lt;p&gt;Using the same data set, we can produce Unix shell friendly&lt;a href=&quot;https://qmacro.org/blog/posts/2025/05/15/point-free-coding-and-function-composition/#footnote-1&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt; output like this:&lt;/p&gt;
-&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;jq &lt;span class=&quot;token parameter variable&quot;&gt;-r&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;.value[] | [.UnitPrice, .ProductName] | @tsv&#39;&lt;/span&gt; products.json&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;This produces:&lt;/p&gt;
-&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;18     Chai
-19     Chang
-10     Aniseed Syrup
-22     Chef Anton&#39;s Cajun Seasoning
-21.35  Chef Anton&#39;s Gumbo Mix
-25     Grandma&#39;s Boysenberry Spread
-6      Konbu
-23.25  Tofu
-15.5   Genen Shouyu
-...&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The shell&#39;s &lt;a href=&quot;https://en.wikipedia.org/wiki/Standard_streams&quot;&gt;standard streams&lt;/a&gt; concept (STDIN / STDOUT etc), make it easy for us to use regular utilities in their natural environment, i.e. in a point free style, where no data is specified, but is implicit and supplied via STDIN.&lt;/p&gt;
-&lt;p&gt;How about working out the top three most expensive products?&lt;/p&gt;
-&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;jq &lt;span class=&quot;token parameter variable&quot;&gt;-r&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;.value[] | [.UnitPrice, .ProductName] | @tsv&#39;&lt;/span&gt; products.json &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-&lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;sort&lt;/span&gt; &lt;span class=&quot;token parameter variable&quot;&gt;-nr&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-&lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;head&lt;/span&gt; &lt;span class=&quot;token parameter variable&quot;&gt;-3&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Here we are:&lt;/p&gt;
-&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;263.5   Côte de Blaye
-123.79  Thüringer Rostbratwurst
-97      Mishi Kobe Niku&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Yup, &lt;a href=&quot;https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/Products?$select=ProductName,UnitPrice&amp;amp;$orderby=UnitPrice%20desc&amp;amp;$top=3&quot;&gt;that computes&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;We can even &#39;compose&#39; these two &#39;functions&#39; (&lt;code&gt;sort&lt;/code&gt; and &lt;code&gt;head&lt;/code&gt;) like this, again, with no data in sight:&lt;/p&gt;
-&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token function-name function&quot;&gt;topthree&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;sort&lt;/span&gt; &lt;span class=&quot;token parameter variable&quot;&gt;-nr&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;head&lt;/span&gt; &lt;span class=&quot;token parameter variable&quot;&gt;-3&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;and then use that higher level building block:&lt;/p&gt;
-&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;jq &lt;span class=&quot;token parameter variable&quot;&gt;-r&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;.value[] | [.UnitPrice, .ProductName] | @tsv&#39;&lt;/span&gt; products.json &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-&lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; topthree&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&quot;to-javascript-and-beyond&quot;&gt;To JavaScript and beyond&lt;/h2&gt;
-&lt;p&gt;Well, we&#39;ve already started from &amp;quot;beyond&amp;quot; JavaScript, but I guess what I was trying to say with this section heading is that these concepts are to be found in many places. Not least JavaScript, as well as of course in languages more strongly focused on the functional programming paradigm.&lt;/p&gt;
-&lt;p&gt;Hopefully I&#39;ve illustrated some general features of these two concepts to show how they allow, even encourage programming that favours:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;thinking about behaviours separately from data&lt;/li&gt;
-&lt;li&gt;building new functions from other functions&lt;/li&gt;
-&lt;li&gt;constructing generic blocks of code&lt;/li&gt;
-&lt;li&gt;coding at a high level&lt;/li&gt;
-&lt;/ul&gt;
-&lt;blockquote&gt;
-&lt;p&gt;This last point has got me thinking that the combination of these concepts lends itself well to being an alternative to the current &amp;quot;low code&amp;quot; approaches. But that&#39;s perhaps a digression for another time.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;This type of approach to programming is facilitated by many of the features we&#39;ve seen in the &lt;a href=&quot;https://www.youtube.com/playlist?list=PL6RpkC85SLQB-0sK7KSRwCc2gdtlZDIkL&quot;&gt;Let&#39;s explore functional programming&lt;/a&gt; series, such as currying, partial application and higher order functions, key items in a programming toolset for using, combining and building new discrete and data-free functions.&lt;/p&gt;
-&lt;p&gt;Turning to a more mainstream programming language like JavaScript allows me to talk about an important aspect of functions in this context.&lt;/p&gt;
-&lt;h3 id=&quot;data-last&quot;&gt;Data last&lt;/h3&gt;
-&lt;p&gt;That important aspect is the order of arguments in function definitions. If we are to embrace all the features that we&#39;ve seen in this series and expand our collection of building blocks even further, we need to be aware of where the data comes in the list of arguments (or &amp;quot;points&amp;quot;).&lt;/p&gt;
-&lt;p&gt;It comes &lt;em&gt;last&lt;/em&gt;.&lt;/p&gt;
-&lt;p&gt;Take a look at any of the functions in Ramda that process data, specifically lists, for example. Take &lt;a href=&quot;https://ramdajs.com/docs/#filter&quot;&gt;filter&lt;/a&gt;, &lt;a href=&quot;https://ramdajs.com/docs/#head&quot;&gt;head&lt;/a&gt; or &lt;a href=&quot;https://ramdajs.com/docs/#reduce&quot;&gt;reduce&lt;/a&gt;. Heck, take &lt;a href=&quot;https://ramdajs.com/docs/#take&quot;&gt;take&lt;/a&gt; (sorry, couldn&#39;t resist).&lt;/p&gt;
-&lt;p&gt;Each one of them expects the data to be supplied via the last argument. Let&#39;s examine &lt;a href=&quot;https://ramdajs.com/docs/#reduce&quot;&gt;reduce&lt;/a&gt; as representative of how this looks. First, the signature is:&lt;/p&gt;
-&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;((a, b) → a) → a → [b] → a&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;So &lt;code&gt;reduce&lt;/code&gt; expects, in this order:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;((a, b) → a&lt;/code&gt; the reducer function&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;a&lt;/code&gt; the starting value for the accumulator&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;[b]&lt;/code&gt; the data (a list of values)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;and produces:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;a&lt;/code&gt; some value&lt;/li&gt;
-&lt;/ul&gt;
-&lt;blockquote&gt;
-&lt;p&gt;This is, by the way, brilliantly explained by Brian Lonsdorf in a now-classic talk - see the &lt;a href=&quot;https://qmacro.org/blog/posts/2025/05/15/point-free-coding-and-function-composition/#further-material&quot;&gt;Further material&lt;/a&gt; section for a link.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h3 id=&quot;a-contrived-example&quot;&gt;A contrived example&lt;/h3&gt;
-&lt;p&gt;This &amp;quot;data last&amp;quot; approach, combined with &lt;a href=&quot;https://en.wikipedia.org/wiki/Closure_(computer_programming)&quot;&gt;closures&lt;/a&gt;, makes currying and partial application not only possible, but powerful.&lt;/p&gt;
-&lt;p&gt;Let&#39;s examine what this means with another slightly contrived example, focusing on the &lt;a href=&quot;https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/Categories/7?$expand=Products&quot;&gt;products in the Produce (dried fruit and bean curd) category&lt;/a&gt;, this time in JavaScript. I&#39;ll use some functions from &lt;a href=&quot;https://ramdajs.com&quot;&gt;Ramda&lt;/a&gt;, mostly to illustrate the mechanisms in a &amp;quot;purer&amp;quot; form than the equivalents in standard JavaScript where the equivalent functions are &amp;quot;attached&amp;quot; to the &lt;code&gt;Array&lt;/code&gt; prototype.&lt;/p&gt;
-&lt;p&gt;Assuming the entire JSON representation of the &lt;a href=&quot;https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/Products&quot;&gt;Products entityset&lt;/a&gt; is available in a file called &lt;code&gt;products.json&lt;/code&gt;, let&#39;s start like this:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; prop &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;ramda&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; products &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;./products.json&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;value&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Ramda&#39;s &lt;a href=&quot;https://ramdajs.com/docs/#prop&quot;&gt;prop&lt;/a&gt; is a convenient function for getting the value of a property.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;It&#39;s worth pausing here to think about how this &lt;code&gt;prop&lt;/code&gt; function might look in its basic form, as it could help to further cement the concepts of currying and partial application (and closures, by the by). Given an object such as &lt;a href=&quot;https://developer-challenge.cfapps.eu10.hana.ondemand.com/odata/v4/northbreeze/Products/1&quot;&gt;the Chai product&lt;/a&gt; (see &lt;a href=&quot;https://qmacro.org/blog/posts/2025/05/15/point-free-coding-and-function-composition/#chai&quot;&gt;earlier&lt;/a&gt;), if we want a function with which to retrieve the value of a property, we need both the object and the property name, which we can express with a definition such as &lt;code&gt;myprop = p =&amp;gt; o =&amp;gt; o[p]&lt;/code&gt;. One difference between &lt;code&gt;myprop&lt;/code&gt; here and &lt;code&gt;prop&lt;/code&gt; is that the latter, being a Ramda function, is curried by default.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;OK. Suppose we wanted to determine the products in the Produce category (the category ID is 7) and emit a list of their names.&lt;/p&gt;
-&lt;p&gt;The &amp;quot;imperative&amp;quot;, or at least direct way of approaching this might look like this:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
-  products
-    &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; x&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Category_CategoryID &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;prop&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;ProductName&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;This produces what we want:&lt;/p&gt;
-&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&quot;Uncle Bob&#39;s Organic Dried Pears&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&quot;Tofu&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&quot;Rössle Sauerkraut&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&quot;Manjimup Dried Apples&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&quot;Longlife Tofu&quot;&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;but is a little rigid. It&#39;s not &lt;em&gt;bad&lt;/em&gt;, and JavaScript&#39;s native &lt;code&gt;filter&lt;/code&gt; and &lt;code&gt;map&lt;/code&gt; functions work well. But we&#39;ll switch to the Ramda equivalents to experiment a little bit more, and to explore the point free and partial application concepts further, as well as working our way towards a nice (if not a little simple) composition.&lt;/p&gt;
-&lt;h3 id=&quot;building-blocks&quot;&gt;Building blocks&lt;/h3&gt;
-&lt;p&gt;Let&#39;s feel our way through constructing some high level building blocks (in the form of functions, of course).&lt;/p&gt;
-&lt;p&gt;First, how about this. I&#39;ll add &lt;a href=&quot;https://ramdajs.com/docs/#curry&quot;&gt;curry&lt;/a&gt; and &lt;a href=&quot;https://ramdajs.com/docs/#filter&quot;&gt;filter&lt;/a&gt; to the list of explicitly imported functions (&lt;code&gt;const { prop, curry, filter } = require(&#39;ramda&#39;)&lt;/code&gt;), and use it when defining a function thus:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; justCategory &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;curry&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;n&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; x&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;prop&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;Category_CategoryID&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; n&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Because the function is curried, we can now comfortably partially apply it and build other functions with it:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; onlyProduce &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;justCategory&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Now we can use this as follows:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
-    &lt;span class=&quot;token function&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;onlyProduce&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; products&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;prop&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;ProductName&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Not a huge change, but right now it feels weird because we&#39;re sort of in a hybrid state - a &amp;quot;pure&amp;quot; &lt;code&gt;filter&lt;/code&gt; function from Ramda but then the &lt;code&gt;Array.prototype.map&lt;/code&gt; function tacked on at the end. Moreover, consider where that &lt;code&gt;products&lt;/code&gt; data reference is currently: it&#39;s sort of stuck, embedded within the entire expression.&lt;/p&gt;
-&lt;p&gt;If we add &lt;code&gt;map&lt;/code&gt; to the list of imported functions, we can modify things to use Ramda&#39;s &lt;code&gt;map&lt;/code&gt; so that we have a literal composition:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
-    &lt;span class=&quot;token function&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;prop&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;ProductName&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;onlyProduce&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; products&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;This is also a sort of intermediate state but one that conveniently illustrates the mathematical basis of composition, i.e. &lt;code&gt;f(g(x))&lt;/code&gt;, where &lt;code&gt;g&lt;/code&gt; is applied to &lt;code&gt;x&lt;/code&gt; and then &lt;code&gt;f&lt;/code&gt; is applied to what that produces. You might have seen this &lt;a href=&quot;https://en.wikipedia.org/wiki/Function_composition_(computer_science)&quot;&gt;composition of functions&lt;/a&gt; &lt;code&gt;f&lt;/code&gt; and &lt;code&gt;g&lt;/code&gt; expressed as &lt;code&gt;f ∘ g&lt;/code&gt;, i.e. &amp;quot;g composed with f&amp;quot;&lt;a href=&quot;https://qmacro.org/blog/posts/2025/05/15/point-free-coding-and-function-composition/#footnote-2&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;.&lt;/p&gt;
-&lt;h3 id=&quot;compose&quot;&gt;Compose&lt;/h3&gt;
-&lt;p&gt;So let&#39;s use Ramda&#39;s &lt;a href=&quot;https://ramdajs.com/docs/#compose&quot;&gt;compose&lt;/a&gt; to cement this, noting that we can &amp;quot;unnest&amp;quot; the relationship, and more importantly &amp;quot;lose&amp;quot; the reference to the data:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; produceList &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;compose&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
-  &lt;span class=&quot;token function&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;prop&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;ProductName&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token function&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;onlyProduce&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;While we&#39;re at it, let&#39;s construct another small building block:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; name &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;prop&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;ProductName&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;and use that to move our composition to something that is arguably even more declarative:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; produceList &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;compose&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
-  &lt;span class=&quot;token function&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;name&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token function&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;onlyProduce&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Be aware that at this point, emitting &lt;code&gt;produceList&lt;/code&gt; to the log will show this:&lt;/p&gt;
-&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;[Function (anonymous)]&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;That&#39;s because &lt;code&gt;compose&lt;/code&gt; has also only been partially applied, and is &lt;em&gt;waiting for data&lt;/em&gt;. Let&#39;s give it some now:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
-  &lt;span class=&quot;token function&quot;&gt;produceList&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;products&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Guess what - this produces the same output too:&lt;/p&gt;
-&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&quot;Uncle Bob&#39;s Organic Dried Pears&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&quot;Tofu&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&quot;Rössle Sauerkraut&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&quot;Manjimup Dried Apples&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&quot;Longlife Tofu&quot;&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Here&#39;s the script now in its entirety:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; prop&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; curry&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; filter&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; compose&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; map &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;ramda&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; products &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;./products.json&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;value
-
-&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; justCategory &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;curry&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;n&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; x&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;prop&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;Category_CategoryID&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; x&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; n&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; onlyProduce &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;justCategory&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; name &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;prop&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;ProductName&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; produceList &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;compose&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
-  &lt;span class=&quot;token function&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;name&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token function&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;onlyProduce&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-
-console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;produceList&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;products&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&quot;one-extra-level-of-abstraction&quot;&gt;One extra level of abstraction&lt;/h3&gt;
-&lt;p&gt;Depending on how we prefer to think about the abstractions, we might wish to go one level further up towards even higher level coding abstractions by pushing the &lt;code&gt;map&lt;/code&gt; and &lt;code&gt;filter&lt;/code&gt; up into the pre-&lt;code&gt;compose&lt;/code&gt; definitions:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; onlyProduce &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;filter&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;justCategory&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; names &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;map&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;prop&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;ProductName&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; produceList &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;compose&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
-  names&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  onlyProduce
-&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-
-console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;produceList&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;products&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&quot;pipe&quot;&gt;Pipe&lt;/h3&gt;
-&lt;p&gt;In a way, we got here to this composition via a route that included function chains, which are most similar to the pipe based constructions in the &lt;code&gt;jq&lt;/code&gt; and &lt;code&gt;bash&lt;/code&gt; examples earlier. And in fact there&#39;s a sibling function to &lt;code&gt;compose&lt;/code&gt; in the Ramda toolkit, which is &lt;a href=&quot;https://ramdajs.com/docs/#pipe&quot;&gt;pipe&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;With &lt;code&gt;compose&lt;/code&gt;, we think about the &lt;code&gt;f(g(x))&lt;/code&gt; pattern and express it naturally in that way, with the innermost function last in the list:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token function&quot;&gt;compose&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;f&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; g&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Alternatively we can consider the data flowing through a series of functions, our building blocks, so it&#39;s easier to think about things the other way round, i.e. &lt;code&gt;-&amp;gt; | g | f&lt;/code&gt;, and with &lt;code&gt;pipe&lt;/code&gt; we can express it naturally in that way:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token function&quot;&gt;pipe&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;g&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; f&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;If you&#39;re coming from a more standard JavaScript background and have been used to using function chains with the &lt;code&gt;Array&lt;/code&gt; prototypical functions such as &lt;code&gt;map&lt;/code&gt;, &lt;code&gt;filter&lt;/code&gt;, &lt;code&gt;some&lt;/code&gt;, &lt;code&gt;reduce&lt;/code&gt; and so on, then &lt;code&gt;pipe&lt;/code&gt; might be a better mental fit.&lt;/p&gt;
-&lt;p&gt;By the way, based on the &lt;code&gt;pipe&lt;/code&gt; equivalent of the even higher abstraction version, it would look like this (assuming we add &lt;code&gt;pipe&lt;/code&gt; to the list of imported functions from Ramda of course):&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; produceList &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;pipe&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
-  onlyProduce&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  names
-&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
-&lt;p&gt;Anyway, I think it&#39;s time to bring this ramble to a close. Hopefully you can see that thinking about functional programming concepts such as partial application will naturally lead you to also think about other related concepts such as currying, closures and so on, all supported by the underpinnings that come in the form of functions as values and higher order functions. And while you can already start thinking functionally even in regular JavaScript, having a library like Ramda, or even building your own utility functions&lt;a href=&quot;https://qmacro.org/blog/posts/2025/05/15/point-free-coding-and-function-composition/#footnote-3&quot;&gt;&lt;sup&gt;3&lt;/sup&gt;&lt;/a&gt;, takes you a great deal further.&lt;/p&gt;
-&lt;h2 id=&quot;further-material&quot;&gt;Further material&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2025/05/01/fp-function-chains-and-cap-model-loading/&quot;&gt;FP, function chains and CAP model loading&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://qmacro.org/tags/jq/&quot;&gt;More posts on jq&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Brian Lonsdorf&#39;s classic talk &lt;a href=&quot;https://www.youtube.com/watch?v=m3svKOdZijA&quot;&gt;Hey Underscore, You&#39;re Doing It Wrong!&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a name=&quot;footnotes&quot;&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;i.e. amenable to classic shell tools that process textual-based information.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;In some languages, such as Haskell, this is expressed in pretty much the same way, i.e. &lt;code&gt;foo = f . g&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;For example, a simple &lt;code&gt;compose&lt;/code&gt; function &lt;a href=&quot;https://www.linkedin.com/posts/djadams_handsonsapdev-activity-7327252502918184961-LEo9&quot;&gt;could look like&lt;/a&gt; this: &lt;code&gt;const compose = (...fs) =&amp;gt; (x) =&amp;gt; fs.reverse().reduce((a, f) =&amp;gt; f(a), x)&lt;/code&gt; (yes I know there&#39;s a &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduceRight&quot;&gt;reduceRight&lt;/a&gt; too :-))&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
 </content>
   </entry>
 </feed>
