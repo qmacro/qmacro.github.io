@@ -174,7 +174,7 @@ There are some technical differences, which are worth pointing out (there's alwa
 - this `S.Orders.Items` entity has a key element `up_` that points back to the parent
 - there's additional info at the `Items` element in the parent that captures the original anonymous aspect definition (in `targetAspect`)
 
-From a naming convention perspective, the name of the generated target entity is creaed using the parent entity as a prefix (`S.Orders`) to the composition element's name (`Items`), forming a [scoped](https://cap.cloud.sap/docs/cds/cdl#scoped-names) name `S.Orders.Items`. And I would wager that it's unlikely that we as humans would use an underscore-suffixed name for an element, so `up_` is a good choice for the automatically generated pointer-to-parent element name.
+From a naming convention perspective, the name of the generated target entity is created using the parent entity as a prefix (`S.Orders`) to the composition element's name (`Items`), forming a [scoped](https://cap.cloud.sap/docs/cds/cdl#scoped-names) name `S.Orders.Items`. And I would wager that it's unlikely that we as humans would use an underscore-suffixed name for an element, so `up_` is a good choice for the automatically generated pointer-to-parent element name.
 
 ## Hybrid
 
