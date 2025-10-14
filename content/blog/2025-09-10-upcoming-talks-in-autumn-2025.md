@@ -55,6 +55,14 @@ This is a talk ([CT1291](https://www.sap.com/events/teched/berlin/flow/sap/te25/
 
 Abstract: Work through a simple SAP Cloud Application Programming Model (CAP) project, live with your peers, in the cds REPL. Explore as you go and collectively ask each other questions, such as "What will happen if?" "What do you think this will evaluate to?" and "Why does this happen?"
 
-### 30 Nov: Hands-on workshop
+### 30 Nov: Hands-on with the domain modelling language that powers ECC, S/4HANA and beyond - CAP's CDS
 
-I'm _hoping_ to be able to attend and deliver some sort of hands-on workshop at [UKISUG Connect](https://www.sap.com/uk/events/2025-11-30-uk-pe-ukisug-connect.html) this year on Sun 30 Nov in Birmingham, UK. Nothing has been confirmed or agreed yet, but I thought I'd put it in this list, and cross my fingers :-)
+This is a hands-on workshop I'm running on the first day of [UKISUG Connect 2025](https://www.sap.com/uk/events/2025-11-30-uk-pe-ukisug-connect.html).
+
+Abstract: Become acquainted with CAP's CDS, the common language that binds domain experts, with their key business & process knowledge, to developers. A hands-on-optional session where we'll explore the language & concepts together and get comfortable with it. (More info is available on the [session detail page](https://virtual.oxfordabstracts.com/event/75555/submission/101)).
+
+### 01 Dec: Local-first: A more efficient development strategy for extending with the SAP Cloud Application Programming Model
+
+This is a talk in the Technical stream at [UKISUG Connect 2025](https://www.sap.com/uk/events/2025-11-30-uk-pe-ukisug-connect.html).
+
+Abstract: Today, more than ever, developer efficiency is critical. Join this session to learn of the local-first development affordances that CAP has to offer. No slides, just live coding and (hopefully) some fun!
