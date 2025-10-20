@@ -5,11 +5,227 @@
   <subtitle>Reserving the right to be wrong</subtitle>
   <link href="https://qmacro.org/feed/feed.xml" rel="self" />
   <link href="https://qmacro.org/blog/" />
-  <updated>2025-10-14T00:00:00Z</updated>
+  <updated>2025-10-20T00:00:00Z</updated>
   <id>https://qmacro.org/blog/</id>
   <author>
     <name>DJ Adams</name>
   </author>
+  <entry>
+    <title>Quiet cds test output - two ways</title>
+    <link href="https://qmacro.org/blog/posts/2025/10/20/quiet-cds-test-output-two-ways/" />
+    <updated>2025-10-20T00:00:00Z</updated>
+    <id>https://qmacro.org/blog/posts/2025/10/20/quiet-cds-test-output-two-ways/</id>
+    <content type="html">&lt;h2 id=&quot;background&quot;&gt;Background&lt;/h2&gt;
+&lt;p&gt;I watched Mauricio Lauffer&#39;s Devtoberfest session &lt;a href=&quot;https://www.youtube.com/watch?v=6kfixPTQH4U&quot;&gt;Testing SAP CAP Node.js apps with cds.test&lt;/a&gt; yesterday, it was great. Thanks Mauricio! It&#39;s a nice accompaniment to the &lt;a href=&quot;https://cap.cloud.sap/docs/node.js/cds-test&quot;&gt;Testing with cds.test&lt;/a&gt; topic in Capire.&lt;/p&gt;
+&lt;h2 id=&quot;setting-up-a-test-project&quot;&gt;Setting up a test project&lt;/h2&gt;
+&lt;p&gt;I set up a small project to try things out myself (using CAP Node.js, with my &lt;code&gt;@sap/cds-dk&lt;/code&gt; at 9.4.1):&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;cds init &lt;span class=&quot;token parameter variable&quot;&gt;--add&lt;/span&gt; tiny-sample,test proj &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;token builtin class-name&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;token variable&quot;&gt;$_&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;npm&lt;/span&gt; i&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This produced:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;creating new CAP project in &lt;span class=&quot;token file-path string&quot;&gt;./proj&lt;/span&gt;
+
+adding nodejs
+adding tiny&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;sample
+adding test
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; writing test&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;CatalogService&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;test&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;js
+
+successfully created project – continue with cd proj
+
+find samples on &lt;span class=&quot;token url&quot;&gt;https://github.com/capire/samples&lt;/span&gt;
+learn about next steps at &lt;span class=&quot;token url&quot;&gt;https://cap.cloud.sap&lt;/span&gt;
+
+added &lt;span class=&quot;token number&quot;&gt;134&lt;/span&gt; packages&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; and audited &lt;span class=&quot;token number&quot;&gt;135&lt;/span&gt; packages in &lt;span class=&quot;token number&quot;&gt;5s&lt;/span&gt;
+
+&lt;span class=&quot;token number&quot;&gt;25&lt;/span&gt; packages are looking for funding
+  run `npm fund` for details
+
+found &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt; vulnerabilities&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I was now in the position to experiment.&lt;/p&gt;
+&lt;h2 id=&quot;the-basic-testing-artifacts&quot;&gt;The basic testing artifacts&lt;/h2&gt;
+&lt;p&gt;By default, adding the &lt;code&gt;test&lt;/code&gt; facet created &lt;code&gt;test/CatalogService.test.js&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+├── README&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;md
+├── app
+├── db
+│   ├── data
+│   │   └── my&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;bookshop&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Books&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+│   └── &lt;span class=&quot;token domain constant&quot;&gt;schema.cds&lt;/span&gt;
+├── &lt;span class=&quot;token domain constant&quot;&gt;eslint.config.mjs&lt;/span&gt;
+├── &lt;span class=&quot;token domain constant&quot;&gt;package-lock.json&lt;/span&gt;
+├── &lt;span class=&quot;token domain constant&quot;&gt;package.json&lt;/span&gt;
+├── srv
+│   └── &lt;span class=&quot;token domain constant&quot;&gt;cat-service.cds&lt;/span&gt;
+└── test
+    └── CatalogService&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;test&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;js&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Additionally, in &lt;code&gt;package.json&lt;/code&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;@cap-js/cds-test&lt;/code&gt; was added as a dev dependency&lt;/li&gt;
+&lt;li&gt;a new script &lt;code&gt;test&lt;/code&gt; was added which invokes &lt;code&gt;node --test&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The &lt;code&gt;test/CatalogService.test.js&lt;/code&gt; file contains a fixture to test the &lt;code&gt;CatalogService&lt;/code&gt; endpoint, specifically the &lt;code&gt;Books&lt;/code&gt; entityset, where I modified the expected book subset to be one of the items in the initial data, i.e. &lt;code&gt;{&amp;quot;ID&amp;quot;: 2, &amp;quot;title&amp;quot;: &amp;quot;Jane Eyre&amp;quot;}&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;So far so good.&lt;/p&gt;
+&lt;h2 id=&quot;the-first-test-run&quot;&gt;The first test run&lt;/h2&gt;
+&lt;p&gt;When I invoke the test cycle, with &lt;code&gt;npm test&lt;/code&gt; (causing &lt;code&gt;node --test&lt;/code&gt; to run), I see this:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; proj&lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1.0.0&lt;/span&gt; test
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; node &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;test
+
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; loaded model from &lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt; file&lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;s&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;
+
+  srv&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;cat&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;service&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;cds
+  node_modules&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;sap&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;cds&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;srv&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;outbox&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;cds
+  db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;schema&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;cds
+
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; connect to db &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; sqlite &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;:memory:&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;my&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;bookshop&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Books&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; successfully deployed to in&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;memory database&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; using auth strategy &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;kind:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;mocked&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;impl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;node_modules/@sap/cds/lib/srv/middlewares/auth/basic-auth.js&#39;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; serving CatalogService &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;at:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;/odata/v4/catalog&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;decl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;srv/cat-service.cds:3&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;impl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;node_modules/@sap/cds/srv/app-service.js&#39;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; server listening on &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;http://localhost:34593&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; server &lt;span class=&quot;token number&quot;&gt;v9.4.3&lt;/span&gt; launched in &lt;span class=&quot;token number&quot;&gt;185&lt;/span&gt; ms
+✔ &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;next&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;105.447291ms&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;odata&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; GET &lt;span class=&quot;token file-path string&quot;&gt;/odata/v4/catalog/CatalogService.Books&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;$select&#39;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;ID,title&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+▶ OData APIs
+  ✔ serves CatalogService&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Books &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;18.874042ms&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;
+✔ OData APIs &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;19.020667ms&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;
+ℹ tests &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;
+ℹ suites &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;
+ℹ pass &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;
+ℹ fail &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
+ℹ cancelled &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
+ℹ skipped &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
+ℹ todo &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
+ℹ duration_ms &lt;span class=&quot;token number&quot;&gt;220.950041&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That&#39;s quite a lot of output, and it&#39;s not as easy as it could be to discern what happened.&lt;/p&gt;
+&lt;h2 id=&quot;using-cds-log-levels&quot;&gt;Using cds.log.levels&lt;/h2&gt;
+&lt;p&gt;One way to address this, &lt;a href=&quot;https://github.com/mauriciolauffer/devtoberfest2025/blob/main/package.json&quot;&gt;as Mauricio did&lt;/a&gt;, is to reduce the output of certain modules to nothing, using &lt;code&gt;silent&lt;/code&gt; for various &lt;code&gt;cds.log.levels&lt;/code&gt; components, in &lt;code&gt;package.json&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;cds&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;log&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;levels&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;cds&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;silent&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;cds.serve&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;silent&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;odata&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;silent&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;deploy&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;silent&quot;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This makes the test output less noisy, for sure:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; proj&lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1.0.0&lt;/span&gt; test
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; node &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;test
+
+✔ &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;next&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;100.910208ms&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;
+▶ OData APIs
+  ✔ serves CatalogService&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Books &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;19.222666ms&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;
+✔ OData APIs &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;19.378125ms&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;
+ℹ tests &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;
+ℹ suites &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;
+ℹ pass &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;
+ℹ fail &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
+ℹ cancelled &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
+ℹ skipped &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
+ℹ todo &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
+ℹ duration_ms &lt;span class=&quot;token number&quot;&gt;212.527334&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;But it also makes regular CAP server log output a little mute - when running &lt;code&gt;cds watch&lt;/code&gt;, this is all that is emitted:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;cds serve all &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;with&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;mocks &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;in&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;memory&lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt; live reload enabled for browsers &lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;
+
+        ___________________________
+
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; connect using bindings from&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; registry&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;~/.cds-services.json&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;A little too quiet.&lt;/p&gt;
+&lt;h2 id=&quot;wrapping-log-level-settings-in-a-profile&quot;&gt;Wrapping log level settings in a profile&lt;/h2&gt;
+&lt;p&gt;As the Capire documentation explains, &lt;a href=&quot;https://cap.cloud.sap/docs/node.js/cds-env#profiles&quot;&gt;configuration profiles&lt;/a&gt; are easy to use and can be employed in various ways.&lt;/p&gt;
+&lt;p&gt;I can contextualise these reductions in log output to a configuration profile, I&#39;ll call it &amp;quot;quiet&amp;quot;:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;cds&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;[quiet]&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;log&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;levels&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+          &lt;span class=&quot;token property&quot;&gt;&quot;cds&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;silent&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          &lt;span class=&quot;token property&quot;&gt;&quot;cds.serve&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;silent&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          &lt;span class=&quot;token property&quot;&gt;&quot;odata&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;silent&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          &lt;span class=&quot;token property&quot;&gt;&quot;deploy&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;silent&quot;&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then I can run &lt;code&gt;cds watch&lt;/code&gt; as normal and get the output I expect:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;cds serve all &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;with&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;mocks &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;in&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;memory&lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt; live reload enabled for browsers &lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;
+
+        ___________________________
+
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; loaded model from &lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt; file&lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;s&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;
+
+  srv&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;cat&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;service&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;cds
+  node_modules&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;sap&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;cds&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;srv&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;outbox&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;cds
+  db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;schema&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;cds
+
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; connect using bindings from&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; registry&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;~/.cds-services.json&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; connect to db &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; sqlite &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;:memory:&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;my&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;bookshop&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Books&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; successfully deployed to in&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;memory database&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; using auth strategy &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;kind:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;mocked&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;impl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;node_modules/@sap/cds/lib/srv/middlewares/auth/basic-auth.js&#39;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; serving CatalogService &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;at:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;/odata/v4/catalog&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;decl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;srv/cat-service.cds:3&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;impl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;node_modules/@sap/cds/srv/app-service.js&#39;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; server listening on &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;http://localhost:4004&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; server &lt;span class=&quot;token number&quot;&gt;v9.4.3&lt;/span&gt; launched in &lt;span class=&quot;token number&quot;&gt;245&lt;/span&gt; ms
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; terminate with &lt;span class=&quot;token operator&quot;&gt;^&lt;/span&gt;C &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;But I can add the profile specification to the &lt;code&gt;test&lt;/code&gt; NPM script via &lt;code&gt;CDS_ENV&lt;/code&gt; or &lt;code&gt;NODE_ENV&lt;/code&gt; like this:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;scripts&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;start&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;cds-serve&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;test&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;CDS_ENV=quiet node --test&quot;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This keeps the test run output quiet and manageable:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; proj&lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1.0.0&lt;/span&gt; test
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; CDS_ENV&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;quiet node &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;test
+
+✔ &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;next&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;115.602208ms&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;
+▶ OData APIs
+  ✔ serves CatalogService&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Books &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;21.739417ms&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;
+✔ OData APIs &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;21.917125ms&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;
+ℹ tests &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;
+ℹ suites &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;
+ℹ pass &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;
+ℹ fail &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
+ℹ cancelled &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
+ℹ skipped &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
+ℹ todo &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
+ℹ duration_ms &lt;span class=&quot;token number&quot;&gt;231.362166&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;using-cds-test&quot;&gt;Using cds test&lt;/h2&gt;
+&lt;p&gt;In another great Devtoberfest session, &lt;a href=&quot;https://www.youtube.com/watch?v=HLlX_e-kXJw&quot;&gt;CAP Tools - What&#39;s New and Hot&lt;/a&gt;, Christian Georgi took us through some really cool new tools for development and testing.&lt;/p&gt;
+&lt;p&gt;One of these was the new &lt;code&gt;cds test&lt;/code&gt; command.&lt;/p&gt;
+&lt;p&gt;But very briefly, instead of using &lt;code&gt;node --test&lt;/code&gt;, with (or without) the &lt;code&gt;CDS_ENV=quiet&lt;/code&gt; setting, I can use the &lt;code&gt;cds test&lt;/code&gt; command, which runs the tests and has a lovely succinct output:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;  OData APIs
+    ✔ serves CatalogService&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Books
+
+ &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; passed
+ &lt;span class=&quot;token number&quot;&gt;0.259s&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;How neat is that?!&lt;/p&gt;
+&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
+&lt;p&gt;To find out more, you should watch the replay of Christian&#39;s session, after watching the replay of Mauricio&#39;s session too, of course.&lt;/p&gt;
+&lt;p&gt;Happy testing!&lt;/p&gt;
+</content>
+  </entry>
   <entry>
     <title>Modelling contained-in relationships with compositions in CDS</title>
     <link href="https://qmacro.org/blog/posts/2025/10/14/modelling-contained-in-relationships-with-compositions-in-cds/" />
@@ -1746,92 +1962,6 @@ E   &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; ID 
     &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
   &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-</content>
-  </entry>
-  <entry>
-    <title>Editing Markdown in a Neovim environment</title>
-    <link href="https://qmacro.org/blog/posts/2025/06/03/editing-markdown-in-a-neovim-environment/" />
-    <updated>2025-06-03T00:00:00Z</updated>
-    <id>https://qmacro.org/blog/posts/2025/06/03/editing-markdown-in-a-neovim-environment/</id>
-    <content type="html">&lt;p&gt;🚧 DRAFT POST 🚧&lt;/p&gt;
-&lt;p&gt;I am now feeling more comfortable having made the transition from Vim to Neovim and started reconfiguring in Lua. While I had a Neovim setup that worked fine for me for editing in general, which included Markdown sources, I knew I didn&#39;t quite understand how things worked, which tools were doing what, and what features I hadn&#39;t either discovered or properly got to grips with.&lt;/p&gt;
-&lt;p&gt;This post is simply an attempt to document what I&#39;ve set up specifically for Markdown, my understanding of it and the components that it comprises. I&#39;m sure I have many gaps in that understanding and in my ability to wield the tools correctly; if you have any suggestions for changes or improvements, or can fix or enhance my understanding, please let me know in the comments!&lt;/p&gt;
-&lt;h2 id=&quot;caveat-lector&quot;&gt;Caveat lector&lt;/h2&gt;
-&lt;p&gt;In addition to the gaps in my understanding, one can think of Neovim as an equal if not more extreme companion to Perl in the &lt;a href=&quot;https://en.wikipedia.org/wiki/Perl#Philosophy&quot;&gt;TMTOWTDI&lt;/a&gt; department. The setup I describe in this post is just one way of doing things; one particular combination of tools, one way I have decided to use them, and one way of setting them up.&lt;/p&gt;
-&lt;p&gt;There are other options, so don&#39;t take what you read here as definitive.&lt;/p&gt;
-&lt;p&gt;For example, I know that the Markdownlint tool can &lt;a href=&quot;https://github.com/DavidAnson/markdownlint?tab=readme-ov-file#fixing&quot;&gt;automatically fix certain issues&lt;/a&gt;, such as &lt;a href=&quot;https://github.com/markdownlint/markdownlint/blob/main/docs/RULES.md#md004---unordered-list-style&quot;&gt;MD004 - Unordered list style&lt;/a&gt;, but (a) my approach is to get the tool to nag me so I learn to get things right by having to correct issues myself, and (b) I&#39;m not sure yet how I can use the &lt;code&gt;--fix&lt;/code&gt; option in the context of Neovim as &lt;a href=&quot;https://qmacro.org/blog/posts/2021/05/13/notes-on-markdown-linting-part-1/#:~:text=fix%20basic%20errors%20(does%20not%20work%20with%20STDIN)&quot;&gt;it doesn&#39;t work in the context of STDIN&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;Another example relates to &lt;a href=&quot;https://prettier.io/docs/&quot;&gt;Prettier&lt;/a&gt;, an opinionated code formatter that supports Markdown. I know that folks use Prettier in conjunction with Neovim (often via the &lt;a href=&quot;https://github.com/stevearc/conform.nvim&quot;&gt;conform plugin&lt;/a&gt;) but I will get to that in the next iteration of this Markdown editing setup.&lt;/p&gt;
-&lt;h2 id=&quot;configuration&quot;&gt;Configuration&lt;/h2&gt;
-&lt;p&gt;My general Neovim configuration is based on some of the early videos in the excellent &lt;a href=&quot;https://www.youtube.com/playlist?list=PLep05UYkc6wTyBe7kPjQFWVXTlhKeQejM&quot;&gt;Advent of Neovim&lt;/a&gt; series from TJ DeVries, and I&#39;m also using the &lt;a href=&quot;https://neovim.io/doc/user/starting.html#%24NVIM_APPNAME&quot;&gt;NVIM_APPNAME&lt;/a&gt; feature to split up my config and have different experimental instances, which I switch between with a function that &lt;a href=&quot;https://github.com/qmacro/dotfiles/blob/73e27bb3e76067e9bf21be873ad7c131a0ddf40b/bashrc.d/70-functions.sh#L95-L114&quot;&gt;looks like&lt;/a&gt; this:&lt;/p&gt;
-&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function-name function&quot;&gt;nvc&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-
-  &lt;span class=&quot;token builtin class-name&quot;&gt;local&lt;/span&gt; &lt;span class=&quot;token assign-left variable&quot;&gt;configdir&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;nvim-configs
-
-  &lt;span class=&quot;token builtin class-name&quot;&gt;local&lt;/span&gt; config
-  &lt;span class=&quot;token assign-left variable&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;&lt;span class=&quot;token variable&quot;&gt;&lt;span class=&quot;token variable&quot;&gt;$(&lt;/span&gt;
-    &lt;span class=&quot;token function&quot;&gt;find&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&lt;span class=&quot;token environment constant&quot;&gt;$HOME&lt;/span&gt;/.config/&lt;span class=&quot;token variable&quot;&gt;$configdir&lt;/span&gt;&quot;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-    &lt;span class=&quot;token parameter variable&quot;&gt;-mindepth&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-    &lt;span class=&quot;token parameter variable&quot;&gt;-maxdepth&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-    &lt;span class=&quot;token parameter variable&quot;&gt;-printf&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;%f&lt;span class=&quot;token entity&quot; title=&quot;&#92;n&quot;&gt;&#92;n&lt;/span&gt;&quot;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-    &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; fzf
-  &lt;span class=&quot;token variable&quot;&gt;)&lt;/span&gt;&lt;/span&gt;&quot;&lt;/span&gt;
-
-  &lt;span class=&quot;token builtin class-name&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;token assign-left variable&quot;&gt;NVIM_APPNAME&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;&lt;span class=&quot;token variable&quot;&gt;$configdir&lt;/span&gt;/&lt;span class=&quot;token variable&quot;&gt;${config&lt;span class=&quot;token operator&quot;&gt;:-&lt;/span&gt;nvim}&lt;/span&gt;&quot;&lt;/span&gt;
-  &lt;span class=&quot;token function&quot;&gt;sed&lt;/span&gt; &lt;span class=&quot;token parameter variable&quot;&gt;-i&lt;/span&gt; &lt;span class=&quot;token parameter variable&quot;&gt;-E&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;s#(NVIM_APPNAME)=.*$#&#92;1=&#39;&lt;/span&gt;&quot;&lt;span class=&quot;token variable&quot;&gt;$NVIM_APPNAME&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;&#39;#&#39; &lt;span class=&quot;token environment constant&quot;&gt;$HOME&lt;/span&gt;/dotfiles/bashrc.d/54-globals-nvim.sh
-
-  nvim &quot;&lt;/span&gt;&lt;span class=&quot;token variable&quot;&gt;$@&lt;/span&gt;&quot;
-
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;and track which &amp;quot;flavour&amp;quot; I have set &lt;a href=&quot;https://github.com/qmacro/dotfiles/commit/c40e76516ef162b01ad0aee1d7fba45449329888&quot;&gt;in my shell prompt&lt;/a&gt;.&lt;/p&gt;
-&lt;h2 id=&quot;the-tools&quot;&gt;The tools&lt;/h2&gt;
-&lt;p&gt;Beyond Neovim itself, I&#39;m using a number of tools which provide different features and facilities for my Markdown editing needs.&lt;/p&gt;
-&lt;h3 id=&quot;editorconfig&quot;&gt;EditorConfig&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&quot;https://editorconfig.org/&quot;&gt;EditorConfig&lt;/a&gt; is a file format specification that describes the content of configuration files, the use of which helps to maintain consistent coding styles for multiple developers working on the same files across various editors and IDEs.&lt;/p&gt;
-&lt;p&gt;Neovim has &lt;a href=&quot;https://neovim.io/doc/user/editorconfig.html&quot;&gt;native support for EditorConfig&lt;/a&gt; and all that&#39;s needed is a configuration file with the required coding style aspects. I think of the EditorConfig tool as one that is built in to Neovim and controlled by configuration.&lt;/p&gt;
-&lt;h3 id=&quot;marksman&quot;&gt;Marksman&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&quot;https://github.com/artempyanykh/marksman&quot;&gt;Marksman&lt;/a&gt; is a &lt;a href=&quot;https://en.wikipedia.org/wiki/Language_Server_Protocol&quot;&gt;language server&lt;/a&gt; for Markdown that provides various language server protocol (LSP) features for Markdown content, such as completion, goto definition, diagnostics and more.&lt;/p&gt;
-&lt;p&gt;Neovim has &lt;a href=&quot;https://neovim.io/doc/user/lsp.html&quot;&gt;native LSP support&lt;/a&gt; in that it can act as a client to various language servers, and exposes a Lua framework (via &lt;code&gt;vim.lsp&lt;/code&gt;) that makes the facililities offered by language servers available.&lt;/p&gt;
-&lt;p&gt;I think of the Marksman tool as a facility that is separate from Neovim but not anything I would (or can) use directly; rather, something I use &amp;quot;remotely&amp;quot; from within Neovim. Like most language servers, Marksman has features that allow me to navigate and manipulate my Markdown sources, and also can surface issues (in the form of warnings and errors, for example) that can be then displayed in Neovim as &lt;a href=&quot;https://neovim.io/doc/user/diagnostic.html&quot;&gt;diagnostics&lt;/a&gt;.&lt;/p&gt;
-&lt;h3 id=&quot;markdownlint&quot;&gt;Markdownlint&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&quot;https://github.com/markdownlint/markdownlint&quot;&gt;Markdownlint&lt;/a&gt; is a linting tool to check Markdown content for stylistic and other issues; there are many &lt;a href=&quot;https://github.com/markdownlint/markdownlint/blob/main/docs/RULES.md&quot;&gt;rules&lt;/a&gt; that it will base the checking on, rules that can be customised or turned off entirely, depending on what you want. As an example, I normally turn off the &lt;a href=&quot;https://github.com/markdownlint/markdownlint/blob/main/docs/RULES.md#md013---line-length&quot;&gt;MD013 - Line length&lt;/a&gt; rule as I like to write long lines in my Markdown sources.&lt;/p&gt;
-&lt;p&gt;Differing again to EditorConfig and Marksman, Markdownlint is an external tool that I can (and sometimes do) run on the command line directly, pointing it at Markdown files ... but something that I can harness from within Neovim too and capture (and display) the output as &lt;a href=&quot;https://neovim.io/doc/user/diagnostic.html&quot;&gt;diagnostics&lt;/a&gt;. I use the &lt;a href=&quot;https://github.com/mfussenegger/nvim-lint&quot;&gt;mfussenegger/nvim-lint&lt;/a&gt; asynchronous linter plugin for this harness as it (to quote the README) &amp;quot;spawns linters, parses their output, and reports the results via the &lt;code&gt;vim.diagnostic&lt;/code&gt; module&amp;quot;.&lt;/p&gt;
-&lt;h3 id=&quot;treesitter&quot;&gt;Treesitter&lt;/h3&gt;
-&lt;p&gt;As with EditorConfig, Neovim also has built-in support for [Treesitter], and (beyond the parser for Markdown itself) there&#39;s not really anything specific to editing Markdown. That said, I have added configuration for &lt;a href=&quot;https://neovim.io/doc/user/treesitter.html&quot;&gt;Neovim&#39;s built-in support for Treesitter&lt;/a&gt; listing the languages for which I want Treesitter parsers automatically installed. This is so I can get &lt;a href=&quot;https://qmacro.org/blog/posts/2025/06/03/editing-markdown-in-a-neovim-environment/#syntax-highlighting-of-code-within-code-blocks&quot;&gt;syntax highlighting in fenced code blocks&lt;/a&gt;.&lt;/p&gt;
-&lt;h2 id=&quot;the-combined-effect&quot;&gt;The combined effect&lt;/h2&gt;
-&lt;p&gt;The combination of each of these tools comes together for a comfortable overall effect, making my Markdown editing life easier.&lt;/p&gt;
-&lt;p&gt;In no particular order, here is a run down of the features I&#39;m taking advantage of, which tool supplies them, and how I use them. Note that beyond those features listed here, the tools offer more.&lt;/p&gt;
-&lt;h3 id=&quot;automatic-trimming-of-trailing-whitespace&quot;&gt;Automatic trimming of trailing whitespace&lt;/h3&gt;
-&lt;p&gt;I use EditorConfig on other projects so it was a natural fit here for my Markdown sources. With &lt;code&gt;trim_trailing_whitespace&lt;/code&gt; set to &lt;code&gt;true&lt;/code&gt; I know that NeoVim will do exactly that for me when I save. Here&#39;s the entire content of the &lt;code&gt;.editorconfig&lt;/code&gt; file in this blog repository:&lt;/p&gt;
-&lt;pre class=&quot;language-toml&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-toml&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;*&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;md&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;token key property&quot;&gt;trim_trailing_whitespace&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;
-&lt;span class=&quot;token key property&quot;&gt;insert_final_newline&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&quot;syntax-highlighting-of-code-within-code-blocks&quot;&gt;Syntax highlighting of code within code blocks&lt;/h3&gt;
-&lt;p&gt;Often in my Markdown sources I&#39;ll use &lt;a href=&quot;https://www.markdownguide.org/extended-syntax/#fenced-code-blocks&quot;&gt;fenced code blocks&lt;/a&gt; to include code samples. If I specify the language of the fenced code block, and have the requisite Treesitter parser installed, I&#39;ll get language-aware syntax highlighting for the content within the block, which is really lovely. This is what the relevant section of the Treesitter configuration looks like (in &lt;code&gt;lua/plugins/treesitter.lua&lt;/code&gt;):&lt;/p&gt;
-&lt;pre class=&quot;language-lua&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-lua&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token string&quot;&gt;&quot;nvim-treesitter/nvim-treesitter&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    build &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;:TSUpdate&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    config &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-      require &lt;span class=&quot;token string&quot;&gt;&#39;nvim-treesitter.configs&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;setup&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-        ensure_installed &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;c&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;lua&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;vim&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;vimdoc&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;query&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;markdown&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;markdown_inline&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;bash&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;javascript&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;toml&quot;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-        auto_install &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-        &lt;span class=&quot;token comment&quot;&gt;-- ...&lt;/span&gt;
-      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;token keyword&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;So when for example I add a fenced code block containing Bash, JavaScript or Lua for example, the block contents will be nicely highlighted (I added the &lt;code&gt;&amp;quot;toml&amp;quot;&lt;/code&gt; entry just now so I could get syntax highlighting for the TOML block I just added earlier to this post).&lt;/p&gt;
-&lt;h3 id=&quot;an-overview-of-section-headings&quot;&gt;An overview of section headings&lt;/h3&gt;
-&lt;p&gt;TODO: add basic use of &lt;code&gt;gO&lt;/code&gt; too!&lt;/p&gt;
-&lt;p&gt;The Marksman language server presents &lt;a href=&quot;https://www.markdownguide.org/basic-syntax/#headings&quot;&gt;Markdown headings&lt;/a&gt; as &lt;a href=&quot;https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocument_documentSymbol&quot;&gt;document symbols&lt;/a&gt;. This means I can get a quick overview of the current document&#39;s sections, and also jump to them. With the &lt;a href=&quot;https://neovim.io/doc/user/lsp.html#vim.lsp.buf.document_symbol()&quot;&gt;vim.lsp.buf.document_symbol()&lt;/a&gt; function (invoked in command mode with &lt;code&gt;lua vim.lsp.buf.document_symbol()&lt;/code&gt;) I can have them displayed in Neovim&#39;s location list:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2025/06/document-symbols-in-location-list.png&quot; alt=&quot;screenshot of location list containing three document symbols, each of which is a heading in the document&quot;&gt;&lt;/p&gt;
-&lt;p&gt;I&#39;m also starting to use &lt;a href=&quot;https://github.com/nvim-telescope/telescope.nvim&quot;&gt;Telescope&lt;/a&gt;, the &amp;quot;highly extendable fuzzy finder over lists&amp;quot;. Telescope has a built-in &lt;a href=&quot;https://github.com/nvim-telescope/telescope.nvim?tab=readme-ov-file#pickers&quot;&gt;picker&lt;/a&gt; for such document symbols too, so I can also invoke &lt;code&gt;Telescope lsp_document_symbols&lt;/code&gt; in command mode for a similar result, from the same Marksman language server source:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2025/06/document-symbols-in-telescope.png&quot; alt=&quot;screenshot of a Telescope picker containing three document symbols, each of which is a heading in the document&quot;&gt;&lt;/p&gt;
-&lt;p&gt;Navigating through these and selecting one will then take me to that selected heading in the document.&lt;/p&gt;
-&lt;h3 id=&quot;diagnostics-in-general&quot;&gt;Diagnostics in general&lt;/h3&gt;
-&lt;h3 id=&quot;diagnostic-details&quot;&gt;Diagnostic details&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2025/06/diagnostic-link-to-non-existent-document.png&quot; alt=&quot;TODO&quot;&gt;&lt;/p&gt;
-&lt;hr&gt;
 </content>
   </entry>
 </feed>
