@@ -65,4 +65,4 @@ Abstract: Become acquainted with CAP's CDS, the common language that binds domai
 
 This is a talk in the Technical stream at [UKISUG Connect 2025](https://www.sap.com/uk/events/2025-11-30-uk-pe-ukisug-connect.html).
 
-Abstract: Today, more than ever, developer efficiency is critical. Join this session to learn of the local-first development affordances that CAP has to offer. No slides, just live coding and (hopefully) some fun!
+Abstract: Today, more than ever, developer efficiency is critical. Join this session to learn of the local-first development affordances that CAP has to offer. No slides, just live coding and (hopefully) some fun! (More info is available on the [session detail page](https://virtual.oxfordabstracts.com/event/75555/submission/127)).
