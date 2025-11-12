@@ -258,7 +258,7 @@ This warning message ID is `def-unsupported-key`; you may wish to peruse the [Co
 
 This is only a warning, and the compiler will still (currently) honour the key element in the entity, but it doesn't feel right to use a type like this, hence the "qualified yes".
 
-Stopping to think about this a little, I am minded to reflect that the flexibility and simplicity of CDL is augmented by the intent conveyed by the semantics of the keywords themselves. I could imagine a version of CDL where both the `aspect` and `type` keywords were absent, replaced with a single `struct` keyword.
+Stopping to think about this a little, I am minded to reflect that the flexibility and simplicity of CDL is augmented by the intent conveyed by the semantics of the keywords themselves. I could imagine a version of CDL where both the `aspect` and `type` keywords were absent, replaced with a single `struct` keyword[<sup>3</sup>](#footnotes).
 But that would, for me at least, make the language less approachable, less rich in expressiveness and the ability to show intent.
 
 And while one ultimate target of CDL is the machine readable equivalent (CSN), another ultimate target ... is us humans, in our endeavour to model business domains together.
@@ -266,4 +266,5 @@ And while one ultimate target of CDL is the machine readable equivalent (CSN), a
 ## Footnotes
 
 1. It may interest you to know that `annotate` [is a shortcut for](https://cap.cloud.sap/docs/cds/cdl#the-annotate-directive) `extend`.
-1. I also get a warning in my editor thanks to CAP's language server for CDS
+1. I also get a warning in my editor thanks to CAP's language server for CDS.
+1. On that note, it may interest you to read the [Structured Types](https://cap.cloud.sap/docs/cds/csn#structured-types) section of Capire's CSN topic, where it says that "_structured types are signified by the presence of an `elements` property_". Did you notice that each definition in the final YAML representation of the compiled model -- whether entity, aspect or type -- has an `elements` property?
