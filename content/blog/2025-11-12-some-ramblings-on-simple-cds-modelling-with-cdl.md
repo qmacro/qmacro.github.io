@@ -84,7 +84,7 @@ What does this look like when compiled to CSN? We'll take the YAML representatio
 cds compile --to yaml db/keywords-and-identifiers.cds
 ```
 
-This gives us:
+we get:
 
 ```yaml
 definitions:
