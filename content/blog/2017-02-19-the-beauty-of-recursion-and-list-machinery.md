@@ -9,7 +9,7 @@ There are beautiful patterns inherent in the use of recursion that I've seen in 
 
 This post explores one particular pattern that is inherent in how recursion is often expressed in some functional languages, and finishes with the alternative based on what I'm going to call "list machinery" - mechanisms within a language that provide powerful processing abstractions over structures such as lists.
 
-# <a name="initial-recognition"></a>Initial recognition
+## Initial recognition
 
 Erik Meijer, whom I'll mention properly in a moment, uses a phrase:
 
@@ -17,29 +17,27 @@ Erik Meijer, whom I'll mention properly in a moment, uses a phrase:
 
 This really appeals to me, because it expresses the act of focus and concentration in a wonderfully casual way. I've stared at this stuff long enough for it to become something tangible, something recognisable, and hopefully there's useful content here for you to stare at too.
 
-<a name="introduction-via-haskell"></a>
-## Introduction via Haskell
+### Introduction via Haskell
 
 It was my son [Joseph](http://jcla1.com) that introduced me to the concept that has intrigued me since the first day I saw it. Proficient in many different languages, he was showing me some solutions to [Project Euler]((https://www.youtube.com/watch?v=UIUlFQH4Cvo&list=PLTA0Ta9Qyspa5Nayx0VCHj5AHQJqp1clD)) challenges that he'd written in Haskell. They involved a fascinating approach using pattern matching. Determining the resulting value of something based upon a list of possible matches on the data being processed. It involved expressions involving the symbols `x` and `xs`. This is very abstract, but it will become more concrete shortly.
 
-## C9 Lectures
+### C9 Lectures
 
 The next time I encountered this pattern matching technique was in a series of lectures by the inimitable Erik Meijer. These lectures are on functional programming techniques, and the series is called "[Programming in Haskell](https://www.youtube.com/watch?v=UIUlFQH4Cvo&list=PLTA0Ta9Qyspa5Nayx0VCHj5AHQJqp1clD)", although the concepts themselves are explained in terms of other languages (C#, LINQ) too. I thoroughly recommend you spend some time enjoying them. One thing that Erik said a lot was "x over xs", which is expressed as `x::xs`.
 
 Being somewhat intimidated by the M-word (monad), I have avoided Haskell so far, although my interest in functional programming in other languages (such as in Clojure, and with Ramda in JavaScript) has grown considerably ... I presented at [SAP TechEd EMEA](https://sessioncatalog.sapevents.com/go/agendabuilder.sessions/?l=133&sid=37706_0&locale=en_US) and also at [UI5con](/tweets/qmacro/status/802108634255806465/), both in 2016, on functional programming techniques in JavaScript.
 
-## Elm
+### Elm
 
 And now, learning [elm](http://elm-lang.org/), I re-encounter these pattern-matching patterns again. I think it's because, at least to my naive mind, elm seems to reflect a lot of concepts from Haskell (and from Clojure, for that matter). The patterns are expressed nicely in an online book "[Learn You an Elm](https://learnyouanelm.github.io/)"; the book is very much a work-in-progress but definitely worth a read even at this early stage.
 
 The examples in this post will be in elm.
 
-
-# Subsequent understanding
+## Subsequent understanding
 
 It turns out that the wonderfully succinct expression `x::xs` represents one of the core concepts in functional programming. A list can be seen in two parts - the head, and the tail. The first element, and the rest of the elements. So `x` represents the head of a list, and `xs` represents the tail. And the `::`? That represents the concept of "cons", which has [its own page on Wikipedia](https://en.wikipedia.org/wiki/Cons) but I'm going to call "prepend" for brevity.
 
-## No loops
+### No loops
 
 One thing to bear in mind from the outset is that in functional programming, there are no loops. Not as you or I might understand them, at least. But if you think of a list of items that you want to process "in a loop", the concept of "x over xs" is what you need.
 
@@ -78,11 +76,12 @@ Let's extract the core pattern matching approach here, in the `case` expression:
 
 The sum of an empty list of numbers - the base case - is zero, clearly. The sum of a non empty list of numbers is where we see the recursive nature of the definition: it's the first number added to the sum of the rest of the numbers. And while contemplating this beautiful simplicity, consider also that this is an example of how a functional approach to programming is declarative, rather than imperative. Rather than explaining *how* to compute the sum (which we'd traditionally do with a loop and some variable to accumulate the final value), we're just saying *what* it is.
 
-## Further pattern examples
+### Further pattern examples
 
 Let's examine a few more instances of this pattern matching. I'm going for quite a few examples, so you can stare at them all for a while.
 
-### Factorial
+#### Factorial
+
 First, how about calculating factorials:
 
 ```elm
@@ -98,7 +97,7 @@ factorial 5
 
 We have the same approach here: matching the base case, where n is zero, and then declaring that the factorial of n is just n multiplied by the factorial of n - 1. In this particular example of pattern matching, we're not interested in capturing the matched number (as we already have it in n), hence the `_` in the pattern.
 
-### Length
+#### Length
 
 How about calculating the length of a list? That's simple:
 
@@ -115,7 +114,7 @@ length [1,2,3,4,5]
 
 Again, we see the same pattern.
 
-### Reverse
+#### Reverse
 
 This time we'll use the pattern matching approach to produce the reverse of a list.
 
@@ -132,8 +131,7 @@ reverse [1,2,3,4,5]
 
 This time, the base case - an empty list - results in an empty list. Otherwise we take the head and prepend the reverse of the tail to it, recursively.
 
-
-### Take
+#### Take
 
 Now let's define our own `take` function, a common facility found in functional languages that are (naturally) list-oriented. The function returns the first n elements of a list.
 
@@ -151,7 +149,7 @@ take 3 [1,2,3,4,5]
 
 Here we have something extra. There are two base cases - where the list is empty, but also where the number of elements to take is zero or less. But otherwise the pattern is the same.
 
-### Member
+#### Member
 
 This time, we're going to need the `if then else` expression to declare the recursive definition for a function that returns whether an element is a member of a list.
 
@@ -172,7 +170,7 @@ member 6 [1,2,3,4,5]
 
 If the list is empty - the base case - then the answer is clearly going to be False. Otherwise we check to see if the head of the list is the same as the element to find, and if it is, then the answer is True; otherwise we recurse with the tail of the list.
 
-### Maximum
+#### Maximum
 
 Finally, here's a definition of a function that will return the maximum value in a list. Note here that the function's type signature uses the `comparable` type.
 
@@ -207,7 +205,7 @@ maximum_ [1,2,3,4,5,4,3,2,1]
 
 Wonderful.
 
-# List machinery
+## List machinery
 
 I've talked at length about recursion, and perhaps you too can see the beauty therein.
 
