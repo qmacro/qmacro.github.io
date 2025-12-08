@@ -99,7 +99,7 @@ annotate <target> with <annotation> : <info> actions { ... }
 and indeed the construction used is rather unusual:
 
 - `annotate <target> actions { ... }` is [reasonably common](https://github.com/search?q=org%3Acapire+OR+org%3ASAP-samples+%2Fannotate+.%2B+actions%2F+path%3A*.cds&type=code)
-- but _two_ effective targets in a single annotation declaration context is [extremely rare](https://github.com/search?q=org%3Acapire+%2Fannotate+.%2B+with+%40.%2B+actions%2F+path%3A*.cds&type=code)
+- but _two_ effective targets in a single annotation declaration context is [extremely rare](https://github.com/search?q=org%3Acapire+OR+org%3ASAP-samples+%2Fannotate+.%2B+with+%40.%2B+actions%2F+path%3A*.cds&type=code)
 
 What we have here is a sequence of two annotations in one. The single annotation expression above could just as readily be expressed like this[<sup>2</sup>](#footnotes):
 
