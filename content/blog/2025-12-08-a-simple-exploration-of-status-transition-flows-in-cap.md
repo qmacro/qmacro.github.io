@@ -27,6 +27,7 @@ Of course, this is only part of how things are set up; following the link at the
 I wanted to write my own example, complete but also as simple as possible, so I could then [stare at it](/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#initial-recognition) for a while to let things sink in. Here's what I came up with.
 
 ![double toggle switch](/images/2025/12/double-toggle-switch.jpg)
+([Image courtesy of Wikimedia Commons](https://commons.wikimedia.org/wiki/File:A_double_toggle_light_switch.jpg))
 
 ## Modelling an on/off switch
 
