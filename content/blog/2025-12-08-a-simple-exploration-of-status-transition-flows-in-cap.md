@@ -235,7 +235,7 @@ OK, are there any existing switch entities?
 
 ```bash
 ; curl \
-  -s \
+  --silent \
   --url 'localhost:4004/odata/v4/switch/Switches' \
   | jq
 {
@@ -248,9 +248,9 @@ No. So I'll create one:
 
 ```bash
 ; curl \
-  -H 'Content-Type: application/json' \
-  -d '{"ID":1}' \
-  -s \
+  --header 'Content-Type: application/json' \
+  --data '{"ID":1}' \
+  --silent \
   --url 'localhost:4004/odata/v4/switch/Switches' \
   | jq
 {
@@ -264,22 +264,18 @@ It has the default status of `Down`, as expected.
 
 ### Trying to flip the switch the wrong way
 
-The switch is down, so I want to see if I can invoke the `flipDown` action:
+The switch is down, so I want to see if I can invoke the `flipDown` action[<sup>3</sup>](#footnotes):
 
 ```bash
 ; curl \
-  -X POST \
-  -i \
+  --request POST \
+  --include \
   --url 'localhost:4004/odata/v4/switch/Switches/1/flipDown'
 HTTP/1.1 409 Conflict
 X-Powered-By: Express
-X-Correlation-ID: 3c323920-f971-4a3d-97c3-4fa2c3dbae8b
 OData-Version: 4.0
 Content-Type: application/json; charset=utf-8
 Content-Length: 151
-Date: Mon, 08 Dec 2025 20:12:00 GMT
-Connection: keep-alive
-Keep-Alive: timeout=5
 
 {
   "error": {
@@ -297,23 +293,20 @@ Nope! Plus, the HTTP status code 409 is [nicely appropriate](https://developer.m
 So how about flipping the switch from down to up?
 
 ```bash
-; curl -X POST \
-  -i \
+; curl \
+  --request POST \
+  --include \
   --url 'localhost:4004/odata/v4/switch/Switches/1/flipUp'
 HTTP/1.1 204 No Content
 X-Powered-By: Express
-X-Correlation-ID: 90214307-36e2-4e1a-968c-7b2985375949
 OData-Version: 4.0
-Date: Mon, 08 Dec 2025 20:13:26 GMT
-Connection: keep-alive
-Keep-Alive: timeout=5
 ```
 
 That seemed to work, but I'll check anyway:
 
 ```bash
 ; curl \
-  -s \
+  --silent \
   --url 'localhost:4004/odata/v4/switch/Switches/1' \
   | jq
 {
@@ -346,5 +339,6 @@ Of course, there's a lot more that this new Status-Transition Flows feature offe
 
     This means that it's a default ("well-known") location for CDS model definitions.
 
-1. What's really going to blow your mind is that `annotate` is really [just a shortcut variant](https://cap.cloud.sap/docs/cds/cdl#the-annotate-directive) of `extend`
+1. What's really going to blow your mind is that `annotate` is really [just a shortcut variant](https://cap.cloud.sap/docs/cds/cdl#the-annotate-directive) of `extend`.
 
+1. I use `--include` to have the response headers emitted, but have only included some of them in the output here, to keep things brief.
