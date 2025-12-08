@@ -5,11 +5,272 @@
   <subtitle>Reserving the right to be wrong</subtitle>
   <link href="https://qmacro.org/feed/feed.xml" rel="self" />
   <link href="https://qmacro.org/blog/" />
-  <updated>2025-11-12T00:00:00Z</updated>
+  <updated>2025-12-08T00:00:00Z</updated>
   <id>https://qmacro.org/blog/</id>
   <author>
     <name>DJ Adams</name>
   </author>
+  <entry>
+    <title>A simple exploration of status transition flows in CAP</title>
+    <link href="https://qmacro.org/blog/posts/2025/12/08/a-simple-exploration-of-status-transition-flows-in-cap/" />
+    <updated>2025-12-08T00:00:00Z</updated>
+    <id>https://qmacro.org/blog/posts/2025/12/08/a-simple-exploration-of-status-transition-flows-in-cap/</id>
+    <content type="html">&lt;p&gt;The &lt;a href=&quot;https://cap.cloud.sap/docs/releases/nov25&quot;&gt;November 2025 release&lt;/a&gt; of CAP heralded &lt;a href=&quot;https://cap.cloud.sap/docs/releases/nov25#status-transition-flows&quot;&gt;a beta version of Status-Transition Flows&lt;/a&gt;, moving us up yet another gear in the journey towards declarative nirvana.&lt;/p&gt;
+&lt;h2 id=&quot;background&quot;&gt;Background&lt;/h2&gt;
+&lt;p&gt;I wanted to try out this new significant feature, one which embodies and celebrates one of the key reasons to use CAP - &lt;a href=&quot;https://qmacro.org/blog/posts/2024/11/07/five-reasons-to-use-cap/#1-the-code-is-in-the-framework-not-outside-of-it&quot;&gt;the code is in the framework, not outside of it&lt;/a&gt;. In the November release notes there&#39;s a brief glimpse of what this declarative approach looks like:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;annotate Travels with &lt;span class=&quot;token annotation important&quot;&gt;@flow.status:&lt;/span&gt; Status &lt;span class=&quot;token keyword&quot;&gt;actions&lt;/span&gt; {
+  rejectTravel    @&lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt;: #Open  &lt;span class=&quot;token annotation important&quot;&gt;@to:&lt;/span&gt; #Canceled;
+  acceptTravel    @&lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt;: #Open  &lt;span class=&quot;token annotation important&quot;&gt;@to:&lt;/span&gt; #Accepted;
+  deductDiscount  @&lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt;: #Open;
+};&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Of course, this is only part of how things are set up; following the link at the end of this section of the release notes leads us to &lt;a href=&quot;https://cap.cloud.sap/docs/guides/providing-services#status-transition-flows&quot;&gt;the relevant Capire section within the Providing Services topic&lt;/a&gt;, where we can see some of the rest of the CDS model (domain model and service definition specifically) that goes to make up the sample.&lt;/p&gt;
+&lt;p&gt;I wanted to write my own example, complete but also as simple as possible, so I could then &lt;a href=&quot;https://qmacro.org/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#initial-recognition&quot;&gt;stare at it&lt;/a&gt; for a while to let things sink in. Here&#39;s what I came up with.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2025/12/double-toggle-switch.jpg&quot; alt=&quot;double toggle switch&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;modelling-an-on-off-switch&quot;&gt;Modelling an on/off switch&lt;/h2&gt;
+&lt;p&gt;After initialising a new CAP project (with &lt;code&gt;cds init&lt;/code&gt;), I just created a &lt;code&gt;services.cds&lt;/code&gt; file&lt;a href=&quot;https://qmacro.org/blog/posts/2025/12/08/a-simple-exploration-of-status-transition-flows-in-cap/#footnotes&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt; with the following content:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;context&lt;/span&gt; qmacro {
+
+  &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;type&lt;/span&gt; Status : &lt;span class=&quot;token type builtin&quot;&gt;String &lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;enum&lt;/span&gt; {
+    Up;
+    Down;
+  }
+
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Switches {
+    &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; ID     : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
+        status : Status &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;default&lt;/span&gt; #Down;
+  }
+}
+
+&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; SwitchService {
+
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Switches &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; qmacro.Switches
+
+    &lt;span class=&quot;token keyword&quot;&gt;actions&lt;/span&gt; {
+      &lt;span class=&quot;token keyword&quot;&gt;action&lt;/span&gt; flipUp();
+      &lt;span class=&quot;token keyword&quot;&gt;action&lt;/span&gt; flipDown();
+    };
+
+
+  annotate Switches with &lt;span class=&quot;token annotation important&quot;&gt;@flow.status:&lt;/span&gt; status &lt;span class=&quot;token keyword&quot;&gt;actions&lt;/span&gt; {
+    flipUp               @&lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt;       : #Down  &lt;span class=&quot;token annotation important&quot;&gt;@to:&lt;/span&gt; #Up;
+    flipDown             @&lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt;       : #Up    &lt;span class=&quot;token annotation important&quot;&gt;@to:&lt;/span&gt; #Down;
+  };
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;understanding-the-definitions&quot;&gt;Understanding the definitions&lt;/h2&gt;
+&lt;p&gt;Recently I&#39;ve been looking more closely at CDS modelling in general and CDL in particular, partly in the context of creating the exercise content for the &lt;a href=&quot;https://github.com/SAP-samples/cap-cds-hands-on/&quot;&gt;Hands-on with CAP CDS&lt;/a&gt; workshop which I gave &lt;a href=&quot;https://qmacro.org/blog/posts/2025/09/10/upcoming-talks-in-autumn-2025/#ukisug-connect&quot;&gt;at UKISUG Connect&lt;/a&gt; at the start of this month. And I have come to value taking my time to understand the nuances of how models are expressed. Here are a few points of interest relating to the declarations here:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;I want to have everything in a single file to keep things as simple as possible&lt;/li&gt;
+&lt;li&gt;This includes my data model, my service definition and my annotations&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;With regards to the data model:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;I&#39;m using the &lt;code&gt;context&lt;/code&gt; keyword to enclose my data model, which consists of a custom named type &lt;code&gt;Status&lt;/code&gt; and the entity &lt;code&gt;Switches&lt;/code&gt;, with a scope name prefix (&lt;code&gt;qmacro&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;status&lt;/code&gt; element of &lt;code&gt;Switches&lt;/code&gt; is defined with the custom &lt;code&gt;Status&lt;/code&gt; type which has its possible values as a list of &lt;a href=&quot;https://cap.cloud.sap/docs/cds/cdl#enums&quot;&gt;enumeration values&lt;/a&gt; (&lt;code&gt;Up&lt;/code&gt; and &lt;code&gt;Down&lt;/code&gt;); as this is the element that&#39;s going to be used as the status element, I&#39;ve given it a default value (&lt;code&gt;Down&lt;/code&gt;) as it requires one (no initial state can be provided on creation as the element should be immutable)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;With regards to the service definition:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;There&#39;s a pass-through projection (i.e. it defaults to an &lt;a href=&quot;https://cap.cloud.sap/docs/cds/cdl#views-with-inferred-signatures&quot;&gt;inferred signature&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;The projection is for the &lt;code&gt;Switches&lt;/code&gt; entity, and there&#39;s also a couple of &lt;a href=&quot;https://cap.cloud.sap/docs/cds/cdl#bound-actions&quot;&gt;bound actions&lt;/a&gt; declared as part of the entity definition that starts with &lt;code&gt;entity Switches ...&lt;/code&gt; and finishes with the semicolon &lt;code&gt;;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;As these are actions, which semantically signal that side-effects are likely, they&#39;ll need to be invoked with HTTP POST&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Finally there&#39;s the annotation:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;it&#39;s separate to the annotation target, and arguably easier to read that way; moreover, it would likely (or at least possibly) be in a separate file if it weren&#39;t so deliberately simple (see &lt;a href=&quot;https://qmacro.org/blog/posts/2024/11/04/separating-concerns-and-focusing-on-the-important-stuff/&quot;&gt;Separating concerns and focusing on the important stuff&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;it has been written in accordance with the description in the &lt;a href=&quot;https://cap.cloud.sap/docs/guides/providing-services#modeling-flows&quot;&gt;Modelling Flows&lt;/a&gt; section of the &lt;a href=&quot;https://cap.cloud.sap/docs/guides/providing-services&quot;&gt;Providing Services&lt;/a&gt; topic in Capire&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;digging-in-to-the-annotation&quot;&gt;Digging in to the annotation&lt;/h3&gt;
+&lt;p&gt;The annotation is quite involved:&lt;/p&gt;
+&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;annotate &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;target&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; with &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;annotation&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;info&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; actions &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;..&lt;/span&gt;. &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and indeed the construction used is rather unusual:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;annotate &amp;lt;target&amp;gt; actions { ... }&lt;/code&gt; is &lt;a href=&quot;https://github.com/search?q=org%3Acapire+OR+org%3ASAP-samples+%2Fannotate+.%2B+actions%2F+path%3A*.cds&amp;amp;type=code&quot;&gt;reasonably common&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;but &lt;em&gt;two&lt;/em&gt; effective targets in a single annotation declaration context is &lt;a href=&quot;https://github.com/search?q=org%3Acapire+%2Fannotate+.%2B+with+%40.%2B+actions%2F+path%3A*.cds&amp;amp;type=code&quot;&gt;extremely rare&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;What we have here is a sequence of two annotations in one. The single annotation expression above could just as readily be expressed like this&lt;a href=&quot;https://qmacro.org/blog/posts/2025/12/08/a-simple-exploration-of-status-transition-flows-in-cap/#footnotes&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;annotate Switches with &lt;span class=&quot;token annotation important&quot;&gt;@flow.status:&lt;/span&gt; status;
+
+annotate Switches &lt;span class=&quot;token keyword&quot;&gt;actions&lt;/span&gt; {
+  flipUp    @&lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt;: #Down  &lt;span class=&quot;token annotation important&quot;&gt;@to:&lt;/span&gt; #Up;
+  flipDown  @&lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt;: #Up    &lt;span class=&quot;token annotation important&quot;&gt;@to:&lt;/span&gt; #Down;
+};&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Separating these out like this makes it a bit easier for me to grok what&#39;s going on.&lt;/p&gt;
+&lt;p&gt;First, we&#39;re blessing the &lt;code&gt;Switches&lt;/code&gt; entity with the Status-Transition Flows ability; at this level, we must specify the specific element to be used for the status. It&#39;s the &lt;code&gt;status&lt;/code&gt; element that&#39;s important, and we do that here by targeting the entire entity with the annotation and then specifying the element as a secondary piece of information. We could have annotated the element directly, like this:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;context&lt;/span&gt; qmacro {
+
+  &lt;span class=&quot;token single-line-comment comment&quot;&gt;// ...&lt;/span&gt;
+
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Switches {
+    &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; ID     : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
+
+        &lt;span class=&quot;token annotation important&quot;&gt;@flow.status&lt;/span&gt;
+        status : Status &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;default&lt;/span&gt; #Down;
+  }
+}
+
+&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; SwitchService {
+
+  &lt;span class=&quot;token single-line-comment comment&quot;&gt;// ...&lt;/span&gt;
+
+  annotate Switches &lt;span class=&quot;token keyword&quot;&gt;actions&lt;/span&gt; {
+    flipUp    @&lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt;: #Down  &lt;span class=&quot;token annotation important&quot;&gt;@to:&lt;/span&gt; #Up;
+    flipDown  @&lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt;: #Up    &lt;span class=&quot;token annotation important&quot;&gt;@to:&lt;/span&gt; #Down;
+  };
+
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;but, we&#39;d have needed to additionally, explicitly and manually specify the &lt;code&gt;@readonly&lt;/code&gt; annotation &lt;a href=&quot;https://cap.cloud.sap/docs/guides/providing-services#declare-flow-using-flow-status&quot;&gt;as directed&lt;/a&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Switches {
+  &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; ID     : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
+
+      &lt;span class=&quot;token annotation important&quot;&gt;@readonly&lt;/span&gt;
+      &lt;span class=&quot;token annotation important&quot;&gt;@flow.status&lt;/span&gt;
+      status : Status &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;default&lt;/span&gt; #Down;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In the current state of how we make these declarations, specifying the flow status annotation at the entity level, and in the service layer, nearer to the related actions, makes more sense to me.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;In case you&#39;re wondering, the original entity level &lt;code&gt;@flow.status&lt;/code&gt; annotation does indeed also cause a &lt;code&gt;@readonly&lt;/code&gt; annotation to be added; here&#39;s the relevant section of the CSN that&#39;s generated:&lt;/p&gt;
+&lt;pre class=&quot;language-yaml&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-yaml&quot;&gt;&lt;span class=&quot;token key atrule&quot;&gt;definitions&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;SwitchService.Switches&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; entity
+    &lt;span class=&quot;token key atrule&quot;&gt;&quot;@flow.status&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;&quot;=&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; status &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;projection&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;from&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;qmacro.Switches&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;elements&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;token key atrule&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Integer &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;token key atrule&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; qmacro.Status
+        &lt;span class=&quot;token key atrule&quot;&gt;default&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;&quot;#&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Down&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; Down &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;&quot;@flow.status&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
+        &lt;span class=&quot;token key atrule&quot;&gt;&quot;@readonly&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;And, what of the actions themselves?&lt;/p&gt;
+&lt;h3 id=&quot;looking-at-the-implementation-for-the-actions&quot;&gt;Looking at the implementation for the actions&lt;/h3&gt;
+&lt;p&gt;We are used to having the CAP server provide a complete out-of-the-box CRUD handler experience for our services, on an entity by entity basis. We are also used to having to write our own handlers for custom &amp;quot;orthogonal&amp;quot; offerings such as actions and functions, as, almost by definition, they could be anything and are unguessable.&lt;/p&gt;
+&lt;p&gt;And so here we are now with a couple of actions we&#39;ve declared:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token single-line-comment comment&quot;&gt;// ...&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; SwitchService {
+
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Switches &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; qmacro.Switches
+
+    &lt;span class=&quot;token keyword&quot;&gt;actions&lt;/span&gt; {
+      &lt;span class=&quot;token keyword&quot;&gt;action&lt;/span&gt; flipUp();
+      &lt;span class=&quot;token keyword&quot;&gt;action&lt;/span&gt; flipDown();
+    };
+
+    &lt;span class=&quot;token single-line-comment comment&quot;&gt;// ...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and annotated:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;  &lt;span class=&quot;token single-line-comment comment&quot;&gt;// ...&lt;/span&gt;
+
+  annotate Switches &lt;span class=&quot;token keyword&quot;&gt;actions&lt;/span&gt; {
+    flipUp    @&lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt;: #Down  &lt;span class=&quot;token annotation important&quot;&gt;@to:&lt;/span&gt; #Up;
+    flipDown  @&lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt;: #Up    &lt;span class=&quot;token annotation important&quot;&gt;@to:&lt;/span&gt; #Down;
+  };
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Here&#39;s what the implementation looks like, say in a corresponding &lt;code&gt;services.js&lt;/code&gt; file:&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Yep, that&#39;s right. There is no implementation required, and no corresponding implementation file needed - that&#39;s sort of the whole point!&lt;/p&gt;
+&lt;p&gt;With the declarative Status-Transition Flows approach, we&#39;ve declared everything we need with the annotations, describing what each action should do with respect to the status; what starting status requirements there are and what target statuses there can be. Here:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;flipUp&lt;/code&gt;, which will transition the status to &lt;code&gt;Up&lt;/code&gt;, can only be invoked if the status is currently &lt;code&gt;Down&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;flipDown&lt;/code&gt;, which will transition the status to &lt;code&gt;Down&lt;/code&gt;, can only be invoked if the status is currently &lt;code&gt;Up&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Of course, there are far more flexible and involved possibilities here, which are nicely described &lt;a href=&quot;https://cap.cloud.sap/docs/guides/providing-services#status-transition-flows&quot;&gt;in the appropriate section&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&quot;kicking-the-tyres&quot;&gt;Kicking the tyres&lt;/h2&gt;
+&lt;p&gt;Now I have my model and service definition, and the appropriate annotations, what does it feel like, how does one interact with and experience it?&lt;/p&gt;
+&lt;p&gt;Simply from an HTTP level, I&#39;ll give it a go. One can imagine how this then translates to calls being made from a frontend somewhere too, with buttons and other widgets in the UI enabled or disabled (or even hidden) according to the current status.&lt;/p&gt;
+&lt;p&gt;I&#39;ll start the server with &lt;code&gt;cds watch&lt;/code&gt;.&lt;/p&gt;
+&lt;h3 id=&quot;creating-my-first-switch&quot;&gt;Creating my first switch&lt;/h3&gt;
+&lt;p&gt;OK, are there any existing switch entities?&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;-s&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;localhost:4004/odata/v4/switch/Switches&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; jq
+&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token string&quot;&gt;&quot;@odata.context&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&lt;span class=&quot;token variable&quot;&gt;$metadata&lt;/span&gt;#Switches&quot;&lt;/span&gt;,
+  &lt;span class=&quot;token string&quot;&gt;&quot;value&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;No. So I&#39;ll create one:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;-H&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Content-Type: application/json&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;-d&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;{&quot;ID&quot;:1}&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;-s&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;localhost:4004/odata/v4/switch/Switches&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; jq
+&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token string&quot;&gt;&quot;@odata.context&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&lt;span class=&quot;token variable&quot;&gt;$metadata&lt;/span&gt;#Switches/&lt;span class=&quot;token variable&quot;&gt;$entity&lt;/span&gt;&quot;&lt;/span&gt;,
+  &lt;span class=&quot;token string&quot;&gt;&quot;ID&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;,
+  &lt;span class=&quot;token string&quot;&gt;&quot;status&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Down&quot;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;It has the default status of &lt;code&gt;Down&lt;/code&gt;, as expected.&lt;/p&gt;
+&lt;h3 id=&quot;trying-to-flip-the-switch-the-wrong-way&quot;&gt;Trying to flip the switch the wrong way&lt;/h3&gt;
+&lt;p&gt;The switch is down, so I want to see if I can invoke the &lt;code&gt;flipDown&lt;/code&gt; action:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;-X&lt;/span&gt; POST &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;-i&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;localhost:4004/odata/v4/switch/Switches/1/flipDown&#39;&lt;/span&gt;
+HTTP/1.1 &lt;span class=&quot;token number&quot;&gt;409&lt;/span&gt; Conflict
+X-Powered-By: Express
+X-Correlation-ID: 3c323920-f971-4a3d-97c3-4fa2c3dbae8b
+OData-Version: &lt;span class=&quot;token number&quot;&gt;4.0&lt;/span&gt;
+Content-Type: application/json&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token assign-left variable&quot;&gt;charset&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;utf-8
+Content-Length: &lt;span class=&quot;token number&quot;&gt;151&lt;/span&gt;
+Date: Mon, 08 Dec &lt;span class=&quot;token number&quot;&gt;2025&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;20&lt;/span&gt;:12:00 GMT
+Connection: keep-alive
+Keep-Alive: &lt;span class=&quot;token assign-left variable&quot;&gt;timeout&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt;
+
+&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token string&quot;&gt;&quot;error&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token string&quot;&gt;&quot;message&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Action &lt;span class=&quot;token entity&quot; title=&quot;&#92;&amp;quot;&quot;&gt;&#92;&quot;&lt;/span&gt;flipDown&lt;span class=&quot;token entity&quot; title=&quot;&#92;&amp;quot;&quot;&gt;&#92;&quot;&lt;/span&gt; requires &lt;span class=&quot;token entity&quot; title=&quot;&#92;&amp;quot;&quot;&gt;&#92;&quot;&lt;/span&gt;status&lt;span class=&quot;token entity&quot; title=&quot;&#92;&amp;quot;&quot;&gt;&#92;&quot;&lt;/span&gt; to be &lt;span class=&quot;token entity&quot; title=&quot;&#92;&amp;quot;&quot;&gt;&#92;&quot;&lt;/span&gt;[&lt;span class=&quot;token entity&quot; title=&quot;&#92;&amp;quot;&quot;&gt;&#92;&quot;&lt;/span&gt;Up&lt;span class=&quot;token entity&quot; title=&quot;&#92;&amp;quot;&quot;&gt;&#92;&quot;&lt;/span&gt;]&lt;span class=&quot;token entity&quot; title=&quot;&#92;&amp;quot;&quot;&gt;&#92;&quot;&lt;/span&gt;.&quot;&lt;/span&gt;,
+    &lt;span class=&quot;token string&quot;&gt;&quot;code&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;INVALID_FLOW_TRANSITION_SINGLE&quot;&lt;/span&gt;,
+    &lt;span class=&quot;token string&quot;&gt;&quot;@Common.numericSeverity&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Nope! Plus, the HTTP status code 409 is &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/409&quot;&gt;nicely appropriate&lt;/a&gt;.&lt;/p&gt;
+&lt;h3 id=&quot;flipping-the-switch-the-right-way&quot;&gt;Flipping the switch the right way&lt;/h3&gt;
+&lt;p&gt;So how about flipping the switch from down to up?&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token parameter variable&quot;&gt;-X&lt;/span&gt; POST &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;-i&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;localhost:4004/odata/v4/switch/Switches/1/flipUp&#39;&lt;/span&gt;
+HTTP/1.1 &lt;span class=&quot;token number&quot;&gt;204&lt;/span&gt; No Content
+X-Powered-By: Express
+X-Correlation-ID: &lt;span class=&quot;token number&quot;&gt;90214307&lt;/span&gt;-36e2-4e1a-968c-7b2985375949
+OData-Version: &lt;span class=&quot;token number&quot;&gt;4.0&lt;/span&gt;
+Date: Mon, 08 Dec &lt;span class=&quot;token number&quot;&gt;2025&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;20&lt;/span&gt;:13:26 GMT
+Connection: keep-alive
+Keep-Alive: &lt;span class=&quot;token assign-left variable&quot;&gt;timeout&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That seemed to work, but I&#39;ll check anyway:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;-s&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;localhost:4004/odata/v4/switch/Switches/1&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; jq
+&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token string&quot;&gt;&quot;@odata.context&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&lt;span class=&quot;token variable&quot;&gt;$metadata&lt;/span&gt;#Switches/&lt;span class=&quot;token variable&quot;&gt;$entity&lt;/span&gt;&quot;&lt;/span&gt;,
+  &lt;span class=&quot;token string&quot;&gt;&quot;ID&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;,
+  &lt;span class=&quot;token string&quot;&gt;&quot;status&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Up&quot;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Excellent!&lt;/p&gt;
+&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
+&lt;p&gt;Of course, there&#39;s a lot more that this new Status-Transition Flows feature offers, but for now, I&#39;m glad I took a first look with this simple example.&lt;/p&gt;
+&lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;The name of this file is significant, it&#39;s one of the two file items (the rest are directory items) in the &amp;quot;CDS roots&amp;quot;, as illustrated:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; cds &lt;span class=&quot;token function&quot;&gt;env&lt;/span&gt; roots
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+  &lt;span class=&quot;token string&quot;&gt;&quot;db/&quot;&lt;/span&gt;,
+  &lt;span class=&quot;token string&quot;&gt;&quot;srv/&quot;&lt;/span&gt;,
+  &lt;span class=&quot;token string&quot;&gt;&quot;app/&quot;&lt;/span&gt;,
+  &lt;span class=&quot;token string&quot;&gt;&quot;schema&quot;&lt;/span&gt;,
+  &lt;span class=&quot;token string&quot;&gt;&quot;services&quot;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This means that it&#39;s a default (&amp;quot;well-known&amp;quot;) location for CDS model definitions.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;What&#39;s really going to blow your mind is that &lt;code&gt;annotate&lt;/code&gt; is really &lt;a href=&quot;https://cap.cloud.sap/docs/cds/cdl#the-annotate-directive&quot;&gt;just a shortcut variant&lt;/a&gt; of &lt;code&gt;extend&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+  </entry>
   <entry>
     <title>Some ramblings on simple CDS modelling with CDL</title>
     <link href="https://qmacro.org/blog/posts/2025/11/12/some-ramblings-on-simple-cds-modelling-with-cdl/" />
@@ -1225,205 +1486,6 @@ vim&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;opt&lt;span cla
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node-js-configuration-and-diagnostics/&quot;&gt;A modern and clean Neovim setup for CAP Node.js - configuration and diagnostics&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2025/08/04/excluding-specific-diagnostics-in-neovim/&quot;&gt;Excluding specific diagnostics in Neovim&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-</content>
-  </entry>
-  <entry>
-    <title>Excluding specific diagnostics in Neovim</title>
-    <link href="https://qmacro.org/blog/posts/2025/08/04/excluding-specific-diagnostics-in-neovim/" />
-    <updated>2025-08-04T00:00:00Z</updated>
-    <id>https://qmacro.org/blog/posts/2025/08/04/excluding-specific-diagnostics-in-neovim/</id>
-    <content type="html">&lt;p&gt;Note: I&#39;m still learning (a) Lua, (b) the API surface of Neovim and (c) how the different core components interact and work together, so this may not be the best solution, but it works for me and I&#39;ve learned a lot digging in and putting it together.&lt;/p&gt;
-&lt;p&gt;I recently revisited my Neovim config, with a view to updating and simplifying it with the advent of release 0.11. I covered some of this in my last Neovim related post &lt;a href=&quot;https://qmacro.org/blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node-js-configuration-and-diagnostics/&quot;&gt;A modern and clean Neovim setup for CAP Node.js - configuration and diagnostics&lt;/a&gt;. In that context, when editing Node.js (JavaScript) files, everything worked nicely with regards to the Language Server and how the diagnostics were surfaced.&lt;/p&gt;
-&lt;h2 id=&quot;a-desire-to-filter-out-a-specific-diagnostic&quot;&gt;A desire to filter out a specific diagnostic&lt;/h2&gt;
-&lt;p&gt;That is, everything worked nicely ... with one annoyance - the hint level diagnostic &amp;quot;File is a CommonJS module&amp;quot; shown here on line 1:&lt;/p&gt;
-&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;H   1 const cds = require(&#39;@sap/cds&#39;)     ■ File is a CommonJS module; it may be converted to an ES module.
-    2 module.exports = cds.service.impl(function() {
-    3   this.after(&#39;each&#39;, &#39;Books&#39;, book =&gt; {
-    4     console.log(book
-E   5   })     ■ &#39;,&#39; expected.
-    6 })&lt;/code&gt;&lt;/pre&gt;
-&lt;blockquote&gt;
-&lt;p&gt;For this sample display I&#39;d temporarily changed my preferred config so that all diagnostics are shown, as virtual text, rather than virtual lines, like this:&lt;/p&gt;
-&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;:lua vim.diagnostic.config({virtual_lines = false, virtual_text = true})&lt;/code&gt;&lt;/pre&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;So I wanted the language server to still publish diagnostics, but for me to be able to filter them.&lt;/p&gt;
-&lt;h2 id=&quot;digging-into-the-neovim-docu&quot;&gt;Digging into the Neovim docu&lt;/h2&gt;
-&lt;p&gt;In order to achieve this, I spent a pleasant morning today looking through the documentation and getting a better understanding of the API with respect to these features of Neovim (the links are to the documentation sections that are important here):&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;https://neovim.io/doc/user/diagnostic.html&quot;&gt;Diagnostic framework&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://neovim.io/doc/user/lsp.html&quot;&gt;LSP client / framework&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://neovim.io/doc/user/lua.html&quot;&gt;Lua engine&lt;/a&gt; (including the &lt;code&gt;vim&lt;/code&gt; table-related functions)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&quot;the-general-idea&quot;&gt;The general idea&lt;/h2&gt;
-&lt;p&gt;Neovim has mechanisms for firing up language servers, connecting to them and making their features and functionality available in buffers. It also has facilities for managing diagnostics and surfacing them in different ways.&lt;/p&gt;
-&lt;p&gt;With regards to diagnostics, a simplified flow between Neovim and a language server looks generally like this:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Neovim attaches to a language server, sending the contents of the buffer to it for analysis&lt;/li&gt;
-&lt;li&gt;The language server publishes hint, information, warning and error level diagnostics (via &lt;a href=&quot;https://code.visualstudio.com/api/language-extensions/programmatic-language-features#provide-diagnostics&quot;&gt;textDocument/publishDiagnostics&lt;/a&gt;)&lt;/li&gt;
-&lt;li&gt;These diagnostics are stored in Neovim via a call to &lt;code&gt;vim.diagnostic.set&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Depending on the configuration, the diagnostics are displayed appropriately in the buffer&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;While I first went down the path of trying to add a filter in the last part (diagnostic display), I found that this was ultimately the wrong way to go about it, not least because I would have found myself having to override all the various diagnostic display affordances such as signs, virtual text, and so on.&lt;/p&gt;
-&lt;p&gt;The key was to interrupt the &lt;em&gt;setting&lt;/em&gt; of the diagnostics so that I could filter some out before they were actually stored, which meant overriding &lt;code&gt;vim.diagnostic.set&lt;/code&gt;.&lt;/p&gt;
-&lt;h2 id=&quot;examining-the-anatomy-of-a-diagnostic&quot;&gt;Examining the anatomy of a diagnostic&lt;/h2&gt;
-&lt;p&gt;Understanding what a diagnostic looked like helped me enormously. In the JavaScript sample above, these two diagnostics are displayed:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;(H)INT 80001: File is a CommonJS module; it may be converted to an ES module.&lt;/li&gt;
-&lt;li&gt;(E)RROR 1005: &#39;,&#39; expected&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;We can look at what these are via &lt;code&gt;vim.diagnostic.get&lt;/code&gt;. Invoking this:&lt;/p&gt;
-&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;:lua print(vim.diagnostic.get())&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;will just emit a table reference, something like this:&lt;/p&gt;
-&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;table: 0x68251cb7dca8&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;But we can use the &lt;code&gt;vim.print&lt;/code&gt; function instead:&lt;/p&gt;
-&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;:lua vim.print(vim.diagnostic.get())&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;or even simply the &lt;code&gt;=&lt;/code&gt; mechanism:&lt;/p&gt;
-&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;:lua =vim.diagnostic.get()&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;and this will cause a formatted display of the table contents:&lt;/p&gt;
-&lt;pre class=&quot;language-lua&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-lua&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    bufnr &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    code &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1005&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    col &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    end_col &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    end_lnum &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    lnum &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    message &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&#39;,&#39; expected.&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    namespace &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    severity &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    source &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;typescript&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    user_data &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-      lsp &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-        code &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1005&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-        message &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&#39;,&#39; expected.&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-        range &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-          &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;end&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-            character &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-            line &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;
-          &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-          start &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-            character &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-            line &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;
-          &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-        severity &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-        source &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;typescript&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-        tags &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    bufnr &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    code &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;80001&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    col &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    end_col &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;31&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    end_lnum &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    lnum &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    message &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;File is a CommonJS module; it may be converted to an ES module.&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    namespace &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    severity &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    source &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;typescript&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    user_data &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-      lsp &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-        code &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;80001&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-        message &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;File is a CommonJS module; it may be converted to an ES module.&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-        range &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-          &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;end&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-            character &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;31&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-            line &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
-          &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-          start &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-            character &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-            line &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
-          &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-        severity &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-        source &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;typescript&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-        tags &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;I decided that I would want to filter on &lt;code&gt;code&lt;/code&gt; and &lt;code&gt;source&lt;/code&gt;; the &lt;code&gt;source&lt;/code&gt; for both diagnostics here is &lt;code&gt;typescript&lt;/code&gt;, and the &lt;code&gt;code&lt;/code&gt; values are actually shown in the virtual text display already (&lt;code&gt;80001&lt;/code&gt; and &lt;code&gt;1005&lt;/code&gt;).&lt;/p&gt;
-&lt;h2 id=&quot;how-diagnostics-are-set&quot;&gt;How diagnostics are set&lt;/h2&gt;
-&lt;p&gt;Diagnostics find their way from the language server back into Neovim via &lt;code&gt;vim.diagnostic.set&lt;/code&gt; which &lt;a href=&quot;https://neovim.io/doc/user/diagnostic.html#vim.diagnostic.set()&quot;&gt;has this signature&lt;/a&gt;:&lt;/p&gt;
-&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;set({namespace}, {bufnr}, {diagnostics}, {opts})&lt;/code&gt;&lt;/pre&gt;
-&lt;blockquote&gt;
-&lt;p&gt;I was curious as to what the namespace was; the value is shown as &lt;code&gt;7&lt;/code&gt; for both diagnostic records above; looking at the namespaces with &lt;code&gt;:lua =vim.api.nvim_get_namespaces()&lt;/code&gt; shows this:&lt;/p&gt;
-&lt;pre class=&quot;language-lua&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-lua&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  lazy &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;nvim.hlyank&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;nvim.lsp.references&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;nvim.lsp.semantic_tokens&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;nvim.lsp.semantic_tokens:1&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;nvim.lsp.signature_help&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;nvim.terminal.prompt&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;nvim.treesitter.highlighter&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;nvim.vim.lsp.javascript.1.diagnostic.signs&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;11&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;nvim.vim.lsp.javascript.1.diagnostic.underline&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;nvim.vim.lsp.javascript.1.diagnostic.virtual_lines&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;vim.lsp.javascript.1&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;7&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;which confirms that they&#39;re coming from the language server for TypeScript/JavaScript.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h3 id=&quot;injecting-a-filter-into-vim-diagnostic-set&quot;&gt;Injecting a filter into vim.diagnostic.set&lt;/h3&gt;
-&lt;p&gt;Once I understood this, I was able to create a simple module (it&#39;s my first real foray into custom modules, so I may be doing this suboptimally), in &lt;code&gt;~/.config/nvim/lua/qmacro/diagnostic.lua&lt;/code&gt;:&lt;/p&gt;
-&lt;pre class=&quot;language-lua&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-lua&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;local&lt;/span&gt; M &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;token keyword&quot;&gt;local&lt;/span&gt; original_vim_diagnostic_set &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; vim&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;diagnostic&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;set
-
-&lt;span class=&quot;token keyword&quot;&gt;local&lt;/span&gt; filterbuilder &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;filters&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;diagnostic&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;token keyword&quot;&gt;for&lt;/span&gt; _&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; e &lt;span class=&quot;token keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;pairs&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;filters&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;do&lt;/span&gt;
-      &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; e&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;code &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; diagnostic&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;code &lt;span class=&quot;token keyword&quot;&gt;and&lt;/span&gt; e&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;source &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; diagnostic&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;source &lt;span class=&quot;token keyword&quot;&gt;then&lt;/span&gt;
-        &lt;span class=&quot;token comment&quot;&gt;-- if e.reason then&lt;/span&gt;
-        &lt;span class=&quot;token comment&quot;&gt;--   print(&#39;Filtering out&#39;, diagnostic.source, &#39;/&#39;, diagnostic.code, &#39;diagnostic -&#39;, e.reason)&lt;/span&gt;
-        &lt;span class=&quot;token comment&quot;&gt;-- end&lt;/span&gt;
-        &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;false&lt;/span&gt;
-      &lt;span class=&quot;token keyword&quot;&gt;end&lt;/span&gt;
-    &lt;span class=&quot;token keyword&quot;&gt;end&lt;/span&gt;
-    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;true&lt;/span&gt;
-  &lt;span class=&quot;token keyword&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;token keyword&quot;&gt;end&lt;/span&gt;
-
-M&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;exclude &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;filters&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-  vim&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;diagnostic&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;set &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;ns&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; bufnr&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; diagnostics&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; opts&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;token keyword&quot;&gt;local&lt;/span&gt; filtered_diagnostics &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; vim&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;tbl_filter&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;filterbuilder&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;filters&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; diagnostics&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;token function&quot;&gt;original_vim_diagnostic_set&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;ns&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; bufnr&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; filtered_diagnostics&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; opts&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;token keyword&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;token keyword&quot;&gt;end&lt;/span&gt;
-
-&lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; M&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&quot;using-the-module&quot;&gt;Using the module&lt;/h3&gt;
-&lt;p&gt;Before walking through this, I thought it would help to show how I want to call this, from within my &lt;code&gt;~/.config/nvim/init.lua&lt;/code&gt;:&lt;/p&gt;
-&lt;pre class=&quot;language-lua&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-lua&quot;&gt;&lt;span class=&quot;token function&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;qmacro.diagnostic&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;exclude&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; code &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;80001&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; source &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;typescript&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; reason &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;yes I know already!&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;In calling the &lt;code&gt;exclude&lt;/code&gt; function in this module, I can pass a table of exclude filters, each of which has a &lt;code&gt;code&lt;/code&gt; and &lt;code&gt;source&lt;/code&gt; field, and an optional &lt;code&gt;reason&lt;/code&gt; field.&lt;/p&gt;
-&lt;h3 id=&quot;a-walkthrough-of-the-module&quot;&gt;A walkthrough of the module&lt;/h3&gt;
-&lt;p&gt;Now here&#39;s a brief breakdown of the module:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;I save the original &lt;code&gt;vim.diagnostic.set&lt;/code&gt; function in &lt;code&gt;original_vim_diagnostic_set&lt;/code&gt; so I can call it later&lt;/li&gt;
-&lt;li&gt;The &lt;code&gt;filterbuilder&lt;/code&gt; function takes a table of filters and produces a function (yes, I like higher order functions), specifically a predicate function, that can be then used with &lt;a href=&quot;https://neovim.io/doc/user/lua.html#vim.tbl_filter()&quot;&gt;vim.tbl_filter&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;The predicate function produced also has some commented-out logging (that uses the optional &lt;code&gt;reason&lt;/code&gt; field from the filter entry) that I&#39;ll make good once I figure out the best way to log stuff cleanly and in accordance with standard levels&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;With all that preparation, all that I then have to do is:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Override the standard &lt;code&gt;vim.diagnostic.set&lt;/code&gt; function with one that injects a call to &lt;code&gt;vim.tbl_filter&lt;/code&gt; to remove any diagnostics that are caught by the exclude filters, before passing through the modified table and the rest of the original arguments to the original &lt;code&gt;vim.diagnostic.set&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;And that&#39;s pretty much it.&lt;/p&gt;
-&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
-&lt;p&gt;This works for me so far, and getting to this stage has also taught me some more about Neovim&#39;s Lua API and various components.&lt;/p&gt;
-&lt;p&gt;I added this setup to my Neovim configuration with &lt;a href=&quot;https://github.com/qmacro/dotfiles/commit/fb3272c121a5acd7610dc21aceb3a7bb53190257&quot;&gt;this commit to my dotfiles&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;Along with the Neovim documentation itself, the following resources helped clarify things in my mind:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;https://influentcoder.com/posts/nvim-diagnostics/&quot;&gt;Understanding Diagnostics in Neovim&lt;/a&gt; by Guillaume Humbert&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blob42.xyz/blog/neovim-diagnostic-filtering/&quot;&gt;Filtering Neovim Diagnostics&lt;/a&gt; by Chakib Benziane&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://www.youtube.com/playlist?list=PLep05UYkc6wTyBe7kPjQFWVXTlhKeQejM&quot;&gt;Advent of Neovim&lt;/a&gt; by TJ DeVries&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Thanks!&lt;/p&gt;
-&lt;h2 id=&quot;see-also&quot;&gt;See also&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node-js-configuration-and-diagnostics/&quot;&gt;A modern and clean Neovim setup for CAP Node.js - configuration and diagnostics&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2025/08/06/neovim-configuration-for-file-and-module-navigation-in-cds-models/&quot;&gt;Neovim configuration for file and module navigation in CDS models&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </content>
   </entry>
