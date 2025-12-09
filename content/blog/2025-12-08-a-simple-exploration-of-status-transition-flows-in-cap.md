@@ -115,7 +115,7 @@ annotate Switches actions {
 
 Separating these out like this makes it a bit easier for me to grok what's going on.
 
-First, we're blessing the `Switches` entity with the Status-Transition Flows ability; at this level, we must specify the specific element to be used for the status. It's the `status` element that's important, and we do that here by targeting the entire entity with the annotation and then specifying the element as a secondary piece of information. We could have annotated the element directly, like this:
+First, we're blessing the `Switches` entity with the Status-Transition Flows ability; at this level, we must specify the element to be used for the status. It's the `status` element that's important, and we do that here by targeting the entire entity with the annotation and then specifying the element as a secondary piece of information. We could have annotated the element directly, like this:
 
 ```cds
 context qmacro {
