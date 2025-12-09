@@ -80,12 +80,12 @@ With regards to the service definition:
 
 - There's a pass-through projection (i.e. it defaults to an [inferred signature](https://cap.cloud.sap/docs/cds/cdl#views-with-inferred-signatures))
 - The projection is for the `Switches` entity, and there's also a couple of [bound actions](https://cap.cloud.sap/docs/cds/cdl#bound-actions) declared as part of the entity definition that starts with `entity Switches ...` and finishes with the semicolon `;`
-- As these are actions, which semantically signal that side-effects are likely, they'll need to be invoked with HTTP POST
+- As actions semantically signal that side-effects are likely, they'll need to be invoked with HTTP POST
 
 Finally there's the annotation:
 
-- it's separate to the annotation target, and arguably easier to read that way; moreover, it would likely (or at least possibly) be in a separate file if it weren't so deliberately simple (see [Separating concerns and focusing on the important stuff](/blog/posts/2024/11/04/separating-concerns-and-focusing-on-the-important-stuff/))
-- it has been written in accordance with the description in the [Modelling Flows](https://cap.cloud.sap/docs/guides/providing-services#modeling-flows) section of the [Providing Services](https://cap.cloud.sap/docs/guides/providing-services) topic in Capire
+- It's separate to the annotation target, and arguably easier to read that way; moreover, it would likely (or at least possibly) be in a separate file if it weren't so deliberately simple (see [Separating concerns and focusing on the important stuff](/blog/posts/2024/11/04/separating-concerns-and-focusing-on-the-important-stuff/))
+- It has been written in accordance with the description in the [Modelling Flows](https://cap.cloud.sap/docs/guides/providing-services#modeling-flows) section of the [Providing Services](https://cap.cloud.sap/docs/guides/providing-services) topic in Capire
 
 ### Digging in to the annotation
 
