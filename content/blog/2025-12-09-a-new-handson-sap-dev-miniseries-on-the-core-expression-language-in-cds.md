@@ -24,14 +24,11 @@ calculated elements and in annotations. They are fundamental to many of the
 underlying design philosophies in CAP and convey power wrapped in simplicity
 that is the hallmark of CDS.
 
-![the new series thumbnail with me and
-Patrice](/images/2025/12/cxl-thumbnail.png)
+[![the new series thumbnail with me and
+Patrice](/images/2025/12/cxl-thumbnail.png)](https://www.youtube.com/watch?v=aiE20i5BP70&list=PL6RpkC85SLQABOpzhd7WI-hMpy99PxUo0&index=1)
 
-Join CAP core team member [Patrice Bender](https://patrice.codes/) and me in
-this new mini-series **"CDS expressions in CAP - Under the hood"** on [the
-Hands-on SAP Dev
-show](https://www.youtube.com/playlist?list=PL6RpkC85SLQABOpzhd7WI-hMpy99PxUo0),
-starting in mid January.
+👉 Join CAP core team member [Patrice Bender](https://patrice.codes/) and me in
+[Part 1 of this new mini-series "CDS expressions in CAP - Under the hood"](https://www.youtube.com/watch?v=aiE20i5BP70&list=PL6RpkC85SLQABOpzhd7WI-hMpy99PxUo0&index=1) on Fri 16 Jan 2026 at the usual time.
 
 ## Footnotes
 
