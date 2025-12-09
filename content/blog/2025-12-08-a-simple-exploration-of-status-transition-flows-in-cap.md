@@ -325,6 +325,8 @@ Of course, there's a lot more that this new Status-Transition Flows feature offe
 
 For further explorations and explanations, see Simon Engel's great session [Status Transition Flows in CAP](https://www.youtube.com/watch?v=1XolXCjN5IQ) from Devtoberfest earlier this year, as well as the [coverage in Capire](https://cap.cloud.sap/docs/guides/providing-services#status-transition-flows).
 
+And remember, this is a beta feature right now, so a great time to try it out for yourself.
+
 ## Footnotes
 
 1. The name of this file is significant, it's one of the two file items (the rest are directory items) in the "CDS roots", as illustrated:
