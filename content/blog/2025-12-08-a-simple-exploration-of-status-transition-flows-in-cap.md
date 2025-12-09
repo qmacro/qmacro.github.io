@@ -74,7 +74,7 @@ Recently I've been looking more closely at CDS modelling in general and CDL in p
 With regards to the data model:
 
 - I'm using the `context` keyword to enclose my data model, which consists of a custom named type `Status` and the entity `Switches`, with a scope name prefix (`qmacro`)
-- The `status` element of `Switches` is defined with the custom `Status` type which has its possible values as a list of [enumeration values](https://cap.cloud.sap/docs/cds/cdl#enums) (`Up` and `Down`); as this is the element that's going to be used as the status element, I've given it a default value (`Down`) as it requires one (no initial state can be provided on creation as the element should be immutable)
+- The `status` element of `Switches` is defined with the custom `Status` type which has its possible values as a list of [enumeration values](https://cap.cloud.sap/docs/cds/cdl#enums) (`Up` and `Down`); as this is the element that's going to be used as the status element, I've given it a default value (`Down`) as it requires one (no initial state can be provided on creation as the element should be readonly from the client perspective)
 
 With regards to the service definition:
 
