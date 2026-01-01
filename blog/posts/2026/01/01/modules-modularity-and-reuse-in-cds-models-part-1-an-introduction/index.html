@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Modules, modularity &amp; reuse in CDS models - part 1 - an introduction</title>
+		<meta name="description" content="In this first post of a new series I look at the using directive in CDS modelling, and how NPM modules can be fundamental building blocks in modularity and reuse.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="Modules, modularity &amp; reuse in CDS models - part 1 - an introduction">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="In this first post of a new series I look at the using directive in CDS modelling, and how NPM modules can be fundamental building blocks in modularity and reuse.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="modules-modularity-and-reuse-in-cds-models-part-1-an-introduction">Modules, modularity &amp; reuse in CDS models - part 1 - an introduction</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2026-01-01">01 January 2026</time></li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/cds/" class="post-tag">cds</a>, </li>
+	<li><a href="/tags/npm/" class="post-tag">npm</a>, </li>
+	<li><a href="/tags/reuse/" class="post-tag">reuse</a>, </li>
+	<li><a href="/tags/modularity/" class="post-tag">modularity</a></li>
+</ul>
+
+<p class="post-description-main">In this first post of a new series I look at the using directive in CDS modelling, and how NPM modules can be fundamental building blocks in modularity and reuse.</p>
+
+<p>You know the drill: instead of inventing your own versions of core model
+building blocks over and over again, use <a href="https://cap.cloud.sap/docs/cds/common">common types and
+aspects</a> for reuse, like this:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> {
+  managed,
+  cuid,
+  Currency
+} <span class="token from keyword">from</span> '@sap/cds/common';
+
+<span class="token keyword">namespace</span> qmacro;
+
+<span class="token keyword">entity</span> Books : managed, cuid {
+  title    : <span class="token type builtin">String</span>;
+  price    : <span class="token type builtin">Decimal</span>;
+  currency : Currency;
+  ...
+}</code></pre>
+<blockquote>
+<p>There are <a href="https://cap.cloud.sap/docs/cds/common#why-use-sap-cds-common">plenty more great
+reasons</a> to use
+<code>@sap/cds/common</code>, by the way.</p>
+</blockquote>
+<p>But how does that <code>using ... from</code> actually work, what is going on with what
+looks like some sort of NPM module reference, i.e. <code>@sap/cds/common</code>?</p>
+<h2 id="imports-and-model-resolution">Imports and model resolution</h2>
+<p>The <a href="https://cap.cloud.sap/docs/cds/cdl#model-imports">Model Imports</a> section
+of the CDL topic in Capire explains it. Basically, model definitions, most
+commonly in <code>.cds</code> files, can be imported from relative or absolute paths, or
+from NPM modules. Either way, the reference will result in a file specification
+or a directory specification; if it's a directory, then an <code>index.cds</code> will be
+loaded from within.</p>
+<blockquote>
+<p>In addition to <code>.cds</code>, file extensions <code>.csn</code> and <code>.json</code> are also supported.
+In fact it's good practice to omit the extension when
+specifying an import source, to allow these possibilities to be automatically
+enumerated.</p>
+</blockquote>
+<p>Of course, for an NPM module source to be used, it has to be present, i.e.
+added to the project (thus the resolved path will be within the project's
+<code>node_modules/</code> directory).</p>
+<p>The <code>@sap/cds/common</code> reference, shown in the code snippet above, is a special
+case, in more ways than one:</p>
+<ol>
+<li>As <code>@sap/cds</code> is fundamental to any CAP Node.js project, it's always going
+to be available</li>
+<li>Even if it's not there locally, i.e. if an initial project <code>npm install</code>
+hasn't been executed, it's still available from the global CAP Node.js runtime</li>
+<li>It's a reference to a location <em>within</em> the <code>@sap/cds</code> module, i.e. to
+<code>common</code></li>
+</ol>
+<p>That reference also follows the good practice of not using an extension;
+<code>common</code> here translates into the file <code>common.cds</code> within <code>@sap/cds</code> in the
+project's <code>node_modules/</code> directory (or the global one in special case #2).</p>
+<p>So NPM module based sources, including <code>@</code>-prefixed ones, work pretty much
+exactly the same way as plain file or directory references, such as this
+classic:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> {sap.capire.bookshop <span class="token cqlkeywords keyword">as</span> my} <span class="token from keyword">from</span> '../db/schema';</code></pre>
+<h2 id="modules-in-the-capire-namespace">Modules in the capire namespace</h2>
+<p>In the <a href="https://cap.cloud.sap/docs/releases/aug25">August 2025 release</a> of CAP,
+which I covered in detail in <a href="https://youtu.be/Gbz0-cAlxH0">this SAP Developer News
+episode</a>, the new <a href="https://github.com/capire">capire org on
+GitHub</a> was announced, as the home of docs
+and samples for CAP.</p>
+<p>In this org there are already plenty of CAP project repos, including those
+originally contained in the (now archived)
+<a href="https://github.com/SAP-samples/cloud-cap-samples">sap-samples/cloud-cap-samples</a>
+repo. In their new home, though, there are some intriguing differences.</p>
+<h3 id="module-capire-bookshop">Module capire/bookshop</h3>
+<p>Take <a href="https://github.com/capire/bookshop">capire/bookshop</a> for example.</p>
+<p>First, it's on its own, in fact all the CAP projects from within the
+<code>sap-samples/cloud-cap-samples</code> monorepo have been &quot;exploded&quot; out into
+individual repos. Why? The clue is &quot;reuse&quot;.</p>
+<blockquote>
+<p>See <a href="https://github.com/qmacro/capref/blob/main/bestpractices/BES006.md">BES006 Compose with reuse in
+mind</a>.</p>
+</blockquote>
+<p>Augmenting that one-word clue is the fact that there's also an NPM
+<a href="https://github.com/capire/bookshop/pkgs/npm/bookshop">package</a><a href="#footnotes"><sup>1</sup></a>:</p>
+<p><img src="/images/2025/10/capire-bookshop-package.png" alt="The package page for capire/bookshop on
+GitHub"></p>
+<p>Where is this thing? What's it for? How would one use it? How does it work? How
+do I create my own? I aim to answer these questions, and more, over the course
+of the subsequent posts in this series.</p>
+<blockquote>
+<p>Regarding the &quot;how would one use it?&quot; question, I have already covered the
+<em>mechanics</em> of retrieving a module from the NPM registry within GitHub Packages
+in <a href="blog/posts/2025/10/12/using-capire-modules-from-github-packages/">Using @capire modules from GitHub
+Packages</a>.</p>
+</blockquote>
+<p>To whet our appetite, let's round this blog post off with a quick look at
+another module in the <code>capire</code> namespace.</p>
+<h3 id="module-capire-common">Module capire/common</h3>
+<p>Alongside <a href="https://github.com/capire/bookshop">capire/bookshop</a> in the <a href="https://github.com/orgs/capire/repositories">list of
+repositories in the capire org</a>
+there's <a href="https://github.com/orgs/capire/repositories">capire/common</a>,
+explicitly denoted as &quot;a reuse content package&quot;.</p>
+<p>Its <a href="https://github.com/capire/common/blob/main/readme.md">README</a> tells us
+that it's a plugin that extends <code>@sap/cds/common</code> while also providing
+enhanced reuse data.</p>
+<p>Looking at the entire structure of the module, we see:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">.</span>
+├── LICENSE
+├── <span class="token domain constant">cds-plugin.js</span>
+├── <span class="token domain constant">currencies.cds</span>
+├── data
+│   ├── sap<span class="token punctuation">.</span>common<span class="token operator">-</span>Countries<span class="token punctuation">.</span>csv
+│   ├── sap<span class="token punctuation">.</span>common<span class="token operator">-</span>Countries_texts<span class="token punctuation">.</span>csv
+│   ├── sap<span class="token punctuation">.</span>common<span class="token operator">-</span>Currencies<span class="token punctuation">.</span>csv
+│   ├── sap<span class="token punctuation">.</span>common<span class="token operator">-</span>Currencies_texts<span class="token punctuation">.</span>csv
+│   ├── sap<span class="token punctuation">.</span>common<span class="token operator">-</span>Languages<span class="token punctuation">.</span>csv
+│   └── sap<span class="token punctuation">.</span>common<span class="token operator">-</span>Languages_texts<span class="token punctuation">.</span>csv
+├── <span class="token domain constant">index.cds</span>
+├── <span class="token domain constant">package.json</span>
+├── <span class="token domain constant">readme.md</span>
+└── <span class="token domain constant">regions.cds</span></code></pre>
+<p>Most of the files contain data in CSV form, and there are a couple
+of CDS files brought together via an <code>index.cds</code> file:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">        index
+          |
+    +-----+-----+
+    |           |
+currencies   regions</code></pre>
+<p>(more on that index file mechanism later in this series).</p>
+<p>There's also a <code>cds-plugin.js</code> file (see the <a href="/blog/posts/2024/12/30/cap-node-js-plugins/">CAP Node.js
+Plugins</a> series post for links to
+videos and blog posts on how plugins are constructed) as this is built to function
+as a plugin.</p>
+<p>There's not much to this module, but it packs a punch! Using it will cause all
+sorts of goodness to be brought into play in your CAP project.</p>
+<blockquote>
+<p>Later on in this series I'll come to use the term &quot;active&quot; for this sort of
+plugin-based reuse module, as opposed to &quot;passive&quot; for a reuse module that
+isn't a plugin.</p>
+</blockquote>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>In an upcoming post in this series, we'll set up a simple CAP Node.js project and
+then introduce this <code>@capire/common</code> reuse module and observe what happen. Not only
+that, but we'll endeavour to understand why and how things happen as they do.</p>
+<p>But we want to walk before we can run, so before that, we'll look at creating
+our own basic reuse module, to understand the <a href="https://creators.spotify.com/pod/show/tech-aloud/episodes/The-Simplest-Thing-that-Could-Possibly-Work--A-conversation-with-Ward-Cunningham--Part-V---Bill-Venners-e5dpts">simplest thing that could
+possibly
+work</a>,
+and learn along the way not only how to develop and test that module locally,
+but also how to then add it to the NPM registry on GitHub Packages, covering
+scoped (<code>@</code>-prefixed) and non-scoped module names.</p>
+<p>Until next time, happy reuse!</p>
+<h2 id="footnotes">Footnotes</h2>
+<ol>
+<li>The terms &quot;package&quot; and &quot;module&quot;, in the context of NPM, can be used
+interchangeably. I chose &quot;module&quot; here as it feels more appropriate in how they
+are to be used to construct the overall CDS model, and also because it helps me
+put some alliteration into the title of this post :)</li>
+</ol>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/">A new Hands-on SAP Dev mini-series on the core expression language in CDS</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/` was built on 2026-01-01T14:31:30.474Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>

@@ -5,11 +5,171 @@
   <subtitle>Reserving the right to be wrong</subtitle>
   <link href="https://qmacro.org/feed/feed.xml" rel="self" />
   <link href="https://qmacro.org/blog/" />
-  <updated>2025-12-09T00:00:00Z</updated>
+  <updated>2026-01-01T00:00:00Z</updated>
   <id>https://qmacro.org/blog/</id>
   <author>
     <name>DJ Adams</name>
   </author>
+  <entry>
+    <title>Modules, modularity &amp; reuse in CDS models - part 1 - an introduction</title>
+    <link href="https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/" />
+    <updated>2026-01-01T00:00:00Z</updated>
+    <id>https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/</id>
+    <content type="html">&lt;p&gt;You know the drill: instead of inventing your own versions of core model
+building blocks over and over again, use &lt;a href=&quot;https://cap.cloud.sap/docs/cds/common&quot;&gt;common types and
+aspects&lt;/a&gt; for reuse, like this:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; {
+  managed,
+  cuid,
+  Currency
+} &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;@sap/cds/common&#39;;
+
+&lt;span class=&quot;token keyword&quot;&gt;namespace&lt;/span&gt; qmacro;
+
+&lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Books : managed, cuid {
+  title    : &lt;span class=&quot;token type builtin&quot;&gt;String&lt;/span&gt;;
+  price    : &lt;span class=&quot;token type builtin&quot;&gt;Decimal&lt;/span&gt;;
+  currency : Currency;
+  ...
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;There are &lt;a href=&quot;https://cap.cloud.sap/docs/cds/common#why-use-sap-cds-common&quot;&gt;plenty more great
+reasons&lt;/a&gt; to use
+&lt;code&gt;@sap/cds/common&lt;/code&gt;, by the way.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;But how does that &lt;code&gt;using ... from&lt;/code&gt; actually work, what is going on with what
+looks like some sort of NPM module reference, i.e. &lt;code&gt;@sap/cds/common&lt;/code&gt;?&lt;/p&gt;
+&lt;h2 id=&quot;imports-and-model-resolution&quot;&gt;Imports and model resolution&lt;/h2&gt;
+&lt;p&gt;The &lt;a href=&quot;https://cap.cloud.sap/docs/cds/cdl#model-imports&quot;&gt;Model Imports&lt;/a&gt; section
+of the CDL topic in Capire explains it. Basically, model definitions, most
+commonly in &lt;code&gt;.cds&lt;/code&gt; files, can be imported from relative or absolute paths, or
+from NPM modules. Either way, the reference will result in a file specification
+or a directory specification; if it&#39;s a directory, then an &lt;code&gt;index.cds&lt;/code&gt; will be
+loaded from within.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;In addition to &lt;code&gt;.cds&lt;/code&gt;, file extensions &lt;code&gt;.csn&lt;/code&gt; and &lt;code&gt;.json&lt;/code&gt; are also supported.
+In fact it&#39;s good practice to omit the extension when
+specifying an import source, to allow these possibilities to be automatically
+enumerated.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Of course, for an NPM module source to be used, it has to be present, i.e.
+added to the project (thus the resolved path will be within the project&#39;s
+&lt;code&gt;node_modules/&lt;/code&gt; directory).&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;@sap/cds/common&lt;/code&gt; reference, shown in the code snippet above, is a special
+case, in more ways than one:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;As &lt;code&gt;@sap/cds&lt;/code&gt; is fundamental to any CAP Node.js project, it&#39;s always going
+to be available&lt;/li&gt;
+&lt;li&gt;Even if it&#39;s not there locally, i.e. if an initial project &lt;code&gt;npm install&lt;/code&gt;
+hasn&#39;t been executed, it&#39;s still available from the global CAP Node.js runtime&lt;/li&gt;
+&lt;li&gt;It&#39;s a reference to a location &lt;em&gt;within&lt;/em&gt; the &lt;code&gt;@sap/cds&lt;/code&gt; module, i.e. to
+&lt;code&gt;common&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;That reference also follows the good practice of not using an extension;
+&lt;code&gt;common&lt;/code&gt; here translates into the file &lt;code&gt;common.cds&lt;/code&gt; within &lt;code&gt;@sap/cds&lt;/code&gt; in the
+project&#39;s &lt;code&gt;node_modules/&lt;/code&gt; directory (or the global one in special case #2).&lt;/p&gt;
+&lt;p&gt;So NPM module based sources, including &lt;code&gt;@&lt;/code&gt;-prefixed ones, work pretty much
+exactly the same way as plain file or directory references, such as this
+classic:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; {sap.capire.bookshop &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; my} &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;../db/schema&#39;;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;modules-in-the-capire-namespace&quot;&gt;Modules in the capire namespace&lt;/h2&gt;
+&lt;p&gt;In the &lt;a href=&quot;https://cap.cloud.sap/docs/releases/aug25&quot;&gt;August 2025 release&lt;/a&gt; of CAP,
+which I covered in detail in &lt;a href=&quot;https://youtu.be/Gbz0-cAlxH0&quot;&gt;this SAP Developer News
+episode&lt;/a&gt;, the new &lt;a href=&quot;https://github.com/capire&quot;&gt;capire org on
+GitHub&lt;/a&gt; was announced, as the home of docs
+and samples for CAP.&lt;/p&gt;
+&lt;p&gt;In this org there are already plenty of CAP project repos, including those
+originally contained in the (now archived)
+&lt;a href=&quot;https://github.com/SAP-samples/cloud-cap-samples&quot;&gt;sap-samples/cloud-cap-samples&lt;/a&gt;
+repo. In their new home, though, there are some intriguing differences.&lt;/p&gt;
+&lt;h3 id=&quot;module-capire-bookshop&quot;&gt;Module capire/bookshop&lt;/h3&gt;
+&lt;p&gt;Take &lt;a href=&quot;https://github.com/capire/bookshop&quot;&gt;capire/bookshop&lt;/a&gt; for example.&lt;/p&gt;
+&lt;p&gt;First, it&#39;s on its own, in fact all the CAP projects from within the
+&lt;code&gt;sap-samples/cloud-cap-samples&lt;/code&gt; monorepo have been &amp;quot;exploded&amp;quot; out into
+individual repos. Why? The clue is &amp;quot;reuse&amp;quot;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;See &lt;a href=&quot;https://github.com/qmacro/capref/blob/main/bestpractices/BES006.md&quot;&gt;BES006 Compose with reuse in
+mind&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Augmenting that one-word clue is the fact that there&#39;s also an NPM
+&lt;a href=&quot;https://github.com/capire/bookshop/pkgs/npm/bookshop&quot;&gt;package&lt;/a&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/#footnotes&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2025/10/capire-bookshop-package.png&quot; alt=&quot;The package page for capire/bookshop on
+GitHub&quot;&gt;&lt;/p&gt;
+&lt;p&gt;Where is this thing? What&#39;s it for? How would one use it? How does it work? How
+do I create my own? I aim to answer these questions, and more, over the course
+of the subsequent posts in this series.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Regarding the &amp;quot;how would one use it?&amp;quot; question, I have already covered the
+&lt;em&gt;mechanics&lt;/em&gt; of retrieving a module from the NPM registry within GitHub Packages
+in &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/blog/posts/2025/10/12/using-capire-modules-from-github-packages/&quot;&gt;Using @capire modules from GitHub
+Packages&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;To whet our appetite, let&#39;s round this blog post off with a quick look at
+another module in the &lt;code&gt;capire&lt;/code&gt; namespace.&lt;/p&gt;
+&lt;h3 id=&quot;module-capire-common&quot;&gt;Module capire/common&lt;/h3&gt;
+&lt;p&gt;Alongside &lt;a href=&quot;https://github.com/capire/bookshop&quot;&gt;capire/bookshop&lt;/a&gt; in the &lt;a href=&quot;https://github.com/orgs/capire/repositories&quot;&gt;list of
+repositories in the capire org&lt;/a&gt;
+there&#39;s &lt;a href=&quot;https://github.com/orgs/capire/repositories&quot;&gt;capire/common&lt;/a&gt;,
+explicitly denoted as &amp;quot;a reuse content package&amp;quot;.&lt;/p&gt;
+&lt;p&gt;Its &lt;a href=&quot;https://github.com/capire/common/blob/main/readme.md&quot;&gt;README&lt;/a&gt; tells us
+that it&#39;s a plugin that extends &lt;code&gt;@sap/cds/common&lt;/code&gt; while also providing
+enhanced reuse data.&lt;/p&gt;
+&lt;p&gt;Looking at the entire structure of the module, we see:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+├── LICENSE
+├── &lt;span class=&quot;token domain constant&quot;&gt;cds-plugin.js&lt;/span&gt;
+├── &lt;span class=&quot;token domain constant&quot;&gt;currencies.cds&lt;/span&gt;
+├── data
+│   ├── sap&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;common&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Countries&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+│   ├── sap&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;common&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Countries_texts&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+│   ├── sap&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;common&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Currencies&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+│   ├── sap&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;common&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Currencies_texts&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+│   ├── sap&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;common&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Languages&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+│   └── sap&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;common&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Languages_texts&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+├── &lt;span class=&quot;token domain constant&quot;&gt;index.cds&lt;/span&gt;
+├── &lt;span class=&quot;token domain constant&quot;&gt;package.json&lt;/span&gt;
+├── &lt;span class=&quot;token domain constant&quot;&gt;readme.md&lt;/span&gt;
+└── &lt;span class=&quot;token domain constant&quot;&gt;regions.cds&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Most of the files contain data in CSV form, and there are a couple
+of CDS files brought together via an &lt;code&gt;index.cds&lt;/code&gt; file:&lt;/p&gt;
+&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;        index
+          |
+    +-----+-----+
+    |           |
+currencies   regions&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;(more on that index file mechanism later in this series).&lt;/p&gt;
+&lt;p&gt;There&#39;s also a &lt;code&gt;cds-plugin.js&lt;/code&gt; file (see the &lt;a href=&quot;https://qmacro.org/blog/posts/2024/12/30/cap-node-js-plugins/&quot;&gt;CAP Node.js
+Plugins&lt;/a&gt; series post for links to
+videos and blog posts on how plugins are constructed) as this is built to function
+as a plugin.&lt;/p&gt;
+&lt;p&gt;There&#39;s not much to this module, but it packs a punch! Using it will cause all
+sorts of goodness to be brought into play in your CAP project.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Later on in this series I&#39;ll come to use the term &amp;quot;active&amp;quot; for this sort of
+plugin-based reuse module, as opposed to &amp;quot;passive&amp;quot; for a reuse module that
+isn&#39;t a plugin.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
+&lt;p&gt;In an upcoming post in this series, we&#39;ll set up a simple CAP Node.js project and
+then introduce this &lt;code&gt;@capire/common&lt;/code&gt; reuse module and observe what happen. Not only
+that, but we&#39;ll endeavour to understand why and how things happen as they do.&lt;/p&gt;
+&lt;p&gt;But we want to walk before we can run, so before that, we&#39;ll look at creating
+our own basic reuse module, to understand the &lt;a href=&quot;https://creators.spotify.com/pod/show/tech-aloud/episodes/The-Simplest-Thing-that-Could-Possibly-Work--A-conversation-with-Ward-Cunningham--Part-V---Bill-Venners-e5dpts&quot;&gt;simplest thing that could
+possibly
+work&lt;/a&gt;,
+and learn along the way not only how to develop and test that module locally,
+but also how to then add it to the NPM registry on GitHub Packages, covering
+scoped (&lt;code&gt;@&lt;/code&gt;-prefixed) and non-scoped module names.&lt;/p&gt;
+&lt;p&gt;Until next time, happy reuse!&lt;/p&gt;
+&lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;The terms &amp;quot;package&amp;quot; and &amp;quot;module&amp;quot;, in the context of NPM, can be used
+interchangeably. I chose &amp;quot;module&amp;quot; here as it feels more appropriate in how they
+are to be used to construct the overall CDS model, and also because it helps me
+put some alliteration into the title of this post :)&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+  </entry>
   <entry>
     <title>A new Hands-on SAP Dev mini-series on the core expression language in CDS</title>
     <link href="https://qmacro.org/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/" />
@@ -1048,263 +1208,6 @@ found &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt; vulnerabilities&
 &lt;h3 id=&quot;01-dec-local-first-a-more-efficient-development-strategy-for-extending-with-the-sap-cloud-application-programming-model&quot;&gt;01 Dec: Local-first: A more efficient development strategy for extending with the SAP Cloud Application Programming Model&lt;/h3&gt;
 &lt;p&gt;This is a talk in the Technical stream at &lt;a href=&quot;https://www.sap.com/uk/events/2025-11-30-uk-pe-ukisug-connect.html&quot;&gt;UKISUG Connect 2025&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Abstract: Today, more than ever, developer efficiency is critical. Join this session to learn of the local-first development affordances that CAP has to offer. No slides, just live coding and (hopefully) some fun! (More info is available on the &lt;a href=&quot;https://virtual.oxfordabstracts.com/event/75555/submission/127&quot;&gt;session detail page&lt;/a&gt;).&lt;/p&gt;
-</content>
-  </entry>
-  <entry>
-    <title>Auto formatting extensionless Bash scripts in Neovim</title>
-    <link href="https://qmacro.org/blog/posts/2025/09/01/auto-formatting-extensionless-bash-scripts-in-neovim/" />
-    <updated>2025-09-01T00:00:00Z</updated>
-    <id>https://qmacro.org/blog/posts/2025/09/01/auto-formatting-extensionless-bash-scripts-in-neovim/</id>
-    <content type="html">&lt;h2 id=&quot;tl-dr&quot;&gt;TL;DR&lt;/h2&gt;
-&lt;p&gt;The Bash language server is easy to install and has support for &lt;code&gt;shfmt&lt;/code&gt; which in turn has support for Editorconfig settings.&lt;/p&gt;
-&lt;p&gt;For shell scripts without extensions, Editorconfig is no good, except if you use &lt;code&gt;shfmt&lt;/code&gt;&#39;s special support in the form of &lt;code&gt;[[shell]]&lt;/code&gt; or &lt;code&gt;[[bash]]&lt;/code&gt; section globs.&lt;/p&gt;
-&lt;p&gt;But that&#39;s non-standard, and when invoked via the Bash language server, doesn&#39;t work. However, you can get it to work by using a wrapper script that strips off options in the call to &lt;code&gt;shfmt&lt;/code&gt; with the result that these special Editorconfig sections are recognised.&lt;/p&gt;
-&lt;h2 id=&quot;background&quot;&gt;Background&lt;/h2&gt;
-&lt;p&gt;In my continuing quest to &lt;a href=&quot;https://qmacro.org/blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node-js-configuration-and-diagnostics/&quot;&gt;build out a cleaner and leaner Neovim configuration&lt;/a&gt; I turned my attention recently to improving my Bash script editing experience. For Bash there are plenty of facilities that fit into my Personal Development Environment, including &lt;code&gt;shellcheck&lt;/code&gt; and &lt;code&gt;shfmt&lt;/code&gt;, both of which I have been using for quite a while (see &lt;a href=&quot;https://qmacro.org/blog/posts/2020/10/05/improving-my-shell-scripting/&quot;&gt;Improving my shell scripting&lt;/a&gt;).&lt;/p&gt;
-&lt;p&gt;I decided to give the &lt;a href=&quot;https://github.com/bash-lsp/bash-language-server&quot;&gt;Bash language server&lt;/a&gt; a try. It&#39;s a super easy setup &lt;a href=&quot;https://github.com/bash-lsp/bash-language-server?tab=readme-ov-file#neovim&quot;&gt;for Neovim 0.11+&lt;/a&gt; and the &lt;a href=&quot;https://github.com/bash-lsp/bash-language-server?tab=readme-ov-file#shfmt-integration&quot;&gt;integration with shfmt&lt;/a&gt; was a feature that caught my eye in particular. See &lt;a href=&quot;https://qmacro.org/blog/posts/2025/09/01/auto-formatting-extensionless-bash-scripts-in-neovim/#appendix-c-neovim-lsp-configuration-for-the-bash-language-server&quot;&gt;Appendix C&lt;/a&gt; for the setup configuration details.&lt;/p&gt;
-&lt;p&gt;Add to this a desire to also more consciously embrace &lt;a href=&quot;https://editorconfig.org/&quot;&gt;Editorconfig&lt;/a&gt;, especially given &lt;a href=&quot;https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#description&quot;&gt;shfmt&#39;s support for that&lt;/a&gt;, and I was set for a great experience.&lt;/p&gt;
-&lt;h2 id=&quot;the-perfect-storm&quot;&gt;The perfect storm&lt;/h2&gt;
-&lt;p&gt;I am of the opinion that the names of shell scripts that are written to be executed on the command line should not have extensions. This follows a &lt;a href=&quot;https://google.github.io/styleguide/shellguide.html#s2.1-file-extensions&quot;&gt;specific guideline&lt;/a&gt; in the &lt;a href=&quot;https://google.github.io/styleguide/shellguide.html&quot;&gt;Google Shell Style Guide&lt;/a&gt;. Interpretation of shell script file[type]s is based on the &lt;a href=&quot;https://en.wikipedia.org/wiki/Shebang_(Unix)&quot;&gt;shebang&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;This approach, combined with the Bash language server, its support for &lt;code&gt;shfmt&lt;/code&gt;, and a custom part of &lt;code&gt;shfmt&lt;/code&gt;&#39;s support for Editorconfig, turned out to be a small but perfect storm:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Editorconfig&#39;s approach and configuration (&lt;a href=&quot;https://spec.editorconfig.org/&quot;&gt;specification&lt;/a&gt;) is based on file extensions only and there is no generic provision for specifying editor settings for files without extensions&lt;/li&gt;
-&lt;li&gt;As the extensionless shell script is such a common phenomenon, support for Editorconfig within &lt;code&gt;shfmt&lt;/code&gt; has been extended to allow for special &lt;a href=&quot;https://spec.editorconfig.org/#glob-expressions&quot;&gt;section names&lt;/a&gt; in Editorconfig configuration files so that such shell scripts can be matched more generically; this support is described in the &lt;a href=&quot;https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#examples&quot;&gt;Examples&lt;/a&gt; section in &lt;code&gt;shfmt&lt;/code&gt;&#39;s documentation thus:
-&lt;blockquote&gt;
-&lt;p&gt;&amp;quot;EditorConfig sections may also use &lt;code&gt;[[shell]]&lt;/code&gt; or &lt;code&gt;[[bash]]&lt;/code&gt; to match any shell or bash scripts, which is particularly useful when scripts use a shebang but no extension. Note that this feature is outside of the EditorConfig spec and may be changed in the future.&amp;quot;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;/li&gt;
-&lt;li&gt;While it&#39;s great to have &lt;a href=&quot;https://github.com/bash-lsp/bash-language-server?tab=readme-ov-file#shfmt-integration&quot;&gt;support for shfmt&lt;/a&gt; in the Bash language server, this support does not include this non-standard (but insanely useful) &lt;code&gt;[[bash]]&lt;/code&gt; style facility for Editorconfig configuration.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Consequently, when editing shell scripts with extensionless filenames using Neovim with the Bash language server configured and &lt;code&gt;shfmt&lt;/code&gt; installed&lt;a href=&quot;https://qmacro.org/blog/posts/2025/09/01/auto-formatting-extensionless-bash-scripts-in-neovim/#footnotes&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;
-I got a very odd and confusing experience.&lt;/p&gt;
-&lt;p&gt;&lt;a name=&quot;example-of-the-issue&quot;&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&quot;example-of-the-issue&quot;&gt;Example of the issue&lt;/h2&gt;
-&lt;p&gt;Here&#39;s an example, based on three test files called &lt;code&gt;a&lt;/code&gt;, &lt;code&gt;b&lt;/code&gt; and &lt;code&gt;fixup&lt;/code&gt;, and these (reduced) Editorconfig settings in my &lt;code&gt;.editorconfig&lt;/code&gt; file:&lt;/p&gt;
-&lt;pre class=&quot;language-toml&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-toml&quot;&gt;&lt;span class=&quot;token key property&quot;&gt;root&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;
-
-&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;*&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;token key property&quot;&gt;indent_style&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt; tab
-
-&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token table class-name&quot;&gt;bash&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;token key property&quot;&gt;indent_size&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;
-&lt;span class=&quot;token key property&quot;&gt;indent_style&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt; space
-&lt;span class=&quot;token key property&quot;&gt;switch_case_indent&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;
-&lt;span class=&quot;token key property&quot;&gt;binary_next_line&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;
-&lt;span class=&quot;token key property&quot;&gt;space_redirects&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;em&gt;On the command line&lt;/em&gt;, running &lt;code&gt;shfmt&lt;/code&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2025/09/01/auto-formatting-extensionless-bash-scripts-in-neovim/#footnotes&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt; on each of these three files produced the expected results, in that all were formatted according to the &lt;code&gt;shfmt&lt;/code&gt;-specific settings in that &lt;code&gt;[[bash]]&lt;/code&gt; section plus of course indented with 2 spaces.&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Within Neovim&lt;/em&gt;, via the Bash language server&lt;a href=&quot;https://qmacro.org/blog/posts/2025/09/01/auto-formatting-extensionless-bash-scripts-in-neovim/#footnotes&quot;&gt;&lt;sup&gt;3&lt;/sup&gt;&lt;/a&gt;, with shell script files &lt;code&gt;a&lt;/code&gt; and &lt;code&gt;b&lt;/code&gt; everything seemed to work fine and my Bash scripts were indented appropriately with 2 spaces. When I then started to work on real shell scripts such as the one called &lt;code&gt;fixup&lt;/code&gt;, things didn&#39;t work the same, and the indentation was done with tabs, not spaces (the horror!).&lt;/p&gt;
-&lt;p&gt;Yes, you guessed it, this was because in standard Editorconfig procedure, the &lt;code&gt;[bash]&lt;/code&gt; part of the &lt;code&gt;[[bash]]&lt;/code&gt; section heading is considered a sequence of characters &lt;code&gt;b&lt;/code&gt;, &lt;code&gt;a&lt;/code&gt;, &lt;code&gt;s&lt;/code&gt; and &lt;code&gt;h&lt;/code&gt;, matching files of those single-character names; and as &lt;code&gt;fixup&lt;/code&gt; was not matched with that sequence, that section (containing &lt;code&gt;indent_style = space&lt;/code&gt;) didn&#39;t apply, and so &lt;code&gt;indent_style = tab&lt;/code&gt; prevailed.&lt;/p&gt;
-&lt;p&gt;This is unfortunate, but is not really anyone&#39;s fault.&lt;/p&gt;
-&lt;h2 id=&quot;bash-language-server-shfmt-and-editorconfig&quot;&gt;Bash language server, shfmt and Editorconfig&lt;/h2&gt;
-&lt;p&gt;I dug in to see what was happening in the Bash language server.&lt;/p&gt;
-&lt;p&gt;In preparing to call &lt;code&gt;shfmt&lt;/code&gt;, properties appropriate for the file in question are determined from the Editorconfig configuration. The &lt;a href=&quot;https://www.npmjs.com/package/editorconfig&quot;&gt;editorconfig&lt;/a&gt; NPM package is used for this determination, and the custom &lt;code&gt;shfmt&lt;/code&gt; extension to allow for &lt;code&gt;[[bash]]&lt;/code&gt; and &lt;code&gt;[[shell]]&lt;/code&gt; does not exist in that package.&lt;/p&gt;
-&lt;p&gt;There are generic configuration properties such as &lt;code&gt;indent_style&lt;/code&gt;, and &lt;code&gt;shfmt&lt;/code&gt;-specific ones such as &lt;code&gt;switch_case_indent&lt;/code&gt;. If there are any &lt;code&gt;shfmt&lt;/code&gt;-specific ones then the Editorconfig configuration is used. Otherwise, the language server configuration is used. This reflects the approach taken by &lt;code&gt;shfmt&lt;/code&gt; itself in using either Editorconfig or its own command line flags, but not both (as we&#39;ll see in the next section).&lt;/p&gt;
-&lt;p&gt;The configuration is then turned into a series of explicit &lt;code&gt;shfmt&lt;/code&gt; command line options, in particular (but not exclusively) from the &lt;a href=&quot;https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#printer-flags&quot;&gt;Printer flags&lt;/a&gt; group. For example, on surfacing a &lt;code&gt;binary_next_line = true&lt;/code&gt; setting in &lt;code&gt;.editorconfig&lt;/code&gt; it will generate an equivalent &lt;code&gt;-bn&lt;/code&gt; flag to pass in the call to &lt;code&gt;shfmt&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;Then the Bash language server invokes &lt;code&gt;shfmt&lt;/code&gt; passing these generated options, plus the &lt;code&gt;--filename&lt;/code&gt; option to specify the full pathname of the file being formatted.&lt;/p&gt;
-&lt;h3 id=&quot;example-for-script-called-fixup&quot;&gt;Example for script called &#39;fixup&#39;&lt;/h3&gt;
-&lt;p&gt;Here&#39;s an example of that for the script called &lt;code&gt;fixup&lt;/code&gt; for which the &lt;code&gt;editorconfig&lt;/code&gt; package does &lt;em&gt;not&lt;/em&gt; match the &lt;code&gt;[[bash]]&lt;/code&gt; section. This is what&#39;s invoked:&lt;/p&gt;
-&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;shfmt &lt;span class=&quot;token parameter variable&quot;&gt;--filename&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;/home/dj/test/fixup &lt;span class=&quot;token parameter variable&quot;&gt;-i0&lt;/span&gt; &lt;span class=&quot;token parameter variable&quot;&gt;-ln&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;auto -&lt;/code&gt;&lt;/pre&gt;
-&lt;ul&gt;
-&lt;li&gt;the &lt;code&gt;-i0&lt;/code&gt; comes from a default driven by the basic details sent in the request from Neovim&#39;s LSP client, which includes &lt;code&gt;insertSpaces = false&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;the &lt;code&gt;-ln=auto&lt;/code&gt; comes from &lt;a href=&quot;https://github.com/bash-lsp/bash-language-server/blob/main/server/src/config.ts&quot;&gt;a default in the Bash language server itself&lt;/a&gt; for &lt;code&gt;languageDialect&lt;/code&gt; (see also &lt;a href=&quot;https://qmacro.org/blog/posts/2025/09/01/auto-formatting-extensionless-bash-scripts-in-neovim/#appendix-a-mason-info-for-bash-language-server&quot;&gt;Appendix A&lt;/a&gt;)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&quot;example-for-script-called-a&quot;&gt;Example for script called &#39;a&#39;&lt;/h3&gt;
-&lt;p&gt;Here&#39;s another example of what the Bash language server ultimately invokes for the script called &lt;code&gt;a&lt;/code&gt; which (by chance) &lt;em&gt;was&lt;/em&gt; matched by the &lt;code&gt;[[bash]]&lt;/code&gt; section:&lt;/p&gt;
-&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;shfmt &lt;span class=&quot;token parameter variable&quot;&gt;--filename&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;/home/dj/test/a &lt;span class=&quot;token parameter variable&quot;&gt;-i&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;token parameter variable&quot;&gt;-bn&lt;/span&gt; &lt;span class=&quot;token parameter variable&quot;&gt;-ci&lt;/span&gt; &lt;span class=&quot;token parameter variable&quot;&gt;-sr&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;ul&gt;
-&lt;li&gt;these options come from the &lt;code&gt;indent_size&lt;/code&gt;, &lt;code&gt;binary_next_line&lt;/code&gt;, &lt;code&gt;switch_case_indent&lt;/code&gt; and &lt;code&gt;space_redirects&lt;/code&gt; Editorconfig properties in the &lt;code&gt;[[bash]]&lt;/code&gt; section&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&quot;between-a-rock-and-a-hard-place&quot;&gt;Between a rock and a hard place&lt;/h2&gt;
-&lt;p&gt;As mentioned in the previous section, the Bash language server&#39;s approach takes its cue from the &lt;a href=&quot;https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#description&quot;&gt;equivalent approach&lt;/a&gt; of &lt;code&gt;shfmt&lt;/code&gt; itself:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&amp;quot;If any EditorConfig files are found, they will be used to apply formatting options. If any parser or printer flags are given to the tool, no EditorConfig formatting options will be used. A default like -i=0 can be used for this purpose.&amp;quot;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;In other words, &lt;em&gt;either&lt;/em&gt; Editorconfig (only), or no Editorconfig.&lt;/p&gt;
-&lt;p&gt;But to effect this, Bash language server invokes &lt;code&gt;shfmt&lt;/code&gt; with explicit options for &lt;em&gt;both&lt;/em&gt; cases (where there&#39;s a match, and where there isn&#39;t). This can be seen directly in the two example invocations above.&lt;/p&gt;
-&lt;p&gt;I want to manage my formatting in my &lt;code&gt;.editorconfig&lt;/code&gt; file(s), but if I want the Editorconfig settings to be honoured when formatting my shell scripts, I need to give them names that I can match with the Editorconfig section name globs, for example by giving them extensions. I don&#39;t want to do that.&lt;/p&gt;
-&lt;p&gt;I want the Bash language server to invoke &lt;code&gt;shfmt&lt;/code&gt; without any &lt;a href=&quot;https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#parser-flags&quot;&gt;parser&lt;/a&gt; or &lt;a href=&quot;https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#printer-flags&quot;&gt;printer&lt;/a&gt; options so that &lt;code&gt;shfmt&lt;/code&gt; itself, with its special &lt;code&gt;[[bash]]&lt;/code&gt; processing ability (rather than the Bash language server with the standard &lt;code&gt;editorconfig&lt;/code&gt; package) parses the Editorconfig settings. This would effectively bypass any Bash language server logic for &lt;code&gt;shfmt&lt;/code&gt; and just let &lt;code&gt;shfmt&lt;/code&gt; do its thing, with (or without) an &lt;code&gt;.editorconfig&lt;/code&gt; file present.&lt;/p&gt;
-&lt;h2 id=&quot;forcing-the-effect&quot;&gt;Forcing the effect&lt;/h2&gt;
-&lt;p&gt;To begin with, I debugged what was going on (see the &lt;a href=&quot;https://qmacro.org/blog/posts/2025/09/01/auto-formatting-extensionless-bash-scripts-in-neovim/#useful-debugging-approaches&quot;&gt;Useful debugging approaches&lt;/a&gt; section) and found that the options for &lt;code&gt;shfmt&lt;/code&gt; were being determined and marshalled in &lt;a href=&quot;https://github.com/bash-lsp/bash-language-server/blob/6e419dad6fb07bcf269101c8ffe0d47fd11b14db/server/src/shfmt/index.ts&quot;&gt;server/src/shfmt/index.ts&lt;/a&gt; (yay for open source!):&lt;/p&gt;
-&lt;pre class=&quot;language-typescript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-typescript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;async&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;runShfmt&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
-  document&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; TextDocument&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  formatOptions&lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;LSP&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;FormattingOptions &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  shfmtConfig&lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Record&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token builtin&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;boolean&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token builtin&quot;&gt;Promise&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token builtin&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; args &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;getShfmtArguments&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;document&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;uri&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; formatOptions&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; shfmtConfig&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;
-  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; proc &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;&lt;span class=&quot;token builtin&quot;&gt;Promise&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;resolve&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; reject&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; proc &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;spawn&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;executablePath&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;args&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;-&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; cwd&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;cwd &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Using brute force&lt;a href=&quot;https://qmacro.org/blog/posts/2025/09/01/auto-formatting-extensionless-bash-scripts-in-neovim/#footnotes&quot;&gt;&lt;sup&gt;4&lt;/sup&gt;&lt;/a&gt; I simply truncated &lt;code&gt;args&lt;/code&gt; to &lt;code&gt;[]&lt;/code&gt;, removing the call to &lt;code&gt;this.getShfmtArguments&lt;/code&gt;, and everything worked as planned - &lt;code&gt;shfmt&lt;/code&gt; was called without any options at all, with the result that &lt;code&gt;shfmt&lt;/code&gt; did the right thing, finding and using the appropriate Editorconfig settings, for all Bash files.&lt;/p&gt;
-&lt;p&gt;I didn&#39;t want to have to make this modification each time I installed the Bash language server, nor do I think it appropriate to suggest as a modification upstream. So I decided to wrap the call to &lt;code&gt;shfmt&lt;/code&gt;.&lt;/p&gt;
-&lt;h3 id=&quot;wrapping-shfmt-to-strip-off-the-options&quot;&gt;Wrapping shfmt to strip off the options&lt;/h3&gt;
-&lt;p&gt;The Bash language server &lt;a href=&quot;https://github.com/bash-lsp/bash-language-server/blob/main/server/src/config.ts&quot;&gt;configuration&lt;/a&gt; includes a section specifically for &lt;code&gt;shfmt&lt;/code&gt; (see &lt;a href=&quot;https://qmacro.org/blog/posts/2025/09/01/auto-formatting-extensionless-bash-scripts-in-neovim/#appendix-b-configuration-for-bash-language-server&quot;&gt;Appendix B&lt;/a&gt;). I can use the &lt;code&gt;shfmt.path&lt;/code&gt; configuration option to specify an alternate path for the executable, pointing to a simple shell script that removes all the options passed, except for a couple of generic ones.&lt;/p&gt;
-&lt;p&gt;Here&#39;s the script, called &lt;code&gt;shfmt-wrapper&lt;/code&gt;, placed in &lt;code&gt;~/.local/bin/&lt;/code&gt; which is listed first in my &lt;code&gt;PATH&lt;/code&gt; environment variable:&lt;/p&gt;
-&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token shebang important&quot;&gt;#!/usr/bin/env bash&lt;/span&gt;
-
-&lt;span class=&quot;token builtin class-name&quot;&gt;declare&lt;/span&gt; &lt;span class=&quot;token parameter variable&quot;&gt;-a&lt;/span&gt; shfmtargs
-&lt;span class=&quot;token keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;token for-or-select variable&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&lt;span class=&quot;token variable&quot;&gt;$@&lt;/span&gt;&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;do&lt;/span&gt;
-  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token variable&quot;&gt;$i&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;token parameter variable&quot;&gt;--filename&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;* &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;||&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token variable&quot;&gt;$i&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;-&quot;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;then&lt;/span&gt;
-    &lt;span class=&quot;token assign-left variable&quot;&gt;shfmtargs&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;&lt;span class=&quot;token variable&quot;&gt;${shfmtargs&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;@&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;}&lt;/span&gt;&quot;&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&lt;span class=&quot;token variable&quot;&gt;$i&lt;/span&gt;&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-  &lt;span class=&quot;token keyword&quot;&gt;fi&lt;/span&gt;
-&lt;span class=&quot;token keyword&quot;&gt;done&lt;/span&gt;
-shfmt &lt;span class=&quot;token string&quot;&gt;&quot;&lt;span class=&quot;token variable&quot;&gt;${shfmtargs&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;@&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;}&lt;/span&gt;&quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;All it does is take the options passed to it, removes all but the &lt;code&gt;--filename=...&lt;/code&gt; and &lt;code&gt;-&lt;/code&gt; ones, and then calls the actual &lt;code&gt;shfmt&lt;/code&gt; with what&#39;s left.&lt;/p&gt;
-&lt;p&gt;And with the &lt;code&gt;shfmt.path&lt;/code&gt; option (see &lt;a href=&quot;https://qmacro.org/blog/posts/2025/09/01/auto-formatting-extensionless-bash-scripts-in-neovim/#appendix-c-neovim-lsp-configuration-for-the-bash-language-server&quot;&gt;Appendix C&lt;/a&gt;) I then told the Bash language server to use this wrapper when invoking &lt;code&gt;shfmt&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;Therefore, because no parser or printer flags are ever present in the &lt;code&gt;shfmt&lt;/code&gt; option list, &lt;code&gt;shfmt&lt;/code&gt; will use the Editorconfig configuration, interpreting it using the custom support for &lt;code&gt;[[bash]]&lt;/code&gt; or &lt;code&gt;[[shell]]&lt;/code&gt; sections.&lt;/p&gt;
-&lt;p&gt;The result is that this section of my &lt;code&gt;.editorconfig&lt;/code&gt; file is interpreted as I intend:&lt;/p&gt;
-&lt;pre class=&quot;language-toml&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-toml&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token table class-name&quot;&gt;bash&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;token key property&quot;&gt;indent_size&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;
-&lt;span class=&quot;token key property&quot;&gt;indent_style&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt; space
-&lt;span class=&quot;token key property&quot;&gt;switch_case_indent&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;
-&lt;span class=&quot;token key property&quot;&gt;binary_next_line&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;
-&lt;span class=&quot;token key property&quot;&gt;space_redirects&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;and my extensionless Bash script files are formatted appropriately. Not with tabs, and no &lt;code&gt;shfmt&lt;/code&gt;-specific configuration, but as I have described in configuration.&lt;/p&gt;
-&lt;p&gt;Great!&lt;/p&gt;
-&lt;p&gt;This is of course a bit hacky, but I think it is within the boundaries of &amp;quot;small pieces, loosely joined&amp;quot; and doesn&#39;t require any modification to any non-user-serviceable parts.&lt;/p&gt;
-&lt;p&gt;&lt;a name=&quot;useful-debugging-approaches&quot;&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&quot;useful-debugging-approaches&quot;&gt;Useful debugging approaches&lt;/h2&gt;
-&lt;p&gt;In working out what was going on, I used various tools and settings to help me. Here&#39;s a quick list of those, mostly to remind my future self.&lt;/p&gt;
-&lt;h3 id=&quot;the-editorconfig-cli&quot;&gt;The editorconfig CLI&lt;/h3&gt;
-&lt;p&gt;The &lt;a href=&quot;https://www.npmjs.com/package/editorconfig&quot;&gt;editorconfig&lt;/a&gt; package, which I installed globally for these investigations with &lt;code&gt;npm i -g editorconfig&lt;/code&gt;, also sports a CLI which can be used to show the &amp;quot;effective configuration&amp;quot;, given a filename. Taking the &lt;code&gt;.editorconfig&lt;/code&gt; file contents in the &lt;a href=&quot;https://qmacro.org/blog/posts/2025/09/01/auto-formatting-extensionless-bash-scripts-in-neovim/#example-of-the-issue&quot;&gt;example of the issue&lt;/a&gt; shown earlier, here&#39;s what is output ...&lt;/p&gt;
-&lt;p&gt;for the shell script file named &lt;code&gt;a&lt;/code&gt;:&lt;/p&gt;
-&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;$ editorconfig a
-&lt;span class=&quot;token assign-left variable&quot;&gt;indent_style&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;space
-&lt;span class=&quot;token assign-left variable&quot;&gt;indent_size&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;
-&lt;span class=&quot;token assign-left variable&quot;&gt;switch_case_indent&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;true
-&lt;span class=&quot;token assign-left variable&quot;&gt;binary_next_line&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;true
-&lt;span class=&quot;token assign-left variable&quot;&gt;space_redirects&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;true
-&lt;span class=&quot;token assign-left variable&quot;&gt;tab_width&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;and for the shell script file named &lt;code&gt;fixup&lt;/code&gt;:&lt;/p&gt;
-&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;$ editorconfig fixup
-&lt;span class=&quot;token assign-left variable&quot;&gt;indent_style&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;tab
-&lt;span class=&quot;token assign-left variable&quot;&gt;indent_size&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;tab&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Thus I can see first hand what the Bash language server would receive from the &lt;code&gt;editorconfig&lt;/code&gt; module, given a filename and some Editorconfig configuration.&lt;/p&gt;
-&lt;h3 id=&quot;language-server-logging&quot;&gt;Language server logging&lt;/h3&gt;
-&lt;p&gt;Logs are emitted at various points in the Bash language server&#39;s operation, as I could see from browsing the &lt;a href=&quot;https://github.com/bash-lsp/bash-language-server/tree/main/server/src&quot;&gt;server source code&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;For example, the &lt;a href=&quot;https://github.com/bash-lsp/bash-language-server/blob/main/server/src/shfmt/index.ts&quot;&gt;shfmt support&lt;/a&gt; has many logging lines, including this one:&lt;/p&gt;
-&lt;pre class=&quot;language-typescript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-typescript&quot;&gt;logger&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;debug&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
-  &lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;Shfmt: found .editorconfig properties: &lt;/span&gt;&lt;span class=&quot;token interpolation&quot;&gt;&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;JSON&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;stringify&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
-    editorconfigProperties&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;In the &lt;a href=&quot;https://github.com/bash-lsp/bash-language-server/blob/main/server/src/config.ts&quot;&gt;configuration section&lt;/a&gt; I could see that it was probably possible to set my desired logging level with the environment variable &lt;code&gt;BASH_IDE_LOG_LEVEL&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;But it turns out that the idea is that settings can be specified in the LSP configuration, and the setting property &amp;quot;path&amp;quot; is what&#39;s actually shown in the &lt;a href=&quot;https://qmacro.org/blog/posts/2025/09/01/auto-formatting-extensionless-bash-scripts-in-neovim/#appendix-a-mason-info-for-bash-language-server&quot;&gt;Mason info&lt;/a&gt;, starting with &lt;code&gt;bashIde&lt;/code&gt; as the first path section. I didn&#39;t find that in the Bash language server README or configuration section, perhaps I should have known that implicitly, or known to look elsewhere for it.&lt;/p&gt;
-&lt;p&gt;Anyway, once I figured that out, I could set my desired level like this (also shown in &lt;a href=&quot;https://qmacro.org/blog/posts/2025/09/01/auto-formatting-extensionless-bash-scripts-in-neovim/appendix-c-neovim-lsp-configuration-for-the-bash-language-server&quot;&gt;Appendix C&lt;/a&gt;):&lt;/p&gt;
-&lt;pre class=&quot;language-lua&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-lua&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  cmd &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;bash-language-server&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;start&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  filetypes &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;bash&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;sh&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  settings &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    bashIde &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-      logLevel &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;debug&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      shfmt &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-        path &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; vim&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;fn&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;expand&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;$HOME&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;..&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;/dotfiles/scripts/shfmt-wrapper&#39;&lt;/span&gt;
-      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Where does this log output from the Bash language server show up? Well, now I figured it out, it&#39;s obvious - it&#39;s all collected in Neovim&#39;s general LSP log file at &lt;code&gt;~/.local/state/nvim/lsp.log&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;However, any debug level log output from the Bash language server will only show up there if the general Neovim language server logging level is high enough. Even after adding the &lt;code&gt;logLevel = &#39;debug&#39;&lt;/code&gt; configuration above, nothing showed up ... until I realised I had this in my &lt;code&gt;~/.config/nvim/init.lua&lt;/code&gt;:&lt;/p&gt;
-&lt;pre class=&quot;language-lua&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-lua&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;-- LSP logging&lt;/span&gt;
-vim&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;lsp&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;set_log_level&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;WARN&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Setting this to &lt;code&gt;DEBUG&lt;/code&gt;, either by changing the value in the &lt;code&gt;init.lua&lt;/code&gt; file itself, or simply on the fly with:&lt;/p&gt;
-&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;:lua vim.lsp.set_log_level&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;DEBUG&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;does the trick, and output like this appears in the &lt;code&gt;lsp.log&lt;/code&gt; file:&lt;/p&gt;
-&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token level debug keyword&quot;&gt;DEBUG&lt;/span&gt; &lt;span class=&quot;token property&quot;&gt;Shfmt:&lt;/span&gt; found &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;editorconfig properties&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;indent_style&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;tab&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;indent_size&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;tab&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;&#39;
-&lt;span class=&quot;token level debug keyword&quot;&gt;DEBUG&lt;/span&gt; &lt;span class=&quot;token property&quot;&gt;Shfmt:&lt;/span&gt; no shfmt properties found in &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;editorconfig &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; using language server shfmt config&quot;
-&lt;span class=&quot;token level debug keyword&quot;&gt;DEBUG&lt;/span&gt; &lt;span class=&quot;token property&quot;&gt;Shfmt:&lt;/span&gt; running &lt;span class=&quot;token string&quot;&gt;&quot;/home/dj/.local/bin/shfmt-wrapper --filename=/tmp/formatting/fixup -i=0 -ln=auto&quot;&lt;/span&gt;&#39;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;a name=&quot;appendix-a-mason-info-for-the-bash-language-server&quot;&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&quot;appendix-a-mason-info-for-the-bash-language-server&quot;&gt;Appendix A - Mason info for the Bash language server&lt;/h2&gt;
-&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;Language Filter: press &lt;C-f&gt; to apply filter
-
-Installed (1)
-  ◍ bash-language-server
-    A language server for Bash.
-
-    installed version 5.6.0
-    installed purl    pkg:npm/bash-language-server@5.6.0
-    homepage          https://github.com/bash-lsp/bash-language-server
-    languages         Bash, Csh, Ksh, Sh, Zsh
-    categories        LSP
-    executables       bash-language-server
-
-    ↓ LSP server configuration schema (press enter to collapse)
-      This is a read-only overview of the settings this server accepts.
-      Note that some settings might not apply to neovim.
-
-      → bashIde.backgroundAnalysisMaxFiles    default: 500
-      → bashIde.enableSourceErrorDiagnostics  default: false
-      → bashIde.explainshellEndpoint          default: &quot;&quot;
-      → bashIde.globPattern                   default: &quot;**/*@(.sh|.inc|.bash|.command)&quot;
-      → bashIde.includeAllWorkspaceSymbols    default: false
-      → bashIde.logLevel                      default: &quot;info&quot;
-      → bashIde.shellcheckArguments           default: &quot;&quot;
-      → bashIde.shellcheckPath                default: &quot;shellcheck&quot;
-      → bashIde.shfmt.binaryNextLine          default: false
-      → bashIde.shfmt.caseIndent              default: false
-      → bashIde.shfmt.funcNextLine            default: false
-      → bashIde.shfmt.ignoreEditorconfig      default: false
-      → bashIde.shfmt.keepPadding             default: false
-      → bashIde.shfmt.languageDialect         default: &quot;auto&quot;
-      → bashIde.shfmt.path                    default: &quot;shfmt&quot;
-      → bashIde.shfmt.simplifyCode            default: false
-      → bashIde.shfmt.spaceRedirects          default: false&lt;/C-f&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;a name=&quot;appendix-b-configuation-for-bash-language-server&quot;&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&quot;appendix-b-configuration-for-bash-language-server&quot;&gt;Appendix B - Configuration for Bash language server&lt;/h2&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; rawConfig &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token literal-property property&quot;&gt;backgroundAnalysisMaxFiles&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;toNumber&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;process&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;env&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;BACKGROUND_ANALYSIS_MAX_FILES&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token literal-property property&quot;&gt;enableSourceErrorDiagnostics&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;toBoolean&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;process&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;env&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;ENABLE_SOURCE_ERROR_DIAGNOSTICS&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token literal-property property&quot;&gt;explainshellEndpoint&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; process&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;env&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;EXPLAINSHELL_ENDPOINT&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token literal-property property&quot;&gt;globPattern&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; process&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;env&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;GLOB_PATTERN&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token literal-property property&quot;&gt;includeAllWorkspaceSymbols&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;toBoolean&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;process&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;env&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;INCLUDE_ALL_WORKSPACE_SYMBOLS&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token literal-property property&quot;&gt;logLevel&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; process&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;env&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;LOG_LEVEL_ENV_VAR&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token literal-property property&quot;&gt;shellcheckArguments&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; process&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;env&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;SHELLCHECK_ARGUMENTS&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token literal-property property&quot;&gt;shellcheckPath&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; process&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;env&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;SHELLCHECK_PATH&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token literal-property property&quot;&gt;shfmt&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token literal-property property&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; process&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;env&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;SHFMT_PATH&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;token literal-property property&quot;&gt;ignoreEditorconfig&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;toBoolean&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;process&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;env&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;SHFMT_IGNORE_EDITORCONFIG&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;token literal-property property&quot;&gt;languageDialect&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; process&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;env&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;SHFMT_LANGUAGE_DIALECT&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;token literal-property property&quot;&gt;binaryNextLine&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;toBoolean&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;process&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;env&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;SHFMT_BINARY_NEXT_LINE&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;token literal-property property&quot;&gt;caseIndent&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;toBoolean&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;process&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;env&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;SHFMT_CASE_INDENT&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;token literal-property property&quot;&gt;funcNextLine&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;toBoolean&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;process&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;env&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;SHFMT_FUNC_NEXT_LINE&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;token literal-property property&quot;&gt;keepPadding&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;toBoolean&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;process&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;env&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;SHFMT_KEEP_PADDING&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;token literal-property property&quot;&gt;simplifyCode&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;toBoolean&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;process&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;env&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;SHFMT_SIMPLIFY_CODE&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;token literal-property property&quot;&gt;spaceRedirects&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;toBoolean&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;process&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;env&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;SHFMT_SPACE_REDIRECTS&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;a name=&quot;appendix-c-neovim-lsp-configuration-for-the-bash-language-server&quot;&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&quot;appendix-c-neovim-lsp-configuration-for-the-bash-language-server&quot;&gt;Appendix C - Neovim LSP configuration for the Bash language server&lt;/h2&gt;
-&lt;p&gt;To add the Bash language server to &lt;a href=&quot;https://qmacro.org/blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node-js-configuration-and-diagnostics/&quot;&gt;my Neovim 0.11+ setup&lt;/a&gt; and configure it, all I needed was to create a new configuration file &lt;code&gt;~/.config/nvim/lsp/bash.lua&lt;/code&gt;:&lt;/p&gt;
-&lt;pre class=&quot;language-lua&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-lua&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  cmd &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;bash-language-server&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;start&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  filetypes &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;bash&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;sh&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  settings &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    bashIde &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-      logLevel &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;debug&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      shfmt &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-        path &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; vim&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;fn&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;expand&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;$HOME&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;..&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;/dotfiles/scripts/shfmt-wrapper&#39;&lt;/span&gt;
-      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;(The settings will be explained in the course of this post.)&lt;/p&gt;
-&lt;p&gt;Then it was just a matter of enabling the server in the list in my main &lt;code&gt;~/config/nvim/init.lua&lt;/code&gt; file:&lt;/p&gt;
-&lt;pre class=&quot;language-lua&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-lua&quot;&gt;vim&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;lsp&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;enable&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&#39;javascript&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&#39;cds&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&#39;markdown&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&#39;dockerfile&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&#39;lua&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&#39;bash&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token comment&quot;&gt;-- here&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;a name=&quot;footnotes&quot;&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;as well as &lt;code&gt;shellcheck&lt;/code&gt; which &lt;a href=&quot;https://github.com/bash-lsp/bash-language-server?tab=readme-ov-file#dependencies&quot;&gt;is also supported&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;version &lt;a href=&quot;https://github.com/mvdan/sh/releases/tag/v3.8.0&quot;&gt;3.8.0&lt;/a&gt; or higher, as that is when support for Editorconfig sections such as &lt;code&gt;[[shell]]&lt;/code&gt; &lt;a href=&quot;https://github.com/mvdan/sh/issues/664&quot;&gt;was introduced&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://github.com/qmacro/dotfiles/blob/57c7f38e64ef1f59b9c41f6155b0fa350eb030b7/config/nvim/init.lua#L14-L23&quot;&gt;configured&lt;/a&gt; through a &lt;code&gt;BufWritePre&lt;/code&gt; event based call to &lt;code&gt;vim.lsp.buf.format&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;it was actually in the &lt;a href=&quot;https://github.com/mason-org/mason.nvim&quot;&gt;Mason&lt;/a&gt; installed and managed location at &lt;code&gt;~/.local/share/nvim/mason/packages/bash-language-server/node_modules/bash-language-server/out/shfmt/index.js&lt;/code&gt;, i.e. the transpiled JavaScript equivalent file&lt;/li&gt;
-&lt;/ol&gt;
 </content>
   </entry>
 </feed>
