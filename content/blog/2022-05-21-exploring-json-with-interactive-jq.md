@@ -56,4 +56,4 @@ But I could have just as well done this:
 | last[1]
 ```
 
-As a kind fellow rightly pointed out in the comments to my previous post [JSON object values into CSV with jq](https://qmacro.org/blog/posts/2022/05/19/json-object-values-into-csv-with-jq/) - TIMTOWTDI, or "there is more than one way to do it", an adage from the Perl community.
+As a kind fellow rightly pointed out in the comments to my previous post [JSON object values into CSV with jq](/blog/posts/2022/05/19/json-object-values-into-csv-with-jq/) - TIMTOWTDI, or "there is more than one way to do it", an adage from the Perl community.

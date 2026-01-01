@@ -9,7 +9,7 @@ tags:
 
 _Here’s more of what I learned from reading the first part of the fzf README and paying attention. Now I have a better setup and understanding of the basics and how to control the appearance, it's time to turn my attention to setting some defaults to control what I get in my search results._
 
-In [fzf - the basics part 1 - layout](https://qmacro.org/blog/posts/2021/02/02/fzf-the-basics-1-layout/) I shared what I learned about controlling `fzf`'s layout. In the examples I showed, based on directories and files in the [SAP TechEd 2020 Developer Keynote repository](https://github.com/SAP-samples/teched2020-developer-keynote) (which I'll use again in this post), `fzf` presented a total of over 17000 items from which to make my choice.
+In [fzf - the basics part 1 - layout](/blog/posts/2021/02/02/fzf-the-basics-1-layout/) I shared what I learned about controlling `fzf`'s layout. In the examples I showed, based on directories and files in the [SAP TechEd 2020 Developer Keynote repository](https://github.com/SAP-samples/teched2020-developer-keynote) (which I'll use again in this post), `fzf` presented a total of over 17000 items from which to make my choice.
 
 That's a lot, and far more than I want to consider wading through.
 
@@ -293,7 +293,7 @@ That's more like it - the `Fruit/` directory and its contents are ignored.
 <a name="using-rg-for-real"></a>
 **Using rg for real**
 
-Moving back to the [repository](https://github.com/SAP-samples/teched2020-developer-keynote) content that I have been using to explore `fzf` in more depth (especially in [fzf - the basics part 1 - layout](https://qmacro.org/blog/posts/2021/02/02/fzf-the-basics-1-layout/)), let's see what effect `rg`'s respect for `.gitignore` has on the results in this more realistic scenario.
+Moving back to the [repository](https://github.com/SAP-samples/teched2020-developer-keynote) content that I have been using to explore `fzf` in more depth (especially in [fzf - the basics part 1 - layout](/blog/posts/2021/02/02/fzf-the-basics-1-layout/)), let's see what effect `rg`'s respect for `.gitignore` has on the results in this more realistic scenario.
 
 First, what does the incantation of `find` that most closely resembles `fzf`'s default behaviour give us from the top level of that repository?
 
@@ -305,7 +305,7 @@ First, what does the incantation of `find` that most closely resembles `fzf`'s d
 ;
 ```
 
-OK, so that's what we got in the [previous post](https://qmacro.org/blog/posts/2021/02/02/fzf-the-basics-1-layout/). The repository has a `.gitignore` file:
+OK, so that's what we got in the [previous post](/blog/posts/2021/02/02/fzf-the-basics-1-layout/). The repository has a `.gitignore` file:
 
 ```shell
 # /tmp/teched2020-developer-keynote (main *=)

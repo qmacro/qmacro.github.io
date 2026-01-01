@@ -114,7 +114,7 @@ That's it - that's the entire equivalent declaration. In using an anonymous aspe
 - a composition constraint
 - a pointer from the child back to the parent
 
-I would go so far as to say that [staring at](https://qmacro.org/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#initial-recognition) this structure expression conjures up far more readily what a document (such as those examples mentioned above) "looks like" mentally.
+I would go so far as to say that [staring at](/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#initial-recognition) this structure expression conjures up far more readily what a document (such as those examples mentioned above) "looks like" mentally.
 
 And guess what? The equivalent schema notation is logically the same. Here's what compiling this "quieter" and more compact version to the YAML flavour of CSN gives us[<sup>2</sup>](#footnotes):
 

@@ -90,7 +90,7 @@ This:
 * uses the `-r` flag to tell `jq` to output raw strings, rather than JSON texts (this means that the value `banana` would be output as is, rather than `"banana"` with double quotes; a double-quoted string is valid JSON and `jq` strives to output valid JSON by default)
 * uses the `-R` flag to tell `jq` to expect raw strings, rather than JSON input
 * uses the `-f` flag to point to a file containing the actual `jq` script (called a "filter")
-* provides the input via a [here string](https://qmacro.org/2021/11/07/exploring-fff-part-2-get-ls-colors/#inputoutput-redirection-here-documents-and-here-strings) as `jq` expects the input via STDIN (so far, the `<test input>` values have been scalar values)
+* provides the input via a [here string](/blog/posts/2021/11/07/exploring-fff-part-2-get-ls-colors/#inputoutput-redirection-here-documents-and-here-strings) as `jq` expects the input via STDIN (so far, the `<test input>` values have been scalar values)
 
 This is what the above excerpted unit test file now looks like:
 

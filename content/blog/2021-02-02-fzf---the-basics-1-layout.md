@@ -9,7 +9,7 @@ tags:
 
 _Here's what I learned from reading the first part of the fzf README and paying attention. Now I have a better setup and understanding of the basics, and in particular how to control the appearance._
 
-In the context of [doing less and doing it better](https://qmacro.org/2021/02/01/do-less-and-do-it-better/) I decided to start learning more about [`fzf`](https://github.com/junegunn/fzf), the "command line fuzzy finder". Learning more wasn't difficult, because despite using it for quite a while, I've never really read any of the documentation, and have thus only scratched its surface.
+In the context of [doing less and doing it better](/blog/posts/2021/02/01/do-less-and-do-it-better/) I decided to start learning more about [`fzf`](https://github.com/junegunn/fzf), the "command line fuzzy finder". Learning more wasn't difficult, because despite using it for quite a while, I've never really read any of the documentation, and have thus only scratched its surface.
 
 So I started with the first part of the main [README](https://github.com/junegunn/fzf/blob/master/README.md), and here's what I found.
 
@@ -65,6 +65,6 @@ Before we leave the Layout category, there's a couple of other options that can 
 
 That's about it for what I've learned about controlling the appearance. There's actually plenty more on this in the [wiki](https://github.com/junegunn/fzf/wiki).
 
-Note right now that there are 17688 entries in the list of choices presented to me. That's a lot, and far more than I'd ever actually want to select from. [Next time](https://qmacro.org/2021/02/07/fzf-the-basics-part-2-search-results/) I'll take a look at a couple of `fzf` environment variables, one of which controls what command `fzf` uses, and how that can be changed to affect what gets displayed (or not displayed) in the choice list, so I can address that large number of entries issue.
+Note right now that there are 17688 entries in the list of choices presented to me. That's a lot, and far more than I'd ever actually want to select from. [Next time](/blog/posts/2021/02/07/fzf-the-basics-part-2-search-results/) I'll take a look at a couple of `fzf` environment variables, one of which controls what command `fzf` uses, and how that can be changed to affect what gets displayed (or not displayed) in the choice list, so I can address that large number of entries issue.
 
-Update: part 2 of this series is now available: [fzf - the basics part 2 - search results](https://qmacro.org/2021/02/07/fzf-the-basics-part-2-search-results/).
+Update: part 2 of this series is now available: [fzf - the basics part 2 - search results](/blog/posts/2021/02/07/fzf-the-basics-part-2-search-results/).

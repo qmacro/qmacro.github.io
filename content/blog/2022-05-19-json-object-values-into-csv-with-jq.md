@@ -124,7 +124,7 @@ This results in something that looks almost but not quite the same:
 }
 ```
 
-What's happening here is that the iterator causes `jq` to emit a JSON value for each item in the array. This is an important concept and also relates to the fact that `jq` can process -- as well as emit -- multiple JSON values. I discuss this in the post [Some thoughts on jq and statelessness](https://qmacro.org/blog/posts/2022/05/02/some-thoughts-on-jq-and-statelessness/) which you may be interested to read.
+What's happening here is that the iterator causes `jq` to emit a JSON value for each item in the array. This is an important concept and also relates to the fact that `jq` can process -- as well as emit -- multiple JSON values. I discuss this in the post [Some thoughts on jq and statelessness](/blog/posts/2022/05/02/some-thoughts-on-jq-and-statelessness/) which you may be interested to read.
 
 In other words, while the first invocation (`.value`) emitted a single JSON value (an array), the second (`.value[]`) caused three JSON values (three objects) to be emitted, effectively one at a time.
 

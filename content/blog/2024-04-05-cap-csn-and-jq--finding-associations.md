@@ -30,7 +30,7 @@ service bookshop {
 
 > Yes, there's a `cuid` aspect in `@sap/cds/common` but I didn't want the entire contents of that package being expressed in the output that follows, as it would make it more difficult to see the essential parts in this short example.
 
-There's a "to-one" relationship between `Books` and `Authors`, and a "to-many" relationship in the back link beween `Authors` and `Books`. 
+There's a "to-one" relationship between `Books` and `Authors`, and a "to-many" relationship in the back link beween `Authors` and `Books`.
 
 > For those non-CAP folks wondering where the foreign key field is in the first relationship, it's constructed automatically as the `Books:author` association is a [managed](https://cap.cloud.sap/docs/guides/domain-modeling#managed-1-associations) one.
 
@@ -250,4 +250,4 @@ Which do you prefer?
 
 1: The human readable language we used to define models is commonly referred to as CDS. [Capire](https://cap.cloud.sap/docs), the CAP documentation resource, is more precise, calling it CDL, classing CDL, CSN and other CAP little languages such as CQL and CQN as all being under the general CDS umbrella term. As you can see from the bottom of the CSN output, even the compiler refers to it as CDS!
 
-2: For more on this family of functions, see [Reshaping data values using jq's with_entries](https://qmacro.org/blog/posts/2022/05/30/reshaping-data-values-using-jq's-with_entries/) and [Quick conversion of multiple values using with_entries in jq](https://qmacro.org/blog/posts/2024/02/28/quick-conversion-of-multiple-values-using-with_entries-in-jq/).
+2: For more on this family of functions, see [Reshaping data values using jq's with_entries](/blog/posts/2022/05/30/reshaping-data-values-using-jqs-with-entries/) and [Quick conversion of multiple values using with_entries in jq](/blog/posts/2024/02/28/quick-conversion-of-multiple-values-using-with-entries-in-jq/).

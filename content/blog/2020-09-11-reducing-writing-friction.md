@@ -27,4 +27,4 @@ That'll do for now!
 
 Incidentally, I'm already on a small path to writing more, having adopted Simon's [Today I Learned](https://til.simonwillison.net/) (TIL) mini-post approach. I've written a few TIL posts on this blog recently and I feel very freed by the constraints.
 
-**Update 2020-10-08** I've moved these posts to a new blog [autodidactics](https://qmacro.org/tags/autodidactics/) - see [A new learning source for shell scripting](https://qmacro.org/2020/10/03/a-new-learning-source-for-shell-scripting/) for the background.
+**Update 2020-10-08** I've moved these posts to a new blog [autodidactics](https://qmacro.org/tags/autodidactics/) - see [A new learning source for shell scripting](/blog/posts/2020/10/03/a-new-learning-source-for-shell-scripting/) for the background.

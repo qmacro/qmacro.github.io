@@ -263,7 +263,7 @@ I'm tempted to want to define another function `rest` thus:
 def rest: .[1:length];
 ```
 
-See [The beauty of recursion and list machinery](https://qmacro.org/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/) for why - in particular, a slight obsession about `x:xs`, first and rest, head and tail, and so on.
+See [The beauty of recursion and list machinery](/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/) for why - in particular, a slight obsession about `x:xs`, first and rest, head and tail, and so on.
 
 But I digress.
 

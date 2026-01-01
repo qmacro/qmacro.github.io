@@ -8,7 +8,7 @@ tags:
 ---
 In this post, I consider what CAP really is, what it gives us, and why we should consider it a fundamental piece of the puzzle in the cloud context and beyond.
 
-Update (08 Nov): This blog post is available in audio format as [an episode](https://anchor.fm/tech-aloud/episodes/CAP-is-important-because-its-not-important---6-Nov-2019---DJ-Adams-e8rg7s) on the [Tech Aloud podcast](https://qmacro.org/2019/09/17/new-podcast-tech-aloud/). Also, I recorded a CodeTalk episode on this subject with [Ian Thain](https://people.sap.com/ian.thain) – watch it here: <https://www.youtube.com/watch?v=5ffTjFdjs8M>.
+Update (08 Nov): This blog post is available in audio format as [an episode](https://anchor.fm/tech-aloud/episodes/CAP-is-important-because-its-not-important---6-Nov-2019---DJ-Adams-e8rg7s) on the [Tech Aloud podcast](/blog/posts/2019/09/17/new-podcast-tech-aloud/). Also, I recorded a CodeTalk episode on this subject with [Ian Thain](https://people.sap.com/ian.thain) – watch it here: <https://www.youtube.com/watch?v=5ffTjFdjs8M>.
 
 If you read one technical article today\*, make it the [About CAP](https://cap.cloud.sap/docs/about/) page in the online documentation, which starts with the following overview:
 
@@ -16,7 +16,7 @@ If you read one technical article today\*, make it the [About CAP](https://cap.c
 
 Key for me here is that the design principles that are at CAP's core (open and opinionated, zero lock-in, non-intrusive and platform agnostic) and that have influenced what CAP is and what it can do for us, explain why it is fundamental.
 
-\*(If you don't have time to read it, it's also available as a podcast episode in the [Tech Aloud podcast](https://qmacro.org/2019/09/17/new-podcast-tech-aloud/) here: [SAP Cloud Application Programming Model (About CAP) – SAP – September 2019](https://anchor.fm/tech-aloud/episodes/SAP-Cloud-Application-Programming-Model-About-CAP---SAP---September-2019-e5f76p).
+\*(If you don't have time to read it, it's also available as a podcast episode in the [Tech Aloud podcast](/blog/posts/2019/09/17/new-podcast-tech-aloud/) here: [SAP Cloud Application Programming Model (About CAP) – SAP – September 2019](https://anchor.fm/tech-aloud/episodes/SAP-Cloud-Application-Programming-Model-About-CAP---SAP---September-2019-e5f76p).
 
 ## What CAP is for me
 

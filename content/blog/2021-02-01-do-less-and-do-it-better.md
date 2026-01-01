@@ -37,4 +37,4 @@ The lockdown has afforded me time to read more, and I need to embrace that and w
 
 ---
 
-Update 02 Feb 2021: I've started digging deeper into `fzf` - see [fzf - the basics part 1 - layout](https://qmacro.org/blog/posts/2021/02/02/fzf-the-basics-1-layout/) and [fzf - the basics part 2 - search results](https://qmacro.org/blog/posts/2021/02/07/fzf-the-basics-2-search-results/) over on my [Autodidactics](https://qmacro.org/blog/posts/) blog.
+Update 02 Feb 2021: I've started digging deeper into `fzf` - see [fzf - the basics part 1 - layout](/blog/posts/2021/02/02/fzf-the-basics-1-layout/) and [fzf - the basics part 2 - search results](/blog/posts/2021/02/07/fzf-the-basics-2-search-results/) over on my [Autodidactics](/blog/posts/) blog.

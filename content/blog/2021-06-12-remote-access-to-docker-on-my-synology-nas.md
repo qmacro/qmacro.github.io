@@ -12,7 +12,7 @@ This post describes the steps I took to set up remote access to Docker running o
 
 ## Introduction
 
-Having followed the container revolution for a while, I've become more and more enamoured with the idea of disposable workspaces, services and apps that can be instantly reified and leave no trace when they're gone. This was one of the reasons I opted for a Synology NAS, my first NAS device (see [Adding a drive to my Synology NAS](https://qmacro.org/2021/05/22/adding-a-drive-to-my-synology-nas/)), because it is to act not only as a storage device, but as a container server.
+Having followed the container revolution for a while, I've become more and more enamoured with the idea of disposable workspaces, services and apps that can be instantly reified and leave no trace when they're gone. This was one of the reasons I opted for a Synology NAS, my first NAS device (see [Adding a drive to my Synology NAS](/blog/posts/2021/05/22/adding-a-drive-to-my-synology-nas/)), because it is to act not only as a storage device, but as a container server.
 
 The Docker experience out of the box with the NAS's operating system, DiskStation Manager (DSM), is very pleasant, via a graphical user interface. I've been very happy with the way it works, especially in the initial discovery phase.
 

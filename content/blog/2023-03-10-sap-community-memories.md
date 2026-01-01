@@ -81,5 +81,5 @@ So there you have it, my memories of the birth of the Web-based SAP Community. I
 <br/>
 
 * [The SAP developer community 10 years ago](https://blogs.sap.com/2005/07/04/the-sap-developer-community-10-years-ago/) (Jul 2005)
-* [The evolution of the SAP community](https://qmacro.org/blog/posts/2016/03/10/the-evolution-of-the-sap-community/) (Mar 2016)
-* [How I got involved in the SAP community](https://qmacro.org/blog/posts/2022/02/09/how-i-got-involved-in-the-sap-community) (Feb 2022)
+* [The evolution of the SAP community](/blog/posts/2016/03/10/the-evolution-of-the-sap-community/) (Mar 2016)
+* [How I got involved in the SAP community](/blog/posts/2022/02/09/how-i-got-involved-in-the-sap-community) (Feb 2022)

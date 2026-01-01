@@ -12,7 +12,7 @@ I've been starting multiple `tmux` sessions, one for each project I'm working on
 
 But I'm trying to move to a simpler workflow, and use fewer `tmux` sessions. This meant I hit on that possibly age-old issue of being in the "wrong" directory when I create a new window or pane, and having to `cd` to where I want to be. Which is usually *where I just was* before invoking the new window or pane command!
 
-I did a bit of digging and found the answer, which was quite simple in the end - and I would have known about it with a better level of knowledge about `tmux`. I had written a short essay on that subject: [Deeper connections to everyday tools](https://qmacro.org/2021/03/31/deeper-connections-to-everyday-tools/), and in that essay, I'd made a reference to this new discovery.
+I did a bit of digging and found the answer, which was quite simple in the end - and I would have known about it with a better level of knowledge about `tmux`. I had written a short essay on that subject: [Deeper connections to everyday tools](/blog/posts/2021/03/31/deeper-connections-to-everyday-tools/), and in that essay, I'd made a reference to this new discovery.
 
 [Christian Drumm asked](https://twitter.com/ceedee666/status/1377501505226477569) me today about this very thing, so I thought I'd write this short entry that I could refer to for Christian and also for others.
 

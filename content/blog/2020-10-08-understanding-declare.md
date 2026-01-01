@@ -32,7 +32,7 @@ declare [-aAfFgilnrtux] [-p] [name[=value] ...]
 declare -%s
 ```
 
-(If you're curious about `[` being an external executable, you might be interested in another post: [The open square bracket \[ is an executable](https://qmacro.org/blog/posts/2020/08/21/open-square-bracket/).)
+(If you're curious about `[` being an external executable, you might be interested in another post: [The open square bracket \[ is an executable](/blog/posts/2020/08/21/open-square-bracket/).)
 
 **The `typeset` synonym**
 

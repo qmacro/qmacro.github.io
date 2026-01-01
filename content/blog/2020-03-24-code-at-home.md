@@ -78,13 +78,13 @@ I definitely encourage you parents to join too if you can, so you can satisfy yo
 <a name="moreinfo"></a>
 **More information on me**
 
-I used to [run a CodeClub](https://qmacro.org/2012/12/05/codeclub-and-becoming-a-stem-ambassador/) at the Woodhouses Village School, I have been a volunteer at [Manchester CoderDojo](https://mcrcoderdojo.org.uk/) at MadLab and also at the Sharp Project in Newton Heath.
+I used to [run a CodeClub](/blog/posts/2012/12/05/codeclub-and-becoming-a-stem-ambassador/) at the Woodhouses Village School, I have been a volunteer at [Manchester CoderDojo](https://mcrcoderdojo.org.uk/) at MadLab and also at the Sharp Project in Newton Heath.
 
 Here's a pic of me [giving a Scratch session](https://mcrcoderdojo.org.uk/underwater-scratch/) at Manchester CoderDojo:
 
 ![Underwater Scratch]( {{ "/images/2020/03/underwaterscratch.jpg" | url }})
 
-I'm a STEM Ambassador who has given sessions at schools including [Xaverian Sixth Form College](http://www.xaverian.ac.uk/computer-science-with-dj-adams/), I've given a session at TEDx Oldham on [Our Computational Future](https://www.youtube.com/watch?v=-gvOCaExeK0) (making the argument for teaching our kids to code).
+I'm a STEM Ambassador who has given sessions at schools including [Xaverian Sixth Form College](https://web.archive.org/web/20200208154429/https://www.xaverian.ac.uk/computer-science-with-dj-adams/), I've given a session at TEDx Oldham on [Our Computational Future](https://www.youtube.com/watch?v=-gvOCaExeK0) (making the argument for teaching our kids to code).
 
 I've also helped out as a mentor at MadLab in Manchester during the [Young Rewired State](https://getcodingkids.com/young-rewired-state/) (YRS) events. Here's a still of me from [the video about our activities for YRS 2013](https://vimeo.com/75229099):
 

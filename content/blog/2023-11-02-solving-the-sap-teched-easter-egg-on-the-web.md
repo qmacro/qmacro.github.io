@@ -25,4 +25,4 @@ And of course, it almost goes without saying that you can run it in a Dev Space 
 
 ![Easter Egg in SAP BAS](/images/2023/11/easter-egg-in-bas.png)
 
-So what are you waiting for? [Stare at the code](https://qmacro.org/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#initialrecognition), try and work out what it's doing, what it emits, and if you get stuck, run it in one of these Web-based environments and see where it leads you. And have fun!
+So what are you waiting for? [Stare at the code](/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#initialrecognition), try and work out what it's doing, what it emits, and if you get stuck, run it in one of these Web-based environments and see where it leads you. And have fun!

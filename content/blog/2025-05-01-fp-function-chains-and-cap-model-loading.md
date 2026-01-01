@@ -103,7 +103,7 @@ module.exports = exports = function load (files, options) {
 }
 ```
 
-At this point, the value passed to the function's `files` parameter is `'*'`, effectively corresponding to the `all` in `cds serve all`, and via some nifty [lazy loading via getters](https://qmacro.org/blog/posts/2024/12/10/tasc-notes-part-4/#lazy-loading-of-the-cds-facades-many-features), in `@sap/cds/lib/index.js`:
+At this point, the value passed to the function's `files` parameter is `'*'`, effectively corresponding to the `all` in `cds serve all`, and via some nifty [lazy loading via getters](/blog/posts/2024/12/10/tasc-notes-part-4/#lazy-loading-of-the-cds-facades-many-features), in `@sap/cds/lib/index.js`:
 
 ```javascript
 get resolve()  { return super.resolve = require('./compile/resolve') }

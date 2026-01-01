@@ -148,7 +148,7 @@ As I mentioned before, two approaches involve this dev container definition. One
 <a name="vscodeanddockerdesktop"></a>
 ### With VS Code and Docker Desktop
 
-VS Code is available for pretty much all platforms. As is Docker Desktop. And, in the continued context of avoiding installation of tools locally, I would say that these two are exceptions. I mean, my main editor is of course (Neo)vim, inside my [terminal-based IDE](https://qmacro.org/blog/posts/2024/01/09/a-seeimple-jq-repl-with-tmux-bash-vim-and-entr/) but if I were to use a more graphical IDE I'd want it running locally and directly on the host OS (as I like my terminal emulator to run locally). And I see Docker Desktop in a similar way to how I see a VM manager like VirtualBox or VMWare Fusion, for example. An extension of the host OS.
+VS Code is available for pretty much all platforms. As is Docker Desktop. And, in the continued context of avoiding installation of tools locally, I would say that these two are exceptions. I mean, my main editor is of course (Neo)vim, inside my [terminal-based IDE](/blog/posts/2024/01/09/a-seeimple-jq-repl-with-tmux-bash-vim-and-entr/) but if I were to use a more graphical IDE I'd want it running locally and directly on the host OS (as I like my terminal emulator to run locally). And I see Docker Desktop in a similar way to how I see a VM manager like VirtualBox or VMWare Fusion, for example. An extension of the host OS.
 
 Anyway, I digress, and not for the first time. Talking of digressions, I'm not going to go into Docker Desktop, licencing, and alternatives (such as Podman Desktop) here. That's a topic for another time.
 

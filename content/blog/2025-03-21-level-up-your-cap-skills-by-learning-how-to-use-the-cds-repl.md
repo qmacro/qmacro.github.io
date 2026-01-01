@@ -54,7 +54,7 @@ then you're ready to start up the cds REPL within the container:
 
 - `cds repl`
 
-(If you want a further example of trying things out in a container context, see the [appendix on setting up a test environment](https://qmacro.org/blog/posts/2024/12/10/tasc-notes-part-4/#appendix1) in the notes to The Art and Science of CAP part 4.)
+(If you want a further example of trying things out in a container context, see the [appendix on setting up a test environment](/blog/posts/2024/12/10/tasc-notes-part-4/#appendix1) in the notes to The Art and Science of CAP part 4.)
 
 Unless otherwise stated, all the following cds REPL session examples (identified by the `>` prompt, as opposed to the `$` shell prompt) are based on this scenario setup.
 

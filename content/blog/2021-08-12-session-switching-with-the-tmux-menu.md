@@ -8,7 +8,7 @@ tags:
 
 _Here's a way to get a simple session switcher in `tmux` using a popup menu._
 
-I was looking at Waylon Walker's [tmux fzf session jumper](https://waylonwalker.com/tmux-fzf-session-jump/) recently, and really liked it, so much so that I dug into the incantations that he shared, resulting in a new post on this autodidactics blog: [tmux output formatting](https://qmacro.org/blog/posts/2021/08/06/tmux-output-formatting/).
+I was looking at Waylon Walker's [tmux fzf session jumper](https://waylonwalker.com/tmux-fzf-session-jump/) recently, and really liked it, so much so that I dug into the incantations that he shared, resulting in a new post on this autodidactics blog: [tmux output formatting](/blog/posts/2021/08/06/tmux-output-formatting/).
 
 Anyway, I was still thinking about session switching yesterday, and randomly came across this Reddit post: [how to bring up context menu without a mouse](https://www.reddit.com/r/tmux/comments/ot77fx/how_to_bring_up_context_menu_without_mouse/). I'd seen the context menu before, by accidentally triggering it with the right mouse button, and it looks something like this:
 
@@ -43,7 +43,7 @@ tmux display-menu \
 
 ### Listing the sessions
 
-From the [tmux output formatting](https://qmacro.org/blog/posts/2021/08/06/tmux-output-formatting/) post we already know how to do this. The basic `tmux list-sessions` command produces something like this:
+From the [tmux output formatting](/blog/posts/2021/08/06/tmux-output-formatting/) post we already know how to do this. The basic `tmux list-sessions` command produces something like this:
 
 ```
 dotfiles: 2 windows (created Thu Aug 12 10:06:53 2021)

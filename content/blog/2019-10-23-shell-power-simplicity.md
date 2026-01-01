@@ -139,7 +139,7 @@ Same result. Nice.
 
 Now we have some clean and predictable input to pass to another program. We'll use `awk` which is a very useful and powerful text processing tool, along with its sibling `sed`. The wonderful programming language Perl took inspiration from both `awk` and `sed` and other text processing tools, as it happens.
 
-> It may be interesting to you to know that `awk`'s initials are from the authors, Aho, Weinberger and Kernighan, three luminaries from Bell Labs, the birthplace of C and Unix. On the [Tech Aloud](https://qmacro.org/2019/09/17/new-podcast-tech-aloud/) podcast, you'll find an episode entitled "[C, the Enduring Legacy of Dennis Ritchie - Alfred V. Aho - 07 Sep 2012](https://anchor.fm/tech-aloud/episodes/C--the-Enduring-Legacy-of-Dennis-Ritchie---Alfred-V--Aho---07-Sep-2012-e7mp8r)" to which you may enjoy listening.
+> It may be interesting to you to know that `awk`'s initials are from the authors, Aho, Weinberger and Kernighan, three luminaries from Bell Labs, the birthplace of C and Unix. On the [Tech Aloud](/blog/posts/2019/09/17/new-podcast-tech-aloud/) podcast, you'll find an episode entitled "[C, the Enduring Legacy of Dennis Ritchie - Alfred V. Aho - 07 Sep 2012](https://anchor.fm/tech-aloud/episodes/C--the-Enduring-Legacy-of-Dennis-Ritchie---Alfred-V--Aho---07-Sep-2012-e7mp8r)" to which you may enjoy listening.
 
 `awk` reads lines from STDIN (standard input) and is used often to rearrange fields in those lines, or otherwise process them. In this case we're going to read in the output from our pipeline so far, and get `awk` to start out by splitting each one up into separate pieces, so that we go from this:
 
