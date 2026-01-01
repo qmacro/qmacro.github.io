@@ -25,7 +25,7 @@ Of course, I also publish on the [SAP Community](https://community.sap.com) blog
 
 **My autodidactics blog**
 
-In the middle of last year I started a new, secondary blog [autodidactics](https://qmacro.org/autodidactics/) to share things I'd learned (I endeavour to be a life long learner). I was inspired to create such a blog having seen [Simon Willison's TIL (Today I Learned)](https://til.simonwillison.net/) site.
+In the middle of last year I started a new, secondary blog [autodidactics](https://qmacro.org/blog/posts/) to share things I'd learned (I endeavour to be a life long learner). I was inspired to create such a blog having seen [Simon Willison's TIL (Today I Learned)](https://til.simonwillison.net/) site.
 
 Moreover, I did very definitely feel I needed a place to share smaller nuggets of information that I'd learned; this in turn was triggered by reading some of [rwxrob](https://rwxrob.live/)'s repository of [dotfiles and scripts](https://github.com/rwxrob/dotfiles/).
 
@@ -52,7 +52,7 @@ What do these categories mean to me?
 
 **Major**: If I want to write something in the major category, that's a relatively significant investment in time to create and publish posts (and for the consumer it can be significant too). That's fine, and those posts definitely will always have their place.
 
-**Minor**: If I want to share something specific that I learned, such as on the subject of the shell's `declare` builtin (in [Understanding declare](https://qmacro.org/autodidactics/2020/10/08/understanding-declare/)), I have my [autodidactics](https://qmacro.org/autodidactics) blog. The posts are usually shorter -- although some may be more densely packed -- and about something quite small and specific.
+**Minor**: If I want to share something specific that I learned, such as on the subject of the shell's `declare` builtin (in [Understanding declare](https://qmacro.org/blog/posts/2020/10/08/understanding-declare/)), I have my [autodidactics](https://qmacro.org/autodidactics) blog. The posts are usually shorter -- although some may be more densely packed -- and about something quite small and specific.
 
 **Micro**: If I just want to share a fleeting idea (or rant), I have [Twitter](https://twitter.com/qmacro).
 

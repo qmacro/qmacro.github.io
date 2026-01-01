@@ -50,5 +50,5 @@ Much more succinct - I like it!
 [shell-expansions]: https://www.gnu.org/software/bash/manual/html_node/Shell-Expansions.html
 [parameter-expansion]: https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html
 [getepisodeimage]: https://github.com/qmacro/dotfiles/blob/master/scripts/getepisodeimage
-[open-square-bracket-post]: https://qmacro.org/autodidactics/2020/08/21/open-square-bracket/
-[shell-parameter-post]: https://qmacro.org/autodidactics/2020/09/27/shell-parameter-expansion-with-+/
+[open-square-bracket-post]: https://qmacro.org/blog/posts/2020/08/21/open-square-bracket/
+[shell-parameter-post]: https://qmacro.org/blog/posts/2020/09/27/shell-parameter-expansion-with-+/

@@ -137,7 +137,7 @@ This call is `main "$@"` which just passes on any and all values that were speci
 
 ### The main function
 
-I like to qualify my variables, so use `local` here, which is a synonym for `declare`. I wrote about this in [Understanding declare](https://qmacro.org/autodidactics/2020/10/08/understanding-declare/) in case you want to dig in further.
+I like to qualify my variables, so use `local` here, which is a synonym for `declare`. I wrote about this in [Understanding declare](https://qmacro.org/blog/posts/2020/10/08/understanding-declare/) in case you want to dig in further.
 
 Because I have my emulator earlier, I can make almost the same-shaped call to the Bitwarden CLI, passing what was specified in `searchterm` and retrieving the results (a JSON array) in the `logins` variable.
 

@@ -123,7 +123,7 @@ So `btpguid` is a script. Great, let's have a look at it!
 # It's the second part of the output (the table) that is used.
 
 # Uses the "${2:-$1}" technique seen in fff - see
-# https://qmacro.org/autodidactics/2021/09/03/exploring-fff-part-1-main/
+# https://qmacro.org/blog/posts/2021/09/03/exploring-fff-part-1-main/
 # for details.
 
 gethier() {
@@ -401,7 +401,7 @@ output before the script ends. Nice!
 In case you're wondering about the `-r` option to the `read` builtin,
 it's to stop any backslashes in the input being interpreted
 inappropriately. I wrote about this in a recent post on my
-[Autodidactics blog](/tags/autodidactics/) - see [The read
+[Autodidactics blog](/tags/blog/posts/) - see [The read
 command](/blog/posts/2021/11/07/exploring-fff-part-2-get_ls_colors/#readcommand)
 section of [Exploring fff part 2 -
 get_ls_colors](/blog/posts/2021/11/07/exploring-fff-part-2-get_ls_colors/).

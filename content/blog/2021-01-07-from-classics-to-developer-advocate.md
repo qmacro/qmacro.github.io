@@ -85,7 +85,7 @@ room in one of the school buildings (there are some pictures in
 "[Computer Unit
 1979](/blog/posts/2020/11/03/computer-unit-1979/)") and taught
 myself BASIC PLUS and how to use the PDP-11's operating system. This
-[autodidactic](/tags/autodidactics/) approach continued
+[autodidactic](/tags/blog/posts/) approach continued
 into my days at university, where I became an unofficial regular in the
 computing department there, forming a triangle between the Classics
 faculty rooms, the computing facilities and the library (we studied a
