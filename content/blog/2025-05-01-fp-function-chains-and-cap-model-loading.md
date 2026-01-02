@@ -71,13 +71,13 @@ which returns:
 [ 'db/', 'srv/', 'app/', 'schema', 'services' ]
 ```
 
-In other words, unless directed otherwise, the compiler will look for files in the `db/`, `srv/` and `app/` directories (the holy model trinity) plus any files specifically named `schema` or `services`[<sup>1</sup>](#footnote-1) (with `cds` or `csn` extensions).
+In other words, unless directed otherwise, the compiler will look for files in the `db/`, `srv/` and `app/` directories (the holy model trinity) plus any files specifically named `schema` or `services`[<sup>1</sup>](#footnotes) (with `cds` or `csn` extensions).
 
 It doesn't _descend_ within those three directories, so why does that file, in a directory _within_ `srv/`, get loaded at all?
 
 ## Use the source Luke
 
-Taking heed of a [great piece of advice](https://wiki.c2.com/?UseTheSourceLuke) in the original Wiki[<sup>2</sup>](#footnote-2) - to look at the source code, ideally while it's running, in a debugger - I dug in to the CAP Node.js server source. Here's what I discovered.
+Taking heed of a [great piece of advice](https://wiki.c2.com/?UseTheSourceLuke) in the original Wiki[<sup>2</sup>](#footnotes) - to look at the source code, ideally while it's running, in a debugger - I dug in to the CAP Node.js server source. Here's what I discovered.
 
 ### @sap/cds/server.js
 
@@ -276,7 +276,7 @@ All that is wanted here is a reference to any and all CDS model files, and if th
 
 This simple callback function for `map` produces a simple structure (`map` always reads a list and produces a list that is the same length).
 
-And now this is passed in, to the next (and last) function in this chain, namely to `filter`, which is another higher order function that takes a predicate function[<sup>3</sup>](#footnote-3), which is even simpler than the previous callback function:
+And now this is passed in, to the next (and last) function in this chain, namely to `filter`, which is another higher order function that takes a predicate function[<sup>3</sup>](#footnotes), which is even simpler than the previous callback function:
 
 ```javascript
 x => x
@@ -349,7 +349,7 @@ That's straightforward, in that if no value is supplied for `b`, the default val
 
 But what about `env=cds.env`? The default value here ... is referring to a property in the `cds` object, which itself is the first parameter! Said out loud:
 
-"_If there's no value[<sup>4</sup>](#footnote-4) for the `env` parameter, take the value of the `env` property of the (object) value passed to the first parameter named `cds`_".
+"_If there's no value[<sup>4</sup>](#footnotes) for the `env` parameter, take the value of the `env` property of the (object) value passed to the first parameter named `cds`_".
 
 I did a double-take when I first saw that, and thought it worth highlighting.
 
