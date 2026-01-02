@@ -75,6 +75,10 @@ This follows the [simplest thing that could possibly
 work](https://creators.spotify.com/pod/profile/tech-aloud/episodes/The-Simplest-Thing-that-Could-Possibly-Work--A-conversation-with-Ward-Cunningham--Part-V---Bill-Venners-e5dpts)
 philosophy.
 
+## See also
+
+- [FP, function chains and CAP model loading](/blog/posts/2025/05/01/fp-function-chains-and-cap-model-loading/)
+
 ## Footnotes
 
 1. In [the footnotes to FP, function chains and CAP model
