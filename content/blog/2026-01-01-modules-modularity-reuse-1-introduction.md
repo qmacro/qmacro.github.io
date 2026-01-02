@@ -168,8 +168,8 @@ Plugins](/blog/posts/2024/12/30/cap-node-js-plugins/) series post for links to
 videos and blog posts on how plugins are constructed) as this is built to function
 as a plugin.
 
-There's not much to this module, but it packs a punch! Using it will cause all
-sorts of goodness to be brought into play in your CAP project.
+There's not much to this module, but it certainly packs a punch! Using it will
+cause all sorts of goodness to be brought into play in your CAP project.
 
 > Later on in this series I'll come to use the term "active" for this sort of
 > plugin-based reuse module, as opposed to "passive" for a reuse module that
@@ -178,7 +178,7 @@ sorts of goodness to be brought into play in your CAP project.
 ## Wrapping up
 
 In an upcoming post in this series, we'll set up a simple CAP Node.js project and
-then introduce this `@capire/common` reuse module and observe what happen. Not only
+then introduce this `@capire/common` reuse module and observe what happens. Not only
 that, but we'll endeavour to understand why and how things happen as they do.
 
 But we want to walk before we can run, so before that, we'll look at creating
