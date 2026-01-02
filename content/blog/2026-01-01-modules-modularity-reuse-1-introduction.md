@@ -186,8 +186,7 @@ our own basic reuse module, to understand the [simplest thing that could
 possibly
 work](https://creators.spotify.com/pod/show/tech-aloud/episodes/The-Simplest-Thing-that-Could-Possibly-Work--A-conversation-with-Ward-Cunningham--Part-V---Bill-Venners-e5dpts),
 and learn along the way not only how to develop and test that module locally,
-but also how to then add it to the NPM registry on GitHub Packages, covering
-scoped (`@`-prefixed) and non-scoped module names.
+but also how to then add it to the NPM registry on GitHub Packages.
 
 Until next time, happy reuse!
 
