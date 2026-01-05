@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Breathing through the reduction meditation</title>
+		<meta name="description" content="In this post I look even more closely at a simple Clojure implementation of a reduce function.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="Breathing through the reduction meditation">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="In this post I look even more closely at a simple Clojure implementation of a reduce function.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2015/10/20/breathing-through-the-reduction-meditation/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="breathing-through-the-reduction-meditation">Breathing through the reduction meditation</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2015-10-20">20 October 2015</time></li>
+	<li><a href="/tags/language-ramblings/" class="post-tag">language-ramblings</a>, </li>
+	<li><a href="/tags/clojure/" class="post-tag">clojure</a>, </li>
+	<li><a href="/tags/firstrest/" class="post-tag">firstrest</a>, </li>
+	<li><a href="/tags/headtail/" class="post-tag">headtail</a>, </li>
+	<li><a href="/tags/looprecur/" class="post-tag">looprecur</a>, </li>
+	<li><a href="/tags/reduce/" class="post-tag">reduce</a></li>
+</ul>
+
+<p class="post-description-main">In this post I look even more closely at a simple Clojure implementation of a reduce function.</p>
+
+<p>The subject of the earlier post <a href="/blog/posts/2015/10/19/a-meditation-on-reduction/">A meditation on
+reduction</a> was the simple
+Clojure implementation of a reduce function.</p>
+<p>Here it is again:</p>
+<pre class="language-clojure" tabindex="0"><code class="language-clojure"><span class="token punctuation">(</span><span class="token keyword">defn</span> my-reduce
+ <span class="token punctuation">(</span><span class="token punctuation">[</span>f initial coll<span class="token punctuation">]</span>
+  <span class="token punctuation">(</span><span class="token keyword">loop</span> <span class="token punctuation">[</span>result initial
+         remaining coll<span class="token punctuation">]</span>
+    <span class="token punctuation">(</span><span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">empty?</span> remaining<span class="token punctuation">)</span>
+      result
+      <span class="token punctuation">(</span><span class="token keyword">recur</span> <span class="token punctuation">(</span><span class="token function">f</span> result <span class="token punctuation">(</span><span class="token keyword">first</span> remaining<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token keyword">rest</span> remaining<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+ <span class="token punctuation">(</span><span class="token punctuation">[</span>f <span class="token punctuation">[</span>head &amp; tail<span class="token punctuation">]</span><span class="token punctuation">]</span>
+  <span class="token punctuation">(</span><span class="token function">my-reduce</span> f head tail<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>If you’re not familiar with what reduce is used for, and how, you may want to
+take a quick look at the
+<a href="https://clojuredocs.org/clojure.core/reduce">documentation</a> before continuing.</p>
+<p>OK, let’s examine it line by line.</p>
+<p>1: the <code>my-reduce</code> function definition starts with the <code>defn</code> macro, which
+allows for a shorthand way to write <code>(def my-reduce (fn (...)))</code>. The name
+<code>my-reduce</code> is used to distinguish it from the actual reduce function.</p>
+<p>2: So begins the first arity definition, ending on line 7. This definition is
+for the 3-arity case – where the <code>my-reduce</code> function is called with three
+arguments – the function, a starting value, and the collection. The arguments
+are captured into <code>f</code>, <code>initial</code> and <code>coll</code>. Note that these are immutable from
+the get go.</p>
+<p>3-4:
+<a href="http://clojure.org/special_forms#Special%20Forms--(recur%20exprs*)">loop/recur</a>
+is a tail position pattern where the <code>loop</code> part has bindings which we can see
+here on lines 3 and 4. These are like <a href="https://clojuredocs.org/clojure.core/let">let
+bindings</a>, to local vars (remember,
+vars are not variables!). Here the vars are <code>result</code> and <code>remaining,</code> bound
+initially (i.e. before the first recur) to <code>initial</code> and <code>coll</code>.</p>
+<p>5-7: The test to be evaluated is whether the remaining collection (in
+<code>remaining</code>) is empty; if it is, then the current value of <code>result</code> becomes the
+return value of the call to <code>my-reduce</code> and execution ends. If it’s not, then
+the <code>recur</code> goes back to the target indicated by <code>loop</code> in line 3, specifying
+the values to be used for the result and remaining bindings this time around.</p>
+<p>For <code>result</code>, the value is the result of applying the function bound to <code>f</code> to
+the <code>result</code> and the first element of the <code>remaining</code> collection. So for
+example, if we were using this to sum a series of numbers, this would be the
+point (and in fact the only point) at which the actual add function would be
+invoked.</p>
+<p>For <code>remaining</code>, we take all but the first element of the <code>remaining</code>
+collection.</p>
+<p>This is a nice example of the “head and tail” pattern that I mentioned in an
+earlier post <a href="/blog/posts/2015/10/19/my-journey-to-clojure/">My Journey to
+Clojure</a>.</p>
+<p>8-9: And here we find the second arity definition. It’s simplicity is what
+makes it lovely, and again, this is a common pattern in Clojure. For the case
+where an argument to a function isn’t supplied, then often you’ll a second
+definition, expecting that reduced set of arguments and then calling itself
+with the “right” number of arguments.</p>
+<p>In this particular case, this second arity definition is for the 2-argument
+case <code>[f [head &amp; tail]]</code> as opposed to the 3-argument case <code>[f initial coll]</code>
+in line 2.</p>
+<p>In case you’re wondering about <code>[f [head &amp; tail]]</code>, f is the first argument,
+and <code>[head &amp; tail]</code> is the second. This second argument is an example of
+sequential destructuring, where the first value is captured and then any
+remaining values beyond the named position (head) are gathered into a sequence.</p>
+<h2 id="visualisation">Visualisation</h2>
+<p>Scribbling down values in my notebook for sample executions helped me meditate
+on this. I thought I’d share a couple here.</p>
+<p><img src="/images/2015/10/notebook-scribbles.png" alt="notebook scribbles"></p>
+<h2 id="summing-up">Summing up</h2>
+<p>All in all, for such a small piece of code, such a compact meditation, there
+are some choice patterns and best (or at least common) practices that one can
+reflect upon and enjoy.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2015/10/19/my-journey-to-clojure/">My journey to Clojure</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2015/10/20/celebrating-the-engine-of-the-fiori-revolution-the-30ui5-ebook/">Celebrating the engine of the Fiori revolution - the 30UI5 ebook</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2015/10/20/breathing-through-the-reduction-meditation/` was built on 2026-01-05T20:48:22.146Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
