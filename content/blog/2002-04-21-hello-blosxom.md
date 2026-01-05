@@ -1,4 +1,5 @@
 ---
+date: 2002-04-21
 title: Hello Blosxom
 description: A move to the Blosxom blogging software.
 ---

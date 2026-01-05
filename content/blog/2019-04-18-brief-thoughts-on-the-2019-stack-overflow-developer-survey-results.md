@@ -19,7 +19,7 @@ I'm an enterprise developer *and* a back-end developer (and sometimes a front-en
 
 What struck me here was the comment in the accompanying text: "Developers who work with languages such as VBA, F# and Clojure" have the most years of professional coding experience".
 
-This came as quite a surprise - I would have expected to see perhaps Java in this list (some say Java is the new COBOL). I can understand seeing VBA there but certainly not the two functional languages F# and Clojure, which no-one is going to claim are mainstream. That said, they are both wonderful ... I've been exploring them both over the last couple of years - see my other blog [Language Ramblings](https://langram.org) for some posts on that subject.
+This came as quite a surprise - I would have expected to see perhaps Java in this list (some say Java is the new COBOL). I can understand seeing VBA there but certainly not the two functional languages F# and Clojure, which no-one is going to claim are mainstream. That said, they are both wonderful ... I've been exploring them both over the last couple of years - see my other blog [Language Ramblings](/tags/language-ramblings/) for some posts on that subject.
 
 Note that later on we see also that Clojure and F# are number one and number two in the list of [Top Paying Technologies](https://insights.stackoverflow.com/survey/2019#top-paying-technologies)!
 

@@ -5,7 +5,7 @@ tags:
   - fp
   - language-ramblings
 ---
-Further to [Enlightenment in action](http://langram.org/2016/04/12/enlightenment-in-action/), here's a tiny bit more light that I discovered on my journey up to Newcastle this morning.
+Further to [Enlightenment in action](/blog/posts/2016/04/12/enlightenment-in-action/), here's a tiny bit more light that I discovered on my journey up to Newcastle this morning.
 
 I solved 4Clojure puzzle 100 ([Least Common Multiple](https://www.4clojure.com/problem/100)) with this code:
 
