@@ -114,7 +114,7 @@ of the subsequent posts in this series.
 > Regarding the "how would one use it?" question, I have already covered the
 > _mechanics_ of retrieving a module from the NPM registry within GitHub Packages
 > in [Using @capire modules from GitHub
-> Packages](blog/posts/2025/10/12/using-capire-modules-from-github-packages/).
+> Packages](/blog/posts/2025/10/12/using-capire-modules-from-github-packages/).
 
 To whet our appetite, let's round this blog post off with a quick look at
 another module in the `capire` namespace.
@@ -171,9 +171,11 @@ as a plugin.
 There's not much to this module, but it certainly packs a punch! Using it will
 cause all sorts of goodness to be brought into play in your CAP project.
 
-> Later on in this series I'll come to use the term "active" for this sort of
-> plugin-based reuse module, as opposed to "passive" for a reuse module that
-> isn't a plugin.
+#### Active vs passive
+
+Later on in this series I'll come to use the term "active" for this sort of
+plugin-based reuse module, as opposed to "passive" for a reuse module that
+isn't a plugin.
 
 ## Wrapping up
 
