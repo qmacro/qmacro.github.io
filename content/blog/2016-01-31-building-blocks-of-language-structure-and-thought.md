@@ -4,10 +4,18 @@ title: Building blocks of language, structure and thought
 tags:
   - fp
   - language-ramblings
+  - car
+  - cdr
+  - clojure
+  - lisp
+  - firstrest
+  - cons
+  - fibonacci
+  - javascript
+  - linkedlists
+  - scheme
+description: As I travel on my path to perhaps what I deem as some sort of enlightenment, back in time via Clojure to one of the great ancestors of language, structure and computational thought (Lisp), I continue to come across a simple theme.
 ---
-As I travel on my path to perhaps what I deem as some sort of enlightenment, back in time via Clojure to one of the great ancestors of language, structure and computational thought (Lisp), I continue to come across a simple theme.
-
-**Building Blocks**
 
 That theme is the concept of basic building blocks with which vast cathedrals can be constructed. Those building blocks are, in Lisp terms at least, `car`, `cdr` and `cons`.
 
@@ -15,7 +23,7 @@ One of my companions on this path is Daniel Higginbotham's [Clojure for the Brav
 
 There's a close parallel between `first`, `rest` & `cons` in Clojure and `car`, `cdr` & `cons` in other Lisps such as Scheme. And there's an inherent and implicit beauty in a collection of constructs so simple yet collectively so powerful. You can read about the origins of the terms [`car` and `cdr` on the Wikipedia page](https://en.wikipedia.org/wiki/CAR_and_CDR), which have a depth and a degree of venerability of their own. Essentially both sets of functions implement a linked list, which can be simply illustrated, as shown in the book and elsewhere, as a sequence of connected nodes, like this:
 
-```
+```text
 node1              node2              node3
 +--------------+   +--------------+   +--------------+
 | value | next |-->| value | next |-->| value | next |
@@ -25,7 +33,7 @@ node1              node2              node3
   "one"              "two"              "three"
 ```
 
-**Implementing a linked list**
+## Implementing a linked list
 
 Daniel goes on to show how such a linked list of nodes like this, along with the three functions, can be simply implemented in, say, JavaScript. Given that these nodes could be represented like this in JavaScript:
 
@@ -57,18 +65,18 @@ function map(s, f) {
 
 To me, there's a beauty there that is twofold. It's implemented using the three core functions we've already seen, the core atoms, if you will. Moreover, there's a beauty in the recursion and the "first and rest pattern" I touched upon earlier in "[A meditation on reduction](https://langramblog.wordpress.com/2015/10/19/a-meditation-on-reduction/)".
 
-**Using the building blocks**
+## Using the building blocks
 
 Let's look at another example of how those simple building blocks are put together to form something greater. This time, we'll take inspiration from a presentation by Marc Feeley: "[The 90 minute Scheme to C compiler](http://churchturing.org/y/90-min-scc.pdf)". In a slide on tail calls and garbage collection, the sample code, in Scheme (a dialect of Lisp), is shown with a tail call recursion approach thus:
 
 ```scheme
 (define f
-  (lambda (n x) 
-    (if (= n 0) 
-        (car x) 
-        (f (- n 1) 
-           (cons (cdr x) 
-                 (+ (car x) 
+  (lambda (n x)
+    (if (= n 0)
+        (car x)
+        (f (- n 1)
+           (cons (cdr x)
+                 (+ (car x)
                     (cdr x)))))))
 ```
 
