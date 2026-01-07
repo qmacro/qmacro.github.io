@@ -5,11 +5,467 @@
   <subtitle>Reserving the right to be wrong</subtitle>
   <link href="https://qmacro.org/feed/feed.xml" rel="self" />
   <link href="https://qmacro.org/blog/" />
-  <updated>2026-01-02T00:00:00Z</updated>
+  <updated>2026-01-07T00:00:00Z</updated>
   <id>https://qmacro.org/blog/</id>
   <author>
     <name>DJ Adams</name>
   </author>
+  <entry>
+    <title>Modules, modularity &amp; reuse in CDS models - part 2 - creating a simple reuse package</title>
+    <link href="https://qmacro.org/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/" />
+    <updated>2026-01-07T00:00:00Z</updated>
+    <id>https://qmacro.org/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/</id>
+    <content type="html">&lt;p&gt;In &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/#wrapping-up&quot;&gt;wrapping up the end of part
+1&lt;/a&gt;
+we looked forward to creating the simplest kind of reuse module, not only as an
+important fundamental building block but as a base for further understanding
+and exploration (especially when we start looking closer at
+&lt;a href=&quot;https://github.com/capire/common&quot;&gt;capire/common&lt;/a&gt;).&lt;/p&gt;
+&lt;p&gt;What we&#39;ll do in this post is:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;create a simple CAP Node.js project with a basic CDS model&lt;/li&gt;
+&lt;li&gt;extend it by defining a custom type in a separate file, and using that type&lt;/li&gt;
+&lt;li&gt;make that custom type definition reusable by creating an NPM package and putting it there instead&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Following best practice &lt;a href=&quot;https://github.com/qmacro/capref/blob/main/bestpractices/BES002.md&quot;&gt;BES002 Think
+local-first&lt;/a&gt;
+we&#39;ll create and build out that NPM package locally, for the ultimate in
+development iteration and &lt;a href=&quot;https://cap.cloud.sap/docs/about/#fast-inner-loops&quot;&gt;fast inner
+loops&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&quot;creating-a-simple-cap-node-js-project&quot;&gt;Creating a simple CAP Node.js project&lt;/h2&gt;
+&lt;p&gt;For simplicity&#39;s sake, and to highlight the even more basic alternative
+approach (to using &lt;code&gt;cds init&lt;/code&gt;) to create a new CAP Node.js project, we&#39;ll use
+the NPM command line tool &lt;code&gt;npm&lt;/code&gt; as demonstrated by Daniel Schlachter in our &lt;a href=&quot;https://youtu.be/fUYNjuQbLzQ?si=7GyAUdnrAsUaTmlF&amp;amp;t=354&quot;&gt;Expert
+Session: Getting started with CAP Node.js - 2025/2026
+edition!&lt;/a&gt;. After all,
+this post is ultimately all about Node.js packages.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://youtu.be/fUYNjuQbLzQ?si=7GyAUdnrAsUaTmlF&amp;amp;t=354&quot;&gt;&lt;img src=&quot;https://qmacro.org/images/2026/01/daniel-schlachter-from-scratch.png&quot; alt=&quot;Daniel uses npm init -y to start a new CAP Node.js project from
+scratch&quot;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Here goes:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;mkdir&lt;/span&gt; myproj &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;token builtin class-name&quot;&gt;cd&lt;/span&gt; &lt;span class=&quot;token variable&quot;&gt;$_&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;npm&lt;/span&gt; init &lt;span class=&quot;token parameter variable&quot;&gt;-y&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;npm&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;add&lt;/span&gt; @sap/cds express &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;npm&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;add&lt;/span&gt; --save-dev @cap-js/sqlite&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This creates everything we need for starting to develop a CAP Node.js project.
+Firing things up with &lt;code&gt;cds watch&lt;/code&gt; gives us:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;cds serve all &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;with&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;mocks &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;in&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;memory&lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt; live reload enabled for browsers &lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;
+        ___________________________
+
+    No models found in db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;srv&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;app&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;app&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;schema&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;services&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+    Waiting for some to arrive&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;All subsequent command line invocations in this post are from the same
+location as this, i.e. at the project root, in &lt;code&gt;myproj/&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;adding-a-simple-cds-model&quot;&gt;Adding a simple CDS model&lt;/h2&gt;
+&lt;p&gt;To keep things as simple as possible and not distract us from the goal, let&#39;s
+define the CDS model in &lt;code&gt;services.cds&lt;/code&gt; as something minimal:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;context&lt;/span&gt; schema {
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; E {
+    &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; ID : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
+        e  : &lt;span class=&quot;token type builtin&quot;&gt;String&lt;/span&gt;;
+  }
+}
+
+&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; S {
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; E &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; schema.E;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For those wondering about the starkness, here are a few notes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;In minimal scenarios like this, I like to have everything in one file, and my
+choice of &lt;code&gt;services.cds&lt;/code&gt; is explained in &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/02/why-i-use-services-cds-in-simple-cds-model-examples/&quot;&gt;Why I use services.cds in simple
+CDS model
+examples&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Because everything is in one file, I can either define an entity directly
+within a service, &amp;quot;in-flight&amp;quot; as it were, like this:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; Bookshop {
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Books {
+    &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; ID    : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
+        title : &lt;span class=&quot;token type builtin&quot;&gt;String&lt;/span&gt;;
+        stock : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
+  }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;(this is from my &lt;code&gt;cdsnano&lt;/code&gt;
+&lt;a href=&quot;https://github.com/qmacro/dotfiles/blob/main/scripts/cdsnano-template/services.cds&quot;&gt;template&lt;/a&gt;)&lt;/p&gt;
+&lt;p&gt;but I have come to
+&lt;a href=&quot;https://github.com/qmacro/dotfiles/blob/main/scripts/cdspico&quot;&gt;prefer&lt;/a&gt; using
+the &lt;a href=&quot;https://cap.cloud.sap/docs/cds/cdl#context&quot;&gt;context&lt;/a&gt; directive; that
+way, I can make use of
+&lt;a href=&quot;https://cap.cloud.sap/docs/cds/cdl#views-projections&quot;&gt;projections&lt;/a&gt; as the
+projection target is in a separate namespace (scope).&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Even simpler than the Bookshop or Northwind theme, I am using single letters,
+while still following the &lt;a href=&quot;https://cap.cloud.sap/docs/guides/domain-modeling#naming-conventions&quot;&gt;naming convention
+rules&lt;/a&gt;
+on capitalisation:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;entity &lt;code&gt;E&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;element &lt;code&gt;e&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;service &lt;code&gt;S&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I chose &lt;code&gt;schema&lt;/code&gt; as the namespace, mostly because it reminds me of the name
+of the first file I usually create in a &lt;code&gt;db/&lt;/code&gt; directory when modelling:
+&lt;code&gt;schema.cds&lt;/code&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/#footnotes&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;With the definitions in &lt;code&gt;services.cds&lt;/code&gt;, we&#39;re up and running with a full
+service (some log lines omitted for brevity):&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; loaded model from &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt; file&lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;s&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;
+
+  &lt;span class=&quot;token domain constant&quot;&gt;services.cds&lt;/span&gt;
+  node_modules&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;sap&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;cds&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;srv&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;outbox&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;cds
+
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; serving S &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;at:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;/odata/v4/s&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;decl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;services.cds:8&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;impl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;node_modules/@sap/cds/srv/app-service.js&#39;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; server listening on &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;http://localhost:4004&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now let&#39;s start to extend that model a little.&lt;/p&gt;
+&lt;h2 id=&quot;extending-with-a-separate-file-in-the-project&quot;&gt;Extending with a separate file in the project&lt;/h2&gt;
+&lt;p&gt;For the sake of illustration, let&#39;s say we have a custom type that we want to
+use in this model. We can take the smallest first step in the direction of a
+couple of best practices:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/qmacro/capref/blob/main/bestpractices/BES005.md&quot;&gt;BES005 Factor out separate
+concerns&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/qmacro/capref/blob/main/bestpractices/BES006.md&quot;&gt;BES006 Compose with reuse in
+mind&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;by factoring that type out into a separate file, and then importing it into our
+main model file &lt;code&gt;services.cds&lt;/code&gt; with the &lt;code&gt;using&lt;/code&gt; directive.&lt;/p&gt;
+&lt;h3 id=&quot;a-simple-type-t&quot;&gt;A simple type T&lt;/h3&gt;
+&lt;p&gt;In a new file &lt;code&gt;base.cds&lt;/code&gt;, also at the project root alongside &lt;code&gt;services.cds&lt;/code&gt;,
+let&#39;s define the type:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token cqlkeywords keyword&quot;&gt;type&lt;/span&gt; T : &lt;span class=&quot;token type builtin&quot;&gt;Boolean&lt;/span&gt;;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And in &lt;code&gt;services.cds&lt;/code&gt; let&#39;s use that to redefine the element &lt;code&gt;e&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; T &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;./base&#39;;
+
+&lt;span class=&quot;token keyword&quot;&gt;context&lt;/span&gt; schema {
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; E {
+    &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; ID : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
+        e  : T;
+  }
+}
+
+&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; S {
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; E &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; schema.E;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So far so good.&lt;/p&gt;
+&lt;h3 id=&quot;namespaces-are-a-good-idea&quot;&gt;Namespaces are a good idea&lt;/h3&gt;
+&lt;p&gt;But that simple name &lt;code&gt;T&lt;/code&gt; makes me a little nervous in that it&#39;s unscoped, i.e.
+at the equivalent of the global level, and this sort of practice is asking for
+trouble down the line with name clashes. So let&#39;s put this definition for &lt;code&gt;T&lt;/code&gt;
+into a scope with the &lt;code&gt;namespace&lt;/code&gt; directive; that way, we can more readily
+reuse and share it.&lt;/p&gt;
+&lt;p&gt;In &lt;code&gt;base.cds&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;namespace&lt;/span&gt; qmacro.common;
+
+&lt;span class=&quot;token cqlkeywords keyword&quot;&gt;type&lt;/span&gt; T : &lt;span class=&quot;token type builtin&quot;&gt;Boolean&lt;/span&gt;;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In &lt;code&gt;services.cds&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; qmacro.common.T &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;./base&#39;;
+
+&lt;span class=&quot;token keyword&quot;&gt;context&lt;/span&gt; schema {
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; E {
+    &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; ID : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
+        e  : T;
+  }
+}
+
+&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; S {
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; E &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; schema.E;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That&#39;s better!&lt;/p&gt;
+&lt;p&gt;Everything works well, and I can add to the &lt;code&gt;base.cds&lt;/code&gt; file and use the
+definitions therein as I build out the rest of the CDS model for the current
+project.&lt;/p&gt;
+&lt;p&gt;But one thing I cannot do is easily reuse those definitions in other projects.&lt;/p&gt;
+&lt;h2 id=&quot;extending-via-an-npm-package&quot;&gt;Extending via an NPM package&lt;/h2&gt;
+&lt;p&gt;To remedy this, I can transfer what I have in &lt;code&gt;base.cds&lt;/code&gt; to a new NPM package,
+and use that. That way, I not only get to reuse the definitions in the current
+project but I can also:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;maintain it independently, in its own lifecycle&lt;/li&gt;
+&lt;li&gt;use it in other projects I&#39;m working on&lt;/li&gt;
+&lt;li&gt;make it available for others to use in their projects&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Just like &lt;a href=&quot;https://github.com/capire/common&quot;&gt;capire/common&lt;/a&gt;, in fact! But much,
+much simpler&lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/#footnotes&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;h3 id=&quot;creating-the-package-locally&quot;&gt;Creating the package locally&lt;/h3&gt;
+&lt;p&gt;Best practice &lt;a href=&quot;https://github.com/qmacro/capref/blob/main/bestpractices/BES002.md&quot;&gt;BES002 Think
+local-first&lt;/a&gt;
+exhorts us to take a local-first approach to development. That goes not only
+for CAP components, but in general. And with NPM&#39;s
+&lt;a href=&quot;https://docs.npmjs.com/cli/v11/using-npm/workspaces&quot;&gt;workspaces&lt;/a&gt; concept, we
+can follow this best practice in building out our reuse package too.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;See the &lt;a href=&quot;https://qmacro.org/blog/posts/2025/02/14/tasc-notes-part-8/#local-development-submodules-and-workspaces&quot;&gt;Local development, submodules and
+workspaces&lt;/a&gt;
+section of the notes accompanying part 8 of &lt;a href=&quot;https://qmacro.org/blog/posts/2024/12/06/the-art-and-science-of-cap/&quot;&gt;The Art and Science of
+CAP&lt;/a&gt;
+for more on this.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h4 id=&quot;deciding-on-a-scope-and-a-name&quot;&gt;Deciding on a scope and a name&lt;/h4&gt;
+&lt;p&gt;Like the namespace we added to the definition in &lt;code&gt;base.cds&lt;/code&gt;
+&lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/#namespaces-are-a-good-idea&quot;&gt;earlier&lt;/a&gt;, it&#39;s also a good idea to think about a
+scope for the package (in the same way that
+&lt;a href=&quot;https://www.npmjs.com/search?q=%40sap&quot;&gt;@sap&lt;/a&gt;,
+&lt;a href=&quot;https://www.npmjs.com/search?q=%40cap-js&quot;&gt;@cap-js&lt;/a&gt; and
+&lt;a href=&quot;https://github.com/orgs/capire/packages&quot;&gt;@capire&lt;/a&gt; exist). It would make sense
+to eventually publish it, and GitHub Packages&#39; NPM registry seems a good
+bet.&lt;/p&gt;
+&lt;p&gt;So let&#39;s go for &lt;code&gt;qmacro&lt;/code&gt; as the scope, and &lt;code&gt;common&lt;/code&gt; as the package name&lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/#footnotes&quot;&gt;&lt;sup&gt;3&lt;/sup&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;h4 id=&quot;setting-up-and-examining-the-workspace-constructs&quot;&gt;Setting up and examining the workspace constructs&lt;/h4&gt;
+&lt;p&gt;Previously, in the &lt;a href=&quot;https://qmacro.org/blog/posts/2024/12/30/cap-node-js-plugins/&quot;&gt;CAP Node.js
+Plugins&lt;/a&gt; mini
+series, we set up a workspace in the &lt;a href=&quot;https://qmacro.org/blog/posts/2024/10/05/cap-node-js-plugins-part-1-how-things-work/#creating-our-own-plugin-package&quot;&gt;Creating our own plugin
+package&lt;/a&gt;
+section of part 1. We&#39;ll take a similar approach now, taking care to specify
+our chosen scope this time:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;npm&lt;/span&gt; init &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--yes&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--workspace&lt;/span&gt; packages/@qmacro/common &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--scope&lt;/span&gt; @qmacro&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Running this command does quite a few things. Let&#39;s look at (a cut down version
+of) the project&#39;s structure as a result of this:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;
+├── node_modules&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;
+│   ├── &lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;cap&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;js&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;
+│   │   └── &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+│   ├── &lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;qmacro&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;
+│   │   └── common &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;packages&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;qmacro&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;common&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt;
+│   ├── &lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;sap&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;                                          &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt;
+│   │       └── &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;                                    &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt;
+├── &lt;span class=&quot;token domain constant&quot;&gt;package-lock.json&lt;/span&gt;                                  &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt;
+├── &lt;span class=&quot;token domain constant&quot;&gt;package.json&lt;/span&gt;                                       &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt;
+├── packages&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;      &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token separator comment&quot;&gt;-----------------------------------&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt;
+│   └── &lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;qmacro&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;
+│       └── common&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;
+│           └── &lt;span class=&quot;token domain constant&quot;&gt;package.json&lt;/span&gt;
+├── &lt;span class=&quot;token domain constant&quot;&gt;base.cds&lt;/span&gt;
+└── &lt;span class=&quot;token domain constant&quot;&gt;services.cds&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;What can we see? Well:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;There&#39;s a new &lt;code&gt;packages/&lt;/code&gt; directory in the project root; the name that we
+chose (via the value for the &lt;code&gt;--workspace&lt;/code&gt; option) makes sense, given it&#39;s a
+container for the NPM package we&#39;re going to create&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;That NPM package is represented locally within this new &lt;code&gt;packages/&lt;/code&gt;
+directory, and currently contains just a simple &lt;code&gt;package.json&lt;/code&gt; file with
+defaults (as we used &lt;code&gt;--yes&lt;/code&gt; to skip the package initialisation
+questionnaire):&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;@qmacro/common&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;version&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;1.0.0&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;main&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;index.js&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;devDependencies&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;scripts&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;test&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;echo &#92;&quot;Error: no test specified&#92;&quot; &amp;amp;&amp;amp; exit 1&quot;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;keywords&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;author&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;license&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;ISC&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;description&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&quot;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Because of the &lt;code&gt;--scoped @qmacro&lt;/code&gt; option, this is a scoped package&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Additionally:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Within the standard NPM package location for the project, i.e. the
+&lt;code&gt;node_modules/&lt;/code&gt; directory, there&#39;s a new path &lt;code&gt;@qmacro/common&lt;/code&gt; that has been
+created as a symbolic link to the NPM package within &lt;code&gt;packages/&lt;/code&gt;, as
+illustrated by the arrow; this means that we can work on developing the
+package locally within &lt;code&gt;packages/@qmacro/common/&lt;/code&gt; and use it immediately in
+the context of our project.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;And if we look inside the project&#39;s &lt;code&gt;package.json&lt;/code&gt; file, we&#39;ll see:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;there&#39;s a new top level &lt;code&gt;workspaces&lt;/code&gt; property which has a reference to this
+local NPM package directory:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;myproj&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;...&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;...&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;workspaces&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;token string&quot;&gt;&quot;packages/@qmacro/common&quot;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This is a key component in the mechanism that allows a simplified use of
+locally existing NPM packages within a project, &lt;a href=&quot;https://www.clivebanks.co.uk/THHGTTG/THHGTTGradio2.htm#:~:text=The%20Infinite%20Improbability%20Drive%20is%20a%20wonderful%20new%20method%20of%20crossing%20interstellar%20distances%20in%20a%20few%20seconds%2C%20without%20all%20that%20tedious%20mucking%20about%20in%20hyperspace&quot;&gt;without all that tedious
+mucking about
+with&lt;/a&gt;
+&lt;code&gt;npm link&lt;/code&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&quot;adding-the-package-as-a-project-dependency&quot;&gt;Adding the package as a project dependency&lt;/h4&gt;
+&lt;p&gt;There&#39;s one more thing we should do now, but let&#39;s &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/#adding-the-package-as-a-dependency&quot;&gt;defer it to the end of
+this post&lt;/a&gt;, which will allow me to
+illustrate some local behaviours.&lt;/p&gt;
+&lt;h3 id=&quot;transferring-the-type-definition&quot;&gt;Transferring the type definition&lt;/h3&gt;
+&lt;p&gt;Now that we have the NPM package, let&#39;s move the contents of &lt;code&gt;base.cds&lt;/code&gt; to it,
+and also make a corresponding modification to the reference to it.&lt;/p&gt;
+&lt;h4 id=&quot;moving-the-definition&quot;&gt;Moving the definition&lt;/h4&gt;
+&lt;p&gt;The simplest first step is to move &lt;code&gt;base.cds&lt;/code&gt; from where it is in the project
+root to the root of the &lt;code&gt;@qmacro/common&lt;/code&gt; package, i.e. to
+&lt;code&gt;packages/@qmacro/common/&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;mv&lt;/span&gt; base.cds packages/@qmacro/common/&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;At this point, the structure for our project and our new local package looks
+like this (the &lt;code&gt;node_modules/&lt;/code&gt; directory content has been omitted here for
+brevity):&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;
+├── &lt;span class=&quot;token domain constant&quot;&gt;package-lock.json&lt;/span&gt;
+├── &lt;span class=&quot;token domain constant&quot;&gt;package.json&lt;/span&gt;
+├── packages&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;
+│   └── &lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;qmacro&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;
+│       └── common&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;
+│           ├── &lt;span class=&quot;token domain constant&quot;&gt;base.cds&lt;/span&gt;
+│           └── &lt;span class=&quot;token domain constant&quot;&gt;package.json&lt;/span&gt;
+└── &lt;span class=&quot;token domain constant&quot;&gt;services.cds&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&quot;changing-the-using-directive&quot;&gt;Changing the using directive&lt;/h4&gt;
+&lt;p&gt;Next up we should modify the reference in &lt;code&gt;services.cds&lt;/code&gt;. Instead of loading
+&lt;code&gt;qmacro.common.T&lt;/code&gt; from &lt;code&gt;./base&lt;/code&gt;, i.e. the &lt;code&gt;base.cds&lt;/code&gt; file that was in the
+project root, we&#39;ll want to load it from the &lt;code&gt;@qmacro/common&lt;/code&gt; package. This is
+what we need to change &lt;code&gt;services.cds&lt;/code&gt; to (just the &lt;code&gt;using&lt;/code&gt; line has changed
+here):&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; qmacro.common.T &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;@qmacro/common&#39;;
+
+&lt;span class=&quot;token keyword&quot;&gt;context&lt;/span&gt; schema {
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; E {
+    &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; ID : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
+        e  : T;
+  }
+}
+
+&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; S {
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; E &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; schema.E;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&quot;understanding-model-resolution&quot;&gt;Understanding model resolution&lt;/h4&gt;
+&lt;p&gt;At this point, if you&#39;re using a decent editor with LSP support connected to an
+instance of the CDS language server&lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/#footnotes&quot;&gt;&lt;sup&gt;4&lt;/sup&gt;&lt;/a&gt;, you&#39;ll likely
+see a diagnostics error:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;Can&#39;t find package module &lt;span class=&quot;token string&quot;&gt;&#39;@qmacro/common&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;file&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;unknown&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;package&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can also elicit this error report by simply attempting to compile the
+contents of &lt;code&gt;services.cds&lt;/code&gt; to CSN, like this, for example:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;cds compile services.cds&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This error occurs &lt;em&gt;not&lt;/em&gt; because the local setup of the NPM package is somehow
+not right. It&#39;s because of the way &lt;a href=&quot;https://cap.cloud.sap/docs/cds/cdl#model-resolution&quot;&gt;model
+resolution&lt;/a&gt; works:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;Resolving module references: Names starting with neither &lt;code&gt;.&lt;/code&gt; nor &lt;code&gt;/&lt;/code&gt; such as
+&lt;code&gt;@sap/cds/common&lt;/code&gt; are fetched for in &lt;code&gt;node_modules&lt;/code&gt; folders:&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;Files having &lt;code&gt;.cds&lt;/code&gt;, &lt;code&gt;.csn&lt;/code&gt;, or &lt;code&gt;.json&lt;/code&gt; as suffixes, appended in order&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Folders, from either the file set in &lt;code&gt;cds.main&lt;/code&gt; in the folder&#39;s
+&lt;code&gt;package.json&lt;/code&gt; or &lt;code&gt;index.&amp;lt;cds|csn|json&amp;gt;&lt;/code&gt; file.&lt;/em&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;In other words, we either need to use an &amp;quot;index&amp;quot; file, or add configuration to
+the NPM package&#39;s &lt;code&gt;package.json&lt;/code&gt; file to point to the actual file in there,
+i.e. &lt;code&gt;base.cds&lt;/code&gt;; that &lt;code&gt;cds.main&lt;/code&gt; configuration in &lt;code&gt;package.json&lt;/code&gt; would look
+like this:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;@qmacro/common&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;version&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;1.0.0&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;main&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;index.js&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;devDependencies&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;scripts&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;test&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;echo &#92;&quot;Error: no test specified&#92;&quot; &amp;amp;&amp;amp; exit 1&quot;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;keywords&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;author&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;license&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;ISC&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;description&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;cds&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;main&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;base&quot;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With this in place, the reference in&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; qmacro.common.T &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;@qmacro/common&#39;;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;works fine and the error goes away.&lt;/p&gt;
+&lt;p&gt;However, while it works, adding explicit configuration like this goes against
+axiom &lt;a href=&quot;https://github.com/qmacro/capref/blob/main/axioms/AXI003.md&quot;&gt;AX003 Convention over
+configuration&lt;/a&gt;. So
+let&#39;s not do that.&lt;/p&gt;
+&lt;p&gt;Moreover, it&#39;s actually good practice to use an &amp;quot;index&amp;quot; file (in the form of
+&lt;code&gt;index.cds&lt;/code&gt;) as the entry point for reuse packages such as this one that we&#39;re
+creating - see &lt;a href=&quot;https://github.com/qmacro/capref/blob/main/bestpractices/BES007.md&quot;&gt;BES007 Provide public entry points to reuse
+packages&lt;/a&gt;.&lt;/p&gt;
+&lt;h4 id=&quot;creating-the-index-entry-point&quot;&gt;Creating the index entry point&lt;/h4&gt;
+&lt;p&gt;So let&#39;s avoid any explicit &lt;code&gt;cds.main&lt;/code&gt; configuration, and create an &lt;code&gt;index.cds&lt;/code&gt;
+file in the package root. The simplest thing would be to rename &lt;code&gt;base.cds&lt;/code&gt;, so
+that&#39;s what we&#39;ll do:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;mv&lt;/span&gt; packages/@qmacro/common/base.cds packages/@qmacro/common/index.cds&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Nice!&lt;/p&gt;
+&lt;h3 id=&quot;adding-the-package-as-a-dependency&quot;&gt;Adding the package as a dependency&lt;/h3&gt;
+&lt;p&gt;There&#39;s one more thing we need to do, &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/#adding-the-package-as-a-project-dependency&quot;&gt;something which we deliberately deferred
+until now&lt;/a&gt;, which is to add the
+&lt;code&gt;@qmacro/common&lt;/code&gt; reuse package as a project dependency.&lt;/p&gt;
+&lt;p&gt;Yes, everything works as we expect right now, but that&#39;s down to the NPM
+workspace concept. We have our project, and the workspace-hosted reuse package,
+which is accessible from the project. But what happens when we deploy that
+project elsewhere? The workspace-based development is just that - for
+development. So we need to ensure that our reuse package is brought in when
+setting up the project elsewhere.&lt;/p&gt;
+&lt;p&gt;Invoking:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;npm&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;add&lt;/span&gt; @qmacro/common&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;is all we need to do.&lt;/p&gt;
+&lt;p&gt;This adds a reference to the package in the project&#39;s &lt;code&gt;dependencies&lt;/code&gt; property:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;myproj&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;version&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;1.0.0&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;main&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;index.js&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;scripts&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;test&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;echo &#92;&quot;Error: no test specified&#92;&quot; &amp;amp;&amp;amp; exit 1&quot;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;keywords&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;author&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;license&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;ISC&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;description&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;dependencies&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;@qmacro/common&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;^1.0.0&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;@sap/cds&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;^9.6.1&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;express&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;^4.22.1&quot;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;devDependencies&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;@cap-js/sqlite&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;^2.1.2&quot;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;workspaces&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;token string&quot;&gt;&quot;packages/@qmacro/common&quot;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
+&lt;p&gt;At this point, we&#39;re all set, and we can continue to build out our project, and our reuse package, locally.&lt;/p&gt;
+&lt;p&gt;In the next part we&#39;ll move beyond local development for the reuse package, and make it available publicly in the NPM registry within GitHub Packages.&lt;/p&gt;
+&lt;p&gt;Thanks for reading!&lt;/p&gt;
+&lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;schema.cds&lt;/code&gt; is also &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/02/why-i-use-services-cds-in-simple-cds-model-examples/&quot;&gt;one of the CDS roots&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;And &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/#active-vs-passive&quot;&gt;passive, rather than active&lt;/a&gt; - more on that another time.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;In fact, for a package to be hosted in the NPM registry within GitHub Packages, the scope inevitably is required and comes from the corresponding user or org name on GitHub. My user name on GitHub is &lt;code&gt;qmacro&lt;/code&gt;. See &lt;a href=&quot;https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry&quot;&gt;Working with the npm registry&lt;/a&gt; for more details on this relationship.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;If you&#39;re using the SAP Business Application Studio, or VS Code with the &lt;a href=&quot;https://marketplace.visualstudio.com/items?itemName=SAPSE.vscode-cds&quot;&gt;SAP CDS Language Support&lt;/a&gt; extension, you&#39;ll have this already; if you want to set up Neovim to use the language server, see &lt;a href=&quot;https://qmacro.org/blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node-js-configuration-and-diagnostics/&quot;&gt;A modern and clean Neovim setup for CAP Node.js - configuration and diagnostics&lt;/a&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+  </entry>
   <entry>
     <title>Why I use services.cds in simple CDS model examples</title>
     <link href="https://qmacro.org/blog/posts/2026/01/02/why-i-use-services-cds-in-simple-cds-model-examples/" />
@@ -250,7 +706,7 @@ put some alliteration into the title of this post :)&lt;/li&gt;
     <id>https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models/</id>
     <content type="html">&lt;ul&gt;
 &lt;li&gt;01 Jan 2026 Part 1 &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/&quot;&gt;An introduction&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;07 Jan 2026 Part 2 Creating a simple reuse package&lt;/li&gt;
+&lt;li&gt;07 Jan 2026 Part 2 &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/&quot;&gt;Creating a simple reuse package&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;14 Jan 2026 Part 3 Publishing the simple reuse package&lt;/li&gt;
 &lt;li&gt;21 Jan 2026 Part 4 ...&lt;/li&gt;
 &lt;/ul&gt;
@@ -1146,74 +1602,6 @@ found &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt; vulnerabilities&
 &lt;p&gt;just to keep things a little more compact.&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-</content>
-  </entry>
-  <entry>
-    <title>Using @capire modules from GitHub Packages</title>
-    <link href="https://qmacro.org/blog/posts/2025/10/12/using-capire-modules-from-github-packages/" />
-    <updated>2025-10-12T00:00:00Z</updated>
-    <id>https://qmacro.org/blog/posts/2025/10/12/using-capire-modules-from-github-packages/</id>
-    <content type="html">&lt;h2 id=&quot;background&quot;&gt;Background&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&quot;https://cap.cloud.sap/docs/releases/aug25&quot;&gt;Recently&lt;/a&gt; the home for Capire documentation and sample repositories moved into the &lt;a href=&quot;https://github.com/capire&quot;&gt;capire&lt;/a&gt; organisation on GitHub. This content includes classic modules such as &lt;a href=&quot;https://github.com/capire/bookshop&quot;&gt;bookshop&lt;/a&gt; which are now maintained as individual repositories, are subject to release schedules and deployments, and are made available as &lt;a href=&quot;https://github.com/orgs/capire/packages&quot;&gt;packages&lt;/a&gt; that are available in the NPM registry which is part of &lt;a href=&quot;https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages&quot;&gt;GitHub Packages&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;Retrieving (e.g. via &lt;code&gt;npm install&lt;/code&gt; or &lt;code&gt;npm add&lt;/code&gt;) a package such as &lt;code&gt;@sap/cds-dk&lt;/code&gt; is straightforward as such packages &lt;a href=&quot;https://www.npmjs.com/package/@sap/cds-dk&quot;&gt;are available&lt;/a&gt; in the default NPM registry at &lt;a href=&quot;https://registry.npmjs.org&quot;&gt;https://registry.npmjs.org&lt;/a&gt; (with a human centric UI at &lt;a href=&quot;https://npmjs.com&quot;&gt;https://npmjs.com&lt;/a&gt;).&lt;/p&gt;
-&lt;h2 id=&quot;namespace-registry-mapping-required&quot;&gt;Namespace registry mapping required&lt;/h2&gt;
-&lt;p&gt;Retrieving packages from any other registry (such as package &lt;code&gt;@capire/bookshop&lt;/code&gt; in the NPM registry that is part of GitHub Packages) requires a mapping, typically by package namespace.&lt;/p&gt;
-&lt;p&gt;This is done by configuration in an &lt;code&gt;.npmrc&lt;/code&gt; file in your home directory. The mapping here (for the &lt;code&gt;@capire&lt;/code&gt; namespaced packages) needs to look like this in that file:&lt;/p&gt;
-&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;@capire:registry=https://npm.pkg.github.com&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Without this mapping, here&#39;s what happens:&lt;/p&gt;
-&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;;&lt;/span&gt; npm add &lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;capire&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;bookshop&lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;2.0.4&lt;/span&gt;
-npm error code E404
-npm error &lt;span class=&quot;token number&quot;&gt;404&lt;/span&gt; Not Found &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; GET &lt;span class=&quot;token url&quot;&gt;https://registry.npmjs.org/@capire%2fbookshop&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; Not found
-npm error &lt;span class=&quot;token number&quot;&gt;404&lt;/span&gt;
-npm error &lt;span class=&quot;token number&quot;&gt;404&lt;/span&gt;  &lt;span class=&quot;token string&quot;&gt;&#39;@capire/bookshop@2.0.4&#39;&lt;/span&gt; is not in this registry&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
-npm error &lt;span class=&quot;token number&quot;&gt;404&lt;/span&gt;
-npm error &lt;span class=&quot;token number&quot;&gt;404&lt;/span&gt; Note that you can also install from a
-npm error &lt;span class=&quot;token number&quot;&gt;404&lt;/span&gt; tarball&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; folder&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; http url&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; or git url&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;With the mapping above in the &lt;code&gt;.npmrc&lt;/code&gt; file, here&#39;s what happens:&lt;/p&gt;
-&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;;&lt;/span&gt; npm add &lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;capire&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;bookshop&lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;2.0.4&lt;/span&gt;
-npm error code E401
-npm error &lt;span class=&quot;token number&quot;&gt;401&lt;/span&gt; Unauthorized
-  &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; GET &lt;span class=&quot;token url&quot;&gt;https://npm.pkg.github.com/@capire%2fbookshop&lt;/span&gt;
-  &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; authentication token not provided&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&quot;authentication-information-required&quot;&gt;Authentication information required&lt;/h2&gt;
-&lt;p&gt;In order to &lt;a href=&quot;https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry&quot;&gt;work with GitHub Packages&#39; NPM registry&lt;/a&gt; ...&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&amp;quot;... you need an access token to publish, install, and delete private, internal, and public packages.&amp;quot;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Yes, even for read operations such as &lt;code&gt;install&lt;/code&gt; and &lt;code&gt;add&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;The &lt;a href=&quot;https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#authenticating-with-a-personal-access-token&quot;&gt;Authenticating with a personal access token&lt;/a&gt; describes the procedure, which basically has two steps.&lt;/p&gt;
-&lt;h3 id=&quot;generate-a-token&quot;&gt;Generate a token&lt;/h3&gt;
-&lt;p&gt;In the &lt;a href=&quot;https://github.com/settings/tokens&quot;&gt;Tokens (classic) section of your GitHub developer settings&lt;/a&gt;, generate a new &amp;quot;Personal Access Token (classic)&amp;quot; like this, selecting the &lt;code&gt;read:packages&lt;/code&gt; scope:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2025/10/personal-access-token-classic-read-packages.png&quot; alt=&quot;generating a personal access token (classic) with read:packages scope&quot;&gt;&lt;/p&gt;
-&lt;h3 id=&quot;associate-the-token-with-the-registry&quot;&gt;Associate the token with the registry&lt;/h3&gt;
-&lt;p&gt;This token now needs to be associated with the registry, by adding another line to the &lt;code&gt;.npmrc&lt;/code&gt; file that looks like this:&lt;/p&gt;
-&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;//npm.pkg.github.com/:_authToken=THE-TOKEN-JUST-GENERATED&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&quot;installing-a-package&quot;&gt;Installing a package&lt;/h2&gt;
-&lt;p&gt;Once this is done, &lt;code&gt;npm install&lt;/code&gt; or &lt;code&gt;npm add&lt;/code&gt; will complete successfully:&lt;/p&gt;
-&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;npm&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;add&lt;/span&gt; @capire/bookshop@2.0.4
-
-added &lt;span class=&quot;token number&quot;&gt;115&lt;/span&gt; packages, and audited &lt;span class=&quot;token number&quot;&gt;116&lt;/span&gt; packages &lt;span class=&quot;token keyword&quot;&gt;in&lt;/span&gt; 6s
-
-&lt;span class=&quot;token number&quot;&gt;23&lt;/span&gt; packages are looking &lt;span class=&quot;token keyword&quot;&gt;for&lt;/span&gt; funding
-  run &lt;span class=&quot;token variable&quot;&gt;&lt;span class=&quot;token variable&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;npm&lt;/span&gt; fund&lt;span class=&quot;token variable&quot;&gt;`&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;for&lt;/span&gt; details
-
-found &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt; vulnerabilities&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The package appears in the appropriate dependencies section of &lt;code&gt;package.json&lt;/code&gt; as usual:&lt;/p&gt;
-&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;test&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;dependencies&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token property&quot;&gt;&quot;@capire/bookshop&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;^2.0.4&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;token property&quot;&gt;&quot;@sap/cds&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;^9&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;token property&quot;&gt;&quot;express&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;^4&quot;&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;devDependencies&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token property&quot;&gt;&quot;@cap-js/sqlite&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;^2&quot;&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;scripts&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token property&quot;&gt;&quot;start&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;cds-serve&quot;&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Success!&lt;/p&gt;
 </content>
   </entry>
 </feed>

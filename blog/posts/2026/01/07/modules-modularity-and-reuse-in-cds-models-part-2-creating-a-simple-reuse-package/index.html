@@ -1,0 +1,1029 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Modules, modularity &amp; reuse in CDS models - part 2 - creating a simple reuse package</title>
+		<meta name="description" content="Following on from part 1 in this series, I take a step back and look at the fundamentals of creating and working with a module, locally in this part, using the NPM workspace concept.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="Modules, modularity &amp; reuse in CDS models - part 2 - creating a simple reuse package">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="Following on from part 1 in this series, I take a step back and look at the fundamentals of creating and working with a module, locally in this part, using the NPM workspace concept.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-all;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package">Modules, modularity &amp; reuse in CDS models - part 2 - creating a simple reuse package</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2026-01-07">07 January 2026</time></li>
+	<li><a href="/tags/cds/" class="post-tag">cds</a>, </li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/npm/" class="post-tag">npm</a>, </li>
+	<li><a href="/tags/reuse/" class="post-tag">reuse</a>, </li>
+	<li><a href="/tags/modularity/" class="post-tag">modularity</a></li>
+</ul>
+
+<p class="post-description-main">Following on from part 1 in this series, I take a step back and look at the fundamentals of creating and working with a module, locally in this part, using the NPM workspace concept.</p>
+
+<p>In <a href="/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/#wrapping-up">wrapping up the end of part
+1</a>
+we looked forward to creating the simplest kind of reuse module, not only as an
+important fundamental building block but as a base for further understanding
+and exploration (especially when we start looking closer at
+<a href="https://github.com/capire/common">capire/common</a>).</p>
+<p>What we'll do in this post is:</p>
+<ul>
+<li>create a simple CAP Node.js project with a basic CDS model</li>
+<li>extend it by defining a custom type in a separate file, and using that type</li>
+<li>make that custom type definition reusable by creating an NPM package and putting it there instead</li>
+</ul>
+<p>Following best practice <a href="https://github.com/qmacro/capref/blob/main/bestpractices/BES002.md">BES002 Think
+local-first</a>
+we'll create and build out that NPM package locally, for the ultimate in
+development iteration and <a href="https://cap.cloud.sap/docs/about/#fast-inner-loops">fast inner
+loops</a>.</p>
+<h2 id="creating-a-simple-cap-node-js-project">Creating a simple CAP Node.js project</h2>
+<p>For simplicity's sake, and to highlight the even more basic alternative
+approach (to using <code>cds init</code>) to create a new CAP Node.js project, we'll use
+the NPM command line tool <code>npm</code> as demonstrated by Daniel Schlachter in our <a href="https://youtu.be/fUYNjuQbLzQ?si=7GyAUdnrAsUaTmlF&amp;t=354">Expert
+Session: Getting started with CAP Node.js - 2025/2026
+edition!</a>. After all,
+this post is ultimately all about Node.js packages.</p>
+<p><a href="https://youtu.be/fUYNjuQbLzQ?si=7GyAUdnrAsUaTmlF&amp;t=354"><img src="/images/2026/01/daniel-schlachter-from-scratch.png" alt="Daniel uses npm init -y to start a new CAP Node.js project from
+scratch"></a></p>
+<p>Here goes:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">mkdir</span> myproj <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> <span class="token variable">$_</span> <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> <span class="token function">npm</span> init <span class="token parameter variable">-y</span> <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> <span class="token function">npm</span> <span class="token function">add</span> @sap/cds express <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> <span class="token function">npm</span> <span class="token function">add</span> --save-dev @cap-js/sqlite</code></pre>
+<p>This creates everything we need for starting to develop a CAP Node.js project.
+Firing things up with <code>cds watch</code> gives us:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">cds serve all <span class="token operator">-</span><span class="token operator">-</span>with<span class="token operator">-</span>mocks <span class="token operator">-</span><span class="token operator">-</span>in<span class="token operator">-</span>memory<span class="token operator">?</span>
+<span class="token operator">(</span> live reload enabled for browsers <span class="token operator">)</span>
+        ___________________________
+
+    No models found in db<span class="token operator">/</span><span class="token punctuation">,</span>srv<span class="token operator">/</span><span class="token punctuation">,</span>app<span class="token operator">/</span><span class="token punctuation">,</span>app<span class="token operator">/</span><span class="token operator">*</span><span class="token punctuation">,</span>schema<span class="token punctuation">,</span>services<span class="token punctuation">.</span>
+    Waiting for some to arrive<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+</code></pre>
+<blockquote>
+<p>All subsequent command line invocations in this post are from the same
+location as this, i.e. at the project root, in <code>myproj/</code>.</p>
+</blockquote>
+<h2 id="adding-a-simple-cds-model">Adding a simple CDS model</h2>
+<p>To keep things as simple as possible and not distract us from the goal, let's
+define the CDS model in <code>services.cds</code> as something minimal:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token keyword">context</span> schema {
+  <span class="token keyword">entity</span> E {
+    <span class="token cqlkeywords keyword">key</span> ID : <span class="token type builtin">Integer</span>;
+        e  : <span class="token type builtin">String</span>;
+  }
+}
+
+<span class="token keyword">service</span> S {
+  <span class="token keyword">entity</span> E <span class="token cqlkeywords keyword">as</span> <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> schema.E;
+}</code></pre>
+<p>For those wondering about the starkness, here are a few notes:</p>
+<ul>
+<li>
+<p>In minimal scenarios like this, I like to have everything in one file, and my
+choice of <code>services.cds</code> is explained in <a href="/blog/posts/2026/01/02/why-i-use-services-cds-in-simple-cds-model-examples/">Why I use services.cds in simple
+CDS model
+examples</a></p>
+</li>
+<li>
+<p>Because everything is in one file, I can either define an entity directly
+within a service, &quot;in-flight&quot; as it were, like this:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token keyword">service</span> Bookshop {
+  <span class="token keyword">entity</span> Books {
+    <span class="token cqlkeywords keyword">key</span> ID    : <span class="token type builtin">Integer</span>;
+        title : <span class="token type builtin">String</span>;
+        stock : <span class="token type builtin">Integer</span>;
+  }
+}</code></pre>
+<p>(this is from my <code>cdsnano</code>
+<a href="https://github.com/qmacro/dotfiles/blob/main/scripts/cdsnano-template/services.cds">template</a>)</p>
+<p>but I have come to
+<a href="https://github.com/qmacro/dotfiles/blob/main/scripts/cdspico">prefer</a> using
+the <a href="https://cap.cloud.sap/docs/cds/cdl#context">context</a> directive; that
+way, I can make use of
+<a href="https://cap.cloud.sap/docs/cds/cdl#views-projections">projections</a> as the
+projection target is in a separate namespace (scope).</p>
+</li>
+<li>
+<p>Even simpler than the Bookshop or Northwind theme, I am using single letters,
+while still following the <a href="https://cap.cloud.sap/docs/guides/domain-modeling#naming-conventions">naming convention
+rules</a>
+on capitalisation:</p>
+<ul>
+<li>entity <code>E</code></li>
+<li>element <code>e</code></li>
+<li>service <code>S</code></li>
+</ul>
+<p>I chose <code>schema</code> as the namespace, mostly because it reminds me of the name
+of the first file I usually create in a <code>db/</code> directory when modelling:
+<code>schema.cds</code><a href="#footnotes"><sup>1</sup></a></p>
+</li>
+</ul>
+<p>With the definitions in <code>services.cds</code>, we're up and running with a full
+service (some log lines omitted for brevity):</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loaded model from <span class="token number">2</span> file<span class="token operator">(</span>s<span class="token operator">)</span><span class="token operator">:</span>
+
+  <span class="token domain constant">services.cds</span>
+  node_modules<span class="token operator">/</span><span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">/</span>srv<span class="token operator">/</span>outbox<span class="token punctuation">.</span>cds
+
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> serving S <span class="token operator">{</span>
+  <span class="token property">at:</span> <span class="token punctuation">[</span> <span class="token string">'/odata/v4/s'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">decl:</span> <span class="token string">'services.cds:8'</span><span class="token punctuation">,</span>
+  <span class="token property">impl:</span> <span class="token string">'node_modules/@sap/cds/srv/app-service.js'</span>
+<span class="token operator">}</span>
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> server listening on <span class="token operator">{</span> url<span class="token operator">:</span> <span class="token string">'http://localhost:4004'</span> <span class="token operator">}</span></code></pre>
+<p>Now let's start to extend that model a little.</p>
+<h2 id="extending-with-a-separate-file-in-the-project">Extending with a separate file in the project</h2>
+<p>For the sake of illustration, let's say we have a custom type that we want to
+use in this model. We can take the smallest first step in the direction of a
+couple of best practices:</p>
+<ul>
+<li><a href="https://github.com/qmacro/capref/blob/main/bestpractices/BES005.md">BES005 Factor out separate
+concerns</a></li>
+<li><a href="https://github.com/qmacro/capref/blob/main/bestpractices/BES006.md">BES006 Compose with reuse in
+mind</a></li>
+</ul>
+<p>by factoring that type out into a separate file, and then importing it into our
+main model file <code>services.cds</code> with the <code>using</code> directive.</p>
+<h3 id="a-simple-type-t">A simple type T</h3>
+<p>In a new file <code>base.cds</code>, also at the project root alongside <code>services.cds</code>,
+let's define the type:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token cqlkeywords keyword">type</span> T : <span class="token type builtin">Boolean</span>;</code></pre>
+<p>And in <code>services.cds</code> let's use that to redefine the element <code>e</code>:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> T <span class="token from keyword">from</span> './base';
+
+<span class="token keyword">context</span> schema {
+  <span class="token keyword">entity</span> E {
+    <span class="token cqlkeywords keyword">key</span> ID : <span class="token type builtin">Integer</span>;
+        e  : T;
+  }
+}
+
+<span class="token keyword">service</span> S {
+  <span class="token keyword">entity</span> E <span class="token cqlkeywords keyword">as</span> <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> schema.E;
+}</code></pre>
+<p>So far so good.</p>
+<h3 id="namespaces-are-a-good-idea">Namespaces are a good idea</h3>
+<p>But that simple name <code>T</code> makes me a little nervous in that it's unscoped, i.e.
+at the equivalent of the global level, and this sort of practice is asking for
+trouble down the line with name clashes. So let's put this definition for <code>T</code>
+into a scope with the <code>namespace</code> directive; that way, we can more readily
+reuse and share it.</p>
+<p>In <code>base.cds</code>:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token keyword">namespace</span> qmacro.common;
+
+<span class="token cqlkeywords keyword">type</span> T : <span class="token type builtin">Boolean</span>;</code></pre>
+<p>In <code>services.cds</code>:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> qmacro.common.T <span class="token from keyword">from</span> './base';
+
+<span class="token keyword">context</span> schema {
+  <span class="token keyword">entity</span> E {
+    <span class="token cqlkeywords keyword">key</span> ID : <span class="token type builtin">Integer</span>;
+        e  : T;
+  }
+}
+
+<span class="token keyword">service</span> S {
+  <span class="token keyword">entity</span> E <span class="token cqlkeywords keyword">as</span> <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> schema.E;
+}</code></pre>
+<p>That's better!</p>
+<p>Everything works well, and I can add to the <code>base.cds</code> file and use the
+definitions therein as I build out the rest of the CDS model for the current
+project.</p>
+<p>But one thing I cannot do is easily reuse those definitions in other projects.</p>
+<h2 id="extending-via-an-npm-package">Extending via an NPM package</h2>
+<p>To remedy this, I can transfer what I have in <code>base.cds</code> to a new NPM package,
+and use that. That way, I not only get to reuse the definitions in the current
+project but I can also:</p>
+<ul>
+<li>maintain it independently, in its own lifecycle</li>
+<li>use it in other projects I'm working on</li>
+<li>make it available for others to use in their projects</li>
+</ul>
+<p>Just like <a href="https://github.com/capire/common">capire/common</a>, in fact! But much,
+much simpler<a href="#footnotes"><sup>2</sup></a>.</p>
+<h3 id="creating-the-package-locally">Creating the package locally</h3>
+<p>Best practice <a href="https://github.com/qmacro/capref/blob/main/bestpractices/BES002.md">BES002 Think
+local-first</a>
+exhorts us to take a local-first approach to development. That goes not only
+for CAP components, but in general. And with NPM's
+<a href="https://docs.npmjs.com/cli/v11/using-npm/workspaces">workspaces</a> concept, we
+can follow this best practice in building out our reuse package too.</p>
+<blockquote>
+<p>See the <a href="https://qmacro.org/blog/posts/2025/02/14/tasc-notes-part-8/#local-development-submodules-and-workspaces">Local development, submodules and
+workspaces</a>
+section of the notes accompanying part 8 of <a href="https://qmacro.org/blog/posts/2024/12/06/the-art-and-science-of-cap/">The Art and Science of
+CAP</a>
+for more on this.</p>
+</blockquote>
+<h4 id="deciding-on-a-scope-and-a-name">Deciding on a scope and a name</h4>
+<p>Like the namespace we added to the definition in <code>base.cds</code>
+<a href="#namespaces-are-a-good-idea">earlier</a>, it's also a good idea to think about a
+scope for the package (in the same way that
+<a href="https://www.npmjs.com/search?q=%40sap">@sap</a>,
+<a href="https://www.npmjs.com/search?q=%40cap-js">@cap-js</a> and
+<a href="https://github.com/orgs/capire/packages">@capire</a> exist). It would make sense
+to eventually publish it, and GitHub Packages' NPM registry seems a good
+bet.</p>
+<p>So let's go for <code>qmacro</code> as the scope, and <code>common</code> as the package name<a href="#footnotes"><sup>3</sup></a>.</p>
+<h4 id="setting-up-and-examining-the-workspace-constructs">Setting up and examining the workspace constructs</h4>
+<p>Previously, in the <a href="https://qmacro.org/blog/posts/2024/12/30/cap-node-js-plugins/">CAP Node.js
+Plugins</a> mini
+series, we set up a workspace in the <a href="https://qmacro.org/blog/posts/2024/10/05/cap-node-js-plugins-part-1-how-things-work/#creating-our-own-plugin-package">Creating our own plugin
+package</a>
+section of part 1. We'll take a similar approach now, taking care to specify
+our chosen scope this time:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">npm</span> init <span class="token punctuation">\</span>
+  <span class="token parameter variable">--yes</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--workspace</span> packages/@qmacro/common <span class="token punctuation">\</span>
+  <span class="token parameter variable">--scope</span> @qmacro</code></pre>
+<p>Running this command does quite a few things. Let's look at (a cut down version
+of) the project's structure as a result of this:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">.</span><span class="token operator">/</span>
+├── node_modules<span class="token operator">/</span>
+│   ├── <span class="token operator">@</span>cap<span class="token operator">-</span>js<span class="token operator">/</span>
+│   │   └── <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+│   ├── <span class="token operator">@</span>qmacro<span class="token operator">/</span>
+│   │   └── common <span class="token operator">-</span><span class="token operator">></span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token operator">/</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token operator">/</span>packages<span class="token operator">/</span><span class="token operator">@</span>qmacro<span class="token operator">/</span>common<span class="token operator">/</span> <span class="token operator">-</span><span class="token operator">-</span><span class="token operator">+</span>
+│   ├── <span class="token operator">@</span>sap<span class="token operator">/</span>                                          <span class="token operator">|</span>
+│   │       └── <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>                                    <span class="token operator">|</span>
+├── <span class="token domain constant">package-lock.json</span>                                  <span class="token operator">|</span>
+├── <span class="token domain constant">package.json</span>                                       <span class="token operator">|</span>
+├── packages<span class="token operator">/</span>      <span class="token operator">&lt;</span><span class="token separator comment">-----------------------------------</span><span class="token operator">+</span>
+│   └── <span class="token operator">@</span>qmacro<span class="token operator">/</span>
+│       └── common<span class="token operator">/</span>
+│           └── <span class="token domain constant">package.json</span>
+├── <span class="token domain constant">base.cds</span>
+└── <span class="token domain constant">services.cds</span></code></pre>
+<p>What can we see? Well:</p>
+<ul>
+<li>
+<p>There's a new <code>packages/</code> directory in the project root; the name that we
+chose (via the value for the <code>--workspace</code> option) makes sense, given it's a
+container for the NPM package we're going to create</p>
+</li>
+<li>
+<p>That NPM package is represented locally within this new <code>packages/</code>
+directory, and currently contains just a simple <code>package.json</code> file with
+defaults (as we used <code>--yes</code> to skip the package initialisation
+questionnaire):</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"@qmacro/common"</span><span class="token punctuation">,</span>
+  <span class="token property">"version"</span><span class="token operator">:</span> <span class="token string">"1.0.0"</span><span class="token punctuation">,</span>
+  <span class="token property">"main"</span><span class="token operator">:</span> <span class="token string">"index.js"</span><span class="token punctuation">,</span>
+  <span class="token property">"devDependencies"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"scripts"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"test"</span><span class="token operator">:</span> <span class="token string">"echo \"Error: no test specified\" &amp;&amp; exit 1"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"keywords"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">"author"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token property">"license"</span><span class="token operator">:</span> <span class="token string">"ISC"</span><span class="token punctuation">,</span>
+  <span class="token property">"description"</span><span class="token operator">:</span> <span class="token string">""</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li>
+<p>Because of the <code>--scoped @qmacro</code> option, this is a scoped package</p>
+</li>
+</ul>
+<p>Additionally:</p>
+<ul>
+<li>Within the standard NPM package location for the project, i.e. the
+<code>node_modules/</code> directory, there's a new path <code>@qmacro/common</code> that has been
+created as a symbolic link to the NPM package within <code>packages/</code>, as
+illustrated by the arrow; this means that we can work on developing the
+package locally within <code>packages/@qmacro/common/</code> and use it immediately in
+the context of our project.</li>
+</ul>
+<p>And if we look inside the project's <code>package.json</code> file, we'll see:</p>
+<ul>
+<li>
+<p>there's a new top level <code>workspaces</code> property which has a reference to this
+local NPM package directory:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"myproj"</span><span class="token punctuation">,</span>
+  <span class="token property">"..."</span><span class="token operator">:</span> <span class="token string">"..."</span><span class="token punctuation">,</span>
+  <span class="token property">"workspaces"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token string">"packages/@qmacro/common"</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<p>This is a key component in the mechanism that allows a simplified use of
+locally existing NPM packages within a project, <a href="https://www.clivebanks.co.uk/THHGTTG/THHGTTGradio2.htm#:~:text=The%20Infinite%20Improbability%20Drive%20is%20a%20wonderful%20new%20method%20of%20crossing%20interstellar%20distances%20in%20a%20few%20seconds%2C%20without%20all%20that%20tedious%20mucking%20about%20in%20hyperspace">without all that tedious
+mucking about
+with</a>
+<code>npm link</code>.</p>
+</li>
+</ul>
+<h4 id="adding-the-package-as-a-project-dependency">Adding the package as a project dependency</h4>
+<p>There's one more thing we should do now, but let's <a href="#adding-the-package-as-a-dependency">defer it to the end of
+this post</a>, which will allow me to
+illustrate some local behaviours.</p>
+<h3 id="transferring-the-type-definition">Transferring the type definition</h3>
+<p>Now that we have the NPM package, let's move the contents of <code>base.cds</code> to it,
+and also make a corresponding modification to the reference to it.</p>
+<h4 id="moving-the-definition">Moving the definition</h4>
+<p>The simplest first step is to move <code>base.cds</code> from where it is in the project
+root to the root of the <code>@qmacro/common</code> package, i.e. to
+<code>packages/@qmacro/common/</code>:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">mv</span> base.cds packages/@qmacro/common/</code></pre>
+<p>At this point, the structure for our project and our new local package looks
+like this (the <code>node_modules/</code> directory content has been omitted here for
+brevity):</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">.</span><span class="token operator">/</span>
+├── <span class="token domain constant">package-lock.json</span>
+├── <span class="token domain constant">package.json</span>
+├── packages<span class="token operator">/</span>
+│   └── <span class="token operator">@</span>qmacro<span class="token operator">/</span>
+│       └── common<span class="token operator">/</span>
+│           ├── <span class="token domain constant">base.cds</span>
+│           └── <span class="token domain constant">package.json</span>
+└── <span class="token domain constant">services.cds</span></code></pre>
+<h4 id="changing-the-using-directive">Changing the using directive</h4>
+<p>Next up we should modify the reference in <code>services.cds</code>. Instead of loading
+<code>qmacro.common.T</code> from <code>./base</code>, i.e. the <code>base.cds</code> file that was in the
+project root, we'll want to load it from the <code>@qmacro/common</code> package. This is
+what we need to change <code>services.cds</code> to (just the <code>using</code> line has changed
+here):</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> qmacro.common.T <span class="token from keyword">from</span> '@qmacro/common';
+
+<span class="token keyword">context</span> schema {
+  <span class="token keyword">entity</span> E {
+    <span class="token cqlkeywords keyword">key</span> ID : <span class="token type builtin">Integer</span>;
+        e  : T;
+  }
+}
+
+<span class="token keyword">service</span> S {
+  <span class="token keyword">entity</span> E <span class="token cqlkeywords keyword">as</span> <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> schema.E;
+}</code></pre>
+<h4 id="understanding-model-resolution">Understanding model resolution</h4>
+<p>At this point, if you're using a decent editor with LSP support connected to an
+instance of the CDS language server<a href="#footnotes"><sup>4</sup></a>, you'll likely
+see a diagnostics error:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">Can't find package module <span class="token string">'@qmacro/common'</span> <span class="token punctuation">[</span>file<span class="token operator">-</span>unknown<span class="token operator">-</span>package<span class="token punctuation">]</span></code></pre>
+<p>You can also elicit this error report by simply attempting to compile the
+contents of <code>services.cds</code> to CSN, like this, for example:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">cds compile services.cds</code></pre>
+<p>This error occurs <em>not</em> because the local setup of the NPM package is somehow
+not right. It's because of the way <a href="https://cap.cloud.sap/docs/cds/cdl#model-resolution">model
+resolution</a> works:</p>
+<blockquote>
+<p><em>Resolving module references: Names starting with neither <code>.</code> nor <code>/</code> such as
+<code>@sap/cds/common</code> are fetched for in <code>node_modules</code> folders:</em></p>
+<ul>
+<li><em>Files having <code>.cds</code>, <code>.csn</code>, or <code>.json</code> as suffixes, appended in order</em></li>
+<li><em>Folders, from either the file set in <code>cds.main</code> in the folder's
+<code>package.json</code> or <code>index.&lt;cds|csn|json&gt;</code> file.</em></li>
+</ul>
+</blockquote>
+<p>In other words, we either need to use an &quot;index&quot; file, or add configuration to
+the NPM package's <code>package.json</code> file to point to the actual file in there,
+i.e. <code>base.cds</code>; that <code>cds.main</code> configuration in <code>package.json</code> would look
+like this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"@qmacro/common"</span><span class="token punctuation">,</span>
+  <span class="token property">"version"</span><span class="token operator">:</span> <span class="token string">"1.0.0"</span><span class="token punctuation">,</span>
+  <span class="token property">"main"</span><span class="token operator">:</span> <span class="token string">"index.js"</span><span class="token punctuation">,</span>
+  <span class="token property">"devDependencies"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"scripts"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"test"</span><span class="token operator">:</span> <span class="token string">"echo \"Error: no test specified\" &amp;&amp; exit 1"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"keywords"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">"author"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token property">"license"</span><span class="token operator">:</span> <span class="token string">"ISC"</span><span class="token punctuation">,</span>
+  <span class="token property">"description"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token property">"cds"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"main"</span><span class="token operator">:</span> <span class="token string">"base"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>With this in place, the reference in</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> qmacro.common.T <span class="token from keyword">from</span> '@qmacro/common';</code></pre>
+<p>works fine and the error goes away.</p>
+<p>However, while it works, adding explicit configuration like this goes against
+axiom <a href="https://github.com/qmacro/capref/blob/main/axioms/AXI003.md">AX003 Convention over
+configuration</a>. So
+let's not do that.</p>
+<p>Moreover, it's actually good practice to use an &quot;index&quot; file (in the form of
+<code>index.cds</code>) as the entry point for reuse packages such as this one that we're
+creating - see <a href="https://github.com/qmacro/capref/blob/main/bestpractices/BES007.md">BES007 Provide public entry points to reuse
+packages</a>.</p>
+<h4 id="creating-the-index-entry-point">Creating the index entry point</h4>
+<p>So let's avoid any explicit <code>cds.main</code> configuration, and create an <code>index.cds</code>
+file in the package root. The simplest thing would be to rename <code>base.cds</code>, so
+that's what we'll do:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">mv</span> packages/@qmacro/common/base.cds packages/@qmacro/common/index.cds</code></pre>
+<p>Nice!</p>
+<h3 id="adding-the-package-as-a-dependency">Adding the package as a dependency</h3>
+<p>There's one more thing we need to do, <a href="#adding-the-package-as-a-project-dependency">something which we deliberately deferred
+until now</a>, which is to add the
+<code>@qmacro/common</code> reuse package as a project dependency.</p>
+<p>Yes, everything works as we expect right now, but that's down to the NPM
+workspace concept. We have our project, and the workspace-hosted reuse package,
+which is accessible from the project. But what happens when we deploy that
+project elsewhere? The workspace-based development is just that - for
+development. So we need to ensure that our reuse package is brought in when
+setting up the project elsewhere.</p>
+<p>Invoking:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">npm</span> <span class="token function">add</span> @qmacro/common</code></pre>
+<p>is all we need to do.</p>
+<p>This adds a reference to the package in the project's <code>dependencies</code> property:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"myproj"</span><span class="token punctuation">,</span>
+  <span class="token property">"version"</span><span class="token operator">:</span> <span class="token string">"1.0.0"</span><span class="token punctuation">,</span>
+  <span class="token property">"main"</span><span class="token operator">:</span> <span class="token string">"index.js"</span><span class="token punctuation">,</span>
+  <span class="token property">"scripts"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"test"</span><span class="token operator">:</span> <span class="token string">"echo \"Error: no test specified\" &amp;&amp; exit 1"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"keywords"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">"author"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token property">"license"</span><span class="token operator">:</span> <span class="token string">"ISC"</span><span class="token punctuation">,</span>
+  <span class="token property">"description"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token property">"dependencies"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"@qmacro/common"</span><span class="token operator">:</span> <span class="token string">"^1.0.0"</span><span class="token punctuation">,</span>
+    <span class="token property">"@sap/cds"</span><span class="token operator">:</span> <span class="token string">"^9.6.1"</span><span class="token punctuation">,</span>
+    <span class="token property">"express"</span><span class="token operator">:</span> <span class="token string">"^4.22.1"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"devDependencies"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"@cap-js/sqlite"</span><span class="token operator">:</span> <span class="token string">"^2.1.2"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"workspaces"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token string">"packages/@qmacro/common"</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>At this point, we're all set, and we can continue to build out our project, and our reuse package, locally.</p>
+<p>In the next part we'll move beyond local development for the reuse package, and make it available publicly in the NPM registry within GitHub Packages.</p>
+<p>Thanks for reading!</p>
+<h2 id="footnotes">Footnotes</h2>
+<ol>
+<li>
+<p><code>schema.cds</code> is also <a href="/blog/posts/2026/01/02/why-i-use-services-cds-in-simple-cds-model-examples/">one of the CDS roots</a></p>
+</li>
+<li>
+<p>And <a href="/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/#active-vs-passive">passive, rather than active</a> - more on that another time.</p>
+</li>
+<li>
+<p>In fact, for a package to be hosted in the NPM registry within GitHub Packages, the scope inevitably is required and comes from the corresponding user or org name on GitHub. My user name on GitHub is <code>qmacro</code>. See <a href="https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry">Working with the npm registry</a> for more details on this relationship.</p>
+</li>
+<li>
+<p>If you're using the SAP Business Application Studio, or VS Code with the <a href="https://marketplace.visualstudio.com/items?itemName=SAPSE.vscode-cds">SAP CDS Language Support</a> extension, you'll have this already; if you want to set up Neovim to use the language server, see <a href="/blog/posts/2025/06/10/a-modern-and-clean-neovim-setup-for-cap-node-js-configuration-and-diagnostics/">A modern and clean Neovim setup for CAP Node.js - configuration and diagnostics</a>.</p>
+</li>
+</ol>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2026/01/02/why-i-use-services-cds-in-simple-cds-model-examples/">Why I use services.cds in simple CDS model examples</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/` was built on 2026-01-07T07:10:38.865Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
