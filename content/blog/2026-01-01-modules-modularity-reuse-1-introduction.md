@@ -194,6 +194,9 @@ but also how to then add it to the NPM registry on GitHub Packages.
 
 Until next time, happy reuse!
 
+Next in this series: [Creating a simple reuse
+package](/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/).
+
 ## Footnotes
 
 1. The terms "package" and "module", in the context of NPM, can be used
