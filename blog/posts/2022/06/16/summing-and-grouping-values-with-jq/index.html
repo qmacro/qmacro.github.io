@@ -4,14 +4,14 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Summing and grouping values with jq</title>
-		<meta name="description" content="Reserving the right to be wrong.">
+		<meta name="description" content="Here&#39;s yet another note-to-self on using jq, this time to transform a flat list of order totals and dates into a summary of total order values by year.">
 		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
 		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 
       <meta property="og:title" content="Summing and grouping values with jq">
         <meta property="og:site_name" content="DJ Adams">
           <meta property="og:image" content="/images/site-image.png">
-        <meta property="og:description" content="Reserving the right to be wrong.">
+        <meta property="og:description" content="Here&#39;s yet another note-to-self on using jq, this time to transform a flat list of order totals and dates into a summary of total order values by year.">
         <meta property="og:url" content="https://qmacro.org/blog/posts/2022/06/16/summing-and-grouping-values-with-jq/">
 		
 		
@@ -555,17 +555,38 @@ pre[class*="language-diff-"] {
 <ul class="post-metadata">
 	<li><time datetime="2022-06-16">16 June 2022</time></li>
 	<li><a href="/tags/jq/" class="post-tag">jq</a>, </li>
+	<li><a href="/tags/pipe/" class="post-tag">pipe</a>, </li>
 	<li><a href="/tags/odata/" class="post-tag">odata</a></li>
 </ul>
 
-<p class="post-description-main"></p>
+<p class="post-description-main">Here's yet another note-to-self on using jq, this time to transform a flat list of order totals and dates into a summary of total order values by year.</p>
 
-<p>Here's yet another note-to-self on using jq, this time to transform a flat list of order totals and dates into a summary of total order values by year.</p>
-<p>In doing some research for an <a href="https://qmacro.org/talks/#odata-basics-4-all-things-filter">upcoming live stream</a> I was looking at the <a href="https://services.odata.org/v4/northwind/northwind.svc/">Northwind OData v4 service</a> and in particular at the <a href="https://services.odata.org/v4/northwind/northwind.svc/Summary_of_Sales_by_Years">Summary_of_Sales_by_Years</a> entity set. It is not what I initially expected; rather than be a summary of sales by year, it was a list of orders each with a shipping date, order ID and order total. There are <a href="https://services.odata.org/v4/northwind/northwind.svc/Summary_of_Sales_by_Years/$count">over 800</a> entries, and I grabbed all of them and stored them in a single JSON file <code>Summary_of_Sales_by_Years.json</code> using a Bash shell script <a href="https://github.com/SAP-samples/odata-basics-handsonsapdev/blob/ecf9f4f4c378428e936dfbd80bbcefcaebfbfb8b/bin/slurp">slurp</a> that auto-follows the <a href="http://docs.oasis-open.org/odata/odata-json-format/v4.0/errata03/os/odata-json-format-v4.0-errata03-os-complete.html#_Toc453766632">@odata.nextLink annotation</a> trail on each chunk response.</p>
-<p>I wanted to group the list by year and get grand totals for each year. This blog post describes how I went about it, and also describes a sort of preparation stage too where I created an initially much smaller dataset to experiment with.</p>
-<p>I've created snippets on <a href="https://jqplay.org">jqplay</a> for each of the stages here - you'll see the links at the relevant points in this post.</p>
+<p>In doing some research for an <a href="https://qmacro.org/talks/#odata-basics-4-all-things-filter">upcoming live
+stream</a> I was
+looking at the <a href="https://services.odata.org/v4/northwind/northwind.svc/">Northwind OData v4
+service</a> and in
+particular at the
+<a href="https://services.odata.org/v4/northwind/northwind.svc/Summary_of_Sales_by_Years">Summary_of_Sales_by_Years</a>
+entity set. It is not what I initially expected; rather than be a summary of
+sales by year, it was a list of orders each with a shipping date, order ID and
+order total. There are <a href="https://services.odata.org/v4/northwind/northwind.svc/Summary_of_Sales_by_Years/$count">over
+800</a>
+entries, and I grabbed all of them and stored them in a single JSON file
+<code>Summary_of_Sales_by_Years.json</code> using a Bash shell script
+<a href="https://github.com/SAP-samples/odata-basics-handsonsapdev/blob/ecf9f4f4c378428e936dfbd80bbcefcaebfbfb8b/bin/slurp">slurp</a>
+that auto-follows the <a href="http://docs.oasis-open.org/odata/odata-json-format/v4.0/errata03/os/odata-json-format-v4.0-errata03-os-complete.html#_Toc453766632">@odata.nextLink
+annotation</a>
+trail on each chunk response.</p>
+<p>I wanted to group the list by year and get grand totals for each year. This
+blog post describes how I went about it, and also describes a sort of
+preparation stage too where I created an initially much smaller dataset to
+experiment with.</p>
+<p>I've created snippets on <a href="https://jqplay.org">jqplay</a> for each of the stages
+here - you'll see the links at the relevant points in this post.</p>
 <h2 id="preparing-the-sample-data">Preparing the sample data</h2>
-<p>For the sake of brevity in this post, I cut the data down to just 6 entries, two for each of the years represented (1996, 1997 and 1998). I did this with <code>jq</code> too, redirecting the output into a new file <code>subset.json</code>, thus:</p>
+<p>For the sake of brevity in this post, I cut the data down to just 6 entries,
+two for each of the years represented (1996, 1997 and 1998). I did this with
+<code>jq</code> too, redirecting the output into a new file <code>subset.json</code>, thus:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token punctuation">\</span>
   <span class="token string">'.value |= (
     group_by(.ShippedDate[:4])
@@ -574,7 +595,8 @@ pre[class*="language-diff-"] {
   )'</span> <span class="token punctuation">\</span>
   Summary_of_Sales_by_Years.json <span class="token punctuation">\</span>
   <span class="token operator">></span> subset.json</code></pre>
-<p>This resulted in the following content in <code>subset.json</code>, which I can now use to more easily illustrate the summing and grouping.</p>
+<p>This resulted in the following content in <code>subset.json</code>, which I can now use to
+more easily illustrate the summing and grouping.</p>
 <pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token punctuation">{</span>
@@ -617,14 +639,38 @@ pre[class*="language-diff-"] {
   <span class="token operator pipe">|</span> <span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
   <span class="token operator pipe">|</span> flatten
 <span class="token punctuation">)</span></code></pre>
-<p>First, there's this construct: <code>.value |= (...)</code>. The <code>|=</code> is the <a href="https://stedolan.github.io/jq/manual/#Update-assignment:%7C=">update assignment</a> operator and whatever the filter on the right hand side produces becomes the new value for the <code>value</code> property. The parentheses in this particular instance ensure that the output from the entire expression within is used. It's needed here because the expression contains pipes (<code>|</code>) which would otherwise short circuit.</p>
-<p>With <code>group_by(.ShippedDate[:4])</code> the <a href="https://stedolan.github.io/jq/manual/#group_by(path_expression)">group_by</a> function collects objects by the <code>ShippedDate</code> property - but not the entire property value, just the first four characters, which represent the year, for example &quot;1996&quot; in &quot;1996-07-16T00:00:00Z&quot; (there's the <code>strptime</code> function too, which will parse a date into its component parts, but knowledge of the data and laziness won through here). Note that the <code>[:4]</code> construct (which is short for <code>[0:4]</code>) is the <a href="https://stedolan.github.io/jq/manual/#Array/StringSlice:.%5B10:15%5D">array/string slice</a> filter operating on a string value in this case, which will return a substring.</p>
-<p>The use of <code>group_by</code> produces an array of arrays, with one subarray for each year.</p>
-<p>This is then piped into <code>map(.[:2])</code>. The <code>[:2]</code> (again, short for <code>[0:2]</code>) is the array/string slice filter again, but this time, it's operating on an array rather than a string. I'm using <code>map</code> to run the filter <code>.[:2]</code> against each element of the input array, which contains a subarray for each of the years. And the <code>.[:2]</code> filter, in an array context, will return the first two elements.</p>
-<p>The result of this is still an array of arrays, but now each subarray has only two objects each. Now they can all be merged, i.e. taken out of their respective subarrays and collected together. This is done with the <a href="https://stedolan.github.io/jq/manual/#flatten,flatten(depth)">flatten</a> filter.</p>
-<p>▶ You can see how this <code>jq</code> program reduces the input data to the subset in this jqplay snippet: <a href="https://jqplay.org/s/7fwbQqvjluG">Initial input data reduction</a>.</p>
+<p>First, there's this construct: <code>.value |= (...)</code>. The <code>|=</code> is the <a href="https://stedolan.github.io/jq/manual/#Update-assignment:%7C=">update
+assignment</a> operator and whatever the filter on the
+right hand side produces becomes the new value for the <code>value</code> property. The
+parentheses in this particular instance ensure that the output from the entire
+expression within is used. It's needed here because the expression contains
+pipes (<code>|</code>) which would otherwise short circuit.</p>
+<p>With <code>group_by(.ShippedDate[:4])</code> the <a href="https://stedolan.github.io/jq/manual/#group_by(path_expression)">group_by</a> function
+collects objects by the <code>ShippedDate</code> property - but not the entire property
+value, just the first four characters, which represent the year, for example
+&quot;1996&quot; in &quot;1996-07-16T00:00:00Z&quot; (there's the <code>strptime</code> function too, which
+will parse a date into its component parts, but knowledge of the data and
+laziness won through here). Note that the <code>[:4]</code> construct (which is short for
+<code>[0:4]</code>) is the <a href="https://stedolan.github.io/jq/manual/#Array/StringSlice:.%5B10:15%5D">array/string slice</a> filter
+operating on a string value in this case, which will return a substring.</p>
+<p>The use of <code>group_by</code> produces an array of arrays, with one subarray for each
+year.</p>
+<p>This is then piped into <code>map(.[:2])</code>. The <code>[:2]</code> (again, short for <code>[0:2]</code>) is
+the array/string slice filter again, but this time, it's operating on an array
+rather than a string. I'm using <code>map</code> to run the filter <code>.[:2]</code> against each
+element of the input array, which contains a subarray for each of the years.
+And the <code>.[:2]</code> filter, in an array context, will return the first two
+elements.</p>
+<p>The result of this is still an array of arrays, but now each subarray has only
+two objects each. Now they can all be merged, i.e. taken out of their
+respective subarrays and collected together. This is done with the
+<a href="https://stedolan.github.io/jq/manual/#flatten,flatten(depth)">flatten</a> filter.</p>
+<p>▶ You can see how this <code>jq</code> program reduces the input data to the subset in
+this jqplay snippet: <a href="https://jqplay.org/s/7fwbQqvjluG">Initial input data
+reduction</a>.</p>
 <h2 id="producing-the-totals-by-year">Producing the totals by year</h2>
-<p>So, (now based on the subset of data above), what I actually want is a summary of total order value for each year, something like this:</p>
+<p>So, (now based on the subset of data above), what I actually want is a summary
+of total order value for each year, something like this:</p>
 <pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
   <span class="token punctuation">[</span>
     <span class="token string">"1996"</span><span class="token punctuation">,</span>
@@ -640,7 +686,11 @@ pre[class*="language-diff-"] {
   <span class="token punctuation">]</span>
 <span class="token punctuation">]</span></code></pre>
 <h3 id="grouping-by-year">Grouping by year</h3>
-<p>It makes sense that the approach required will also employ the <a href="https://stedolan.github.io/jq/manual/#group_by(path_expression)">group_by</a> function as we want total order values for each year, and we can determine the years in the same way as we've seen in the preparation stage, i.e. with the <a href="https://stedolan.github.io/jq/manual/#Array/StringSlice:.%5B10:15%5D">array/string slice</a> filter (<code>[:4]</code>).</p>
+<p>It makes sense that the approach required will also employ the
+<a href="https://stedolan.github.io/jq/manual/#group_by(path_expression)">group_by</a> function as we want total order values for each
+year, and we can determine the years in the same way as we've seen in the
+preparation stage, i.e. with the <a href="https://stedolan.github.io/jq/manual/#Array/StringSlice:.%5B10:15%5D">array/string
+slice</a> filter (<code>[:4]</code>).</p>
 <p>Let's start to explore:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token punctuation">\</span>
   <span class="token string">'.value
@@ -684,9 +734,11 @@ pre[class*="language-diff-"] {
     <span class="token punctuation">}</span>
   <span class="token punctuation">]</span>
 <span class="token punctuation">]</span></code></pre>
-<p>This is a nice illustration of the array of arrays structure we talked about earlier. There's a subarray for the objects for each year.</p>
+<p>This is a nice illustration of the array of arrays structure we talked about
+earlier. There's a subarray for the objects for each year.</p>
 <h3 id="totalling-the-values">Totalling the values</h3>
-<p>Now the data is in the right &quot;shape&quot;, it's time to focus on summing the <code>Subtotal</code> values within each subarray.</p>
+<p>Now the data is in the right &quot;shape&quot;, it's time to focus on summing the
+<code>Subtotal</code> values within each subarray.</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token punctuation">\</span>
   <span class="token string">'.value
   | group_by(.ShippedDate[:4])
@@ -707,8 +759,17 @@ pre[class*="language-diff-"] {
     <span class="token number">224</span>
   <span class="token punctuation">]</span>
 <span class="token punctuation">]</span></code></pre>
-<p>Note the nested calls to <code>map</code>, i.e. <code>map(map(...)</code>. This is because the outer <code>map</code> processes the outer array, and passes each element (each of which are also arrays - the by-year subarrays) to the function specified, which is also <code>map</code>, which processes (in turn) each inner array, which contain the objects. The simple filter <code>.Subtotal</code> will just return the value of the <code>Subtotal</code> property, so we see a list of lists of subtotals, remembering that we've got two for each of the three years.</p>
-<p>So we have an array of arrays of subtotal values. As a next step let's add these grouped subtotal values together, using <a href="https://stedolan.github.io/jq/manual/#add">add</a> (which is a filter that operates on arrays). While we're at it, we'll use <a href="https://stedolan.github.io/jq/manual/#floor">floor</a> to hard round down to the nearest whole number:</p>
+<p>Note the nested calls to <code>map</code>, i.e. <code>map(map(...)</code>. This is because the outer
+<code>map</code> processes the outer array, and passes each element (each of which are
+also arrays - the by-year subarrays) to the function specified, which is also
+<code>map</code>, which processes (in turn) each inner array, which contain the objects.
+The simple filter <code>.Subtotal</code> will just return the value of the <code>Subtotal</code>
+property, so we see a list of lists of subtotals, remembering that we've got
+two for each of the three years.</p>
+<p>So we have an array of arrays of subtotal values. As a next step let's add
+these grouped subtotal values together, using <a href="https://stedolan.github.io/jq/manual/#add">add</a> (which is a
+filter that operates on arrays). While we're at it, we'll use
+<a href="https://stedolan.github.io/jq/manual/#floor">floor</a> to hard round down to the nearest whole number:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token punctuation">\</span>
   <span class="token string">'.value
   | group_by(.ShippedDate[:4])
@@ -721,7 +782,9 @@ pre[class*="language-diff-"] {
   <span class="token number">568</span>
 <span class="token punctuation">]</span></code></pre>
 <h3 id="adding-the-year">Adding the year</h3>
-<p>Almost there - but it's not that useful without the year. To get the structure we want, which is an array of arrays each containing the year and total, we'll need to add the year, and enclose that, with the total, in an array:</p>
+<p>Almost there - but it's not that useful without the year. To get the structure
+we want, which is an array of arrays each containing the year and total, we'll
+need to add the year, and enclose that, with the total, in an array:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token punctuation">\</span>
   <span class="token string">'.value
   | group_by(.ShippedDate[:4])
@@ -735,16 +798,31 @@ pre[class*="language-diff-"] {
   first<span class="token punctuation">.</span>ShippedDate<span class="token punctuation">[</span><span class="token punctuation">:</span><span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token punctuation">(</span><span class="token c-style-function function">map</span><span class="token punctuation">(</span><span class="token punctuation">.</span>Subtotal<span class="token punctuation">)</span> <span class="token operator pipe">|</span> add <span class="token operator pipe">|</span> floor<span class="token punctuation">)</span>
 <span class="token punctuation">]</span></code></pre>
-<p>What's happening here is that we're using <a href="https://stedolan.github.io/jq/manual/#Arrayconstruction:%5B%5D">array construction</a> (<code>[...]</code>) to produce an array, with two elements, starting with the value of <code>first.ShippedDate[:4]</code>.</p>
-<p>Each of the expressions in this array construction receives an array (one of the year-specific subarrays), but for our first element we only want the value from one of the elements in the incoming array, so we can use the <a href="https://stedolan.github.io/jq/manual/#first,last,nth(n)">first</a> function to do that. This is a lovely bit of syntactic sugar through a definition, along with definitions for its siblings <code>last</code> and <code>nth</code>, in <a href="https://github.com/stedolan/jq/blob/a9f97e9e61a910a374a5d768244e8ad63f407d3e/src/builtin.jq#L187-L189">builtin.jq</a>:</p>
+<p>What's happening here is that we're using <a href="https://stedolan.github.io/jq/manual/#Arrayconstruction:%5B%5D">array
+construction</a>
+(<code>[...]</code>) to produce an array, with two elements, starting with the value of
+<code>first.ShippedDate[:4]</code>.</p>
+<p>Each of the expressions in this array construction receives an array (one of
+the year-specific subarrays), but for our first element we only want the value
+from one of the elements in the incoming array, so we can use the
+<a href="https://stedolan.github.io/jq/manual/#first,last,nth(n)">first</a> function to do that. This is a lovely bit of
+syntactic sugar through a definition, along with definitions for its siblings
+<code>last</code> and <code>nth</code>, in
+<a href="https://github.com/stedolan/jq/blob/a9f97e9e61a910a374a5d768244e8ad63f407d3e/src/builtin.jq#L187-L189">builtin.jq</a>:</p>
 <pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token keyword">def</span> <span class="token function">first</span><span class="token punctuation">:</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
 <span class="token keyword">def</span> <span class="token function">last</span><span class="token punctuation">:</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
 <span class="token keyword">def</span> <span class="token function">nth</span><span class="token punctuation">(</span><span class="token variable">$n</span><span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token variable">$n</span><span class="token punctuation">]</span><span class="token punctuation">;</span></code></pre>
 <p>I'm tempted to want to define another function <code>rest</code> thus:</p>
 <pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token keyword">def</span> <span class="token function">rest</span><span class="token punctuation">:</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">:</span>length<span class="token punctuation">]</span><span class="token punctuation">;</span></code></pre>
-<p>See <a href="/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/">The beauty of recursion and list machinery</a> for why - in particular, a slight obsession about <code>x:xs</code>, first and rest, head and tail, and so on.</p>
+<p>See <a href="/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/">The beauty of recursion and list
+machinery</a>
+for why - in particular, a slight obsession about <code>x:xs</code>, first and rest, head
+and tail, and so on.</p>
 <p>But I digress.</p>
-<p>The second element in the constructed array, i.e. <code>(map(.Subtotal) | add | floor)</code>, is the same as before, except that it's now surrounded in parentheses to ensure the whole thing is evaluated in one go (specifically, so that it's only the <code>map(.Subtotal)</code> that gets passed through those pipes to <code>add</code> and <code>floor</code>, and not anything else).</p>
+<p>The second element in the constructed array, i.e. <code>(map(.Subtotal) | add | floor)</code>, is the same as before, except that it's now surrounded in parentheses
+to ensure the whole thing is evaluated in one go (specifically, so that it's
+only the <code>map(.Subtotal)</code> that gets passed through those pipes to <code>add</code> and
+<code>floor</code>, and not anything else).</p>
 <p>So this is where we've ended up:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token punctuation">\</span>
   <span class="token string">'.value
@@ -770,18 +848,26 @@ pre[class*="language-diff-"] {
   <span class="token punctuation">]</span>
 <span class="token punctuation">]</span></code></pre>
 <p>Very nice!</p>
-<p>▶ You can see how this result is achieved in this jqplay snippet: <a href="https://jqplay.org/s/TRVd7ttVjmc">Producing the 'array' style final result</a>.</p>
+<p>▶ You can see how this result is achieved in this jqplay snippet: <a href="https://jqplay.org/s/TRVd7ttVjmc">Producing
+the 'array' style final result</a>.</p>
 <h3 id="an-alternative-result-structure">An alternative result structure</h3>
-<p>As alternative way of representing the totals by year, and knowing that the year values are stable enough to be property names in objects, we could instead go for something like this:</p>
+<p>As alternative way of representing the totals by year, and knowing that the
+year values are stable enough to be property names in objects, we could instead
+go for something like this:</p>
 <pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"1996"</span><span class="token operator">:</span> <span class="token number">2303</span><span class="token punctuation">,</span>
   <span class="token property">"1997"</span><span class="token operator">:</span> <span class="token number">2753</span><span class="token punctuation">,</span>
   <span class="token property">"1998"</span><span class="token operator">:</span> <span class="token number">568</span>
 <span class="token punctuation">}</span></code></pre>
-<p>To get this, it's not much of a departure from what we previously ended up with. First, instead of using array construction (<code>[...]</code>) we can use <a href="https://stedolan.github.io/jq/manual/#Objectconstruction:%5B%5D">object construction</a>. As expected, we need to specify the property name and value, in this form:</p>
-<pre><code>property: value
-</code></pre>
-<p>Let's make that change, noting that because the expression for the property (the key) is not &quot;identifier-like&quot;, i.e. it's an expression to be evaluated, we need to enclose it in parentheses like this: <code>(first.ShippedDate[:4])</code>. Here we go:</p>
+<p>To get this, it's not much of a departure from what we previously ended up
+with. First, instead of using array construction (<code>[...]</code>) we can use <a href="https://stedolan.github.io/jq/manual/#Objectconstruction:%5B%5D">object
+construction</a>. As expected, we need to specify the
+property name and value, in this form:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">property: value</code></pre>
+<p>Let's make that change, noting that because the expression for the property
+(the key) is not &quot;identifier-like&quot;, i.e. it's an expression to be evaluated, we
+need to enclose it in parentheses like this: <code>(first.ShippedDate[:4])</code>. Here we
+go:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token punctuation">\</span>
   <span class="token string">'.value
   | group_by(.ShippedDate[:4])
@@ -801,7 +887,11 @@ pre[class*="language-diff-"] {
     <span class="token string">"1998"</span><span class="token builtin class-name">:</span> <span class="token number">568</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">]</span></code></pre>
-<p>But that's OK, because the more you get the feel for how <code>jq</code> behaves, the more you'll likely guess that there'll be a simple way to merge these objects. And there is - the versatile <a href="https://stedolan.github.io/jq/manual/#add">add</a> filter. We've used <code>add</code> already to sum up an array of numeric values (the subtotals) but &quot;adding&quot; an array of objects together merges them.</p>
+<p>But that's OK, because the more you get the feel for how <code>jq</code> behaves, the more
+you'll likely guess that there'll be a simple way to merge these objects. And
+there is - the versatile <a href="https://stedolan.github.io/jq/manual/#add">add</a> filter. We've used <code>add</code> already to
+sum up an array of numeric values (the subtotals) but &quot;adding&quot; an array of
+objects together merges them.</p>
 <p>So let's pipe the output of the <code>map({...})</code> into add:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token punctuation">\</span>
   <span class="token string">'.value
@@ -810,16 +900,20 @@ pre[class*="language-diff-"] {
       (first.ShippedDate[:4]): map(.Subtotal)|add|floor
     }) | add'</span> <span class="token punctuation">\</span>
   subset.json</code></pre>
-<p>This merges the three year:total pairs from the three objects into a single object, and thus gives us what we want:</p>
+<p>This merges the three year:total pairs from the three objects into a single
+object, and thus gives us what we want:</p>
 <pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"1996"</span><span class="token operator">:</span> <span class="token number">2303</span><span class="token punctuation">,</span>
   <span class="token property">"1997"</span><span class="token operator">:</span> <span class="token number">2753</span><span class="token punctuation">,</span>
   <span class="token property">"1998"</span><span class="token operator">:</span> <span class="token number">568</span>
 <span class="token punctuation">}</span></code></pre>
 <p>Lovely!</p>
-<p>▶ You can see how this alternative result is achieved in this jqplay snippet: <a href="https://jqplay.org/s/LJzeX3oH64M">Producing the 'array' style final result</a>.</p>
+<p>▶ You can see how this alternative result is achieved in this jqplay snippet:
+<a href="https://jqplay.org/s/LJzeX3oH64M">Producing the 'array' style final result</a>.</p>
 <h2 id="summing-up">Summing up</h2>
-<p>This turned out (again) to be a slightly longer post than expected, but in writing it, and in manipulating the source data, I've learned more about <code>jq</code>. So that's a result. I hope this helps you too.</p>
+<p>This turned out (again) to be a slightly longer post than expected, but in
+writing it, and in manipulating the source data, I've learned more about <code>jq</code>.
+So that's a result. I hope this helps you too.</p>
 
 
 
@@ -831,7 +925,7 @@ pre[class*="language-diff-"] {
 			</heading-anchors>
 		</main>
 
-		<!-- This page `/blog/posts/2022/06/16/summing-and-grouping-values-with-jq/` was built on 2026-01-10T09:01:38.780Z -->
+		<!-- This page `/blog/posts/2022/06/16/summing-and-grouping-values-with-jq/` was built on 2026-01-10T14:54:12.856Z -->
 		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
 	</body>
 </html>

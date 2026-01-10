@@ -4,14 +4,14 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>JSON object values into CSV with jq</title>
-		<meta name="description" content="Reserving the right to be wrong.">
+		<meta name="description" content="I wanted to grab a CSV version of a JSON representation of an entityset in the Northwind OData service. Here&#39;s how I converted the JSON structure into CSV with jq, and along the way, I talk about arrays, objects, iterators, object indices, variables, identity, array construction and format strings.">
 		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
 		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 
       <meta property="og:title" content="JSON object values into CSV with jq">
         <meta property="og:site_name" content="DJ Adams">
           <meta property="og:image" content="/images/site-image.png">
-        <meta property="og:description" content="Reserving the right to be wrong.">
+        <meta property="og:description" content="I wanted to grab a CSV version of a JSON representation of an entityset in the Northwind OData service. Here&#39;s how I converted the JSON structure into CSV with jq, and along the way, I talk about arrays, objects, iterators, object indices, variables, identity, array construction and format strings.">
         <meta property="og:url" content="https://qmacro.org/blog/posts/2022/05/19/json-object-values-into-csv-with-jq/">
 		
 		
@@ -556,17 +556,24 @@ pre[class*="language-diff-"] {
 	<li><time datetime="2022-05-19">19 May 2022</time></li>
 	<li><a href="/tags/jq/" class="post-tag">jq</a>, </li>
 	<li><a href="/tags/json/" class="post-tag">json</a>, </li>
+	<li><a href="/tags/pipe/" class="post-tag">pipe</a>, </li>
 	<li><a href="/tags/odata/" class="post-tag">odata</a>, </li>
 	<li><a href="/tags/northwind/" class="post-tag">northwind</a>, </li>
 	<li><a href="/tags/csv/" class="post-tag">csv</a></li>
 </ul>
 
-<p class="post-description-main"></p>
+<p class="post-description-main">I wanted to grab a CSV version of a JSON representation of an entityset in the Northwind OData service. Here's how I converted the JSON structure into CSV with jq, and along the way, I talk about arrays, objects, iterators, object indices, variables, identity, array construction and format strings.</p>
 
-<p>I wanted to grab a CSV version of a JSON representation of an entityset in the Northwind OData service. Here's how I converted the JSON structure into CSV with jq, and along the way, I talk about arrays, objects, iterators, object indices, variables, identity, array construction and format strings.</p>
-<p>In our current <a href="https://www.youtube.com/playlist?list=PL6RpkC85SLQDYLiN1BobWXvvnhaGErkwj">Back to basics: OData series</a> on the Developer Advocates' Hands-on SAP Dev <a href="https://blogs.sap.com/2020/11/09/an-overview-of-sap-developers-video-content/#shows">show</a> I'm using various aspects of the classic Northwind OData service:</p>
+<p>In our current <a href="https://www.youtube.com/playlist?list=PL6RpkC85SLQDYLiN1BobWXvvnhaGErkwj">Back to basics: OData
+series</a>
+on the Developer Advocates' Hands-on SAP Dev
+<a href="https://blogs.sap.com/2020/11/09/an-overview-of-sap-developers-video-content/#shows">show</a>
+I'm using various aspects of the classic Northwind OData service:</p>
 <p><a href="https://services.odata.org/V4/Northwind/Northwind.svc/">https://services.odata.org/V4/Northwind/Northwind.svc/</a></p>
-<p>There's an entityset that I wanted to grab the data from, but have in CSV form. It's the <a href="https://services.odata.org/v4/northwind/northwind.svc/Customer_and_Suppliers_by_Cities">Customer_and_Suppliers_by_Cities</a> entityset that looks like this:</p>
+<p>There's an entityset that I wanted to grab the data from, but have in CSV form.
+It's the
+<a href="https://services.odata.org/v4/northwind/northwind.svc/Customer_and_Suppliers_by_Cities">Customer_and_Suppliers_by_Cities</a>
+entityset that looks like this:</p>
 <pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@odata.context"</span><span class="token operator">:</span> <span class="token string">"https://services.odata.org/V4/Northwind/Northwind.svc/$metadata#Customer_and_Suppliers_by_Cities"</span><span class="token punctuation">,</span>
   <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
@@ -591,19 +598,26 @@ pre[class*="language-diff-"] {
   <span class="token punctuation">]</span>
 <span class="token punctuation">}</span></code></pre>
 <blockquote>
-<p>I've reduced the actual representation down to just three entries to save space here, and will retrieve these three entries only (with OData's <code>$top</code> system query option) to keep the display of data in this blog post under control.</p>
+<p>I've reduced the actual representation down to just three entries to save
+space here, and will retrieve these three entries only (with OData's <code>$top</code>
+system query option) to keep the display of data in this blog post under
+control.</p>
 </blockquote>
 <p>I wanted to turn this JSON into something like this:</p>
 <pre class="language-text" tabindex="0"><code class="language-text">"Berlin","Alfreds Futterkiste","Maria Anders","Customers"
 "México D.F.","Ana Trujillo Emparedados y helados","Ana Trujillo","Customers"
 "México D.F.","Antonio Moreno Taquería","Antonio Moreno","Customers"</code></pre>
-<p>As I'm trying to <a href="/tags/jq/">learn more</a> about <a href="https://stedolan.github.io/jq/">jq</a> I thought I'd use that.</p>
-<p>Before doing anything else, I grab the representation into a local file called <code>entities.json</code> like this (restricting the entities to the first three):</p>
+<p>As I'm trying to <a href="/tags/jq/">learn more</a> about
+<a href="https://stedolan.github.io/jq/">jq</a> I thought I'd use that.</p>
+<p>Before doing anything else, I grab the representation into a local file called
+<code>entities.json</code> like this (restricting the entities to the first three):</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">curl</span> <span class="token punctuation">\</span>
   <span class="token parameter variable">--url</span> <span class="token string">'https://services.odata.org/v4/northwind/northwind.svc/Customer_and_Suppliers_by_Cities?$top=3'</span> <span class="token punctuation">\</span>
   <span class="token operator">></span> entities.json</code></pre>
 <h2 id="iterating-through-the-entities">Iterating through the entities</h2>
-<p>OK, so it's the values in the objects that I want, in the <code>value</code> property. So I start out with the simple <a href="https://stedolan.github.io/jq/manual/#ObjectIdentifier-Index:.foo,.foo.bar">object identifier-index</a> like this:</p>
+<p>OK, so it's the values in the objects that I want, in the <code>value</code> property. So
+I start out with the simple <a href="https://stedolan.github.io/jq/manual/#ObjectIdentifier-Index:.foo,.foo.bar">object
+identifier-index</a> like this:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token string">'.value'</span> entities.json</code></pre>
 <p>This gives me:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token punctuation">[</span>
@@ -626,7 +640,9 @@ pre[class*="language-diff-"] {
     <span class="token string">"Relationship"</span><span class="token builtin class-name">:</span> <span class="token string">"Customers"</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">]</span></code></pre>
-<p>The value of the <code>value</code> property is indeed an array of objects. So far so good. But I want to do something with each of those objects, so next I add the <a href="https://stedolan.github.io/jq/manual/#Array/ObjectValueIterator:.%5B%5D">array value iterator</a> (<code>[]</code>) thus:</p>
+<p>The value of the <code>value</code> property is indeed an array of objects. So far so
+good. But I want to do something with each of those objects, so next I add the
+<a href="https://stedolan.github.io/jq/manual/#Array/ObjectValueIterator:.%5B%5D">array value iterator</a> (<code>[]</code>) thus:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token string">'.value[]'</span> entities.json</code></pre>
 <p>This results in something that looks almost but not quite the same:</p>
 <pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
@@ -647,10 +663,22 @@ pre[class*="language-diff-"] {
   <span class="token property">"ContactName"</span><span class="token operator">:</span> <span class="token string">"Antonio Moreno"</span><span class="token punctuation">,</span>
   <span class="token property">"Relationship"</span><span class="token operator">:</span> <span class="token string">"Customers"</span>
 <span class="token punctuation">}</span></code></pre>
-<p>What's happening here is that the iterator causes <code>jq</code> to emit a JSON value for each item in the array. This is an important concept and also relates to the fact that <code>jq</code> can process -- as well as emit -- multiple JSON values. I discuss this in the post <a href="/blog/posts/2022/05/02/some-thoughts-on-jq-and-statelessness/">Some thoughts on jq and statelessness</a> which you may be interested to read.</p>
-<p>In other words, while the first invocation (<code>.value</code>) emitted a single JSON value (an array), the second (<code>.value[]</code>) caused three JSON values (three objects) to be emitted, effectively one at a time.</p>
+<p>What's happening here is that the iterator causes <code>jq</code> to emit a JSON value for
+each item in the array. This is an important concept and also relates to the
+fact that <code>jq</code> can process -- as well as emit -- multiple JSON values. I
+discuss this in the post <a href="/blog/posts/2022/05/02/some-thoughts-on-jq-and-statelessness/">Some thoughts on jq and
+statelessness</a>
+which you may be interested to read.</p>
+<p>In other words, while the first invocation (<code>.value</code>) emitted a single JSON
+value (an array), the second (<code>.value[]</code>) caused three JSON values (three
+objects) to be emitted, effectively one at a time.</p>
 <h3 id="understanding-the-iterator-a-bit-more">Understanding the iterator a bit more</h3>
-<p>To understand what the iterator does, we can run a simple experiment. We'll revisit each of the two <code>jq</code> invocations we've done so far, adding a second filter into the mix via the <a href="https://stedolan.github.io/jq/manual/#Pipe:%7C">pipe</a>. We'll use the simple <code>length</code> filter which, given an array will return the number of elements, and given an object will return the number of key-value pairs (and, for that matter, given a string, will return the length of that string).</p>
+<p>To understand what the iterator does, we can run a simple experiment. We'll
+revisit each of the two <code>jq</code> invocations we've done so far, adding a second
+filter into the mix via the <a href="https://stedolan.github.io/jq/manual/#Pipe:%7C">pipe</a>. We'll use the simple <code>length</code>
+filter which, given an array will return the number of elements, and given an
+object will return the number of key-value pairs (and, for that matter, given a
+string, will return the length of that string).</p>
 <p>Remember that the value of the <code>value</code> property is an array. So this:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token string">'.value | length'</span> entities.json</code></pre>
 <p>returns the following:</p>
@@ -661,17 +689,27 @@ pre[class*="language-diff-"] {
 <pre class="language-text" tabindex="0"><code class="language-text">4
 4
 4</code></pre>
-<p>In this case, what's happening is that the array iterator is causing each element of the array to be passed, one at a time, through the filter(s) that follow (i.e. through <code>length</code> in this case). And when passed an object, <code>length</code> returns the number of key-value pairs. There are four key-value pairs in each of the objects, so we get 4, but we get that three times, one for each object (and remember, each of these instances of <code>4</code> are valid JSON values).</p>
+<p>In this case, what's happening is that the array iterator is causing each
+element of the array to be passed, one at a time, through the filter(s) that
+follow (i.e. through <code>length</code> in this case). And when passed an object,
+<code>length</code> returns the number of key-value pairs. There are four key-value pairs
+in each of the objects, so we get 4, but we get that three times, one for each
+object (and remember, each of these instances of <code>4</code> are valid JSON values).</p>
 <h2 id="jumping-ahead-temporarily-to-csv-output">Jumping ahead temporarily to CSV output</h2>
-<p>So that we better understand where we're heading, I want to introduce the <code>@csv</code> <a href="https://stedolan.github.io/jq/manual/#Formatstringsandescaping">format string</a>, which is described as follows:</p>
+<p>So that we better understand where we're heading, I want to introduce the
+<code>@csv</code> <a href="https://stedolan.github.io/jq/manual/#Formatstringsandescaping">format string</a>, which is described as follows:</p>
 <blockquote>
 <p>The input must be an array, and it is rendered as CSV with double quotes for strings, and quotes escaped by repetition.</p>
 </blockquote>
 <p>So this:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token builtin class-name">echo</span> <span class="token string">'[1,2,"buckle my shoe"]'</span> <span class="token operator">|</span> jq --raw-output <span class="token string">'@csv'</span></code></pre>
-<p>(note the use of the <code>--raw-output</code> (<code>-r</code>) option so that <code>jq</code> won't try to emit JSON values but instead output the values directly) results in CSV like this:</p>
+<p>(note the use of the <code>--raw-output</code> (<code>-r</code>) option so that <code>jq</code> won't try to
+emit JSON values but instead output the values directly) results in CSV like
+this:</p>
 <pre class="language-text" tabindex="0"><code class="language-text">1,2,"buckle my shoe"</code></pre>
-<p>So our aim is to produce a list of arrays, one for each JSON object in the input (one for each entity, effectively). Then each of these arrays can then be fed through the <code>@csv</code> format string, to produce CSV records.</p>
+<p>So our aim is to produce a list of arrays, one for each JSON object in the
+input (one for each entity, effectively). Then each of these arrays can then be
+fed through the <code>@csv</code> format string, to produce CSV records.</p>
 <h2 id="producing-the-arrays-with-hardcoded-key-names">Producing the arrays with hardcoded key names</h2>
 <p>Each CSV record needs four values, the values for each key in the object(s):</p>
 <pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
@@ -681,7 +719,9 @@ pre[class*="language-diff-"] {
   <span class="token property">"Relationship"</span><span class="token operator">:</span> <span class="token string">"Customers"</span>
 <span class="token punctuation">}</span></code></pre>
 <p>In other words, values for <code>City</code>, <code>CompanyName</code>, <code>ContactName</code> and <code>Relationship</code>.</p>
-<p>The simplest way to do this would be to just use <a href="https://stedolan.github.io/jq/manual/#ObjectIdentifier-Index:.foo,.foo.bar">object identifier-indices</a> directly, something like this:</p>
+<p>The simplest way to do this would be to just use <a href="https://stedolan.github.io/jq/manual/#ObjectIdentifier-Index:.foo,.foo.bar">object
+identifier-indices</a> directly, something like
+this:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq --raw-output <span class="token string">'
   .value[]
   | [.City, .CompanyName, .ContactName, .Relationship]
@@ -691,10 +731,17 @@ pre[class*="language-diff-"] {
 <pre class="language-text" tabindex="0"><code class="language-text">"Berlin","Alfreds Futterkiste","Maria Anders","Customers"
 "México D.F.","Ana Trujillo Emparedados y helados","Ana Trujillo","Customers"
 "México D.F.","Antonio Moreno Taquería","Antonio Moreno","Customers"</code></pre>
-<p>But of course that's somewhat unsatisfactory. We'd have to examine the input data and then adjust the object identifier-indices each time we had different input data.</p>
+<p>But of course that's somewhat unsatisfactory. We'd have to examine the input
+data and then adjust the object identifier-indices each time we had different
+input data.</p>
 <h2 id="producing-the-arrays-dynamically">Producing the arrays dynamically</h2>
-<p>According to the great <a href="https://en.wikipedia.org/wiki/Larry_Wall">Larry Wall</a>, the three great virtues of a programmer are <a href="https://wiki.c2.com/?LazinessImpatienceHubris">laziness, impatience and hubris</a>. And we can get a little nearer to laziness and also somewhat to impatience here by striving to make our solution determine the keys automatically.</p>
-<p>There's a <a href="https://stedolan.github.io/jq/manual/#keys,keys_unsorted">keys</a> function in <code>jq</code> which will return the keys of an object. That might get us part of the way. Let's try it out:</p>
+<p>According to the great <a href="https://en.wikipedia.org/wiki/Larry_Wall">Larry Wall</a>,
+the three great virtues of a programmer are <a href="https://wiki.c2.com/?LazinessImpatienceHubris">laziness, impatience and
+hubris</a>. And we can get a little
+nearer to laziness and also somewhat to impatience here by striving to make our
+solution determine the keys automatically.</p>
+<p>There's a <a href="https://stedolan.github.io/jq/manual/#keys,keys_unsorted">keys</a> function in <code>jq</code> which will return the keys of an
+object. That might get us part of the way. Let's try it out:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token string">'
   .value[]
   | keys
@@ -718,7 +765,9 @@ pre[class*="language-diff-"] {
   <span class="token string">"ContactName"</span><span class="token punctuation">,</span>
   <span class="token string">"Relationship"</span>
 <span class="token punctuation">]</span></code></pre>
-<p>In fact, we have the structure that we want and are now only really one &quot;indirection&quot; away from our goal. Let's put this into the CSV output context to see, by piping the result into <code>@csv</code>:</p>
+<p>In fact, we have the structure that we want and are now only really one
+&quot;indirection&quot; away from our goal. Let's put this into the CSV output context to
+see, by piping the result into <code>@csv</code>:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq --raw-output <span class="token string">'
   .value[]
   | keys
@@ -728,9 +777,16 @@ pre[class*="language-diff-"] {
 <pre class="language-text" tabindex="0"><code class="language-text">"City","CompanyName","ContactName","Relationship"
 "City","CompanyName","ContactName","Relationship"
 "City","CompanyName","ContactName","Relationship"</code></pre>
-<p>We can make use of these key values like <code>City</code> with the <a href="https://stedolan.github.io/jq/manual/#ObjectIdentifier-Index:.foo,.foo.bar">object identifier-index</a> construct. Well, almost. We need the more <a href="https://stedolan.github.io/jq/manual/#GenericObjectIndex:.%5B%3Cstring%3E%5D">generic form</a> for which the <a href="https://stedolan.github.io/jq/manual/#ObjectIdentifier-Index:.foo,.foo.bar">object identifier-index</a> is just a shorthand version for when identifiers are simple and &quot;string-like&quot;.</p>
-<p>In other words, the <a href="https://stedolan.github.io/jq/manual/#GenericObjectIndex:.%5B%3Cstring%3E%5D">generic object index</a> can be used when the identifier is not &quot;string-like&quot; ... such as when it's a <a href="https://stedolan.github.io/jq/manual/#Variable/SymbolicBindingOperator:...as$identifier%7C...">variable</a>.</p>
-<p>Let's step back and focus for a moment on just one of the objects - the first (0th) one - using the <a href="https://stedolan.github.io/jq/manual/#ArrayIndex:.%5B2%5D">array index</a> construction (<code>[n]</code>):</p>
+<p>We can make use of these key values like <code>City</code> with the <a href="https://stedolan.github.io/jq/manual/#ObjectIdentifier-Index:.foo,.foo.bar">object
+identifier-index</a> construct. Well, almost. We
+need the more <a href="https://stedolan.github.io/jq/manual/#GenericObjectIndex:.%5B%3Cstring%3E%5D">generic form</a> for which the <a href="https://stedolan.github.io/jq/manual/#ObjectIdentifier-Index:.foo,.foo.bar">object
+identifier-index</a> is just a shorthand version
+for when identifiers are simple and &quot;string-like&quot;.</p>
+<p>In other words, the <a href="https://stedolan.github.io/jq/manual/#GenericObjectIndex:.%5B%3Cstring%3E%5D">generic object index</a> can be
+used when the identifier is not &quot;string-like&quot; ... such as when it's a
+<a href="https://stedolan.github.io/jq/manual/#Variable/SymbolicBindingOperator:...as$identifier%7C...">variable</a>.</p>
+<p>Let's step back and focus for a moment on just one of the objects - the first
+(0th) one - using the <a href="https://stedolan.github.io/jq/manual/#ArrayIndex:.%5B2%5D">array index</a> construction (<code>[n]</code>):</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token string">'
   .value[0]
   | keys
@@ -742,7 +798,8 @@ pre[class*="language-diff-"] {
   <span class="token string">"ContactName"</span>,
   <span class="token string">"Relationship"</span>
 <span class="token punctuation">]</span></code></pre>
-<p>Let's assign the keys to a variable <code>$k</code>, and just emit the value of that variable:</p>
+<p>Let's assign the keys to a variable <code>$k</code>, and just emit the value of that
+variable:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token string">'
   .value[0]
   | keys as $k | $k
@@ -755,7 +812,10 @@ pre[class*="language-diff-"] {
   "Relationship"
 ]</code></pre>
 <p>But now we have an array of key names to work with!</p>
-<p>Note that <code>keys</code> produces an array, so we can use the <a href="https://stedolan.github.io/jq/manual/#Array/ObjectValueIterator:.%5B%5D">array value iterator</a> (<code>[]</code>) to cause each of the keys to be emitted separately (looped through, effectively) and passed to subsequent filters.</p>
+<p>Note that <code>keys</code> produces an array, so we can use the <a href="https://stedolan.github.io/jq/manual/#Array/ObjectValueIterator:.%5B%5D">array value
+iterator</a> (<code>[]</code>) to cause each of the keys to be
+emitted separately (looped through, effectively) and passed to subsequent
+filters.</p>
 <p>Adding the iterator <code>[]</code> to the <code>keys</code> function like this:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token string">'
   .value[0]
@@ -766,10 +826,16 @@ pre[class*="language-diff-"] {
 "CompanyName"
 "ContactName"
 "Relationship"</code></pre>
-<p>This is a similar effect to what we've seen earlier; it causes <code>jq</code> to iterate over the output of <code>keys</code> one item at a time, so the <code>$k</code> after the pipe in this sample is called four times, one for each key, and each time producing a JSON value (the key name as a string) as output.</p>
-<p>We may be focusing deeper and deeper on the keys here, but don't forget we always have the <a href="https://stedolan.github.io/jq/manual/#Identity:.">identity</a> filter (<code>.</code>) to give us access to the input, to whatever came through the pipe to where we are now, as it were.</p>
+<p>This is a similar effect to what we've seen earlier; it causes <code>jq</code> to iterate
+over the output of <code>keys</code> one item at a time, so the <code>$k</code> after the pipe in
+this sample is called four times, one for each key, and each time producing a
+JSON value (the key name as a string) as output.</p>
+<p>We may be focusing deeper and deeper on the keys here, but don't forget we
+always have the <a href="https://stedolan.github.io/jq/manual/#Identity:.">identity</a> filter (<code>.</code>) to give us access to
+the input, to whatever came through the pipe to where we are now, as it were.</p>
 <h2 id="variable-assignment-with-as-as-a-foreach-loop">Variable assignment with 'as' as a foreach loop</h2>
-<p>Let's understand this, by way of something perhaps unexpected. Replacing the <code>$k</code> at the end of the pipeline with simply <code>.</code>, like this:</p>
+<p>Let's understand this, by way of something perhaps unexpected. Replacing the
+<code>$k</code> at the end of the pipeline with simply <code>.</code>, like this:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token string">'
   .value[0]
   | keys[] as $k | .
@@ -799,8 +865,16 @@ pre[class*="language-diff-"] {
   <span class="token property">"ContactName"</span><span class="token operator">:</span> <span class="token string">"Maria Anders"</span><span class="token punctuation">,</span>
   <span class="token property">"Relationship"</span><span class="token operator">:</span> <span class="token string">"Customers"</span>
 <span class="token punctuation">}</span></code></pre>
-<p>Odd, the same object, four times. But when we stare at that for a second, we realise that it's exactly what we asked for. With <code>keys[]</code> we're iterating through the keys of the object (<code>City</code>, <code>CompanyName</code>, <code>ContactName</code> and <code>Relationship</code>). Four of them. So whatever is beyond the pipe after that, which is simply the identity filter (<code>.</code>), is being called four times. And the identity filter (which simply outputs whatever it receives as input) receives as input the original object.</p>
-<p>What we might expect <code>.</code> to output is one key, each time. That would be the case if we didn't assign <code>keys[]</code> to the variable <code>$k</code> with <code>keys[] as $k</code>. Let's remove the <code>as $k</code> bit to see:</p>
+<p>Odd, the same object, four times. But when we stare at that for a second, we
+realise that it's exactly what we asked for. With <code>keys[]</code> we're iterating
+through the keys of the object (<code>City</code>, <code>CompanyName</code>, <code>ContactName</code> and
+<code>Relationship</code>). Four of them. So whatever is beyond the pipe after that, which
+is simply the identity filter (<code>.</code>), is being called four times. And the
+identity filter (which simply outputs whatever it receives as input) receives
+as input the original object.</p>
+<p>What we might expect <code>.</code> to output is one key, each time. That would be the
+case if we didn't assign <code>keys[]</code> to the variable <code>$k</code> with <code>keys[] as $k</code>.
+Let's remove the <code>as $k</code> bit to see:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token string">'
   .value[0]
   | keys[] | .
@@ -810,9 +884,15 @@ pre[class*="language-diff-"] {
 "CompanyName"
 "ContactName"
 "Relationship"</code></pre>
-<p>So in this case, <code>.</code>'s input are (each time) the keys of the object. The important thing to realise here is that the variable assignment <code>as $k</code> means that the input that came into that expression (the object) passes straight through unconsumed to the next filter. This part of the manual for the section on <a href="https://stedolan.github.io/jq/manual/#Variable/SymbolicBindingOperator:...as$identifier%7C...">variables</a> helps to explain:</p>
+<p>So in this case, <code>.</code>'s input are (each time) the keys of the object. The
+important thing to realise here is that the variable assignment <code>as $k</code> means
+that the input that came into that expression (the object) passes straight
+through unconsumed to the next filter. This part of the manual for the section
+on <a href="https://stedolan.github.io/jq/manual/#Variable/SymbolicBindingOperator:...as$identifier%7C...">variables</a> helps to explain:</p>
 <blockquote>
-<p>The expression <code>exp as $x | ...</code> means: for each value of expression <code>exp</code>, run the rest of the pipeline with the entire original input, and with <code>$x</code> set to that value. Thus <code>as</code> functions as something of a foreach loop.</p>
+<p>The expression <code>exp as $x | ...</code> means: for each value of expression <code>exp</code>,
+run the rest of the pipeline with the entire original input, and with <code>$x</code>
+set to that value. Thus <code>as</code> functions as something of a foreach loop.</p>
 </blockquote>
 <p>With this in mind, we should now be able to understand why this:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token string">'
@@ -820,8 +900,13 @@ pre[class*="language-diff-"] {
   | keys[] as $k | .
 '</span> entities.json</code></pre>
 <p>produced four identical copies of the object.</p>
-<p>While that's an odd thing to produce, it helps a lot here. Having the input at this stage in the pipeline (<code>.</code>) set to the object, combined with the &quot;foreach loop&quot; (as the manual described it) iterating over the values in <code>$k</code>, is very useful!</p>
-<p>Let's look at that in a basic form; how about emitting an array with two elements, the first being the value of <code>$k</code> and the second being the input, each time:</p>
+<p>While that's an odd thing to produce, it helps a lot here. Having the input at
+this stage in the pipeline (<code>.</code>) set to the object, combined with the &quot;foreach
+loop&quot; (as the manual described it) iterating over the values in <code>$k</code>, is very
+useful!</p>
+<p>Let's look at that in a basic form; how about emitting an array with two
+elements, the first being the value of <code>$k</code> and the second being the input,
+each time:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token string">'
   .value[0]
   | keys[] as $k | [$k, .]
@@ -863,7 +948,9 @@ pre[class*="language-diff-"] {
     <span class="token property">"Relationship"</span><span class="token operator">:</span> <span class="token string">"Customers"</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">]</span></code></pre>
-<p>And of course, look what we can do with that combination of data in <code>.</code> and <code>$k</code>, using the <a href="https://stedolan.github.io/jq/manual/#GenericObjectIndex:.%5B%3Cstring%3E%5D">generic object index</a> like this <code>.[$k]</code> to look up the value of each of the keys:</p>
+<p>And of course, look what we can do with that combination of data in <code>.</code> and
+<code>$k</code>, using the <a href="https://stedolan.github.io/jq/manual/#GenericObjectIndex:.%5B%3Cstring%3E%5D">generic object index</a> like this
+<code>.[$k]</code> to look up the value of each of the keys:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq <span class="token string">'
   .value[0]
   | keys[] as $k | .[$k]
@@ -873,7 +960,10 @@ pre[class*="language-diff-"] {
 "Alfreds Futterkiste"
 "Maria Anders"
 "Customers"</code></pre>
-<p>Great! And if we wrap this entire expression in an <a href="https://stedolan.github.io/jq/manual/#Arrayconstruction:%5B%5D">array construction</a> (<code>[...]</code>), we then have the right shape (an array) to give to the <code>@csv</code> format string (and as we're emitting CSV again we'll use the <code>--raw-output</code> option again here):</p>
+<p>Great! And if we wrap this entire expression in an <a href="https://stedolan.github.io/jq/manual/#Arrayconstruction:%5B%5D">array
+construction</a> (<code>[...]</code>), we then have the right
+shape (an array) to give to the <code>@csv</code> format string (and as we're emitting CSV
+again we'll use the <code>--raw-output</code> option again here):</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq --raw-output <span class="token string">'
   .value[0]
   | [ keys[] as $k | .[$k] ]
@@ -881,7 +971,8 @@ pre[class*="language-diff-"] {
 '</span> entities.json</code></pre>
 <p>This produces a perfect single CSV record:</p>
 <pre class="language-text" tabindex="0"><code class="language-text">"Berlin","Alfreds Futterkiste","Maria Anders","Customers"</code></pre>
-<p>Now all we need to do is remove the array index (the <code>0</code> from <code>.value[0]</code>) to go back to an iteration over all the items in the array:</p>
+<p>Now all we need to do is remove the array index (the <code>0</code> from <code>.value[0]</code>) to
+go back to an iteration over all the items in the array:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq --raw-output <span class="token string">'
   .value[]
   | [ keys[] as $k | .[$k] ]
@@ -892,9 +983,12 @@ pre[class*="language-diff-"] {
 "México D.F.","Ana Trujillo Emparedados y helados","Ana Trujillo","Customers"
 "México D.F.","Antonio Moreno Taquería","Antonio Moreno","Customers"</code></pre>
 <h2 id="storing-as-a-function">Storing as a function</h2>
-<p>I'm likely to want to use this approach again some time, so I'll store the core construct here as a function in my local <code>~/.jq</code> file (see the <a href="https://stedolan.github.io/jq/manual/#Modules">modules</a> section of the manual for more detail):</p>
+<p>I'm likely to want to use this approach again some time, so I'll store the core
+construct here as a function in my local <code>~/.jq</code> file (see the
+<a href="https://stedolan.github.io/jq/manual/#Modules">modules</a> section of the manual for more detail):</p>
 <pre class="language-jq" tabindex="0"><code class="language-jq"><span class="token keyword">def</span> <span class="token function">onlyvalues</span><span class="token punctuation">:</span> <span class="token punctuation">[</span> keys<span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token keyword">as</span> <span class="token variable">$k</span> <span class="token operator pipe">|</span> <span class="token punctuation">.</span><span class="token punctuation">[</span><span class="token variable">$k</span><span class="token punctuation">]</span> <span class="token punctuation">]</span><span class="token punctuation">;</span></code></pre>
-<p>Now I can use that function wherever I want; here's a great place, because it also simplifies the entire invocation:</p>
+<p>Now I can use that function wherever I want; here's a great place, because it
+also simplifies the entire invocation:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash">jq --raw-output <span class="token string">'
   .value[]
   | onlyvalues
@@ -905,7 +999,11 @@ pre[class*="language-diff-"] {
 "México D.F.","Ana Trujillo Emparedados y helados","Ana Trujillo","Customers"
 "México D.F.","Antonio Moreno Taquería","Antonio Moreno","Customers"</code></pre>
 <h2 id="wrapping-up">Wrapping up</h2>
-<p>This turned out to be a longer post than I'd intended to write. I found that I wanted to make sure I explained each part of the solution, and why it was how it was. Of course, this has the benefit of causing me to think a little harder about what <code>jq</code> is doing, which in turn helps me learn a little bit more about it.</p>
+<p>This turned out to be a longer post than I'd intended to write. I found that I
+wanted to make sure I explained each part of the solution, and why it was how
+it was. Of course, this has the benefit of causing me to think a little harder
+about what <code>jq</code> is doing, which in turn helps me learn a little bit more about
+it.</p>
 
 
 
@@ -917,7 +1015,7 @@ pre[class*="language-diff-"] {
 			</heading-anchors>
 		</main>
 
-		<!-- This page `/blog/posts/2022/05/19/json-object-values-into-csv-with-jq/` was built on 2026-01-10T09:01:38.779Z -->
+		<!-- This page `/blog/posts/2022/05/19/json-object-values-into-csv-with-jq/` was built on 2026-01-10T14:54:12.855Z -->
 		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
 	</body>
 </html>
