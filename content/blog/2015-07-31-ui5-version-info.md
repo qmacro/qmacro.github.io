@@ -8,6 +8,7 @@ tags:
   - versioninfo
 description: 30 Days of UI5 - day 28 by DJ Adams.
 ---
+(Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 
 ![]( {{ "/images/2018/02/Screen-Shot-2015-07-31-at-13.04.22-624x312.png" | url }})
 
@@ -49,5 +50,3 @@ Here’s what the result looks like:
 I’ve tried to use some UI5 design and control best practices, while [defining the UI in XML](https://github.com/qmacro/ui5versioninfo/blob/master/new.html?ts=2#L15-L92). I’ve added some [functional programming style data merging](https://github.com/qmacro/ui5versioninfo/blob/master/new.html?ts=2#L191-L209) to take place after the original manipulation, and a [small controller](https://github.com/qmacro/ui5versioninfo/blob/master/new.html?ts=2#L211-L259) with the requisite functions for event handling and formatting.
 
 I took the screencast of the “finished” attempt on the tube from London Euston to Chiswick this morning, so it really was a rush job. But I think that it’s worth thinking about how we can improve this useful resource. How would you improve it?
-
- 

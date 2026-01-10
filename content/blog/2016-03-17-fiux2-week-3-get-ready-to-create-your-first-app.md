@@ -30,7 +30,7 @@ That said, if it hadn’t have been skipped, I could imagine the unit being four
 
 ## Unit 3 “Introduction to Annotations and Smart Templates”
 
-This was a very interesting unit, not least because of the implications and the reasoning behind augmenting the metadata with extra semantics. I’ve written about semantic information before (see [Semantic Pages](/blog/posts/2015/07/06/semantic-pages/), a post in the [30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) series). This time it’s about adding extra information to the OData metadata to enable a more rapid construction – in some cases automatic – of UI5 based application components. A control, or set of controls, that can understand the data that is bound to it, is capable of more than acting passively.
+This was a very interesting unit, not least because of the implications and the reasoning behind augmenting the metadata with extra semantics. I’ve written about semantic information before (see [Semantic Pages](/blog/posts/2015/07/06/semantic-pages/), a post in the [30 Days of UI5](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/) series). This time it’s about adding extra information to the OData metadata to enable a more rapid construction – in some cases automatic – of UI5 based application components. A control, or set of controls, that can understand the data that is bound to it, is capable of more than acting passively.
 
 There’s a lot driving the concept of annotations and their use in smart controls and templates, not least SAP’s need to produce yet more SAP Fiori apps, more quickly and more reliably. Finding a way for apps, or parts of apps, to write themselves, is going to help that process.
 

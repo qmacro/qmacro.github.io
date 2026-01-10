@@ -10,6 +10,7 @@ tags:
   - openui5
 description: 30 Days of UI5 - day 17 by John Appleby.
 ---
+(Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 
 DJ kindly asked me to write a blog for his 30 days of UI5 series to celebrate version 1.30 of UI5. My immediate reaction was what, me, what do I have to add to this subject?
 
@@ -23,7 +24,7 @@ At that time, it was necessary to pay for core SAP licenses, Gateway integration
 
 From that conversation came a blog [Should SAP Fiori be Freeori?](http://diginomica.com/2014/02/05/sap-fiori-freeori) which framed the conversation in a way we believed SAP would understand. That was key to our argument – we believed that Fiori was the solution to renovating the SAP user experience and that charging for it would risk SAP’s long-term future.
 
-**What happened next?**
+## What happened next?
 
 Geoff Scott, CEO of ASUG chimed in with[Time for a UX Revolution, Not Evolution](http://www.asugnews.com/article/time-for-a-ux-revolution-not-evolution) and then Chris Kanaracus, that time at IDG, now working at ASUG, continued the discussion with [SAP users rattle sabers over charges for user-friendly Fiori apps](http://www.pcworld.com/article/2143980/sap-users-rattle-sabers-over-charges-for-userfriendly-fiori-apps.html) and did a fantastic job of rallying the user groups and getting great quotes from the ecosystem:
 
@@ -35,7 +36,7 @@ Dennis then put the hammer in with [The SAP Fiori or Freeori discussion heats u
 
 I received a few back-channel messages about this, suggesting that things would move, and sure enough, SAP opened up the Fiori product to all customers at no charge. What incredible news.
 
-**What does this look like one year on?**
+## What does this look like one year on?
 
 The concern my colleagues at SAP had was that charging for Fiori ensured that there was attention to the development. However the reverse hasn’t caused an issue. On the contrary, Fiori has more investment and Sam Yen’s User eXperience group have gone from strength to strength.
 

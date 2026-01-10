@@ -9,8 +9,9 @@ tags:
   - 30ui5
 description: 30 Days of UI5 - day 19 by DJ Adams.
 ---
+(Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 
-In an earlier post in this [series](/blog/posts/2015/07/04/30-days-of-ui5/), entitled “[The UI5 Support Tool – Help Yourself!](/blog/posts/2015/07/18/the-ui5-support-tool-help-yourself/)“, we looked at the Support Tool, examining the information available in the Control Tree. In particular we looked at the Properties and Binding Infos tabs. While exploring the new UI5 1.30 features with the Explored app, I re-noticed a small addition to the Explored UI – a Button that allowed me to switch to full screen mode to view control samples.
+In an earlier post in this [series](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/), entitled “[The UI5 Support Tool – Help Yourself!](/blog/posts/2015/07/18/the-ui5-support-tool-help-yourself/)“, we looked at the Support Tool, examining the information available in the Control Tree. In particular we looked at the Properties and Binding Infos tabs. While exploring the new UI5 1.30 features with the Explored app, I re-noticed a small addition to the Explored UI – a Button that allowed me to switch to full screen mode to view control samples.
 
 ![Fullscreen toggle example]( {{ "/images/2018/02/fullscreentoggle-624x349.gif" | url }})
 

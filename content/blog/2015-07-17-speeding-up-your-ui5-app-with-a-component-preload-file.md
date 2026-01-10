@@ -9,18 +9,19 @@ tags:
   - preload
 description: 30 Days of UI5 - day 14 by John Murray.
 ---
+(Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 
 In this post we’ll be looking at how you can speed up the load times of your UI5 applications by using a Component preload file. Those of you who are familiar with SAP Fiori applications will probably already know what a Component preload file is, however those of you who aren’t will almost definitely have all seen a reference to this file before. This file is referenced in an error message that appears in the console whenever you load a UI5 app, which is lacking a Component preload file.
 
 ![Chrome preload error]( {{ "/images/2018/02/Screen-Shot-2015-07-14-at-20.54.47-624x31.png" | url }})
 
-**So just what is this preload file and why should I care?**
+## So just what is this preload file and why should I care?
 
 The preload file is essentially all of the files which make up your application, so that’s the Component itself, Controllers, Views, Fragments and so on, all compressed and inserted into one file, the preload file. If this file exists then UI5 will only load that file, and it won’t load of all of the other various files which it ordinarily would have done. The error we saw earlier is caused because UI5 looks for a preload file early in the execution flow, but of course did not find one, and so carried on loading all of the files individually.
 
 Now that we’ve cleared up what the file actually is, and why that error appears, just why should exactly should we worry about it? After all we’ve ignored that error up until now and all our apps have worked just fine. Well, the reason we should care is that it dramatically decreases page load time. This is due to the app only having to make one call to get the preload file, rather than all of the individual calls for each file, but also because in the preload file the code is “minified”, which means the file size is also very small relative to the full size individual files. This is especially important when developing UI5 applications which are to be used over a mobile data connection, where size has a very large impact on initial load performance. As an anecdotal example, on the simple UI5 app which I have just created a preload file for my initial load time went from 8-9 seconds down to 3-4 seconds, which is tremendous improvement!
 
-**Sounds great! So how can I make a preload file for my UI5 app?**
+## Sounds great! So how can I make a preload file for my UI5 app?
 
 For this next section you will need to have installed on your machine [NodeJS](https://nodejs.org/), [npm](https://www.npmjs.com/) and [Grunt](http://gruntjs.com/). If you don’t know how to install and use these things then do [reach out to me on Twitter](http://twitter.com/johnbmurray).
 
@@ -57,14 +58,14 @@ module.exports = function(grunt) {
             cwd: '',
             prefix: '',
             src: [
-              'webapp/**/*.js',
-              'webapp/**/*.fragment.html',
-              'webapp/**/*.fragment.json',
-              'webapp/**/*.fragment.xml',
-              'webapp/**/*.view.html',
-              'webapp/**/*.view.json',
-              'webapp/**/*.view.xml',
-              'webapp/**/*.properties'
+              'webapp/## /*.js',
+              'webapp/## /*.fragment.html',
+              'webapp/## /*.fragment.json',
+              'webapp/## /*.fragment.xml',
+              'webapp/## /*.view.html',
+              'webapp/## /*.view.json',
+              'webapp/## /*.view.xml',
+              'webapp/## /*.properties'
             ]
           },
           dest: '',
@@ -96,6 +97,6 @@ That’s all the configuration set up, now it’s time to generate our preload f
 
 ![preload generation output]( {{ "/images/2018/02/Screen-Shot-2015-07-15-at-00.48.10-624x88.png" | url }})
 
-**Final thoughts**
+## Final thoughts
 
 Congratulations, you’ve just made your first preload file and are now well on the way to creating even better apps with UI5!

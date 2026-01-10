@@ -7,6 +7,7 @@ tags:
   - openui5
 description: 30 Days of UI5 - day 10 by James Hale.
 ---
+(Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 
 ![Date Picker control]( {{ "/images/2018/02/30ui5-10-date-picker.jpg" | url }})
 

@@ -11,6 +11,7 @@ tags:
   - soap
 description: 30 Days of UI5 - day 26 by DJ Adams.
 ---
+(Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 
 ![]( {{ "/images/2018/02/Screen-Shot-2015-07-29-at-07.33.30-624x255.png" | url }})
 

@@ -8,30 +8,57 @@ tags:
   - 30ui5
 description: 30 Days of UI5 - overview and day 1 by DJ Adams.
 ---
+(Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 
 ![OpenUI5 logo](/images/2018/01/OpenUI5_text_below_small.png)
 
-UI5, the collective short name for both SAPUI5 and OpenUI5, is soon to reach a milestone, with the release of 1.30. There’s already [a preview release available](http://openui5.tumblr.com/post/121579731137/first-preview-of-openui5-1-30).
+UI5, the collective short name for both SAPUI5 and OpenUI5, is soon to reach a
+milestone, with the release of 1.30. There’s already [a preview release
+available](http://openui5.tumblr.com/post/121579731137/first-preview-of-openui5-1-30).
 
-The UI Development Toolkit for HTML5, to give it its proper long-form [Culture-style name](https://en.wikipedia.org/wiki/List_of_spacecraft_in_the_Culture_series), has come a long way in the last few years. It’s a multi-faceted tookit that shows pedigree, passion and influence from many directions. From the [web dynpro inspired design roots](https://openui5.hana.ondemand.com/#test-resources/sap/ui/commons/demokit/Dialog.html),  through the hard work and commitment from all the great designers and developers, to the exemplary responsive controls we have come to know and love in the sap.m library and beyond.
+The UI Development Toolkit for HTML5, to give it its proper
+long-form [Culture-style
+name](https://en.wikipedia.org/wiki/List_of_spacecraft_in_the_Culture_series),
+has come a long way in the last few years. It’s a multi-faceted tookit that
+shows pedigree, passion and influence from many directions. From the [web
+dynpro inspired design
+roots](https://openui5.hana.ondemand.com/#test-resources/sap/ui/commons/demokit/Dialog.html),
+ through the hard work and commitment from all the great designers and
+developers, to the exemplary responsive controls we have come to know and love
+in the sap.m library and beyond.
 
 ![Message on London Transport sign](/images/2018/01/opensource-168x300.png)
 
-And of course there’s [the open sourcing of the toolkit](http://scn.sap.com/community/developer-center/front-end/blog/2013/12/11/what-is-openui5-sapui5), a great move on SAP’s part, influenced not in a small way by many developers both external and internal to SAP. Many of the UI5 core team have open source in their blood, part of a new generation that is making SAP what it is today.
+And of course there’s [the open sourcing of the
+toolkit](http://scn.sap.com/community/developer-center/front-end/blog/2013/12/11/what-is-openui5-sapui5),
+a great move on SAP’s part, influenced not in a small way by many developers
+both external and internal to SAP. Many of the UI5 core team have open source
+in their blood, part of a new generation that is making SAP what it is today.
 
-Where would SAP Fiori be without UI5? Nowhere. The engine behind the UX revolution that is powering today’s and tomorrow’s SAP applications (with S/4HANA) is UI5.
+Where would SAP Fiori be without UI5? Nowhere. The engine behind the UX
+revolution that is powering today’s and tomorrow’s SAP applications (with
+S/4HANA) is UI5.
 
-As Norman Cook might say, “[You’ve come a long way, baby](https://open.spotify.com/album/6h3VY15qno2SJbgH2VuEnn)“.
+As Norman Cook might say, “[You’ve come a long way,
+baby](https://open.spotify.com/album/6h3VY15qno2SJbgH2VuEnn)“.
 
-So as a bit of fun, and to celebrate this version 1.30 milestone, here’s a series of 30 posts, one a day, on UI5 related topics. Small posts from me and some guest authors, designed to be read during a quick coffee break. Nothing earth shattering, but hopefully things that will whet your appetite for further reading, and perhaps bring to your attention features that you might not yet have had a chance to consider.
+So as a bit of fun, and to celebrate this version 1.30 milestone, here’s a
+series of 30 posts, one a day, on UI5 related topics. Small posts from me and
+some guest authors, designed to be read during a quick coffee break. Nothing
+earth shattering, but hopefully things that will whet your appetite for further
+reading, and perhaps bring to your attention features that you might not yet
+have had a chance to consider.
 
-(This series is also available online, for the Kindle, at Amazon: [30 Days of UI5: Celebrating SAPUI5 and OpenUI5's milestone 1.30 release in Autumn 2015](https://www.amazon.co.uk/30-Days-UI5-Celebrating-milestone-ebook/dp/B017MOJEWG/).)
+(This series is also available online, for the Kindle, at Amazon: [30 Days of
+UI5: Celebrating SAPUI5 and OpenUI5's milestone 1.30 release in Autumn
+2015](https://www.amazon.co.uk/30-Days-UI5-Celebrating-milestone-ebook/dp/B017MOJEWG/).)
 
-[Share and enjoy!](https://www.goodreads.com/quotes/95859-share-and-enjoy-is-the-company-motto-of-the-hugely)
+[Share and
+enjoy!](https://www.goodreads.com/quotes/95859-share-and-enjoy-is-the-company-motto-of-the-hugely)
 
 ## The Series
 
-- Day 1 [Welcome to 30 Days of UI5!](/blog/posts/2015/07/04/30-days-of-ui5/) by [DJ Adams](/about/) (this post)
+- Day 1 [Welcome to 30 Days of UI5!](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/) by [DJ Adams](/about/) (this post)
 - Day 2 [Expression Binding](/blog/posts/2015/07/05/expression-binding/) by [DJ Adams](/about/)
 - Day 3 [Semantic Pages](/blog/posts/2015/07/06/semantic-pages/) by [DJ Adams](/about/)
 - Day 4 [Creating Native Applications with UI5](/blog/posts/2015/07/07/creating-native-applications-with-ui5/) by [John Murray](http://jmurray.me/)
@@ -43,7 +70,7 @@ So as a bit of fun, and to celebrate this version 1.30 milestone, here’s a se
 - Day 10 [Handling Dates with the Date Picker](/blog/posts/2015/07/13/handling-dates-with-the-date-picker/) by [James Hale](https://twitter.com/jameshale14)
 - Day 11 [Lightweight Notifications with the Message Strip](/blog/posts/2015/07/04/lightweight-notifications-with-the-message-strip/) by [DJ Adams](/about/)
 - Day 12 [Base Classes in UI5](/blog/posts/2015/07/14/base-classes-in-ui5/) by [Thilo Seidel](https://twitter.com/ThiloDev)
-- Day 13 [Multi-language support out of the box – UI5's pedigree](/blog/posts/2015/07/16/multi-language-support-out-of-the-box-ui5-s-pedigree/) by [DJ Adams](/about/)
+- Day 13 [Multi-language support out of the box – UI5's pedigree](/blog/posts/2015/07/16/multi-language-support-out-of-the-box-ui5s-pedigree/) by [DJ Adams](/about/)
 - Day 14 [Speeding up your app with a Component preload file](/blog/posts/2015/07/17/speeding-up-your-ui5-app-with-a-component-preload-file/)  by [John Murray](http://jmurray.me/)
 - Day 15 [The UI5 Support Tool – Help Yourself!](/blog/posts/2015/07/18/the-ui5-support-tool-help-yourself/) by [DJ Adams](/about/)
 - Day 16 [UI5 and Coding Standards](/blog/posts/2015/07/19/ui5-and-coding-standards/) by [DJ Adams](/about/)

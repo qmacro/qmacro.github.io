@@ -6,6 +6,7 @@ tags:
   - openui5
 description: 30 Days of UI5 - day 30 by Sam Yen.
 ---
+(Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 
 Not too long ago, before Fiori was Fiori, SAP had tried several times to refresh the user experience.  I’m aware of over 20 different UI technologies that we have used since the release of R/3.  As mobility was sweeping into the enterprise, SAP adopted a native mobile development approach.  At the time, many believed that this was an opportunity to create modern experiences with modern UI technologies (primarily iOS at the time) and development environments to refresh the SAP User Experience.
 
