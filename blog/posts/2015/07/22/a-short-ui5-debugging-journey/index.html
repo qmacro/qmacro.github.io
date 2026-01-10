@@ -4,14 +4,14 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>A Short UI5 Debugging Journey</title>
-		<meta name="description" content="Reserving the right to be wrong.">
+		<meta name="description" content="30 Days of UI5 - day 19 by DJ Adams.">
 		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
 		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 
       <meta property="og:title" content="A Short UI5 Debugging Journey">
         <meta property="og:site_name" content="DJ Adams">
           <meta property="og:image" content="/images/site-image.png">
-        <meta property="og:description" content="Reserving the right to be wrong.">
+        <meta property="og:description" content="30 Days of UI5 - day 19 by DJ Adams.">
         <meta property="og:url" content="https://qmacro.org/blog/posts/2015/07/22/a-short-ui5-debugging-journey/">
 		
 		
@@ -556,26 +556,27 @@ pre[class*="language-diff-"] {
 	<li><time datetime="2015-07-22">22 July 2015</time></li>
 	<li><a href="/tags/debugging/" class="post-tag">debugging</a>, </li>
 	<li><a href="/tags/openui5/" class="post-tag">openui5</a>, </li>
-	<li><a href="/tags/supporttool/" class="post-tag">supporttool</a></li>
+	<li><a href="/tags/supporttool/" class="post-tag">supporttool</a>, </li>
+	<li><a href="/tags/ui5/" class="post-tag">ui5</a>, </li>
+	<li><a href="/tags/30ui5/" class="post-tag">30ui5</a></li>
 </ul>
 
-<p class="post-description-main"></p>
+<p class="post-description-main">30 Days of UI5 - day 19 by DJ Adams.</p>
 
-<p><strong><a href="/blog/posts/2015/07/04/30-days-of-ui5/">30 Days of UI5</a> — Day 19 by <a href="//qmacro.org/about/">DJ Adams</a></strong></p>
-<p>In an earlier post in this <a href="/blog/posts/2015/07/04/30-days-of-ui5/">series</a>, entitled “<a href="/2015/07/18/the-ui5-support-tool-help-yourself/">The UI5 Support Tool – Help Yourself!</a>“, we looked at the Support Tool, examining the information available in the Control Tree. In particular we looked at the Properties and Binding Infos tabs. While exploring the new UI5 1.30 features with the Explored app, I re-noticed a small addition to the Explored UI – a Button that allowed me to switch to full screen mode to view control samples.</p>
+<p>In an earlier post in this <a href="/blog/posts/2015/07/04/30-days-of-ui5/">series</a>, entitled “<a href="/blog/posts/2015/07/18/the-ui5-support-tool-help-yourself/">The UI5 Support Tool – Help Yourself!</a>“, we looked at the Support Tool, examining the information available in the Control Tree. In particular we looked at the Properties and Binding Infos tabs. While exploring the new UI5 1.30 features with the Explored app, I re-noticed a small addition to the Explored UI – a Button that allowed me to switch to full screen mode to view control samples.</p>
 <p><img src="/images/2018/02/fullscreentoggle-624x349.gif" alt="Fullscreen toggle example"></p>
 <p>I thought it would be fun to use the Support Tool and other debugging techniques to see what was exactly happening in the Explored app when we toggled that control.</p>
-<p><strong>Identifying the Button</strong></p>
+<h2 id="identifying-the-button">Identifying the Button</h2>
 <p>First, we need to identify the Button control – by its ID. We can use a context menu feature of Chrome which will open up the Developer Tools: Right-click on the Button and select Inspect Element. This will show us the ID in the highlighted sections in the screenshot:</p>
 <p><img src="/images/2018/02/Screen-Shot-2015-07-20-at-09.13.22-624x329.png" alt=""></p>
 <p>Here, the full ID highlighted is “__xmlview2–toggleFullScreenBtn-img”, as we right clicked on the image part of the Button. Go up a couple of levels in the HTML element hierarchy and you’ll see the button tag with an ID without the “-img” suffix. That’s what we want.</p>
-<p><strong>Stopping at the Press Event</strong></p>
+<h2 id="stopping-at-the-press-event">Stopping at the Press Event</h2>
 <p>We could at this stage <a href="http://mtg.wikia.com/wiki/Instant">play an instant</a> and use sap.ui.getCore().byId to get a handle on the control with this ID. But instead let’s look at the Support Tool and how it can expose event breakpoints.</p>
 <p>Opening the Support Tool, and the Control Tree section within, we can search for the ID “__xmlview2–toggleFullScreenBtn”. When we find it, we can switch to the Breakpoints tab and set a breakpoint for the firePress function (as that is what will be happening when we press the Button – a “press” event will be fired):</p>
 <p><img src="/images/2018/02/Screen-Shot-2015-07-20-at-09.18.35-624x220.png" alt=""></p>
 <p>Now when we press the Button, we land inside Breakpoint.js:</p>
 <p><img src="/images/2018/02/Screen-Shot-2015-07-20-at-09.22.29-624x329.png" alt=""></p>
-<p><strong>Finding the Event Handler</strong></p>
+<h2 id="finding-the-event-handler">Finding the Event Handler</h2>
 <p>Now that we’re here, there’s plenty to explore, but let’s cut to the chase and look at the Button instance. In particular, we’ll look at an internal property “mEventRegistry” which is a map that holds the functions to be called when specific events are fired. Remember that this is an internal property, which we can’t use, or rely upon, when <em>building</em> apps (for more details on this, see the post “<a href="/blog/posts/2015/07/04/javascript-dos-and-donts-for-ui5/">JavaScript Do’s and Don’ts in UI5</a>” in this series). But we’re not building, we’re debugging, so all bets are off.</p>
 <p>The ‘this’ here is the Button control instance, and so we can see that the “this.mEventRegistry” map has an entry for “press”:</p>
 <pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">this</span><span class="token punctuation">.</span>mEventRegistry
@@ -586,13 +587,11 @@ pre[class*="language-diff-"] {
 <p>Unless you’re using an older version of Chrome, you should be able to click on the function name to bring you to the “onToggleFullScreen” function definition:</p>
 <p><img src="/images/2018/02/Screen-Shot-2015-07-20-at-09.29.55-624x222.png" alt=""></p>
 <p>Nice!</p>
-<p><strong>Examining What Happens</strong></p>
+<h2 id="examining-what-happens">Examining What Happens</h2>
 <p>We can now put a breakpoint on line 163 (which I had done already before taking the screenshot above) and hit continue, to be able to then step into what this function calls (the updateMode function) when the stack gets here. This is what the updateMode function looks like:</p>
 <p><img src="/images/2018/02/Screen-Shot-2015-07-20-at-09.34.58-624x237.png" alt=""></p>
 <p>It sets the Split App’s <a href="https://openui5.hana.ondemand.com/#docs/api/symbols/sap.m.SplitAppMode.html">mode</a> to the appropriate value (the default of “ShowHideMode”, or “HideMode” for the full screen effect). It also modifies the containing <a href="https://openui5.hana.ondemand.com/#docs/api/symbols/sap.m.Shell.html#getAppWidthLimited">Shell</a> control’s appWidthLimited property so that a real full screen effect can be properly achieved.</p>
 <p>So that’s it! If you can become comfortable helping yourself with these tools, you’ll be a better UI5 developer.</p>
-<p></p>
-<p></p>
 
 
 
@@ -604,7 +603,7 @@ pre[class*="language-diff-"] {
 			</heading-anchors>
 		</main>
 
-		<!-- This page `/blog/posts/2015/07/22/a-short-ui5-debugging-journey/` was built on 2026-01-10T14:54:12.820Z -->
+		<!-- This page `/blog/posts/2015/07/22/a-short-ui5-debugging-journey/` was built on 2026-01-10T15:26:00.077Z -->
 		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
 	</body>
 </html>
