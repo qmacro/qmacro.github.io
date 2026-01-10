@@ -2,15 +2,15 @@
 date: 2015-07-29
 title: UI5 - looking back and forward
 tags:
-- http
-- odata
-- open
-- openui5
-- rest
-- soap
+  - 30ui5
+  - http
+  - odata
+  - open
+  - openui5
+  - rest
+  - soap
+description: 30 Days of UI5 - day 26 by DJ Adams.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 26 by [DJ Adams](//qmacro.org/about/)**
 
 ![]( {{ "/images/2018/02/Screen-Shot-2015-07-29-at-07.33.30-624x255.png" | url }})
 

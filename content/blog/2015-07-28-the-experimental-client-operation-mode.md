@@ -2,11 +2,13 @@
 date: 2015-07-28
 title: The experimental Client operation mode
 tags:
-- northwind
-- odata
-- odatamodel
-- openui5
-- operationmode
+  - 30ui5
+  - northwind
+  - odata
+  - odatamodel
+  - openui5
+  - operationmode
+description: 30 Days of UI5 - day 25 by DJ Adams.
 ---
 
 **[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 25 by [DJ Adams](//qmacro.org/about/)**

@@ -2,14 +2,14 @@
 date: 2015-07-18
 title: The UI5 Support Tool - Help Yourself!
 tags:
-- fragment
-- mvc
-- openui5
-- supporttool
-- xml
+  - 30ui5
+  - fragment
+  - mvc
+  - openui5
+  - supporttool
+  - xml
+description: 30 Days of UI5 - day 15 by DJ Adams.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 15 by [DJ Adams](//qmacro.org/about/)**
 
 ![part of the Support Tool Menu]( {{ "/images/2018/02/Screenshot-2015-07-18-at-12.12.33.png" | url }})
 

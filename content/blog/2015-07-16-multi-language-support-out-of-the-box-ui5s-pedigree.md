@@ -2,16 +2,16 @@
 date: 2015-07-16
 title: Multi language support out of the box - UI5's pedigree
 tags:
-- language
-- locale
-- messagepage
-- multilingual
-- openui5
-- pedigree
-- rtl
+  - 30ui5
+  - language
+  - locale
+  - messagepage
+  - multilingual
+  - openui5
+  - pedigree
+  - rtl
+description: 30 Days of UI5 - day 13 by DJ Adams.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 13 by [DJ Adams](//qmacro.org/about/)**
 
 ![Message Page control]( {{ "/images/2018/02/Screen-Shot-2015-07-14-at-18.10.05-624x415.png" | url }})
 

@@ -2,15 +2,15 @@
 date: 2015-07-30
 title: A non-techie PM's view of UI5
 tags:
-- agile
-- branches
-- gateway
-- git
-- openui5
-- projectmanagement
+  - 30ui5
+  - agile
+  - branches
+  - gateway
+  - git
+  - openui5
+  - projectmanagement
+description: 30 Days of UI5 - day 27 by Jon Gregory.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 27 by [Jon Gregory](https://twitter.com/jongregs)**
 
 ![]( {{ "/images/2018/02/branches.png" | url }})
 

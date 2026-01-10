@@ -2,15 +2,14 @@
 date: 2015-07-07
 title: Creating Native Applications with UI5
 tags:
-- openui5
-- phonegap
-- phonegapbuild
-- sapui5
-- ui5
-- 30ui5
+  - openui5
+  - phonegap
+  - phonegapbuild
+  - sapui5
+  - ui5
+  - 30ui5
+description: 30 Days of UI5 - day 4 by John Murray.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) – Day 4 by [John Murray](http://jmurray.me/)**
 
 ![PhoneGap:Build logo]( {{ "/images/2018/01/download.jpeg" | url }})
 

@@ -2,11 +2,12 @@
 date: 2015-07-04
 title: JavaScript Do's and Don'ts for UI5
 tags:
-- javascript
-- openui5
+  - 30ui5
+  - javascript
+  - openui5
+description: 30 Days of UI5 - day 7 by DJ Adams.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/)  &mdash; Day 7 by [DJ Adams](//qmacro.org/about/)**
+(Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 
 ![Screenshot of coding issues menu item]( {{ "/images/2018/02/Screen-Shot-2015-07-04-at-10.00.14.png" | url }})
 
@@ -22,11 +23,11 @@ Related to this item is almost the antithesis, which is to use (create) properti
 sap.ui.controller("local.controller", {
 
   _oView : null,
- 
+
   onInit : function() {
     this._oView = this.getView();
   },
- 
+
   onSomeEvent : function(oEvent) {
     ...
     this._oView.someFunction(...);
@@ -41,11 +42,11 @@ But sometimes the developer, averse to underscores, will write it like this:
 sap.ui.controller("local.controller", {
 
   oView : null,
- 
+
   onInit : function() {
     this.oView = this.getView();
   },
- 
+
   onSomeEvent : function(oEvent) {
     ...
     this.oView.someFunction(...);

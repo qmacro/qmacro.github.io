@@ -2,16 +2,15 @@
 date: 2015-07-05
 title: Expression Binding
 tags:
-- binding
-- embeddedbinding
-- expressionbinding
-- formatter
-- openui5
-- ui5
-- 30ui5
+  - binding
+  - embeddedbinding
+  - expressionbinding
+  - formatter
+  - openui5
+  - ui5
+  - 30ui5
+description: 30 Days of UI5 - day 2 by DJ Adams.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/)  &mdash; Day 2 by [DJ Adams](//qmacro.org/about/)**
 
 ![Expression Binding samples]( {{ "/images/2018/01/Screen-Shot-2015-07-05-at-13.34.07.png" | url }})
 
@@ -33,8 +32,8 @@ Those who have had their coffee already today (milk and sugar optional) may have
 
 ```html
 <Input
-  enabled="false" 
-  description="Expression" 
+  enabled="false"
+  description="Expression"
   value="Good {= ${/now}.getHours() > 11 ? 'afternoon' : 'morning'}" />
 ```
 

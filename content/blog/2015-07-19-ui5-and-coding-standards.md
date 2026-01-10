@@ -2,15 +2,15 @@
 date: 2015-07-19
 title: UI5 and Coding Standards
 tags:
-- coding
-- contribution
-- guidelines
-- openui5
-- standards
-- xmlviews
+  - 30ui5
+  - coding
+  - contribution
+  - guidelines
+  - openui5
+  - standards
+  - xmlviews
+description: 30 Days of UI5 - day 16 by DJ Adams.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 16 by [DJ Adams](//qmacro.org/about/)**
 
 ![Y-U-NO meme]( {{ "/images/2018/02/Screen-Shot-2015-07-19-at-07.09.23.png" | url }})
 

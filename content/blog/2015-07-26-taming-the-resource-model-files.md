@@ -2,13 +2,13 @@
 date: 2015-07-26
 title: Taming the Resource Model Files
 tags:
-- i18n
-- messagebundle
-- openui5
-- resourcemodel
+  - 30ui5
+  - i18n
+  - messagebundle
+  - openui5
+  - resourcemodel
+description: 30 Days of UI5 - day 23 by Nathan Adams.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 23 by [Nathan Adams](http://twitter.com/lxinspc)**
 
 UI5’s support for multiple-languages, out of the box (see the post “[Multi-language support out of the box – UI5’s pedigree](/blog/posts/2015/07/16/multi-language-support-out-of-the-box-ui5s-pedigree/)” in this series) is impressive and easy to use. Creating a message resource bundle in your Component.js file is straightforward, especially if picking up the user’s language preferences in the browser.
 
@@ -19,19 +19,19 @@ What can be less straightforward though is organising these files into something
 
 DISTRIBUTE_EVENLY=Distribute Amounts Evenly
 
-#XBUT,20: add internal attendee button  
+#XBUT,20: add internal attendee button
 ADD_INTERNAL_ATTENDEE=Add Internal Attendee
 
-#XBUT,20: add external attendee button  
+#XBUT,20: add external attendee button
 ADD_EXTERNAL_ATTENDEE=Add External Attendee
 
-#XFLD,20: FirstName – LastName in the right order, e.g. EN: Smith, John  
+#XFLD,20: FirstName – LastName in the right order, e.g. EN: Smith, John
 ATTENDEE_FULLNAME_ARTIFACT={1}, {0}
 
-#XTIT: title of Add Internal Attendees select dialog  
+#XTIT: title of Add Internal Attendees select dialog
 INTERNAL_ATTENDEES_TIT=Add Internal Attendees
 
-#XTIT: title of Add External Attendees dialog  
+#XTIT: title of Add External Attendees dialog
 EXTERNAL_ATTENDEES_TIT=Add External Attendees
 ```
 *Example of a Fiori Resource Model file from ‘My Travel Expenses’*

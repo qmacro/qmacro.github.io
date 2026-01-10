@@ -2,13 +2,12 @@
 date: 2015-07-09
 title: The App Descriptor
 tags:
-- appdescriptor
-- metadata
-- openui5
-- 30ui5
+  - appdescriptor
+  - metadata
+  - openui5
+  - 30ui5
+description: 30 Days of UI5 - day 6 by Thilo Seidel.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/)  &mdash; Day 6 by [Thilo Seidel](https://twitter.com/ThiloDev)**
 
 Writing your component based applications in UI5 you might be familiar with a long list of settings in your metadata section making you scroll down for hours before reaching the point where the first violin plays. This is not only annoying but in fact bad design as it means to mix static configuration in large amounts with actual code.
 

@@ -2,13 +2,12 @@
 date: 2015-07-07
 title: OpenUI5 Walkthrough
 tags:
-- explored
-- openui5
-- walkthrough
-- 30ui5
+  - explored
+  - openui5
+  - walkthrough
+  - 30ui5
+description: 30 Days of UI5 - day 5 by DJ Adams.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/)  &mdash; Day 5 by [DJ Adams](//qmacro.org/about/)**
 
 ![A tile with a link to sap.m.Explored]( {{ "/images/2018/01/Screen-Shot-2015-07-04-at-11.03.14.png" | url }})
 Explored, before its promotion.
@@ -28,7 +27,7 @@ One thing that immediately caught my eye was when I selected the appropriate Exp
 I was curious as to how this automatic opening of the tool had been achieved, and a quick look at the appropriate webapp/Component.js asset in the [sample’s code section](https://openui5beta.hana.ondemand.com/explored.html#/sample/sap.m.tutorial.walkthrough.30/code) gave me the answer:
 
 ```javascript
-jQuery.sap.require("sap.ui.core.support.Support"); 
+jQuery.sap.require("sap.ui.core.support.Support");
 var oSupport = sap.ui.core.support.Support.getStub("APPLICATION"); oSupport.openSupportTool();
 ```
 

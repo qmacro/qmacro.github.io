@@ -2,12 +2,12 @@
 date: 2015-07-31
 title: UI5 Version Info
 tags:
-- openui5
-- sapui5
-- versioninfo
+  - 30ui5
+  - openui5
+  - sapui5
+  - versioninfo
+description: 30 Days of UI5 - day 28 by DJ Adams.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 28 by [DJ Adams](//qmacro.org/about/)**
 
 ![]( {{ "/images/2018/02/Screen-Shot-2015-07-31-at-13.04.22-624x312.png" | url }})
 

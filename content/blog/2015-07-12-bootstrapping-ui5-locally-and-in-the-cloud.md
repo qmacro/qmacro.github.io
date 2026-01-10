@@ -2,15 +2,15 @@
 date: 2015-07-12
 title: Bootstrapping UI5 Locally and in the Cloud
 tags:
-- bootstrap
-- hcp
-- openui5
-- saphcp
-- sapwebide
-- webide
+  - 30ui5
+  - bootstrap
+  - hcp
+  - openui5
+  - saphcp
+  - sapwebide
+  - webide
+description: 30 Days of UI5 - day 9 by DJ Adams.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 9 by [DJ Adams](//qmacro.org/about/)**
 
 ![Screenshot of files in a UI5 app directory]( {{ "/images/2018/02/Screen-Shot-2015-07-11-at-16.05.52.png" | url }})
 

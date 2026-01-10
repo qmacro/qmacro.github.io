@@ -2,12 +2,12 @@
 date: 2015-07-11
 title: User Notifications with the Message Popover
 tags:
-- messages
-- openui5
-- popover
+  - 30ui5
+  - messages
+  - openui5
+  - popover
+description: 30 Days of UI5 - day 8 by Sean Campbell.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 8 by by [Sean Campbell](http://twitter.com/saoirse_22)**
 
 ![A selection of brightly coloured messages]( {{ "/images/2018/02/Screen-Shot-2015-07-09-at-21.12.19-300x298.png" | url }})
 

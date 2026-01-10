@@ -2,13 +2,13 @@
 date: 2015-07-06
 title: Semantic Pages
 tags:
-- abstraction
-- openui5
-- scaffolding
-- semanticpage
+  - 30ui5
+  - abstraction
+  - openui5
+  - scaffolding
+  - semanticpage
+description: 30 Days of UI5 - day 3 by DJ Adams.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/)  &mdash; Day 3 by [DJ Adams](//qmacro.org/about/)**
 
 [![the cover of "A Primer of Greek Grammar" by Abbott and Mansfield](/images/2018/01/download1-1.jpeg)](http://www.bloomsbury.com/au/primer-of-greek-grammar-9780715612583/)
 
@@ -33,10 +33,10 @@ It’s similar in the [Semantic Page Full Screen sample](https://openui5beta.han
 What we seem to have so far is a small hierarchy of Page based controls, that looks like this:
 
 ```
-     SemanticPage 
-          | 
+     SemanticPage
+          |
     +----------------------+
-    |                      | 
+    |                      |
 MasterPage          ShareMenuPage
                            |
                    +---------------+

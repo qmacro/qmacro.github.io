@@ -2,14 +2,14 @@
 date: 2015-07-20
 title: UI5 and Fiori - The Story of Open and Free
 tags:
-- fiori
-- free
-- freeori
-- opensource
-- openui5
+  - 30ui5
+  - fiori
+  - free
+  - freeori
+  - opensource
+  - openui5
+description: 30 Days of UI5 - day 17 by John Appleby.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 17 by [John Appleby](https://twitter.com/applebyj)** 
 
 DJ kindly asked me to write a blog for his 30 days of UI5 series to celebrate version 1.30 of UI5. My immediate reaction was what, me, what do I have to add to this subject?
 

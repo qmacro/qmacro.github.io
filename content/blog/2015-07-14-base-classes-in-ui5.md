@@ -2,16 +2,16 @@
 date: 2015-07-14
 title: Base Classes in UI5
 tags:
-- baseclass
-- control
-- element
-- eventprovider
-- managedobject
-- metadata
-- openui5
+  - 30ui5
+  - baseclass
+  - control
+  - element
+  - eventprovider
+  - managedobject
+  - metadata
+  - openui5
+description: 30 Days of UI5 - day 12 by Thilo Seidel.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 12 by [Thilo Seidel](https://twitter.com/ThiloDev)**
 
 Learning your way around UI5 can be hard sometimes. With the new tutorials and improved structure in the developer guide, help on the journey to UI5 mastery has got better over the last few months.
 
