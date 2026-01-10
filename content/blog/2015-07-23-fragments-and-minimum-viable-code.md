@@ -2,13 +2,14 @@
 date: 2015-07-23
 title: Fragments and Minimum Viable Code
 tags:
-- fragment
-- mvc
-- openui5
-- xmlfragments
+  - 30ui5
+  - fragment
+  - mvc
+  - openui5
+  - xmlfragments
+description: 30 Days of UI5 - day 20 by DJ Adams.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 20 by [DJ Adams](//qmacro.org/about/)**
+(Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 
 In an earlier post in this series, [MVC – Model View Controller, Minimum Viable Code](/blog/posts/2015/07/21/mvc-model-view-controller-minimum-viable-code/), I showed how you could write a single-file UI5 app but still embrace and use the concepts of Model View Controller, having separate controller definitions and declarative XML Views. I also mentioned you could use XML Fragments in this way too, and [Robin van het Hof asked](https://twitter.com/Qualiture/status/623467858652200960) if I could explain how. So here we go, thanks Robin!
 

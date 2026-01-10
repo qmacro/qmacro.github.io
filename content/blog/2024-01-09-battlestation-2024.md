@@ -14,4 +14,4 @@ It's in the office space on the narrowboat that you can see here near the centre
 
 My main work machine is a MacBook Air M2 from 2022, which is great. I'm running the Chromebook tablet (Lenovo IdeaPad Duet 3) to monitor Docker containers (via a remote ssh-based context, in a similar way to how I set up [remote access to Docker on my Synology NAS](/blog/posts/2021/06/12/remote-access-to-docker-on-my-synology-nas/)) and also I use it for controlling my live streams via YouTube Studio, where I can monitor the chat separate from my main display.
 
-The space is perfect, and just behind the wooden bulkhead is the [stove](https://qmacro.org/blog/posts/2023/04/07/living-on-a-narrowboat-the-stove-as-the-heart-of-the-home/), so it's nice and warm here in the office as well as in the saloon and galley.
+The space is perfect, and just behind the wooden bulkhead is the [stove](/blog/posts/2023/04/07/living-on-a-narrowboat-the-stove-as-the-heart-of-the-home/), so it's nice and warm here in the office as well as in the saloon and galley.

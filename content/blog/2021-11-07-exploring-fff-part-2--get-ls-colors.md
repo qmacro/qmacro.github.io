@@ -144,7 +144,7 @@ world
 <a name="ioredirection"></a>
 ### Input/output redirection, here documents and here strings
 
-In [part 1][part-1] I took [a brief look at output redirection](https://github.com/qmacro/autodidactics/blob/fff-1/_posts/2021-08-30-exploring-fff-part-1---main.markdown#output-redirection). Now it's the time to look at input redirection.
+In [part 1][part-1] I took [a brief look at output redirection](https://github.com/qmacro/blog/posts/blob/fff-1/_posts/2021-08-30-exploring-fff-part-1---main.markdown#output-redirection). Now it's the time to look at input redirection.
 
 I see the use of the input redirection symbol (`<`), and how it "grows" (to `<<` and even `<<<`) as the input "shrinks", in the same way as I see the first part of vehicle licence plates in Germany.
 

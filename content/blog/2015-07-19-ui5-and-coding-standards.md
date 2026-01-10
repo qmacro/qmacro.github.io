@@ -2,31 +2,32 @@
 date: 2015-07-19
 title: UI5 and Coding Standards
 tags:
-- coding
-- contribution
-- guidelines
-- openui5
-- standards
-- xmlviews
+  - 30ui5
+  - coding
+  - contribution
+  - guidelines
+  - openui5
+  - standards
+  - xmlviews
+description: 30 Days of UI5 - day 16 by DJ Adams.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 16 by [DJ Adams](//qmacro.org/about/)**
+(Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 
 ![Y-U-NO meme]( {{ "/images/2018/02/Screen-Shot-2015-07-19-at-07.09.23.png" | url }})
 
 At one end of the spectrum, coding standards can be regarded as [essential](https://jaxenter.com/power-ten-nasas-coding-commandments-114124.html). At the other, they’re the subject of many a passionate debate, second perhaps only to the Vim vs Emacs [editor wars](https://en.wikipedia.org/wiki/Editor_war).
 
-I’ll provide some caution by starting with one of my favourite quotes from Andrew Tanenbaum: 
+I’ll provide some caution by starting with one of my favourite quotes from Andrew Tanenbaum:
 
 *“The nice thing about standards is that there are so many of them to choose from”.*
 
-**Use of standards**
+## Use of standards
 
 As software projects scale up, coding standards make more and more sense. On a [recent run](https://www.endomondo.com/users/1074038/workouts/555294655), I listened to the JavaScript Jabber podcast “[JSJ ESLint with Jamund Ferguson](http://devchat.tv/js-jabber/162-jsj-eslint-with-jamund-ferguson)“. There was a great discussion about ESLint, and it was interesting to see the different perspectives on imposed coding standards, from “it restricts my freedom of expression” to “it makes teams more efficient as they work more as one”. I think those two perspectives slot roughly onto the scale spectrum. If it’s just you developing, then by all means use whatever style you feel like using. But if you’re part of a larger team whose members have to work with each other’s code, imposed coding standards do make a lot of sense.
 
 The OpenUI5 project has some coding [contribution guidelines](https://github.com/SAP/openui5/blob/master/CONTRIBUTING.md#contribute-code) as well as [ESLint rules](https://github.com/SAP/openui5/blob/master/.eslintrc), well worth checking out, and pretty important if you want to contribute to UI5. It’s also worth considering them for your own UI5 applications. One advantage of adopting the OpenUI5 project’s guidelines and rules is that when you cross the path from your codebase into the underlying UI5 toolkit, the transition won’t be as jarring.
 
-**Example XML View**
+## Example XML View
 
 The ESLint rules, and ESLint in general would cause this post to be a lot longer than I want, so instead I’ll look at some non-JavaScript conventions that I like to try and impose, at least upon myself. In particular I’ll look at the style for XML View definitions. Here’s part a sample XML View, which I’ll use to illustrate the style for which I strive. Note that the “»” character represents a tab (I have the list mode turned on in my editor to [show invisibles](http://vimcasts.org/episodes/show-invisibles/)).
 
@@ -56,6 +57,6 @@ In the following, each prefix represents the line number(s) to which I’m refer
 
 **1-34**: Use double quotes throughout; the only place you’ll then use single quotes is within embedded binding syntax. Also … I know this is the subject of much debate, but the OpenUI5’s project standard specifies tabs for indentation. It came as a shock to me at first, but I have now embraced it :-)
 
-**Conclusion**
+## Conclusion
 
 I have no doubt caused some outrage to some of you, but hopefully just as much agreement with others. For me, this sample XML View is easy to read, a lot easier than some of the Fiori views that are generated from templates, for example. What are your standards?

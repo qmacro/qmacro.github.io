@@ -3,6 +3,11 @@ title: Project Gateway. A call to arms. Or at least to data.
 date: 2011-02-01
 tags:
   - bluefinsolutions
+  - gateway
+  - odata
+  - integration
+  - 2001
+description: This was a guest blog post on Bluefin Solutions website which I wrote to herald a major turning point in SAP software's integration trajectory.
 ---
 
 Here I'll plot a brief history of SAP integration tools and technologies, and look forward to what Project Gateway promises: Uniform, resource orientated access to your enterprise functions and information. It's time to take back control of your data.
@@ -51,6 +56,5 @@ USE THEM TOGETHER<br/>
 USE THEM IN PEACE
 
 ---
-
 
 [Originally published on the Bluefin Solutions website](https://web.archive.org/web/20180227042502/http://www.bluefinsolutions.com/insights/dj-adams/february-2011/project-gateway-a-call-to-arms-or-at-least-to-da) (where they disowned me because of this article ... that championed the introduction of what now drives and supports everything related to SAP's cloud activities from the ABAP platform).

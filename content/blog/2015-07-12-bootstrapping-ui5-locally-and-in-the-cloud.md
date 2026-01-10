@@ -2,29 +2,30 @@
 date: 2015-07-12
 title: Bootstrapping UI5 Locally and in the Cloud
 tags:
-- bootstrap
-- hcp
-- openui5
-- saphcp
-- sapwebide
-- webide
+  - 30ui5
+  - bootstrap
+  - hcp
+  - openui5
+  - saphcp
+  - sapwebide
+  - webide
+description: 30 Days of UI5 - day 9 by DJ Adams.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 9 by [DJ Adams](//qmacro.org/about/)**
+(Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 
 ![Screenshot of files in a UI5 app directory]( {{ "/images/2018/02/Screen-Shot-2015-07-11-at-16.05.52.png" | url }})
 
 Like many developers who find themselves building a lot with UI5, I find my working environment is mostly a local one, supplemented by activities in the cloud.
 
-**Local Environment**
+## Local Environment
 
 More precisely, while I often use the excellent [SAP Web IDE](http://scn.sap.com/docs/DOC-55465) – for training, generating starter projects and custom Fiori work, my main development workflow is based upon tools that are local to my workstation. In my particular case, that’s most often my MacBook Pro running OSX, but sometimes a Debian-based environment running in a chroot on my Chromebook, courtesy of the awesome [crouton](https://github.com/dnschneid/crouton) project. I use tools that work for me, that don’t get in the way of my flow, and at the bare essentials level, that means a decent editor (Vim or Atom), a local webserver (based on NodeJS), and a runtime platform that doubles as debugging, tracing and development (Chrome).
 
-**Cloud Environment**
+## Cloud Environment
 
 When I’m working in the cloud, specifically with the SAP Web IDE, the toolset is totally different. Not only that, but the bootstrapping of UI5 works slightly differently. In this short post, I wanted to explain what I do to flatten any speedbumps when transitioning between the two environments. The worst thing for me would be to have to alter my codebase slightly to take account of different runtime environments.
 
-**Different UI5 Versions**
+## Different UI5 Versions
 
 Locally, I maintain a variety of different UI5 versions, that I’ve picked up over the months and years. You never know when you’ll need to go back to a previous version, or even look through the complete history, to see how something has changed. This is what the contents my local ~/ui5/ folder look like:
 
@@ -44,7 +45,7 @@ The same approach with the URL path applies to the contents of the “src” att
 
 ![UI5 bootstrap with latest UI5 version]( {{ "/images/2018/02/Screen-Shot-2015-07-12-at-08.50.35.png" | url }})
 
-**Harmonising Local and Cloud Bootrapping**
+## Harmonising Local and Cloud Bootrapping
 
 However, this doesn’t play well with the SAP Web IDE, at least not directly. So I’ve come up with an approach that minimises the fuss and disruption when taking a UI5 app repo that I’ve developed locally, and cloning it for use in the SAP Web IDE on the HANA Cloud Platform (HCP) environment, or vice versa.
 

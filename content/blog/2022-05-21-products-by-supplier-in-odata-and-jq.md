@@ -75,7 +75,7 @@ https://services.odata.org
 
 (Note for this simple example, I won't bother trying to consume all of the products by following the `@odata.nextLink`s).
 
-This gives a nice structure that we can dig into with `jq`. It turns out to be quite simple, especially in the context of the recent process I followed in [Exploring JSON with interactive jq](https://qmacro.org/blog/posts/2022/05/21/exploring-json-with-interactive-jq/).
+This gives a nice structure that we can dig into with `jq`. It turns out to be quite simple, especially in the context of the recent process I followed in [Exploring JSON with interactive jq](/blog/posts/2022/05/21/exploring-json-with-interactive-jq/).
 
 Being an OData v4 entityset, the data is in the top level `value` property, so we start with that, grouping by the ID of each product's supplier:
 

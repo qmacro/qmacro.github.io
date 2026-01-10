@@ -5,7 +5,7 @@ tags:
   - autodidactics
   - curl
 ---
-_In [reading through](/autodidactics/2020/10/03/using-exec-to-jump.html) [Mr Rob](https://rwx.gg/)'s [`ix`](https://gitlab.com/rwxrob/dotfiles/-/blob/master/scripts/ix) script, I discovered something about `curl` that I hadn't known about._
+_In [reading through](/blog/posts/2020/10/03/using-exec-to-jump.html) [Mr Rob](https://rwx.gg/)'s [`ix`](https://gitlab.com/rwxrob/dotfiles/-/blob/master/scripts/ix) script, I discovered something about `curl` that I hadn't known about._
 
 The script's key line is this:
 

@@ -17,7 +17,7 @@ I have been around a long time, taking my first nervous but excited steps onto t
 
 Back in the day, we ran our own websites, maintained and posted on own weblogs, grew ad hoc federation via simple webrings, [linkback](https://en.wikipedia.org/wiki/Linkback) mechanisms, RSS (and latterly Atom) feeds and more. They were happier, simpler times, bursting with potential, and times where we had more ownership, control & responsibility for our own content and how it connected to other content.
 
-To that point, while I've been blogging for decades (on [my own blog](https://qmacro.org/blog/)), I was also "microblogging" on another platform before I hopped onto Twitter in early 2007. That platform was [Identica](https://wiki.p2pfoundation.net/Identica). And it was open and federated. 
+To that point, while I've been blogging for decades (on [my own blog](/blog/)), I was also "microblogging" on another platform before I hopped onto Twitter in early 2007. That platform was [Identica](https://wiki.p2pfoundation.net/Identica). And it was open and federated. 
 
 The attraction of the federated nature of Identica is here again, and much stronger, with the [Fediverse](https://en.wikipedia.org/wiki/Fediverse), "_an ensemble of social networks which can communicate with each other, while remaining independent platforms_". There's a standard, an open decentralised social networking protocol, called [ActivityPub](https://en.wikipedia.org/wiki/ActivityPub), which powers this open interconnectivity, and Mastodon is a microblogging platform that supports ActivityPub and plays nicely in this (relatively) new exciting world.
 

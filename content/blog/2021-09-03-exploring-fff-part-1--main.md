@@ -28,7 +28,7 @@ Where I can, I link to reference material so you can dig in further to Bash deta
 
 ## Structure and use of main function
 
-As I mentioned recently in [Learning by rewriting - bash, jq and fzf details](https://qmacro.org/2021/08/26/learning-by-rewriting/), I like to structure Bash scripts into functions, with a `main` function towards the end, followed by a simple call to that function, passing in everything that was specified on the command line via the `$@` [special parameter](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html) which "expands to the positional parameters, starting from one" (positional parameter zero is the name of the script itself).
+As I mentioned recently in [Learning by rewriting - bash, jq and fzf details](/blog/posts/2021/08/26/learning-by-rewriting/), I like to structure Bash scripts into functions, with a `main` function towards the end, followed by a simple call to that function, passing in everything that was specified on the command line via the `$@` [special parameter](https://www.gnu.org/software/bash/manual/html_node/Special-Parameters.html) which "expands to the positional parameters, starting from one" (positional parameter zero is the name of the script itself).
 
 This is a practice I picked up, I think, from Google's [Shell Style Guide](https://google.github.io/styleguide/shellguide.html) - see [this section](https://google.github.io/styleguide/shellguide.html#s7.8-main) for details. I wrote about this guide last year in [Improving my shell scripting](/blog/posts/2020/10/05/improving-my-shell-scripting/).
 

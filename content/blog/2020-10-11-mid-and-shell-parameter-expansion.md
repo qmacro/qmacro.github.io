@@ -33,7 +33,7 @@ o, Wo
 
 There's plenty more information on this in the [Bash man page](https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html); perhaps most importantly we learn there what this is called - in what category this contruct lives. It's in the [**parameter expansion**](https://www.gnu.org/software/bash/manual/html_node/Shell-Parameter-Expansion.html) family.
 
-We've seen parameter expansion before in this blog, specifically in [Shell parameter expansion with :+ is useful](https://qmacro.org/autodidactics/2020/09/27/shell-parameter-expansion-with-+/), which looks at the `:-` and `:+` variants. But even if we combine this post with that one, we're only scratching the surface of what's possible; I'm looking forward to grabbing a cup of tea and reading through the entire section of the Bash man page on this topic soon.
+We've seen parameter expansion before in this blog, specifically in [Shell parameter expansion with :+ is useful](/blog/posts/2020/09/27/shell-parameter-expansion-with-+/), which looks at the `:-` and `:+` variants. But even if we combine this post with that one, we're only scratching the surface of what's possible; I'm looking forward to grabbing a cup of tea and reading through the entire section of the Bash man page on this topic soon.
 
 **Using `expr`**
 

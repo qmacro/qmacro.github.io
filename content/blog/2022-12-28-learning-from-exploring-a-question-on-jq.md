@@ -238,7 +238,7 @@ This approach felt a little better, not only because of the cleaner use of `to_e
 
 But there were a couple of new things that didn't feel quite right:
 
-* I was using a sequence of two `map` calls; this feels OK to some extent, expecially in the context of more literate (or explicit) chains of functions in Ramda's [pipe](https://ramdajs.com/docs/#pipe) or [compose](https://ramdajs.com/docs/#compose) context (see [ES6, reduce and pipe](https://qmacro.org/blog/posts/2019/04/08/es6-reduce-and-pipe/) for an example) but perhaps it could be neater in jq
+* I was using a sequence of two `map` calls; this feels OK to some extent, expecially in the context of more literate (or explicit) chains of functions in Ramda's [pipe](https://ramdajs.com/docs/#pipe) or [compose](https://ramdajs.com/docs/#compose) context (see [ES6, reduce and pipe](/blog/posts/2019/04/08/es6-reduce-and-pipe/) for an example) but perhaps it could be neater in jq
 * the explicit use of the [array index][arrayindex] `[0]` to get the first (and only) values (such as `Normal` and `Grau`) out of each of the innermost arrays was OK but made me feel as though I could perhaps transform the input into something even cleaner and simpler earlier in the process
 
 ### Third approach

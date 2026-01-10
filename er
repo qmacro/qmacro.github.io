@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+# er - edit recents
+
+set -eo pipefail
+
+declare bloghome="$WORK/gh/github.com/qmacro/qmacro.github.io"
+
+preview() {
+
+  yq -e '[.date, .title] | @tsv'
+
+}
+
+recent() {
+
+  find "$bloghome/content/blog/" -name "*.md" \
+    | sort \
+    | tail
+
+}
+
+choice() {
+
+  recent \
+    | while read -r post; do
+      echo -e "$(frontmatter "$post" | preview)" '\t' "$post"
+    done \
+    | sort -r
+
+}
+
+chooseandedit() {
+
+  choice \
+    | fzf \
+      --delimiter='\t' \
+      --with-nth=1,2 \
+      --preview-window=down \
+      --preview='frontmatter {3} | bat --language yaml --plain --color always' \
+    | cut -f 3 \
+    | xargs nvim
+
+}
+
+main() {
+
+  chooseandedit
+
+}
+
+main "$@"

@@ -24,8 +24,8 @@ I support equality in tech, and so should you.
 Further reading:
 
 * [Unbreak Tech](https://unbreak.tech)
-* [CodeClub and becoming a STEM Ambassador](https://qmacro.org/2012/12/05/codeclub-and-becoming-a-stem-ambassador/)
-* [CodeClub Thoughts](https://qmacro.org/2013/04/18/codeclub-thoughts/)
-* [Let's learn to "Code at Home"](https://qmacro.org/2020/03/24/code-at-home/)
+* [CodeClub and becoming a STEM Ambassador](/blog/posts/2012/12/05/codeclub-and-becoming-a-stem-ambassador/)
+* [CodeClub Thoughts](/blog/posts/2013/04/18/codeclub-thoughts/)
+* [Let's learn to "Code at Home"](/blog/posts/2020/03/24/code-at-home/)
 
 ![Me teaching Scratch at Manchester CoderDojo]({{ "/images/2020/03/underwaterscratch.jpg" | url }})

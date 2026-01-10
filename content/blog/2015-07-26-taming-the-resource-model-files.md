@@ -2,39 +2,41 @@
 date: 2015-07-26
 title: Taming the Resource Model Files
 tags:
-- i18n
-- messagebundle
-- openui5
-- resourcemodel
+  - 30ui5
+  - i18n
+  - messagebundle
+  - openui5
+  - resourcemodel
+description: 30 Days of UI5 - day 23 by Nathan Adams.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 23 by [Nathan Adams](http://twitter.com/lxinspc)**
+(Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 
 UI5’s support for multiple-languages, out of the box (see the post “[Multi-language support out of the box – UI5’s pedigree](/blog/posts/2015/07/16/multi-language-support-out-of-the-box-ui5s-pedigree/)” in this series) is impressive and easy to use. Creating a message resource bundle in your Component.js file is straightforward, especially if picking up the user’s language preferences in the browser.
 
 What can be less straightforward though is organising these files into something manageable, for plenty of projects, your i18n file might be on the small side, but it’s pretty easy to build up a large file. An application I’m currently working on, which perhaps has only 50% of its views defined, already has just 100 definitions in the i18n file. (A quick look at the Fiori My Travel Expenses App v2 shows there are around 1000 lines, and about 500 definitions in the resource file and whilst reasonably well documented with comments – you may well be hunting for usage of a text).
 
-```
+```text
 #XBUT,20: Button that distributes (shares) the total amount evenly between all attendees
 
 DISTRIBUTE_EVENLY=Distribute Amounts Evenly
 
-#XBUT,20: add internal attendee button  
+#XBUT,20: add internal attendee button
 ADD_INTERNAL_ATTENDEE=Add Internal Attendee
 
-#XBUT,20: add external attendee button  
+#XBUT,20: add external attendee button
 ADD_EXTERNAL_ATTENDEE=Add External Attendee
 
-#XFLD,20: FirstName – LastName in the right order, e.g. EN: Smith, John  
+#XFLD,20: FirstName – LastName in the right order, e.g. EN: Smith, John
 ATTENDEE_FULLNAME_ARTIFACT={1}, {0}
 
-#XTIT: title of Add Internal Attendees select dialog  
+#XTIT: title of Add Internal Attendees select dialog
 INTERNAL_ATTENDEES_TIT=Add Internal Attendees
 
-#XTIT: title of Add External Attendees dialog  
+#XTIT: title of Add External Attendees dialog
 EXTERNAL_ATTENDEES_TIT=Add External Attendees
 ```
-*Example of a Fiori Resource Model file from ‘My Travel Expenses’*
+
+## Example of a Fiori Resource Model file from ‘My Travel Expenses’
 
 Before we dive into the structure of the key value pairs of the file though, it’s worth thinking about if one file for all your texts makes sense. In the majority of cases, you really wouldn’t want to add further complexity by adding more files. in my experience though, there are some cases where creating additional resource files may be useful.
 
@@ -58,7 +60,7 @@ How you choose to organise the language file is a matter of preference, however 
 
 I’ll define all the common terms at the beginning of my language file. My preference for all my keys, is to use a dot notation to specify them (as it lines up nicely with identification of components). So here’s an example
 
-```
+```text
 #Common Terms
 common.thing=Foo
 common.items=Items
@@ -70,13 +72,13 @@ Thing is though, common terms feel like something I should have in my applicatio
 
 OK so maybe I can define some common texts, and do some clever pre-processing with Grunt to expand placeholders in my text, or do the same when I load the resource file
 
-```
+```text
 #Specifc Terms (pre-process)
 master.things.addThing=Add {common.thing}
 master.things.deleteThings=Delete {common.thing}s
 ```
 
-```
+```text
 #Specific Terms (post-process)
 master.things.addThing=Add Foo
 master.things.deleteThings=Delete Foos
@@ -95,7 +97,7 @@ So most of my definitions though, will be very specific to a view or fragment, a
 
 then I’ll structure my language file, very specifically to reference the view, the control(s) in the view, and where appropriate the property. Which might result in something like.
 
-```
+```text
 #Master views
 #Tasks
 master.tasks.title=Maintenance Tasks

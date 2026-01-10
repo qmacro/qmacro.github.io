@@ -2,14 +2,15 @@
 date: 2015-07-18
 title: The UI5 Support Tool - Help Yourself!
 tags:
-- fragment
-- mvc
-- openui5
-- supporttool
-- xml
+  - 30ui5
+  - fragment
+  - mvc
+  - openui5
+  - supporttool
+  - xml
+description: 30 Days of UI5 - day 15 by DJ Adams.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 15 by [DJ Adams](//qmacro.org/about/)**
+(Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 
 ![part of the Support Tool Menu]( {{ "/images/2018/02/Screenshot-2015-07-18-at-12.12.33.png" | url }})
 
@@ -17,7 +18,7 @@ Building anything but the most trivial native apps (that’s web native, of cour
 
 The UI5 toolkit supports many features that make building and debugging easier. One of these is the support for the separation of concerns in the form of Model-View-Controller (MVC) mechanisms. Another is the ability to use a declarative approach to define your views (no moving parts), in XML, HTML or JSON; furthermore, you can use the subview and fragment concepts to divide and conquer complexity and embrace reuse.
 
-**The Support Tool**
+## The Support Tool
 
 The particular feature I wanted to talk briefly about in this post though is the Support Tool, alternatively known as “UI5 [Diagnostics](https://openui5.hana.ondemand.com/#docs/guide/6ec18e80b0ce47f290bc2645b0cc86e6.html)“, or even “the claw hand thing”. This last nickname comes from the fact that you invoke the support tool from a challenging key combination: Ctrl-Alt-Shift-S.
 
@@ -51,7 +52,7 @@ For you eagle-eyed readers, the model name here — “entity” — is the nam
 
 There’s so much to discover with the Control Tree and the rest of the Support Tool, I recommend you hit Ctrl-Alt-Shift-S the next time you’re running a UI5 apps, and start exploring.
 
-**Finishing off**
+## Finishing off
 
 Let’s finish this post off with a quick piece of trivia and a tip. If you’ve had the Chrome Developer Tools open and then open the Support Tool, you’ll notice a ton of new messages in the console, and it’s a lot more verbose. This is because when the Support Tool starts up, it sends a message to the [logger](https://openui5.hana.ondemand.com/#docs/api/symbols/jQuery.sap.log.html) to crank the logging output [up to 11](https://en.wikipedia.org/wiki/Up_to_eleven).
 

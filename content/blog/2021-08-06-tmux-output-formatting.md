@@ -86,8 +86,8 @@ Why do this? Well, it makes sense that if I'm going to pick another session to j
 
 This reduced list is then piped into `fzf`, about which I've written a couple of posts on this autodidactics blog before:
 
-* [fzf - the basics part 1 - layout](https://qmacro.org/autodidactics/2021/02/02/fzf-the-basics-1-layout/)
-* [fzf - the basics part 2 - search results](https://qmacro.org/autodidactics/2021/02/07/fzf-the-basics-2-search-results/)
+* [fzf - the basics part 1 - layout](/blog/posts/2021/02/02/fzf-the-basics-1-layout/)
+* [fzf - the basics part 2 - search results](/blog/posts/2021/02/07/fzf-the-basics-2-search-results/)
 
 Using `fzf` here is perfect, it's my tool of choice for mini-UIs in the terminal where a choice has to be made, where an item (or items) must be selected. And because it fits with the Unix philosophy too, the output is simply the value of the item(s) selected. And in case you're wondering, the `--reverse` switch is a synonym for `--layout=reverse` which causes `fzf` to display the selection from the top.
 

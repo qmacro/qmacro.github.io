@@ -70,7 +70,7 @@ When I'm connected to my remote virtual machines, what am I doing?
 Well, let me answer that by talking about a project upon which I've
 embarked, to kill two birds with one stone - move my core presence on
 the web (my [homepage](https://qmacro.org), my [main personal
-blog](https://qmacro.org/blog/), and various processes that run
+blog](/blog/), and various processes that run
 in the background) to a container-based setup, and learn more about
 containers.
 

@@ -7,7 +7,7 @@ tags:
 ---
 _I've been looking into declare, and also how it compares to typeset and local. It turns out that there's a lot to know._
 
-After working my way through the small `ix` script in [Mr Rob](https://rwx.gg)'s [dotfiles](https://gitlab.com/rwxrob/dotfiles/-/tree/master), writing three posts [Using exec to jump](/autodidactics/2020/10/03/using-exec-to-jump/), [curl and multipart/form-data](/autodidactics/2020/10/04/curl-and-multipart-form-data/) and [Checking a command is available before use](/autodidactics/2020/10/04/check-command-available/) along the way, I've now turned my attention to the [`twitch`](https://gitlab.com/rwxrob/dotfiles/-/blob/master/scripts/twitch) script which he uses during his [live streams](twitch.tv/rwxrob). I haven't gone very far when I light upon this section:
+After working my way through the small `ix` script in [Mr Rob](https://rwx.gg)'s [dotfiles](https://gitlab.com/rwxrob/dotfiles/-/tree/master), writing three posts [Using exec to jump](/blog/posts/2020/10/03/using-exec-to-jump/), [curl and multipart/form-data](/blog/posts/2020/10/04/curl-and-multipart-form-data/) and [Checking a command is available before use](/blog/posts/2020/10/04/check-command-available/) along the way, I've now turned my attention to the [`twitch`](https://gitlab.com/rwxrob/dotfiles/-/blob/master/scripts/twitch) script which he uses during his [live streams](twitch.tv/rwxrob). I haven't gone very far when I light upon this section:
 
 ```shell
 declare gold=$'\033[38;2;184;138;0m'
@@ -32,7 +32,7 @@ declare [-aAfFgilnrtux] [-p] [name[=value] ...]
 declare -%s
 ```
 
-(If you're curious about `[` being an external executable, you might be interested in another post: [The open square bracket \[ is an executable](https://qmacro.org/autodidactics/2020/08/21/open-square-bracket/).)
+(If you're curious about `[` being an external executable, you might be interested in another post: [The open square bracket \[ is an executable](/blog/posts/2020/08/21/open-square-bracket/).)
 
 **The `typeset` synonym**
 

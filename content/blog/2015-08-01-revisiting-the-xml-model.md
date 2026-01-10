@@ -2,11 +2,12 @@
 date: 2015-08-01
 title: Revisiting the XML Model
 tags:
-- openui5
-- xmlmodel
+  - 30ui5
+  - openui5
+  - xmlmodel
+description: 30 Days of UI5 - day 29 by DJ Adams.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 29 by [DJ Adams](//qmacro.org/about/)**
+(Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 
 ![]( {{ "/images/2018/02/Screen-Shot-2015-08-01-at-11.56.50.png" | url }})
 
@@ -16,7 +17,7 @@ The XML Model mechanism proved very useful this week on a project, and I thought
 
 The [API reference documentation for the XML Model](https://openui5.hana.ondemand.com/#docs/api/symbols/sap.ui.model.xml.XMLModel.html) is a little dry. As Frank Zappa once said, “*The computer can’t tell you the emotional story. It can give you the exact mathematical design, but what’s missing is the eyebrows*“. We need to look elsewhere for the emotional story, for the eyebrows; and I think a nice place might be the [QUnit tests for the XML Model](https://openui5.hana.ondemand.com/test-resources/sap/ui/core/qunit/XMLModel.qunit.html).
 
-**Learning from the QUnit sources**
+## Learning from the QUnit sources
 
 Let’s have a look at the source, and see what we can learn. There are actually a couple of QUnit test files; we’ll have a look at just one of them – [XMLModel.qunit.html](https://github.com/SAP/openui5/blob/48324c5fd9ed365620bc49b32c4046aa76269bc7/src/sap.ui.core/test/sap/ui/core/qunit/XMLModel.qunit.html). We’ll just examine the setup and a couple of tests to see what we can find – what we can expect to be able to do with an XML Model. You can explore the rest of the QUnit test files on your own.
 
@@ -42,7 +43,7 @@ var testdataChild = "<pets>" +
   "</pets>";
 ```
 
-**setXML and setData**
+## setXML and setData
 
 The [XML data is added to the XML Models](https://github.com/SAP/openui5/blob/48324c5fd9ed365620bc49b32c4046aa76269bc7/src/sap.ui.core/test/sap/ui/core/qunit/XMLModel.qunit.html#L48-L53) with the setXML function:
 
@@ -55,7 +56,7 @@ The [XML data is added to the XML Models](https://github.com/SAP/openui5/blob/48
 	oModelChild.setXML(testdataChild);
 ```
 
-This is different to the setData function, which is also present on the JSON Model, with an equivalent semantic. Here in the XML Model, the [setData](https://openui5.hana.ondemand.com/#docs/api/symbols/sap.ui.model.xml.XMLModel.html#setData) function would be expecting an **XML encoded data object**, not a literal string containing XML.
+This is different to the setData function, which is also present on the JSON Model, with an equivalent semantic. Here in the XML Model, the [setData](https://openui5.hana.ondemand.com/#docs/api/symbols/sap.ui.model.xml.XMLModel.html#setData) function would be expecting an ## XML encoded data object**, not a literal string containing XML.
 
 As an example, if we have a variable containing some XML string like this:
 
@@ -89,7 +90,7 @@ m.getProperty("/name")
 => "DJ"
 ```
 
-**A couple of tests**
+## A couple of tests
 
 Then we’re off on the tests. There are [a couple of tests to check getProperty](https://github.com/SAP/openui5/blob/48324c5fd9ed365620bc49b32c4046aa76269bc7/src/sap.ui.core/test/sap/ui/core/qunit/XMLModel.qunit.html#L61-L71), the first using a relative context binding:
 
@@ -109,7 +110,7 @@ Then we’re off on the tests. There are [a couple of tests to check getPropert
 
 What we can see here already is that we can access XML attribute values (“lastName” in this case) with the XPath @ accessor. As an aside, the use of the optional second oContext parameter in the getProperty call is something one doesn’t see very much, but is extremely useful.
 
-**Element content retrieval**
+## Element content retrieval
 
 The rest of the file contain a load of other tests, all useful reading material, from the rare-to-see [use of the unbindProperty](https://github.com/SAP/openui5/blob/48324c5fd9ed365620bc49b32c4046aa76269bc7/src/sap.ui.core/test/sap/ui/core/qunit/XMLModel.qunit.html#L83) function to [aggregation bindings that are comfortable to use](https://github.com/SAP/openui5/blob/48324c5fd9ed365620bc49b32c4046aa76269bc7/src/sap.ui.core/test/sap/ui/core/qunit/XMLModel.qunit.html#L174-L195).
 
@@ -137,25 +138,25 @@ Until now we’ve only seen examples of XML where the data is stored in attribut
 
 Well, as we can see, a simple call to getProperty will do what we want. If we’re XPath inclined, we could even add the text() specification like this:
 
-```
+```javascript
 testModel.getProperty("/bar/text()")
 => "ABCDEFG"
 ```
 
 and still get what we expect.
 
-**Ending where we started**
+## Ending where we started
 
-And of course, to round things off, we can always get back to an **XML encoded data object** with getObject, like this:
+And of course, to round things off, we can always get back to an ## XML encoded data object** with getObject, like this:
 
-```
+```javascript
 testModel.getObject("/bar")
 => <bar>ABCDEFG</bar>
 ```
 
 (that result is indeed an object), in a similar way to how we retrieve the whole object from the model:
 
-```
+```javascript
 testModel.getData()
 => #document
    <root>

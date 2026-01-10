@@ -19,7 +19,7 @@ It's also makes for a less controversial experience generally as you're not goin
 
 ## The importance of domain modelling and the language used
 
-In [Five reasons to use CAP](/blog/posts/2024/11/07/five-reasons-to-use-cap/) I talk about [domain modelling being a first class citizen](https://qmacro.org/blog/posts/2024/11/07/five-reasons-to-use-cap/#2-domain-modelling-is-a-first-class-citizen); it's a critical part of the design and of the process, and the CDS model, described in the declarative and high level [Conceptual Definition Language](https://cap.cloud.sap/docs/cds/cdl) (CDL)[<sup>1</sup>](#footnotes) is central to that, being a language that both domain expert and programmer alike use to meet and describe models and behaviours.
+In [Five reasons to use CAP](/blog/posts/2024/11/07/five-reasons-to-use-cap/) I talk about [domain modelling being a first class citizen](/blog/posts/2024/11/07/five-reasons-to-use-cap/#2-domain-modelling-is-a-first-class-citizen); it's a critical part of the design and of the process, and the CDS model, described in the declarative and high level [Conceptual Definition Language](https://cap.cloud.sap/docs/cds/cdl) (CDL)[<sup>1</sup>](#footnotes) is central to that, being a language that both domain expert and programmer alike use to meet and describe models and behaviours.
 
 Reading and writing CDS models is therefore an important skill for us all to cultivate. Having a consistent format, a sort of "forma franca", can only help with that.
 

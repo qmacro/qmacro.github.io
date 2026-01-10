@@ -2,19 +2,19 @@
 date: 2015-07-27
 title: An introduction to sap.ui.define
 tags:
-- controller
-- define
-- modules
-- openui5
-- sap-ui-define
+  - 30ui5
+  - controller
+  - define
+  - modules
+  - openui5
+  - sap-ui-define
+description: 30 Days of UI5 - day 24 by DJ Adams.
 ---
-
-**[30 Days of UI5](/blog/posts/2015/07/04/30-days-of-ui5/) &mdash; Day 24 by [DJ Adams](//qmacro.org/about/)**
+(Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 
 ![]( {{ "/images/2018/02/Screen-Shot-2015-07-27-at-11.04.02.png" | url }})
 
-
-If you’ve followed [this series](/blog/posts/2015/07/04/30-days-of-ui5/) you’ll have come across the [OpenUI5 Walkthrough](/2015/07/07/openui5-walkthrough/), a “a great multi-step walkthrough of many of the features and practices of UI5 development”.
+If you’ve followed [this series](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/) you’ll have come across the [OpenUI5 Walkthrough](/blog/posts/2015/07/07/openui5-walkthrough/), a “a great multi-step walkthrough of many of the features and practices of UI5 development”.
 
 In Step 5 of the walkthrough, on “Controllers”, we’re introduced to something that looks unfamiliar. Especially to those who have written large numbers of controllers thus far, for example. The way the XML View’s Controller is defined is … different. Step 5 doesn’t say much specifically about how this works, but Step 6, on “Modules”, does.
 
@@ -34,7 +34,7 @@ Instead of calling something like this …
 
 ```javascript
 sap.ui.core.mvc.Controller.extend("your.name.here", {  
-  // your controller logic here 
+  // your controller logic here
 });
 ```
 

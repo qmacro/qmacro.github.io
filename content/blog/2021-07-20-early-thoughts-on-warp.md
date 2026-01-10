@@ -13,7 +13,7 @@ To quote [Warp's website](https://www.warp.dev/):
 
 > Warp is a blazingly fast, Rust-based terminal that makes you and your team more productive at coding and DevOps.
 
-It's a fascinating venture, for many reasons. While the team is not looking to reinvent the entire terminal, a lot of what they describe feels "foreign" to me, as a long time terminal user (who [started out](https://qmacro.org/2020/11/03/computer-unit-1979/) on a paper-based Superterm Data Communications Terminal hooked up to a PDP-11). I've read the [How it works](https://blog.warp.dev/how-warp-works/) post, which is great. Here are some random thoughts on that, and also on the [Warp beta welcome](https://youtu.be/X0LzWAVlOC0) video.
+It's a fascinating venture, for many reasons. While the team is not looking to reinvent the entire terminal, a lot of what they describe feels "foreign" to me, as a long time terminal user (who [started out](/blog/posts/2020/11/03/computer-unit-1979/) on a paper-based Superterm Data Communications Terminal hooked up to a PDP-11). I've read the [How it works](https://blog.warp.dev/how-warp-works/) post, which is great. Here are some random thoughts on that, and also on the [Warp beta welcome](https://youtu.be/X0LzWAVlOC0) video.
 
 ## Speed
 
