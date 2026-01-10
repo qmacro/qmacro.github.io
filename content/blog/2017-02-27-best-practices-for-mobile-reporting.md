@@ -14,7 +14,7 @@ short!) we find it useful to align our thinking with the flow mantra that SAP
 have popularised: Discover, Design, Develop, Deliver. (There's also a fifth
 "D", but you can read about that in another post: [Debugging SAP Fiori apps -
 the fifth
-"D"](/blog/posts/2017/01/12/debugging-sap-fiori-apps-the-fifth-"d"/).)
+"D"](/blog/posts/2017/01/12/debugging-sap-fiori-apps-the-fifth-d/).)
 
 Here are some best practices for you to consider when contemplating a mobile
 reporting solution, organised by the stages in that flow. Whether it's adopting
