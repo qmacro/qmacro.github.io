@@ -1,13 +1,13 @@
 ---
 date: 2015-03-15
-title: The Maker's Schedule, Restraint and Flow
+title: The maker's schedule, restraint and flow
 tags:
 - flow
 - maker
 - pomodoro
 - work
+description: My thoughts on schedules and saying 'no'.
 ---
-
 
 A few years ago Paul Graham published a short essay “[Maker’s Schedule, Manager’s Schedule](http://www.paulgraham.com/makersschedule.html)“. It described succinctly how, and perhaps more importantly why calendar entry driven task scheduling, and in particular meetings, cause issues for makers. And I include myself and many of my colleagues within that “makers” general collective term.
 
@@ -21,10 +21,10 @@ Remember – saying “no”, creating situations where you’re less able to be
 
 Further viewing & reading:
 
-[Scott Hanselman: It’s Not What You Read, It’s What You Ignore](https://www.youtube.com/watch?v=IWPgUn8tL8s&feature=youtu.be)
-
-[Johnny Wu: Developer Productivity – The Art Of Saying “No”](https://localizejs.com/blog/startup/developer-productivity-saying-no)
-
-[Inbox Pause](http://inboxpause.com/) (great as an idea as well as this implementation)
-
-[The Pomodoro Technique](http://pomodorotechnique.com/)
+- [Scott Hanselman: It’s Not What You Read, It’s What You
+   Ignore](https://www.youtube.com/watch?v=IWPgUn8tL8s&feature=youtu.be)
+- [Johnny Wu: Developer Productivity – The Art Of Saying
+  “No”](https://localizejs.com/blog/startup/developer-productivity-saying-no)
+- [Inbox Pause](http://inboxpause.com/) (great as an idea as well as this
+  implementation)
+- [The Pomodoro Technique](http://pomodorotechnique.com/)
