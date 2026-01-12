@@ -7,7 +7,7 @@ tags:
   - npm
   - reuse
   - gh
-  - modularity
+  - modularityandreuse-series
 description: Taking the simple passive reuse package created in part 2, I now publish it to the NPM registry which is part of GitHub Packages.
 ---
 (Get to all the parts in this series via the [series

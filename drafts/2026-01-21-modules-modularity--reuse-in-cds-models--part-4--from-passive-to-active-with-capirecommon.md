@@ -6,7 +6,7 @@ tags:
   - cap
   - reuse
   - npm
-  - modularity
+  - modularityandreuse-series
 description: Starting with a simple use of the published @qmacro/common reuse module, I then turn to @capire/common for a first look at what I call an "active" reuse module.
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models/).)
