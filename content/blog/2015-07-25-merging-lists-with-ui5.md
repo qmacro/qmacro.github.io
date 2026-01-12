@@ -2,7 +2,7 @@
 date: 2015-07-25
 title: Merging lists with UI5
 tags:
-  - 30ui5
+  - 30daysofui5
   - customdata
   - jquery
   - openui5

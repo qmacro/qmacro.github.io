@@ -2,7 +2,7 @@
 date: 2015-07-17
 title: Speeding up your UI5 app with a Component preload file
 tags:
-  - 30ui5
+  - 30daysofui5
   - grunt
   - openui5
   - performance

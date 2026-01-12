@@ -2,7 +2,7 @@
 date: 2015-07-14
 title: Base Classes in UI5
 tags:
-  - 30ui5
+  - 30daysofui5
   - baseclass
   - control
   - element

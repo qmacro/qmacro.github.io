@@ -2,7 +2,7 @@
 date: 2015-07-27
 title: An introduction to sap.ui.define
 tags:
-  - 30ui5
+  - 30daysofui5
   - controller
   - define
   - modules

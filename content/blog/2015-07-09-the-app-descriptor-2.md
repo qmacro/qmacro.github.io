@@ -5,7 +5,7 @@ tags:
   - appdescriptor
   - metadata
   - openui5
-  - 30ui5
+  - 30daysofui5
 description: 30 Days of UI5 - day 6 by Thilo Seidel.
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)

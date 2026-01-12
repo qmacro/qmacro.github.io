@@ -2,7 +2,7 @@
 date: 2015-07-12
 title: Bootstrapping UI5 Locally and in the Cloud
 tags:
-  - 30ui5
+  - 30daysofui5
   - bootstrap
   - hcp
   - openui5

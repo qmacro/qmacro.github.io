@@ -2,7 +2,7 @@
 date: 2015-07-20
 title: UI5 and Fiori - The Story of Open and Free
 tags:
-  - 30ui5
+  - 30daysofui5
   - fiori
   - free
   - freeori

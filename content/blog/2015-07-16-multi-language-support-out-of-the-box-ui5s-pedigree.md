@@ -2,7 +2,7 @@
 date: 2015-07-16
 title: Multi language support out of the box - UI5's pedigree
 tags:
-  - 30ui5
+  - 30daysofui5
   - language
   - locale
   - messagepage

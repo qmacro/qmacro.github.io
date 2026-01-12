@@ -2,7 +2,7 @@
 date: 2015-07-18
 title: The UI5 Support Tool - Help Yourself!
 tags:
-  - 30ui5
+  - 30daysofui5
   - fragment
   - mvc
   - openui5

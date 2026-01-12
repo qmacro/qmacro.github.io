@@ -2,7 +2,7 @@
 date: 2015-07-23
 title: Fragments and Minimum Viable Code
 tags:
-  - 30ui5
+  - 30daysofui5
   - fragment
   - mvc
   - openui5

@@ -2,7 +2,7 @@
 date: 2015-07-06
 title: Semantic Pages
 tags:
-  - 30ui5
+  - 30daysofui5
   - abstraction
   - openui5
   - scaffolding

@@ -2,7 +2,7 @@
 date: 2015-07-24
 title: Spreading the UI5 Message
 tags:
-  - 30ui5
+  - 30daysofui5
   - bacon
   - codejam
   - conferences

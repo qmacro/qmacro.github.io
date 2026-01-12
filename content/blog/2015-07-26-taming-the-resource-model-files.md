@@ -2,7 +2,7 @@
 date: 2015-07-26
 title: Taming the Resource Model Files
 tags:
-  - 30ui5
+  - 30daysofui5
   - i18n
   - messagebundle
   - openui5

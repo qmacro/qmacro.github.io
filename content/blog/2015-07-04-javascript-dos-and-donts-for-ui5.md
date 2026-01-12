@@ -2,7 +2,7 @@
 date: 2015-07-04
 title: JavaScript Do's and Don'ts for UI5
 tags:
-  - 30ui5
+  - 30daysofui5
   - javascript
   - openui5
 description: 30 Days of UI5 - day 7 by DJ Adams.

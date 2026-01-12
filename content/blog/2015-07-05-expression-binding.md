@@ -8,7 +8,7 @@ tags:
   - formatter
   - openui5
   - ui5
-  - 30ui5
+  - 30daysofui5
 description: 30 Days of UI5 - day 2 by DJ Adams.
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
