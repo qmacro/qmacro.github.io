@@ -2,6 +2,7 @@
 title: CAP Node.js Plugins
 date: 2024-12-30
 tags:
+  - capnodejsplugins-series
   - cap
   - cds
   - plugins

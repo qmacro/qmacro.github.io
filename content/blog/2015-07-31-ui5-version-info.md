@@ -2,7 +2,7 @@
 date: 2015-07-31
 title: UI5 Version Info
 tags:
-  - 30daysofui5
+  - 30daysofui5-series
   - openui5
   - sapui5
   - versioninfo

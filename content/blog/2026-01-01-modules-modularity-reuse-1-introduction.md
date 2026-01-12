@@ -6,7 +6,7 @@ tags:
   - cds
   - npm
   - reuse
-  - modularity
+  - modularityandreuse-series
 description: In this first post of a new series I look at the using directive in CDS modelling, and how NPM modules can be fundamental building blocks in modularity and reuse.
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models/).)

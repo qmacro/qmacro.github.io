@@ -5,7 +5,7 @@ tags:
   - seriespost
   - opensource
   - openui5
-  - 30daysofui5
+  - 30daysofui5-series
 description: 30 Days of UI5 - overview and day 1 by DJ Adams.
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)

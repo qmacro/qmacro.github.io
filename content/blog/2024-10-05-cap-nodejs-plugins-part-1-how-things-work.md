@@ -2,6 +2,7 @@
 title: CAP Node.js plugins - part 1 - how things work
 date: 2024-10-05
 tags:
+  - capnodejsplugins-series
   - cap
   - cds
   - plugins

@@ -6,7 +6,7 @@ tags:
   - cap
   - npm
   - reuse
-  - modularity
+  - modularityandreuse-series
 description: Following on from part 1 in this series, I take a step back and look at the fundamentals of creating and working with a module, locally in this part, using the NPM workspace concept.
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models/).)
