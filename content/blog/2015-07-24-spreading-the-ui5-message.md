@@ -18,7 +18,8 @@ description: 30 Days of UI5 - day 21 by DJ Adams.
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 
-![Michael Graf at OSCON]( {{ "/images/2018/02/Screen-Shot-2015-07-24-at-14.17.50-300x273.png" | url }})
+![Michael Graf at OSCON](/images/2018/02/Screen-Shot-2015-07-24-at-14.17.50-300x273.png)
+
 _Photo courtesy of Janina Blaesius_
 
 If you’re reading this post, or this [whole series](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/), it’s very likely that you already know something about UI5. Whether that’s coming from the SAP enterprise angle with the SAPUI5 flavour, or from the Open Source angle with the OpenUI5 flavour. But there are plenty of other souls out there that are still missing the UI5 salvation :-). And so I thought I’d briefly review the sorts of activities that have been happening over the last couple of years as far as evangelism, education, and advocacy are concerned.

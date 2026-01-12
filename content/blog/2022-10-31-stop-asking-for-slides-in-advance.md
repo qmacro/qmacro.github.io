@@ -5,8 +5,10 @@ tags:
   - talk
   - courtesy
   - bestpractice
+description: I'm giving a talk next month and was asked by the organiser to send my slides to them no later than two weeks before the event. Hmm.
 ---
-I'm giving a talk next month and was asked by the organiser to send my slides to them no later than two weeks before the event. Further to my [tweet on the subject](/tweets/qmacro/status/1587102735794638854/), I decided to write a quick post to explain why this is such an anti-pattern.
+
+Further to my [tweet on the subject](/tweets/qmacro/status/1587102735794638854/), I decided to write a quick post to explain why this is such an anti-pattern.
 
 I'm not a great fan of slides, but am not against them either. I use them sometimes, and on the occasions when I do, each slide will be simple, perhaps with a picture or diagram, or with a few key words.
 

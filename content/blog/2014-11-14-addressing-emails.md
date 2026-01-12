@@ -4,11 +4,12 @@ title: Addressing emails
 tags:
   - work
   - email
+  - courtesy
 description: Showing respect and courtesy by appropriate use of TO and CC.
 ---
 
-I use filters to manage my emails and auto-filter all incoming emails that have
-me only in the CC list, and not in the TO list, into a separate folder. I
+I use filters to manage my emails and auto-filter all incoming emails that have
+me only in the CC list, and not in the TO list, into a separate folder. I
 review emails in this folder no more frequently than every couple of days. This
 is common practice.
 
