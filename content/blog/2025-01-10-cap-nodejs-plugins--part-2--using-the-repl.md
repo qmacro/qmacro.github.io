@@ -1,6 +1,5 @@
 ---
 title: CAP Node.js plugins - part 2 - using the REPL
-description: This blog post accompanies part 2 of a three part video series where we explore the CDS Plugin mechanism in CAP Node.js to find out how it works. In part 1 we looked at the plugin mechanism itself and how it worked. In this part we use the cds REPL to start our CAP service running and to explore it - to introspect it.
 date: 2025-01-10
 tags:
   - capnodejsplugins-series
@@ -9,22 +8,32 @@ tags:
   - plugins
   - repl
   - introspection
+description: This blog post accompanies part 2 of a three part video series where we explore the CDS Plugin mechanism in CAP Node.js to find out how it works. In part 1 we looked at the plugin mechanism itself and how it worked. In this part we use the cds REPL to start our CAP service running and to explore it - to introspect it.
 ---
-For information on the series and links to all resources, see the [CAP Node.js Plugins][1] series post.
 
-> The examples in this post are based on CAP Node.js at release 8.6 ([December 2024][2]).
+For information on the series and links to all resources, see the [CAP Node.js
+Plugins][1] series post.
+
+> The examples in this post are based on CAP Node.js at release 8.6 ([December
+> 2024][2]).
 
 ## Picking up from where we left off last time
 
-Now we have a skeleton plugin package set up and wired in (which we did in part 1), we can turn our attention to how they can be used to enhance the standard CAP service processing.
+Now we have a skeleton plugin package set up and wired in (which we did in part
+1), we can turn our attention to how they can be used to enhance the standard
+CAP service processing.
 
-Let's have our plugin bring about some behaviour for a custom annotation we'll add to one of the elements in one of the entities in our [service][5].
+Let's have our plugin bring about some behaviour for a custom annotation we'll
+add to one of the elements in one of the entities in our [service][5].
 
 ## Adding a custom annotation
 
-If we annotate an element, for example the `genre` element of the `Books` entity, with `@loud`, that signifies that the value of that element should be returned in UPPER CASE.
+If we annotate an element, for example the `genre` element of the `Books`
+entity, with `@loud`, that signifies that the value of that element should be
+returned in UPPER CASE.
 
-Let's annotate `Books.genre` with `@loud` in the CDL definition so it looks like this:
+Let's annotate `Books.genre` with `@loud` in the CDL definition so it looks
+like this:
 
 ```cds
 service Bookshop {
@@ -40,7 +49,10 @@ service Bookshop {
 }
 ```
 
-The idea is that the contents of the `genre` element should be converted to all capitals before being returned, so that the responses look like this (notice how "SCIENCE FICTION" is presented in all capitals, i.e. in a "loud" shouty fashion).
+The idea is that the contents of the `genre` element should be converted to all
+capitals before being returned, so that the responses look like this (notice
+how "SCIENCE FICTION" is presented in all capitals, i.e. in a "loud" shouty
+fashion).
 
 ```json
 {
@@ -56,9 +68,13 @@ The idea is that the contents of the `genre` element should be converted to all 
 }
 ```
 
-This custom annotation won't have any adverse effect on the standard service provision, but it's available to us when we introspect the service and its makeup.
+This custom annotation won't have any adverse effect on the standard service
+provision, but it's available to us when we introspect the service and its
+makeup.
 
-To see how this completely new and random annotation is handled in general, let's see what the CDS compiler makes of it. Let's ask for the YAML representation of the Core Schema Notation (CSN) for our CDS model:
+To see how this completely new and random annotation is handled in general,
+let's see what the CDS compiler makes of it. Let's ask for the YAML
+representation of the Core Schema Notation (CSN) for our CDS model:
 
 ```shell
 cds compile . --to yaml
@@ -81,19 +97,30 @@ meta: {creator: CDS Compiler v5.6.0, flavor: inferred}
 $version: 2.0
 ```
 
-Note how our new annotation is captured and stored simply as a new property for the element, a property which has the annotation itself as the key and a boolean `true` as the value:
+Note how our new annotation is captured and stored simply as a new property for
+the element, a property which has the annotation itself as the key and a
+boolean `true` as the value:
 
 ```yaml
 genre: {'@loud': true, type: cds.String}
 ```
 
-Using the annotation as the property key means that it won't clash with anything standard. This is so simple that it's easy to gloss over this detail and miss the beauty of the design here.
+Using the annotation as the property key means that it won't clash with
+anything standard. This is so simple that it's easy to gloss over this detail
+and miss the beauty of the design here.
 
 ## Starting up the cds REPL and a server instance
 
-We can use the cds REPL to manually and interactively explore the service and everything it contains. The cds REPL has had some [recent enhancements in the December 2024][3] release, so we'll explore some of those throughout this session.
+We can use the cds REPL to manually and interactively explore the service and
+everything it contains. The cds REPL has had some [recent enhancements in the
+December 2024][3] release, so we'll explore some of those throughout this
+session.
 
-For now, though, there's a [cds.test](https://cap.cloud.sap/docs/node.js/cds-test) library for writing tests for CAP Node.js services, and we can also [use that library directly in the REPL](https://cap.cloud.sap/docs/node.js/cds-test#using-cds-test-in-repl) to great effect.
+For now, though, there's a
+[cds.test](https://cap.cloud.sap/docs/node.js/cds-test) library for writing
+tests for CAP Node.js services, and we can also [use that library directly in
+the REPL](https://cap.cloud.sap/docs/node.js/cds-test#using-cds-test-in-repl)
+to great effect.
 
 Let's start the REPL with `cds repl` and enter `const test = await cds.test()`. The output is what we see from a standard server startup, including the announcement from our fledgling plugin (see [Appendix A - Turning down the logging](#appendix-a-turning-down-the-logging) on suppressing this by default). Here's a sample session output (the `>` symbol is the REPL prompt character):
 
@@ -124,11 +151,16 @@ Welcome to cds repl v 8.6.0
 >
 ```
 
-> The CAP server is started bound to a random port, rather than the default one. This is so it doesn't clash with a CAP server that you might already have running.
+> The CAP server is started bound to a random port, rather than the default
+> one. This is so it doesn't clash with a CAP server that you might already
+> have running.
 >
-> We're not actually interested in what's stored in the `test` constant, the assignment is made just to avoid the output of `cds.test()` being otherwise emitted in the REPL display and overwhelming us.
+> We're not actually interested in what's stored in the `test` constant, the
+> assignment is made just to avoid the output of `cds.test()` being otherwise
+> emitted in the REPL display and overwhelming us.
 
-At this point we can start [querying](https://cap.cloud.sap/docs/node.js/cds-ql):
+At this point we can start
+[querying](https://cap.cloud.sap/docs/node.js/cds-ql):
 
 ```shell
 > await SELECT `title, genre` .from `Bookshop.Books`
@@ -140,18 +172,25 @@ At this point we can start [querying](https://cap.cloud.sap/docs/node.js/cds-ql)
 ]
 ```
 
-But instead of querying the data, what we really want to do in this session is explore the service structure, bearing in mind that, usually, a service contains one or more entities, and those entities contain one or more elements (fields).
+But instead of querying the data, what we really want to do in this session is
+explore the service structure, bearing in mind that, usually, a service
+contains one or more entities, and those entities contain one or more elements
+(fields).
 
-> Instead of using `cds.test()` there are features introduced to the cds REPL in the December 2024 release which makes this more comfortable; use either of these approaches:
+> Instead of using `cds.test()` there are features introduced to the cds REPL
+> in the December 2024 release which makes this more comfortable; use either of
+> these approaches:
 >
 > - `cds repl --run .` in the project directory (`cds r -r .` is the short version)
 > - `.run .` at the REPL prompt
 
 ## Exploring the cds facade
 
-Just like we used the `cds` facade to discover the values of `cds.root` and `cds.home` [in part 1][4], we can use it to look at the services.
+Just like we used the `cds` facade to discover the values of `cds.root` and
+`cds.home` [in part 1][4], we can use it to look at the services.
 
-Entering `cds.` and then hitting `<Tab>`  a couple of times will cause the autocomplete facility to show what's on offer:
+Entering `cds.` and then hitting `<Tab>`  a couple of times will cause the
+autocomplete facility to show what's on offer:
 
 ```shell
 > cds.
@@ -191,9 +230,13 @@ cds.shutdown              cds.test                  cds.type                  cd
 cds.version
 ```
 
-Some of these properties are from the standard JavaScript object mechanism, but some are CAP specific and made available as part of the facade.
+Some of these properties are from the standard JavaScript object mechanism, but
+some are CAP specific and made available as part of the facade.
 
-That's one way to start to explore. Another is to use one of the [cds REPL features][6]: `.inspect`, which has a `.depth` setting (the default value is 11, i.e. "very deep!", but can be changed) that can specified explicitly on the fly too.
+That's one way to start to explore. Another is to use one of the [cds REPL
+features][6]: `.inspect`, which has a `.depth` setting (the default value is
+11, i.e. "very deep!", but can be changed) that can specified explicitly on the
+fly too.
 
 Let's use this to examine the facade:
 
@@ -223,7 +266,8 @@ cds: cds {
 
 ## A first look at the service(s)
 
-If we enter `cds.services` at the REPL prompt, we'll see an avalanche of information, ending like this:
+If we enter `cds.services` at the REPL prompt, we'll see an avalanche of
+information, ending like this:
 
 ```text
           ...
@@ -249,7 +293,8 @@ If we enter `cds.services` at the REPL prompt, we'll see an avalanche of informa
 
 Good, but too much.
 
-We can see from the closing brace that we can probably treat it as an object. Evaluating `typeof(cds.services)` confirms this:
+We can see from the closing brace that we can probably treat it as an object.
+Evaluating `typeof(cds.services)` confirms this:
 
 ```shell
 > typeof(cds.services)
@@ -263,7 +308,8 @@ We can use standard JavaScript affordances to look at the keys. Let's try:
 [ 'db', 'Bookshop' ]
 ```
 
-You'd be right to guess that the first key represents the database service. And the second key points to the value that represents our `Bookshop` service.
+You'd be right to guess that the first key represents the database service. And
+the second key points to the value that represents our `Bookshop` service.
 
 We can confirm this as follows:
 
@@ -272,9 +318,12 @@ We can confirm this as follows:
 [ [ 'db', 'sqlite' ], [ 'Bookshop', 'app-service' ] ]
 ```
 
-> We could also achieve this by reifying `cds.services` as an array, like this: `[...cds.services].map(x => [x.name, x.kind])`. See later for more on the rest parameter syntax (`...`).
+> We could also achieve this by reifying `cds.services` as an array, like this:
+> `[...cds.services].map(x => [x.name, x.kind])`. See later for more on the
+> rest parameter syntax (`...`).
 
-In fact, this "basic info" of name and kind is going to be useful again shortly, so let's create a helper function thus:
+In fact, this "basic info" of name and kind is going to be useful again
+shortly, so let's create a helper function thus:
 
 ```javascript
 const basicInfo = x => [x.name, x.kind]
@@ -282,17 +331,22 @@ const basicInfo = x => [x.name, x.kind]
 
 We can use it like this: `[...cds.services].map(basicInfo)`.
 
-Anyway, let's keep going. In CAP, [everything is a service][7], which explains why we see the SQLite database mechanism appearing here too. But we're interested in our `Bookshop` service, which incidentally has the `kind` value of `app-service`.
+Anyway, let's keep going. In CAP, [everything is a service][7], which explains
+why we see the SQLite database mechanism appearing here too. But we're
+interested in our `Bookshop` service, which incidentally has the `kind` value
+of `app-service`.
 
 ## Digging deeper into the Bookshop service
 
-To make it more convenient for us to work with, let's get a handle on that service object using a [destructuring assignment][11] like this:
+To make it more convenient for us to work with, let's get a handle on that
+service object using a [destructuring assignment][11] like this:
 
 ```shell
 > { Bookshop } = cds.services
 ```
 
-Let's have a look at what's available in this service object, with `Object.keys(Bookshop)`:
+Let's have a look at what's available in this service object, with
+`Object.keys(Bookshop)`:
 
 ```shell
 > Object.keys(Bookshop)
@@ -307,7 +361,10 @@ Let's have a look at what's available in this service object, with `Object.keys(
 ]
 ```
 
-That's a good start, but we can also use the `.inspect` feature with the depth set to the "shallowest" value (0) to look at more or less the same information, but with more hints as to the nature of each of the properties, in a less generic JavaScript context and a more specific CAP context:
+That's a good start, but we can also use the `.inspect` feature with the depth
+set to the "shallowest" value (0) to look at more or less the same information,
+but with more hints as to the nature of each of the properties, in a less
+generic JavaScript context and a more specific CAP context:
 
 ```log
 > .inspect Bookshop .depth=0
@@ -329,22 +386,34 @@ Bookshop: ApplicationService {
 }
 ```
 
-We want to dig down through the entities to the elements, so let's now examine the `entities` property.
+We want to dig down through the entities to the elements, so let's now examine
+the `entities` property.
 
-If we start typing `Bookshop.entities` at the prompt we should see the REPL already start eagerly returning a value which represents a function that returns a [LinkedDefinitions](https://cap.cloud.sap/docs/node.js/cds-reflect#iterable) object:
+If we start typing `Bookshop.entities` at the prompt we should see the REPL
+already start eagerly returning a value which represents a function that
+returns a
+[LinkedDefinitions](https://cap.cloud.sap/docs/node.js/cds-reflect#iterable)
+object:
 
 ```shell
 > Bookshop.entities
 { [Function: children] LinkedDefinitions Books: entity { kind: 'entity', elements: [LinkedDefinitions] } }
 ```
 
-> We already got a clue about this from the output above - the `entities` property was shown as being an array of `LinkedDefinitions`.
+> We already got a clue about this from the output above - the `entities`
+> property was shown as being an array of `LinkedDefinitions`.
 
-So while we can't have that expression emit the entities directly (basically because it's an _iterable_), we can resolve them into an array with `...`, which is the [rest parameter syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters).
+So while we can't have that expression emit the entities directly (basically
+because it's an _iterable_), we can resolve them into an array with `...`,
+which is the [rest parameter
+syntax](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/rest_parameters).
 
-> Since the August 2024 release of CAP Node.js (8.2.1) this conversion to array is now required because of some [important changes made to LinkedDefinitions](https://cap.cloud.sap/docs/releases/aug24#changes-in-node-js).
+> Since the August 2024 release of CAP Node.js (8.2.1) this conversion to array
+> is now required because of some [important changes made to
+> LinkedDefinitions](https://cap.cloud.sap/docs/releases/aug24#changes-in-node-js).
 
-Let's do that now with `entities = [...Bookshop.entities]` which will also emit a summary of the value of the new `entities` variable created:
+Let's do that now with `entities = [...Bookshop.entities]` which will also emit
+a summary of the value of the new `entities` variable created:
 
 ```shell
 > entities = [...Bookshop.entities]
@@ -367,9 +436,12 @@ Let's do that now with `entities = [...Bookshop.entities]` which will also emit 
 ]
 ```
 
-> We can also use JavaScript's [`for ... in`][8] statement, or the [`for ... of`][9] statement, both of which can work with [iterables][10], as can the [rest parameter syntax][12] here too.
+> We can also use JavaScript's [`for ... in`][8] statement, or the [`for ...
+> of`][9] statement, both of which can work with [iterables][10], as can the
+> [rest parameter syntax][12] here too.
 
-There are two entities in the `services.cds` file, and they are `Books` and `Things`. Therefore there are two elements in the `entities` array.
+There are two entities in the `services.cds` file, and they are `Books` and
+`Things`. Therefore there are two elements in the `entities` array.
 
 We can confirm that with `entities.length`:
 
@@ -380,14 +452,16 @@ We can confirm that with `entities.length`:
 
 ## Looking at individual entities and their elements
 
-Let's look at some of the aspects of the entities using our useful basic info function:
+Let's look at some of the aspects of the entities using our useful basic info
+function:
 
 ```shell
 > entities.map(basicInfo)
 [ [ 'Bookshop.Books', 'entity' ], [ 'Bookshop.Things', 'entity' ] ]
 ```
 
-We can also examine the elements of the first entity (`Bookshop.Books`) like this:
+We can also examine the elements of the first entity (`Bookshop.Books`) like
+this:
 
 ```shell
 > entities[0].elements
@@ -400,7 +474,10 @@ LinkedDefinitions {
 >
 ```
 
-Notice that the `entities[0].elements` property is shown as being of a [LinkedDefinitions](https://cap.cloud.sap/docs/node.js/cds-reflect#iterable) type, which is, as we have found out already, not an array per se, but an iterable.
+Notice that the `entities[0].elements` property is shown as being of a
+[LinkedDefinitions](https://cap.cloud.sap/docs/node.js/cds-reflect#iterable)
+type, which is, as we have found out already, not an array per se, but an
+iterable.
 
 So let's explore, like this:
 
@@ -412,11 +489,14 @@ genre [ '@loud', 'type' ]
 stock [ 'type' ]
 ```
 
-These are the elements (fields) of our `Book` entity. And look - there's our custom `@loud` annotation on the `genre` element!
+These are the elements (fields) of our `Book` entity. And look - there's our
+custom `@loud` annotation on the `genre` element!
 
 ## Identifying the elements annotated with @loud
 
-Let's define a function `loudElements` that we can use when mapping over the entities to return a list of entities and any corresponding elements that have been annotated with `@loud`:
+Let's define a function `loudElements` that we can use when mapping over the
+entities to return a list of entities and any corresponding elements that have
+been annotated with `@loud`:
 
 ```javascript
 const loudElements = en => ({
@@ -432,9 +512,12 @@ This takes an entity `en`, and returns an object with three properties:
 - the entire entity object
 - a list of zero or more element names that have the `@loud` annotation
 
-This was both possible and easy because of the wonderfully beautiful and simple way annotations are processed and stored.
+This was both possible and easy because of the wonderfully beautiful and simple
+way annotations are processed and stored.
 
-Now, we can map this function over the list of entities, which should return something like this (pay particular attention to the value of the `elements` property in each of the array items):
+Now, we can map this function over the list of entities, which should return
+something like this (pay particular attention to the value of the `elements`
+property in each of the array items):
 
 ```shell
 > entities.map(loudElements)
@@ -465,27 +548,33 @@ Now, we can map this function over the list of entities, which should return som
 ]
 ```
 
-We only annotated the `genre` element of the `Books` entity, so this makes sense.
+We only annotated the `genre` element of the `Books` entity, so this makes
+sense.
 
 This way we can identify those entities upon which we need to focus.
 
 ## Wrapping up
 
-This post just scratches the surface of the power that the cds REPL gives us as developers, to explore, understand, manipulate and write code against the services and other artifacts presented in what we're building, both in _our_ user space, but also in the CAP framework's "kernel" space (see the [Kernel space and user space][13] section of [Five reasons to use CAP][14]).
+This post just scratches the surface of the power that the cds REPL gives us as
+developers, to explore, understand, manipulate and write code against the
+services and other artifacts presented in what we're building, both in _our_
+user space, but also in the CAP framework's "kernel" space (see the [Kernel
+space and user space][13] section of [Five reasons to use CAP][14]).
 
-In [the third and final part][15] to this series we can use the knowledge we've gained from this cds REPL session to write our actual plugin!
+In [the third and final part][15] to this series we can use the knowledge we've
+gained from this cds REPL session to write our actual plugin!
 
 ---
 
 ## Appendix A - Turning down the logging
 
-The reason this line appears each and every time we start up the service, even in the REPL:
+The reason this line appears each and every time we start up the service, even
+in the REPL:
 
-```log
-[LOUD] - Starting up ...
-```
+```log [LOUD] - Starting up ... ```
 
-is because by default, the `log('Starting up ...')` call here in our plugin file `loud/cap-plugin.js`:
+is because by default, the `log('Starting up ...')` call here in our plugin
+file `loud/cap-plugin.js`:
 
 ```javascript
 const cds = require('@sap/cds')
@@ -495,7 +584,10 @@ log('Starting up ...')
 
 emits at a level that finds its way to the server output by default.
 
-Switching this to an explicit call to `log.debug('Starting up ...')`, which is at lower more detailed level that is not output by default, means that we don't see this line any more, except if we explicitly ask to see debug output, using the `DEBUG` environment variable, for example like this:
+Switching this to an explicit call to `log.debug('Starting up ...')`, which is
+at lower more detailed level that is not output by default, means that we don't
+see this line any more, except if we explicitly ask to see debug output, using
+the `DEBUG` environment variable, for example like this:
 
 ```shell
 DEBUG=LOUD cds watch

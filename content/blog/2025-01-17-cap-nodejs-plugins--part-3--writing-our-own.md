@@ -1,6 +1,5 @@
 ---
 title: CAP Node.js plugins - part 3 - writing our own
-description: This blog post accompanies part 3 of a three part series where we explore the CDS Plugin mechanism in CAP Node.js to find out how it works. In part 1 we looked at the plugin mechanism itself and how it worked. In part 2 we used the cds REPL to start our CAP service running and to introspect it. In this part we'll use what we learned and discovered in the first two parts to write our own plugin.
 date: 2025-01-17
 tags:
   - capnodejsplugins-series
@@ -8,21 +7,34 @@ tags:
   - cds
   - plugins
   - javascript
+description: This blog post accompanies part 3 of a three part series where we explore the CDS Plugin mechanism in CAP Node.js to find out how it works. In part 1 we looked at the plugin mechanism itself and how it worked. In part 2 we used the cds REPL to start our CAP service running and to introspect it. In this part we'll use what we learned and discovered in the first two parts to write our own plugin.
 ---
 
-For information on the series and links to all resources, see the [CAP Node.js Plugins][1] series post.
+For information on the series and links to all resources, see the [CAP Node.js
+Plugins][1] series post.
 
-> The examples in this post are based on CAP Node.js at release 8.6 ([December 2024][2]).
+> The examples in this post are based on CAP Node.js at release 8.6 ([December
+> 2024][2]).
 
 ## Continuing from where we left off last time
 
-We finished part 2 [with a function][3] that we named `loudElements` which gave us a summary of entities in our service, and which elements (if any) were annotated with `@loud`.
+We finished part 2 [with a function][3] that we named `loudElements` which gave
+us a summary of entities in our service, and which elements (if any) were
+annotated with `@loud`.
 
-In fact, using the word "service" here in the singular prompts me to want to make things a tiny bit more interesting, or at least illustrative, by defining a second service, and a further entity within. This is so we can see for ourselves how universal introspection can be.
+In fact, using the word "service" here in the singular prompts me to want to
+make things a tiny bit more interesting, or at least illustrative, by defining
+a second service, and a further entity within. This is so we can see for
+ourselves how universal introspection can be.
 
-Let's keep things simple from a mechanics perspective, introduce a simple new entity, `Colours`, in the context of the Platonic [Theory of forms][4] and annotate its string element with `@loud`. There's no reason for this departure to the philosophical except to have something a little more adventurous than "Foo"s and "Bar"s.
+Let's keep things simple from a mechanics perspective, introduce a simple new
+entity, `Colours`, in the context of the Platonic [Theory of forms][4] and
+annotate its string element with `@loud`. There's no reason for this departure
+to the philosophical except to have something a little more adventurous than
+"Foo"s and "Bar"s.
 
-In addition, we'll add a `String` element to the `Things` entity in the original service, but _not_ annotate that with `@loud`.
+In addition, we'll add a `String` element to the `Things` entity in the
+original service, but _not_ annotate that with `@loud`.
 
 This is what we then end up with in `services.cds`:
 
@@ -69,7 +81,9 @@ ID,name
 3,Blue
 ```
 
-Now, with this second service, we have to be more ready to process any service we come across; remember that in part 2 we explicitly picked out the `Bookshop` service by name:
+Now, with this second service, we have to be more ready to process any service
+we come across; remember that in part 2 we explicitly picked out the `Bookshop`
+service by name:
 
 ```javascript
 { Bookshop } = cds.services
@@ -79,9 +93,13 @@ But in this part we'll address (almost) the entirety of `cds.services`.
 
 ## Identifying application services
 
-In addressing the entirety of `cds.services` we'll need to ensure we pick out only "our" services, i.e. not the core framework's services such as the database service.
+In addressing the entirety of `cds.services` we'll need to ensure we pick out
+only "our" services, i.e. not the core framework's services such as the
+database service.
 
-Starting up the cds REPL with the `--run` option (from the [CAP December 2024 release][5], and [as noted][6] in the blog post for the previous part) we see the list of services `db`, `Bookshop` and `PlatonicForms`:
+Starting up the cds REPL with the `--run` option (from the [CAP December 2024
+release][5], and [as noted][6] in the blog post for the previous part) we see
+the list of services `db`, `Bookshop` and `PlatonicForms`:
 
 ```shell
 $ cds r -r .
@@ -105,7 +123,8 @@ from cds.services: {
 Simply type e.g. PlatonicForms in the prompt to use the respective objects.
 ```
 
-Moreover, examining the services as we did last time shows us what we need to know:
+Moreover, examining the services as we did last time shows us what we need to
+know:
 
 ```log
 > const basicInfo = x => [x.name, x.kind]
@@ -117,7 +136,8 @@ Moreover, examining the services as we did last time shows us what we need to kn
 ]
 ```
 
-In other words, it will be useful to have a helper so that we can pick out "our" services, something like this:
+In other words, it will be useful to have a helper so that we can pick out
+"our" services, something like this:
 
 ```javascript
 const isAppService = x => x.kind = 'app-service'
@@ -129,7 +149,9 @@ With this we can gather our services into an array, thus:
 const services = [...cds.services].filter(isAppService)
 ```
 
-While `basicInfo` is somewhat more useful in an interactive REPL session, this `isAppService` [predicate function][7] is going to help us in our real plugin code itself, along with `loudElements`, which, as a reminder, looks like this:
+While `basicInfo` is somewhat more useful in an interactive REPL session, this
+`isAppService` [predicate function][7] is going to help us in our real plugin
+code itself, along with `loudElements`, which, as a reminder, looks like this:
 
 ```javascript
 const loudElements = en => ({
@@ -141,13 +163,22 @@ const loudElements = en => ({
 
 ## Getting the timing right
 
-So far we've been working in the cds REPL, starting up the service on invocation, with the `--run` option, or once we are in the REPL, with e.g. `const test = cds.test()`. So by the time we start to introspect, to look at, say, `cds.services`, the server is already started up and values are available.
+So far we've been working in the cds REPL, starting up the service on
+invocation, with the `--run` option, or once we are in the REPL, with e.g.
+`const test = cds.test()`. So by the time we start to introspect, to look at,
+say, `cds.services`, the server is already started up and values are available.
 
 But what about at runtime?
 
-The plugin needs to be ready to inject the custom behavior at the right time, i.e. once the CAP server is started and all the services have been bootstrapped. As well as regular events such as before, on or after a request, the CAP server itself also sports [lifecycle events][8], and the [served][9] event is ideal for what we need.
+The plugin needs to be ready to inject the custom behavior at the right time,
+i.e. once the CAP server is started and all the services have been
+bootstrapped. As well as regular events such as before, on or after a request,
+the CAP server itself also sports [lifecycle events][8], and the [served][9]
+event is ideal for what we need.
 
-Let's add some simple code inside a handler for `served`, in our plugin (i.e. in `loud/cds-plugin.js`), adding the definitions of `basicInfo`, `isAppService` and `loudElements`, and grabbing the service list into an array:
+Let's add some simple code inside a handler for `served`, in our plugin (i.e.
+in `loud/cds-plugin.js`), adding the definitions of `basicInfo`, `isAppService`
+and `loudElements`, and grabbing the service list into an array:
 
 ```javascript
 const cds = require('@sap/cds')
@@ -171,13 +202,13 @@ cds.once('served', _ => {
 })
 ```
 
-> When there are no arguments expected or needed, I like the "underscore as parameter placeholder" style of arrow function expressions, i.e. (`_ => { ... }`) but you might prefer the "empty list" style i.e. (`() => { ... }`).
+> When there are no arguments expected or needed, I like the "underscore as
+> parameter placeholder" style of arrow function expressions, i.e. (`_ => { ...
+> }`) but you might prefer the "empty list" style i.e. (`() => { ... }`).
 
 Starting up the server:
 
-```shell
-DEBUG=LOUD cds w
-```
+```shell DEBUG=LOUD cds w ```
 
 we see the debug output from our plugin:
 
@@ -197,26 +228,29 @@ cds serve all --with-mocks --in-memory?
 ...
 ```
 
-Great, that's the timing sorted out. Now we just need to put everything together into that `served` lifecycle event handler.
+Great, that's the timing sorted out. Now we just need to put everything
+together into that `served` lifecycle event handler.
 
 ## Fleshing out the plugin activities
 
 We'll replace this line, in the handler above:
 
-```javascript
-log.debug(services.map(basicInfo))
+```javascript log.debug(services.map(basicInfo))
 ```
 
-with something that actually works through those services and does the right thing.
+with something that actually works through those services and does the right
+thing.
 
-As a reminder, this is to be a super simple plugin that uppercases string values for elements annotated with `@loud`. Let's use one of the best features of the set of [design time tools][10] to iterate towards what we need - the auto restart of the CAP server on changes.
+As a reminder, this is to be a super simple plugin that uppercases string
+values for elements annotated with `@loud`. Let's use one of the best features
+of the set of [design time tools][10] to iterate towards what we need - the
+auto restart of the CAP server on changes.
 
 ### Identifying the element candidates
 
 First, replacing that `log.debug` line with this:
 
-```javascript
-services.forEach(s => {
+```javascript services.forEach(s => {
 
     [...s.entities]
 
@@ -232,18 +266,22 @@ services.forEach(s => {
 })
 ```
 
-gives us the following two lines in the CAP server output (when running with `DEBUG` set on for our `LOUD` logger identifier, of course):
+gives us the following two lines in the CAP server output (when running with
+`DEBUG` set on for our `LOUD` logger identifier, of course):
 
-```log
-[LOUD] - Bookshop.Books -> genre
-[LOUD] - PlatonicForms.Colours -> name
+```log [LOUD] - Bookshop.Books -> genre [LOUD] - PlatonicForms.Colours -> name
 ```
 
 ### Setting up a handler to provide the effect
 
-At this point we have everything we need. To bring about the "loud" effect, we can hook ourselves onto the regular processing of read events for the appropriate entities; in other words, we can register [after][11] phase handlers.
+At this point we have everything we need. To bring about the "loud" effect, we
+can hook ourselves onto the regular processing of read events for the
+appropriate entities; in other words, we can register [after][11] phase
+handlers.
 
-Let's replace that inner `.forEach(x => log.debug(...)` part within the function chain above, with a new function that does this. The entire resulting outer `forEach` should now look like this:
+Let's replace that inner `.forEach(x => log.debug(...)` part within the
+function chain above, with a new function that does this. The entire resulting
+outer `forEach` should now look like this:
 
 ```javascript
 services.forEach(s => {
@@ -268,7 +306,9 @@ services.forEach(s => {
 })
 ```
 
-Remember that the `@loud`-annotated elements are stored in the `elements` property of the entity in `en`, i.e. `en.elements`, so we can just iterate over them (`en.elements.forEach`) converting the values using `toUpperCase()`.
+Remember that the `@loud`-annotated elements are stored in the `elements`
+property of the entity in `en`, i.e. `en.elements`, so we can just iterate over
+them (`en.elements.forEach`) converting the values using `toUpperCase()`.
 
 At this point when the server restarts, we see this in the debug output:
 
@@ -296,7 +336,8 @@ $ curl -s localhost:4004/odata/v4/bookshop/Books | jq .
 }
 ```
 
-The value for the `genre` element is uppercased, and the value for `title` is not, as that element is not annotated with `@loud`.
+The value for the `genre` element is uppercased, and the value for `title` is
+not, as that element is not annotated with `@loud`.
 
 Also, none of the strings for `Things` are uppercased:
 
@@ -321,7 +362,9 @@ $ curl -s localhost:4004/odata/v4/bookshop/Things | jq .
 }
 ```
 
-Finally, the string values for the `name` element of the `Colours` entity in the `PlatonicForms` service are uppercased, as that element is annotated with `@loud`:
+Finally, the string values for the `name` element of the `Colours` entity in
+the `PlatonicForms` service are uppercased, as that element is annotated with
+`@loud`:
 
 ```shell
 $ curl -s localhost:4004/odata/v4/platonic-forms/Colours | jq .
@@ -348,11 +391,17 @@ That's pretty much it!
 
 ## Wrapping up
 
-And that's it for this mini-series too. Of course, this is just scratching the surface of what's possible, but hopefully you can see how straightforward it is to create your own plugin. And perhaps the main takeaways from what we've seen are:
+And that's it for this mini-series too. Of course, this is just scratching the
+surface of what's possible, but hopefully you can see how straightforward it is
+to create your own plugin. And perhaps the main takeaways from what we've seen
+are:
 
-- the REPL is one of CAP's greatest superpowers, and can be one of your superpowers too
-- introspection is straightforward and brings you and your understanding closer to the CAP mechanics and philosophy
-- getting a plugin to do something doesn't require any "special" code, it's just events and handlers all the way down
+- the REPL is one of CAP's greatest superpowers, and can be one of your
+  superpowers too
+- introspection is straightforward and brings you and your understanding closer
+  to the CAP mechanics and philosophy
+- getting a plugin to do something doesn't require any "special" code, it's
+  just events and handlers all the way down
 
 [1]: /blog/posts/2024/12/30/cap-node-js-plugins/
 [2]: https://cap.cloud.sap/docs/releases/dec24

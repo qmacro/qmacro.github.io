@@ -11,9 +11,14 @@ tags:
   - deconstructed
   - seriespost
 ---
-Here's a summary of the resources relating to the series called "CAP Node.js Plugins". There are three episodes, broadcast live on the [Hands-on SAP Dev show][31], and of course available for viewing afterwards too. For each of the episodes there's also an accompanying blog post.
+Here's a summary of the resources relating to the series called "CAP Node.js
+Plugins". There are three episodes, broadcast live on the [Hands-on SAP Dev
+show][31], and of course available for viewing afterwards too. For each of the
+episodes there's also an accompanying blog post.
 
-The content of the first episode (Part 1) was originally presented in a session [DEV100B][33] as part of the Developer Keynote at [SAP TechEd Virtual][34] in 2024. There is a [playlist][32] that contains all the episodes, in order.
+The content of the first episode (Part 1) was originally presented in a session
+[DEV100B][33] as part of the Developer Keynote at [SAP TechEd Virtual][34] in
+2024. There is a [playlist][32] that contains all the episodes, in order.
 
 Part|Broadcast|Live Stream / Recording|Blog Post|Community
 -|-|-|-|-
