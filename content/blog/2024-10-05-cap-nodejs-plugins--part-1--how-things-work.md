@@ -2,18 +2,14 @@
 title: CAP Node.js plugins - part 1 - how things work
 date: 2024-10-05
 tags:
-  - capnodejsplugins-series
   - cap
   - cds
   - plugins
+description: In this first of a three part series of blog posts accompanying a corresponding video series, we explore the CDS plugin mechanism in CAP. This post is about understanding how the plugin mechanism works.
 ---
 
-In this first of a three part series of blog posts, we explore the [CDS
-Plugin](https://cap.cloud.sap/docs/node.js/cds-plugins) mechanism in CAP to
-find out how it works, so we are well prepared to write our own plugin.
-
-For information on the series and links to all resources, see [CAP Node.js
-Plugins](/blog/posts/2024/12/30/cap-node-js-plugins/).
+For information on the series and links to all resources, see the [CAP Node.js
+Plugins](/blog/posts/2024/12/30/cap-node-js-plugins/) series post.
 
 > The examples in this post are based on CAP Node.js at release 8.3.0
 > ([September 2024](https://cap.cloud.sap/docs/releases/sep24)).
@@ -57,7 +53,9 @@ service being served.
 [cds] - connect using bindings from: { registry: '~/.cds-services.json' } [cds]
 - connect to db > sqlite { url: ':memory:' }
   > init from data/Bookshop.Books.csv
-/> successfully deployed to in-memory database. ... [cds] - using new OData
+/> successfully deployed to in-memory database.
+...
+[cds] - using new OData
 adapter [cds] - serving Bookshop { path: '/odata/v4/bookshop' }
 
 [cds] - server listening on { url: 'http://localhost:4004' }

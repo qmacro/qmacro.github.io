@@ -2,17 +2,20 @@
 title: CAP Node.js plugins - part 2 - using the REPL
 date: 2025-01-10
 tags:
-  - capnodejsplugins-series
   - cap
   - cds
   - plugins
   - repl
   - introspection
-description: This blog post accompanies part 2 of a three part video series where we explore the CDS Plugin mechanism in CAP Node.js to find out how it works. In part 1 we looked at the plugin mechanism itself and how it worked. In this part we use the cds REPL to start our CAP service running and to explore it - to introspect it.
+description: This blog post accompanies part 2 of a three part video series where we explore the CDS Plugin mechanism in CAP Node.js. This post is about discovering and exploring service details with introspection.
 ---
 
 For information on the series and links to all resources, see the [CAP Node.js
 Plugins][1] series post.
+
+In part 1 we looked at the plugin mechanism itself and how it worked. In this
+part we use the cds REPL to start our CAP service running and to explore it -
+to introspect it.
 
 > The examples in this post are based on CAP Node.js at release 8.6 ([December
 > 2024][2]).

@@ -2,16 +2,20 @@
 title: CAP Node.js plugins - part 3 - writing our own
 date: 2025-01-17
 tags:
-  - capnodejsplugins-series
   - cap
   - cds
   - plugins
   - javascript
-description: This blog post accompanies part 3 of a three part series where we explore the CDS Plugin mechanism in CAP Node.js to find out how it works. In part 1 we looked at the plugin mechanism itself and how it worked. In part 2 we used the cds REPL to start our CAP service running and to introspect it. In this part we'll use what we learned and discovered in the first two parts to write our own plugin.
+description: This blog post accompanies part 3 of a three part series where we explore the CDS Plugin mechanism in CAP Node.js. This post is about using the knowledge we've gained to write our own plugin.
 ---
 
 For information on the series and links to all resources, see the [CAP Node.js
 Plugins][1] series post.
+
+In part 1 we looked at the plugin mechanism itself and how it worked. In part 2
+we used the cds REPL to start our CAP service running and to introspect it. In
+this part we'll use what we learned and discovered in the first two parts to
+write our own plugin.
 
 > The examples in this post are based on CAP Node.js at release 8.6 ([December
 > 2024][2]).
