@@ -557,26 +557,30 @@ pre[class*="language-diff-"] {
 	<li><a href="/tags/capnodejsplugins-series/" class="post-tag">capnodejsplugins-series</a>, </li>
 	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
 	<li><a href="/tags/cds/" class="post-tag">cds</a>, </li>
-	<li><a href="/tags/plugins/" class="post-tag">plugins</a>, </li>
-	<li><a href="/tags/teched/" class="post-tag">teched</a>, </li>
-	<li><a href="/tags/keynote/" class="post-tag">keynote</a></li>
+	<li><a href="/tags/plugins/" class="post-tag">plugins</a></li>
 </ul>
 
 <p class="post-description-main"></p>
 
-<p>In this first of a three part series of blog posts, we explore the <a href="https://cap.cloud.sap/docs/node.js/cds-plugins">CDS Plugin</a> mechanism in CAP to find out how it works, so we are well prepared to write our own plugin.</p>
-<p>For information on the series and links to all resources, see <a href="/blog/posts/2024/12/30/cap-node-js-plugins/">CAP Node.js Plugins</a>.</p>
+<p>In this first of a three part series of blog posts, we explore the <a href="https://cap.cloud.sap/docs/node.js/cds-plugins">CDS
+Plugin</a> mechanism in CAP to
+find out how it works, so we are well prepared to write our own plugin.</p>
+<p>For information on the series and links to all resources, see <a href="/blog/posts/2024/12/30/cap-node-js-plugins/">CAP Node.js
+Plugins</a>.</p>
 <blockquote>
-<p>The examples in this post are based on CAP Node.js at release 8.3.0 (<a href="https://cap.cloud.sap/docs/releases/sep24">September 2024</a>).</p>
+<p>The examples in this post are based on CAP Node.js at release 8.3.0
+(<a href="https://cap.cloud.sap/docs/releases/sep24">September 2024</a>).</p>
 </blockquote>
-<p><a name="setting-the-scene"></a></p>
 <h2 id="setting-the-scene">Setting the scene</h2>
-<p>To set the scene, imagine a simple service scenario, where we've got two entities:</p>
+<p>To set the scene, imagine a simple service scenario, where we've got two
+entities:</p>
 <ul>
 <li><code>Books</code>, where we'll be focusing our attention for the plugin</li>
-<li><code>Things</code>, just there as a &quot;control&quot; to show how we can properly implement a plugin that's generic and doesn't have to be aware of specific entity names</li>
+<li><code>Things</code>, just there as a &quot;control&quot; to show how we can properly implement a
+plugin that's generic and doesn't have to be aware of specific entity names</li>
 </ul>
-<p>This is the entire service definition, in <code>services.cds</code>, including the entities:</p>
+<p>This is the entire service definition, in <code>services.cds</code>, including the
+entities:</p>
 <pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token keyword">service</span> Bookshop {
     <span class="token keyword">entity</span> Books {
         <span class="token cqlkeywords keyword">key</span> ID          : <span class="token type builtin">Integer</span>;
@@ -588,25 +592,28 @@ pre[class*="language-diff-"] {
         <span class="token cqlkeywords keyword">key</span> ID : <span class="token type builtin">Integer</span>;
     }
 }</code></pre>
-<p>Starting the CAP server with <code>cds watch</code> gives us what we expect, there's some data deployed to the in-memory persistence layer and we have an OData V4 service being served.</p>
+<p>Starting the CAP server with <code>cds watch</code> gives us what we expect, there's some
+data deployed to the in-memory persistence layer and we have an OData V4
+service being served.</p>
 <pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
 <span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loaded model from <span class="token number">1</span> file<span class="token operator">(</span>s<span class="token operator">)</span><span class="token operator">:</span>
 
   <span class="token domain constant">services.cds</span>
 
-<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> connect using bindings from<span class="token operator">:</span> <span class="token operator">{</span> registry<span class="token operator">:</span> <span class="token string">'~/.cds-services.json'</span> <span class="token operator">}</span>
-<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> connect to db <span class="token operator">></span> sqlite <span class="token operator">{</span> url<span class="token operator">:</span> <span class="token string">':memory:'</span> <span class="token operator">}</span>
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> connect using bindings from<span class="token operator">:</span> <span class="token operator">{</span> registry<span class="token operator">:</span> <span class="token string">'~/.cds-services.json'</span> <span class="token operator">}</span> <span class="token punctuation">[</span>cds<span class="token punctuation">]</span>
+<span class="token operator">-</span> connect to db <span class="token operator">></span> sqlite <span class="token operator">{</span> url<span class="token operator">:</span> <span class="token string">':memory:'</span> <span class="token operator">}</span>
   <span class="token operator">></span> init from data<span class="token operator">/</span>Bookshop<span class="token punctuation">.</span>Books<span class="token punctuation">.</span>csv
-<span class="token operator">/</span><span class="token operator">></span> successfully deployed to in<span class="token operator">-</span>memory database<span class="token punctuation">.</span>
-<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
-<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> using new OData adapter
-<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> serving Bookshop <span class="token operator">{</span> path<span class="token operator">:</span> <span class="token string">'/odata/v4/bookshop'</span> <span class="token operator">}</span>
+<span class="token operator">/</span><span class="token operator">></span> successfully deployed to in<span class="token operator">-</span>memory database<span class="token punctuation">.</span> <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span> <span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> using new OData
+adapter <span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> serving Bookshop <span class="token operator">{</span> path<span class="token operator">:</span> <span class="token string">'/odata/v4/bookshop'</span> <span class="token operator">}</span>
 
 <span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> server listening on <span class="token operator">{</span> url<span class="token operator">:</span> <span class="token string">'http://localhost:4004'</span> <span class="token operator">}</span></code></pre>
-<p><a name="debug-and-digging-in"></a></p>
 <h2 id="debug-and-digging-in">Debug and digging in</h2>
-<p>Often when I'm trying to deconstruct and understand something, I turn to the <code>DEBUG</code> environment variable. It give me a ton of info to start staring at.</p>
-<p>Running <code>DEBUG=all cds watch</code> emits far too much output to even show here in this post. But that's sort of the point. More is better, but right now let's limit it to the plugins module, by using <code>DEBUG=plugins cds watch</code>. In addition to the log output we've already seen (above), this now also emits:</p>
+<p>Often when I'm trying to deconstruct and understand something, I turn to the
+<code>DEBUG</code> environment variable. It give me a ton of info to start staring at.</p>
+<p>Running <code>DEBUG=all cds watch</code> emits far too much output to even show here in
+this post. But that's sort of the point. More is better, but right now let's
+limit it to the plugins module, by using <code>DEBUG=plugins cds watch</code>. In addition
+to the log output we've already seen (above), this now also emits:</p>
 <pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loading plugin <span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">-</span>fiori<span class="token operator">:</span> <span class="token operator">{</span>
   <span class="token property">impl:</span> <span class="token string">'../../usr/local/share/npm-global/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds-fiori/cds-plugin.js'</span>
 <span class="token operator">}</span>
@@ -616,13 +623,23 @@ pre[class*="language-diff-"] {
 <span class="token punctuation">[</span>plugins<span class="token punctuation">]</span> <span class="token operator">-</span> <span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loaded plugins in<span class="token operator">:</span> <span class="token number">2.464ms</span></code></pre>
 <p>This is interesting! What is this telling us? Well ...</p>
 <ul>
-<li>There are already plugins being loaded! The <a href="https://cap.cloud.sap/docs/plugins/">CAP framework uses the plugin concept itself</a>, here we can see that <code>@sap/cds-fiori</code> and <code>@cap-js/sqlite</code> are plugins. But where are they defined, why are these specific ones being loaded? We'll come to that shortly.</li>
-<li>The <em>filename</em> in each of these plugins is <code>cds-plugin.js</code>, and we can recall this from <a href="https://cap.cloud.sap/docs/node.js/cds-plugins#add-a-cds-plugin-js">the plugin documentation</a>. That's what we'll need to start with too for our own plugin.</li>
-<li>Right now, the implementation (in <code>cds-plugin.js</code>) for each of these plugins is found in the global <code>@sap/cds-dk</code> location (<code>../../usr/local/share/ ... /node_modules/@sap/cds-dk/...</code>). Rather than dig around trying to look at the detail there, it would be easier to be able to look in a project-local <code>node_modules/</code> directory hierarchy here.</li>
+<li>There are already plugins being loaded! The <a href="https://cap.cloud.sap/docs/plugins/">CAP framework uses the plugin
+concept itself</a>, here we can see that
+<code>@sap/cds-fiori</code> and <code>@cap-js/sqlite</code> are plugins. But where are they
+defined, why are these specific ones being loaded? We'll come to that
+shortly.</li>
+<li>The <em>filename</em> in each of these plugins is <code>cds-plugin.js</code>, and we can recall
+this from <a href="https://cap.cloud.sap/docs/node.js/cds-plugins#add-a-cds-plugin-js">the plugin
+documentation</a>.
+That's what we'll need to start with too for our own plugin.</li>
+<li>Right now, the implementation (in <code>cds-plugin.js</code>) for each of these plugins
+is found in the global <code>@sap/cds-dk</code> location (<code>../../usr/local/share/ ... /node_modules/@sap/cds-dk/...</code>). Rather than dig around trying to look at the
+detail there, it would be easier to be able to look in a project-local
+<code>node_modules/</code> directory hierarchy here.</li>
 </ul>
-<p><a name="local-installation-and-identifying-the-plugin-mechanism"></a></p>
 <h2 id="local-install-and-identifying-the-plugin-mechanism">Local install and identifying the plugin mechanism</h2>
-<p>So let's install the project dependencies now, with <code>npm install</code>, which emits something like this:</p>
+<p>So let's install the project dependencies now, with <code>npm install</code>, which emits
+something like this:</p>
 <pre class="language-log" tabindex="0"><code class="language-log">added <span class="token number">112</span> packages<span class="token punctuation">,</span> and audited <span class="token number">113</span> packages in <span class="token number">13s</span>
 
 <span class="token number">22</span> packages are looking for funding
@@ -634,14 +651,18 @@ To address all issues <span class="token operator">(</span>including breaking ch
   npm audit fix <span class="token operator">-</span><span class="token operator">-</span>force
 
 Run `npm audit` for details<span class="token punctuation">.</span></code></pre>
-<p>Now we can look locally for that &quot;loading plugin&quot; message from the debug output, using <code>grep -R 'loading plugin' *</code>. This shows us:</p>
+<p>Now we can look locally for that &quot;loading plugin&quot; message from the debug
+output, using <code>grep -R 'loading plugin' *</code>. This shows us:</p>
 <pre class="language-log" tabindex="0"><code class="language-log">node_modules<span class="token operator">/</span><span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">/</span>bin<span class="token operator">/</span>serve<span class="token punctuation">.</span>js<span class="token operator">:</span>  <span class="token operator">/</span><span class="token operator">/</span> Ensure loading plugins before calling cds<span class="token punctuation">.</span>env<span class="token operator">!</span>
 node_modules<span class="token operator">/</span><span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">/</span>lib<span class="token operator">/</span>plugins<span class="token punctuation">.</span>js<span class="token operator">:</span>    <span class="token level debug keyword">DEBUG</span><span class="token operator">?</span><span class="token punctuation">.</span><span class="token operator">(</span>`loading plugin <span class="token operator">$</span><span class="token operator">{</span>plugin<span class="token operator">}</span><span class="token operator">:</span>`<span class="token punctuation">,</span> <span class="token operator">{</span> impl<span class="token operator">:</span> local<span class="token operator">(</span>conf<span class="token punctuation">.</span>impl<span class="token operator">)</span> <span class="token operator">}</span><span class="token operator">)</span>
 node_modules<span class="token operator">/</span><span class="token punctuation">.</span>bin<span class="token operator">/</span>cds<span class="token operator">-</span>serve<span class="token operator">:</span>  <span class="token operator">/</span><span class="token operator">/</span> Ensure loading plugins before calling cds<span class="token punctuation">.</span>env<span class="token operator">!</span></code></pre>
-<p>Cool. There's a comment in <code>node_modules/@sap/cds/bin/serve.js</code> (and that <code>cds-serve</code> is just a symlink to that same file) ... but that DEBUG output statement in <code>plugins.js</code> seems like the right place. Let's have a look ... at the CAP server source code - let's dive in!</p>
-<p><a name="diving-into-the-cap-server-source-code"></a></p>
+<p>Cool. There's a comment in <code>node_modules/@sap/cds/bin/serve.js</code> (and that
+<code>cds-serve</code> is just a symlink to that same file) ... but that DEBUG output
+statement in <code>plugins.js</code> seems like the right place. Let's have a look ... at
+the CAP server source code - let's dive in!</p>
 <h2 id="diving-into-the-cap-server-source-code">Diving into the CAP server source code</h2>
-<p>Taking a look inside <code>node_modules/@sapcds/lib/plugins.js</code> we can see all sorts of stuff, but I'm drawn to this <code>fetch</code> function:</p>
+<p>Taking a look inside <code>node_modules/@sapcds/lib/plugins.js</code> we can see all sorts
+of stuff, but I'm drawn to this <code>fetch</code> function:</p>
 <pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token comment">/**
  * Fetch cds-plugins from project's package dependencies.
  * Used in and made available through cds.env.plugins.
@@ -666,7 +687,11 @@ exports<span class="token punctuation">.</span><span class="token function-varia
 <li><code>cds.home</code></li>
 <li><code>cds.root</code></li>
 </ul>
-<p>This code may appear initially a little dense, but if we stare at it for a bit we see that the <code>fetch_plugins_in</code> function tries to <code>require</code> a <code>package.json</code> file in the source given, and then tries to <code>resolve</code> a <code>cds-plugin.js</code> file in each of the <code>dependencies</code> (and <code>devDependencies</code> if development mode is indicated) in the <code>package.json</code> files that it manages to find.</p>
+<p>This code may appear initially a little dense, but if we stare at it for a bit
+we see that the <code>fetch_plugins_in</code> function tries to <code>require</code> a <code>package.json</code>
+file in the source given, and then tries to <code>resolve</code> a <code>cds-plugin.js</code> file in
+each of the <code>dependencies</code> (and <code>devDependencies</code> if development mode is
+indicated) in the <code>package.json</code> files that it manages to find.</p>
 <p>Here's what that looks like in glorious ASCII art:</p>
 <pre class="language-text" tabindex="0"><code class="language-text">
             fetch_plugins_in
@@ -685,24 +710,38 @@ exports<span class="token punctuation">.</span><span class="token function-varia
             +--------------------------------------+</code></pre>
 <p>OK, so we're definitely onto something.</p>
 <p>But what are these sources <code>cds.home</code> and <code>cds.root</code>?</p>
-<p><a name="embracing-the-repl"></a></p>
 <h2 id="embracing-the-repl">Embracing the REPL</h2>
-<p>Well, to find out, I'm going to use one of the perhaps lesser known and more mysterious superpowers - the <a href="https://cap.cloud.sap/docs/tools/cds-cli#cds-repl">REPL</a>.</p>
+<p>Well, to find out, I'm going to use one of the perhaps lesser known and more
+mysterious superpowers - the
+<a href="https://cap.cloud.sap/docs/tools/cds-cli#cds-repl">REPL</a>.</p>
 <blockquote>
-<p>The concept of a REPL, which stands for <a href="https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop">Read Evaluate Print Loop</a> is an old one, dating back to the 1960's, especially (but not only) in the world of Lisp. This is yet another example of where the <a href="/blog/posts/2024/12/06/the-art-and-science-of-cap/">Art &amp; Science of CAP</a> has venerable ancestry.</p>
+<p>The concept of a REPL, which stands for <a href="https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop">Read Evaluate Print
+Loop</a> is
+an old one, dating back to the 1960's, especially (but not only) in the world
+of Lisp. This is yet another example of where the <a href="/blog/posts/2024/12/06/the-art-and-science-of-cap/">Art &amp; Science of
+CAP</a> has venerable
+ancestry.</p>
 </blockquote>
-<p>Wanting to know more about <code>cds.home</code> and <code>cds.root</code> is a perfect opportunity to try out the REPL, in a nice and gentle way. And we'll be making heavy use of the REPL in part 2 of this series, so it's worth becoming acquainted with it now.</p>
-<p>Starting the repl with <code>cds repl</code>, we can examine the values of <code>cds.home</code> and <code>cds.root</code> like this:</p>
+<p>Wanting to know more about <code>cds.home</code> and <code>cds.root</code> is a perfect opportunity
+to try out the REPL, in a nice and gentle way. And we'll be making heavy use of
+the REPL in part 2 of this series, so it's worth becoming acquainted with it
+now.</p>
+<p>Starting the repl with <code>cds repl</code>, we can examine the values of <code>cds.home</code> and
+<code>cds.root</code> like this:</p>
 <pre class="language-log" tabindex="0"><code class="language-log">Welcome to cds repl v <span class="token number">8.3.0</span>
 <span class="token operator">></span> <span class="token domain constant">cds.home</span>
 <span class="token file-path string">/workspaces/project/node_modules/@sap/cds</span>
 <span class="token operator">></span> <span class="token domain constant">cds.root</span>
 <span class="token file-path string">/workspaces/project</span>
 <span class="token operator">></span></code></pre>
-<p>So we can see that <code>cds.home</code> is <code>/workspaces/project/node_modules/@sap/cds</code>, i.e. the root part of the libraries, installed as project-local packages, that make up the CAP framework, and that <code>cds.root</code> is <code>/workspaces/project</code> which is the root part of our CAP project directory structure.</p>
-<p><a name="examining-the-surface-area-for-plugin-discovery"></a></p>
+<p>So we can see that <code>cds.home</code> is <code>/workspaces/project/node_modules/@sap/cds</code>,
+i.e. the root part of the libraries, installed as project-local packages, that
+make up the CAP framework, and that <code>cds.root</code> is <code>/workspaces/project</code> which
+is the root part of our CAP project directory structure.</p>
 <h2 id="examining-the-surface-area-for-plugin-discovery">Examining the surface area for plugin discovery</h2>
-<p>So we now know that it's looking for plugin implementations in the collection of packages made up of the <code>dependencies</code> and <code>devDependencies</code> of this project's <code>package.json</code> and also of <code>@sap/cds</code>'s <code>package.json</code>.</p>
+<p>So we now know that it's looking for plugin implementations in the collection
+of packages made up of the <code>dependencies</code> and <code>devDependencies</code> of this
+project's <code>package.json</code> and also of <code>@sap/cds</code>'s <code>package.json</code>.</p>
 <p>I can use the power of <code>jq</code> and get a look at that entire list, like this:</p>
 <pre class="language-jq" tabindex="0"><code class="language-jq">jq '<span class="token punctuation">.</span>name<span class="token punctuation">,</span> <span class="token punctuation">.</span>dependencies <span class="token operator">+</span> <span class="token punctuation">.</span>devDependencies' \
   node_modules<span class="token operator">/</span>@sap<span class="token operator">/</span>cds<span class="token operator">/</span>package<span class="token punctuation">.</span>json \
@@ -720,7 +759,8 @@ exports<span class="token punctuation">.</span><span class="token function-varia
   <span class="token property">"express"</span><span class="token operator">:</span> <span class="token string">"^4"</span><span class="token punctuation">,</span>
   <span class="token property">"@cap-js/sqlite"</span><span class="token operator">:</span> <span class="token string">"^1"</span>
 <span class="token punctuation">}</span></code></pre>
-<p>Manually checking for <code>cds-plugin.js</code> files, with <code>find . -name cds-plugin.js</code> shows that the only occurrences of <code>cds-plugin.js</code> files are these two:</p>
+<p>Manually checking for <code>cds-plugin.js</code> files, with <code>find . -name cds-plugin.js</code>
+shows that the only occurrences of <code>cds-plugin.js</code> files are these two:</p>
 <pre class="language-log" tabindex="0"><code class="language-log">node_modules<span class="token operator">/</span><span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">-</span>fiori<span class="token operator">/</span>cds<span class="token operator">-</span>plugin<span class="token punctuation">.</span>js
 node_modules<span class="token operator">/</span><span class="token operator">@</span>cap<span class="token operator">-</span>js<span class="token operator">/</span>sqlite<span class="token operator">/</span>cds<span class="token operator">-</span>plugin<span class="token punctuation">.</span>js</code></pre>
 <p>And this also shows us that:</p>
@@ -729,15 +769,21 @@ node_modules<span class="token operator">/</span><span class="token operator">@<
 <li>and <code>@cap-js/sqlite</code> (referenced in <code>package.json</code>)</li>
 </ul>
 <p>are indeed implemented ... as plugins!</p>
-<p>And guess what? These are <em>exactly</em> those two listed when we ran <code>DEBUG=plugins cds watch</code>. Of course now that we've installed <code>@sap/cds</code> locally in the project, the implementation files are taken from there, within our project-local <code>node_modules/</code> directory, rather than from <code>@sap/cds-dk</code> in the global NPM modules directory:</p>
+<p>And guess what? These are <em>exactly</em> those two listed when we ran <code>DEBUG=plugins cds watch</code>. Of course now that we've installed <code>@sap/cds</code> locally in the
+project, the implementation files are taken from there, within our
+project-local <code>node_modules/</code> directory, rather than from <code>@sap/cds-dk</code> in the
+global NPM modules directory:</p>
 <pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loading plugin <span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">-</span>fiori<span class="token operator">:</span> <span class="token operator">{</span> impl<span class="token operator">:</span> <span class="token string">'node_modules/@sap/cds-fiori/cds-plugin.js'</span> <span class="token operator">}</span>
 <span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loading plugin <span class="token operator">@</span>cap<span class="token operator">-</span>js<span class="token operator">/</span>sqlite<span class="token operator">:</span> <span class="token operator">{</span> impl<span class="token operator">:</span> <span class="token string">'node_modules/@cap-js/sqlite/cds-plugin.js'</span> <span class="token operator">}</span>
 <span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loaded plugins in<span class="token operator">:</span> <span class="token number">35.172ms</span></code></pre>
-<p><a name="creating-our-own-plugin-package"></a></p>
 <h2 id="creating-our-own-plugin-package">Creating our own plugin package</h2>
-<p>Now we know what we need -- a package with a <code>cds-plugin.js</code> file -- let's create one.</p>
-<p>For convenience, we can use the <a href="https://docs.npmjs.com/cli/v7/using-npm/workspaces">workspaces concept in NPM</a> to create the plugin package locally but still &quot;require&quot; it via the normal <code>dependencies</code> route.</p>
-<p>This is achieved as follows: <code>npm init -y --workspace loud</code>, which outputs something like this:</p>
+<p>Now we know what we need -- a package with a <code>cds-plugin.js</code> file -- let's
+create one.</p>
+<p>For convenience, we can use the <a href="https://docs.npmjs.com/cli/v7/using-npm/workspaces">workspaces concept in
+NPM</a> to create the plugin
+package locally but still &quot;require&quot; it via the normal <code>dependencies</code> route.</p>
+<p>This is achieved as follows: <code>npm init -y --workspace loud</code>, which outputs
+something like this:</p>
 <pre class="language-log" tabindex="0"><code class="language-log">Wrote to <span class="token file-path string">/workspaces/project/loud/package.json</span><span class="token operator">:</span>
 
 <span class="token operator">{</span>
@@ -755,9 +801,13 @@ node_modules<span class="token operator">/</span><span class="token operator">@<
 <span class="token operator">}</span>
 
 added <span class="token number">1</span> package in <span class="token number">191ms</span></code></pre>
-<p>And now that our plugin package exists in that workspace context, we can just add it as a dependency as normal, with:</p>
+<p>And now that our plugin package exists in that workspace context, we can just
+add it as a dependency as normal, with:</p>
 <pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">npm</span> <span class="token function">add</span> loud</code></pre>
-<p>whereupon we see that this is now listed as normal in the <code>dependencies</code> section. Here's what the project's <code>package.json</code> content looks like now, with the addition of the <code>workspaces</code> section and the inclusion of the <code>loud</code> package reference in the <code>dependencies</code> section:</p>
+<p>whereupon we see that this is now listed as normal in the <code>dependencies</code>
+section. Here's what the project's <code>package.json</code> content looks like now, with
+the addition of the <code>workspaces</code> section and the inclusion of the <code>loud</code>
+package reference in the <code>dependencies</code> section:</p>
 <pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"plugins-deconstructed-starter"</span><span class="token punctuation">,</span>
   <span class="token property">"version"</span><span class="token operator">:</span> <span class="token string">"0.0.1"</span><span class="token punctuation">,</span>
@@ -777,15 +827,24 @@ added <span class="token number">1</span> package in <span class="token number">
     <span class="token string">"loud"</span>
   <span class="token punctuation">]</span>
 <span class="token punctuation">}</span></code></pre>
-<p><a name="getting-the-plugin-to-announce-itself"></a></p>
-<h1 id="getting-the-plugin-to-announce-itself">Getting the plugin to announce itself</h1>
-<p>OK, before bringing this first part to an end, we could at least get the plugin to announce itself. Right now the new plugin package exists and is wired up, but there's still no sign of it in the output when we run <code>DEBUG=plugins cds watch</code>:</p>
+<h2 id="getting-the-plugin-to-announce-itself">Getting the plugin to announce itself</h2>
+<p>OK, before bringing this first part to an end, we could at least get the plugin
+to announce itself. Right now the new plugin package exists and is wired up,
+but there's still no sign of it in the output when we run <code>DEBUG=plugins cds watch</code>:</p>
 <pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loading plugin <span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">-</span>fiori<span class="token operator">:</span> <span class="token operator">{</span> impl<span class="token operator">:</span> <span class="token string">'node_modules/@sap/cds-fiori/cds-plugin.js'</span> <span class="token operator">}</span>
 <span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loading plugin <span class="token operator">@</span>cap<span class="token operator">-</span>js<span class="token operator">/</span>sqlite<span class="token operator">:</span> <span class="token operator">{</span> impl<span class="token operator">:</span> <span class="token string">'node_modules/@cap-js/sqlite/cds-plugin.js'</span> <span class="token operator">}</span>
 <span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loaded plugins in<span class="token operator">:</span> <span class="token number">26.998ms</span></code></pre>
-<p>But having deconstructed the mechanism, we sort of know why this is now. It's because the &quot;fetch&quot; mechanism we saw earlier hasn't yet found a <code>cds-plugin.js</code> file. If we add one now with <code>touch loud/cds-plugin.js</code> while the CAP server is still running, we see this new log record in the output that tells us it's now getting loaded:</p>
+<p>But having deconstructed the mechanism, we sort of know why this is now. It's
+because the &quot;fetch&quot; mechanism we saw earlier hasn't yet found a <code>cds-plugin.js</code>
+file. If we add one now with <code>touch loud/cds-plugin.js</code> while the CAP server is
+still running, we see this new log record in the output that tells us it's now
+getting loaded:</p>
 <pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loading plugin loud<span class="token operator">:</span> <span class="token operator">{</span> impl<span class="token operator">:</span> <span class="token string">'loud/cds-plugin.js'</span> <span class="token operator">}</span></code></pre>
-<p>But there's no implementation at all yet. For now, we'll just add &quot;<a href="https://podcasters.spotify.com/pod/show/tech-aloud/episodes/The-Simplest-Thing-that-Could-Possibly-Work--A-conversation-with-Ward-Cunningham--Part-V---Bill-Venners-e5dpts">the simplest thing that could possibly work</a>&quot; and add the usual CDS facade constant plus some log output, in <code>loud/cds-plugin.js</code>:</p>
+<p>But there's no implementation at all yet. For now, we'll just add &quot;<a href="https://podcasters.spotify.com/pod/show/tech-aloud/episodes/The-Simplest-Thing-that-Could-Possibly-Work--A-conversation-with-Ward-Cunningham--Part-V---Bill-Venners-e5dpts">the
+simplest thing that could possibly
+work</a>&quot;
+and add the usual CDS facade constant plus some log output, in
+<code>loud/cds-plugin.js</code>:</p>
 <pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">const</span> cds <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'@sap/cds'</span><span class="token punctuation">)</span>
 <span class="token keyword">const</span> log <span class="token operator">=</span> cds<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'LOUD'</span><span class="token punctuation">)</span>
 <span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'Starting up ...'</span><span class="token punctuation">)</span></code></pre>
@@ -795,7 +854,10 @@ added <span class="token number">1</span> package in <span class="token number">
 <span class="token punctuation">[</span>LOUD<span class="token punctuation">]</span> <span class="token operator">-</span> Starting up <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
 <span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loading plugin <span class="token operator">@</span>cap<span class="token operator">-</span>js<span class="token operator">/</span>sqlite<span class="token operator">:</span> <span class="token operator">{</span> impl<span class="token operator">:</span> <span class="token string">'node_modules/@cap-js/sqlite/cds-plugin.js'</span> <span class="token operator">}</span>
 <span class="token punctuation">[</span>plugins<span class="token punctuation">]</span> <span class="token operator">-</span> <span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loaded plugins in<span class="token operator">:</span> <span class="token number">10.173ms</span></code></pre>
-<p>That's it for part 1 of this series. In the next part, we'll head back to the REPL and explore the service, and what it contains (entities, with their elements), dynamically, while the server is running, using introspection. That way we can work out what we will need for our plugin code.</p>
+<p>That's it for part 1 of this series. In the next part, we'll head back to the
+REPL and explore the service, and what it contains (entities, with their
+elements), dynamically, while the server is running, using introspection. That
+way we can work out what we will need for our plugin code.</p>
 
 
 
@@ -807,7 +869,7 @@ added <span class="token number">1</span> package in <span class="token number">
 			</heading-anchors>
 		</main>
 
-		<!-- This page `/blog/posts/2024/10/05/cap-node-js-plugins-part-1-how-things-work/` was built on 2026-01-12T15:55:53.777Z -->
+		<!-- This page `/blog/posts/2024/10/05/cap-node-js-plugins-part-1-how-things-work/` was built on 2026-01-12T16:54:06.056Z -->
 		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
 	</body>
 </html>
