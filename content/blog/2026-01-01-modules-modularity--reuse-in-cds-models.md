@@ -7,7 +7,6 @@ tags:
   - cds
   - npm
   - reuse
-  - modularityandreuse-series
 description: An overview of the blog posts in the series "Modules, modularity & reuse in CDS models".
 ---
 
