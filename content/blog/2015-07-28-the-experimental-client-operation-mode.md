@@ -2,7 +2,6 @@
 date: 2015-07-28
 title: The experimental Client operation mode
 tags:
-  - 30daysofui5-series
   - northwind
   - odata
   - odatamodel

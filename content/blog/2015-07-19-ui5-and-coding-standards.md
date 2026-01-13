@@ -2,7 +2,6 @@
 date: 2015-07-19
 title: UI5 and Coding Standards
 tags:
-  - 30daysofui5-series
   - coding
   - contribution
   - guidelines

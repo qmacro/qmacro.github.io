@@ -2,7 +2,6 @@
 date: 2015-07-30
 title: A non-techie PM's view of UI5
 tags:
-  - 30daysofui5-series
   - agile
   - branches
   - gateway

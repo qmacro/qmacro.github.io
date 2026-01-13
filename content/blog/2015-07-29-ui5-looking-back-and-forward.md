@@ -2,7 +2,6 @@
 date: 2015-07-29
 title: UI5 - looking back and forward
 tags:
-  - 30daysofui5-series
   - http
   - odata
   - open

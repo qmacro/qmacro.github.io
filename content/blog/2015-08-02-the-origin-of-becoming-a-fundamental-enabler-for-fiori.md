@@ -2,7 +2,6 @@
 date: 2015-08-02
 title: The origin of becoming a fundamental enabler for Fiori
 tags:
-  - 30daysofui5-series
   - openui5
 description: 30 Days of UI5 - day 30 by Sam Yen.
 ---

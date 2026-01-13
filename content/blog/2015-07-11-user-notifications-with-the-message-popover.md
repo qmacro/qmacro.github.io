@@ -2,7 +2,6 @@
 date: 2015-07-11
 title: User Notifications with the Message Popover
 tags:
-  - 30daysofui5-series
   - messages
   - openui5
   - popover

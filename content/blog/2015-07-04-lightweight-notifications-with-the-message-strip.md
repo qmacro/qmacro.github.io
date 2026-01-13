@@ -2,7 +2,6 @@
 date: 2015-07-04
 title: Lightweight notifications with the Message Strip
 tags:
-  - 30daysofui5-series
   - messagestrip
   - messaging
   - notification

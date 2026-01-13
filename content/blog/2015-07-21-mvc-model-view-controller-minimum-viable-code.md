@@ -2,7 +2,6 @@
 date: 2015-07-21
 title: MVC - Model View Controller, Minimum Viable Code
 tags:
-  - 30daysofui5-series
   - atom
   - controller
   - fragment
