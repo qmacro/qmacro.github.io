@@ -5,11 +5,271 @@
   <subtitle>Reserving the right to be wrong</subtitle>
   <link href="https://qmacro.org/feed/feed.xml" rel="self" />
   <link href="https://qmacro.org/blog/" />
-  <updated>2026-01-07T00:00:00Z</updated>
+  <updated>2026-01-14T00:00:00Z</updated>
   <id>https://qmacro.org/blog/</id>
   <author>
     <name>DJ Adams</name>
   </author>
+  <entry>
+    <title>Modules, modularity &amp; reuse in CDS models - part 3 - publishing the simple reuse package</title>
+    <link href="https://qmacro.org/blog/posts/2026/01/14/modules-modularity-and-reuse-in-cds-models-part-3-publishing-the-simple-reuse-package/" />
+    <updated>2026-01-14T00:00:00Z</updated>
+    <id>https://qmacro.org/blog/posts/2026/01/14/modules-modularity-and-reuse-in-cds-models-part-3-publishing-the-simple-reuse-package/</id>
+    <content type="html">&lt;p&gt;(Get to all the parts in this series via the &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models/&quot;&gt;series
+post&lt;/a&gt;.)&lt;/p&gt;
+&lt;p&gt;What we have from &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/&quot;&gt;part
+2&lt;/a&gt;
+is a simple project &lt;code&gt;myproj/&lt;/code&gt; which relies upon a simple reuse package
+&lt;code&gt;@qmacro/common&lt;/code&gt;. That reuse package currently exists only within a workspace
+within the &lt;code&gt;myproj/&lt;/code&gt; project. In order to be able to use it elsewhere and share
+the reuse package with others, we need to publish it to a public NPM registry.&lt;/p&gt;
+&lt;p&gt;One possibility would be the standard NPM registry at &lt;a href=&quot;https://www.npmjs.org&quot;&gt;https://www.npmjs.org&lt;/a&gt;.
+Another is the NPM registry which is part of &lt;a href=&quot;https://docs.github.com/en/packages&quot;&gt;GitHub
+Packages&lt;/a&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/14/modules-modularity-and-reuse-in-cds-models-part-3-publishing-the-simple-reuse-package/#footnotes&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;.
+That&#39;s what I&#39;ll use here. It makes sense also to share the source too, which I
+can do in parallel via a public repo in my &lt;a href=&quot;https://github.com/qmacro/&quot;&gt;user
+space&lt;/a&gt; on GitHub, and I&#39;ll link the NPM package to
+that repo as well.&lt;/p&gt;
+&lt;p&gt;What we want to end up with is a setup that follows the
+&lt;a href=&quot;https://github.com/capire/common&quot;&gt;capire/common&lt;/a&gt; repo and package:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2026/01/capire-common.png&quot; alt=&quot;The capire/common repo&quot;&gt;&lt;/p&gt;
+&lt;h2 id=&quot;sharing-the-reuse-package-source&quot;&gt;Sharing the reuse package source&lt;/h2&gt;
+&lt;p&gt;First, let&#39;s share the source of &lt;code&gt;@qmacro/common&lt;/code&gt;. Clearly the content is not
+earth-shattering, but serves to illustrate the pattern as a
+passive&lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/14/modules-modularity-and-reuse-in-cds-models-part-3-publishing-the-simple-reuse-package/#footnotes&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt; reuse package.&lt;/p&gt;
+&lt;p&gt;As a reminder, here&#39;s what the entire project and workspace-enclosed reuse
+package looks like (minus the &lt;code&gt;node_modules/&lt;/code&gt; directory, to keep things brief):&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+├── &lt;span class=&quot;token domain constant&quot;&gt;package-lock.json&lt;/span&gt;
+├── &lt;span class=&quot;token domain constant&quot;&gt;package.json&lt;/span&gt;
+├── packages
+│   └── &lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;qmacro
+│       └── common
+│           ├── &lt;span class=&quot;token domain constant&quot;&gt;index.cds&lt;/span&gt;
+│           └── &lt;span class=&quot;token domain constant&quot;&gt;package.json&lt;/span&gt;
+└── &lt;span class=&quot;token domain constant&quot;&gt;services.cds&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;It&#39;s the content of &lt;code&gt;packages/@qmacro/common/&lt;/code&gt; that we want to share, and we
+can do that in the normal way, by introducing git-based source code control,
+then creating a repo on GitHub based on that git-controlled source.&lt;/p&gt;
+&lt;p&gt;While we can also add the main &lt;code&gt;myproj/&lt;/code&gt; project source to git-based source
+code control, we won&#39;t do that now. Whenever we do it, we also want to remember
+to exclude the content in &lt;code&gt;packages/&lt;/code&gt; as we want to share and manage the
+packages source lifecycle separately.&lt;/p&gt;
+&lt;h3 id=&quot;moving-to-the-appropriate-place&quot;&gt;Moving to the appropriate place&lt;/h3&gt;
+&lt;p&gt;So first of all, starting from within the main project&#39;s root, i.e. &lt;code&gt;myproj/&lt;/code&gt;,
+let&#39;s move into the reuse package&#39;s directory:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;cd&lt;/span&gt; packages/@qmacro/common/&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;adding-a-readme&quot;&gt;Adding a README&lt;/h3&gt;
+&lt;p&gt;Every public repo on GitHub should have a README, even one as simple as this.
+Let&#39;s just add one now:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;cat&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;EOF&lt;span class=&quot;token bash punctuation&quot;&gt; &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;README.md&lt;/span&gt;
+# @qmacro/common
+
+See the series post
+[Modules, modularity &amp;amp; reuse in CDS models](https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models/)
+for the background to this simple passive CDS model reuse package example.
+EOF&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;setting-up-the-repo&quot;&gt;Setting up the repo&lt;/h3&gt;
+&lt;p&gt;Now, within &lt;code&gt;packages/@qmacro/common/&lt;/code&gt;, let&#39;s set up the git-based source code
+control:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;git&lt;/span&gt; init &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;git&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;add&lt;/span&gt; &lt;span class=&quot;token builtin class-name&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;git&lt;/span&gt; commit &lt;span class=&quot;token parameter variable&quot;&gt;-m&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;initial commit&#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This emits:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;Initialized empty Git repository in myproj&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;packages&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;qmacro&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;common&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;git&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;main &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;root&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;commit&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;37f0091&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; initial commit
+ &lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt; files changed&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;21&lt;/span&gt; insertions&lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;
+ create mode &lt;span class=&quot;token number&quot;&gt;100644&lt;/span&gt; README&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;md
+ create mode &lt;span class=&quot;token number&quot;&gt;100644&lt;/span&gt; &lt;span class=&quot;token domain constant&quot;&gt;index.cds&lt;/span&gt;
+ create mode &lt;span class=&quot;token number&quot;&gt;100644&lt;/span&gt; &lt;span class=&quot;token domain constant&quot;&gt;package.json&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;pushing-the-repo-to-github&quot;&gt;Pushing the repo to GitHub&lt;/h3&gt;
+&lt;p&gt;Now let&#39;s share this with others by pushing it to GitHub, specifically as &lt;a href=&quot;https://github.com/qmacro?tab=repositories&quot;&gt;a
+new repo in my user space&lt;/a&gt;. I&#39;m a
+&lt;a href=&quot;https://qmacro.org/tags/gh/&quot;&gt;happy user&lt;/a&gt; of the excellent GitHub CLI
+&lt;a href=&quot;https://cli.github.com/&quot;&gt;gh&lt;/a&gt;, so let&#39;s use that
+here&lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/14/modules-modularity-and-reuse-in-cds-models-part-3-publishing-the-simple-reuse-package/#footnotes&quot;&gt;&lt;sup&gt;3&lt;/sup&gt;&lt;/a&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;gh repo create common &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--description&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Simple passive CDS model reuse package example&quot;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--source&lt;/span&gt; &lt;span class=&quot;token builtin class-name&quot;&gt;.&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--public&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--push&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This emits:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;✓ Created repository qmacro&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;common on GitHub
+✓ Added remote &lt;span class=&quot;token url&quot;&gt;https://github.com/qmacro/common.git&lt;/span&gt;
+&lt;span class=&quot;token property&quot;&gt;Enumerating objects:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; done&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;token property&quot;&gt;Counting objects:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; done&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+Delta compression using up to &lt;span class=&quot;token number&quot;&gt;8&lt;/span&gt; threads
+&lt;span class=&quot;token property&quot;&gt;Compressing objects:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; done&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;token property&quot;&gt;Writing objects:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;686&lt;/span&gt; bytes &lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;686.00&lt;/span&gt; KiB&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;s&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; done&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+Total &lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;delta &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; reused &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;delta &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; pack&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;reused &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;
+To &lt;span class=&quot;token url&quot;&gt;https://github.com/qmacro/common.git&lt;/span&gt;
+ &lt;span class=&quot;token operator&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;new branch&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;      HEAD &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; main
+branch &lt;span class=&quot;token string&quot;&gt;&#39;main&#39;&lt;/span&gt; set up to track &lt;span class=&quot;token string&quot;&gt;&#39;origin/main&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+✓ Pushed commits to &lt;span class=&quot;token url&quot;&gt;https://github.com/qmacro/common.git&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Et voila, the repo on GitHub is there.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2026/01/qmacro-common-no-package.png&quot; alt=&quot;the qmacro/common repo on
+GitHub&quot;&gt;&lt;/p&gt;
+&lt;p&gt;But there&#39;s no package ... yet.&lt;/p&gt;
+&lt;h2 id=&quot;preparing-to-publish-the-package&quot;&gt;Preparing to publish the package&lt;/h2&gt;
+&lt;p&gt;Let&#39;s do that now. First, there&#39;s some setup required for working with the NPM
+registry in GitHub Packages.&lt;/p&gt;
+&lt;h3 id=&quot;generating-a-token-for-authentication&quot;&gt;Generating a token for authentication&lt;/h3&gt;
+&lt;p&gt;As the GitHub documentation article &lt;a href=&quot;https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry&quot;&gt;Working with the npm
+registry&lt;/a&gt;
+states:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;You need an access token to publish, install, and delete private, internal,
+and public packages.&amp;quot;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Heading over to the &lt;a href=&quot;https://github.com/settings/tokens&quot;&gt;Tokens (classic)&lt;/a&gt; area
+of the GitHub Developer Settings, we should create a new classic token with the
+following scopes:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2026/01/token-scopes.png&quot; alt=&quot;token scopes&quot;&gt;&lt;/p&gt;
+&lt;p&gt;and will end up with something like this:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2026/01/classic-token-full-registry-access.png&quot; alt=&quot;classic token&quot;&gt;&lt;/p&gt;
+&lt;h3 id=&quot;associating-the-token-with-the-registry&quot;&gt;Associating the token with the registry&lt;/h3&gt;
+&lt;p&gt;The value of the token can now be associated, in the
+&lt;a href=&quot;https://docs.npmjs.com/cli/v11/configuring-npm/npmrc&quot;&gt;npmrc&lt;/a&gt;-based
+configuration, with the NPM registry in GitHub Packages, which has the address
+&lt;code&gt;npm.pkg.github.com&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;In an existing or new &lt;code&gt;.npmrc&lt;/code&gt; file in your home directory, we need to add
+this:&lt;/p&gt;
+&lt;pre class=&quot;language-ini&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-ini&quot;&gt;&lt;span class=&quot;token key attr-name&quot;&gt;//npm.pkg.github.com/:_authToken&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token value attr-value&quot;&gt;THE-TOKEN-JUST-GENERATED&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;For more on this, see the &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/14/modules-modularity-and-reuse-in-cds-models-part-3-publishing-the-simple-reuse-package/blog/posts/2025/10/12/using-capire-modules-from-github-packages/#associate-the-token-with-the-registry&quot;&gt;Associate the token with the
+registry&lt;/a&gt;
+section of the blog post &lt;a href=&quot;https://qmacro.org/blog/posts/2025/10/12/using-capire-modules-from-github-packages/&quot;&gt;Using @capire modules from GitHub
+Packages&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;associating-the-scope-with-the-registry&quot;&gt;Associating the scope with the registry&lt;/h3&gt;
+&lt;p&gt;Additionally we&#39;ll need to tell the &lt;code&gt;npm&lt;/code&gt; command line tool about how it should
+use the GitHub Packages NPM registry, rather than the (default) NPM registry at
+&lt;a href=&quot;https://www.npmjs.com&quot;&gt;https://www.npmjs.com&lt;/a&gt;, for &lt;code&gt;@qmacro&lt;/code&gt;-scoped packages.&lt;/p&gt;
+&lt;p&gt;Details about this are also covered in the aforementioned blog post in the
+section &lt;a href=&quot;https://qmacro.org/blog/posts/2025/10/12/using-capire-modules-from-github-packages/#namespace-registry-mapping-required&quot;&gt;Namespace registry mapping
+required&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;In that same &lt;code&gt;~/.npmrc&lt;/code&gt; file, we need to add this too:&lt;/p&gt;
+&lt;pre class=&quot;language-ini&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-ini&quot;&gt;&lt;span class=&quot;token key attr-name&quot;&gt;@qmacro:registry&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token value attr-value&quot;&gt;https://npm.pkg.github.com&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;associate-the-repo-with-the-package&quot;&gt;Associate the repo with the package&lt;/h2&gt;
+&lt;p&gt;While one can register packages in the NPM registry on GitHub Packages that are
+independent of any source repo on GitHub, it makes a lot of sense to have both
+and have them linked. That way, one can go from the repo source to the package,
+and from the package back to the repo source.&lt;/p&gt;
+&lt;p&gt;All that&#39;s needed to make this association is a &lt;code&gt;repository&lt;/code&gt; property in the
+&lt;code&gt;package.json&lt;/code&gt; file. So let&#39;s add that, and commit &amp;amp; push the change to GitHub.
+Here&#39;s the entire contents of the &lt;code&gt;package.json&lt;/code&gt; file with that new
+&lt;code&gt;repository&lt;/code&gt; property&lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/14/modules-modularity-and-reuse-in-cds-models-part-3-publishing-the-simple-reuse-package/#footnotes&quot;&gt;&lt;sup&gt;4&lt;/sup&gt;&lt;/a&gt; added:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;@qmacro/common&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;repository&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;type&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;git&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;url&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;git+https://github.com/qmacro/common.git&quot;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;version&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;1.0.0&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;main&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;index.js&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;devDependencies&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;scripts&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;test&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;echo &#92;&quot;Error: no test specified&#92;&quot; &amp;amp;&amp;amp; exit 1&quot;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;keywords&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;author&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;license&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;ISC&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;description&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&quot;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;After committing this change and pushing it to the remote on GitHub:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;git&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;add&lt;/span&gt; package.json &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;git&lt;/span&gt; commit &lt;span class=&quot;token parameter variable&quot;&gt;-m&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;add repository property&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;git&lt;/span&gt; push&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;we&#39;re ready to actually publish the package!&lt;/p&gt;
+&lt;h2 id=&quot;publishing-the-package&quot;&gt;Publishing the package&lt;/h2&gt;
+&lt;p&gt;After all that preparation, our &lt;code&gt;~/.npmrc&lt;/code&gt; contents in place:&lt;/p&gt;
+&lt;pre class=&quot;language-ini&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-ini&quot;&gt;&lt;span class=&quot;token key attr-name&quot;&gt;@qmacro:registry&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token value attr-value&quot;&gt;https://npm.pkg.github.com&lt;/span&gt;
+&lt;span class=&quot;token key attr-name&quot;&gt;//npm.pkg.github.com/:_authToken&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token value attr-value&quot;&gt;ghp_...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;we&#39;re all set, and the process is simple:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;npm&lt;/span&gt; publish&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This emits output similar to the following:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;npm notice
+npm notice 📦  &lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;qmacro&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;common&lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1.0.0&lt;/span&gt;
+npm notice Tarball Contents
+npm notice &lt;span class=&quot;token number&quot;&gt;243B&lt;/span&gt; README&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;md
+npm notice &lt;span class=&quot;token number&quot;&gt;44B&lt;/span&gt; &lt;span class=&quot;token domain constant&quot;&gt;index.cds&lt;/span&gt;
+npm notice &lt;span class=&quot;token number&quot;&gt;349B&lt;/span&gt; &lt;span class=&quot;token domain constant&quot;&gt;package.json&lt;/span&gt;
+npm notice Tarball Details
+&lt;span class=&quot;token property&quot;&gt;npm notice name:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;qmacro&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;common
+&lt;span class=&quot;token property&quot;&gt;npm notice version:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1.0.0&lt;/span&gt;
+&lt;span class=&quot;token property&quot;&gt;npm notice filename:&lt;/span&gt; qmacro&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;common&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;1&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;0&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;0&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;tgz
+&lt;span class=&quot;token property&quot;&gt;npm notice package size:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;528&lt;/span&gt; B
+&lt;span class=&quot;token property&quot;&gt;npm notice unpacked size:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;636&lt;/span&gt; B
+&lt;span class=&quot;token property&quot;&gt;npm notice shasum:&lt;/span&gt; d6b369d2e3db3878df8f9d9745b393f68a18b18b
+&lt;span class=&quot;token property&quot;&gt;npm notice integrity:&lt;/span&gt; sha512&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Anr74Mjy9kRvb&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;RkUg3wgpto8UA&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;
+&lt;span class=&quot;token property&quot;&gt;npm notice total files:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt;
+npm notice
+npm notice Publishing to &lt;span class=&quot;token url&quot;&gt;https://npm.pkg.github.com&lt;/span&gt; with tag latest and default access
+&lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;qmacro&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;common&lt;span class=&quot;token operator&quot;&gt;@&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1.0.0&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;which denotes success.&lt;/p&gt;
+&lt;h2 id=&quot;examining-the-results&quot;&gt;Examining the results&lt;/h2&gt;
+&lt;p&gt;Indeed, we can now see a package associated with the &lt;code&gt;qmacro/common&lt;/code&gt; repo:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2026/01/qmacro-common-package-associated.png&quot; alt=&quot;qmacro/common package
+associated&quot;&gt;&lt;/p&gt;
+&lt;p&gt;and following that package link to the &lt;a href=&quot;https://github.com/qmacro/common/pkgs/npm/common&quot;&gt;package
+page&lt;/a&gt;, we see:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2026/01/qmacro-common-package-info.png&quot; alt=&quot;qmacro/common package info&quot;&gt;&lt;/p&gt;
+&lt;p&gt;which indeed also has a link (via the README) back to the
+&lt;a href=&quot;https://github.com/qmacro/common&quot;&gt;repo&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&quot;making-the-package-public&quot;&gt;Making the package public&lt;/h2&gt;
+&lt;p&gt;As described in the &lt;a href=&quot;https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry#publishing-a-package&quot;&gt;Publishing a
+package&lt;/a&gt;
+section of &lt;a href=&quot;https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry&quot;&gt;Working with the npm
+registry&lt;/a&gt;:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;quot;When you first publish a package, the default visibility is private.&amp;quot;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;So in order for you to try this out, let&#39;s take one final step in this post,
+and change the visibility to public.&lt;/p&gt;
+&lt;p&gt;This is also simple and can be done via the package settings:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2026/01/changing-package-visibility-to-public.png&quot; alt=&quot;changing package visibility to
+public&quot;&gt;&lt;/p&gt;
+&lt;p&gt;And that&#39;s it!&lt;/p&gt;
+&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
+&lt;p&gt;All that&#39;s left for this post is for you to try the package out, by &lt;code&gt;npm add&lt;/code&gt;ing it to a CAP Node.js project. Let me know in the comments if it works
+for you.&lt;/p&gt;
+&lt;p&gt;Now that we understand the basics of a CDS model reuse package, in the next
+post we&#39;ll start to take a closer look at
+&lt;a href=&quot;https://github.com/capire/common&quot;&gt;capire/common&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;There are multiple registries in GitHub Packages - for Docker, Apache Maven,
+RubyGems and more, as well as for Node.js packages.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;There&#39;s that
+&lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/#active-vs-passive&quot;&gt;passive&lt;/a&gt;
+word again. I&#39;ll get to explaining what I mean by it at some point in this
+series, honest!&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;If you&#39;re not yet familiar with the command line tool options, you can
+invoke just &lt;code&gt;gh repo create&lt;/code&gt; and follow the interactive prompts instead,
+which start like this:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt; What would you like to do&lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt;  &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;Use arrows to move&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; type to filter&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; Create a new repository on GitHub from scratch
+  Push an existing local repository to GitHub&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;While a simpler string value like this:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token property&quot;&gt;&quot;repository&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;https://github.com/qmacro/common&quot;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;will work (similar to &lt;a href=&quot;https://github.com/capire/common/blob/6fe89fb51a6b06cf65d18f6d66ef880545a9054f/package.json#L4&quot;&gt;how it&#39;s defined for
+capire/common&lt;/a&gt;),
+&lt;code&gt;npm publish&lt;/code&gt; will emit a warning like this:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;npm warn publish npm auto&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;corrected some errors in your &lt;span class=&quot;token domain constant&quot;&gt;package.json&lt;/span&gt; when publishing&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;  Please run &lt;span class=&quot;token string&quot;&gt;&quot;npm pkg fix&quot;&lt;/span&gt; to address these errors&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;token property&quot;&gt;npm warn publish errors corrected:&lt;/span&gt;
+npm warn publish &lt;span class=&quot;token string&quot;&gt;&quot;repository&quot;&lt;/span&gt; was changed from a string to an object
+npm warn publish &lt;span class=&quot;token string&quot;&gt;&quot;repository.url&quot;&lt;/span&gt; was normalized to &lt;span class=&quot;token string&quot;&gt;&quot;git+https://github.com/qmacro/common.git&quot;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+  </entry>
   <entry>
     <title>Modules, modularity &amp; reuse in CDS models - part 2 - creating a simple reuse package</title>
     <link href="https://qmacro.org/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/" />
@@ -550,8 +810,9 @@ release&lt;/a&gt;.&lt;/li&gt;
     <content type="html">&lt;ul&gt;
 &lt;li&gt;01 Jan 2026 Part 1 &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/&quot;&gt;An introduction&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;07 Jan 2026 Part 2 &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/&quot;&gt;Creating a simple reuse package&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;14 Jan 2026 Part 3 Publishing the simple reuse package&lt;/li&gt;
-&lt;li&gt;21 Jan 2026 Part 4 ...&lt;/li&gt;
+&lt;li&gt;14 Jan 2026 Part 3 &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/14/modules-modularity-and-reuse-in-cds-models-part-3-publishing-the-simple-reuse-package/&quot;&gt;Publishing the simple reuse package&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;21 Jan 2026 Part 4 From passive to active with @capire/common&lt;/li&gt;
+&lt;li&gt;28 Jan 2026 Part 5 Digging into @capire/common&lt;/li&gt;
 &lt;/ul&gt;
 </content>
   </entry>
@@ -1441,171 +1702,6 @@ found &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt; vulnerabilities&
 &lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
 &lt;p&gt;To find out more, you should watch the replay of Christian&#39;s session, after watching the replay of Mauricio&#39;s session too, of course.&lt;/p&gt;
 &lt;p&gt;Happy testing!&lt;/p&gt;
-</content>
-  </entry>
-  <entry>
-    <title>Modelling contained-in relationships with compositions in CDS</title>
-    <link href="https://qmacro.org/blog/posts/2025/10/14/modelling-contained-in-relationships-with-compositions-in-cds/" />
-    <updated>2025-10-14T00:00:00Z</updated>
-    <id>https://qmacro.org/blog/posts/2025/10/14/modelling-contained-in-relationships-with-compositions-in-cds/</id>
-    <content type="html">&lt;h2 id=&quot;background&quot;&gt;Background&lt;/h2&gt;
-&lt;p&gt;There&#39;s a classic structure often found representing business data in enterprise software, and that&#39;s the &amp;quot;document&amp;quot;. Purchase requisition, sales order, goods receipt, and so on. Header and items. Most of the time the items don&#39;t make sense existing on their own, independent of their header parent. Such documents are typically modelled using contained-in relationships.&lt;/p&gt;
-&lt;p&gt;There&#39;s a great section of the &lt;a href=&quot;https://cap.cloud.sap/docs/&quot;&gt;Capire&lt;/a&gt; documentation, specifically on &lt;a href=&quot;https://cap.cloud.sap/docs/guides/domain-modeling#compositions&quot;&gt;compositions&lt;/a&gt;, on which I want to expand here.&lt;/p&gt;
-&lt;h2 id=&quot;explicit-modelling&quot;&gt;Explicit modelling&lt;/h2&gt;
-&lt;p&gt;Given a hammer, all problems look like nails. Given the &amp;quot;entity&amp;quot; concept, all business data structures look like they should be modelled using entities.&lt;/p&gt;
-&lt;p&gt;Which does work. To wit:&lt;/p&gt;
-&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; S {
-  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Orders {
-    &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; ID    : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
-        Items : &lt;span class=&quot;token association-composition keyword&quot;&gt;Composition of many OrderItems&lt;/span&gt;
-                  &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; Items.parent = $self;
-  }
-
-  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; OrderItems {
-    &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; parent : &lt;span class=&quot;token association-composition keyword&quot;&gt;Association to Orders&lt;/span&gt;;
-    &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; pos    : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
-        qty    : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
-  }
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;When compiled (with &lt;code&gt;cds compile --to yaml service.cds&lt;/code&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2025/10/14/modelling-contained-in-relationships-with-compositions-in-cds/#footnotes&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;), this results in the following schema notation (in a YAML representation as I find it cleaner and easier to read)&lt;a href=&quot;https://qmacro.org/blog/posts/2025/10/14/modelling-contained-in-relationships-with-compositions-in-cds/#footnotes&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;:&lt;/p&gt;
-&lt;pre class=&quot;language-yaml&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-yaml&quot;&gt;&lt;span class=&quot;token key atrule&quot;&gt;definitions&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;token key atrule&quot;&gt;S&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;token key atrule&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; service
-  &lt;span class=&quot;token key atrule&quot;&gt;S.Orders&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;token key atrule&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; entity
-    &lt;span class=&quot;token key atrule&quot;&gt;elements&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-      &lt;span class=&quot;token key atrule&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Integer
-      &lt;span class=&quot;token key atrule&quot;&gt;Items&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Composition
-        &lt;span class=&quot;token key atrule&quot;&gt;cardinality&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-          &lt;span class=&quot;token key atrule&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;*&#39;&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; S.OrderItems
-        &lt;span class=&quot;token key atrule&quot;&gt;&#39;on&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-          &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-              &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; Items
-              &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; parent
-          &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;=&#39;&lt;/span&gt;
-          &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-              &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; $self
-  &lt;span class=&quot;token key atrule&quot;&gt;S.OrderItems&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;token key atrule&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; entity
-    &lt;span class=&quot;token key atrule&quot;&gt;elements&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-      &lt;span class=&quot;token key atrule&quot;&gt;parent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Association
-        &lt;span class=&quot;token key atrule&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; S.Orders
-        &lt;span class=&quot;token key atrule&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-          &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-              &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; ID
-      &lt;span class=&quot;token key atrule&quot;&gt;pos&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Integer
-      &lt;span class=&quot;token key atrule&quot;&gt;qty&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Integer&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The resulting CSN encompasses the modelling intent - zero or more item children, and a relationship constraint that links back to the parent.&lt;/p&gt;
-&lt;p&gt;But the definitions at the CDS model level are quite explicit and arguably a little &amp;quot;noisy&amp;quot;:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;at the parent level, the constraint detail (i.e. &lt;code&gt;on Items.parent = $self&lt;/code&gt;) needs to be expressed explicitly&lt;/li&gt;
-&lt;li&gt;the child requires an explicit (key) element to point back to the parent&lt;/li&gt;
-&lt;li&gt;that child-to-parent relationship needs to be expressed explicitly as a to-one association which is arguably also just a bit too much &amp;quot;machinery&amp;quot; on show&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Remember, domain modelling is the common language for business domain experts and developers, and the CDS model is where they meet. So machinery is to be avoided where possible.&lt;/p&gt;
-&lt;h2 id=&quot;implicit-modelling&quot;&gt;Implicit modelling&lt;/h2&gt;
-&lt;p&gt;Such a classic parent-child structure can be expressed in the CDS model a lot more succinctly, using &lt;a href=&quot;https://cap.cloud.sap/docs/guides/domain-modeling#aspects&quot;&gt;aspects&lt;/a&gt;, specifically &lt;a href=&quot;https://cap.cloud.sap/docs/guides/domain-modeling#composition-of-aspects&quot;&gt;anonymous aspects&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;The exact same model can be expressed thus:&lt;/p&gt;
-&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; S {
-  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Orders {
-    &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; ID    : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
-        Items : &lt;span class=&quot;token association-composition keyword&quot;&gt;Composition of many &lt;/span&gt;{
-                  &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; pos : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
-                      qty : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
-                }
-  }
-
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;That&#39;s it - that&#39;s the entire equivalent declaration. In using an anonymous aspect (that&#39;s the part expressed as the &lt;code&gt;{ ... }&lt;/code&gt; block) to describe the composition target, we get to NOT have to come up with and define:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;a second entity definition&lt;/li&gt;
-&lt;li&gt;a name for that second entity&lt;/li&gt;
-&lt;li&gt;a composition constraint&lt;/li&gt;
-&lt;li&gt;a pointer from the child back to the parent&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;I would go so far as to say that &lt;a href=&quot;https://qmacro.org/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#initial-recognition&quot;&gt;staring at&lt;/a&gt; this structure expression conjures up far more readily what a document (such as those examples mentioned above) &amp;quot;looks like&amp;quot; mentally.&lt;/p&gt;
-&lt;p&gt;And guess what? The equivalent schema notation is logically the same. Here&#39;s what compiling this &amp;quot;quieter&amp;quot; and more compact version to the YAML flavour of CSN gives us&lt;a href=&quot;https://qmacro.org/blog/posts/2025/10/14/modelling-contained-in-relationships-with-compositions-in-cds/#footnotes&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;:&lt;/p&gt;
-&lt;pre class=&quot;language-yaml&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-yaml&quot;&gt;&lt;span class=&quot;token key atrule&quot;&gt;definitions&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;token key atrule&quot;&gt;S&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;token key atrule&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; service
-  &lt;span class=&quot;token key atrule&quot;&gt;S.Orders&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;token key atrule&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; entity
-    &lt;span class=&quot;token key atrule&quot;&gt;elements&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-      &lt;span class=&quot;token key atrule&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Integer
-      &lt;span class=&quot;token key atrule&quot;&gt;Items&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Composition
-        &lt;span class=&quot;token key atrule&quot;&gt;cardinality&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-          &lt;span class=&quot;token key atrule&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;*&#39;&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;targetAspect&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-          &lt;span class=&quot;token key atrule&quot;&gt;elements&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-            &lt;span class=&quot;token key atrule&quot;&gt;pos&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-              &lt;span class=&quot;token key atrule&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
-              &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Integer
-            &lt;span class=&quot;token key atrule&quot;&gt;qty&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-              &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Integer
-        &lt;span class=&quot;token key atrule&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; S.Orders.Items
-        &lt;span class=&quot;token key atrule&quot;&gt;&#39;on&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-          &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-              &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; Items
-              &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; up_
-          &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;=&#39;&lt;/span&gt;
-          &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-              &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; $self
-  &lt;span class=&quot;token key atrule&quot;&gt;S.Orders.Items&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-    &lt;span class=&quot;token key atrule&quot;&gt;kind&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; entity
-    &lt;span class=&quot;token key atrule&quot;&gt;elements&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-      &lt;span class=&quot;token key atrule&quot;&gt;up_&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Association
-        &lt;span class=&quot;token key atrule&quot;&gt;cardinality&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-          &lt;span class=&quot;token key atrule&quot;&gt;min&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;
-          &lt;span class=&quot;token key atrule&quot;&gt;max&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; S.Orders
-        &lt;span class=&quot;token key atrule&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-          &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token key atrule&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-              &lt;span class=&quot;token punctuation&quot;&gt;-&lt;/span&gt; ID
-        &lt;span class=&quot;token key atrule&quot;&gt;notNull&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
-      &lt;span class=&quot;token key atrule&quot;&gt;pos&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;key&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Integer
-      &lt;span class=&quot;token key atrule&quot;&gt;qty&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-        &lt;span class=&quot;token key atrule&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; cds.Integer&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;There are some technical differences, which are worth pointing out (there&#39;s always an opportunity to learn):&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;there&#39;s still a composition &lt;code&gt;target&lt;/code&gt; pointing to an entity definition, but here that is &lt;code&gt;S.Orders.Items&lt;/code&gt;, a definition that&#39;s been created on the fly to help satisfy the composition requirements&lt;/li&gt;
-&lt;li&gt;this &lt;code&gt;S.Orders.Items&lt;/code&gt; entity has a key element &lt;code&gt;up_&lt;/code&gt; that points back to the parent&lt;/li&gt;
-&lt;li&gt;there&#39;s additional info at the &lt;code&gt;Items&lt;/code&gt; element in the parent that captures the original anonymous aspect definition (in &lt;code&gt;targetAspect&lt;/code&gt;)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;From a naming convention perspective, the name of the generated target entity is created using the parent entity as a prefix (&lt;code&gt;S.Orders&lt;/code&gt;) to the composition element&#39;s name (&lt;code&gt;Items&lt;/code&gt;), forming a &lt;a href=&quot;https://cap.cloud.sap/docs/cds/cdl#scoped-names&quot;&gt;scoped&lt;/a&gt; name &lt;code&gt;S.Orders.Items&lt;/code&gt;. And I would wager that it&#39;s unlikely that we as humans would use an underscore-suffixed name for an element, so &lt;code&gt;up_&lt;/code&gt; is a good choice for the automatically generated pointer-to-parent element name.&lt;/p&gt;
-&lt;h2 id=&quot;hybrid&quot;&gt;Hybrid&lt;/h2&gt;
-&lt;p&gt;There is a middle ground, where named, rather than anonymous aspects can be used. You can read more about this in the &lt;a href=&quot;https://cap.cloud.sap/docs/cds/cdl#with-named-targets&quot;&gt;named targets&lt;/a&gt; section of the Domain Modelling topic of Capire.&lt;/p&gt;
-&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
-&lt;p&gt;The CDS modelling language (and CDL specifically) is for humans. CSN is for machines. The distinction is not always top of mind, but if we try to keep it there, we&#39;ll end up with cleaner, simpler model definitions that are easier to reason about, easier to extend and reuse, and easier to maintain.&lt;/p&gt;
-&lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;I piped the resulting YAML through &lt;code&gt;yq -y .&lt;/code&gt; to pretty-print it, as I find the long(er) lines of the raw YAML output a little tough to digest.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;I removed the metadata from the compiled YAML output:&lt;/p&gt;
-&lt;pre class=&quot;language-yaml&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-yaml&quot;&gt;&lt;span class=&quot;token key atrule&quot;&gt;meta&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
-  &lt;span class=&quot;token key atrule&quot;&gt;creator&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; CDS Compiler v6.4.2
-  &lt;span class=&quot;token key atrule&quot;&gt;flavor&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; inferred
-&lt;span class=&quot;token key atrule&quot;&gt;$version&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;just to keep things a little more compact.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
 </content>
   </entry>
 </feed>
