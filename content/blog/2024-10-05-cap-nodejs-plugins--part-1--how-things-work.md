@@ -236,7 +236,7 @@ project's `package.json` and also of `@sap/cds`'s `package.json`.
 
 I can use the power of `jq` and get a look at that entire list, like this:
 
-```jq
+```shell
 jq '.name, .dependencies + .devDependencies' \
   node_modules/@sap/cds/package.json \
   package.json
