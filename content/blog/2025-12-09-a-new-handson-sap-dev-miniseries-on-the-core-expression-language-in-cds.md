@@ -5,6 +5,7 @@ tags:
   - cds
   - cap
   - cxl
+  - seriespost
   - handsonsapdev
 description: Hands-on SAP Dev is back soon, kicking off in January with a new mini-series on CAP, specifically on CXL, the core expression language in the CDS family.
 ---
@@ -17,6 +18,9 @@ channel](https://www.youtube.com/@sapdevs).
 We're starting 2026 off with an under-the-hood style mini-series exploring
 expressions in CDS.
 
+- 16 Jan 2026 Part 1 - [Introduction and overview](https://www.youtube.com/watch?v=aiE20i5BP70) (replay)
+- 23 Jan 2026 Part 2 - [First CXL example expressions](https://www.youtube.com/watch?v=s4IZR1LBRrA) (upcoming)
+
 It's all about CXL - the Core Expression Language. What's that? One of the mini
 languages[<sup>1</sup>](#footnotes) in the CDS language family that is all
 about expressions. Expressions are everywhere - they're used in queries, in
@@ -26,9 +30,6 @@ that is the hallmark of CDS.
 
 [![the new series thumbnail with me and
 Patrice](/images/2025/12/cxl-thumbnail.png)](https://www.youtube.com/watch?v=aiE20i5BP70&list=PL6RpkC85SLQABOpzhd7WI-hMpy99PxUo0&index=1)
-
-👉 Join CAP core team member [Patrice Bender](https://patrice.codes/) and me in
-[Part 1 of this new mini-series "CDS expressions in CAP - Under the hood"](https://www.youtube.com/watch?v=aiE20i5BP70&list=PL6RpkC85SLQABOpzhd7WI-hMpy99PxUo0&index=1) on Fri 16 Jan 2026 at the usual time.
 
 ## Footnotes
 
