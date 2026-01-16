@@ -2,6 +2,7 @@
 title: Modules, modularity & reuse in CDS models
 date: 2026-01-01
 tags:
+  - modularity
   - seriespost
   - cap
   - cds

@@ -2,6 +2,7 @@
 title: Modules, modularity & reuse in CDS models - part 2 - creating a simple reuse package
 date: 2026-01-07
 tags:
+  - modularity
   - cds
   - cap
   - npm
