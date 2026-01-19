@@ -29,6 +29,7 @@ export default async function(eleventyConfig) {
     .addPassthroughCopy("./CNAME")
     .addPassthroughCopy("./content/feed/pretty-atom-feed.xsl")
     .addPassthroughCopy("./content/images/")
+    .addPassthroughCopy("./content/robots.txt", "/robots.txt")
     ;
 
   // Run Eleventy when these files change:
