@@ -1,0 +1,777 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Modules, modularity &amp; reuse in CDS models - part 4 - from passive to active with @capire/common</title>
+		<meta name="description" content="Starting with a simple use of the published @qmacro/common reuse module, I then turn to @capire/common for a first look at what I call an &quot;active&quot; reuse module.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="Modules, modularity &amp; reuse in CDS models - part 4 - from passive to active with @capire/common">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="Starting with a simple use of the published @qmacro/common reuse module, I then turn to @capire/common for a first look at what I call an &quot;active&quot; reuse module.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2026/01/21/modules-modularity-and-reuse-in-cds-models-part-4-from-passive-to-active-with-capire-common/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="modules-modularity-and-reuse-in-cds-models-part-4-from-passive-to-active-with-capire-common">Modules, modularity &amp; reuse in CDS models - part 4 - from passive to active with @capire/common</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2026-01-21">21 January 2026</time></li>
+	<li><a href="/tags/modularity/" class="post-tag">modularity</a>, </li>
+	<li><a href="/tags/cds/" class="post-tag">cds</a>, </li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/reuse/" class="post-tag">reuse</a>, </li>
+	<li><a href="/tags/npm/" class="post-tag">npm</a></li>
+</ul>
+
+<p class="post-description-main">Starting with a simple use of the published @qmacro/common reuse module, I then turn to @capire/common for a first look at what I call an "active" reuse module.</p>
+
+<p>(Get to all the parts in this series via the <a href="/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models/">series
+post</a>.)</p>
+<p>In the <a href="/blog/posts/2026/01/14/modules-modularity-and-reuse-in-cds-models-part-3-publishing-the-simple-reuse-package/">previous
+part</a>
+we published <code>@qmacro/common</code>. Let's start out here by creating a new simple
+CAP Node.js project and bringing in that <code>@qmacro/common</code> package; not only
+will this show that we really do have a publicly available &amp; shareable reuse
+package, but observing what happens will also underline its simple and
+<a href="/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/#active-vs-passive">passive</a>
+nature.</p>
+<h2 id="creating-a-simple-host-project">Creating a simple host project</h2>
+<p>Instead of turning back to the &quot;host&quot; CAP Node.js project that <a href="/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/#creating-a-simple-cap-node-js-project">we created in
+part
+1</a>
+with the <code>packages/@qmacro/common</code> workspace, let's create a fresh host project
+to have a clean context into which to bring each reuse module. First, let's set
+up<a href="#footnotes"><sup>1</sup></a> <code>use-qmacro</code> for
+<a href="https://github.com/qmacro/common">qmacro/common</a>:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">cds init <span class="token punctuation">\</span>
+  <span class="token parameter variable">--add</span> tiny-sample <span class="token punctuation">\</span>
+  use-qmacro <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> <span class="token variable">$_</span> <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> <span class="token function">npm</span> <span class="token function">install</span></code></pre>
+<p>The CDS model artifacts in the &quot;tiny-sample&quot; facet are still simple enough,
+which is what we want. Starting the server now (with <code>cds watch</code>) will allow us
+to see what happens (and, perhaps a little more telling, what does not happen)
+in subsequent steps:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loaded model from <span class="token number">3</span> file<span class="token operator">(</span>s<span class="token operator">)</span><span class="token operator">:</span>
+
+  srv<span class="token operator">/</span>cat<span class="token operator">-</span>service<span class="token punctuation">.</span>cds
+  node_modules<span class="token operator">/</span><span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">/</span>srv<span class="token operator">/</span>outbox<span class="token punctuation">.</span>cds
+  db<span class="token operator">/</span>schema<span class="token punctuation">.</span>cds
+
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> connect to db <span class="token operator">></span> sqlite <span class="token operator">{</span> url<span class="token operator">:</span> <span class="token string">':memory:'</span> <span class="token operator">}</span>
+  <span class="token operator">></span> init from db<span class="token operator">/</span>data<span class="token operator">/</span>my<span class="token punctuation">.</span>bookshop<span class="token operator">-</span>Books<span class="token punctuation">.</span>csv
+<span class="token operator">/</span><span class="token operator">></span> successfully deployed to in<span class="token operator">-</span>memory database<span class="token punctuation">.</span></code></pre>
+<p>Noteworthy here are the files which are being loaded for the CDS model, and the
+initial data load from a CSV file that was found.</p>
+<h2 id="qmacro-common">@qmacro/common</h2>
+<p>It's now time to start exploring what it's like to actually use a reuse
+package. We'll start here with <code>@qmacro/common</code> and then later take a first
+look at <code>@capire/common</code>, so that we can compare what happens.</p>
+<h3 id="adding-qmacro-common">Adding @qmacro/common</h3>
+<p>In a second terminal session (so we can monitor the <code>cds watch</code> output in the
+first) let's install<a href="#footnotes"><sup>2</sup></a> the <code>@qmacro/common</code> reuse
+module:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">npm</span> <span class="token function">add</span> @qmacro/common</code></pre>
+<p>This emits something like this<a href="#footnotes"><sup>3</sup></a>:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">added <span class="token number">1</span> package<span class="token punctuation">,</span> and audited <span class="token number">115</span> packages in <span class="token number">858ms</span>
+
+found <span class="token number">0</span> vulnerabilities</code></pre>
+<p>More importantly, it causes the CAP server to restart. But so far, there are no
+new log lines of interest - the same 3 files as before are loaded for the CDS
+model, and the same single CSV file.</p>
+<h3 id="using-qmacro-common">Using @qmacro/common</h3>
+<p>Let's now make use of this simple passive reuse package by
+importing<a href="#footnotes"><sup>4</sup></a>, as a first step:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> qmacro <span class="token from keyword">from</span> '@qmacro/common'; <span class="token single-line-comment comment">// &lt;--</span>
+
+<span class="token keyword">namespace</span> my.bookshop;
+
+<span class="token keyword">entity</span> Books {
+  <span class="token cqlkeywords keyword">key</span> ID    : <span class="token type builtin">Integer</span>;
+      title : <span class="token type builtin">String</span>;
+      stock : <span class="token type builtin">Integer</span>;
+}</code></pre>
+<p>As soon as the file is saved with this new <code>using</code> directive, the CAP server
+restarts, and a new CDS file appears in the list of sources used to create the
+CDS model:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loaded model from <span class="token number">4</span> file<span class="token operator">(</span>s<span class="token operator">)</span><span class="token operator">:</span>
+
+  srv<span class="token operator">/</span>cat<span class="token operator">-</span>service<span class="token punctuation">.</span>cds
+  node_modules<span class="token operator">/</span><span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">/</span>srv<span class="token operator">/</span>outbox<span class="token punctuation">.</span>cds
+  db<span class="token operator">/</span>schema<span class="token punctuation">.</span>cds
+  node_modules<span class="token operator">/</span><span class="token operator">@</span>qmacro<span class="token operator">/</span>common<span class="token operator">/</span>index<span class="token punctuation">.</span>cds</code></pre>
+<p>It's the
+<a href="https://github.com/qmacro/common/blob/a6e2daea6f9805e1b44fa71deccbe5ac9a6a0333/index.cds">index.cds</a>
+file that <a href="/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/#creating-the-index-entry-point">we created in part
+2</a>,
+nice!</p>
+<p>We haven't made use of the <code>qmacro.common.T</code> type yet, but the compiler still
+loads the reuse package contents (whatever <code>index.cds</code> contains and / or refers
+to).</p>
+<p>But the important thing to observe with this &quot;passive&quot; reuse package is that
+<em>it's only once we explicitly refer to it in our model definitions that
+anything happens</em>.</p>
+<p>To complete the test of this simple reuse package, we can of course add a
+further element to the <code>Books</code> entity definition like this, defined with this
+imported type:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> qmacro <span class="token from keyword">from</span> '@qmacro/common';
+
+<span class="token keyword">namespace</span> my.bookshop;
+
+<span class="token keyword">entity</span> Books {
+  <span class="token cqlkeywords keyword">key</span> ID    : <span class="token type builtin">Integer</span>;
+      title : <span class="token type builtin">String</span>;
+      stock : <span class="token type builtin">Integer</span>;
+      newel : qmacro.common.T; <span class="token single-line-comment comment">// &lt;--</span>
+}</code></pre>
+<p>but this has no further effect on how the package is used or behaves.</p>
+<p>So far, so good! Let's now compare that with a first look at using
+<code>@capire/common</code>.</p>
+<h2 id="creating-a-second-host-project">Creating a second host project</h2>
+<p>To keep things clean and separate, let's now create a second host project just
+like <a href="#creating-a-simple-host-project">the first</a>, this time called <code>use-capire</code>,
+and start up the CAP server straight after:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">cds init <span class="token punctuation">\</span>
+  <span class="token parameter variable">--add</span> tiny-sample <span class="token punctuation">\</span>
+  use-capire <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> <span class="token variable">$_</span> <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> <span class="token function">npm</span> <span class="token function">install</span> <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> cds <span class="token function">watch</span></code></pre>
+<blockquote>
+<p>If you're playing along at home, make sure you create this parallel to
+<code>use-qmacro</code>, not <em>within it</em>, of course.</p>
+</blockquote>
+<p>From the <code>cds watch</code> output, we see the same output as previously, at the same
+stage, with <code>use-qmacro</code>, most notably that the CDS model is composed of 3 files:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loaded model from <span class="token number">3</span> file<span class="token operator">(</span>s<span class="token operator">)</span><span class="token operator">:</span>
+
+  srv<span class="token operator">/</span>cat<span class="token operator">-</span>service<span class="token punctuation">.</span>cds
+  node_modules<span class="token operator">/</span><span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">/</span>srv<span class="token operator">/</span>outbox<span class="token punctuation">.</span>cds
+  db<span class="token operator">/</span>schema<span class="token punctuation">.</span>cds</code></pre>
+<h2 id="capire-common">@capire/common</h2>
+<p>In the same way as with <code>@qmacro/common</code>, let's this time add <code>@capire/common</code>
+to the project.</p>
+<h3 id="associating-the-scope-with-the-registry">Associating the scope with the registry</h3>
+<p>Just like how we associated <code>@qmacro</code> with the GitHub Packages NPM registry <a href="/blog/posts/2026/01/14/modules-modularity-and-reuse-in-cds-models-part-3-publishing-the-simple-reuse-package/#associating-the-scope-with-the-registry">in
+the previous
+part</a>,
+we'll need to do the same for <code>@capire</code>, by adding another line to our
+<code>~/.npmrc</code> file<a href="#footnotes"><sup>5</sup></a>:</p>
+<pre class="language-ini" tabindex="0"><code class="language-ini"><span class="token key attr-name">@capire:registry</span><span class="token punctuation">=</span><span class="token value attr-value">https://npm.pkg.github.com</span></code></pre>
+<h3 id="adding-capire-common">Adding @capire/common</h3>
+<p>Now we can add it:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">npm</span> <span class="token function">add</span> @capire/common</code></pre>
+<p>We get similar output to this as before, but significantly, when the CAP server
+restarts, we see this:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loaded model from <span class="token number">7</span> file<span class="token operator">(</span>s<span class="token operator">)</span><span class="token operator">:</span>
+
+  srv<span class="token operator">/</span>cat<span class="token operator">-</span>service<span class="token punctuation">.</span>cds
+  node_modules<span class="token operator">/</span><span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">/</span>srv<span class="token operator">/</span>outbox<span class="token punctuation">.</span>cds
+  node_modules<span class="token operator">/</span><span class="token operator">@</span>capire<span class="token operator">/</span>common<span class="token operator">/</span>index<span class="token punctuation">.</span>cds
+  node_modules<span class="token operator">/</span><span class="token operator">@</span>capire<span class="token operator">/</span>common<span class="token operator">/</span>regions<span class="token punctuation">.</span>cds
+  node_modules<span class="token operator">/</span><span class="token operator">@</span>capire<span class="token operator">/</span>common<span class="token operator">/</span>currencies<span class="token punctuation">.</span>cds
+  db<span class="token operator">/</span>schema<span class="token punctuation">.</span>cds
+  node_modules<span class="token operator">/</span><span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">/</span>common<span class="token punctuation">.</span>cds</code></pre>
+<p>Waitwhat?</p>
+<h3 id="active-vs-passive">Active vs passive</h3>
+<p>What's going on? Where did they come from? Why are they appearing, even when we
+haven't imported anything into the <code>use-capire</code> model yet?</p>
+<p>This is our first glimpse of a side effect coming from the fact that -- unlike
+<code>@qmacro/common</code>, which is <em>passive</em> -- <code>@capire/common</code> is
+<em>active</em><a href="#footnotes"><sup>6</sup></a>. In other words, the reuse package will do
+things, explicitly and sometimes immediately, as soon as we've added it.</p>
+<p>How does that work? We'll find out in the next part!</p>
+<h2 id="footnotes">Footnotes</h2>
+<ol>
+<li>
+<p>While things would be fine without an <code>npm install</code> at this setup stage
+(using the globally installed <code>@sap/cds</code> package rather than a project-local
+one), we'll use <code>npm install</code> here mostly for cosmetics - references in the
+log output will be to project-local resources rather than global ones which
+have far longer paths; also, we'll be running a package install shortly
+anyway, so the main part of the install work might as well be done now.</p>
+</li>
+<li>
+<p>Remember that you'll have to have the appropriate settings in an
+<a href="https://docs.npmjs.com/cli/v11/configuring-npm/npmrc">npmrc</a> file; see the
+<a href="/blog/posts/2026/01/14/modules-modularity-and-reuse-in-cds-models-part-3-publishing-the-simple-reuse-package/#preparing-to-publish-the-package">Preparing to publish the
+package</a>
+section of the previous part for a reminder about this. Basically, you'll
+need something like this, say, in <code>~/.npmrc</code>:</p>
+<pre class="language-ini" tabindex="0"><code class="language-ini"><span class="token key attr-name">@qmacro:registry</span><span class="token punctuation">=</span><span class="token value attr-value">https://npm.pkg.github.com</span>
+<span class="token key attr-name">//npm.pkg.github.com/:_authToken</span><span class="token punctuation">=</span><span class="token value attr-value">A-CLASSIC-TOKEN-WITH-AT-LEAST-READ-PACKAGES-SCOPE</span></code></pre>
+</li>
+<li>
+<p>The use of the top level name only (i.e. just <code>qmacro</code>) in the <code>using</code>
+directive is deliberate here, just to show a different way of referencing
+the scope and subsequent use in definition positions. See the
+<a href="https://cap.cloud.sap/docs/cds/cdl#namespaces">Namespaces</a> section of
+Capire's CDL topic for further details.</p>
+</li>
+<li>
+<p>I have <code>fund=false</code> in my <code>~/.npmrc</code> file so the &quot;... packages are looking
+for funding ...&quot; messages are suppressed.</p>
+</li>
+<li>
+<p>There's an entire blog post on <a href="blog/posts/2025/10/12/using-capire-modules-from-github-packages/">Using @capire modules from GitHub
+Packages</a>,
+in case you're interested.</p>
+</li>
+<li>
+<p>The terms &quot;active&quot; and &quot;passive&quot; aren't official CAP terms, they're just
+what I have come up wih to distinguish reuse package types.</p>
+</li>
+</ol>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2026/01/14/modules-modularity-and-reuse-in-cds-models-part-3-publishing-the-simple-reuse-package/">Modules, modularity &amp; reuse in CDS models - part 3 - publishing the simple reuse package</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2026/01/21/modules-modularity-and-reuse-in-cds-models-part-4-from-passive-to-active-with-capire-common/` was built on 2026-01-20T17:53:24.364Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
