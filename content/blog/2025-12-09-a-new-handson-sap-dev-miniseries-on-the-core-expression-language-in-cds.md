@@ -18,8 +18,9 @@ channel](https://www.youtube.com/@sapdevs).
 We're starting 2026 off with an under-the-hood style mini-series exploring
 expressions in CDS.
 
-- 16 Jan 2026 Part 1 - [Introduction and overview](https://www.youtube.com/watch?v=aiE20i5BP70) (replay)
-- 23 Jan 2026 Part 2 - [First CXL example expressions](https://www.youtube.com/watch?v=s4IZR1LBRrA) (upcoming)
+- 16 Jan 2026 [Part 1](https://www.youtube.com/watch?v=aiE20i5BP70) (replay)
+- 23 Jan 2026 [Part 2](https://www.youtube.com/watch?v=s4IZR1LBRrA) (replay)
+- 30 Jan 2026 [Part 3](https://www.youtube.com/watch?v=FVEbvHMxOIY) (upcoming)
 
 It's all about CXL - the Core Expression Language. What's that? One of the mini
 languages[<sup>1</sup>](#footnotes) in the CDS language family that is all
