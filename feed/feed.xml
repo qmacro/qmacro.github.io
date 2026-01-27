@@ -5,11 +5,332 @@
   <subtitle>Reserving the right to be wrong</subtitle>
   <link href="https://qmacro.org/feed/feed.xml" rel="self" />
   <link href="https://qmacro.org/blog/" />
-  <updated>2026-01-21T00:00:00Z</updated>
+  <updated>2026-01-27T00:00:00Z</updated>
   <id>https://qmacro.org/blog/</id>
   <author>
     <name>DJ Adams</name>
   </author>
+  <entry>
+    <title>Constraints, expressions and axioms in action</title>
+    <link href="https://qmacro.org/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/" />
+    <updated>2026-01-27T00:00:00Z</updated>
+    <id>https://qmacro.org/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/</id>
+    <content type="html">&lt;p&gt;In &lt;a href=&quot;https://www.youtube.com/watch?v=s4IZR1LBRrA&quot;&gt;part 2&lt;/a&gt; of the current
+Hands-on SAP Dev live stream mini-series &lt;a href=&quot;https://qmacro.org/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/&quot;&gt;on CXL, the core expression language
+in
+CDS&lt;/a&gt;,
+Patrice demonstrated how declarative constraints are actually realised, and it
+made me sit back and wonder. I thought I&#39;d write a quick blog post summarising
+what he showed, as I think it&#39;s worth stopping and taking a bit of time to
+think about.&lt;/p&gt;
+&lt;h2 id=&quot;containers-and-containees&quot;&gt;Containers and containees&lt;/h2&gt;
+&lt;p&gt;During the session, Patrice had painted a lovely picture of CAP&#39;s CDS language
+family, and highlighted that expressions, in
+&lt;a href=&quot;https://cap.cloud.sap/docs/cds/cxl&quot;&gt;CXL&lt;/a&gt; (and its corresponding
+machine-readable equivalent &lt;a href=&quot;https://cap.cloud.sap/docs/cds/cxn&quot;&gt;CXN&lt;/a&gt;) were to
+be found in various places, specifically in the context of:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;the definition language &lt;a href=&quot;https://cap.cloud.sap/docs/cds/cdl&quot;&gt;CDL&lt;/a&gt; (and
+corresponding &lt;a href=&quot;https://cap.cloud.sap/docs/cds/csn&quot;&gt;CSN&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;the query language &lt;a href=&quot;https://cap.cloud.sap/docs/cds/cql&quot;&gt;CQL&lt;/a&gt; (and
+corresponding &lt;a href=&quot;https://cap.cloud.sap/docs/cds/cqn&quot;&gt;CQN&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In other words, from a human perspective, if CXL is a containee, both CDL and
+CQL are containers. Expressions are found in model and service definitions and
+also in queries.&lt;/p&gt;
+&lt;h2 id=&quot;declarative-constraints&quot;&gt;Declarative constraints&lt;/h2&gt;
+&lt;p&gt;In the context of service definitions, data for entities and their elements can
+be subject to &lt;a href=&quot;https://cap.cloud.sap/docs/guides/services/constraints#input-validation&quot;&gt;input
+validation&lt;/a&gt;,
+typically provided via annotations. Annotations such as &lt;code&gt;@mandatory&lt;/code&gt;,
+&lt;code&gt;@readonly&lt;/code&gt;, and &lt;code&gt;@assert.format&lt;/code&gt;, &lt;code&gt;@assert.range&lt;/code&gt; &amp;amp; &lt;code&gt;@assert.target&lt;/code&gt; have been
+available for a while and can be used for formal but limited (pre-defined)
+types of input validation.&lt;/p&gt;
+&lt;p&gt;Declarative constraints are relatively new (&lt;a href=&quot;https://cap.cloud.sap/docs/releases/dec25#declarative-constraints&quot;&gt;reaching &amp;quot;gamma&amp;quot; status in the
+December 2025
+release&lt;/a&gt;)
+and extend the possibilities for input validation by allowing us to define our
+own conditions, using the CXL expression language, and presenting those
+definitions within an &lt;code&gt;@assert&lt;/code&gt; annotation.&lt;/p&gt;
+&lt;h2 id=&quot;what-not-how-less-is-more&quot;&gt;What not how, less is more&lt;/h2&gt;
+&lt;p&gt;There are a couple of axioms that inform the design and the fundamental
+philosophy of the CAP framework:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/qmacro/capref/blob/main/axioms/AXI001.md&quot;&gt;AXI001 What not
+how&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/qmacro/capref/blob/main/axioms/AXI002.md&quot;&gt;AXI002 Less is
+more&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;A practical aim, and effect, of these two axioms is to drive custom code
+upwards and downwards ... and &lt;em&gt;out&lt;/em&gt; of a project:&lt;/p&gt;
+&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;              +---------------+   -+
+              | Definitions   |    |
+              | of services   |    |
+              |               |    |
+              +---------------+    |
+                                   +- CDS
+              +---------------+    |
+              | Domain model  |    |
+              | definition    |    |
+         ^    |               |    |
+    push |    +---------------+   -+
+      up |
+         |    +---------------+   -+
+         +----| Custom        |    |
+              | logic         |    +- JavaScript, Java
+         +----|               |    |
+    push |    +---------------+   -+
+    down |
+         |    +---------------+   -+
+         v    |               |    |
+              | Database      |    +- SQL
+              |               |    |
+              +---------------+   -+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The definition of the declarative constraint that Patrice demonstrated,
+combined with how it was made real, is a perfect reflection of both the upwards
+and downwards push of custom code out of the project.&lt;/p&gt;
+&lt;p&gt;Let me demonstrate what I mean, with a simplified version.&lt;/p&gt;
+&lt;h2 id=&quot;basic-model-and-service-definition&quot;&gt;Basic model and service definition&lt;/h2&gt;
+&lt;p&gt;Using my hyper-simple
+&lt;a href=&quot;https://github.com/qmacro/dotfiles/blob/main/scripts/cdsnano&quot;&gt;cdsnano&lt;/a&gt; CAP
+Node.js tiny project starter, with its
+&lt;a href=&quot;https://github.com/qmacro/dotfiles/blob/main/scripts/cdsnano-template/services.cds&quot;&gt;services.cds&lt;/a&gt;,
+I get this:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;context&lt;/span&gt; qmacro {
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Books {
+    &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; ID    : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
+        title : &lt;span class=&quot;token type builtin&quot;&gt;String&lt;/span&gt;;
+  }
+}
+
+&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; Bookshop {
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Books &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; qmacro.Books;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;adding-a-constraint-declaratively&quot;&gt;Adding a constraint declaratively&lt;/h2&gt;
+&lt;p&gt;Now let me add a declarative constraint, using &lt;code&gt;@assert&lt;/code&gt; and a CXL expression.
+To keep things simple, I&#39;ll put this in the same file:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;annotate Bookshop.Books with {
+  title &lt;span class=&quot;token annotation important&quot;&gt;@assert:&lt;/span&gt; (case
+                    &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;when&lt;/span&gt; length(title) &amp;lt; 2
+                         &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;then&lt;/span&gt; &#39;Book title is too short!&#39;
+                  &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;end&lt;/span&gt;)
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The part in brackets (&lt;code&gt;case when ... then ... end&lt;/code&gt;) is the expression, which is
+evaluated; that is, it resolves to a value. Here, this will either be null, if
+there&#39;s no matched condition&lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/#footnotes&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;, or the string &lt;code&gt;&#39;Book title is too short!&#39;&lt;/code&gt;, which is consequently returned in a 400 status error
+back to the client.&lt;/p&gt;
+&lt;h3 id=&quot;pushing-up&quot;&gt;Pushing up&lt;/h3&gt;
+&lt;p&gt;Already we see a prime example of the &amp;quot;push up&amp;quot; part of the diagram. There&#39;s no
+custom code that we&#39;ve needed to write and maintain in a handler - we&#39;ve
+elevated the business requirement to the CDS modelling level. There is a small
+amount of &amp;quot;code&amp;quot;, in the form of the expression, but this is far simpler, which
+is one of the key benefits:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;there is zero ceremony: no determining the appropriate event context, no
+setting up of the callback, no marshalling of the arguments, no parsing of
+the request data and no manual returning of the error message&lt;/li&gt;
+&lt;li&gt;there is also no free-form language approach to realising the constraint,
+which means a far smaller scope for error&lt;/li&gt;
+&lt;li&gt;constraints are accessible to, shared with and driven by the domain expert,
+at the CDS model level&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;trying-out-the-constraint&quot;&gt;Trying out the constraint&lt;/h2&gt;
+&lt;p&gt;Can things really be this simple? Let&#39;s see.&lt;/p&gt;
+&lt;p&gt;Starting the CAP server up in one shell session, with &lt;code&gt;cds watch&lt;/code&gt; as usual, we
+can request an OData create operation in a second shell session thus:&lt;/p&gt;
+&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--include&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--header&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Content-Type: application/json&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--data&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;{&quot;ID&quot;:1,&quot;title&quot;:&quot;a&quot;}&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; localhost:4004/odata/v4/bookshop/Books&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This returns:&lt;/p&gt;
+&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;HTTP/1.1 400 Bad Request
+OData-Version: 4.0
+Content-Type: application/json; charset=utf-8
+Content-Length: 109
+
+{
+  &quot;error&quot;: {
+    &quot;message&quot;: &quot;Book title is too short!&quot;,
+    &quot;code&quot;: &quot;ASSERT&quot;,
+    &quot;target&quot;: &quot;title&quot;,
+    &quot;@Common.numericSeverity&quot;: 4
+  }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;(Some response headers have been left out, and the response payload has been pretty printed for easier reading.)&lt;/p&gt;
+&lt;h2 id=&quot;digging-in&quot;&gt;Digging in&lt;/h2&gt;
+&lt;p&gt;Patrice used the &lt;code&gt;DEBUG&lt;/code&gt; environment variable to cause the CAP server to emit
+detailed log messages. Let&#39;s do that now, and do it in the context of the cds
+REPL, which Patrice also used, as it&#39;s always a good idea to practise using
+that powerful developer tool&lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/#footnotes&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Starting the cds REPL up, and asking for a CAP server to be started for the
+project in the current directory, like this:&lt;/p&gt;
+&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token assign-left variable&quot;&gt;DEBUG&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;sql cds repl &lt;span class=&quot;token parameter variable&quot;&gt;--run&lt;/span&gt; &lt;span class=&quot;token builtin class-name&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;gives us plenty of output at the outset. But what we&#39;re interested in is what
+happens when we again try to insert the same values.&lt;/p&gt;
+&lt;p&gt;As we&#39;re in the cds REPL, we can construct a query (instead of making an OData
+call from &amp;quot;outside&amp;quot;):&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;q &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;INSERT&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;into&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;Bookshop&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;entities&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Books&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;entries&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token literal-property property&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;a&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;which shows us:&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ql &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token constant&quot;&gt;INSERT&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token literal-property property&quot;&gt;into&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Bookshop.Books&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token literal-property property&quot;&gt;entries&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;a&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now we can send that to the &lt;code&gt;Bookshop&lt;/code&gt; service:&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; Bookshop&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;q&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and at this point we see some debug SQL output:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;sql&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; BEGIN
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;sql&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; INSERT INTO qmacro_Books &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;ID&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;title&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt; SELECT value&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;$.&quot;ID&quot;&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;value&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;$.&quot;title&quot;&#39;&lt;/span&gt; FROM json_each&lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; ID&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; title&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;a&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;sql&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; SELECT json_insert&lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;{}&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;$.&quot;ID&quot;&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;ID&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;$.&quot;@assert:title&quot;&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;@assert:title&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt; as _json_ FROM &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;SELECT &lt;span class=&quot;token string&quot;&gt;&quot;$B&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ID&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;case when length&lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;$B&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;title&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt; then &lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt; end as &lt;span class=&quot;token string&quot;&gt;&quot;@assert:title&quot;&lt;/span&gt; FROM Bookshop_Books as &lt;span class=&quot;token string&quot;&gt;&quot;$B&quot;&lt;/span&gt; WHERE &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;$B&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ID&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt; in &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;?&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Book title is too short!&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;sql&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; ROLLBACK&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We also see the result of this (which would be sent back to the client, in the
+case of an actual request):&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token property&quot;&gt;Uncaught:&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;status:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;400&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;code:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;ASSERT&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;target:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;title&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;numericSeverity:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token string&quot;&gt;&#39;@Common.numericSeverity&#39;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;message:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Book title is too short!&#39;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;examining-the-sql&quot;&gt;Examining the SQL&lt;/h2&gt;
+&lt;p&gt;What happened here? There are four statements, in sequence:&lt;/p&gt;
+&lt;pre class=&quot;language-sql&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-sql&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;BEGIN&lt;/span&gt;     &lt;span class=&quot;token comment&quot;&gt;-- start a new transaction&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;INSERT&lt;/span&gt;    &lt;span class=&quot;token comment&quot;&gt;-- add the record&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;SELECT&lt;/span&gt;    &lt;span class=&quot;token comment&quot;&gt;-- check it&#39;s valid&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;ROLLBACK&lt;/span&gt;  &lt;span class=&quot;token comment&quot;&gt;-- it wasn&#39;t, so roll back the transaction&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;pushing-down&quot;&gt;Pushing down&lt;/h3&gt;
+&lt;p&gt;So, a new transaction was started with &lt;code&gt;BEGIN&lt;/code&gt;, and the record was added with
+&lt;code&gt;INSERT&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Next, we can see that the constraint, which we expressed declaratively, is
+realised by pushing it down to the database, and having it executed there, in
+the context of the &lt;code&gt;SELECT&lt;/code&gt; statement.&lt;/p&gt;
+&lt;p&gt;Finally, because the data was determined not to be valid, the transaction was
+rolled back and the data addition was undone.&lt;/p&gt;
+&lt;p&gt;Let&#39;s reformat the debug SQL output for the &lt;code&gt;INSERT&lt;/code&gt; and &lt;code&gt;SELECT&lt;/code&gt; statements
+and examine them in detail.&lt;/p&gt;
+&lt;h3 id=&quot;the-insert-statement&quot;&gt;The INSERT statement&lt;/h3&gt;
+&lt;p&gt;While the focus of this post is on the declarative constraint based data
+validation, it&#39;s worth looking at not only that (in the &lt;code&gt;SELECT&lt;/code&gt;
+statement) but also the &lt;code&gt;INSERT&lt;/code&gt; statement, as it also uses some &lt;a href=&quot;https://sqlite.org/json1.html&quot;&gt;JSON
+functions and constructs&lt;/a&gt; and gets our brains in
+gear on that front.&lt;/p&gt;
+&lt;pre class=&quot;language-sql&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-sql&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;INSERT&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;INTO&lt;/span&gt;
+  qmacro_Books &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;ID&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; title&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;SELECT&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;$.&quot;ID&quot;&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;$.&quot;title&quot;&#39;&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;FROM&lt;/span&gt;
+  json_each&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;?&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; { ID: &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; title: &lt;span class=&quot;token string&quot;&gt;&#39;a&#39;&lt;/span&gt; } &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;First, the target table is of course the one created for the &lt;code&gt;Books&lt;/code&gt; entity in
+the &lt;code&gt;qmacro&lt;/code&gt; namespace, and its creation at CAP server startup was logged via
+the &lt;code&gt;DEBUG=sql&lt;/code&gt; switch too:&lt;/p&gt;
+&lt;pre class=&quot;language-sql&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-sql&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;TABLE&lt;/span&gt; qmacro_Books &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+  ID &lt;span class=&quot;token keyword&quot;&gt;INTEGER&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  title NVARCHAR&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;255&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;PRIMARY&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;KEY&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;ID&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;json_each&lt;/code&gt; function returns a row of data for each array item, with &lt;code&gt;key&lt;/code&gt;,
+&lt;code&gt;value&lt;/code&gt; and other columns&lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/#footnotes&quot;&gt;&lt;sup&gt;3&lt;/sup&gt;&lt;/a&gt;. The &lt;code&gt;value&lt;/code&gt; column is
+&lt;code&gt;SELECT&lt;/code&gt;ed a couple of times, with the &lt;code&gt;-&amp;gt;&amp;gt;&lt;/code&gt; operator being used to extract
+property values (for &lt;code&gt;ID&lt;/code&gt; and &lt;code&gt;title&lt;/code&gt;) from the current array item presented in
+the value.&lt;/p&gt;
+&lt;p&gt;So the book data row is inserted.&lt;/p&gt;
+&lt;h2 id=&quot;the-select-statement&quot;&gt;The SELECT statement&lt;/h2&gt;
+&lt;p&gt;With the &lt;code&gt;SELECT&lt;/code&gt; statement, the validity of the data according to the
+constraint expression is checked, using SQL, thus mandating the (possibly)
+temporary insertion of the data to be validated, within a transaction.&lt;/p&gt;
+&lt;pre class=&quot;language-sql&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-sql&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;SELECT&lt;/span&gt;
+    json_insert&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+        &lt;span class=&quot;token string&quot;&gt;&#39;{}&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token string&quot;&gt;&#39;$.&quot;ID&quot;&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        ID&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token string&quot;&gt;&#39;$.&quot;@assert:title&quot;&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token string&quot;&gt;&quot;@assert:title&quot;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;as&lt;/span&gt; _json_
+&lt;span class=&quot;token keyword&quot;&gt;FROM&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;SELECT&lt;/span&gt;
+            &lt;span class=&quot;token string&quot;&gt;&quot;$B&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ID&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+            &lt;span class=&quot;token keyword&quot;&gt;case&lt;/span&gt;
+                &lt;span class=&quot;token keyword&quot;&gt;when&lt;/span&gt; length&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;$B&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;title&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt; ? &lt;span class=&quot;token keyword&quot;&gt;then&lt;/span&gt; ?
+            &lt;span class=&quot;token keyword&quot;&gt;end&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;@assert:title&quot;&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;FROM&lt;/span&gt;
+            Bookshop_Books &lt;span class=&quot;token keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;$B&quot;&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;WHERE&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;$B&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ID&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;?&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Book title is too short!&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;SELECT&lt;/code&gt; itself uses &lt;code&gt;json_insert&lt;/code&gt; to construct an object that looks like
+this:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;ID&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &amp;lt;the book ID&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;@assert:title&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &amp;lt;constraint error message&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; or &lt;span class=&quot;token null keyword&quot;&gt;null&lt;/span&gt;&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The values in this object come from the nested &lt;code&gt;SELECT&lt;/code&gt; statement inside the
+&lt;code&gt;FROM&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Inserting the values into the &lt;code&gt;?&lt;/code&gt; placeholders for this statement gives
+us:&lt;/p&gt;
+&lt;pre class=&quot;language-sql&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-sql&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;SELECT&lt;/span&gt;
+    &lt;span class=&quot;token string&quot;&gt;&quot;$B&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ID&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;case&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;when&lt;/span&gt; length&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;$B&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;title&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;then&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Book title is too short!&#39;&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;end&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;@assert:title&quot;&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;FROM&lt;/span&gt;
+    Bookshop_Books &lt;span class=&quot;token keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;$B&quot;&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;WHERE&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;$B&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ID&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Looks familiar, right? The SQL &lt;code&gt;case&lt;/code&gt; expression here mirrors the source
+constraint expression, which has been transliterated and pushed down to the
+database layer for execution.&lt;/p&gt;
+&lt;h3 id=&quot;possible-outcomes&quot;&gt;Possible outcomes&lt;/h3&gt;
+&lt;p&gt;There are two values determined in the inner &lt;code&gt;SELECT&lt;/code&gt;, one for the book&#39;s ID,
+and the other for the possible error message. Here&#39;s an example of failure and
+success:&lt;/p&gt;
+&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;Inserted   --&gt;   Generated
+
+ID, title        ID, @assert:title
+---------        ------------------------------
+1,  &#39;a&#39;          1,  &#39;Book title is too short!&#39;
+1,  &#39;aa&#39;         1,  null&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;At this point, the validation part of the framework checks the generated values
+that are returned, taking appropriate action depending on the value of
+&lt;code&gt;@assert:title&lt;/code&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;non-null: a &lt;code&gt;ROLLBACK&lt;/code&gt; is executed, undoing the data insertion, and the error
+is bubbled back up to the client&lt;/li&gt;
+&lt;li&gt;null: a &lt;code&gt;COMMIT&lt;/code&gt; is executed, and the insertion of the data, now determined
+to be valid, remains intact&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
+&lt;p&gt;Constraints, as expressions, are powerful. What&#39;s more powerful is that these
+constraints, to validate input data, are pushed up out of the custom logic
+layer, to the declarative layer, and the execution thereof is pushed down to
+the database layer. This works for all databases supported by CAP, by the way.&lt;/p&gt;
+&lt;p&gt;In today&#39;s era of assisted programming, and the ever increasing mountain of
+generated code, this is a welcome relief, and &lt;a href=&quot;https://qmacro.org/blog/posts/2024/11/07/five-reasons-to-use-cap/#1-the-code-is-in-the-framework-not-outside-of-it&quot;&gt;exactly the orientation our
+internal compass should be set
+to&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;As it&#39;s essentially the same as the SQL eqivalent, the &lt;code&gt;case&lt;/code&gt; expression
+also has an optional final &lt;code&gt;else&lt;/code&gt; clause which is useful for defining a
+fallback value.&lt;/li&gt;
+&lt;li&gt;It&#39;s also because the detailed log message that&#39;s emitted in the context of
+&lt;code&gt;cds watch&lt;/code&gt; is also slighly less forthcoming, due to the way JavaScript
+tends to convey deep structures in an opaque way, i.e. as &lt;code&gt;[ Object ]&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;See the &lt;code&gt;json_tree&lt;/code&gt; table definition in section &lt;a href=&quot;https://sqlite.org/json1.html#table_valued_functions_for_parsing_json_json_each_jsonb_each_json_tree_and_jsonb_tree_&quot;&gt;4.23. Table valued
+functions for parsing JSON: json_each(), jsonb_each(), json_tree(), and
+jsonb_tree()
+&lt;/a&gt;
+of the SQLite documentation on JSON Functions and Operators.&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+  </entry>
   <entry>
     <title>Modules, modularity &amp; reuse in CDS models - part 4 - from passive to active with @capire/common</title>
     <link href="https://qmacro.org/blog/posts/2026/01/21/modules-modularity-and-reuse-in-cds-models-part-4-from-passive-to-active-with-capire-common/" />
@@ -1654,45 +1975,6 @@ But that would, for me at least, make the language less approachable, less rich 
 &lt;li&gt;I also get a warning in my editor thanks to CAP&#39;s language server for CDS.&lt;/li&gt;
 &lt;li&gt;On that note, it may interest you to read the &lt;a href=&quot;https://cap.cloud.sap/docs/cds/csn#structured-types&quot;&gt;Structured Types&lt;/a&gt; section of Capire&#39;s CSN topic, where it says that &amp;quot;&lt;em&gt;structured types are signified by the presence of an &lt;code&gt;elements&lt;/code&gt; property&lt;/em&gt;&amp;quot;. Did you notice that each definition in the final YAML representation of the compiled model -- whether entity, aspect or type -- has an &lt;code&gt;elements&lt;/code&gt; property?&lt;/li&gt;
 &lt;/ol&gt;
-</content>
-  </entry>
-  <entry>
-    <title>Hands-on domain modelling with CAP&#39;s CDS at UKISUG Connect</title>
-    <link href="https://qmacro.org/blog/posts/2025/11/11/hands-on-domain-modelling-with-caps-cds-at-ukisug-connect/" />
-    <updated>2025-11-11T00:00:00Z</updated>
-    <id>https://qmacro.org/blog/posts/2025/11/11/hands-on-domain-modelling-with-caps-cds-at-ukisug-connect/</id>
-    <content type="html">&lt;p&gt;As I mentioned in my &lt;a href=&quot;https://qmacro.org/blog/posts/2025/09/10/upcoming-talks-in-autumn-2025/&quot;&gt;Upcoming talks in autumn 2025&lt;/a&gt; post recently, I&#39;ll be attending and speaking at &lt;a href=&quot;https://www.ukisugconnect.co.uk/&quot;&gt;UKISUG Connect&lt;/a&gt;. I have a couple of sessions, a hands-on workshop on the &lt;a href=&quot;https://virtual.oxfordabstracts.com/event/75555/program?date=%222025-11-30%22&quot;&gt;Sunday&lt;/a&gt; and a technical track talk on the &lt;a href=&quot;https://virtual.oxfordabstracts.com/event/75555/program?date=%222025-12-1%22&quot;&gt;Monday&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;In this post I want to describe the hands-on workshop, what to expect, and (if you intend to participate in the actual hands-on part) what you need.&lt;/p&gt;
-&lt;p&gt;First, from the &lt;a href=&quot;https://virtual.oxfordabstracts.com/event/75555/submission/101&quot;&gt;session page&lt;/a&gt;, here&#39;s the synopsis:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Become acquainted with CAP&#39;s CDS, the common language that binds domain experts, with their key business &amp;amp; process knowledge, to developers. A hands-on-optional session where we&#39;ll explore the language &amp;amp; concepts together and get comfortable with it.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;There are also the full session details:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;What happened to systems analysts, module specialists?&lt;/p&gt;
-&lt;p&gt;Nothing - they&#39;re still here, and called &amp;quot;domain experts&amp;quot;. What&#39;s more, there&#39;s a common language that binds them, with their key business &amp;amp; process knowledge, to developers, with their knowledge of best practices &amp;amp; developer tools.&lt;/p&gt;
-&lt;p&gt;That common language is CDS - a succinct, powerful and flexible way to describe the domain model and associated functionality for a given solution.&lt;/p&gt;
-&lt;p&gt;We&#39;ll learn by doing, collaboratively exploring how to model entities, relationships, functions and more to build the domain model definition to be at the heart of the solution.&lt;/p&gt;
-&lt;p&gt;Bring and work on your own laptop (setup instructions provided) or just take part in the Q&amp;amp;A style conversation led by the instructor.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;That last sentence is important, and worth explaining. I would like to make the session as welcoming and open as possible, even to those with no prior experience of CAP or CDS, and to non-developers.&lt;/p&gt;
-&lt;p&gt;Additionally, I know that some folks simply may not have their laptops with them, or not want to set things up to participate in the exercises. That is absolutely fine.&lt;/p&gt;
-&lt;p&gt;You can participate:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;either on your laptop, working through the exercises with me and the rest of your fellow hands-on enthusiasts&lt;/li&gt;
-&lt;li&gt;or listen &amp;amp; watch, and take part in the conversation we&#39;ll have throughout the 2 hours, as I work through the exercises myself too, on the big screen, for all to see&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;The first option will require you to set up (or already have) a trial account on the SAP Business Technology Platform (BTP) - more on that in the &lt;a href=&quot;https://qmacro.org/blog/posts/2025/11/11/hands-on-domain-modelling-with-caps-cds-at-ukisug-connect/#preparation-for-doing-the-exercises&quot;&gt;Preparation for doing the exercises&lt;/a&gt; section below.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2025/11/hands-on-session-2024.jpg&quot; alt=&quot;A photo of a hands-on workshop I ran last year at the event&quot;&gt;&lt;/p&gt;
-&lt;p&gt;The second option is just as valid and the more questions and back and forth we generate between us the better for all! And there&#39;s no preparation required, except perhaps to pack your curiosity and bring it with you.&lt;/p&gt;
-&lt;h2 id=&quot;preparation-for-doing-the-exercises&quot;&gt;Preparation for doing the exercises&lt;/h2&gt;
-&lt;p&gt;If you do want to take the first option, and work through the exercises on your laptop as I lead the session working through them myself, then arguably the easiest option for you is to use the SAP Business Application Studio, the online IDE available for free in an BTP trial account.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;To get a trial account, follow the tutorial &lt;a href=&quot;https://developers.sap.com/tutorials/hcp-create-trial-account.html&quot;&gt;Get an Account on SAP BTP Trial&lt;/a&gt;.&lt;/li&gt;
-&lt;li&gt;Once you&#39;ve done that, follow the tutorial &lt;a href=&quot;https://developers.sap.com/tutorials/appstudio-onboarding.html&quot;&gt;Set Up SAP Business Application Studio for Development&lt;/a&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Then you&#39;re all set.&lt;/p&gt;
-&lt;p&gt;Either way, I encourage you to pop down to the hands-on workshop rooms on Sunday afternoon and join me!&lt;/p&gt;
 </content>
   </entry>
 </feed>

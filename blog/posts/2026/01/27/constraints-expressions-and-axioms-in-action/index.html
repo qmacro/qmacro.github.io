@@ -1,0 +1,896 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Constraints, expressions and axioms in action</title>
+		<meta name="description" content="In this blog post I meditate on how declarative constraints are realised in CAP, using the power of the underlying database.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="Constraints, expressions and axioms in action">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="In this blog post I meditate on how declarative constraints are realised in CAP, using the power of the underlying database.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="constraints-expressions-and-axioms-in-action">Constraints, expressions and axioms in action</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2026-01-27">27 January 2026</time></li>
+	<li><a href="/tags/cds/" class="post-tag">cds</a>, </li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/sql/" class="post-tag">sql</a>, </li>
+	<li><a href="/tags/database/" class="post-tag">database</a>, </li>
+	<li><a href="/tags/repl/" class="post-tag">repl</a>, </li>
+	<li><a href="/tags/assert/" class="post-tag">assert</a>, </li>
+	<li><a href="/tags/constraints/" class="post-tag">constraints</a></li>
+</ul>
+
+<p class="post-description-main">In this blog post I meditate on how declarative constraints are realised in CAP, using the power of the underlying database.</p>
+
+<p>In <a href="https://www.youtube.com/watch?v=s4IZR1LBRrA">part 2</a> of the current
+Hands-on SAP Dev live stream mini-series <a href="/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/">on CXL, the core expression language
+in
+CDS</a>,
+Patrice demonstrated how declarative constraints are actually realised, and it
+made me sit back and wonder. I thought I'd write a quick blog post summarising
+what he showed, as I think it's worth stopping and taking a bit of time to
+think about.</p>
+<h2 id="containers-and-containees">Containers and containees</h2>
+<p>During the session, Patrice had painted a lovely picture of CAP's CDS language
+family, and highlighted that expressions, in
+<a href="https://cap.cloud.sap/docs/cds/cxl">CXL</a> (and its corresponding
+machine-readable equivalent <a href="https://cap.cloud.sap/docs/cds/cxn">CXN</a>) were to
+be found in various places, specifically in the context of:</p>
+<ul>
+<li>the definition language <a href="https://cap.cloud.sap/docs/cds/cdl">CDL</a> (and
+corresponding <a href="https://cap.cloud.sap/docs/cds/csn">CSN</a>)</li>
+<li>the query language <a href="https://cap.cloud.sap/docs/cds/cql">CQL</a> (and
+corresponding <a href="https://cap.cloud.sap/docs/cds/cqn">CQN</a>)</li>
+</ul>
+<p>In other words, from a human perspective, if CXL is a containee, both CDL and
+CQL are containers. Expressions are found in model and service definitions and
+also in queries.</p>
+<h2 id="declarative-constraints">Declarative constraints</h2>
+<p>In the context of service definitions, data for entities and their elements can
+be subject to <a href="https://cap.cloud.sap/docs/guides/services/constraints#input-validation">input
+validation</a>,
+typically provided via annotations. Annotations such as <code>@mandatory</code>,
+<code>@readonly</code>, and <code>@assert.format</code>, <code>@assert.range</code> &amp; <code>@assert.target</code> have been
+available for a while and can be used for formal but limited (pre-defined)
+types of input validation.</p>
+<p>Declarative constraints are relatively new (<a href="https://cap.cloud.sap/docs/releases/dec25#declarative-constraints">reaching &quot;gamma&quot; status in the
+December 2025
+release</a>)
+and extend the possibilities for input validation by allowing us to define our
+own conditions, using the CXL expression language, and presenting those
+definitions within an <code>@assert</code> annotation.</p>
+<h2 id="what-not-how-less-is-more">What not how, less is more</h2>
+<p>There are a couple of axioms that inform the design and the fundamental
+philosophy of the CAP framework:</p>
+<ul>
+<li><a href="https://github.com/qmacro/capref/blob/main/axioms/AXI001.md">AXI001 What not
+how</a></li>
+<li><a href="https://github.com/qmacro/capref/blob/main/axioms/AXI002.md">AXI002 Less is
+more</a></li>
+</ul>
+<p>A practical aim, and effect, of these two axioms is to drive custom code
+upwards and downwards ... and <em>out</em> of a project:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">              +---------------+   -+
+              | Definitions   |    |
+              | of services   |    |
+              |               |    |
+              +---------------+    |
+                                   +- CDS
+              +---------------+    |
+              | Domain model  |    |
+              | definition    |    |
+         ^    |               |    |
+    push |    +---------------+   -+
+      up |
+         |    +---------------+   -+
+         +----| Custom        |    |
+              | logic         |    +- JavaScript, Java
+         +----|               |    |
+    push |    +---------------+   -+
+    down |
+         |    +---------------+   -+
+         v    |               |    |
+              | Database      |    +- SQL
+              |               |    |
+              +---------------+   -+</code></pre>
+<p>The definition of the declarative constraint that Patrice demonstrated,
+combined with how it was made real, is a perfect reflection of both the upwards
+and downwards push of custom code out of the project.</p>
+<p>Let me demonstrate what I mean, with a simplified version.</p>
+<h2 id="basic-model-and-service-definition">Basic model and service definition</h2>
+<p>Using my hyper-simple
+<a href="https://github.com/qmacro/dotfiles/blob/main/scripts/cdsnano">cdsnano</a> CAP
+Node.js tiny project starter, with its
+<a href="https://github.com/qmacro/dotfiles/blob/main/scripts/cdsnano-template/services.cds">services.cds</a>,
+I get this:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token keyword">context</span> qmacro {
+  <span class="token keyword">entity</span> Books {
+    <span class="token cqlkeywords keyword">key</span> ID    : <span class="token type builtin">Integer</span>;
+        title : <span class="token type builtin">String</span>;
+  }
+}
+
+<span class="token keyword">service</span> Bookshop {
+  <span class="token keyword">entity</span> Books <span class="token cqlkeywords keyword">as</span> <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> qmacro.Books;
+}</code></pre>
+<h2 id="adding-a-constraint-declaratively">Adding a constraint declaratively</h2>
+<p>Now let me add a declarative constraint, using <code>@assert</code> and a CXL expression.
+To keep things simple, I'll put this in the same file:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds">annotate Bookshop.Books with {
+  title <span class="token annotation important">@assert:</span> (case
+                    <span class="token cdl-keyword keyword">when</span> length(title) &lt; 2
+                         <span class="token cdl-keyword keyword">then</span> 'Book title is too short!'
+                  <span class="token cdl-keyword keyword">end</span>)
+}</code></pre>
+<p>The part in brackets (<code>case when ... then ... end</code>) is the expression, which is
+evaluated; that is, it resolves to a value. Here, this will either be null, if
+there's no matched condition<a href="#footnotes"><sup>1</sup></a>, or the string <code>'Book title is too short!'</code>, which is consequently returned in a 400 status error
+back to the client.</p>
+<h3 id="pushing-up">Pushing up</h3>
+<p>Already we see a prime example of the &quot;push up&quot; part of the diagram. There's no
+custom code that we've needed to write and maintain in a handler - we've
+elevated the business requirement to the CDS modelling level. There is a small
+amount of &quot;code&quot;, in the form of the expression, but this is far simpler, which
+is one of the key benefits:</p>
+<ul>
+<li>there is zero ceremony: no determining the appropriate event context, no
+setting up of the callback, no marshalling of the arguments, no parsing of
+the request data and no manual returning of the error message</li>
+<li>there is also no free-form language approach to realising the constraint,
+which means a far smaller scope for error</li>
+<li>constraints are accessible to, shared with and driven by the domain expert,
+at the CDS model level</li>
+</ul>
+<h2 id="trying-out-the-constraint">Trying out the constraint</h2>
+<p>Can things really be this simple? Let's see.</p>
+<p>Starting the CAP server up in one shell session, with <code>cds watch</code> as usual, we
+can request an OData create operation in a second shell session thus:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">curl</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--include</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--header</span> <span class="token string">'Content-Type: application/json'</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--data</span> <span class="token string">'{"ID":1,"title":"a"}'</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--url</span> localhost:4004/odata/v4/bookshop/Books</code></pre>
+<p>This returns:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">HTTP/1.1 400 Bad Request
+OData-Version: 4.0
+Content-Type: application/json; charset=utf-8
+Content-Length: 109
+
+{
+  "error": {
+    "message": "Book title is too short!",
+    "code": "ASSERT",
+    "target": "title",
+    "@Common.numericSeverity": 4
+  }
+}</code></pre>
+<p>(Some response headers have been left out, and the response payload has been pretty printed for easier reading.)</p>
+<h2 id="digging-in">Digging in</h2>
+<p>Patrice used the <code>DEBUG</code> environment variable to cause the CAP server to emit
+detailed log messages. Let's do that now, and do it in the context of the cds
+REPL, which Patrice also used, as it's always a good idea to practise using
+that powerful developer tool<a href="#footnotes"><sup>2</sup></a>.</p>
+<p>Starting the cds REPL up, and asking for a CAP server to be started for the
+project in the current directory, like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token assign-left variable">DEBUG</span><span class="token operator">=</span>sql cds repl <span class="token parameter variable">--run</span> <span class="token builtin class-name">.</span></code></pre>
+<p>gives us plenty of output at the outset. But what we're interested in is what
+happens when we again try to insert the same values.</p>
+<p>As we're in the cds REPL, we can construct a query (instead of making an OData
+call from &quot;outside&quot;):</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript">q <span class="token operator">=</span> <span class="token constant">INSERT</span><span class="token punctuation">.</span><span class="token function">into</span><span class="token punctuation">(</span>Bookshop<span class="token punctuation">.</span>entities<span class="token punctuation">.</span>Books<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">entries</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token constant">ID</span><span class="token operator">:</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token literal-property property">title</span><span class="token operator">:</span><span class="token string">'a'</span><span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre>
+<p>which shows us:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript">cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">INSERT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">into</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'Bookshop.Books'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">entries</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'a'</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Now we can send that to the <code>Bookshop</code> service:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">await</span> Bookshop<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>q<span class="token punctuation">)</span></code></pre>
+<p>and at this point we see some debug SQL output:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>sql<span class="token punctuation">]</span> <span class="token operator">-</span> BEGIN
+<span class="token punctuation">[</span>sql<span class="token punctuation">]</span> <span class="token operator">-</span> INSERT INTO qmacro_Books <span class="token operator">(</span>ID<span class="token punctuation">,</span>title<span class="token operator">)</span> SELECT value<span class="token operator">-</span><span class="token operator">></span><span class="token operator">></span><span class="token string">'$."ID"'</span><span class="token punctuation">,</span>value<span class="token operator">-</span><span class="token operator">></span><span class="token operator">></span><span class="token string">'$."title"'</span> FROM json_each<span class="token operator">(</span><span class="token operator">?</span><span class="token operator">)</span> <span class="token punctuation">[</span>
+  <span class="token punctuation">[</span> <span class="token punctuation">[</span> <span class="token operator">{</span> ID<span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> title<span class="token operator">:</span> <span class="token string">'a'</span> <span class="token operator">}</span> <span class="token punctuation">]</span> <span class="token punctuation">]</span>
+<span class="token punctuation">]</span>
+<span class="token punctuation">[</span>sql<span class="token punctuation">]</span> <span class="token operator">-</span> SELECT json_insert<span class="token operator">(</span><span class="token string">'{}'</span><span class="token punctuation">,</span><span class="token string">'$."ID"'</span><span class="token punctuation">,</span>ID<span class="token punctuation">,</span><span class="token string">'$."@assert:title"'</span><span class="token punctuation">,</span><span class="token string">"@assert:title"</span><span class="token operator">)</span> as _json_ FROM <span class="token operator">(</span>SELECT <span class="token string">"$B"</span><span class="token punctuation">.</span>ID<span class="token punctuation">,</span>case when length<span class="token operator">(</span><span class="token string">"$B"</span><span class="token punctuation">.</span>title<span class="token operator">)</span> <span class="token operator">&lt;</span> <span class="token operator">?</span> then <span class="token operator">?</span> end as <span class="token string">"@assert:title"</span> FROM Bookshop_Books as <span class="token string">"$B"</span> WHERE <span class="token operator">(</span><span class="token string">"$B"</span><span class="token punctuation">.</span>ID<span class="token operator">)</span> in <span class="token operator">(</span><span class="token operator">(</span><span class="token operator">?</span><span class="token operator">)</span><span class="token operator">)</span><span class="token operator">)</span> <span class="token punctuation">[</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token string">'Book title is too short!'</span><span class="token punctuation">,</span> <span class="token number">1</span> <span class="token punctuation">]</span>
+<span class="token punctuation">[</span>sql<span class="token punctuation">]</span> <span class="token operator">-</span> ROLLBACK</code></pre>
+<p>We also see the result of this (which would be sent back to the client, in the
+case of an actual request):</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token property">Uncaught:</span>
+<span class="token operator">{</span>
+  <span class="token property">status:</span> <span class="token number">400</span><span class="token punctuation">,</span>
+  <span class="token property">code:</span> <span class="token string">'ASSERT'</span><span class="token punctuation">,</span>
+  <span class="token property">target:</span> <span class="token string">'title'</span><span class="token punctuation">,</span>
+  <span class="token property">numericSeverity:</span> <span class="token number">4</span><span class="token punctuation">,</span>
+  <span class="token string">'@Common.numericSeverity'</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
+  <span class="token property">message:</span> <span class="token string">'Book title is too short!'</span>
+<span class="token operator">}</span></code></pre>
+<h2 id="examining-the-sql">Examining the SQL</h2>
+<p>What happened here? There are four statements, in sequence:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">BEGIN</span>     <span class="token comment">-- start a new transaction</span>
+<span class="token keyword">INSERT</span>    <span class="token comment">-- add the record</span>
+<span class="token keyword">SELECT</span>    <span class="token comment">-- check it's valid</span>
+<span class="token keyword">ROLLBACK</span>  <span class="token comment">-- it wasn't, so roll back the transaction</span></code></pre>
+<h3 id="pushing-down">Pushing down</h3>
+<p>So, a new transaction was started with <code>BEGIN</code>, and the record was added with
+<code>INSERT</code>.</p>
+<p>Next, we can see that the constraint, which we expressed declaratively, is
+realised by pushing it down to the database, and having it executed there, in
+the context of the <code>SELECT</code> statement.</p>
+<p>Finally, because the data was determined not to be valid, the transaction was
+rolled back and the data addition was undone.</p>
+<p>Let's reformat the debug SQL output for the <code>INSERT</code> and <code>SELECT</code> statements
+and examine them in detail.</p>
+<h3 id="the-insert-statement">The INSERT statement</h3>
+<p>While the focus of this post is on the declarative constraint based data
+validation, it's worth looking at not only that (in the <code>SELECT</code>
+statement) but also the <code>INSERT</code> statement, as it also uses some <a href="https://sqlite.org/json1.html">JSON
+functions and constructs</a> and gets our brains in
+gear on that front.</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">INSERT</span> <span class="token keyword">INTO</span>
+  qmacro_Books <span class="token punctuation">(</span>ID<span class="token punctuation">,</span> title<span class="token punctuation">)</span>
+<span class="token keyword">SELECT</span>
+  <span class="token keyword">value</span> <span class="token operator">-</span><span class="token operator">>></span> <span class="token string">'$."ID"'</span><span class="token punctuation">,</span>
+  <span class="token keyword">value</span> <span class="token operator">-</span><span class="token operator">>></span> <span class="token string">'$."title"'</span>
+<span class="token keyword">FROM</span>
+  json_each<span class="token punctuation">(</span>?<span class="token punctuation">)</span> <span class="token punctuation">[</span> <span class="token punctuation">[</span> <span class="token punctuation">[</span> { ID: <span class="token number">1</span><span class="token punctuation">,</span> title: <span class="token string">'a'</span> } <span class="token punctuation">]</span> <span class="token punctuation">]</span> <span class="token punctuation">]</span></code></pre>
+<p>First, the target table is of course the one created for the <code>Books</code> entity in
+the <code>qmacro</code> namespace, and its creation at CAP server startup was logged via
+the <code>DEBUG=sql</code> switch too:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> qmacro_Books <span class="token punctuation">(</span>
+  ID <span class="token keyword">INTEGER</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  title NVARCHAR<span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span><span class="token punctuation">(</span>ID<span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>The <code>json_each</code> function returns a row of data for each array item, with <code>key</code>,
+<code>value</code> and other columns<a href="#footnotes"><sup>3</sup></a>. The <code>value</code> column is
+<code>SELECT</code>ed a couple of times, with the <code>-&gt;&gt;</code> operator being used to extract
+property values (for <code>ID</code> and <code>title</code>) from the current array item presented in
+the value.</p>
+<p>So the book data row is inserted.</p>
+<h2 id="the-select-statement">The SELECT statement</h2>
+<p>With the <code>SELECT</code> statement, the validity of the data according to the
+constraint expression is checked, using SQL, thus mandating the (possibly)
+temporary insertion of the data to be validated, within a transaction.</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">SELECT</span>
+    json_insert<span class="token punctuation">(</span>
+        <span class="token string">'{}'</span><span class="token punctuation">,</span>
+        <span class="token string">'$."ID"'</span><span class="token punctuation">,</span>
+        ID<span class="token punctuation">,</span>
+        <span class="token string">'$."@assert:title"'</span><span class="token punctuation">,</span>
+        <span class="token string">"@assert:title"</span>
+    <span class="token punctuation">)</span> <span class="token keyword">as</span> _json_
+<span class="token keyword">FROM</span>
+    <span class="token punctuation">(</span>
+        <span class="token keyword">SELECT</span>
+            <span class="token string">"$B"</span><span class="token punctuation">.</span>ID<span class="token punctuation">,</span>
+            <span class="token keyword">case</span>
+                <span class="token keyword">when</span> length<span class="token punctuation">(</span><span class="token string">"$B"</span><span class="token punctuation">.</span>title<span class="token punctuation">)</span> <span class="token operator">&lt;</span> ? <span class="token keyword">then</span> ?
+            <span class="token keyword">end</span> <span class="token keyword">as</span> <span class="token string">"@assert:title"</span>
+        <span class="token keyword">FROM</span>
+            Bookshop_Books <span class="token keyword">as</span> <span class="token string">"$B"</span>
+        <span class="token keyword">WHERE</span>
+            <span class="token punctuation">(</span><span class="token string">"$B"</span><span class="token punctuation">.</span>ID<span class="token punctuation">)</span> <span class="token operator">in</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>?<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">)</span> <span class="token punctuation">[</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token string">'Book title is too short!'</span><span class="token punctuation">,</span> <span class="token number">1</span> <span class="token punctuation">]</span></code></pre>
+<p>The <code>SELECT</code> itself uses <code>json_insert</code> to construct an object that looks like
+this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"ID"</span><span class="token operator">:</span> &lt;the book ID><span class="token punctuation">,</span>
+  <span class="token property">"@assert:title"</span><span class="token operator">:</span> &lt;constraint error message<span class="token punctuation">,</span> or <span class="token null keyword">null</span>>
+<span class="token punctuation">}</span></code></pre>
+<p>The values in this object come from the nested <code>SELECT</code> statement inside the
+<code>FROM</code>.</p>
+<p>Inserting the values into the <code>?</code> placeholders for this statement gives
+us:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">SELECT</span>
+    <span class="token string">"$B"</span><span class="token punctuation">.</span>ID<span class="token punctuation">,</span>
+    <span class="token keyword">case</span>
+        <span class="token keyword">when</span> length<span class="token punctuation">(</span><span class="token string">"$B"</span><span class="token punctuation">.</span>title<span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">2</span> <span class="token keyword">then</span> <span class="token string">'Book title is too short!'</span>
+    <span class="token keyword">end</span> <span class="token keyword">as</span> <span class="token string">"@assert:title"</span>
+<span class="token keyword">FROM</span>
+    Bookshop_Books <span class="token keyword">as</span> <span class="token string">"$B"</span>
+<span class="token keyword">WHERE</span>
+    <span class="token punctuation">(</span><span class="token string">"$B"</span><span class="token punctuation">.</span>ID<span class="token punctuation">)</span> <span class="token operator">in</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span></code></pre>
+<p>Looks familiar, right? The SQL <code>case</code> expression here mirrors the source
+constraint expression, which has been transliterated and pushed down to the
+database layer for execution.</p>
+<h3 id="possible-outcomes">Possible outcomes</h3>
+<p>There are two values determined in the inner <code>SELECT</code>, one for the book's ID,
+and the other for the possible error message. Here's an example of failure and
+success:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">Inserted   -->   Generated
+
+ID, title        ID, @assert:title
+---------        ------------------------------
+1,  'a'          1,  'Book title is too short!'
+1,  'aa'         1,  null</code></pre>
+<p>At this point, the validation part of the framework checks the generated values
+that are returned, taking appropriate action depending on the value of
+<code>@assert:title</code>:</p>
+<ul>
+<li>non-null: a <code>ROLLBACK</code> is executed, undoing the data insertion, and the error
+is bubbled back up to the client</li>
+<li>null: a <code>COMMIT</code> is executed, and the insertion of the data, now determined
+to be valid, remains intact</li>
+</ul>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>Constraints, as expressions, are powerful. What's more powerful is that these
+constraints, to validate input data, are pushed up out of the custom logic
+layer, to the declarative layer, and the execution thereof is pushed down to
+the database layer. This works for all databases supported by CAP, by the way.</p>
+<p>In today's era of assisted programming, and the ever increasing mountain of
+generated code, this is a welcome relief, and <a href="https://qmacro.org/blog/posts/2024/11/07/five-reasons-to-use-cap/#1-the-code-is-in-the-framework-not-outside-of-it">exactly the orientation our
+internal compass should be set
+to</a>.</p>
+<h2 id="footnotes">Footnotes</h2>
+<ol>
+<li>As it's essentially the same as the SQL eqivalent, the <code>case</code> expression
+also has an optional final <code>else</code> clause which is useful for defining a
+fallback value.</li>
+<li>It's also because the detailed log message that's emitted in the context of
+<code>cds watch</code> is also slighly less forthcoming, due to the way JavaScript
+tends to convey deep structures in an opaque way, i.e. as <code>[ Object ]</code>.</li>
+<li>See the <code>json_tree</code> table definition in section <a href="https://sqlite.org/json1.html#table_valued_functions_for_parsing_json_json_each_jsonb_each_json_tree_and_jsonb_tree_">4.23. Table valued
+functions for parsing JSON: json_each(), jsonb_each(), json_tree(), and
+jsonb_tree()
+</a>
+of the SQLite documentation on JSON Functions and Operators.</li>
+</ol>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2026/01/21/modules-modularity-and-reuse-in-cds-models-part-4-from-passive-to-active-with-capire-common/">Modules, modularity &amp; reuse in CDS models - part 4 - from passive to active with @capire/common</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/` was built on 2026-01-27T07:32:53.247Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
