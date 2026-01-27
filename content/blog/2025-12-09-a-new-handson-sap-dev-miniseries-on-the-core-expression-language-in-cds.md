@@ -32,6 +32,10 @@ that is the hallmark of CDS.
 [![the new series thumbnail with me and
 Patrice](/images/2025/12/cxl-thumbnail.png)](https://www.youtube.com/watch?v=aiE20i5BP70&list=PL6RpkC85SLQABOpzhd7WI-hMpy99PxUo0&index=1)
 
+## Related posts
+
+- [Constraints, expressions and axioms in action](/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/)
+
 ## Footnotes
 
 1. Also known as a [Domain Specific
