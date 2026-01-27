@@ -422,7 +422,7 @@ to](https://qmacro.org/blog/posts/2024/11/07/five-reasons-to-use-cap/#1-the-code
 
 ## Footnotes
 
-1. As it's essentially the same as the SQL eqivalent, the `case` expression
+1. As it's essentially the same as the SQL equivalent, the `case` expression
    also has an optional final `else` clause which is useful for defining a
    fallback value.
 1. It's also because the detailed log message that's emitted in the context of
