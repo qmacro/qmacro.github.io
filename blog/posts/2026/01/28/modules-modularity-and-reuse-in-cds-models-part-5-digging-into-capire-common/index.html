@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Modules, modularity &amp; reuse in CDS models - part 5 - digging into @capire/common</title>
+		<meta name="description" content="In this post I look at various mechanisms that @capire/common has that makes it &quot;active&quot; as a reuse package.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="Modules, modularity &amp; reuse in CDS models - part 5 - digging into @capire/common">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="In this post I look at various mechanisms that @capire/common has that makes it &quot;active&quot; as a reuse package.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2026/01/28/modules-modularity-and-reuse-in-cds-models-part-5-digging-into-capire-common/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="modules-modularity-and-reuse-in-cds-models-part-5-digging-into-capire-common">Modules, modularity &amp; reuse in CDS models - part 5 - digging into @capire/common</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2026-01-28">28 January 2026</time></li>
+	<li><a href="/tags/cds/" class="post-tag">cds</a>, </li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/reuse/" class="post-tag">reuse</a>, </li>
+	<li><a href="/tags/npm/" class="post-tag">npm</a>, </li>
+	<li><a href="/tags/plugins/" class="post-tag">plugins</a>, </li>
+	<li><a href="/tags/modularity/" class="post-tag">modularity</a></li>
+</ul>
+
+<p class="post-description-main">In this post I look at various mechanisms that @capire/common has that makes it "active" as a reuse package.</p>
+
+<p>(Get to all the parts in this series via the <a href="/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models/">series
+post</a>.)</p>
+<p>At the end of the previous part in this series we <a href="/blog/posts/2026/01/21/modules-modularity-and-reuse-in-cds-models-part-4-from-passive-to-active-with-capire-common/#adding-capire-common">added
+@capire/common</a>
+to the host project <code>use-capire</code>, and without doing anything else -- no
+referencing of this reuse package's contents anywhere in our own CDS model -- we
+saw the explosion of sources in the CDS model when the CAP server automatically
+restarted.</p>
+<h2 id="the-model-sources">The model sources</h2>
+<p>This is what was emitted by the CAP server:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loaded model from <span class="token number">7</span> file<span class="token operator">(</span>s<span class="token operator">)</span><span class="token operator">:</span>
+
+  srv<span class="token operator">/</span>cat<span class="token operator">-</span>service<span class="token punctuation">.</span>cds
+  node_modules<span class="token operator">/</span><span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">/</span>srv<span class="token operator">/</span>outbox<span class="token punctuation">.</span>cds
+  node_modules<span class="token operator">/</span><span class="token operator">@</span>capire<span class="token operator">/</span>common<span class="token operator">/</span>index<span class="token punctuation">.</span>cds
+  node_modules<span class="token operator">/</span><span class="token operator">@</span>capire<span class="token operator">/</span>common<span class="token operator">/</span>regions<span class="token punctuation">.</span>cds
+  node_modules<span class="token operator">/</span><span class="token operator">@</span>capire<span class="token operator">/</span>common<span class="token operator">/</span>currencies<span class="token punctuation">.</span>cds
+  db<span class="token operator">/</span>schema<span class="token punctuation">.</span>cds
+  node_modules<span class="token operator">/</span><span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">/</span>common<span class="token punctuation">.</span>cds</code></pre>
+<p>Taking these 7 files, we have the sources specific to the <code>use-capire</code> project:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">srv/cat-service.cds
+db/schema.cds</code></pre>
+<p>as well as the source for the built-in <a href="https://cap.cloud.sap/docs/guides/messaging/task-queues">task
+queues</a> mechanism:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">node_modules/@sap/cds/srv/outbox.cds</code></pre>
+<p>plus three sources from <code>@capire/common</code>:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">node_modules/@capire/common/index.cds
+node_modules/@capire/common/regions.cds
+node_modules/@capire/common/currencies.cds</code></pre>
+<p>and the well-known <code>@sap/cds/common</code> source:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">node_modules/@sap/cds/common.cds</code></pre>
+<p>While it's fairly clear why we have the built-in task queues based source and the
+<code>use-capire</code>-specific sources, the immediate presence of the other sources are
+a little more puzzling.</p>
+<p>Let's dig in.</p>
+<h2 id="contents-of-capire-common">Contents of @capire/common</h2>
+<p>We're now familiar with the extreme basics of a reuse package, in the form of the
+<a href="/blog/posts/2026/01/14/modules-modularity-and-reuse-in-cds-models-part-3-publishing-the-simple-reuse-package/">now-published</a>
+<code>@qmacro/common</code>:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">.
+├── README.md
+├── index.cds
+└── package.json</code></pre>
+<p>However, the contents of <code>@capire/common</code>, which we <a href="/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/#module-capire-common">took an initial look at in part 1
+of this
+series</a>,
+are a little more involved:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">.
+├── LICENSE
+├── cds-plugin.js
+├── currencies.cds
+├── data/
+│   ├── sap.common-Countries.csv
+│   ├── sap.common-Countries_texts.csv
+│   ├── sap.common-Currencies.csv
+│   ├── sap.common-Currencies_texts.csv
+│   ├── sap.common-Languages.csv
+│   └── sap.common-Languages_texts.csv
+├── index.cds
+├── package.json
+├── readme.md
+└── regions.cds</code></pre>
+<h3 id="the-essential-files">The essential files</h3>
+<p>Ignoring the two general repo files <code>LICENSE</code> and <code>readme.md</code> and the CSV files
+in <code>data/</code>, we are left with:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">.
+├── cds-plugin.js
+├── currencies.cds
+├── index.cds
+├── package.json
+└── regions.cds</code></pre>
+<p>There are the two familiar files <code>index.cds</code> and <code>package.json</code> which are
+also present in <code>@qmacro/common</code>, but there's <code>cds-plugin.js</code> as well.</p>
+<p>Let's take each of these three files, one at a time.</p>
+<h3 id="cds-plugin-js">cds-plugin.js</h3>
+<p>If you've read the <a href="/blog/posts/2024/12/30/cap-node-js-plugins/">CAP Node.js
+Plugins</a> series, especially <a href="/blog/posts/2024/10/05/cap-node-js-plugins-part-1-how-things-work/">part
+1 - how things
+work</a>,
+you'll know that <code>cds-plugin.js</code> is a specially named file for which the
+built-in plugin loading mechanism searches on startup.</p>
+<p>It just so happens that this <code>@capire/common</code> reuse package has no need of any
+custom code in <code>cds-plugin.js</code>, but the fact that the file exists causes the
+plugin to be loaded<a href="#footnotes"><sup>1</sup></a>.</p>
+<p>We can see this if we turn on debug output for the plugins mechanism:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token assign-left variable">DEBUG</span><span class="token operator">=</span>plugins cds <span class="token function">watch</span></code></pre>
+<p>whereupon the following will be emitted as part of the server log output:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">.</span>plugins<span class="token punctuation">]</span> <span class="token operator">-</span> fetched plugins in<span class="token operator">:</span> <span class="token number">1.315ms</span>
+<span class="token punctuation">[</span>cds<span class="token punctuation">.</span>plugins<span class="token punctuation">]</span> <span class="token operator">-</span> loading <span class="token operator">@</span>sap<span class="token operator">/</span>cds<span class="token operator">-</span>fiori<span class="token operator">:</span> <span class="token operator">{</span> impl<span class="token operator">:</span> <span class="token string">'node_modules/@sap/cds-fiori/cds-plugin.js'</span> <span class="token operator">}</span>
+<span class="token punctuation">[</span>cds<span class="token punctuation">.</span>plugins<span class="token punctuation">]</span> <span class="token operator">-</span> loading <span class="token operator">@</span>capire<span class="token operator">/</span>common<span class="token operator">:</span> <span class="token operator">{</span> impl<span class="token operator">:</span> <span class="token string">'node_modules/@capire/common/cds-plugin.js'</span> <span class="token operator">}</span>
+<span class="token punctuation">[</span>cds<span class="token punctuation">.</span>plugins<span class="token punctuation">]</span> <span class="token operator">-</span> loading <span class="token operator">@</span>cap<span class="token operator">-</span>js<span class="token operator">/</span>sqlite<span class="token operator">:</span> <span class="token operator">{</span> impl<span class="token operator">:</span> <span class="token string">'node_modules/@cap-js/sqlite/cds-plugin.js'</span> <span class="token operator">}</span>
+<span class="token punctuation">[</span>cds<span class="token punctuation">.</span>plugins<span class="token punctuation">]</span> <span class="token operator">-</span> loaded plugins in<span class="token operator">:</span> <span class="token number">7.149ms</span></code></pre>
+<p>There's our <code>@capire/common</code> being loaded.</p>
+<p>What effect does this have? Well, &quot;loading&quot; a plugin does not concern itself
+solely with the contents of <code>cds-plugin.js</code>. The <a href="https://cap.cloud.sap/docs/node.js/cds-plugins#cds-plugin-packages">CDS Plugin
+Packages</a>
+topic in Capire tells us:</p>
+<blockquote>
+<p>&quot;The <code>cds-plugin</code> technique allows to provide extension packages with
+auto-configuration.&quot;</p>
+</blockquote>
+<p>and indeed the
+<a href="https://cap.cloud.sap/docs/node.js/cds-plugins#auto-configuration">Auto-Configuration</a>
+section of the same topic tells us:</p>
+<blockquote>
+<p>&quot;Plugins can also add new configuration settings, thereby providing auto
+configuration. Simply add a <code>cds</code> section to your <code>package.json</code> file, as you
+would do in a project's <code>package.json</code>.&quot;</p>
+</blockquote>
+<p>So now that the reuse package is being loaded as a plugin, let's next turn our
+attention to <code>@capire/common</code>'s <code>package.json</code> file.</p>
+<h3 id="package-json">package.json</h3>
+<p>Here's the content:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"@capire/common"</span><span class="token punctuation">,</span>
+  <span class="token property">"description"</span><span class="token operator">:</span> <span class="token string">"A plugin extending @sap/cds/common, and providing reuse content."</span><span class="token punctuation">,</span>
+  <span class="token property">"repository"</span><span class="token operator">:</span> <span class="token string">"https://github.com/capire/common"</span><span class="token punctuation">,</span>
+  <span class="token property">"version"</span><span class="token operator">:</span> <span class="token string">"2.0.2"</span><span class="token punctuation">,</span>
+  <span class="token property">"dependencies"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"@sap/cds"</span><span class="token operator">:</span> <span class="token string">"*"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"cds"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"requires"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"@capire/common/data"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"model"</span><span class="token operator">:</span> <span class="token string">"@capire/common"</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>The <code>name</code>, <code>repository</code> and other properties are all
+self-explanatory. But look at that <code>cds</code> property!</p>
+<h4 id="the-effective-environment">The effective environment</h4>
+<p>The value of the <code>cds</code> property <em>becomes part of the effective environment</em>,
+part of the the CAP server's specific DNA.</p>
+<p>We can examine this from within our <code>use-capire</code> project root by running:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">cds <span class="token function">env</span> requires</code></pre>
+<p>which emits:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">{
+  middlewares: true,
+  queue: {
+    model: '@sap/cds/srv/outbox',
+    ...
+    kind: 'persistent-queue'
+  },
+  auth: {
+    restrict_all_services: false,
+    kind: 'mocked',
+    users: {
+      alice: { tenant: 't1', roles: [ 'admin' ] },
+      ...
+      yves: { roles: [ 'internal-user' ] },
+      '*': true
+    },
+    tenants: { t1: { features: [ 'isbn' ] }, t2: { features: '*' } }
+  },
+  '@capire/common/data': { model: '@capire/common' },     <---
+  db: {
+    impl: '@cap-js/sqlite',
+    ...
+    kind: 'sqlite'
+  }
+}</code></pre>
+<p>The arrow shows the value of <code>@capire/common/package.json#cds.requires</code>, which
+is now part of the overall set of &quot;requires&quot; for the project server.</p>
+<p>While the property's key (name) is largely irrelevant, the value:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"model"</span><span class="token operator">:</span> <span class="token string">"@capire/common"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>is critical.</p>
+<p>It means that <code>@capire/common</code> should become part of the project's
+overall CDS model.</p>
+<blockquote>
+<p>How this happens technically is explained in <a href="#appendix-a-including-neighbourhood-models">Appendix A - Including
+neighbourhood models</a>.</p>
+</blockquote>
+<p>And understanding what that means takes us back to earlier points in this
+series, specifically:</p>
+<ul>
+<li><a href="blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/#imports-and-model-resolution">Imports and model
+resolution</a>
+in part 1</li>
+<li><a href="/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/#transferring-the-type-definition">Transferring the type
+definition</a>
+in part 2</li>
+</ul>
+<p>In the model's structure, any reference to a directory will cause the compiler
+to look for an &quot;index&quot; file therein. And as the <code>@capire/common</code> reuse package
+is, at the end of the day, a directory (within <code>node_modules/</code>), that's what
+will happen here.</p>
+<h2 id="index-cds">index.cds</h2>
+<p>So it makes perfect sense to have an <code>index.cds</code> file as the entrypoint for
+<code>@capire/common</code>. And as we learned when <a href="/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/#module-capire-common">first examining module
+@capire/common</a>,
+that <code>index.cds</code> file points to the other two files in <a href="#the-essential-files">the essential
+files</a> list:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">          index.cds
+              |
+        +-----+-----+
+        |           |
+currencies.cds   regions.cds</code></pre>
+<p>This is done with a couple of simple <code>using</code> directives:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> <span class="token from keyword">from</span> './currencies';
+<span class="token using keyword">using</span> <span class="token from keyword">from</span> './regions';</code></pre>
+<p>So. That covers the loading of:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">node_modules/@capire/common/index.cds
+node_modules/@capire/common/regions.cds
+node_modules/@capire/common/currencies.cds</code></pre>
+<p>and as we can probably guess (and confirm by looking within <code>regions.cds</code> and
+<code>currencies.cds</code>), there's also:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">node_modules/@sap/cds/common.cds</code></pre>
+<p>that's being loaded because it's brought in via <code>using</code> directives in each of
+those <code>.cds</code> files.</p>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>This nicely brings us back to where we started with <a href="#the-model-sources">the model
+sources</a>. But now we understand:</p>
+<ul>
+<li>what they are</li>
+<li>where they come from</li>
+<li>why they're loaded</li>
+</ul>
+<p>Essentially:</p>
+<ul>
+<li>the fact that <code>@capire/common</code> reuse package was constructed as a plugin</li>
+<li>combined with its <code>package.json#cds</code> configuration determining the
+requirement for its model to be included</li>
+<li>and the presence of an &quot;index&quot; entrypoint file</li>
+</ul>
+<p>makes the package &quot;active&quot; ... and definitely educational!</p>
+<p>There is elegance in the simplicity of axioms such as <a href="https://github.com/qmacro/capref/blob/main/axioms/AXI003.md">AXI003 Convention
+over
+configuration</a>,
+that inform this approach. There is a beauty in how such axioms are
+realised in the CAP framework.</p>
+<p>Moreover, the power of small mechanisms like this, with their broad
+reach, can bring about &quot;nuclear weapons effects&quot; - not my words, but the words
+of CAP's BDFL, Daniel Hutzel.</p>
+<h2 id="footnotes">Footnotes</h2>
+<ol>
+<li>
+<p>In fact the only thing that <code>cds-plugin.js</code> contains is a comment to this
+effect:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token comment">// dummy to auto-load the plugin</span></code></pre>
+</li>
+</ol>
+<h2 id="appendix-a-including-neighbourhood-models">Appendix A - Including neighbourhood models</h2>
+<p>There's a function in the CAP Node.js runtime resolver that does the work here.
+Its brevity belies the powerful effect that it truly has.</p>
+<h3 id="inside-lib-compile-resolve-js">Inside lib/compile/resolve.js</h3>
+<p>The function is called <code>_required</code> and is in <code>@sap/cds/lib/compile/resolve.js</code>.</p>
+<p>Here's what the function looks like, alongside its big sister function
+<code>_resolve_all</code>, which calls it (this is at CAP Node.js version 9.6.3):</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">_required</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">cds<span class="token punctuation">,</span>env<span class="token operator">=</span>cds<span class="token punctuation">.</span>env</span><span class="token punctuation">)</span> <span class="token operator">=></span> Object<span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span>env<span class="token punctuation">.</span>requires<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token function">map</span> <span class="token punctuation">(</span><span class="token parameter">r</span> <span class="token operator">=></span> r<span class="token punctuation">.</span>model<span class="token punctuation">)</span> <span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">x</span><span class="token operator">=></span>x<span class="token punctuation">)</span>
+<span class="token keyword">const</span> _resolve <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'module'</span><span class="token punctuation">)</span><span class="token punctuation">.</span>_resolveFilename
+
+<span class="token keyword">function</span> <span class="token function">_resolve_all</span> <span class="token punctuation">(</span><span class="token parameter">o<span class="token punctuation">,</span>cds</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> <span class="token punctuation">{</span>roots<span class="token punctuation">}</span> <span class="token operator">=</span> o<span class="token punctuation">.</span>env <span class="token operator">||</span> cds<span class="token punctuation">.</span>env<span class="token punctuation">;</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>o<span class="token punctuation">.</span>dry <span class="token operator">||</span> o <span class="token operator">===</span> <span class="token boolean">false</span><span class="token punctuation">)</span>  <span class="token keyword">return</span> <span class="token punctuation">[</span> <span class="token operator">...</span>roots<span class="token punctuation">,</span> <span class="token operator">...</span><span class="token keyword">new</span> <span class="token class-name">Set</span><span class="token punctuation">(</span><span class="token function">_required</span><span class="token punctuation">(</span>cds<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">flat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">]</span>
+  <span class="token keyword">const</span> cache <span class="token operator">=</span> o<span class="token punctuation">.</span>cache <span class="token operator">||</span> exports<span class="token punctuation">.</span>cache
+  <span class="token keyword">const</span> cached <span class="token operator">=</span> cache<span class="token punctuation">[</span><span class="token string">'*'</span><span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>cached<span class="token punctuation">)</span> <span class="token keyword">return</span> cached
+  cache<span class="token punctuation">[</span><span class="token string">'*'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token comment">// important to avoid endless recursion on '*'</span>
+  <span class="token keyword">const</span> sources <span class="token operator">=</span> cds<span class="token punctuation">.</span><span class="token function">resolve</span> <span class="token punctuation">(</span>roots<span class="token punctuation">,</span>o<span class="token punctuation">)</span> <span class="token operator">||</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token punctuation">(</span>sources<span class="token punctuation">.</span>length <span class="token operator">===</span> <span class="token number">1</span> <span class="token operator">&amp;&amp;</span> sources<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">endsWith</span><span class="token punctuation">(</span><span class="token string">'csn.json'</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// REVISIT: why is that? -> pre-compiled gen/csn.json?</span>
+    sources<span class="token punctuation">.</span><span class="token function">push</span> <span class="token punctuation">(</span><span class="token operator">...</span>cds<span class="token punctuation">.</span><span class="token function">resolve</span> <span class="token punctuation">(</span><span class="token function">_required</span><span class="token punctuation">(</span>cds<span class="token punctuation">,</span>o<span class="token punctuation">.</span>env<span class="token punctuation">)</span><span class="token punctuation">,</span>o<span class="token punctuation">)</span><span class="token operator">||</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> cache<span class="token punctuation">[</span><span class="token string">'*'</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">_resolved</span> <span class="token punctuation">(</span>sources<span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Remember that with regards to the inclusion of any neighbourhood models, the
+required model specified in <code>@capire/common</code>'s <code>package.json#cds</code> configuration
+is the target:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"cds"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"requires"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"@capire/common/data"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"model"</span><span class="token operator">:</span> <span class="token string">"@capire/common"</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>In other words, the required model is stated as being <code>@capire/common</code>.</p>
+<p>Within the <code>_resolve_all</code> function, the relevant processing starts towards the
+end of the function.</p>
+<h3 id="gathering-model-sources">Gathering model sources</h3>
+<p>Given the line:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript">sources<span class="token punctuation">.</span><span class="token function">push</span> <span class="token punctuation">(</span><span class="token operator">...</span>cds<span class="token punctuation">.</span><span class="token function">resolve</span> <span class="token punctuation">(</span><span class="token function">_required</span><span class="token punctuation">(</span>cds<span class="token punctuation">,</span>o<span class="token punctuation">.</span>env<span class="token punctuation">)</span><span class="token punctuation">,</span>o<span class="token punctuation">)</span><span class="token operator">||</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span></code></pre>
+<p>we need to understand that <code>sources</code> is an array that contains the &quot;primary&quot;
+sources for the model, and, before this line is executed, for our <code>use-capire</code>
+project, contains the two usual suspect files:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token punctuation">[</span>
+  <span class="token string">'/tmp/use-capire/db/schema.cds'</span><span class="token punctuation">,</span>
+  <span class="token string">'/tmp/use-capire/srv/cat-service.cds'</span>
+<span class="token punctuation">]</span></code></pre>
+<p>What does the <code>sources</code> array contain after this line is executed? This:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token punctuation">[</span>
+  <span class="token string">'/tmp/use-capire/db/schema.cds'</span><span class="token punctuation">,</span>
+  <span class="token string">'/tmp/use-capire/srv/cat-service.cds'</span><span class="token punctuation">,</span>
+  <span class="token string">'/tmp/use-capire/node_modules/@sap/cds/srv/outbox.cds'</span><span class="token punctuation">,</span>
+  <span class="token string">'/tmp/use-capire/node_modules/@capire/common/index.cds'</span>
+<span class="token punctuation">]</span></code></pre>
+<p>So - what does <code>_required</code> do to cause these two references:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">/tmp/use-capire/node_modules/@sap/cds/srv/outbox.cds
+/tmp/use-capire/node_modules/@capire/common/index.cds</code></pre>
+<p>to be added to the <code>sources</code> array, i.e. to the sources for the overall model?</p>
+<h3 id="looking-at-required">Looking at _required</h3>
+<p>To answer, that, let's take a moment to <a href="/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#initial-recognition">stare
+at</a>
+that <code>_required</code> function, which looks like this when we add some whitespace to
+it:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token punctuation">(</span><span class="token parameter">cds<span class="token punctuation">,</span>env<span class="token operator">=</span>cds<span class="token punctuation">.</span>env</span><span class="token punctuation">)</span> <span class="token operator">=></span>
+  Object<span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span>env<span class="token punctuation">.</span>requires<span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token parameter">r</span> <span class="token operator">=></span> r<span class="token punctuation">.</span>model<span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">x</span><span class="token operator">=></span>x<span class="token punctuation">)</span></code></pre>
+<p>Briefly, this function:</p>
+<ul>
+<li>expects an environment definition, defaulting to the main one (in <code>cds.env</code>)</li>
+<li>produces a list of the values of the <code>requires</code> properties in that
+environment definition</li>
+<li>pares down each of those values to just the value's <code>model</code> specification (if
+there is one)</li>
+<li>removes any empty values (i.e. if there wasn't a <code>model</code> property)</li>
+</ul>
+<p>Remembering the values of the <code>requires</code> property of <a href="#the-effective-environment">the effective
+environment</a> from earlier:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">{
+  middlewares: true,
+  queue: {
+    model: '@sap/cds/srv/outbox',
+    ...
+    kind: 'persistent-queue'
+  },
+  auth: {
+    restrict_all_services: false,
+    kind: 'mocked',
+    users: {
+      alice: { tenant: 't1', roles: [ 'admin' ] },
+      ...
+      yves: { roles: [ 'internal-user' ] },
+      '*': true
+    },
+    tenants: { t1: { features: [ 'isbn' ] }, t2: { features: '*' } }
+  },
+  '@capire/common/data': { model: '@capire/common' },
+  db: {
+    impl: '@cap-js/sqlite',
+    ...
+    kind: 'sqlite'
+  }
+}</code></pre>
+<p>we can see that there are only two that contain a <code>model</code> property:</p>
+<ul>
+<li><code>queue</code> with model <code>@sap/cds/srv/outbox</code> - for the task queue mechanism</li>
+<li><code>@capire/common/data</code> with model <code>@capire/common</code> - our reuse package</li>
+</ul>
+<p>Bingo! These both get pushed onto the <code>sources</code> array (as filesystem
+references, via <code>cds.resolve</code>) and consequently included as part of the overall
+CDS model for the runtime.</p>
+<h3 id="further-reading">Further reading</h3>
+<p>If you want an even deeper dive into this mechanism, you might be interested in
+reading the blog post <a href="/blog/posts/2025/05/01/fp-function-chains-and-cap-model-loading/">FP, function chains and CAP model
+loading</a>.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/">Constraints, expressions and axioms in action</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2026/01/28/modules-modularity-and-reuse-in-cds-models-part-5-digging-into-capire-common/` was built on 2026-01-28T08:12:42.724Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
