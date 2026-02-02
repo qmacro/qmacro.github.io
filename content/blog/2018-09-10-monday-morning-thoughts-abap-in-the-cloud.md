@@ -4,10 +4,8 @@ date: 2018-09-10
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: I think about the new SAP Cloud Platform ABAP Environment, what it is, what it isn't, and why I think it's a great move.
 ---
-*In this post, I think about the new SAP Cloud Platform ABAP
-Environment, what it is, what it isn't, and why I think it's a great
-move.*
 
 A day or two ago [this
 tweet](https://twitter.com/FishInWaterProd/status/1037879269471469568/photo/1)

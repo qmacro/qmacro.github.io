@@ -4,10 +4,8 @@ date: 2018-05-14
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: Musings on the concept of functions-as-a-service, what it means, and what it's good for.
 ---
-
-*In this post, I think about the concept of functions-as-a-service, what
-it means, and what it's good for.*
 
 Serverless, cloud functions, functions-as-a-service. Three terms that
 we're hearing more and more about these days, particularly in the

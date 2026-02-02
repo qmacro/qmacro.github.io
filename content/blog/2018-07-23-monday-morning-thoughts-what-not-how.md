@@ -4,12 +4,8 @@ date: 2018-07-23
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: In this post, I think about how we program, about the way we describe what it is that we want the computer to do for us, and look at what has become for me the canonical example of the difference between 'what' and 'how'.
 ---
-
-*In this post, I think about how we program, about the way we describe
-what it is that we want the computer to do for us, and look at what has
-become for me the canonical example of the difference between 'what'
-and 'how'.*
 
 Over the past week, three worlds have collided, in a most pleasing way.
 First, I've been digging a little bit more into the powerful [data
@@ -95,7 +91,7 @@ And so we come to the subject of Friday's session at UI5con Bangalore.
 It's a session I've given before in a number of different forms
 
 - at SAP TechEd in 2016 (DEV219 "Building More Stable Business Apps with Functional Techniques in JavaScript")
-- at UI5con in 2016 ("An Introduction to Functional Techniques in JavaScript for UI5") 
+- at UI5con in 2016 ("An Introduction to Functional Techniques in JavaScript for UI5")
 - at UI5con@SAP in 2017 and 2018 in the form of a longer hands-on workshop ("Functional programming for your UI5 apps")
 
 It was for the hands-on format that I created a 20 page worksheet which is available for all online:

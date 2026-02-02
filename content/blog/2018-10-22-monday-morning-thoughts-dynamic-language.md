@@ -4,10 +4,8 @@ date: 2018-10-22
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: Musings on a particular function definition in JavaScript, and how it represents beauty and practicality in equal measure.
 ---
-*In this post, I think about a particular function definition in
-JavaScript, and how it represents beauty and practicality in equal
-measure.*
 
 On Friday evening, I
 [tweeted](/tweets/qmacro/status/1053322908813148165):
@@ -72,7 +70,7 @@ code](https://github.com/SAP/cloud-sample-spaceflight/blob/c3c152e192b1d3dcfea23
 again, with the comment that accompanies it:
 
 ```javascript
-// A useful version of Array push that returns the modified array 
+// A useful version of Array push that returns the modified array
 // rather than the index of the newly added item...
 const push = (arr, newEl) =>
   (_ => arr)(arr.push(newEl))
@@ -163,7 +161,7 @@ Like this, for example:
 You'd hope to get this:
 
 ```javascript
-["BLUE", "ORANGE", "RED", "WHITE"] 
+["BLUE", "ORANGE", "RED", "WHITE"]
 ```
 
 However, you'd end up with this:

@@ -4,11 +4,8 @@ date: 2018-07-16
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: I think about abstraction, the power and facility it affords, and consider CDS as one example of a modern abstraction language.
 ---
-
-*In this post, I think about abstraction, the power and facility it
-affords, and consider CDS as one example of a modern abstraction
-language.*
 
 Last week I was chatting to some old friends. One of them had just
 remarked that Google was now considered the world's fourth largest
@@ -118,7 +115,7 @@ SQL statements to create a persistence layer in a traditional RDBMS
 system:
 
 ```shell
-i347491@C02W52RKHV2Q:~/local/projects/bookshop 
+i347491@C02W52RKHV2Q:~/local/projects/bookshop
 => cds compile db/data-model.cds -2 sql
 CREATE TABLE my_bookshop_Orders (
    ID nvarchar(36),
@@ -127,13 +124,13 @@ CREATE TABLE my_bookshop_Orders (
    date datetime,
    amount integer,
    PRIMARY KEY (ID)
-); 
+);
 
 CREATE TABLE my_bookshop_Authors (
    ID integer,
    name nvarchar(111),
    PRIMARY KEY (ID)
-); 
+);
 
 CREATE TABLE my_bookshop_Books (
    ID integer,
@@ -141,9 +138,9 @@ CREATE TABLE my_bookshop_Books (
    author_ID integer,
    stock integer,
    PRIMARY KEY (ID)
-); 
-i347491@C02W52RKHV2Q:~/local/projects/bookshop 
-=> 
+);
+i347491@C02W52RKHV2Q:~/local/projects/bookshop
+=>
 ```
 
 or even compiling the [corresponding service
@@ -152,38 +149,38 @@ the Swagger OpenAPI format (I found a reference to "swgr" being an
 output target by looking through the CDS compiler's source code):
 
 ```shell
-i347491@C02W52RKHV2Q:~/local/projects/bookshop 
+i347491@C02W52RKHV2Q:~/local/projects/bookshop
 
 => cds compile srv/cat-service.cds -2 swgr
-CatalogService: 
+CatalogService:
   openapi: 3.0.0
   info: {version: "", title: CatalogService}
   paths: {}
-  components: 
-    schemas: 
-      Books: 
-        properties: 
+  components:
+    schemas:
+      Books:
+        properties:
           ID: {type: integer, format: int32}
           title: {type: string}
           author: {'$ref': "#/components/schemas/Authors"}
           stock: {type: integer, format: int32}
-      Error: 
+      Error:
         required: [code, message]
         properties: {code: {type: integer, format: int32}, message: {type: string}}
-      Authors: 
-        properties: 
+      Authors:
+        properties:
           ID: {type: integer, format: int32}
           name: {type: string}
           books: {type: array, items: {'$ref': "#/components/schemas/Books"}}
-      Orders: 
-        properties: 
+      Orders:
+        properties:
           ID: {type: string, format: uuid}
           book: {'$ref': "#/components/schemas/Books"}
           buyer: {type: string}
           date: {type: string, format: date-time}
           amount: {type: integer, format: int32}
-i347491@C02W52RKHV2Q:~/local/projects/bookshop 
-=> 
+i347491@C02W52RKHV2Q:~/local/projects/bookshop
+=>
 ```
 
 Already we're seeing the power of abstraction at work here. CDS is a

@@ -4,11 +4,8 @@ date: 2018-10-15
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: On my experience going from primary school to secondary school - "big school", how that parallels our collective move from on-prem to the cloud, and how the community is more important than ever in this transition.
 ---
-*In this post, I think about my experience going from primary school to
-secondary school - "big school", how that parallels our collective
-move from on-prem to the cloud, and how the community is more important
-than ever in this transition.*
 
 My first school, Norman House in New Moston, Manchester, was a small
 place, for pupils aged 4 to 11. We had fixed desks where we kept all our

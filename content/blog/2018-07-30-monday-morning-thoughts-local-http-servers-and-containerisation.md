@@ -5,10 +5,8 @@ tags:
   - sapcommunity
   - mondaymorningthoughts
   - containers
+description: I look back on an idea surfaced by a hero of mine, and think about how that idea laid the path for today's containerisation initiatives.
 ---
-*In this post, I look back on an idea surfaced by a hero of mine, and
-think about how that idea laid the path for today's containerisation
-initiatives.*
 
 One of the periodicals I eagerly anticipated and regularly devoured
 every month, starting in the 1980's, was Byte magazine. From the

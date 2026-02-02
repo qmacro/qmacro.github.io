@@ -4,11 +4,8 @@ date: 2018-06-18
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: I think about some of the basic ingredients of a good online community, and describe what I'm going to try to do to engage more with the SAP Community.
 ---
-
-*In this post, I think about some of the basic ingredients of a good
-online community, and describe what I'm going to try to do to engage
-more with the SAP Community.*
 
 I was re-listening to a great episode of the [Coffee Corner Radio
 podcast](https://anchor.fm/sap-community-podcast/) on my trip over to

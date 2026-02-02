@@ -4,11 +4,8 @@ date: 2018-06-04
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: I contemplate the idea of the learning continuum, and think about the fact that we're all learning together, which is a good thing.
 ---
-
-*In this post I contemplate the idea of the learning continuum, and
-think about the fact that we're all learning together, which is a good
-thing.*
 
 On a run last week I listened to an episode of Scott Hanselman's
 "Hanselminutes": [Functional Programming, F#, and Cloud Containers

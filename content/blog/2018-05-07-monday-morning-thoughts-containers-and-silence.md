@@ -7,11 +7,8 @@ tags:
   - acornatom
   - cloudnative
   - containers
+description: On the silence of workstations and what that represents to me, and the new ability to look at maintaining software and services in a completely different way - via containers.
 ---
-
-*In this post I think about the silence of workstations and what that
-represents to me, and the new ability to look at maintaining software
-and services in a completely different way - via containers.*
 
 Another Monday morning is upon us, and it's a public holiday here in
 England. But I wanted to publish a new set of thoughts, related to what

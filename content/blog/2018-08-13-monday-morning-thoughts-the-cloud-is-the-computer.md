@@ -4,10 +4,8 @@ date: 2018-08-13
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: I think about what the future of programming in an enterprise environment might look like, and realise that it makes sense to consider that the cloud itself is the new computer.
 ---
-*In this post, I think about what the future of programming in an
-enterprise environment might look like, and realise that it makes sense
-to consider that the cloud itself is the new computer.*
 
 Sun Microsystems, an incredibly venerable hardware and software company
 from back in the day, is the creator, directly or indirectly, of some of

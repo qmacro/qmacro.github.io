@@ -4,13 +4,10 @@ date: 2018-07-09
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: I think about how curiosity can lead to a better understanding of things, and give a specific example concerning CDS and the new Application Programming Model for SAP Cloud Platform.
 ---
 
-*In this post, I think about how curiosity can lead to a better
-understanding of things, and give a specific example concerning CDS and
-the new Application Programming Model for SAP Cloud Platform.*
-
-On Friday I 
+On Friday I
 [tweeted something](/tweets/qmacro/status/1015254046079422465/)
 that seemed to capture the interest of
 some:
@@ -116,16 +113,16 @@ npm run build
 > my.app@1.0.0 build /home/vcap/app/.java-buildpack/tomcat/temp/builder/sap.cds.mta/builds/build-253077567018682723/bookshop
 > cds build --clean
 This is CDS 2.3.2, Compiler 1.0.30, Home: node_modules/@sap/cds
-Compiled 'db/data-model.cds' to  
-  db/src/gen/.hdinamespace  
-  db/src/gen/CATALOGSERVICE_AUTHORS.hdbcds  
-  db/src/gen/CATALOGSERVICE_BOOKS.hdbcds  
-  db/src/gen/CATALOGSERVICE_ORDERS.hdbcds  
-  db/src/gen/MY_BOOKSHOP_AUTHORS.hdbcds  
-  db/src/gen/MY_BOOKSHOP_BOOKS.hdbcds  
+Compiled 'db/data-model.cds' to
+  db/src/gen/.hdinamespace
+  db/src/gen/CATALOGSERVICE_AUTHORS.hdbcds
+  db/src/gen/CATALOGSERVICE_BOOKS.hdbcds
+  db/src/gen/CATALOGSERVICE_ORDERS.hdbcds
+  db/src/gen/MY_BOOKSHOP_AUTHORS.hdbcds
+  db/src/gen/MY_BOOKSHOP_BOOKS.hdbcds
   db/src/gen/MY_BOOKSHOP_ORDERS.hdbcds
-Compiled 'srv/my-service.cds' to  
-  srv/src/main/resources/edmx/CatalogService.xml  
+Compiled 'srv/my-service.cds' to
+  srv/src/main/resources/edmx/CatalogService.xml
   srv/src/main/resources/edmx/csn.json
 
 CDS return code: 0
@@ -176,7 +173,7 @@ i347491@C02W52RKHV2Q:~
 added 20 packages in 5.732s
 
 i347491@C02W52RKHV2Q:~
-=> 
+=>
 ```
 
 Happily, this ties up with part of the output we saw from the SAP Web
@@ -203,7 +200,7 @@ build \--clean'. What does the help documentation tell us? Let's have
 a look:
 
 ```shell
-i347491@C02W52RKHV2Q:~ 
+i347491@C02W52RKHV2Q:~
 => cds help build
 
 SYNOPSIS
@@ -247,8 +244,8 @@ EXAMPLES
    cds build project -o _out
 
 
-i347491@C02W52RKHV2Q:~ 
-=> 
+i347491@C02W52RKHV2Q:~
+=>
 ```
 
 Gosh! This is exactly what I was looking for (even though I didn't
@@ -264,11 +261,11 @@ db/data-model.cds file is compiled into 'hdbcds' files, which I can
 repeat locally on my command line like this:
 
 ```shell
-i347491@C02W52RKHV2Q:/tmp 
+i347491@C02W52RKHV2Q:/tmp
 => cds init testproject
-i347491@C02W52RKHV2Q:/tmp 
+i347491@C02W52RKHV2Q:/tmp
 => cd testproject/
-i347491@C02W52RKHV2Q:/tmp/testproject 
+i347491@C02W52RKHV2Q:/tmp/testproject
 => cds build --clean
 This is CDS 2.5.1, Compiler 1.0.30, Home: ../../../Users/i347491/.npm-packages/lib/node_modules/@sap/cds
 
@@ -279,8 +276,8 @@ Compiled 'db/data-model.cds' to
 Compiled 'srv/my-service.cds' to
   srv/src/main/resources/edmx/csn.json
   srv/src/main/resources/edmx/my.service.FooService.xml
-i347491@C02W52RKHV2Q:/tmp/testproject 
-=> 
+i347491@C02W52RKHV2Q:/tmp/testproject
+=>
 ```
 
 What this tells me is that our hunch about CDS was not crazy:

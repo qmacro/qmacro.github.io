@@ -8,7 +8,7 @@ tags:
   - atom
   - atompublishingprotocol
   - rss
-description: In this post, I think about OData, in particular where it came from and why it looks and acts like it does. I also consider why I think it was a good protocol for an organisation like SAP to embrace.
+description: I think about OData, in particular where it came from and why it looks and acts like it does. I also consider why I think it was a good protocol for an organisation like SAP to embrace.
 ---
 
 🔊 This post is also [available in audio

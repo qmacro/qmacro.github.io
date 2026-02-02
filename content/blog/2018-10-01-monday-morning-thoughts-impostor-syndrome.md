@@ -4,10 +4,8 @@ date: 2018-10-01
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: On the impostor syndrome, how it relates to me, and one of the possible causes.
 ---
-
-*In this post I think about the impostor syndrome, how it relates to me,
-and one of the possible causes.*
 
 I'm in Las Vegas for the first SAP TechEd event of 2018 which starts in
 earnest tomorrow. Last night, I listened to an episode of my favourite
@@ -27,7 +25,7 @@ subjected, in that:
 > glimpse of the entire unimaginable infinity of creation, and somewhere
 > in it there's a tiny little speck, a microscopic dot on a microscopic
 > dot, which says, 'You are here.'"
-> 
+>
 > \-- from [Fit the Eighth](https://www.clivebanks.co.uk/THHGTTG/THHGTTGradio8.htm)
 
 

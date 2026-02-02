@@ -4,9 +4,8 @@ date: 2018-11-26
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: I think about the different ways I learn, and wonder how that translates to how we learn in the SAP developer ecosphere.
 ---
-*In this post, I think about the different ways I learn, and wonder how
-that translates to how we learn in the SAP developer ecosphere.*
 
 This will be a shorter post than usual\*, as I've just arrived at the
 (second worst) airport (in the world) on my way to the third and final

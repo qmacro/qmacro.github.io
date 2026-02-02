@@ -4,11 +4,8 @@ date: 2018-11-05
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: On what made me start blogging, and on the reasons to start blogging that might resonate with you, if you've not yet made that step.
 ---
-
-*In this post, I think about what it is that made me start blogging, and
-about the reasons to start blogging that might resonate with you, if
-you've not yet made that step.*
 
 Deep down I'm a shy person. I'm not great at casual conversation, and,
 via a wonderful SAP Inside Track session a few years ago from the

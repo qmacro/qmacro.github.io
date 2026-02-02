@@ -4,11 +4,8 @@ date: 2018-05-21
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: I look back at changes and developments that I consider milestones in SAP's technology history, and muse on some of the developments today that we'll consider milestones in the future.
 ---
-
-*In this post, I look back at changes and developments that I consider
-milestones in SAP's technology history, and muse on some of the
-developments today that we'll consider milestones in the future.*
 
 ![Image result for manchester
 milestone](/images/2018/05/Milestone_rixton_greater_manchester.jpg)

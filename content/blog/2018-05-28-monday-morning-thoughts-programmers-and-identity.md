@@ -4,11 +4,8 @@ date: 2018-05-28
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: On how some programmers identify strongly with a particular language, consider the meanings of 'programmer', 'coder' and 'developer', and what it means for us as the SAP enterprise programming landscape changes.
 ---
-*In this post, I look at how some programmers identify strongly with a
-particular language, consider the meanings of 'programmer', 'coder'
-and 'developer', and what it means for us as the SAP enterprise
-programming landscape changes.*
 
 I watched [a couple of talks by Kevlin
 Henney](https://www.youtube.com/results?search_query=kevlin+henney) last

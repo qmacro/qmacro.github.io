@@ -4,6 +4,7 @@ date: 2018-03-26
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: What does it mean to be "cloud native"?
 ---
 
 This weekend I discovered that one of my favourite online REPLs\* -
@@ -57,7 +58,7 @@ evolution. It is, nevertheless, a very nice experience:
 ![](/images/2018/03/Screen-Shot-2018-03-26-at-08.47.34.png)
 
 (Yes, this is a little UI5 app that was inspired by Meredith Hassett's
-recent #APIFriday post "[Building your Developer Profile -- GitHub 
+recent #APIFriday post "[Building your Developer Profile -- GitHub
 UI5](https://blogs.sap.com/2018/03/22/building-your-developer-profile-github-ui5/)").
 
 I'm mindful of the tools I use with kids [at the local Primary

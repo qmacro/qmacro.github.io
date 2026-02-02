@@ -4,12 +4,8 @@ date: 2018-12-10
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: I think about the tools we use in our day-to-day activities, the feeling I have that I'm just scratching the surface with regards to their capabilities, and what I plan to do about it in 2019.
 ---
-
-*In this post, I think about the tools we use in our day-to-day
-activities, the feeling I have that I'm just scratching the surface
-with regards to their capabilities, and what I plan to do about it in
-2019.*
 
 Last week I found myself installing a Vim plugin in order to use a key
 feature, in an attempt to streamline my editing workflow. I ended up

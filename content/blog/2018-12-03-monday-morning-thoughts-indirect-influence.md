@@ -4,10 +4,8 @@ date: 2018-12-03
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: On how our work can directly and even indirectly influence those that come after us, and about what this means for how we should act.
 ---
-*In this post, I think about how our work can directly and even
-indirectly influence those that come after us, and about what this means
-for how we should act.*
 
 Last week's I attended SAP TechEd 2018 in Bangalore. Most of the time I
 was helping out at the Developer Garage space, assisting the attendees

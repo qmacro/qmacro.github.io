@@ -4,9 +4,8 @@ date: 2018-08-27
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: What makes a good blog post, and also what writing such a post does for the author, too.
 ---
-*In this post, I think about what makes a good blog post, and also what
-writing such a post does for the author, too.*
 
 It's a bank holiday Monday today in England, and so of course it's
 raining\*. I spent a bit of time earlier this morning perusing the news,

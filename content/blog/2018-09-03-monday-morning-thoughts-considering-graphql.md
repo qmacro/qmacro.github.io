@@ -4,11 +4,8 @@ date: 2018-09-03
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: On GraphQL, and its relationship with existing ideas for managing data and structured exposure to that data over a wire protocol.
 ---
-
-*In this post, I think about GraphQL, and its relationship with existing
-ideas for managing data and structured exposure to that data over a wire
-protocol.*
 
 **Update: This post is now available in audio format too - see [the
 episode on Tech Aloud](https://anchor.fm/tech-aloud/episodes/Monday-morning-thoughts-considering-GraphQL---DJ-Adams---3-Sep-2018-e5h54s).**

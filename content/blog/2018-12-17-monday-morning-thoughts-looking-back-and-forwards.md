@@ -6,8 +6,8 @@ tags:
   - mondaymorningthoughts
   - meta
   - reflection
+description: I look back on the posts in this series, reflect upon the journey we've made, and think about what 2019 might hold for us.
 ---
-_In this post, I look back on the posts in this series, reflect upon the journey we've made, and think about what 2019 might hold for us._
 
 The holiday season is pretty much upon us, and for many it's a time for bringing things to a close, with a view to getting some rest and making mental room for what's to come next year. So it is with me and this series.
 

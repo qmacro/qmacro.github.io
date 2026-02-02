@@ -4,10 +4,8 @@ date: 2018-06-25
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: I think about the idea of the programming model and consider the occurrence of such over the recent years in the SAP development ecosphere.
 ---
-*In this post, I think about the idea of the programming model and
-consider the occurrence of such over the recent years in the SAP
-development ecosphere.*
 
 **Update (same day)**: I interviewed Rui Nogueira on the new Application
 Programming Model for the SAP Cloud Platform. You can get the interview

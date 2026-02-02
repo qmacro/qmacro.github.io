@@ -4,10 +4,8 @@ date: 2018-06-11
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: What Core Data Services (CDS) is, what it does, and why we should make it a priority to learn more about.
 ---
-
-*In this post, I think about what Core Data Services (CDS) is, what it
-does, and why we should make it a priority to learn more about.*
 
 Earlier this morning, while following a tutorial, I came across this
 message in the console log of my SAP Web IDE:

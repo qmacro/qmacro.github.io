@@ -5,13 +5,8 @@ tags:
   - sapcommunity
   - mondaymorningthoughts
   - abap
+description: Following a previous post on the subject, I think a bit more about the SAP Cloud Platform ABAP Environment, inspired by the conversations around the subject at SAP TechEd in Las Vegas last week.
 ---
-
-*In this post, following my [previous post on the
-subject](https://blogs.sap.com/2018/09/10/monday-morning-thoughts-abap-in-the-cloud/),
-I think a bit more about the SAP Cloud Platform ABAP Environment,
-inspired by the conversations around the subject at SAP TechEd in Las
-Vegas last week.*
 
 Last month, Harald Kuck published a post "[SAP Cloud Platform ABAP
 Environment](https://blogs.sap.com/2018/09/04/sap-cloud-platform-abap-environment/)"

@@ -4,12 +4,8 @@ date: 2018-09-17
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: I think briefly about the definition of a developer, and in that context look at the advent of Workflow Forms, a major new addition to the functionality of the Workflow service on SAP Cloud Platform.
 ---
-
-*In this post, I think briefly about the definition of a developer, and
-in that context look at the advent of Workflow Forms, a major new
-addition to the functionality of the Workflow service on SAP Cloud
-Platform.*
 
 ## How do you define a developer?
 

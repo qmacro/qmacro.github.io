@@ -4,6 +4,7 @@ date: 2018-04-16
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: On how our modus operandi is often at odds with the true nature of cloud computing.
 ---
 
 This weekend I was exploring some Cloud Foundry features on the SAP

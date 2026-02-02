@@ -4,9 +4,8 @@ date: 2018-04-30
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: I look at how the editor environments that we come across in our daily work are different, and, as those differences might grow and expand as we become cloud native, how we bridge the contrast in facilities with core obsessions such as correct indentation and whitespace.
 ---
-
-*In this post I look at how the editor environments that we come across in our daily work are different, and, as those differences might grow and expand as we become cloud native, how we bridge the contrast in facilities with core obsessions such as correct indentation and whitespace.*
 
 This weekend I continued to look into [Kubeless](https://kubeless.io/),
 a serverless framework that is native to Kubernetes. Kubernetes allows

@@ -4,11 +4,8 @@ date: 2018-10-29
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: I think about reuse and extension, in the context of the Application Programming Model for SAP Cloud Platform, and mindful of Björn Goerke's SAP TechEd 2018 keynote message in Barcelona - "keep the core clean".
 ---
-*In this post, I think about reuse and extension, in the context of the
-Application Programming Model for SAP Cloud Platform, and mindful of
-Björn Goerke's SAP TechEd 2018 keynote message in Barcelona - "keep
-the core clean".*
 
 Last week saw the Barcelona edition of SAP TechEd 2018, where SAP CTO
 Björn Goerke and a great team of role models on stage gave us a keynote
@@ -17,12 +14,12 @@ keynote, I
 [tweeted](/tweets/qmacro/status/1054640660400295936):
 
 > *My three keywords from the #SAPTechEd keynote so far:*
-> 
+>
 > *Open (standards, protocols, APIs)*
-> 
+>
 > *Reuse (important superpower of @sapcp application programming
 > model) *
-> 
+>
 > *Clean (keep the core clean by extending outside of it)*
 
 

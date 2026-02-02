@@ -4,10 +4,8 @@ date: 2018-11-19
 tags:
   - sapcommunity
   - mondaymorningthoughts
+description: I revisit some principles that help us "think like the web" and think about them in the context of today's SAP technology landscape and community.
 ---
-*In this post, I revisit some principles that help us "think like the
-web" and think about them in the context of today's SAP technology
-landscape and community.*
 
 Last week I watched someone I was with [apply for a job on
 LinkedIn](https://www.linkedin.com/help/linkedin/answer/75815/applying-for-jobs-on-linkedin?lang=en),

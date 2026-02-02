@@ -8,10 +8,8 @@ tags:
   - javascript
   - literature
   - running
+description: In this post, I think about how we grow, how we improve ourselves by adding to our knowledge and experience, and consider that our growth is sometimes uphill but almost always rewarding.
 ---
-*In this post, I think about how we grow, how we improve ourselves by
-adding to our knowledge and experience, and consider that our growth is
-sometimes uphill but almost always rewarding.*
 
 I live to the east of the centre Manchester, in beautiful countryside
 that's rich and green from all the rain. It's a great place to run,
