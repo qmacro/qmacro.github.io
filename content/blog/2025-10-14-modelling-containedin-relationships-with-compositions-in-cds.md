@@ -5,7 +5,7 @@ tags:
   - bestpractices
   - cap
   - cds
-  - compositions
+  - composition
   - aspects
 description: A short study of the features of CDS for modelling classic contained-in relationships, with a focus on the details, and a lean towards anonymous aspects.
 ---
