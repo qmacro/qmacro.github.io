@@ -7,6 +7,8 @@ tags:
   - sql
   - cql
   - nodejs
+  - pathexpressions
+  - nestedprojections
 ---
 If, while serving a call to your provided CAP service, you want to construct some CQL to perform on your database in a similar way to how `$expand` works in OData, this post may help.
 
@@ -58,8 +60,8 @@ I've presented the statements across multiple lines for readability; that said, 
 Following the examples in use the `columns()` method documentation, I can try some individual column expressions like this:
 
 ```sql
-await SELECT 
-  .from(Categories) 
+await SELECT
+  .from(Categories)
   .columns( 'CategoryName', 'Description' )
   .limit(3)
 ```
@@ -90,8 +92,8 @@ So far so good. No surprises there.
 I can now try a [path expression](https://cap.cloud.sap/docs/cds/cql#path-expressions) to bring in data from the related entity (`Products`), like this:
 
 ```sql
-await SELECT 
-  .from(Categories) 
+await SELECT
+  .from(Categories)
   .columns( 'CategoryName', 'Products.ProductName as Product' )
   .limit(15)
 ```
@@ -118,7 +120,7 @@ This produces:
 ]
 ```
 
-What's interesting about this is that the data is still "flat" - there's a record for each `CategoryName` and `Products.ProductName` combination. This is moving towards, but not quite the "expand" that my friend wanted. 
+What's interesting about this is that the data is still "flat" - there's a record for each `CategoryName` and `Products.ProductName` combination. This is moving towards, but not quite the "expand" that my friend wanted.
 
 ## Achievement unlocked - using projection functions
 
@@ -127,8 +129,8 @@ I'm now ready to try out projection functions as described in the [columns() sec
 But first, I'll try a simple projection function, to get the general "feel" for them:
 
 ```sql
-await SELECT 
-  .from(Categories) 
+await SELECT
+  .from(Categories)
   .columns( c => { c.CategoryName })
 ```
 
@@ -158,8 +160,8 @@ Now I'll nest another projection function in there, to achieve what my friend wa
 Here goes:
 
 ```sql
-await SELECT 
-  .from(Categories) 
+await SELECT
+  .from(Categories)
   .columns( c => { c.CategoryName, c.Products (p => { p.ProductName }) })
 ```
 
@@ -290,9 +292,9 @@ This produces what we want:
 Excellent! Note how the path expression nesting makes sense; here is the value passed to the `columns()` method, with more whitespace:
 
 ```javascript
-c => { 
+c => {
     c.CategoryName,
-    c.Products (p => { 
+    c.Products (p => {
         p.ProductName
     })
 })
