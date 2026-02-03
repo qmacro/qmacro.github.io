@@ -1,0 +1,945 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Path expressions, nested projections, aggregations and expressions in queries with CQL and CXL in CAP</title>
+		<meta name="description" content="A brief exploration of some of CAP&#39;s powerful query language, with some expression language goodness, inspired by our journey into CXL in the current Hands-on SAP Dev series.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="Path expressions, nested projections, aggregations and expressions in queries with CQL and CXL in CAP">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="A brief exploration of some of CAP&#39;s powerful query language, with some expression language goodness, inspired by our journey into CXL in the current Hands-on SAP Dev series.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2026/02/04/path-expressions-nested-projections-aggregations-and-expressions-in-queries-with-cql-and-cxl-in-cap/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="path-expressions-nested-projections-aggregations-and-expressions-in-queries-with-cql-and-cxl-in-cap">Path expressions, nested projections, aggregations and expressions in queries with CQL and CXL in CAP</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2026-02-04">04 February 2026</time></li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/cds/" class="post-tag">cds</a>, </li>
+	<li><a href="/tags/cxl/" class="post-tag">cxl</a>, </li>
+	<li><a href="/tags/cql/" class="post-tag">cql</a>, </li>
+	<li><a href="/tags/aggregation/" class="post-tag">aggregation</a>, </li>
+	<li><a href="/tags/composition/" class="post-tag">composition</a>, </li>
+	<li><a href="/tags/pathexpressions/" class="post-tag">pathexpressions</a>, </li>
+	<li><a href="/tags/nestedprojections/" class="post-tag">nestedprojections</a></li>
+</ul>
+
+<p class="post-description-main">A brief exploration of some of CAP's powerful query language, with some expression language goodness, inspired by our journey into CXL in the current Hands-on SAP Dev series.</p>
+
+<p>In <a href="https://www.youtube.com/watch?v=s4IZR1LBRrA">Part 2</a> of our current
+Hands-on SAP Dev live stream <a href="/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/">series on CXL with Patrice
+Bender</a>,
+Patrice took some time to give us a glimpse of the power that CQL
+and CXL offers. It was in the context of answering a question from one of
+the live stream viewers (thanks Stubbs!) in the previous part, and the answer
+revealed an inspiring landscape of possibilities.</p>
+<p>In this post I want to revisit the question, which was about iterating
+over composition items in a query, with expressions.</p>
+<h2 id="the-scenario">The scenario</h2>
+<p>In October last year I published <a href="/blog/posts/2025/10/14/modelling-contained-in-relationships-with-compositions-in-cds/">Modelling contained-in relationships
+with compositions in
+CDS</a>,
+so I thought it would be nice to build on the sample in that post for this
+simplified setup<a href="#footnotes"><sup>1</sup></a>.</p>
+<p>All we need is a a <code>services.cds</code> file in a simple CAP Node.js project, the
+usual <code>package.json</code>, and some sample data in a <code>test/data/</code>
+directory<a href="#footnotes"><sup>2</sup></a>.</p>
+<p>Here's the entire CDS model in <code>services.cds</code>, which follows the use of
+an anonymous aspect as the target of the composition, as explained in the
+<a href="/blog/posts/2025/10/14/modelling-contained-in-relationships-with-compositions-in-cds/#implicit-modelling">Implicit
+modelling</a>
+section of the blog post.</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token keyword">context</span> qmacro {
+
+  <span class="token keyword">entity</span> Books {
+    <span class="token cqlkeywords keyword">key</span> ID    : <span class="token type builtin">Integer</span>;
+        title : <span class="token type builtin">String</span>;
+        price : <span class="token type builtin">Integer</span>;
+  }
+
+  <span class="token keyword">entity</span> Orders {
+    <span class="token cqlkeywords keyword">key</span> ID    : <span class="token type builtin">Integer</span>;
+        Items : <span class="token association-composition keyword">Composition of many </span>{
+                  <span class="token cqlkeywords keyword">key</span> pos  : <span class="token type builtin">Integer</span>;
+                      qty  : <span class="token type builtin">Integer</span>;
+                      book : <span class="token association-composition keyword">Association to Books</span>;
+                }
+  }
+
+}
+
+<span class="token keyword">service</span> S {
+  <span class="token keyword">entity</span> Orders <span class="token cqlkeywords keyword">as</span> <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> qmacro.Orders;
+}</code></pre>
+<p>What's different to the sample is that I've added a <code>Books</code> entity, so that we
+have a further relationship level:</p>
+<h3 id="model-diagram">Model diagram</h3>
+<pre class="language-text" tabindex="0"><code class="language-text">+--------+     +--------+     +--------+
+| Orders |1---*| Items  |1---1| Books  |
++--------+     +--------+     +--------+</code></pre>
+<p>I've also now defined the entities within a <code>context</code> block, so that I can
+keep the service definition separate, and use projections if I want to - the
+<code>context</code> usefully lends a scope name (<code>qmacro</code> in this case) to the entities
+so that the projection references don't clash with the service level entity
+specifications.</p>
+<h2 id="some-sample-data">Some sample data</h2>
+<p>Then, with <code>cds add data --out test/data/</code>, I can create the empty CSV files
+that already have the column headers (shown after the # symbols):</p>
+<pre class="language-text" tabindex="0"><code class="language-text">test
+└── data
+    ├── qmacro-Books.csv         # ID,title,price
+    ├── qmacro-Orders.csv        # ID
+    └── qmacro-Orders.Items.csv  # up__ID,pos,qty,book_ID</code></pre>
+<blockquote>
+<p>Remember that <code>up__ID</code> is the result of the concatenation of the <a href="/blog/posts/2025/10/14/modelling-contained-in-relationships-with-compositions-in-cds/#implicit-modelling:~:text=entity%0A%20%20%20%20elements%3A-,up_%3A,-key%3A%20true">generated
+element name for the parent
+pointer</a>
+(<code>up_</code>) with the key element name of the parent (<code>ID</code>), using an underscore
+(<code>_</code>) to join them together.</p>
+</blockquote>
+<p>The actual book and order CSV records can be viewed in <a href="#appendix-a-csv-data">Appendix
+A</a>.</p>
+<h2 id="exploring-in-the-cds-repl">Exploring in the cds REPL</h2>
+<p>Using the cds REPL gives developers a superpower<a href="#footnotes"><sup>3</sup></a>, and
+this is amply demonstrated throughout the series by Patrice. So let's follow
+Patrice's lead and explore what we have using the cds REPL.</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">cds repl <span class="token parameter variable">--run</span> <span class="token builtin class-name">.</span></code></pre>
+<p>The cds REPL starts and a CAP server is fired up automatically for the current
+project (thanks to the <code>--run .</code> option), with automatic reflections:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">from cds.entities: {
+}
+
+from cds.services: {
+  db,
+  S,
+}</code></pre>
+<h2 id="starting-simple">Starting simple</h2>
+<p>We can examine the <code>Orders</code> entity via the service <code>S</code> which is in the
+<code>cds.services</code> list, for example like this:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token constant">S</span><span class="token punctuation">.</span>entities<span class="token punctuation">.</span>Orders
+entity <span class="token punctuation">{</span>
+  <span class="token literal-property property">kind</span><span class="token operator">:</span> <span class="token string">'entity'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">elements</span><span class="token operator">:</span> LinkedDefinitions <span class="token punctuation">{</span>
+    <span class="token constant">ID</span><span class="token operator">:</span> Integer <span class="token punctuation">{</span> <span class="token literal-property property">key</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'cds.Integer'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">Items</span><span class="token operator">:</span> Composition <span class="token punctuation">{</span>
+      <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'cds.Composition'</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">cardinality</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">max</span><span class="token operator">:</span> <span class="token string">'*'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">targetAspect</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">elements</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          <span class="token literal-property property">pos</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">key</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'cds.Integer'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'cds.Integer'</span> <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">'S.Orders.Items'</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">on</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'Items'</span><span class="token punctuation">,</span> <span class="token string">'up_'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token string">'='</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$self'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>In a query, we can also of course simply refer to it by its fully qualified
+name which includes the service name as prefix. Let's try a simple one to start
+with:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">SELECT from S.Orders</span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">2</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">3</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span></code></pre>
+<p>So far, so good.</p>
+<h2 id="a-first-look-at-the-items">A first look at the items</h2>
+<p>Let's now expand (I chose that word deliberately) into the items. How about
+starting with a bit of denormalisation, asking for a flat list of order IDs and
+item positions:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">SELECT ID, Items.pos from S.Orders</span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">Items_pos</span><span class="token operator">:</span> <span class="token number">10</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">Items_pos</span><span class="token operator">:</span> <span class="token number">20</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token literal-property property">Items_pos</span><span class="token operator">:</span> <span class="token number">10</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token literal-property property">Items_pos</span><span class="token operator">:</span> <span class="token number">10</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token literal-property property">Items_pos</span><span class="token operator">:</span> <span class="token number">20</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token literal-property property">Items_pos</span><span class="token operator">:</span> <span class="token number">30</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>This isn't the approach that Patrice took in expressing the query, it's more of
+a traditional SQL-like statement ordering. But the query language parser still
+allows us to use CQL affordances with this style, such as the path expression
+<code>Items.pos</code> which traverses the composition here.</p>
+<p>What Patrice used was the postfix notation (<code>{ ... }</code>) within which we can put
+our projection (the details of the <code>SELECT</code> clause):</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token keyword">from</span> S<span class="token punctuation">.</span>Orders { ID<span class="token punctuation">,</span> Items<span class="token punctuation">.</span>pos }</code></pre>
+<p>This produces the same result set. And this postfix notation approach makes it
+easier to construct and think about more complex queries, which we'll do next.</p>
+<h2 id="structural-expansion">Structural expansion</h2>
+<p>Rather than the flattened list of order IDs and item positions, we can nest
+a projection:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">SELECT from S.Orders { ID, Items { pos as p, qty } }</span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">Items</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">p</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token number">5</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">p</span><span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span> <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token number">10</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token literal-property property">Items</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">p</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token number">50</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token literal-property property">Items</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">p</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token number">3</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">p</span><span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span> <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token number">4</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">p</span><span class="token operator">:</span> <span class="token number">30</span><span class="token punctuation">,</span> <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>This allows us to express and request structure which is reflected here in the
+result set.</p>
+<h2 id="further-model-traversal">Further model traversal</h2>
+<p>We can travel further through the <a href="#entity-diagram">model</a> with ease, as shown
+in this example with a dotted path expression (<code>book.title</code>):</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+SELECT from S.Orders { ID, Items { qty, book.title as book } }
+</span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">Items</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token string">"The Hitchhiker's Guide To The Galaxy"</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token string">'The Restaurant at the End of the Universe'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">Items</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token number">50</span><span class="token punctuation">,</span> <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token string">'Life, the Universe and Everything'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">Items</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token string">"The Hitchhiker's Guide To The Galaxy"</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token string">'Mostly Harmless'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token string">'And Another Thing...'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>It's worth pausing here to reflect on how powerful, expressive and simple this
+is, compared to what we'd be required to write from a <code>JOIN</code> perspective in SQL.</p>
+<p>Alternatively, note that projections can be nested arbitrarily:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+SELECT from S.Orders { ID, Items { qty, book { title } } }
+</span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">Items</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">"The Hitchhiker's Guide To The Galaxy"</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'The Restaurant at the End of the Universe'</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">Items</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token number">50</span><span class="token punctuation">,</span> <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Life, the Universe and Everything'</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">Items</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">"The Hitchhiker's Guide To The Galaxy"</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Mostly Harmless'</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">qty</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'And Another Thing...'</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<h2 id="using-an-expression">Using an expression</h2>
+<p>During the series, Patrice explained that
+<a href="https://cap.cloud.sap/docs/cds/cdl">CDL</a> and
+<a href="https://cap.cloud.sap/docs/cds/cql">CQL</a> are &quot;vehicles&quot; that can carry
+<a href="https://cap.cloud.sap/docs/cds/cxl">CXL</a>. In other words, expressions can be
+used both at design time, in the CDS model, within your CDL, and at runtime, in
+queries, within your CQL.</p>
+<p>The expression he added in the context of the answer here was a &quot;price x
+quantity&quot; calculation. It was within an aggregation, but we'll come to that
+next, separately.</p>
+<p>First, let's just use such an expression, with <code>*</code>, one of the supported
+<a href="https://cap.cloud.sap/docs/cds/cxl#binary-operator">binary operators</a>. We must
+complete the expression with the declaration of an alias (otherwise, how could
+the query be resolved ... we'd get an &quot;Expecting expression to have an alias name&quot;
+error):</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+SELECT from S.Orders { ID, Items { pos as p, book.price * qty as cost} }
+</span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">Items</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">p</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">cost</span><span class="token operator">:</span> <span class="token number">25</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">p</span><span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span> <span class="token literal-property property">cost</span><span class="token operator">:</span> <span class="token number">50</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token literal-property property">Items</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">p</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">cost</span><span class="token operator">:</span> <span class="token number">250</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token literal-property property">Items</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">p</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">cost</span><span class="token operator">:</span> <span class="token number">15</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">p</span><span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span> <span class="token literal-property property">cost</span><span class="token operator">:</span> <span class="token number">20</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">p</span><span class="token operator">:</span> <span class="token number">30</span><span class="token punctuation">,</span> <span class="token literal-property property">cost</span><span class="token operator">:</span> <span class="token number">5</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<h2 id="using-an-aggregation">Using an aggregation</h2>
+<p>The previous query and result set illustrated an expression within a nested
+projection, referencing a path expression, for each order item (position). The
+question, however, was about total values.</p>
+<p>Patrice showed this was also possible, using one of a number of portable
+functions that are provided. These functions can be used in constructing
+expressions, and can be supplied with expressions as arguments:</p>
+<p><img src="/images/2026/02/function-diagram.png" alt="function diagram"></p>
+<p>The main aggregate functions are <code>avg()</code>, <code>min()</code>, <code>max()</code>, <code>count()</code> and <code>sum()</code>.</p>
+<p>Let's use <code>sum()</code>:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+SELECT from S.Orders { ID, Items { sum(book.price * qty) as tot } }
+</span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">Items</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">tot</span><span class="token operator">:</span> <span class="token number">75</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token literal-property property">Items</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">tot</span><span class="token operator">:</span> <span class="token number">250</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token literal-property property">Items</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">tot</span><span class="token operator">:</span> <span class="token number">40</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<h2 id="adding-a-group-by-partition">Adding a group by partition</h2>
+<p>If you were watching this section of <a href="https://www.youtube.com/live/s4IZR1LBRrA">Part
+2</a> closely, you'll have noticed that
+Patrice also used a <code>group by</code> partitioning using an infix notation. Here's the
+equivalent in this scenario:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+SELECT from S.Orders { ID, Items[group by up__ID] { sum(book.price * qty) as tot } }
+</span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">Items</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">tot</span><span class="token operator">:</span> <span class="token number">75</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token literal-property property">Items</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">tot</span><span class="token operator">:</span> <span class="token number">250</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token literal-property property">Items</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">tot</span><span class="token operator">:</span> <span class="token number">40</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<blockquote>
+<p>Bonus: Patrice told me that instead of the explicit <code>up__ID</code>, we can actually
+just use the name of the reverse association<a href="#footnotes"><sup>4</sup></a> on its
+own, i.e. <code>Items[group by up_]</code>, and the database service will sort out the
+foreign key flattening for us.</p>
+</blockquote>
+<p>There's no change. We got the same result set without the <code>group by</code>. But
+that's only because the aggregate function is operating on the entire
+result set, and the context of the cds REPL here is a CAP server in development
+mode, i.e. using a SQLite database, which is rather lenient. Postgres requires
+a <code>group by</code> if there are other elements in the result set not subject to the
+aggregation, and HANA is a different beast altogether. So it's good practice to
+be explicit with your partitioning.</p>
+<h2 id="examining-the-query">Examining the query</h2>
+<p>Before we finish, let's take a quick look at what this query looks like
+&quot;underneath&quot;, i.e. the CQN form of the CQL (and CXL) we've been constructing.
+We can do that simply by omitting the <code>await</code>, as the result of a call to
+<code>cds.ql</code> is a CQN construct. And this is what it looks like:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript">cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'S.Orders'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>
+        <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+          <span class="token punctuation">{</span>
+            <span class="token literal-property property">id</span><span class="token operator">:</span> <span class="token string">'Items'</span><span class="token punctuation">,</span>
+            <span class="token literal-property property">groupBy</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'up__ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+          <span class="token punctuation">}</span>
+        <span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">expand</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+          <span class="token punctuation">{</span>
+            <span class="token literal-property property">func</span><span class="token operator">:</span> <span class="token string">'sum'</span><span class="token punctuation">,</span>
+            <span class="token literal-property property">args</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+              <span class="token punctuation">{</span>
+                <span class="token literal-property property">xpr</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                  <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'book'</span><span class="token punctuation">,</span> <span class="token string">'price'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+                  <span class="token string">'*'</span><span class="token punctuation">,</span>
+                  <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'qty'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span>
+                <span class="token punctuation">]</span>
+              <span class="token punctuation">}</span>
+            <span class="token punctuation">]</span><span class="token punctuation">,</span>
+            <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'tot'</span>
+          <span class="token punctuation">}</span>
+        <span class="token punctuation">]</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>We can observe:</p>
+<ul>
+<li>the <code>group by</code> is part of the reference to <code>Items</code></li>
+<li>the entire expression is clear to see, with a <code>func</code> and an <code>args</code> array</li>
+<li>that array contains a single expression</li>
+<li>that expression is the binary operator <code>*</code> with two operands</li>
+<li>the first operand is a path expression (a <code>ref</code> array with more than one element)</li>
+</ul>
+<p>That's a lot to stare at!</p>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>I hope this has been useful to help you revisit what Patrice taught us; it has
+for me, most certainly. You can catch up on the replays for all the parts in
+this series - just head over to the <a href="/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/">series
+post</a>
+for all the links.</p>
+<h2 id="footnotes">Footnotes</h2>
+<ol>
+<li>Just for a change, and to remind myself that there's a difference between
+initial data and sample data, I've gone for the latter option. For further
+details on the distinction, see the section <a href="https://github.com/SAP-samples/cap-local-development-workshop/tree/main/exercises/01#understand-the-difference-between-initial-and-sample-data">Understand the difference
+between initial and sample
+data</a>
+in exercise 01 of the CAP local development workshop from reCAP 2025.</li>
+<li>I usually find that recreating a slightly different version of what I've
+seen helps me dig deeper and learn more.</li>
+<li>For an intro to the cds REPL, see <a href="/blog/posts/2025/07/21/a-recap-intro-to-the-cds-repl/">A reCAP intro to the cds
+REPL</a></li>
+<li>See the <a href="https://cap.cloud.sap/docs/cds/cdl#managed-compositions">Managed Composition of
+Aspects</a> section of
+Capire's CDL topic for the term &quot;reverse association&quot; (aka &quot;backlink&quot;).</li>
+</ol>
+<h2 id="appendix-a-csv-data">Appendix A - CSV data</h2>
+<p>In <code>qmacro-Books.csv</code>:</p>
+<pre class="language-csv" tabindex="0"><code class="language-csv"><span class="token value">ID</span><span class="token punctuation">,</span><span class="token value">title</span><span class="token punctuation">,</span><span class="token value">price</span>
+<span class="token value">100</span><span class="token punctuation">,</span><span class="token value">"The Hitchhiker's Guide To The Galaxy"</span><span class="token punctuation">,</span><span class="token value">5</span>
+<span class="token value">101</span><span class="token punctuation">,</span><span class="token value">"The Restaurant at the End of the Universe"</span><span class="token punctuation">,</span><span class="token value">5</span>
+<span class="token value">102</span><span class="token punctuation">,</span><span class="token value">"Life, the Universe and Everything"</span><span class="token punctuation">,</span><span class="token value">5</span>
+<span class="token value">103</span><span class="token punctuation">,</span><span class="token value">"So Long, and Thanks for All the Fish"</span><span class="token punctuation">,</span><span class="token value">5</span>
+<span class="token value">504</span><span class="token punctuation">,</span><span class="token value">"Mostly Harmless"</span><span class="token punctuation">,</span><span class="token value">5</span>
+<span class="token value">105</span><span class="token punctuation">,</span><span class="token value">"And Another Thing..."</span><span class="token punctuation">,</span><span class="token value">5</span></code></pre>
+<p>(note the price for each book is <code>5</code> for simple calculation checking).</p>
+<p>In <code>qmacro-Orders.csv</code>:</p>
+<pre class="language-csv" tabindex="0"><code class="language-csv"><span class="token value">ID</span>
+<span class="token value">1</span>
+<span class="token value">2</span>
+<span class="token value">3</span></code></pre>
+<p>In <code>qmacro-Orders.Items.csv</code>:</p>
+<pre class="language-csv" tabindex="0"><code class="language-csv"><span class="token value">up__ID</span><span class="token punctuation">,</span><span class="token value">pos</span><span class="token punctuation">,</span><span class="token value">qty</span><span class="token punctuation">,</span><span class="token value">book_ID</span>
+<span class="token value">1</span><span class="token punctuation">,</span><span class="token value">10</span><span class="token punctuation">,</span><span class="token value">5</span><span class="token punctuation">,</span><span class="token value">100</span>
+<span class="token value">1</span><span class="token punctuation">,</span><span class="token value">20</span><span class="token punctuation">,</span><span class="token value">10</span><span class="token punctuation">,</span><span class="token value">101</span>
+<span class="token value">2</span><span class="token punctuation">,</span><span class="token value">10</span><span class="token punctuation">,</span><span class="token value">50</span><span class="token punctuation">,</span><span class="token value">102</span>
+<span class="token value">3</span><span class="token punctuation">,</span><span class="token value">10</span><span class="token punctuation">,</span><span class="token value">3</span><span class="token punctuation">,</span><span class="token value">100</span>
+<span class="token value">3</span><span class="token punctuation">,</span><span class="token value">20</span><span class="token punctuation">,</span><span class="token value">4</span><span class="token punctuation">,</span><span class="token value">104</span>
+<span class="token value">3</span><span class="token punctuation">,</span><span class="token value">30</span><span class="token punctuation">,</span><span class="token value">1</span><span class="token punctuation">,</span><span class="token value">105</span></code></pre>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2026/02/02/odata-deep-dive-rewrite-in-the-open/">OData Deep Dive rewrite in the open</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2026/02/04/path-expressions-nested-projections-aggregations-and-expressions-in-queries-with-cql-and-cxl-in-cap/` was built on 2026-02-03T17:58:41.417Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
