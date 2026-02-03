@@ -360,8 +360,13 @@ SELECT from S.Orders { ID, Items[group by up__ID] { sum(book.price * qty) as tot
 ]
 ```
 
+> Bonus: Patrice told me that instead of the explicit `up__ID`, we can actually
+> just use the name of the reverse association[<sup>4</sup>](#footnotes) on its
+> own, i.e. `Items[group by up_]`, and the database service will sort out the
+> foreign key flattening for us.
+
 There's no change. We got the same result set without the `group by`. But
-that's only because this the aggregate function is operating on the entire
+that's only because the aggregate function is operating on the entire
 result set, and the context of the cds REPL here is a CAP server in development
 mode, i.e. using a SQLite database, which is rather lenient. Postgres requires
 a `group by` if there are other elements in the result set not subject to the
@@ -438,6 +443,9 @@ for all the links.
    seen helps me dig deeper and learn more.
 1. For an intro to the cds REPL, see [A reCAP intro to the cds
    REPL](/blog/posts/2025/07/21/a-recap-intro-to-the-cds-repl/)
+1. See the [Managed Composition of
+   Aspects](https://cap.cloud.sap/docs/cds/cdl#managed-compositions) section of
+   Capire's CDL topic for the term "reverse association" (aka "backlink").
 
 ## Appendix A - CSV data
 
