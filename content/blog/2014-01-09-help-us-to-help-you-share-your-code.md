@@ -1,5 +1,5 @@
 ---
-title: Help Us To Help You - Share Your Code
+title: Help us to help you - share your code
 date: 2014-01-09
 tags:
   - sapcommunity
@@ -37,7 +37,7 @@ ZIP files of complete applications are better, but they're still very cumbersome
 
 Best of all, at least IMHO, is to create a [Gist on GitHub](https://gist.github.com/). This puts the code centre stage, treats it as a first class citizen on the Web (you can address whole applications, individual files, or even individual lines, with their own URLs) and what's more, it's one command to pull the entire codebase of an application to a local directory and start working on it immediately. If nothing else, sharing the code you want help with as a Gist on GitHub puts the onus on you, who are seeking help (rather than your potential helpers, who are offering help) to marshal the code so that it can be properly diagnosed.
 
-[Here's a recent example](https://answers.sap.com/questions/10567169/adding-type-information-in-xml-views.html) of where someone had a problem with his application and asked for help, posting not only a formatted snippet to provide initial context: 
+[Here's a recent example](https://answers.sap.com/questions/10567169/adding-type-information-in-xml-views.html) of where someone had a problem with his application and asked for help, posting not only a formatted snippet to provide initial context:
 
 ![formatted snippet](/images/2014/01/capture.png)
 
