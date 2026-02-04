@@ -10,13 +10,13 @@ tags:
   - composition
   - pathexpressions
   - nestedprojections
-description: A brief exploration of some of CAP's powerful query language, with some expression language goodness, inspired by our journey into CXL in the current Hands-on SAP Dev series.
+description: A brief exploration of some of the features of CAP's powerful query and expression languages, inspired by our journey into CXL in the current Hands-on SAP Dev series.
 ---
 
 In [Part 2](https://www.youtube.com/watch?v=s4IZR1LBRrA) of our current
 Hands-on SAP Dev live stream [series on CXL with Patrice
 Bender](/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/),
-Patrice took some time to give us a glimpse of the power that CQL
+Patrice took some time to give us a glimpse into the power that CQL
 and CXL offers. It was in the context of answering a question from one of
 the live stream viewers (thanks Stubbs!) in the previous part, and the answer
 revealed an inspiring landscape of possibilities.
