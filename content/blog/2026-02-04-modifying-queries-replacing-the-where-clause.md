@@ -64,7 +64,7 @@ This works as expected:
 [ { ID: 1, title: 'Book 1' } ]
 ```
 
-## Modifying the query
+## Modifying the query (wrong)
 
 Let's say we want to change the WHERE condition, to retrieve any book with a title starting with "Book".
 
@@ -102,7 +102,7 @@ The result of this query is not what we want:
 [ { ID: 1, title: 'Book 1' } ]
 ```
 
-## Replacing the WHERE clause
+## Modifying the query (right)
 
 We can replace the WHERE clause completely, supplying a new predicate, like this:
 
