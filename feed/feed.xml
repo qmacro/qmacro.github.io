@@ -11,6 +11,93 @@
     <name>DJ Adams</name>
   </author>
   <entry>
+    <title>Modifying queries, replacing the WHERE clause</title>
+    <link href="https://qmacro.org/blog/posts/2026/02/04/modifying-queries-replacing-the-where-clause/" />
+    <updated>2026-02-04T00:00:00Z</updated>
+    <id>https://qmacro.org/blog/posts/2026/02/04/modifying-queries-replacing-the-where-clause/</id>
+    <content type="html">&lt;p&gt;The result of modifying existing queries can be a little unexpected at first. For example, you might have a query object where you want to replace the WHERE clause before you execute it. Here&#39;s how not to do it, and then how to do it.&lt;/p&gt;
+&lt;h2 id=&quot;setup&quot;&gt;Setup&lt;/h2&gt;
+&lt;p&gt;To illustrate, we can use my &lt;a href=&quot;https://github.com/qmacro/dotfiles/blob/main/scripts/cdsnano&quot;&gt;cdsnano&lt;/a&gt; script to set up a tiny project with a &lt;a href=&quot;https://github.com/qmacro/dotfiles/blob/main/scripts/cdsnano-template/services.cds&quot;&gt;services.cds&lt;/a&gt; file containing:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;context&lt;/span&gt; qmacro {
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Books {
+    &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;key&lt;/span&gt; ID    : &lt;span class=&quot;token type builtin&quot;&gt;Integer&lt;/span&gt;;
+        title : &lt;span class=&quot;token type builtin&quot;&gt;String&lt;/span&gt;;
+  }
+}
+
+&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; Bookshop {
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Books &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; qmacro.Books;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Let&#39;s add a couple of sample books in &lt;code&gt;test/data/qmacro-Books.csv&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-csv&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-csv&quot;&gt;&lt;span class=&quot;token value&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;title&lt;/span&gt;
+&lt;span class=&quot;token value&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Book 1&lt;/span&gt;
+&lt;span class=&quot;token value&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Book 2&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now we can start up the cds REPL and ask for a CAP server to be started for this project:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;cds repl &lt;span class=&quot;token parameter variable&quot;&gt;--run&lt;/span&gt; &lt;span class=&quot;token builtin class-name&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;creating-the-query&quot;&gt;Creating the query&lt;/h2&gt;
+&lt;p&gt;Let&#39;s create a query object with a WHERE condition:&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; q1 &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ql &lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;
+  SELECT from &lt;/span&gt;&lt;span class=&quot;token interpolation&quot;&gt;&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;${&lt;/span&gt;Bookshop&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;entities&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Books&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt; where title = &#39;Book 1&#39;
+&lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;
+cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ql &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token constant&quot;&gt;SELECT&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token literal-property property&quot;&gt;from&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Bookshop.Books&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token literal-property property&quot;&gt;where&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;title&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;=&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Book 1&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This works as expected:&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; db&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;q1&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Book 1&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;modifying-the-query&quot;&gt;Modifying the query&lt;/h2&gt;
+&lt;p&gt;Let&#39;s say we want to change the WHERE condition, to retrieve any book with a title starting with &amp;quot;Book&amp;quot;.&lt;/p&gt;
+&lt;p&gt;What happens when we do this:&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; q1&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;where&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;title like &#39;Book%&#39;&lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ql &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token constant&quot;&gt;SELECT&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token literal-property property&quot;&gt;from&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Bookshop.Books&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token literal-property property&quot;&gt;where&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;title&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token string&quot;&gt;&#39;=&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Book 1&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token string&quot;&gt;&#39;and&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;title&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token string&quot;&gt;&#39;like&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Book%&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;.where(...)&lt;/code&gt; does not replace, but append - notice that both predicates:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;title = &#39;Book 1&#39;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;title like &#39;Book%&#39;&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;are present, and joined with a logical &lt;code&gt;and&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The result of this query is not what we want:&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; db&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;q1&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Book 1&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;replacing-the-where-clause&quot;&gt;Replacing the WHERE clause&lt;/h2&gt;
+&lt;p&gt;We can replace the WHERE clause completely, supplying a new predicate, like this:&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; q1&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token constant&quot;&gt;SELECT&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;where &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ql&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;predicate &lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;title like &#39;Book%&#39;&lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;title&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;like&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Book%&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And indeed, this is what the entire query object looks like now:&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; q1
+cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ql &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token constant&quot;&gt;SELECT&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token literal-property property&quot;&gt;from&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Bookshop.Books&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token literal-property property&quot;&gt;where&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;title&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;like&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Book%&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This does what we want:&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; db&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;q1&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Book 1&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Book 2&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Nice!&lt;/p&gt;
+&lt;p&gt;For more info, check out the &lt;a href=&quot;https://cap.cloud.sap/docs/node.js/cds-ql&quot;&gt;Querying in JavaScript&lt;/a&gt; topic in Capire, which, in the upcoming January 2026 release (that should be out in the next few days) will be expanded and fully constructed.&lt;/p&gt;
+</content>
+  </entry>
+  <entry>
     <title>Path expressions, nested projections, aggregations and expressions in queries with CQL and CXL in CAP</title>
     <link href="https://qmacro.org/blog/posts/2026/02/04/path-expressions-nested-projections-aggregations-and-expressions-in-queries-with-cql-and-cxl-in-cap/" />
     <updated>2026-02-04T00:00:00Z</updated>
@@ -2163,167 +2250,6 @@ release&lt;/a&gt;.&lt;/li&gt;
 &lt;li&gt;21 Jan 2026 Part 4 &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/21/modules-modularity-and-reuse-in-cds-models-part-4-from-passive-to-active-with-capire-common/&quot;&gt;From passive to active with @capire/common&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;28 Jan 2026 Part 5 &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/28/modules-modularity-and-reuse-in-cds-models-part-5-digging-into-capire-common/&quot;&gt;Digging into @capire/common&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
-</content>
-  </entry>
-  <entry>
-    <title>Modules, modularity &amp; reuse in CDS models - part 1 - an introduction</title>
-    <link href="https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/" />
-    <updated>2026-01-01T00:00:00Z</updated>
-    <id>https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/</id>
-    <content type="html">&lt;p&gt;(Get to all the parts in this series via the &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models/&quot;&gt;series post&lt;/a&gt;.)&lt;/p&gt;
-&lt;p&gt;You know the drill: instead of inventing your own versions of core model
-building blocks over and over again, use &lt;a href=&quot;https://cap.cloud.sap/docs/cds/common&quot;&gt;common types and
-aspects&lt;/a&gt; for reuse, like this:&lt;/p&gt;
-&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; {
-  managed,
-  cuid,
-  Currency
-} &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;@sap/cds/common&#39;;
-
-&lt;span class=&quot;token keyword&quot;&gt;namespace&lt;/span&gt; qmacro;
-
-&lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Books : managed, cuid {
-  title    : &lt;span class=&quot;token type builtin&quot;&gt;String&lt;/span&gt;;
-  price    : &lt;span class=&quot;token type builtin&quot;&gt;Decimal&lt;/span&gt;;
-  currency : Currency;
-  ...
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;blockquote&gt;
-&lt;p&gt;There are &lt;a href=&quot;https://cap.cloud.sap/docs/cds/common#why-use-sap-cds-common&quot;&gt;plenty more great
-reasons&lt;/a&gt; to use
-&lt;code&gt;@sap/cds/common&lt;/code&gt;, by the way.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;But how does that &lt;code&gt;using ... from&lt;/code&gt; actually work, what is going on with what
-looks like some sort of NPM module reference, i.e. &lt;code&gt;@sap/cds/common&lt;/code&gt;?&lt;/p&gt;
-&lt;h2 id=&quot;imports-and-model-resolution&quot;&gt;Imports and model resolution&lt;/h2&gt;
-&lt;p&gt;The &lt;a href=&quot;https://cap.cloud.sap/docs/cds/cdl#model-imports&quot;&gt;Model Imports&lt;/a&gt; section
-of the CDL topic in Capire explains it. Basically, model definitions, most
-commonly in &lt;code&gt;.cds&lt;/code&gt; files, can be imported from relative or absolute paths, or
-from NPM modules. Either way, the reference will result in a file specification
-or a directory specification; if it&#39;s a directory, then an &lt;code&gt;index.cds&lt;/code&gt; will be
-loaded from within.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;In addition to &lt;code&gt;.cds&lt;/code&gt;, file extensions &lt;code&gt;.csn&lt;/code&gt; and &lt;code&gt;.json&lt;/code&gt; are also supported.
-In fact it&#39;s good practice to omit the extension when
-specifying an import source, to allow these possibilities to be automatically
-enumerated.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Of course, for an NPM module source to be used, it has to be present, i.e.
-added to the project (thus the resolved path will be within the project&#39;s
-&lt;code&gt;node_modules/&lt;/code&gt; directory).&lt;/p&gt;
-&lt;p&gt;The &lt;code&gt;@sap/cds/common&lt;/code&gt; reference, shown in the code snippet above, is a special
-case, in more ways than one:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;As &lt;code&gt;@sap/cds&lt;/code&gt; is fundamental to any CAP Node.js project, it&#39;s always going
-to be available&lt;/li&gt;
-&lt;li&gt;Even if it&#39;s not there locally, i.e. if an initial project &lt;code&gt;npm install&lt;/code&gt;
-hasn&#39;t been executed, it&#39;s still available from the global CAP Node.js runtime&lt;/li&gt;
-&lt;li&gt;It&#39;s a reference to a location &lt;em&gt;within&lt;/em&gt; the &lt;code&gt;@sap/cds&lt;/code&gt; module, i.e. to
-&lt;code&gt;common&lt;/code&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;That reference also follows the good practice of not using an extension;
-&lt;code&gt;common&lt;/code&gt; here translates into the file &lt;code&gt;common.cds&lt;/code&gt; within &lt;code&gt;@sap/cds&lt;/code&gt; in the
-project&#39;s &lt;code&gt;node_modules/&lt;/code&gt; directory (or the global one in special case #2).&lt;/p&gt;
-&lt;p&gt;So NPM module based sources, including &lt;code&gt;@&lt;/code&gt;-prefixed ones, work pretty much
-exactly the same way as plain file or directory references, such as this
-classic:&lt;/p&gt;
-&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; {sap.capire.bookshop &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; my} &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;../db/schema&#39;;&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&quot;modules-in-the-capire-namespace&quot;&gt;Modules in the capire namespace&lt;/h2&gt;
-&lt;p&gt;In the &lt;a href=&quot;https://cap.cloud.sap/docs/releases/aug25&quot;&gt;August 2025 release&lt;/a&gt; of CAP,
-which I covered in detail in &lt;a href=&quot;https://youtu.be/Gbz0-cAlxH0&quot;&gt;this SAP Developer News
-episode&lt;/a&gt;, the new &lt;a href=&quot;https://github.com/capire&quot;&gt;capire org on
-GitHub&lt;/a&gt; was announced, as the home of docs
-and samples for CAP.&lt;/p&gt;
-&lt;p&gt;In this org there are already plenty of CAP project repos, including those
-originally contained in the (now archived)
-&lt;a href=&quot;https://github.com/SAP-samples/cloud-cap-samples&quot;&gt;sap-samples/cloud-cap-samples&lt;/a&gt;
-repo. In their new home, though, there are some intriguing differences.&lt;/p&gt;
-&lt;h3 id=&quot;module-capire-bookshop&quot;&gt;Module capire/bookshop&lt;/h3&gt;
-&lt;p&gt;Take &lt;a href=&quot;https://github.com/capire/bookshop&quot;&gt;capire/bookshop&lt;/a&gt; for example.&lt;/p&gt;
-&lt;p&gt;First, it&#39;s on its own, in fact all the CAP projects from within the
-&lt;code&gt;sap-samples/cloud-cap-samples&lt;/code&gt; monorepo have been &amp;quot;exploded&amp;quot; out into
-individual repos. Why? The clue is &amp;quot;reuse&amp;quot;.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;See &lt;a href=&quot;https://github.com/qmacro/capref/blob/main/bestpractices/BES006.md&quot;&gt;BES006 Compose with reuse in
-mind&lt;/a&gt;.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Augmenting that one-word clue is the fact that there&#39;s also an NPM
-&lt;a href=&quot;https://github.com/capire/bookshop/pkgs/npm/bookshop&quot;&gt;package&lt;/a&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/#footnotes&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2025/10/capire-bookshop-package.png&quot; alt=&quot;The package page for capire/bookshop on
-GitHub&quot;&gt;&lt;/p&gt;
-&lt;p&gt;Where is this thing? What&#39;s it for? How would one use it? How does it work? How
-do I create my own? I aim to answer these questions, and more, over the course
-of the subsequent posts in this series.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Regarding the &amp;quot;how would one use it?&amp;quot; question, I have already covered the
-&lt;em&gt;mechanics&lt;/em&gt; of retrieving a module from the NPM registry within GitHub Packages
-in &lt;a href=&quot;https://qmacro.org/blog/posts/2025/10/12/using-capire-modules-from-github-packages/&quot;&gt;Using @capire modules from GitHub
-Packages&lt;/a&gt;.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;To whet our appetite, let&#39;s round this blog post off with a quick look at
-another module in the &lt;code&gt;capire&lt;/code&gt; namespace.&lt;/p&gt;
-&lt;h3 id=&quot;module-capire-common&quot;&gt;Module capire/common&lt;/h3&gt;
-&lt;p&gt;Alongside &lt;a href=&quot;https://github.com/capire/bookshop&quot;&gt;capire/bookshop&lt;/a&gt; in the &lt;a href=&quot;https://github.com/orgs/capire/repositories&quot;&gt;list of
-repositories in the capire org&lt;/a&gt;
-there&#39;s &lt;a href=&quot;https://github.com/orgs/capire/repositories&quot;&gt;capire/common&lt;/a&gt;,
-explicitly denoted as &amp;quot;a reuse content package&amp;quot;.&lt;/p&gt;
-&lt;p&gt;Its &lt;a href=&quot;https://github.com/capire/common/blob/main/readme.md&quot;&gt;README&lt;/a&gt; tells us
-that it&#39;s a plugin that extends &lt;code&gt;@sap/cds/common&lt;/code&gt; while also providing
-enhanced reuse data.&lt;/p&gt;
-&lt;p&gt;Looking at the entire structure of the module, we see:&lt;/p&gt;
-&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
-├── LICENSE
-├── &lt;span class=&quot;token domain constant&quot;&gt;cds-plugin.js&lt;/span&gt;
-├── &lt;span class=&quot;token domain constant&quot;&gt;currencies.cds&lt;/span&gt;
-├── data
-│   ├── sap&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;common&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Countries&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
-│   ├── sap&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;common&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Countries_texts&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
-│   ├── sap&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;common&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Currencies&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
-│   ├── sap&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;common&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Currencies_texts&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
-│   ├── sap&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;common&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Languages&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
-│   └── sap&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;common&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Languages_texts&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
-├── &lt;span class=&quot;token domain constant&quot;&gt;index.cds&lt;/span&gt;
-├── &lt;span class=&quot;token domain constant&quot;&gt;package.json&lt;/span&gt;
-├── &lt;span class=&quot;token domain constant&quot;&gt;readme.md&lt;/span&gt;
-└── &lt;span class=&quot;token domain constant&quot;&gt;regions.cds&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Most of the files contain data in CSV form, and there are a couple
-of CDS files brought together via an &lt;code&gt;index.cds&lt;/code&gt; file:&lt;/p&gt;
-&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;        index
-          |
-    +-----+-----+
-    |           |
-currencies   regions&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;(more on that index file mechanism later in this series).&lt;/p&gt;
-&lt;p&gt;There&#39;s also a &lt;code&gt;cds-plugin.js&lt;/code&gt; file (see the &lt;a href=&quot;https://qmacro.org/blog/posts/2024/12/30/cap-node-js-plugins/&quot;&gt;CAP Node.js
-Plugins&lt;/a&gt; series post for links to
-videos and blog posts on how plugins are constructed) as this is built to function
-as a plugin.&lt;/p&gt;
-&lt;p&gt;There&#39;s not much to this module, but it certainly packs a punch! Using it will
-cause all sorts of goodness to be brought into play in your CAP project.&lt;/p&gt;
-&lt;h4 id=&quot;active-vs-passive&quot;&gt;Active vs passive&lt;/h4&gt;
-&lt;p&gt;Later on in this series I&#39;ll come to use the term &amp;quot;active&amp;quot; for this sort of
-plugin-based reuse module, as opposed to &amp;quot;passive&amp;quot; for a reuse module that
-isn&#39;t a plugin.&lt;/p&gt;
-&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
-&lt;p&gt;In an upcoming post in this series, we&#39;ll set up a simple CAP Node.js project and
-then introduce this &lt;code&gt;@capire/common&lt;/code&gt; reuse module and observe what happens. Not only
-that, but we&#39;ll endeavour to understand why and how things happen as they do.&lt;/p&gt;
-&lt;p&gt;But we want to walk before we can run, so before that, we&#39;ll look at creating
-our own basic reuse module, to understand the &lt;a href=&quot;https://creators.spotify.com/pod/show/tech-aloud/episodes/The-Simplest-Thing-that-Could-Possibly-Work--A-conversation-with-Ward-Cunningham--Part-V---Bill-Venners-e5dpts&quot;&gt;simplest thing that could
-possibly
-work&lt;/a&gt;,
-and learn along the way not only how to develop and test that module locally,
-but also how to then add it to the NPM registry on GitHub Packages.&lt;/p&gt;
-&lt;p&gt;Until next time, happy reuse!&lt;/p&gt;
-&lt;p&gt;Next in this series: &lt;a href=&quot;https://qmacro.org/blog/posts/2026/01/07/modules-modularity-and-reuse-in-cds-models-part-2-creating-a-simple-reuse-package/&quot;&gt;Creating a simple reuse
-package&lt;/a&gt;.&lt;/p&gt;
-&lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;The terms &amp;quot;package&amp;quot; and &amp;quot;module&amp;quot;, in the context of NPM, can be used
-interchangeably. I chose &amp;quot;module&amp;quot; here as it feels more appropriate in how they
-are to be used to construct the overall CDS model, and also because it helps me
-put some alliteration into the title of this post :)&lt;/li&gt;
-&lt;/ol&gt;
 </content>
   </entry>
 </feed>
