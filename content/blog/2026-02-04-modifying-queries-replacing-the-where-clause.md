@@ -139,7 +139,6 @@ It's probably a good idea to think about modifying a copy of the query, so you a
 
 ```javascript
 > q2 = cds.ql.clone(q1)
-cds.ql { SELECT: {} }
 ```
 
 then we can operate on `q2` and keep `q1` intact.
