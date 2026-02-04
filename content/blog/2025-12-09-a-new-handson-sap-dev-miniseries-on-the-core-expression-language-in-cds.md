@@ -36,6 +36,7 @@ Patrice](/images/2025/12/cxl-thumbnail.png)](https://www.youtube.com/watch?v=aiE
 ## Related posts
 
 - [Constraints, expressions and axioms in action](/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/)
+- [Path expressions, nested projections, aggregations and expressions in queries with CQL and CXL in CAP](/blog/posts/2026/02/04/path-expressions-nested-projections-aggregations-and-expressions-in-queries-with-cql-and-cxl-in-cap/)
 
 ## Footnotes
 
