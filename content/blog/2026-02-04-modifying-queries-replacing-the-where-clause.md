@@ -133,6 +133,19 @@ This does what we want:
 ]
 ```
 
+## Modifying a copy of the query
+
+It's probably a good idea to think about modifying a copy of the query, so you always have the original. We can use `cds.ql.clone()` for that. Here's how it would work, in this example context:
+
+```javascript
+> q2 = cds.ql.clone(q1)
+cds.ql { SELECT: {} }
+```
+
+then we can operate on `q2` and keep `q1` intact.
+
+## Wrapping up
+
 Nice!
 
 For more info, check out the [Querying in JavaScript](https://cap.cloud.sap/docs/node.js/cds-ql) topic in Capire, which, in the upcoming January 2026 release (that should be out in the next few days) will be expanded and fully constructed.
