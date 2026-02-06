@@ -22,12 +22,12 @@ but in landscape mode with a bit more detail.
 Here's an overview of that "Did You Know" series; this list will be updated
 over the coming weeks as we add them one by one to upcoming [SAP Developer
 News](https://www.youtube.com/playlist?list=PL6RpkC85SLQAVBSQXN9522_1jNvPavBgg)
-episodes.
+episodes. Use the 📺 link to jump directly to the section in the news episode.
 
 ### 1 The cds REPL
 
-📺 [Did you know](https://www.youtube.com/watch?v=5-mzMGS1gHo&t=139s): that the cds REPL is great for exploring your CAP services? (More info: [A reCAP intro to the cds REPL](/blog/posts/2025/07/21/a-recap-intro-to-the-cds-repl/)) (DJ)
+📺 [Did you know](https://www.youtube.com/watch?v=5-mzMGS1gHo&t=139s): that the cds REPL is great for exploring your CAP services? (More info: [A reCAP intro to the cds REPL](/blog/posts/2025/07/21/a-recap-intro-to-the-cds-repl/)) (_SAP Developer News 29 Jan 2026, with DJ_)
 
 ### 2 Mocking auth in CAP
 
-📺 [Did you know](https://www.youtube.com/watch?v=HqlUHFtW0g4&t=184s): that CAP has a "mocked" authentication strategy you can use in local development so you don't have to put off this important part of your domain design? (More info: [Authentication Strategies](https://cap.cloud.sap/docs/node.js/authentication#strategies)) (DJ) 👈 LATEST
+📺 [Did you know](https://www.youtube.com/watch?v=HqlUHFtW0g4&t=184s): that CAP has a "mocked" authentication strategy you can use in local development so you don't have to put off this important part of your domain design? (More info: [Authentication Strategies](https://cap.cloud.sap/docs/node.js/authentication#strategies)) (_SAP Developer News 05 Feb 2026, with DJ_) 👈 LATEST
