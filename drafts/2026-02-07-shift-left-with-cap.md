@@ -25,7 +25,7 @@ better.
 ## Less code, more solid-state
 
 Why worse? Well, more code means a larger surface area for bugs to
-manifest, higher efforts in maintenance and comprehension, and an increased
+manifest, higher efforts in maintenance and comprehension and an increased
 possibility of the build up of technical debt.
 
 Moreover, in traditional languages (such as JavaScript, Java, et al.) the code
@@ -36,9 +36,9 @@ Today, there's another problem with more code, and that's the lack of concision
 when it comes to being the subject of training, in LLM situations. We want our
 AI models to be trained on, and producing, reliable and concise code.
 
-Whether it's us, or further and future LLMs that will be maintaining and
-extending that generated code, we owe it to ourselves and our AI overlords to
-make it as precise and with a small a footprint as possible.
+Whether it's us, or future LLMs that will be maintaining and
+extending that generated code, we owe it to ourselves (and our future AI
+overlords) to make it as precise and with a small a footprint as possible.
 
 I sometimes use the term "solid-state" in my talks when describing what
 functional programming brings, such as in [Learning by Doing - Beginning
