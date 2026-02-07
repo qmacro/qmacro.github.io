@@ -4,7 +4,7 @@ title: Stop asking for slides in advance
 tags:
   - talk
   - courtesy
-  - bestpractice
+  - bestpractices
 description: I'm giving a talk next month and was asked by the organiser to send my slides to them no later than two weeks before the event. Hmm.
 ---
 
