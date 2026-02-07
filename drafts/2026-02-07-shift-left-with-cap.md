@@ -10,12 +10,15 @@ tags:
   - odata
   - clojure
   - bestpractices
-description: In this post I posit that "shifting left" in our CAP based solutions is a best practice.
+description: In this post I posit that "shifting left" in our CAP based solutions is something that we should be striving to do.
 ---
 
 The "shift left" strategy in software is about how we move testing, security
-considerations and quality assurance to an earlier stage in the development
-process. Something that's always been the case -- but which is gaining increasing
+considerations and quality assurance to an earlier stage in the architecture
+and development process. This strategy is a useful one, and which can be adapted
+to what we code, and _where_ we code.
+
+Something that's always been the case -- but which is gaining increasing
 focus and attention thanks to AI -- is how more lines of code is worse, not
 better.
 
