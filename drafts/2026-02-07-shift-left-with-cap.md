@@ -54,7 +54,7 @@ has a wealth of declarative languages right there for us to embrace, in [the CDS
 language family](https://cap.cloud.sap/docs/cds/): CDL, CQL and CXL.
 
 One way of working towards this goal of writing less code, and having as much
-of that code in solid-state form, is by _shifting out development left_.
+of that code in solid-state form, is by _shifting our development left_.
 
 ## An example
 
@@ -62,7 +62,7 @@ To illustrate what I mean by shifting left from a code perspective in CAP, I
 want to work through a deliberately simple example. Consider a typical CAP
 scenario, where we have an entity model, a service on top of
 that[<sup>3</sup>](#footnotes) which is made available via some protocol,
-and which is consumed in some frontend app.
+consumed in some frontend app.
 
 ```text
 +---------+     +---------+     +---------+     +---------+
@@ -173,11 +173,11 @@ shifting further and further left and towards declarative solutions each time.
 ### Computation at the frontend
 
 ```text
-+---------+  +---------+  +---------+  ***********
-| Entity  |  | Service |  |  OData  |  *         *
-| Model   +--+ Defn    +--+  Proto  +--*frontend *
-|         |  |         |  |         |  *         *
-+---------+  +----+----+  +---------+  ***********
++---------+  +---------+  +---------+  ///////////
+| Entity  |  | Service |  |  OData  |  /         /
+| Model   +--+ Defn    +--+  Proto  +--/Frontend /
+|         |  |         |  |         |  /         /
++---------+  +----+----+  +---------+  ///////////
                   |
              +----+----+
              | Service |
@@ -201,11 +201,11 @@ parts and calculations are least appropriate.
                                 SHIFT LEFT
                                <==================
 
-+---------+  +---------+  ***********  +---------+
-| Entity  |  | Service |  *  OData  *  |         |
-| Model   +--+ Defn    +--*  Proto  *--|Frontend |
-|         |  |         |  *         *  |         |
-+---------+  +----+----+  ***********  +---------+
++---------+  +---------+  ///////////  +---------+
+| Entity  |  | Service |  /  OData  /  |         |
+| Model   +--+ Defn    +--/  Proto  /--|Frontend |
+|         |  |         |  /         /  |         |
++---------+  +----+----+  ///////////  +---------+
                   |
              +----+----+
              | Service |
@@ -266,11 +266,11 @@ OData URLs. We can do better.
 |         |  |         |  |         |  |         |
 +---------+  +----+----+  +---------+  +---------+
                   |
-             ***********
-             * Service *
-             * Impl    *
-             *         *
-             ***********
+             ///////////
+             / Service /
+             / Impl    /
+             /         /
+             ///////////
 ```
 
 Shifting further left, while still in "imperative" mode, given all that
@@ -333,11 +333,11 @@ next option, as service definition and implementation go together.
                    SHIFT LEFT
                   <===============================
 
-+---------+  ***********  +---------+  +---------+
-| Entity  |  * Service *  |  OData  |  |         |
-| Model   +--* Defn    *--+  Proto  +--|Frontend |
-|         |  *         *  |         |  |         |
-+---------+  ***********  +---------+  +---------+
++---------+  ///////////  +---------+  +---------+
+| Entity  |  / Service /  |  OData  |  |         |
+| Model   +--/ Defn    /--+  Proto  +--|Frontend |
+|         |  /         /  |         |  |         |
++---------+  ///////////  +---------+  +---------+
                   |
              +----+----+
              | Service |
@@ -354,11 +354,11 @@ a service is what we should strive for.
 One of my five main reasons to use CAP is that [the code is in the framework,
 not outside of
 it](/blog/posts/2024/11/07/five-reasons-to-use-cap/#1-the-code-is-in-the-framework-not-outside-of-it).
-That gives us a massive step up as developers, allows us to focus on the
-important stuff (such as domain modelling). The phrase "the code is in the
+That gives us a massive step up as developers and allows us to focus on the
+important stuff, such as domain modelling. The phrase "the code is in the
 framework" is also a subtle clue that we should try to keep it that way, too.
 
-So instead of a custom handler, we can remove the `srv/main.js` service
+So instead of a custom handler, let's remove the `srv/main.js` service
 implementation file entirely, and use the power of
 [CDL](https://cap.cloud.sap/docs/cds/cdl) and
 [CXL](https://cap.cloud.sap/docs/cds/cl) to declare a [calculated
@@ -406,11 +406,11 @@ maintain:
       SHIFT LEFT
      <============================================
 
-***********  +---------+  +---------+  +---------+
-* Entity  *  | Service |  |  OData  |  |         |
-* Model   *--+ Defn    +--+  Proto  +--|Frontend |
-*         *  |         |  |         |  |         |
-***********  +----+----+  +---------+  +---------+
+///////////  +---------+  +---------+  +---------+
+/ Entity  /  | Service |  |  OData  |  |         |
+/ Model   /--+ Defn    +--+  Proto  +--|Frontend |
+/         /  |         |  |         |  |         |
+///////////  +----+----+  +---------+  +---------+
                   |
              +----+----+
              | Service |
@@ -424,9 +424,9 @@ service layers. The [Services as
 Facades](https://cap.cloud.sap/docs/guides/services/providing-services#services-as-facades)
 section of the [Define Provided
 Services](https://cap.cloud.sap/docs/guides/services/providing-services) tells
-us that rather than building once service to serve all consumers, they should
-be plentiful, facades encapsulatng different views on domain data
-constellations, exposing different aspects tailored to the uses cases as
+us that rather than having a single service to serve all consumers, they should
+be plentiful, facades encapsulating different views on domain data
+constellations, exposing different aspects tailored to the use cases as
 required.
 
 So while it can make a lot of sense to place a [calculated element at the
@@ -477,9 +477,10 @@ Shifting left in CAP results in less code. It also means that the smaller
 amount of code that we do end up writing is also more solid-state.
 
 Shifting left also surfaces solutions to business requirements at the level
-that the domain expert can more collaborate on; the construction of solutions
-become part of the design document set, rather than being a write-once and
-write-only part of the solution at the imperative and brittle code level.
+that the domain expert can more easily collaborate on; the construction of
+solutions become part of the design document set, rather than being a
+write-once and write-only part of the solution at the imperative and brittle
+code level.
 
 CAP supports us with the built-in philosophies and the languages we can use to
 do the right thing, and I'm reminded of how it also strongly lives up to one of
@@ -488,7 +489,7 @@ Part
 9](https://qmacro.org/blog/posts/2025/02/21/tasc-notes-part-9/#its-all-just-a-path-game),
 especially the first part:
 
-> _Make easy things easy and hard things possible._
+> _Makes easy things easy and hard things possible._
 
 CAP makes it easy for us to do the easy things, the right things. Let's do that.
 
