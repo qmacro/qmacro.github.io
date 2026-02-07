@@ -68,8 +68,8 @@ defame, injure or harass? Is the content illegal? Report it to the moderators.
 ### Feel empowered to call other issues out yourself
 
 In other cases, don't report it. Use your voice publicly, by attaching a comment
-to the post, explaining briefly what you consider inappropriate.
-Encourage your fellow SAP Community members to do the same. Get them to
+to the post, explaining briefly what you consider inappropriate, or just plain
+incorrect. Encourage your fellow SAP Community members to do the same. Get them to
 comment. Get them to upvote your comment.
 
 Use the power of the collective, the power of the shared heart, to highlight,
@@ -95,7 +95,5 @@ but think of it as the call to action instead).
 _Stop reporting poor quality content, and similar transgressions. Call the
 authors out yourself. Everyone is a member, and everyone is a moderator. And if
 we moderate ourselves with respect, honesty and firmness, we just might turn
-this giant sea-going cargo ship towards a better quality future._
-
-
-
+this giant sea-going cargo ship towards a better quality future for the community
+platform that belongs to all of us._
