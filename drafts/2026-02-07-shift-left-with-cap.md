@@ -351,6 +351,12 @@ ceremony and imperative nature of a custom handler in the _implementation_ of a
 service, to a calm, declarative and solid-state addition in the _definition_ of
 a service is what we should strive for.
 
+This is effectively a "push up", as described in the [What now how, less is
+more](/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/#what-not-how-less-is-more)
+section of the [Constraints, expressions and axioms in
+action](/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/)
+post.
+
 One of my five main reasons to use CAP is that [the code is in the framework,
 not outside of
 it](/blog/posts/2024/11/07/five-reasons-to-use-cap/#1-the-code-is-in-the-framework-not-outside-of-it).
@@ -493,12 +499,18 @@ especially the first part:
 
 CAP makes it easy for us to do the easy things, the right things. Let's do that.
 
-(For a great deal of amazing insight into expressions, in CXL, within CDL and
+## Further info
+
+For a great deal of amazing insight into expressions, in CXL, within CDL and
 also CQL, don't miss the current Hands-on SAP Dev live stream series "CDS
 expressions in CAP - under the hood" with me and expert Patrice Bender. You can
 find all the info, including links to replays and upcoming episodes, in the
 post [A new Hands-on SAP Dev mini-series on the core expression language in
-CDS](/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/).)
+CDS](/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/).
+
+Birgit Selbach's post [Declarative Programming in CAP: Less Code, More
+Value](https://community.sap.com/t5/technology-blog-posts-by-sap/declarative-programming-in-cap-less-code-more-value/ba-p/14321990)
+has also some great thoughts in this area.
 
 ## Footnotes
 
