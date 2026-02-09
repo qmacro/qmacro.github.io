@@ -1,0 +1,972 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Shift left with CAP</title>
+		<meta name="description" content="In this post I posit that shifting left in our CAP based solutions is something that we should be striving to do.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="Shift left with CAP">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="In this post I posit that shifting left in our CAP based solutions is something that we should be striving to do.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2026/02/09/shift-left-with-cap/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="shift-left-with-cap">Shift left with CAP</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2026-02-09">09 February 2026</time></li>
+	<li><a href="/tags/llms/" class="post-tag">llms</a>, </li>
+	<li><a href="/tags/fp/" class="post-tag">fp</a>, </li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/cds/" class="post-tag">cds</a>, </li>
+	<li><a href="/tags/cql/" class="post-tag">cql</a>, </li>
+	<li><a href="/tags/odata/" class="post-tag">odata</a>, </li>
+	<li><a href="/tags/clojure/" class="post-tag">clojure</a>, </li>
+	<li><a href="/tags/bestpractices/" class="post-tag">bestpractices</a></li>
+</ul>
+
+<p class="post-description-main">In this post I posit that shifting left in our CAP based solutions is something that we should be striving to do.</p>
+
+<p>The traditional &quot;shift left&quot; strategy in software is about how we move testing,
+security considerations and quality assurance to an earlier stage in the
+architecture and development process. This strategy is a useful one which can
+be adapted to what we code, and <em>where</em> we code.</p>
+<p>Something that's always been the case -- but which is gaining increasing
+focus and attention thanks to AI -- is how more lines of code is worse, not
+better.</p>
+<h2 id="less-code-more-solid-state">Less code, more solid-state</h2>
+<p>Why worse? Well, more code means a larger surface area for bugs to
+manifest, higher efforts in comprehension &amp; maintenance and a greater
+likelihood of technical debt<a href="#footnotes"><sup>1</sup></a>.</p>
+<p>Moreover, in traditional languages (such as JavaScript, Java, et al.) the code
+written often contains moving parts, writhing and mutating ... requiring effort
+to contain, control and reason about.</p>
+<p>Today, there's another problem with more code, and that's the lack of concision
+when it comes to being the subject of training, in LLM situations. We want our
+AI models to be trained on, and producing, reliable and concise code.</p>
+<p>Whether it's us, or future LLMs that will be maintaining and extending that
+generated code, we owe it to ourselves (and our future <a href="https://www.youtube.com/watch?v=8lcUHQYhPTE">AI
+overlords</a>) to make it as precise
+and with a small a footprint as possible.</p>
+<p>I sometimes use the term &quot;solid-state&quot; in my talks when describing what
+functional programming brings, such as in <a href="/images/2025/03/learning-by-doing-beginning-clojure-by-solving-puzzles.pdf">Learning by Doing - Beginning
+Clojure by Solving
+Puzzles</a>.
+The term, for me, captures the idea of code that doesn't move, and therefore is
+far less prone to changing or breaking<a href="#footnotes"><sup>2</sup></a>.</p>
+<p>Alongside functional programming languages in which this state (pun intended)
+can be found, there's also the class of declarative languages. Guess what? CAP
+has a wealth of declarative languages right there for us to embrace, in <a href="https://cap.cloud.sap/docs/cds/">the CDS
+language family</a>: CDL, CQL and CXL.</p>
+<p>One way of working towards this goal of writing less code, and having as much
+of that code in solid-state form, is by <em>shifting our development left</em>.</p>
+<h2 id="an-example">An example</h2>
+<p>To illustrate what I mean by shifting left from a code perspective in CAP, I
+want to work through a deliberately simple example. Consider a typical CAP
+scenario, where we have an entity model, a service on top of
+that<a href="#footnotes"><sup>3</sup></a> which is made available via some protocol,
+consumed in some frontend app.</p>
+<pre class="language-text" tabindex="0"><code class="language-text">+---------+     +---------+     +---------+     +---------+
+| Entity  |     | Service |     |  OData  |     |         |
+| Model   +-----+ Defn    +-----+  Proto  +-----|Frontend |
+|         |     |         |     |         |     |         |
++---------+     +----+----+     +---------+     +---------+
+                     |
+                +----+----+
+                | Service |
+                | Impl    |
+                |         |
+                +---------+</code></pre>
+<h2 id="the-setup">The setup</h2>
+<p>Our starting position is a basic CDS model with a single entity, <code>Products</code>,
+and a single service making that entire entity available.</p>
+<p>In <code>db/schema.cds</code> we have:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token keyword">namespace</span> northbreath;
+
+<span class="token keyword">entity</span> Products {
+  <span class="token cqlkeywords keyword">key</span> ID    : <span class="token type builtin">Integer</span>;
+      name  : <span class="token type builtin">String</span>;
+      price : <span class="token type builtin">Decimal</span>;
+      stock : <span class="token type builtin">Integer</span>;
+}</code></pre>
+<p>and in <code>srv/main.cds</code> we have:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> northbreath <span class="token from keyword">from</span> '../db/schema';
+
+<span class="token keyword">service</span> Main {
+  <span class="token keyword">entity</span> Products <span class="token cqlkeywords keyword">as</span> <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> northbreath.Products;
+}</code></pre>
+<blockquote>
+<p>If
+<a href="/blog/posts/2025/07/21/a-recap-intro-to-the-cds-repl/#sending-queries-to-a-remote-service">Northbreeze</a>
+is a cut down version of the original
+<a href="https://services.odata.org/v4/Northwind/Northwind.svc/">Northwind</a>, then
+<a href="TODO">Northbreath</a> is an <em>extremely</em> cut down version. Geddit? Ok, <a href="https://en.wiktionary.org/wiki/I%27ll_get_my_coat">I'll get
+me coat</a>.</p>
+</blockquote>
+<p>For completion and illustration's sake, we also have a skeleton implementation
+for this <code>Main</code> service in <code>srv/main.js</code>, which does nothing at the moment:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">const</span> cds <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'@sap/cds'</span><span class="token punctuation">)</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token keyword">class</span> <span class="token class-name">Main</span> <span class="token keyword">extends</span> <span class="token class-name">cds<span class="token punctuation">.</span>ApplicationService</span> <span class="token punctuation">{</span>
+  <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>There are just a few initial data records in <code>test/data/northbreath-Products.csv</code>:</p>
+<pre class="language-csv" tabindex="0"><code class="language-csv"><span class="token value">ID</span><span class="token punctuation">,</span><span class="token value">name</span><span class="token punctuation">,</span><span class="token value">price</span><span class="token punctuation">,</span><span class="token value">stock</span>
+<span class="token value">1</span><span class="token punctuation">,</span><span class="token value">Chai</span><span class="token punctuation">,</span><span class="token value">18.00</span><span class="token punctuation">,</span><span class="token value">39</span>
+<span class="token value">2</span><span class="token punctuation">,</span><span class="token value">Chang</span><span class="token punctuation">,</span><span class="token value">19.00</span><span class="token punctuation">,</span><span class="token value">17</span>
+<span class="token value">3</span><span class="token punctuation">,</span><span class="token value">Aniseed Syrup</span><span class="token punctuation">,</span><span class="token value">10.00</span><span class="token punctuation">,</span><span class="token value">13</span></code></pre>
+<p>That's all we need for this scenario. Unless otherwise stated, assume that
+we're now running a CAP server for this project, with <code>cds watch</code>. We'll
+request a single entities in examples henceforth, mostly to keep things brief.</p>
+<p>Albeit simple, this scenario comprises a fully formed model and a service
+provided via OData. Properties available for each entity (e.g. at
+<code>localhost:4004/odata/v4/main/Products/1</code>) are what the frontend is built
+around:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"@odata.context"</span><span class="token operator">:</span> <span class="token string">"$metadata#Products/$entity"</span><span class="token punctuation">,</span>
+  <span class="token property">"ID"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Chai"</span><span class="token punctuation">,</span>
+  <span class="token property">"price"</span><span class="token operator">:</span> <span class="token number">18</span><span class="token punctuation">,</span>
+  <span class="token property">"stock"</span><span class="token operator">:</span> <span class="token number">39</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="the-requirement">The requirement</h2>
+<p>Let's say the frontend now also needs to calculate the in-stock value for each
+of the products (again, deliberately simple, but this idea holds for more
+complex requirements too).</p>
+<p>In other words, the value is the price multiplied by
+the number of units in stock. For this <code>Chai</code> product, that would be <code>18 * 39</code>
+i.e. <code>702</code>.</p>
+<h2 id="addressing-the-requirement">Addressing the requirement</h2>
+<p>How should the developer go about this? There are many approaches, which I'll
+enumerate in right to left order, with respect to the diagram earlier, i.e.
+shifting further and further left and towards declarative solutions each time.</p>
+<h3 id="computation-at-the-frontend">Computation at the frontend</h3>
+<pre class="language-text" tabindex="0"><code class="language-text">+---------+  +---------+  +---------+  ///////////
+| Entity  |  | Service |  |  OData  |  /         /
+| Model   +--+ Defn    +--+  Proto  +--/Frontend /
+|         |  |         |  |         |  /         /
++---------+  +----+----+  +---------+  ///////////
+                  |
+             +----+----+
+             | Service |
+             | Impl    |
+             |         |
+             +---------+</code></pre>
+<p>Naturally one might be tempted to make the calculation in the frontend, on the
+far right, once the entity data is available.</p>
+<p>That would work, but why put extra effort where it's least wanted, transferring
+extra business logic (in the form of JavaScript, typically for a Web-based
+application) and requiring a small amount of extra compute nearest to the user?
+This pushes more complexity at the rightmost end of the spectrum where moving
+parts and calculations are least appropriate.</p>
+<h3 id="computation-via-the-url-in-the-odata-operation">Computation via the URL in the OData operation</h3>
+<pre class="language-text" tabindex="0"><code class="language-text">                                SHIFT LEFT
+                               <==================
+
++---------+  +---------+  ///////////  +---------+
+| Entity  |  | Service |  /  OData  /  |         |
+| Model   +--+ Defn    +--/  Proto  /--|Frontend |
+|         |  |         |  /         /  |         |
++---------+  +----+----+  ///////////  +---------+
+                  |
+             +----+----+
+             | Service |
+             | Impl    |
+             |         |
+             +---------+</code></pre>
+<p>Moving slightly further left, this requirement could be satisfied using OData
+facilities<a href="#footnotes"><sup>4</sup></a>, specifically with the <a href="https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html#_Toc31361047">system query option
+$compute</a>.</p>
+<p>The in-stock value calculation can be effectively shifted left by using
+<code>$compute</code> to return the value as a computed property:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">curl</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--silent</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--url</span> <span class="token string">'localhost:4004/odata/v4/main/Products/1?$compute=price%20mul%20stock%20as%20instockvalue_odata'</span> `
+  <span class="token operator">|</span> jq <span class="token builtin class-name">.</span></code></pre>
+<p>Written out in decoded form, the query string of the URL looks like this:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">$compute=price mul stock as instockvalue_odata</code></pre>
+<p>The entity returned looks like this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"@odata.context"</span><span class="token operator">:</span> <span class="token string">"$metadata#Products/$entity"</span><span class="token punctuation">,</span>
+  <span class="token property">"ID"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Chai"</span><span class="token punctuation">,</span>
+  <span class="token property">"price"</span><span class="token operator">:</span> <span class="token number">18</span><span class="token punctuation">,</span>
+  <span class="token property">"stock"</span><span class="token operator">:</span> <span class="token number">39</span><span class="token punctuation">,</span>
+  <span class="token property">"instockvalue_odata"</span><span class="token operator">:</span> <span class="token number">702</span>
+<span class="token punctuation">}</span></code></pre>
+<p>The calculation is specified in the frontend but provided by the backend and
+thus available without any extra custom code on the right hand side.</p>
+<p>However, we've only slightly deferred the work burning execution cycles in the
+browser's JavaScript engine, changing it into a requirement to customise the
+OData URLs. We can do better.</p>
+<h3 id="using-a-custom-event-handler">Using a custom event handler</h3>
+<pre class="language-text" tabindex="0"><code class="language-text">                   SHIFT LEFT
+                  <===============================
+
++---------+  +---------+  +---------+  +---------+
+| Entity  |  | Service |  |  OData  |  |         |
+| Model   +--+ Defn    +--+  Proto  +--|Frontend |
+|         |  |         |  |         |  |         |
++---------+  +----+----+  +---------+  +---------+
+                  |
+             ///////////
+             / Service /
+             / Impl    /
+             /         /
+             ///////////</code></pre>
+<p>Shifting further left, while still in &quot;imperative&quot; mode, given all that
+JavaScript that's in our heads from thinking all things frontend, we have the
+chance to jump into the built-in request/response handling cycle that the CAP
+server provides, and modify the payload of a response before it's sent back.</p>
+<p>We can do this in an <a href="https://cap.cloud.sap/docs/guides/services/custom-code#hooks-on-before-after">event
+handler</a>,
+specifically in the &quot;after&quot; phase. Such &quot;after&quot; phase handlers run after the
+&quot;on&quot; handlers, and get the result set as input. What might that look like?
+Well, in its simplest form, like this, in our <code>srv/main.js</code>:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">const</span> cds <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'@sap/cds'</span><span class="token punctuation">)</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token keyword">class</span> <span class="token class-name">Main</span> <span class="token keyword">extends</span> <span class="token class-name">cds<span class="token punctuation">.</span>ApplicationService</span> <span class="token punctuation">{</span>
+  <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">after</span><span class="token punctuation">(</span><span class="token string">'each'</span><span class="token punctuation">,</span> <span class="token string">'Products'</span><span class="token punctuation">,</span> <span class="token parameter">p</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+      p<span class="token punctuation">.</span>instockvalue_after <span class="token operator">=</span> p<span class="token punctuation">.</span>price <span class="token operator">*</span> p<span class="token punctuation">.</span>stock
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>In the <code>init</code> we've now defined an anonymous function for the &quot;after&quot; phase, a
+function that adds a new property <code>instockvalue_after</code> to the entity objects.</p>
+<p>This means that the computation of <code>price * stock</code> is now pushed back further
+left, and we can now remove the <code>$compute</code> system query option from the URL in
+the OData request:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">curl</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--silent</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--url</span> 'localhost:4004/odata/v4/main/Products/1`
+  <span class="token operator">|</span> jq <span class="token builtin class-name">.</span></code></pre>
+<p>but still get what we need:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"@odata.context"</span><span class="token operator">:</span> <span class="token string">"$metadata#Products/$entity"</span><span class="token punctuation">,</span>
+  <span class="token property">"ID"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Chai"</span><span class="token punctuation">,</span>
+  <span class="token property">"price"</span><span class="token operator">:</span> <span class="token number">18</span><span class="token punctuation">,</span>
+  <span class="token property">"stock"</span><span class="token operator">:</span> <span class="token number">39</span><span class="token punctuation">,</span>
+  <span class="token property">"instockval_after"</span><span class="token operator">:</span> <span class="token number">702</span>
+<span class="token punctuation">}</span></code></pre>
+<h3 id="calculated-element-in-the-service-definition">Calculated element in the service definition</h3>
+<p>From the diagram's perspective, we're not shifting much further left with this
+next option, as service definition and implementation go together.</p>
+<pre class="language-text" tabindex="0"><code class="language-text">                   SHIFT LEFT
+                  <===============================
+
++---------+  ///////////  +---------+  +---------+
+| Entity  |  / Service /  |  OData  |  |         |
+| Model   +--/ Defn    /--+  Proto  +--|Frontend |
+|         |  /         /  |         |  |         |
++---------+  ///////////  +---------+  +---------+
+                  |
+             +----+----+
+             | Service |
+             | Impl    |
+             |         |
+             +---------+</code></pre>
+<p>However, I'd argue that a shift from the custom code, a move away from the
+ceremony and imperative nature of a custom handler in the <em>implementation</em> of a
+service, to a calm, declarative and solid-state addition in the <em>definition</em> of
+a service is what we should strive for.</p>
+<p>This is effectively a &quot;push up&quot;, as described in the <a href="/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/#what-not-how-less-is-more">What now how, less is
+more</a>
+section of the <a href="/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/">Constraints, expressions and axioms in
+action</a>
+post.</p>
+<p>One of my five main reasons to use CAP is that <a href="/blog/posts/2024/11/07/five-reasons-to-use-cap/#1-the-code-is-in-the-framework-not-outside-of-it">the code is in the framework,
+not outside of
+it</a>.
+That gives us a massive step up as developers and allows us to focus on the
+important stuff, such as domain modelling. The phrase &quot;the code is in the
+framework&quot; is also a subtle clue that we should try to keep it that way, too.</p>
+<p>So instead of a custom handler, let's remove the <code>srv/main.js</code> service
+implementation file entirely, and use the power of
+<a href="https://cap.cloud.sap/docs/cds/cdl">CDL</a> and
+<a href="https://cap.cloud.sap/docs/cds/cl">CXL</a> to declare a <a href="https://cap.cloud.sap/docs/cds/cdl#calculated-elements">calculated
+element</a> in the
+<code>Products</code> projection definition in our <code>Main</code> service, like this:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> northbreath <span class="token from keyword">from</span> '../db/schema';
+
+<span class="token keyword">service</span> Main {
+  <span class="token keyword">entity</span> Products <span class="token cqlkeywords keyword">as</span>
+    <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> northbreath.Products {
+      *,
+      price * stock <span class="token cqlkeywords keyword">as</span> instockval_service
+    }
+}</code></pre>
+<p>Now we can request the &quot;bare&quot; entity URL again:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">curl</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--silent</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--url</span> 'localhost:4004/odata/v4/main/Products/1`
+  <span class="token operator">|</span> jq <span class="token builtin class-name">.</span></code></pre>
+<p>and get what we need, with no moving parts, and no custom code at all to
+maintain:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"@odata.context"</span><span class="token operator">:</span> <span class="token string">"$metadata#Products/$entity"</span><span class="token punctuation">,</span>
+  <span class="token property">"ID"</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Chai"</span><span class="token punctuation">,</span>
+  <span class="token property">"price"</span><span class="token operator">:</span> <span class="token number">18</span><span class="token punctuation">,</span>
+  <span class="token property">"stock"</span><span class="token operator">:</span> <span class="token number">39</span><span class="token punctuation">,</span>
+  <span class="token property">"instockval_service"</span><span class="token operator">:</span> <span class="token number">702</span>
+<span class="token punctuation">}</span></code></pre>
+<h3 id="calculated-element-at-the-schema-layer">Calculated element at the schema layer</h3>
+<pre class="language-text" tabindex="0"><code class="language-text">      SHIFT LEFT
+     <============================================
+
+///////////  +---------+  +---------+  +---------+
+/ Entity  /  | Service |  |  OData  |  |         |
+/ Model   /--+ Defn    +--+  Proto  +--|Frontend |
+/         /  |         |  |         |  |         |
+///////////  +----+----+  +---------+  +---------+
+                  |
+             +----+----+
+             | Service |
+             | Impl    |
+             |         |
+             +---------+</code></pre>
+<p>It is not by chance that there is a distinct separation of CDS model and
+service layers. The <a href="https://cap.cloud.sap/docs/guides/services/providing-services#services-as-facades">Services as
+Facades</a>
+section of the <a href="https://cap.cloud.sap/docs/guides/services/providing-services">Define Provided
+Services</a> tells
+us that rather than having a single service to serve all consumers, they should
+be plentiful, facades encapsulating different views on domain data
+constellations, exposing different aspects tailored to the use cases as
+required.</p>
+<p>So while it can make a lot of sense to place a <a href="#calculated-element-in-the-service-definition">calculated element at the
+service definition layer</a>, it
+can sometimes make sense to place it at the schema layer, directly in the CDS
+model. You and your domain experts &amp; business owners are best placed to
+decide this.</p>
+<p>Defining a calculated element at this level is just as simple. Instead of
+making any changes to the projection definition in <code>srv/main.cds</code>, we can add
+an element to <code>Products</code> directly in <code>db/schema.cds</code>:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token keyword">namespace</span> northbreath;
+
+<span class="token keyword">entity</span> Products {
+  <span class="token cqlkeywords keyword">key</span> ID                  : <span class="token type builtin">Integer</span>;
+      name                : <span class="token type builtin">String</span>;
+      price               : <span class="token type builtin">Decimal</span>;
+      stock               : <span class="token type builtin">Integer</span>;
+      instockvalue_schema : <span class="token type builtin">Decimal </span>= price * stock;
+}</code></pre>
+<p>With the definition at this level, all <code>Products</code> projections at the service
+layer will benefit from this extra element, without you having to do anything
+special.</p>
+<blockquote>
+<p>If there was a particular service where you didn't want this element in a
+projection on <code>Products</code>, you could use an <code>excluding</code> clause, of course like
+this:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> northbreath <span class="token from keyword">from</span> '../db/schema';
+
+<span class="token keyword">service</span> Secondary {
+  <span class="token keyword">entity</span> Products <span class="token cqlkeywords keyword">as</span>
+    <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> northbreath.Products
+    excluding {
+      instockvalue_schema
+    }
+}</code></pre>
+</blockquote>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>Shifting left in CAP results in less code. It also means that the smaller
+amount of code that we do end up writing is also more solid-state.</p>
+<p>Shifting left also surfaces solutions to business requirements at the level
+that the domain expert can more easily collaborate on; the construction of
+solutions become part of the design document set, rather than being a
+write-once and write-only part of the solution at the imperative and brittle
+code level.</p>
+<p>CAP supports us with the built-in philosophies and the languages we can use to
+do the right thing, and I'm reminded of how it also strongly lives up to one of
+Perl's taglines, to which I alluded in <a href="https://qmacro.org/blog/posts/2025/02/21/tasc-notes-part-9/#its-all-just-a-path-game">the notes to The Art and Science of CAP
+Part
+9</a>,
+especially the first part:</p>
+<blockquote>
+<p><em>Makes easy things easy and hard things possible.</em></p>
+</blockquote>
+<p>CAP makes it easy for us to do the easy things, the right things. Let's do that.</p>
+<h2 id="further-info">Further info</h2>
+<p>For a great deal of amazing insight into expressions, in CXL, within CDL and
+also CQL, don't miss the current Hands-on SAP Dev live stream series &quot;CDS
+expressions in CAP - under the hood&quot; with me and expert Patrice Bender. You can
+find all the info, including links to replays and upcoming episodes, in the
+post <a href="/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/">A new Hands-on SAP Dev mini-series on the core expression language in
+CDS</a>.</p>
+<p>Birgit Selbach's post <a href="https://community.sap.com/t5/technology-blog-posts-by-sap/declarative-programming-in-cap-less-code-more-value/ba-p/14321990">Declarative Programming in CAP: Less Code, More
+Value</a>
+has also some great thoughts in this area.</p>
+<h2 id="footnotes">Footnotes</h2>
+<ol>
+<li>See <a href="https://github.com/qmacro/capref/blob/main/axioms/AXI002.md">AXI002 Less is more</a>.</li>
+<li>This is strongly linked with the <a href="/tags/fp">functional programming</a> idea
+that we should avoid mutating data, making things difficult to track, and instead
+use higher level mechanisms that provide us with chainable functions at the
+<a href="https://github.com/qmacro/capref/blob/main/axioms/AXI001.md">what, not how</a>
+level.</li>
+<li>See <a href="https://github.com/qmacro/capref/blob/main/axioms/AXI004.md">AXI004 Services are cheap</a>.</li>
+<li>If you want to learn more about OData, and influence the new series of
+tutorials I'm writing, see <a href="/blog/posts/2026/02/02/odata-deep-dive-rewrite-in-the-open/">OData Deep Dive rewrite in the
+open</a>. See also
+the <a href="https://cap.cloud.sap/docs/guides/protocols/odata">Serving OData APIs</a>
+topic in Capire for what facilities like this are available.</li>
+</ol>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2026/02/06/series-of-did-you-know-videos/">Series of &quot;Did You Know&quot; videos</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2026/02/09/shift-left-with-cap/` was built on 2026-02-09T07:38:03.880Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
