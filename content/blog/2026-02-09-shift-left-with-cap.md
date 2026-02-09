@@ -351,7 +351,7 @@ ceremony and imperative nature of a custom handler in the _implementation_ of a
 service, to a calm, declarative and solid-state addition in the _definition_ of
 a service is what we should strive for.
 
-This is effectively a "push up", as described in the [What now how, less is
+This is effectively a "push up", as described in the [What not how, less is
 more](/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/#what-not-how-less-is-more)
 section of the [Constraints, expressions and axioms in
 action](/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/)
