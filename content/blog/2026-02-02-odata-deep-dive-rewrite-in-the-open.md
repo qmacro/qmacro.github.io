@@ -8,9 +8,12 @@ tags:
 description: I'm refreshing the content of the OData Deep Dive series of tutorials, in the open.
 ---
 
-OData is a topic close to my heart.
+You can jump directly to the [Progress](#progress) section below, which has
+links to all the draft tutorial content so far.
 
 ## History
+
+OData is a topic close to my heart.
 
 I was around when RSS was growing up, and
 even contributed to the wider RSS community activities at the time. I was also
@@ -86,3 +89,4 @@ Nr|Link|Title|Status|Action
 -|-|-|-|-
 1|[Origins](https://github.com/sap-tutorials/Tutorials/blob/master/tutorials/odata-dd-1-origins/odata-dd-1-origins.md)|Learn about OData's origins|Draft|[Feedback](https://github.com/sap-tutorials/Tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%201%20on%20%22Origins%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Origins%22%20tutorial.%20Thanks!)
 2|[Resources](https://github.com/sap-tutorials/Tutorials/blob/master/tutorials/odata-dd-2-resources/odata-dd-2-resources.md)|Get to know the OData standards resources on the Web|Draft|[Feedback](https://github.com/sap-tutorials/Tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%202%20on%20%22Resources%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Resources%22%20tutorial.%20Thanks!)
+2|[Northbreeze](https://github.com/sap-tutorials/Tutorials/blob/master/tutorials/odata-dd-3-northbreeze/odata-dd-3-northbreeze.md)|Set up your own OData service|Draft|[Feedback](https://github.com/sap-tutorials/Tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%203%20on%20%22Northbreeze%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Northbreeze%22%20tutorial.%20Thanks!)
