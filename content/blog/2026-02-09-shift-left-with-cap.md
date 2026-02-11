@@ -137,7 +137,7 @@ ID,name,price,stock
 
 That's all we need for this scenario. Unless otherwise stated, assume that
 we're now running a CAP server for this project, with `cds watch`. We'll
-request a single entities in examples henceforth, mostly to keep things brief.
+request single entities in examples henceforth, mostly to keep things brief.
 
 Albeit simple, this scenario comprises a fully formed model and a service
 provided via OData. Properties available for each entity (e.g. at
@@ -248,7 +248,7 @@ The entity returned looks like this:
 ```
 
 The calculation is specified in the frontend but provided by the backend and
-thus available without any extra custom code on the right hand side.
+thus available without any extra custom code on the far right hand side.
 
 However, we've only slightly deferred the work burning execution cycles in the
 browser's JavaScript engine, changing it into a requirement to customise the
@@ -462,8 +462,7 @@ layer will benefit from this extra element, without you having to do anything
 special.
 
 > If there was a particular service where you didn't want this element in a
-> projection on `Products`, you could use an `excluding` clause, of course like
-> this:
+> projection on `Products`, you could use an `excluding` clause like this:
 >
 > ```cds
 > using northbreath from '../db/schema';
