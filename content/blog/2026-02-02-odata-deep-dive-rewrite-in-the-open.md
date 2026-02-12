@@ -77,7 +77,7 @@ Thanks!
 
 ## Progress
 
-Here are links to the content for the OData Deep Dive tutorials so far.
+Here are links to the content for the OData Deep Dive tutorials so far - those planned, and those already drafted.
 
 👉 Follow the hyperlinks in the "Link" columns to get to the tutorial content draft to read through.
 
@@ -89,4 +89,6 @@ Nr|Link|Title|Status|Action
 -|-|-|-|-
 1|[Origins](https://github.com/sap-tutorials/Tutorials/blob/master/tutorials/odata-dd-1-origins/odata-dd-1-origins.md)|Learn about OData's origins|Draft|[Feedback](https://github.com/sap-tutorials/Tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%201%20on%20%22Origins%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Origins%22%20tutorial.%20Thanks!)
 2|[Resources](https://github.com/sap-tutorials/Tutorials/blob/master/tutorials/odata-dd-2-resources/odata-dd-2-resources.md)|Get to know the OData standards resources on the Web|Draft|[Feedback](https://github.com/sap-tutorials/Tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%202%20on%20%22Resources%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Resources%22%20tutorial.%20Thanks!)
-2|[Northbreeze](https://github.com/sap-tutorials/Tutorials/blob/master/tutorials/odata-dd-3-northbreeze/odata-dd-3-northbreeze.md)|Set up your own OData service|Draft|[Feedback](https://github.com/sap-tutorials/Tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%203%20on%20%22Northbreeze%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Northbreeze%22%20tutorial.%20Thanks!)
+3|[Northbreeze](https://github.com/sap-tutorials/Tutorials/blob/master/tutorials/odata-dd-3-northbreeze/odata-dd-3-northbreeze.md)|Set up your own OData service|Draft|[Feedback](https://github.com/sap-tutorials/Tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%203%20on%20%22Northbreeze%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Northbreeze%22%20tutorial.%20Thanks!)
+4|[Metadata](https://github.com/sap-tutorials/Tutorials/blob/master/tutorials/odata-dd-4-metadata/odata-dd-4-metadata.md)|Learn how to read OData metadata|Draft|[Feedback](https://github.com/sap-tutorials/Tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%203%20on%20%22Metadata%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Metadata%22%20tutorial.%20Thanks!)
+N|Vocabularies|Learn what vocabularies are and how they're used|Planned|[Feedback](https://github.com/sap-tutorials/Tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%20N%20on%20%22Vocabularies%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Vocabularies%22%20tutorial.%20Thanks!)
