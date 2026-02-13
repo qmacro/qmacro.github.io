@@ -30,4 +30,8 @@ episodes. Use the 📺 link to jump directly to the section in the news episode.
 
 ### 2 Mocking auth in CAP
 
-📺 [Did you know](https://www.youtube.com/watch?v=HqlUHFtW0g4&t=184s): that CAP has a "mocked" authentication strategy you can use in local development so you don't have to put off this important part of your domain design? (More info: [Authentication Strategies](https://cap.cloud.sap/docs/node.js/authentication#strategies)) (_SAP Developer News 05 Feb 2026, with DJ_) 👈 LATEST
+📺 [Did you know](https://www.youtube.com/watch?v=HqlUHFtW0g4&t=184s): that CAP has a "mocked" authentication strategy you can use in local development so you don't have to put off this important part of your domain design? (More info: [Authentication Strategies](https://cap.cloud.sap/docs/node.js/authentication#strategies)) (_SAP Developer News 05 Feb 2026, with DJ_)
+
+### 3 Debugging apps on CF
+
+📺 [Did you know](https://www.youtube.com/watch?v=aU3Eu2SlvxE&t=449s): that it's easy to debug your CAP Node.js apps running on Cloud Foundry? (More info: The [Debugging with cds debug](https://cap.cloud.sap/docs/tools/cds-cli#cds-debug) section of the CLI topic in Capire) (_SAP Developer News 12 Feb 2026, with DJ_) 👈 LATEST
