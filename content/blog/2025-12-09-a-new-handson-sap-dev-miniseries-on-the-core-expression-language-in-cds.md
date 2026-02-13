@@ -22,7 +22,8 @@ expressions in CDS.
 - 23 Jan 2026 [Part 2](https://www.youtube.com/watch?v=s4IZR1LBRrA) (replay)
 - 30 Jan 2026 [Part 3](https://www.youtube.com/watch?v=FVEbvHMxOIY) (replay)
 - 06 Feb 2026 [Part 4](https://www.youtube.com/watch?v=XD71N7YYuGA) (replay)
-- 13 Feb 2026 [Part 5](https://www.youtube.com/watch?v=I2Y3uC10Cs8) (upcoming)
+- 13 Feb 2026 [Part 5](https://www.youtube.com/watch?v=I2Y3uC10Cs8) (replay)
+- 20 Feb 2026 [Part 6](https://www.youtube.com/watch?v=OPOH3agULQ0) (upcoming)
 
 It's all about CXL - the Core Expression Language. What's that? One of the mini
 languages[<sup>1</sup>](#footnotes) in the CDS language family that is all
