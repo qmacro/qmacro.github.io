@@ -118,3 +118,7 @@ authors out yourself. Everyone is a member, and everyone is a moderator. And if
 we moderate ourselves with respect, honesty and firmness, we just might turn
 this giant sea-going cargo ship towards a better quality future for the community
 platform that belongs to all of us._
+
+---
+
+[Also posted on the SAP Community platform](https://community.sap.com/t5/community-corner-blog-posts/improving-the-sap-community-together-one-comment-at-a-time/bc-p/14330635).
