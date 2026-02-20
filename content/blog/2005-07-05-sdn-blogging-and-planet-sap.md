@@ -16,9 +16,8 @@ Well, there are many reasons. Here are the main ones:
 
 (a) History
 
-I was writing on my blog before SDN came along. SDN came along, and I
- was invited to write some posts there. I did. I continue to post on my
- blog while contributing to the collective SDN one too.
+I was writing on my blog before SDN came along. I started to write some posts there.
+I continued to post on my blog while contributing to the collective SDN one too.
 
 (b) Freedom
 
