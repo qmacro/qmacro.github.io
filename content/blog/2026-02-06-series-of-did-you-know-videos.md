@@ -7,8 +7,6 @@ tags:
 description: Here's a collection of pointers to short "Did You Know" videos from the Developer Advocates, highlighting small but interesting and useful aspects of various SAP tech tools, frameworks and products.
 ---
 
-👉 Jump to the [latest video](#2-mocking-auth-in-cap).
-
 In the run up to SAP TechEd 2025, the Developer Advocates put together a series
 of short videos on tech topics, in a "Did You Know" series. A bit like our
 collection of YouTube Shorts "Good To Know" series (on [CAP
@@ -34,4 +32,8 @@ episodes. Use the 📺 link to jump directly to the section in the news episode.
 
 ### 3 Debugging apps on CF
 
-📺 [Did you know](https://www.youtube.com/watch?v=aU3Eu2SlvxE&t=449s): that it's easy to debug your CAP Node.js apps running on Cloud Foundry? (More info: The [Debugging with cds debug](https://cap.cloud.sap/docs/tools/cds-cli#cds-debug) section of the CLI topic in Capire) (_SAP Developer News 12 Feb 2026, with DJ_) 👈 LATEST
+📺 [Did you know](https://www.youtube.com/watch?v=aU3Eu2SlvxE&t=449s): that it's easy to debug your CAP Node.js apps running on Cloud Foundry? (More info: The [Debugging with cds debug](https://cap.cloud.sap/docs/tools/cds-cli#cds-debug) section of the CLI topic in Capire) (_SAP Developer News 12 Feb 2026, with DJ_)
+
+### 4 Released Objects in ADT
+
+📺 [Did you know](https://www.youtube.com/watch?v=-PQk6qfZLeQ&t=247s): that the released objects that are available for developer extensibility are displayed in the Project Explorer of ABAP Development Tools? (More info: The [Released Development Objects](https://help.sap.com/docs/SAP_S4HANA_CLOUD/6aa39f1ac05441e5a23f484f31e477e7/7e27832a2d494e0b98359a7f1c6edefe.html) section of the Developer Extensibility documentation in the SAP Help Portal) (_SAP Developer News 19 Feb 2026, with Shilpa_) 👈 LATEST
