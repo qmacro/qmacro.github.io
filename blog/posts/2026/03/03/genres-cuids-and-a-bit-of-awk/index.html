@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Genres, cuids and a bit of AWK</title>
+		<meta name="description" content="Using AWK to process the Genres data from the CAP bookshop sample.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="Genres, cuids and a bit of AWK">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="Using AWK to process the Genres data from the CAP bookshop sample.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2026/03/03/genres-cuids-and-a-bit-of-awk/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="genres-cuids-and-a-bit-of-awk">Genres, cuids and a bit of AWK</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2026-03-03">03 March 2026</time></li>
+	<li><a href="/tags/awk/" class="post-tag">awk</a>, </li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/cds/" class="post-tag">cds</a></li>
+</ul>
+
+<p class="post-description-main">Using AWK to process the Genres data from the CAP bookshop sample.</p>
+
+<p>One of my goals this year is to learn more about the
+<a href="https://www.awk.dev/">AWK</a> programming language. I'm interested in not only
+the beauty of the language itself and the Unix history that surrounded it, but
+in how AWK shaped one of my favourite languages of all time, Perl.</p>
+<p>In some ways AWK and <a href="https://cap.cloud.sap/docs/">CAP</a> are similar, in that
+there's beauty, power and simplicity built in. These three attributes come
+about not least because it's about the code that you <em>don't</em> have to write; the
+language (AWK) and <a href="https://qmacro.org/blog/posts/2024/11/07/five-reasons-to-use-cap/#1-the-code-is-in-the-framework-not-outside-of-it">the
+framework</a>
+(CAP) take care of much of the ceremony, allowing you to focus on the heart of
+the task at hand, and to write the smallest amount of code necessary to get the job
+done and minimise the maintenance burden for yourself.</p>
+<h2 id="challenge">Challenge</h2>
+<p>It's from the CAP context that a small challenge arose. The initial data
+supplied with the &quot;bookshop&quot;
+<a href="https://cap.cloud.sap/docs/tools/cds-cli#sample">sample</a> contains Books,
+Authors and Genres. But I don't like the aesthetics of the Genre IDs; they're
+GUIDs, as defined by the <code>cuid</code> aspect in the schema:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> {
+  cuid,
+  sap
+} <span class="token from keyword">from</span> '@sap/cds/common';
+
+<span class="token keyword">namespace</span> sap.capire.bookshop;
+
+<span class="token block-comment comment">/** Hierarchically organized Code List for Genres */</span>
+<span class="token keyword">entity</span> Genres : cuid, sap.common.CodeList {
+  parent   : <span class="token association-composition keyword">Association to Genres</span>;
+  children : <span class="token association-composition keyword">Composition of many Genres</span>
+               <span class="token cqlkeywords keyword">on</span> children.parent = $self;
+}</code></pre>
+<p>The corresponding initial data (in <code>db/data/sap.capire.bookshop.Genres.csv</code>)
+looks like this (many records have been omitted for brevity):</p>
+<pre class="language-csv" tabindex="0"><code class="language-csv"><span class="token value">ID</span><span class="token punctuation">,</span><span class="token value">parent_ID</span><span class="token punctuation">,</span><span class="token value">name</span>
+<span class="token value">10aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token punctuation">,</span><span class="token value">Fiction</span>
+<span class="token value">11aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">10aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">Drama</span>
+<span class="token value">12aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">10aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">Poetry</span>
+<span class="token value">13aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">10aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">Fantasy</span>
+<span class="token value">131aaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">13aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">Fairy Tale</span>
+<span class="token value">132aaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">13aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">Epic Fantasy</span>
+<span class="token value">133aaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">13aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">High Fantasy</span>
+<span class="token value">134aaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">13aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">Gothic</span>
+<span class="token value">14aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">10aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">Science Fiction</span>
+<span class="token value">141aaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">14aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">Utopian and Dystopian</span>
+<span class="token value">1411aaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">141aaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">Utopian</span>
+<span class="token value">1412aaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">141aaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">Dystopian</span>
+<span class="token value">14121aaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">1412aaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">Cyberpunk</span>
+<span class="token value">141211aa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">14121aaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">Steampunk</span>
+<span class="token value">...</span>
+<span class="token value">18aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">10aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">Short Story</span>
+<span class="token value">19aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">10aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">Graphic Novel</span>
+<span class="token value">20aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token punctuation">,</span><span class="token value">Non-Fiction</span>
+<span class="token value">21aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">20aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">Biography</span>
+<span class="token value">22aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">21aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">Autobiography</span>
+<span class="token value">23aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">20aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">Essay</span>
+<span class="token value">24aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">20aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa</span><span class="token punctuation">,</span><span class="token value">Speech</span></code></pre>
+<p>This hurts my eyes, and I wanted to rebuild this dataset with integer IDs,
+while keeping the same hierarchy<a href="#footnotes"><sup>1</sup></a>. As a bonus, I
+wanted to be able to visualise that hierarchy too.</p>
+<h2 id="exploration">Exploration</h2>
+<p>While I was on a similar journey to <a href="/tags/jq/">learn more about jq</a>, I built
+an interactive jq REPL style data explorer, using tools in my personal
+development environment (i.e. my Unix shell). I described that explorer (called
+<a href="https://github.com/qmacro/dotfiles/blob/main/scripts/jqte">jqte</a>) in the blog
+post <a href="/blog/posts/2024/01/09/a-simple-jq-repl-with-tmux-bash-vim-and-entr/">A simple jq REPL with tmux, bash, vim and
+entr</a>.</p>
+<p>I found <code>jqte</code> so useful that I thought a similar AWK REPL style data explorer
+would be useful too, so I created one, called
+<a href="https://github.com/qmacro/dotfiles/blob/main/scripts/ate">ate</a> (AWK terminal
+explorer, I guess).</p>
+<p><img src="/images/2026/03/ate.png" alt="Exploring and manipulating the Genres CSV data with AWK in the 'ate'
+tool"></p>
+<p>It's great, because:</p>
+<ul>
+<li>I can see the original data (top right)</li>
+<li>I get immediate feedback and output (left) ...</li>
+<li>... as soon as I modify any of my AWK incantations (bottom right)</li>
+</ul>
+<h2 id="solution">Solution</h2>
+<p>Here's the AWK script I came up with, bearing in mind that I've not written
+very much AWK at all, and probably most of what I have written has been very
+simple, in one-liners. I have written some <a href="#notes">notes</a> below on how the
+script works.</p>
+<pre class="language-awk" tabindex="0"><code class="language-awk"><span class="token keyword">function</span> <span class="token function">getparent</span><span class="token punctuation">(</span>sid<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span> parent<span class="token punctuation">[</span>sid<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token string">""</span>
+  <span class="token keyword">return</span> <span class="token function">getparent</span><span class="token punctuation">(</span>parent<span class="token punctuation">[</span>sid<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token string">"/"</span> name<span class="token punctuation">[</span>parent<span class="token punctuation">[</span>sid<span class="token punctuation">]</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">BEGIN</span> <span class="token punctuation">{</span>
+  OFS <span class="token operator">=</span> FS <span class="token operator">=</span> <span class="token string">","</span><span class="token punctuation">;</span>
+  DIR <span class="token operator">=</span> <span class="token string">"genres"</span><span class="token punctuation">;</span>
+  <span class="token function">system</span><span class="token punctuation">(</span><span class="token string">"rm -rf /tmp/"</span> DIR<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+NR <span class="token operator">==</span> <span class="token number">1</span>
+
+NR <span class="token operator">></span> <span class="token number">1</span> <span class="token punctuation">{</span>
+  sid <span class="token operator">=</span> NR <span class="token operator">-</span> <span class="token number">1</span>
+  id<span class="token punctuation">[</span><span class="token variable">$1</span><span class="token punctuation">]</span> <span class="token operator">=</span> sid
+  name<span class="token punctuation">[</span>sid<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token variable">$3</span>
+  parent<span class="token punctuation">[</span>sid<span class="token punctuation">]</span> <span class="token operator">=</span> id<span class="token punctuation">[</span><span class="token variable">$2</span><span class="token punctuation">]</span>
+  <span class="token keyword">print</span> sid<span class="token punctuation">,</span> parent<span class="token punctuation">[</span>sid<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token variable">$3</span>
+  <span class="token function">system</span><span class="token punctuation">(</span><span class="token string">"mkdir -p /tmp/"</span> DIR <span class="token function">getparent</span><span class="token punctuation">(</span>sid<span class="token punctuation">)</span> <span class="token string">"/"</span> <span class="token variable">$3</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+<p>This script turns the above CSV records into ones that have (to me) much more
+pleasant identifiers:</p>
+<pre class="language-csv" tabindex="0"><code class="language-csv"><span class="token value">ID</span><span class="token punctuation">,</span><span class="token value">parent_ID</span><span class="token punctuation">,</span><span class="token value">name</span>
+<span class="token value">1</span><span class="token punctuation">,</span><span class="token punctuation">,</span><span class="token value">Fiction</span>
+<span class="token value">2</span><span class="token punctuation">,</span><span class="token value">1</span><span class="token punctuation">,</span><span class="token value">Drama</span>
+<span class="token value">3</span><span class="token punctuation">,</span><span class="token value">1</span><span class="token punctuation">,</span><span class="token value">Poetry</span>
+<span class="token value">4</span><span class="token punctuation">,</span><span class="token value">1</span><span class="token punctuation">,</span><span class="token value">Fantasy</span>
+<span class="token value">5</span><span class="token punctuation">,</span><span class="token value">4</span><span class="token punctuation">,</span><span class="token value">Fairy Tale</span>
+<span class="token value">6</span><span class="token punctuation">,</span><span class="token value">4</span><span class="token punctuation">,</span><span class="token value">Epic Fantasy</span>
+<span class="token value">7</span><span class="token punctuation">,</span><span class="token value">4</span><span class="token punctuation">,</span><span class="token value">High Fantasy</span>
+<span class="token value">8</span><span class="token punctuation">,</span><span class="token value">4</span><span class="token punctuation">,</span><span class="token value">Gothic</span>
+<span class="token value">9</span><span class="token punctuation">,</span><span class="token value">1</span><span class="token punctuation">,</span><span class="token value">Science Fiction</span>
+<span class="token value">10</span><span class="token punctuation">,</span><span class="token value">9</span><span class="token punctuation">,</span><span class="token value">Utopian and Dystopian</span>
+<span class="token value">11</span><span class="token punctuation">,</span><span class="token value">10</span><span class="token punctuation">,</span><span class="token value">Utopian</span>
+<span class="token value">12</span><span class="token punctuation">,</span><span class="token value">10</span><span class="token punctuation">,</span><span class="token value">Dystopian</span>
+<span class="token value">13</span><span class="token punctuation">,</span><span class="token value">12</span><span class="token punctuation">,</span><span class="token value">Cyberpunk</span>
+<span class="token value">14</span><span class="token punctuation">,</span><span class="token value">13</span><span class="token punctuation">,</span><span class="token value">Steampunk</span>
+<span class="token value">...</span>
+<span class="token value">36</span><span class="token punctuation">,</span><span class="token value">1</span><span class="token punctuation">,</span><span class="token value">Short Story</span>
+<span class="token value">37</span><span class="token punctuation">,</span><span class="token value">1</span><span class="token punctuation">,</span><span class="token value">Graphic Novel</span>
+<span class="token value">38</span><span class="token punctuation">,</span><span class="token punctuation">,</span><span class="token value">Non-Fiction</span>
+<span class="token value">39</span><span class="token punctuation">,</span><span class="token value">38</span><span class="token punctuation">,</span><span class="token value">Biography</span>
+<span class="token value">40</span><span class="token punctuation">,</span><span class="token value">39</span><span class="token punctuation">,</span><span class="token value">Autobiography</span>
+<span class="token value">41</span><span class="token punctuation">,</span><span class="token value">38</span><span class="token punctuation">,</span><span class="token value">Essay</span>
+<span class="token value">42</span><span class="token punctuation">,</span><span class="token value">38</span><span class="token punctuation">,</span><span class="token value">Speech</span></code></pre>
+<p>You may have noticed the <code>system( ... )</code> call in the script. This is related to
+the visualisation part of the challenge.</p>
+<p>To address this part, I had decided not to reinvent any wheels and use the
+venerable <a href="https://en.wikipedia.org/wiki/Tree_(command)">tree</a> facility
+available almost everywhere, which is designed to show files and directories in
+a hierarchical view. So all I needed was to create a hierarchy of directories,
+where each directory was a genre, with optional parent and children, and then
+display it with <code>tree</code>. The result looks like this:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">genres
+├── Fiction
+│   ├── Adventure
+│   ├── Drama
+│   ├── Fantasy
+│   │   ├── Epic
+│   │   ├── Fairy
+│   │   ├── Gothic
+│   │   └── High
+│   ├── Graphic
+│   ├── Mystery
+│   │   ├── Cozy
+│   │   ├── Crime
+│   │   │   ├── Detective
+│   │   │   ├── Suspense
+│   │   │   └── Thriller
+│   │   │       ├── Legal
+│   │   │       ├── Medical
+│   │   │       ├── Police
+│   │   │       └── Spy
+│   │   └── Noir
+│   │       ├── Nordic
+│   │       └── Tart
+│   ├── Poetry
+│   ├── Romance
+│   │   ├── Contemporary
+│   │   ├── Historical
+│   │   └── Romantic
+│   ├── Science
+│   └── Short
+└── Non-Fiction
+    ├── Biography
+    │   └── Autobiography
+    ├── Essay
+    └── Speech</code></pre>
+<h2 id="notes">Notes</h2>
+<p>Here are some notes on the content of the script, the small size of which is a
+testament to the power, beauty and simplicity of AWK and the Unix toolset,
+rather than any skill of mine.</p>
+<ul>
+<li>Records, which contain fields, are processed one by one in AWK.</li>
+<li>There's a <code>PATTERN - ACTION</code> pair approach to thinking about what you want to
+happen for each record.</li>
+<li>In each pair's case, the pattern come first, then the corresponding action is
+defined in a <code>{ ... }</code> block.</li>
+<li>If the pattern matches, then the action is carried out.</li>
+<li>There are special patterns, one of which, <code>BEGIN</code>, I use here to set a few
+things up.</li>
+<li>There are many built-in variables; in the <code>BEGIN</code> section I'm setting the
+(input) field separator <code>FS</code> and the output field separator <code>OFS</code>; also used
+in this script is <code>NR</code> which is the number of the record being currently
+processed.</li>
+<li>As well as these built-in &quot;system&quot; variables, the variables <code>$1</code>, <code>$2</code>, <code>$3</code>
+and so on refer to the individual fields in a record (and <code>$0</code> refers to the
+entire record)</li>
+<li>AWK can make system calls, as you can also see here where I remove any
+previously created directory hierarchy in <code>/tmp/genres/</code> at the start.</li>
+<li>The default action is to print the entire record, which I use for the first
+record (pattern <code>NR == 1</code>) to pass through the CSV header line to the output
+untouched</li>
+<li>Processing is done for each of the actual CSV records (where the pattern <code>NR &gt; 1</code> holds
+true, basically), where I derive a simple (integer) ID in <code>sid</code>
+and then create lookups (using AWK's array structure which is associative)
+for the IDs, genre names, and genre parents (where appropriate).</li>
+<li>Variables (including arrays) benefit from
+<a href="https://en.wikipedia.org/wiki/Autovivification">autovivification</a><a href="#footnotes"><sup>2</sup></a>, which
+means I don't need to worry about declaring or initialising anything.</li>
+<li>The <code>print</code> statement is where I output the CSV records each with their (and
+their parent's) simpler IDs.</li>
+<li>I also invoke a <code>mkdir</code> command to create a directory within <code>/tmp/genres/</code>
+to represent the current genre.</li>
+<li>The core of this relies on the <code>getparent</code> function defined at the top, which
+recursively backtracks to derive the complete parent path.</li>
+</ul>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>I am still fascinated by the simplicity of command line tools, flat file data
+processing and little languages like AWK, whose size belies its power and
+utility.</p>
+<p>If you want to learn a little more about AWK, I would definitely recommend the
+paper <a href="https://www.awk.dev/awk.spe.pdf">Awk - A Pattern Scanning and Processing
+Language</a>, concise and compact, just like AWK.</p>
+<h2 id="footnotes">Footnotes</h2>
+<ol>
+<li>Yes I know there's also a corresponding <code>.texts.csv</code> file that I should also
+convert, but I would rather just delete this file, as it's just initial data
+for testing in all cases, anyway. I may also want to change the type of the
+<code>Genres:ID</code> element to <code>Integer</code> itself. But basically, this excursion was more
+about AWK than genre data.</li>
+<li>It's fascinating that the linked Wikipedia page entry on autovivification
+specifically refers to Perl which as I've mentioned was heavily influenced
+by AWK as well as other contemporary languages and tools.</li>
+</ol>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2026/02/17/improving-the-sap-community-together-one-comment-at-a-time/">Improving the SAP Community together, one comment at a time</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2026/03/03/genres-cuids-and-a-bit-of-awk/` was built on 2026-03-03T14:18:23.056Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
