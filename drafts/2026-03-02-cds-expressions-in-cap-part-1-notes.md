@@ -27,11 +27,10 @@ CSN, CQL & CQN and CXL & CXN).
 [07:05](https://www.youtube.com/live/aiE20i5BP70?t=425s) A first look at the
 "cxl-bookshop" project, specifically the entities and service definition.
 Patrice compiled (with `cds compile db/schema.cds`) the schema level
-definitions to show the relationship between CDL (human) and the corresponding
-CSN (machine).
+definitions to show the relationship between the human-first [CDL](https://cap.cloud.sap/docs/cds/cdl) (Conceptual Definition Language) and the corresponding machine-first [CSN](https://cap.cloud.sap/docs/cds/csn) (Core Schema Notation).
 
 [11:38](https://www.youtube.com/live/aiE20i5BP70?t=698s) Next in the CDS
-language family overview is CQL (CDS Query Language). An example was given in
+language family overview is the human-first [CQL](https://cap.cloud.sap/docs/cds/cql) (CDS Query Language) and corresponding machine-first equivalent [CQNhttps://cap.cloud.sap/docs/cds/cqn) (CDS Query Notation). An example was given in
 the context of a cds REPL session (started with `cds repl --run .`). The
 example uses a postfix projection to specify the desired column (element),
 instead of the more SQL-like `SELECT title from Books` (the resulting query is
@@ -48,3 +47,8 @@ cds.ql {
 ```
 
 This shows the CQL and the corresponding CQN.
+
+[19:58](https://www.youtube.com/live/aiE20i5BP70?t=1198s) The final language pair, the human-first [CXL](https://cap.cloud.sap/docs/cds/cxl) (CDS Expression Language) and the corresponding machine-first [CXN](https://cap.cloud.sap/docs/cds/cxn) (CDS Expression Notation) (at this point the CXL documentation in Capire was still under construction, but exists now).
+
+[23:58](https://www.youtube.com/live/aiE20i5BP70?t=1430s) Looking at the simplest expression, with the (context-free) expression parser `cds.parse.expr`.
+
