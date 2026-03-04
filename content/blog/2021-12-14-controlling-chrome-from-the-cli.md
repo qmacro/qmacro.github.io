@@ -5,6 +5,7 @@ tags:
   - autodidactics
   - chrome
   - shell
+  - awk
 ---
 Here's how I used the chrome-cli tool to help me open up URLs in different tabs in a new Chrome window. From the command line.
 <!--excerpt-->

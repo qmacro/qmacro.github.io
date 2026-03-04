@@ -3,6 +3,7 @@ date: 2019-10-23
 title: Shell power and simplicity
 tags:
   - language-ramblings
+  - awk
 ---
 
 Sometimes we overlook the power of the shell, because the terminal context in which it's used is seen as outdated. That's far from the truth; in fact I think it would be a shame to lose sight of some fundamental and simple shell programming concepts which are as relevant, if not more, today, as they were ten years ago.

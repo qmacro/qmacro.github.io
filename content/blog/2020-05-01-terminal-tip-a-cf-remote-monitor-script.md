@@ -5,6 +5,7 @@ tags:
   - sapcommunity
   - terminal
   - terminaltip
+  - awk
 ---
 In the previous terminal tip ([remotely monitor a CF
 deployment](/blog/posts/2020/04/24/terminal-tip:-remotely-monitor-a-cf-deployment/))
@@ -24,7 +25,7 @@ First, let's see the script in its entirety:
 ```shell
 #!/usr/bin/env bash
 
-getopsid () { cf mta-ops | sed '1,3d' | head -1 | awk '{print $1}'; }                                                                   
+getopsid () { cf mta-ops | sed '1,3d' | head -1 | awk '{print $1}'; }
 
 echo -n Searching for MTA operation
 
@@ -50,7 +51,7 @@ Now let's take it a step at a time.
 The first line looks like this:
 
 ```shell
-getopsid () { cf mta-ops | sed '1,3d' | head -1 | awk '{print $1}'; }                                                                   
+getopsid () { cf mta-ops | sed '1,3d' | head -1 | awk '{print $1}'; }
 ```
 
 Here we're defining a function `getopsid` that contains way to try and

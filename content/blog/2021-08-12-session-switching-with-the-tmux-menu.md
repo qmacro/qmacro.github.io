@@ -4,6 +4,7 @@ title: Session switching with the tmux menu
 tags:
   - autodidactics
   - tmux
+  - awk
 ---
 
 _Here's a way to get a simple session switcher in `tmux` using a popup menu._
