@@ -30,7 +30,7 @@ At around [17:30][101] Daniel introduces some of his very recent development wor
   It's the same as doing {ref,val,xpr,...} = cds.ql within the repl.
 ```
 
-As the description for `--run` says, it's a shortcut for starting the REPL and then issuing `.run <project>`. 
+As the description for `--run` says, it's a shortcut for starting the REPL and then issuing `.run <project>`.
 
 The `--use` feature is a little more intriguing, in that it will import, into the REPL's global environment, the values exported by the specified feature. Daniel shows an example for `cds.ql` which -- at least in his bleeding edge developer version -- includes new, simple utility functions `ref`, `val`, `xpr` and `expand` that make it easier to manually construct CQN representations of queries (which can otherwise be quite tricky with all the bracket notation) when working in the REPL.
 
@@ -78,15 +78,15 @@ While building up this example, Daniel remarks that:
 
 > "CAP CDL has infix filters and so has CQN".
 
-I wanted to take a moment to think about this, and dig into [Capire][45], for two reasons: 
+I wanted to take a moment to think about this, and dig into [Capire][45], for two reasons:
 
 * it was important to understood the meaning and implication of the term "infix filter" and recognise them at the drop of a hat
 * these two DSLs (CDL and CQN) are, at least in my mind, orthogonal to one another in a couple of dimensions:
 
-|CDS DSLs|Human|Machine| 
-|-|-|-|
-|Schema|[CDL][4]|[CSN][5]|
-|Queries|[CQL][6]|[CQN][7]|
+  |CDS DSLs|Human|Machine|
+  |-|-|-|
+  |Schema|[CDL][4]|[CSN][5]|
+  |Queries|[CQL][6]|[CQN][7]|
 
 ... and I was curious to understand how an infix filter would be meaninfgul across the two differing pairs of DSLs.
 
@@ -431,7 +431,7 @@ Once the services in this "bookstore" constellation were all up and running, and
   }
 ```
 
-... it was time to become familiar with inter-service messaging. Which just works, out of the box, with zero configuration, in CAP's classic [grow as you go][33] approach to making the lives of developers, especially in design time, as easy as possible. 
+... it was time to become familiar with inter-service messaging. Which just works, out of the box, with zero configuration, in CAP's classic [grow as you go][33] approach to making the lives of developers, especially in design time, as easy as possible.
 
 When Daniel entered a review on the [Vue.js][34] based frontend served by the CAP server serving `ReviewsService` on 4005, we saw in the logs of that CAP server something like this:
 
@@ -509,7 +509,7 @@ Service {
 The handler's function signature uses `eve` as the parameter name, to underline the point above, in that it doesn't matter whether a request (`req`) or a message (`msg`) is (sent and) received, what matters is that it's "just an event (with a small 'e') handler".
 
 Next, `a`[<sup>8</sup>](#footnote-8):
- 
+
 ```log
 > (a = new cds.Service).on('some event', msg => b.send('hey see', msg))
 Service {
