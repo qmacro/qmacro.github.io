@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>CDS expressions in CAP - notes on Part 1</title>
+		<meta name="description" content="Notes to accompany Part 1 of the mini-series on the core expression language in CDS.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="CDS expressions in CAP - notes on Part 1">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="Notes to accompany Part 1 of the mini-series on the core expression language in CDS.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2026/03/02/cds-expressions-in-cap-notes-on-part-1/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 31%, 39%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="cds-expressions-in-cap-notes-on-part-1">CDS expressions in CAP - notes on Part 1</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2026-03-02">02 March 2026</time></li>
+	<li><a href="/tags/cds/" class="post-tag">cds</a>, </li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/cql/" class="post-tag">cql</a>, </li>
+	<li><a href="/tags/cxl/" class="post-tag">cxl</a>, </li>
+	<li><a href="/tags/handsonsapdev/" class="post-tag">handsonsapdev</a></li>
+</ul>
+
+<p class="post-description-main">Notes to accompany Part 1 of the mini-series on the core expression language in CDS.</p>
+
+<p>See the <a href="/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/">series
+post</a>
+for an overview of all the episodes.</p>
+<h2 id="notes">Notes</h2>
+<p><a href="https://www.youtube.com/live/aiE20i5BP70?t=0s">00:00</a> Introductions.</p>
+<p><a href="https://www.youtube.com/live/aiE20i5BP70?t=300s">05:00</a> A first look at
+expressions in the context of <a href="https://pages.github.tools.sap/cap/docs/releases/2025/dec25#declarative-constraints">the new Declarative Constraints
+feature</a>.</p>
+<p><a href="https://www.youtube.com/live/aiE20i5BP70?t=360s">06:00</a> An overview of CDS and
+the languages within the <a href="https://cap.cloud.sap/docs/cds/">CDS</a> family (CDL &amp;
+CSN, CQL &amp; CQN and CXL &amp; CXN).</p>
+<p><a href="https://www.youtube.com/live/aiE20i5BP70?t=425s">07:05</a> A first look at the
+&quot;cxl-bookshop&quot; project, specifically the entities and service definition.
+Patrice compiled (with <code>cds compile db/schema.cds</code>) the schema level
+definitions to show the relationship between the human-first
+<a href="https://cap.cloud.sap/docs/cds/cdl">CDL</a> (Conceptual Definition Language) and
+the corresponding machine-first <a href="https://cap.cloud.sap/docs/cds/csn">CSN</a> (Core
+Schema Notation).</p>
+<p><a href="https://www.youtube.com/live/aiE20i5BP70?t=698s">11:38</a> Next in the CDS
+language family overview is the human-first
+<a href="https://cap.cloud.sap/docs/cds/cql">CQL</a> (CDS Query Language) and
+corresponding machine-first equivalent
+<a href="https://cap.cloud.sap/docs/cds/cqn">CQN</a> (CDS Query Notation). An example was
+given in the context of a cds REPL session (started with <code>cds repl --run .</code>).
+The example uses a postfix projection to specify the desired column (element),
+instead of the more SQL-like <code>SELECT title from Books</code> (the resulting query is
+the same):</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q <span class="token operator">=</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string"> SELECT from Books { title }</span><span class="token template-punctuation string">`</span></span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'Books'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'title'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>This shows the CQL and the corresponding CQN.</p>
+<p><a href="https://www.youtube.com/live/aiE20i5BP70?t=1198s">19:58</a> The final language
+pair, the human-first <a href="https://cap.cloud.sap/docs/cds/cxl">CXL</a> (CDS Expression
+Language) and the corresponding machine-first
+<a href="https://cap.cloud.sap/docs/cds/cxn">CXN</a> (CDS Expression Notation) (at this
+point the CXL documentation in Capire was still under construction, but exists
+now).</p>
+<p><a href="https://www.youtube.com/live/aiE20i5BP70?t=1643s">27:23</a> Looking at very
+simple expressions, trying out the (context-free) expression parser
+<code>cds.parse.expr</code> to parse a CXL expression to the internal CXN
+representation:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> cds<span class="token punctuation">.</span>parse<span class="token punctuation">.</span>expr<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string"> 1 </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span></code></pre>
+<p>Here's one with a binary operator (<code>+</code>), taking two operands:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> cds<span class="token punctuation">.</span>parse<span class="token punctuation">.</span>expr<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string"> 1 + 1 </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">{</span> <span class="token literal-property property">xpr</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token string">'+'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span></code></pre>
+<p><a name="annotation"></a>
+<a href="https://www.youtube.com/live/aiE20i5BP70?t=1741s">29:01</a> An example in the
+context of declarative constraints, where validation is added to a service
+entity (which makes sense as they act as functional facets to the underlying
+persistence layer), in particular, to the <code>stock</code> element of the <code>Books</code>
+entity:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> {sap.capire.bookshop <span class="token cqlkeywords keyword">as</span> my} <span class="token from keyword">from</span> '../db/schema';
+
+<span class="token keyword">service</span> AdminService {
+  <span class="token keyword">entity</span> Books   <span class="token cqlkeywords keyword">as</span> <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> my.Books;
+  <span class="token keyword">entity</span> Authors <span class="token cqlkeywords keyword">as</span> <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> my.Authors;
+}
+
+annotate AdminService.Books:stock with <span class="token annotation important">@assert:</span> (
+  case
+    <span class="token cdl-keyword keyword">when</span> stock &lt; 0 <span class="token cdl-keyword keyword">then</span> 'stock must not be negative'
+    <span class="token cdl-keyword keyword">when</span> stock > 1000 <span class="token cdl-keyword keyword">then</span> 'stock exceeds maximum limit of 1000'
+  <span class="token cdl-keyword keyword">end</span>
+);</code></pre>
+<p>Note that here we have:</p>
+<ul>
+<li>the <code>annotate</code> directive (CDL)</li>
+<li>the <code>@assert</code> annotation (also CDL)</li>
+<li>the <code>case ... when ... then ... end</code> expression (CXL)</li>
+</ul>
+<p>There was a brief discussion on how <a href="https://cap.cloud.sap/docs/cds/cdl#expressions-as-annotation-values">expressions in
+annotations</a>
+should be enclosed in parentheses (as used in this annotation example), which
+also allows full compiler support and also code completion.</p>
+<p><a href="https://www.youtube.com/live/aiE20i5BP70?t=2098s">34:58</a> Exercising the
+constraint, from within the cds REPL. First, an overview of the entities:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>AdminService<span class="token punctuation">.</span>entities<span class="token punctuation">)</span>
+<span class="token punctuation">[</span>
+  <span class="token string">'Books'</span><span class="token punctuation">,</span>
+  <span class="token string">'Authors'</span><span class="token punctuation">,</span>
+  <span class="token string">'Genres'</span><span class="token punctuation">,</span>
+  <span class="token string">'Genres.texts'</span><span class="token punctuation">,</span>
+  <span class="token string">'Currencies'</span><span class="token punctuation">,</span>
+  <span class="token string">'Currencies.texts'</span><span class="token punctuation">,</span>
+  <span class="token string">'Books.texts'</span>
+<span class="token punctuation">]</span></code></pre>
+<p>and then some destructuring to get the <code>Books</code> entity from the <code>AdminService</code>:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token punctuation">{</span> Books <span class="token punctuation">}</span> <span class="token operator">=</span> AdminService<span class="token punctuation">.</span>entities
+<span class="token punctuation">[</span>object Function<span class="token punctuation">]</span></code></pre>
+<p>Next, the construction of an INSERT query via the <a href="https://cap.cloud.sap/docs/node.js/cds-ql#insert">fluent
+API</a> (the statement is split
+across multiple lines for readability; use the REPL's <code>.editor</code> command to
+paste in these multiple lines if you're playing along):</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> insert <span class="token operator">=</span> <span class="token constant">INSERT</span>
+<span class="token punctuation">.</span><span class="token function">into</span><span class="token punctuation">(</span>Books<span class="token punctuation">)</span>
+<span class="token punctuation">.</span><span class="token function">entries</span><span class="token punctuation">(</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span><span class="token number">567</span><span class="token punctuation">,</span> <span class="token literal-property property">author_ID</span><span class="token operator">:</span> <span class="token number">180</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Foo'</span><span class="token punctuation">,</span> <span class="token literal-property property">stock</span><span class="token operator">:</span> <span class="token operator">-</span><span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">568</span><span class="token punctuation">,</span> <span class="token literal-property property">author_ID</span><span class="token operator">:</span> <span class="token number">180</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Foo 2'</span><span class="token punctuation">,</span> <span class="token literal-property property">stock</span><span class="token operator">:</span> <span class="token number">1001</span> <span class="token punctuation">}</span>
+<span class="token punctuation">)</span></code></pre>
+<p>which gives:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript">cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">INSERT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">into</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'AdminService.Books'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">entries</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">567</span><span class="token punctuation">,</span> <span class="token literal-property property">author_ID</span><span class="token operator">:</span> <span class="token number">180</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Foo'</span><span class="token punctuation">,</span> <span class="token literal-property property">stock</span><span class="token operator">:</span> <span class="token operator">-</span><span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">568</span><span class="token punctuation">,</span> <span class="token literal-property property">author_ID</span><span class="token operator">:</span> <span class="token number">180</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Foo 2'</span><span class="token punctuation">,</span> <span class="token literal-property property">stock</span><span class="token operator">:</span> <span class="token number">1001</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<blockquote>
+<p>At this point, this query was <code>await</code>ed, with an unexpected result. That's
+because using <code>await</code> on a query object will by default invoke <code>db.run()</code>,
+sending that query object as an argument (i.e. <code>db.run(insert)</code> here).
+However, this <code>db</code> service is the &quot;wrong&quot; one - it's the persistence-layer
+database service, rather than the <code>AdminService</code> at which level we have our
+declarative constraint. This is why the insertion of the two new book records
+was successful (at
+<a href="https://www.youtube.com/live/aiE20i5BP70?t=2390s">39:50</a>).</p>
+</blockquote>
+<p>Sending this to the <code>AdminService</code> to be executed:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> AdminService<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>insert<span class="token punctuation">)</span></code></pre>
+<p>shows us the result of the constraint:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> Uncaught <span class="token punctuation">[</span>Error<span class="token operator">:</span> <span class="token constant">MULTIPLE_ERRORS</span><span class="token punctuation">]</span> <span class="token punctuation">{</span>
+  <span class="token literal-property property">details</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token literal-property property">status</span><span class="token operator">:</span> <span class="token number">400</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">code</span><span class="token operator">:</span> <span class="token string">'ASSERT'</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">'stock'</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">numericSeverity</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
+      <span class="token string-property property">'@Common.numericSeverity'</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token string">'stock must not be negative'</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token punctuation">{</span>
+      <span class="token literal-property property">status</span><span class="token operator">:</span> <span class="token number">400</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">code</span><span class="token operator">:</span> <span class="token string">'ASSERT'</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">'stock'</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">numericSeverity</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
+      <span class="token string-property property">'@Common.numericSeverity'</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token string">'stock exceeds maximum limit of 1000'</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<p><a href="https://www.youtube.com/live/aiE20i5BP70?t=2785s">46:25</a> A brief comparison
+between the <code>Books</code> definition at the persistence (&quot;db&quot;) level from
+<code>cds.entities</code> and the <code>Books</code> definition in the <code>AdminService</code> at the service
+(&quot;srv&quot;) level. This is effectively the difference between A and B where:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> {sap.capire.bookshop <span class="token cqlkeywords keyword">as</span> my} <span class="token from keyword">from</span> '../db/schema';
+
+<span class="token keyword">service</span> AdminService {
+  <span class="token keyword">entity</span> Books <span class="token cqlkeywords keyword">as</span> <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> my.Books;
+           ^                       ^
+           |                       |
+           B                       A</code></pre>
+<ul>
+<li>A <code>my.Books</code> is from <code>sap.capire.bookshop</code> in <code>db/schema</code></li>
+<li>B <code>Books</code> is the entity defined in <code>AdminService</code> as a projection on
+<code>my.Books</code> in A</li>
+</ul>
+<p>Comparing the artifacts and their CSN shows differences that all make sense
+(each of these comparisons shows A first, then B):</p>
+<ul>
+<li>
+<p>the artifacts' <code>name</code> properties (<code>Books.name</code>) are different:
+<code>sap.capire.bookshop.Books</code> vs <code>AdminService.Books</code></p>
+</li>
+<li>
+<p>reflecting this, the scope name prefixes are different in each reference,
+with A being <code>sap.capire.bookshop</code> and B being <code>AdminService</code>, for example:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token literal-property property">author</span><span class="token operator">:</span> Association <span class="token punctuation">{</span>
+  <span class="token operator">...</span>
+  <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">'sap.capire.bookshop.Authors'</span>
+<span class="token punctuation">}</span></code></pre>
+<p>vs</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token literal-property property">author</span><span class="token operator">:</span> Association <span class="token punctuation">{</span>
+  <span class="token operator">...</span>
+  <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">'AdminService.Authors'</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li>
+<p>each association in the service level CSN has an additional annotation
+<code>@Common.ValueList.viaAssociation</code>, for example (although we didn't dwell on
+this at all):</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript">  <span class="token literal-property property">genre</span><span class="token operator">:</span> Association <span class="token punctuation">{</span>
+    <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'cds.Association'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">target</span><span class="token operator">:</span> <span class="token string">'AdminService.Genres'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">keys</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'ID'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token string-property property">'$generatedFieldName'</span><span class="token operator">:</span> <span class="token string">'genre_ID'</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token string-property property">'@Common.ValueList.viaAssociation'</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token string-property property">'='</span><span class="token operator">:</span> <span class="token string">'genre'</span> <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span></code></pre>
+</li>
+<li>
+<p>as pointed out in the conversation, the service level CSN has an extra
+<code>projection</code> property, which makes sense given how this is defined:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token literal-property property">projection</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Books'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span></code></pre>
+</li>
+</ul>
+<p>And perhaps most significantly:</p>
+<ul>
+<li>
+<p>while the <code>stock</code> element at the persistence level is defined like this:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token literal-property property">stock</span><span class="token operator">:</span> Integer <span class="token punctuation">{</span> <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'cds.Integer'</span> <span class="token punctuation">}</span></code></pre>
+<p>the projected version, thanks to the <a href="#annotation">annotation</a> applied
+specifically to <code>AdminService.Books:stock</code>, is defined like this (where can
+see the expression in CXN form):</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token literal-property property">stock</span><span class="token operator">:</span> Integer <span class="token punctuation">{</span>
+  <span class="token string-property property">'@assert'</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token string-property property">'='</span><span class="token operator">:</span> <span class="token string">"case when stock &lt; 0 then 'stock must not be negative' when stock > 1000 then 'stock exceeds maximum limit of 1000' end"</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">xpr</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">'case'</span><span class="token punctuation">,</span>
+      <span class="token string">'when'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'stock'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token string">'&lt;'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">0</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token string">'then'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token string">'stock must not be negative'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token string">'when'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'stock'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token string">'>'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">1000</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token string">'then'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token string">'stock exceeds maximum limit of 1000'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token string">'end'</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'cds.Integer'</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+</ul>
+<p><a href="https://www.youtube.com/live/aiE20i5BP70?t=3464s">57:44</a> Patrice describes the
+relationship between CXL, CQL and CDL in terms of &quot;passenger&quot; and &quot;vehicle&quot;, in
+that CXL expressions are &quot;passengers&quot; carried in the &quot;vehicles&quot; of CQL queries
+and / or CDL definitions (such as annotations and element definitions); Patrice
+illustrates this further by showing what a simple expression in CXL is parsed
+to:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> cds<span class="token punctuation">.</span>parse<span class="token punctuation">.</span>expr<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string"> author.books.genre.name </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'author'</span><span class="token punctuation">,</span> <span class="token string">'books'</span><span class="token punctuation">,</span> <span class="token string">'genre'</span><span class="token punctuation">,</span> <span class="token string">'name'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span></code></pre>
+<p>and also notes that the value of the <code>ref</code> is interpreted depending on the
+&quot;vehicle&quot; in which it is being carried.</p>
+<h2 id="further-info">Further info</h2>
+<p>Patrice also has <a href="https://github.com/patricebender/cxl-bookshop/blob/main/notes/notes-session1.md">some great notes for this
+part</a>,
+definitely worth perusing too!</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2026/02/17/improving-the-sap-community-together-one-comment-at-a-time/">Improving the SAP Community together, one comment at a time</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2026/03/03/genres-cuids-and-a-bit-of-awk/">Genres, cuids and a bit of AWK</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2026/03/02/cds-expressions-in-cap-notes-on-part-1/` was built on 2026-03-05T08:34:32.948Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
