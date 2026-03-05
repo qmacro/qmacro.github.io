@@ -1,6 +1,6 @@
 ---
 title: CDS expressions in CAP - notes on Part 1
-date: 2026-03-02
+date: 2026-03-05
 tags:
   - cds
   - cap
@@ -16,17 +16,17 @@ for an overview of all the episodes.
 
 ## Notes
 
-[00:00](https://www.youtube.com/live/aiE20i5BP70?t=0s) Introductions.
+[00:00](https://www.youtube.com/watch?v=aiE20i5BP70&t=0s) Introductions.
 
-[05:00](https://www.youtube.com/live/aiE20i5BP70?t=300s) A first look at
+[05:00](https://www.youtube.com/watch?v=aiE20i5BP70&t=300s) A first look at
 expressions in the context of [the new Declarative Constraints
 feature](https://pages.github.tools.sap/cap/docs/releases/2025/dec25#declarative-constraints).
 
-[06:00](https://www.youtube.com/live/aiE20i5BP70?t=360s) An overview of CDS and
+[06:00](https://www.youtube.com/watch?v=aiE20i5BP70&t=360s) An overview of CDS and
 the languages within the [CDS](https://cap.cloud.sap/docs/cds/) family (CDL &
 CSN, CQL & CQN and CXL & CXN).
 
-[07:05](https://www.youtube.com/live/aiE20i5BP70?t=425s) A first look at the
+[07:05](https://www.youtube.com/watch?v=aiE20i5BP70&t=425s) A first look at the
 "cxl-bookshop" project, specifically the entities and service definition.
 Patrice compiled (with `cds compile db/schema.cds`) the schema level
 definitions to show the relationship between the human-first
@@ -34,7 +34,7 @@ definitions to show the relationship between the human-first
 the corresponding machine-first [CSN](https://cap.cloud.sap/docs/cds/csn) (Core
 Schema Notation).
 
-[11:38](https://www.youtube.com/live/aiE20i5BP70?t=698s) Next in the CDS
+[11:38](https://www.youtube.com/watch?v=aiE20i5BP70&t=698s) Next in the CDS
 language family overview is the human-first
 [CQL](https://cap.cloud.sap/docs/cds/cql) (CDS Query Language) and
 corresponding machine-first equivalent
@@ -56,14 +56,14 @@ cds.ql {
 
 This shows the CQL and the corresponding CQN.
 
-[19:58](https://www.youtube.com/live/aiE20i5BP70?t=1198s) The final language
+[19:58](https://www.youtube.com/watch?v=aiE20i5BP70&t=1198s) The final language
 pair, the human-first [CXL](https://cap.cloud.sap/docs/cds/cxl) (CDS Expression
 Language) and the corresponding machine-first
 [CXN](https://cap.cloud.sap/docs/cds/cxn) (CDS Expression Notation) (at this
 point the CXL documentation in Capire was still under construction, but exists
 now).
 
-[27:23](https://www.youtube.com/live/aiE20i5BP70?t=1643s) Looking at very
+[27:23](https://www.youtube.com/watch?v=aiE20i5BP70&t=1643s) Looking at very
 simple expressions, trying out the (context-free) expression parser
 `cds.parse.expr` to parse a CXL expression to the internal CXN
 representation:
@@ -81,7 +81,7 @@ Here's one with a binary operator (`+`), taking two operands:
 ```
 
 <a name="annotation"></a>
-[29:01](https://www.youtube.com/live/aiE20i5BP70?t=1741s) An example in the
+[29:01](https://www.youtube.com/watch?v=aiE20i5BP70&t=1741s) An example in the
 context of declarative constraints, where validation is added to a service
 entity (which makes sense as they act as functional facets to the underlying
 persistence layer), in particular, to the `stock` element of the `Books`
@@ -114,7 +114,7 @@ annotations](https://cap.cloud.sap/docs/cds/cdl#expressions-as-annotation-values
 should be enclosed in parentheses (as used in this annotation example), which
 also allows full compiler support and also code completion.
 
-[34:58](https://www.youtube.com/live/aiE20i5BP70?t=2098s) Exercising the
+[34:58](https://www.youtube.com/watch?v=aiE20i5BP70&t=2098s) Exercising the
 constraint, from within the cds REPL. First, an overview of the entities:
 
 ```javascript
@@ -172,7 +172,7 @@ cds.ql {
 > database service, rather than the `AdminService` at which level we have our
 > declarative constraint. This is why the insertion of the two new book records
 > was successful (at
-> [39:50](https://www.youtube.com/live/aiE20i5BP70?t=2390s)).
+> [39:50](https://www.youtube.com/watch?v=aiE20i5BP70&t=2390s)).
 
 Sending this to the `AdminService` to be executed:
 
@@ -205,7 +205,7 @@ shows us the result of the constraint:
 }
 ```
 
-[46:25](https://www.youtube.com/live/aiE20i5BP70?t=2785s) A brief comparison
+[46:25](https://www.youtube.com/watch?v=aiE20i5BP70&t=2785s) A brief comparison
 between the `Books` definition at the persistence ("db") level from
 `cds.entities` and the `Books` definition in the `AdminService` at the service
 ("srv") level. This is effectively the difference between A and B where:
@@ -305,7 +305,7 @@ And perhaps most significantly:
   }
   ```
 
-[57:44](https://www.youtube.com/live/aiE20i5BP70?t=3464s) Patrice describes the
+[57:44](https://www.youtube.com/watch?v=aiE20i5BP70&t=3464s) Patrice describes the
 relationship between CXL, CQL and CDL in terms of "passenger" and "vehicle", in
 that CXL expressions are "passengers" carried in the "vehicles" of CQL queries
 and / or CDL definitions (such as annotations and element definitions); Patrice

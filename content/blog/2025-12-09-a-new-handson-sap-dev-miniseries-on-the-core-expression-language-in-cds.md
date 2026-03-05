@@ -18,13 +18,13 @@ channel](https://www.youtube.com/@sapdevs).
 We're starting 2026 off with an under-the-hood style mini-series exploring
 expressions in CDS.
 
-- 16 Jan 2026 [Part 1](https://www.youtube.com/watch?v=aiE20i5BP70) (replay)
-- 23 Jan 2026 [Part 2](https://www.youtube.com/watch?v=s4IZR1LBRrA) (replay)
-- 30 Jan 2026 [Part 3](https://www.youtube.com/watch?v=FVEbvHMxOIY) (replay)
-- 06 Feb 2026 [Part 4](https://www.youtube.com/watch?v=XD71N7YYuGA) (replay)
-- 13 Feb 2026 [Part 5](https://www.youtube.com/watch?v=I2Y3uC10Cs8) (replay)
-- 20 Feb 2026 [Part 6](https://www.youtube.com/watch?v=OPOH3agULQ0) (replay)
-- 27 Feb 2026 [Part 7](https://www.youtube.com/watch?v=TqfHXKKHEEU) (replay)
+- Part 1 [replay](https://www.youtube.com/watch?v=aiE20i5BP70) (16 Jan 2026) [notes](/blog/posts/2026/03/05/cds-expressions-in-cap-notes-on-part-1/)
+- Part 2 [replay](https://www.youtube.com/watch?v=s4IZR1LBRrA) (23 Jan 2026)
+- Part 3 [replay](https://www.youtube.com/watch?v=FVEbvHMxOIY) (30 Jan 2026)
+- Part 4 [replay](https://www.youtube.com/watch?v=XD71N7YYuGA) (06 Feb 2026)
+- Part 5 [replay](https://www.youtube.com/watch?v=I2Y3uC10Cs8) (13 Feb 2026)
+- Part 6 [replay](https://www.youtube.com/watch?v=OPOH3agULQ0) (20 Feb 2026)
+- Part 7 [replay](https://www.youtube.com/watch?v=TqfHXKKHEEU) (27 Feb 2026)
 
 It's all about CXL - the Core Expression Language. What's that? One of the mini
 languages[<sup>1</sup>](#footnotes) in the CDS language family that is all
