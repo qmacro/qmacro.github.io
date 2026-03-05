@@ -40,4 +40,8 @@ episodes. Use the 📺 link to jump directly to the section in the news episode.
 
 ### 5 Search ABAP CDS objects using Annotations
 
-📺 [Did you know](https://www.youtube.com/watch?v=MI7CC4ji5z0&t=390s): that you can search the CDS View entity by the annotations used? More info: The guide to [the ABAP Development Tools for Eclipse](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/about-abap-development-tools-user-guide) in the SAP Help Portal (_SAP Developer News 26 Feb 2026, with Shilpa_). 👈 LATEST
+📺 [Did you know](https://www.youtube.com/watch?v=MI7CC4ji5z0&t=390s): that you can search the CDS View entity by the annotations used? More info: The guide to [the ABAP Development Tools for Eclipse](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/about-abap-development-tools-user-guide) in the SAP Help Portal (_SAP Developer News 26 Feb 2026, with Shilpa_).
+
+### 6 Privileged access in ADT
+
+📺 [Did you know](https://www.youtube.com/watch?v=g6hDrE2ERyI&t=226s): that you can check if your data model can access the relevant data without using an access control? More info: The guide to [the ABAP Development Tools for Eclipse](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/about-abap-development-tools-user-guide) in the SAP Help Portal (_SAP Developer News 05 Mar 2026, with Shilpa_). 👈 LATEST
