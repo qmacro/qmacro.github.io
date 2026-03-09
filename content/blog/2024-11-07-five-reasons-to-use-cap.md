@@ -4,6 +4,7 @@ date: 2024-11-07
 tags:
   - cap
   - talk
+  - aspects
 ---
 
 _This is now available in audio format on the [Tech Aloud podcast][34]: [Five reasons to use CAP - DJ Adams - 07 Nov 2024][35]._
@@ -35,7 +36,7 @@ The more code you have, the more you have to test and maintain. Somewhat alarmin
 <a name="kernel-space-and-user-space"></a>
 ### Kernel space and user space
 
-In operating systems there's the concept of [kernel space and user space][2]. The kernel space is for running a privileged operating system kernel, software that has direct access to, and control over, the hardware. It's essential that this software is robust and reliable, and thoroughly tested and maintained. In contrast, user space is where the application programs and tools live. Of course, this software needs to have the same qualities as the kernel, but perhaps not to the same extreme degree. Just imagine if every tool, every application, every piece of user-facing software had to access and manipulate the hardware resources itself? It would be chaos, and software development would not only be incredibly difficult but be so unstable as to be almost unviable. 
+In operating systems there's the concept of [kernel space and user space][2]. The kernel space is for running a privileged operating system kernel, software that has direct access to, and control over, the hardware. It's essential that this software is robust and reliable, and thoroughly tested and maintained. In contrast, user space is where the application programs and tools live. Of course, this software needs to have the same qualities as the kernel, but perhaps not to the same extreme degree. Just imagine if every tool, every application, every piece of user-facing software had to access and manipulate the hardware resources itself? It would be chaos, and software development would not only be incredibly difficult but be so unstable as to be almost unviable.
 
 In the world of hardware and infrastructure there's been a philosophy over the past decade or two that has followed this line of (sensible) reasoning - why run hardware yourself, when you can have it provided for you? The cloud is the kernel space, leaving us to concentrate on the user space of building and running applications. All the hard work of power provision, cooling, scaling and more is handled by the hyperscalers.
 
@@ -48,7 +49,7 @@ While CAP can do so much more than merely facilitate the provision of OData serv
 
 You may recall the effort required to create and fully provision a complete OData service on the ABAP stack; defining the artifacts, the shape, in the SEGW transaction, and then hand crafting all the data provider classes to bring about everything needed to have your service respond to all OData operations - Create, Read, Update, Delete and Query (CRUD+Q) - even in their most basic form. That was a lot of user space code that you had to write and test and subsequently debug and maintain, even before you got to any custom logic. And this was needed for each and every OData service!
 
-Stepping outside of the ABAP stack for a second, and you had the Olingo library in the Java world with which you could do something similar. But the work there to get even a basic CRUD+Q OData service up and running was as much if not more work. 
+Stepping outside of the ABAP stack for a second, and you had the Olingo library in the Java world with which you could do something similar. But the work there to get even a basic CRUD+Q OData service up and running was as much if not more work.
 
 With CAP, none of that is necessary. In the time it takes to boil some water for [a nice hot cup of tea][3], you have a fully fledged OData service running and responding to all CRUD+Q operations ... _without you having to have written a single line of code!_
 
@@ -133,7 +134,7 @@ As the [Agnostic Design][14] section of Capire puts it: our development investme
 <a name="4-by-developers-for-developers"></a>
 ## 4 By developers for developers
 
-The design time aspects of CAP are a developer's dream. Earlier I described how CAP's philosophy is reified in the form of first class facilities for domain modelling and the domain expert. It is also reified in the form of affordances, design choices, tools and conventions to optimise the developer experience. From the moment you start using CAP as a developer, you can feel that it's been conceived based on vast foundational layers of good practice tempered by a realism that is refreshing, and has been brought to life by real developers. By developers for developers. 
+The design time aspects of CAP are a developer's dream. Earlier I described how CAP's philosophy is reified in the form of first class facilities for domain modelling and the domain expert. It is also reified in the form of affordances, design choices, tools and conventions to optimise the developer experience. From the moment you start using CAP as a developer, you can feel that it's been conceived based on vast foundational layers of good practice tempered by a realism that is refreshing, and has been brought to life by real developers. By developers for developers.
 
 <a name="design-time-tools"></a>
 ### Design time tools
@@ -157,7 +158,7 @@ What of the CAP server itself? In design time mode, in a similar way to how the 
 <a name="the-power-of-the-repl"></a>
 ### The power of the REPL
 
-Perhaps one of the lesser known superpowers that are granted by the design time tools to developers is the REPL. But its relative obscurity is more than matched by its power and utility. Anyone who has used a REPL in another language or development environment (they're especially prominent in LISPs, such as [Clojure][21], but also available and very useful in more mainstream languages such as Python) will understand the godlike power granted to whoever is able to wield it. And with CAP's REPL (which is based on the Node.js REPL[<sup>6</sup>](#footnotes) plus a layer of CAP server goodness) we see that in action. 
+Perhaps one of the lesser known superpowers that are granted by the design time tools to developers is the REPL. But its relative obscurity is more than matched by its power and utility. Anyone who has used a REPL in another language or development environment (they're especially prominent in LISPs, such as [Clojure][21], but also available and very useful in more mainstream languages such as Python) will understand the godlike power granted to whoever is able to wield it. And with CAP's REPL (which is based on the Node.js REPL[<sup>6</sup>](#footnotes) plus a layer of CAP server goodness) we see that in action.
 
 <a name="adding-custom-logic"></a>
 ### Adding custom logic
@@ -173,7 +174,7 @@ I'm merely scratching the surface of this theme with the features and facilities
 <a name="5-activity-and-community"></a>
 ## 5 Activity and community
 
-How could I not include one of the most appealing -- but non-technical -- aspects of CAP? The sense of community plays an important part in many software projects, especially frameworks such as CAP, which are used by a broad and diverse set of developers. And there is the activity within the CAP team itself, with a regular cadence of releases. 
+How could I not include one of the most appealing -- but non-technical -- aspects of CAP? The sense of community plays an important part in many software projects, especially frameworks such as CAP, which are used by a broad and diverse set of developers. And there is the activity within the CAP team itself, with a regular cadence of releases.
 
 <a name="cap-team-activity"></a>
 ### CAP team activity

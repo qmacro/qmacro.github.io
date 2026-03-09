@@ -6,6 +6,7 @@ tags:
   - tasc
   - cap
   - cds
+  - aspects
   - handsonsapdev
 ---
 For all resources related to this series, see the post [The Art and Science of CAP][2].
