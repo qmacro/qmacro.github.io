@@ -19,7 +19,7 @@ We're starting 2026 off with an under-the-hood style mini-series exploring
 expressions in CDS.
 
 - Part 1 [replay](https://www.youtube.com/watch?v=aiE20i5BP70) (16 Jan 2026) [notes](/blog/posts/2026/03/05/cds-expressions-in-cap-notes-on-part-1/)
-- Part 2 [replay](https://www.youtube.com/watch?v=s4IZR1LBRrA) (23 Jan 2026)
+- Part 2 [replay](https://www.youtube.com/watch?v=s4IZR1LBRrA) (23 Jan 2026) [notes](/blog/posts/2026/03/09/cds-expressions-in-cap-notes-on-part-2/)
 - Part 3 [replay](https://www.youtube.com/watch?v=FVEbvHMxOIY) (30 Jan 2026)
 - Part 4 [replay](https://www.youtube.com/watch?v=XD71N7YYuGA) (06 Feb 2026)
 - Part 5 [replay](https://www.youtube.com/watch?v=I2Y3uC10Cs8) (13 Feb 2026)
