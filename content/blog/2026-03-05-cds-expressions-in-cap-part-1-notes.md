@@ -14,6 +14,8 @@ See the [series
 post](/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/)
 for an overview of all the episodes.
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/aiE20i5BP70?si=xSpl4uDc8j0Y1jll" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 ## Notes
 
 [00:00](https://www.youtube.com/watch?v=aiE20i5BP70&t=0s) Introductions.
@@ -165,6 +167,7 @@ cds.ql {
 }
 ```
 
+<a name="invoking-run"></a>
 > At this point, this query was `await`ed, with an unexpected result. That's
 > because using `await` on a query object will by default invoke `db.run()`,
 > sending that query object as an argument (i.e. `db.run(insert)` here).
