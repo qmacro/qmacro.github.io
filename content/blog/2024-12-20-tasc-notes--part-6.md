@@ -5,8 +5,9 @@ tags:
   - tasc
   - cap
   - cds
+  - hcql
   - handsonsapdev
---- 
+---
 
 These are the notes summarising what was covered in [The Art and Science of CAP part 6][2], one episode in a mini series with Daniel Hutzel to explore the philosophy, the background, the technology history and layers that support and inform the SAP Cloud Application Programming Model.
 
@@ -480,11 +481,11 @@ Briefly, what we can discern from it is that there are log records from the `cds
 It's always worth taking a few seconds to stare at output like this. Even when it doesn't directly help the diagnosis, it will almost always add value, context and understanding.
 
 <a name="the-uncaughtexception-culprit"></a>
-### The 'uncaughtException' culprit 
+### The 'uncaughtException' culprit
 
 Through some brute-force searching through the codebase, Daniel eventually finds the problem - the [Winston logger][21], which [emits an uncaught exception][22]. The Winston logger is used by the [SAP Cloud SDK][23], which we know (if you don't, see [footnote 2](#footnote-2)) is used by the CAP server for remote connections.
 
-By means of "a light tap with a heavy stick" (essentially commenting out the offending lines) Daniel manages to prevent this uncaught exception failure in the REPL, and the remote connection is successfully set up! 
+By means of "a light tap with a heavy stick" (essentially commenting out the offending lines) Daniel manages to prevent this uncaught exception failure in the REPL, and the remote connection is successfully set up!
 
 ```log
 > cats = await cds.connect.to('CatalogService',{kind:'odata',credentials:{url:'http://localhost:4004/browse'}})
