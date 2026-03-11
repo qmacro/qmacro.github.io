@@ -420,6 +420,10 @@ generated code, this is a welcome relief, and [exactly the orientation our
 internal compass should be set
 to](https://qmacro.org/blog/posts/2024/11/07/five-reasons-to-use-cap/#1-the-code-is-in-the-framework-not-outside-of-it).
 
+## See also
+
+- [Shift left with CAP](/blog/posts/2026/02/09/shift-left-with-cap/)
+
 ## Footnotes
 
 1. As it's essentially the same as the SQL equivalent, the `case` expression
