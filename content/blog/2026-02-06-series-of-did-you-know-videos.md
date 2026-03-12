@@ -44,4 +44,8 @@ episodes. Use the 📺 link to jump directly to the section in the news episode.
 
 ### 6 Privileged access in ADT
 
-📺 [Did you know](https://www.youtube.com/watch?v=g6hDrE2ERyI&t=226s): that you can check if your data model can access the relevant data without using an access control? More info: The guide to [the ABAP Development Tools for Eclipse](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/about-abap-development-tools-user-guide) in the SAP Help Portal (_SAP Developer News 05 Mar 2026, with Shilpa_). 👈 LATEST
+📺 [Did you know](https://www.youtube.com/watch?v=g6hDrE2ERyI&t=226s): that you can check if your data model can access the relevant data without using an access control? More info: The guide to [the ABAP Development Tools for Eclipse](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/about-abap-development-tools-user-guide) in the SAP Help Portal (_SAP Developer News 05 Mar 2026, with Shilpa_).
+
+### 7 AI Launchpad Model Library
+
+📺 [Did you know](https://www.youtube.com/watch?v=3Uc8l3b5600&t=395s): that you can use the Model Library in Generative AI Hub on SAP AI Launchpad to explore the LLMs SAP is offering managed, hosted or provided remotely? More info: The [SAP AI Launchpad Model Library](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/model-library) documentation in the SAP Help Portal (_SAP Developer News 12 Mar 2026, with Kevin). 👈 LATEST
