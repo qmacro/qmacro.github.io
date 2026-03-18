@@ -511,6 +511,8 @@ Birgit Selbach's post [Declarative Programming in CAP: Less Code, More
 Value](https://community.sap.com/t5/technology-blog-posts-by-sap/declarative-programming-in-cap-less-code-more-value/ba-p/14321990)
 has also some great thoughts in this area.
 
+The blog post [Constraints, expressions and axioms in action](/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/) also [talks about](/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/#what-not-how-less-is-more) driving custom code upwards, downwards and _out_ of a project.
+
 ## Footnotes
 
 1. See [AXI002 Less is more](https://github.com/qmacro/capref/blob/main/axioms/AXI002.md).

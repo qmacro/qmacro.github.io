@@ -64,7 +64,7 @@ WHERE (Books.ID) in ((?), (?))
 
 This is executed within the transaction, straight after the record insertion, and, in the `@assert:stock` alias, surfaces either nothing or an error string (from the expression in the `@assert` annotation above); the selection is restricted to the two records specifically just inserted. If something (i.e. an error string) is surfaced from this, then the entire transaction is aborted and rolled back.
 
-[31:20](https://www.youtube.com/watch?v=s4IZR1LBRrA&t=1880s) Such checks are done implicitly, in the "before" phase, and we saw the built-in `validate_input` here:
+[31:20](https://www.youtube.com/watch?v=s4IZR1LBRrA&t=1880s) While some checks are done implicitly in the "before" phase, such as in the built-in `validate_input` here:
 
 ```javascript
 > AdminService.handlers
@@ -90,6 +90,8 @@ EventHandlers {
   ...
 }
 ```
+
+... such declarative constraints are checked in an "after" phase handler - see the [notes to part 3 of this series](/blog/posts/2026/03/20/cds-expressions-in-cap-notes-on-part-3/) for a clarification.
 
 [31:30](https://www.youtube.com/watch?v=s4IZR1LBRrA&t=1890s) At this point we start to look at one of the two questions that were asked at the very end of [part 1](/blog/posts/2026/03/05/cds-expressions-in-cap-notes-on-part-1/) by Ben: "_Would it be possible to build an expression and then re-use it for different assertions?_".
 
