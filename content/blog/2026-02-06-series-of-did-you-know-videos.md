@@ -48,4 +48,8 @@ episodes. Use the 📺 link to jump directly to the section in the news episode.
 
 ### 7 AI Launchpad Model Library
 
-📺 [Did you know](https://www.youtube.com/watch?v=3Uc8l3b5600&t=395s): that you can use the Model Library in Generative AI Hub on SAP AI Launchpad to explore the LLMs SAP is offering managed, hosted or provided remotely? More info: The [SAP AI Launchpad Model Library](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/model-library) documentation in the SAP Help Portal (_SAP Developer News 12 Mar 2026, with Kevin). 👈 LATEST
+📺 [Did you know](https://www.youtube.com/watch?v=3Uc8l3b5600&t=395s): that you can use the Model Library in Generative AI Hub on SAP AI Launchpad to explore the LLMs SAP is offering managed, hosted or provided remotely? More info: The [SAP AI Launchpad Model Library](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/model-library) documentation in the SAP Help Portal (_SAP Developer News 12 Mar 2026, with Kevin_).
+
+### 8 Orchestration Client in SAP Cloud SDK for AI
+
+📺 [Did you know](https://www.youtube.com/watch?v=TODO&t=TODOs): that you can use the orchestration client from the SAP Cloud SDK for AI to create a full AI orchestration flow in CAP? More info: The [SAP Cloud SDK for AI – Chat Completion documentation](https://sap.github.io/ai-sdk/docs/js/orchestration/chat-completion) (_SAP Developer News 19 Mar 2026, with Kevin_). 👈 LATEST
