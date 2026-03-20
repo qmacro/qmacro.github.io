@@ -16,13 +16,15 @@ for an overview of all the episodes.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/aiE20i5BP70?si=xSpl4uDc8j0Y1jll" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-## Notes
+## Introduction
 
 [00:00](https://www.youtube.com/watch?v=aiE20i5BP70&t=0s) Introductions.
 
 [05:00](https://www.youtube.com/watch?v=aiE20i5BP70&t=300s) A first look at
 expressions in the context of [the new Declarative Constraints
 feature](https://pages.github.tools.sap/cap/docs/releases/2025/dec25#declarative-constraints).
+
+## The family of CDS languages
 
 [06:00](https://www.youtube.com/watch?v=aiE20i5BP70&t=360s) An overview of CDS and
 the languages within the [CDS](https://cap.cloud.sap/docs/cds/) family (CDL &
@@ -64,6 +66,8 @@ Language) and the corresponding machine-first
 [CXN](https://cap.cloud.sap/docs/cds/cxn) (CDS Expression Notation) (at this
 point the CXL documentation in Capire was still under construction, but exists
 now).
+
+## A first look at expressions
 
 [27:23](https://www.youtube.com/watch?v=aiE20i5BP70&t=1643s) Looking at very
 simple expressions, trying out the (context-free) expression parser
@@ -116,8 +120,10 @@ annotations](https://cap.cloud.sap/docs/cds/cdl#expressions-as-annotation-values
 should be enclosed in parentheses (as used in this annotation example), which
 also allows full compiler support and also code completion.
 
-[34:58](https://www.youtube.com/watch?v=aiE20i5BP70&t=2098s) Exercising the
-constraint, from within the cds REPL. First, an overview of the entities:
+## Exercising the constraint in the cds REPL
+
+[34:58](https://www.youtube.com/watch?v=aiE20i5BP70&t=2098s) First, an overview
+of the entities:
 
 ```javascript
 > Object.keys(AdminService.entities)
@@ -207,6 +213,8 @@ shows us the result of the constraint:
   ]
 }
 ```
+
+## Comparing entity definitions at different layers
 
 [46:25](https://www.youtube.com/watch?v=aiE20i5BP70&t=2785s) A brief comparison
 between the `Books` definition at the persistence ("db") level from
@@ -325,6 +333,5 @@ and also notes that the value of the `ref` is interpreted depending on the
 
 ## Further info
 
-Patrice also has [some great notes for this
-part](https://github.com/patricebender/cxl-bookshop/blob/main/notes/notes-session1.md),
-definitely worth perusing too!
+- Patrice also has [some great notes for this
+  part](https://github.com/patricebender/cxl-bookshop/blob/main/notes/notes-session1.md)

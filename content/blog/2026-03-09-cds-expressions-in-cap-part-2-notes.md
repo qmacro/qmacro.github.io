@@ -17,11 +17,13 @@ for an overview of all the episodes.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/s4IZR1LBRrA?si=dOie8WsVetGT24hZ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-## Notes
+## Introduction
 
 [00:00](https://www.youtube.com/watch?v=aiE20i5BP70&t=0s) A rather lengthy introduction and recap (sorry Patrice!).
 
-[09:30](https://www.youtube.com/watch?v=s4IZR1LBRrA&t=570s) Patrice reviews and re-explains the `case ... when ... then ... else` statement in the `@assert` annotation, noting that if neither of the conditions match then the expression evaluates to null:
+## The case-when-then-end expression
+
+[09:30](https://www.youtube.com/watch?v=s4IZR1LBRrA&t=570s) Patrice reviews and re-explains the `case ... when ... then ... else` expression in the `@assert` annotation, noting that if neither of the conditions match then the expression evaluates to null:
 
 ```cds
 annotate AdminService.Books:stock with @assert: (
@@ -92,6 +94,8 @@ EventHandlers {
 ```
 
 ... such declarative constraints are checked in an "after" phase handler - see the [notes to part 3 of this series](/blog/posts/2026/03/20/cds-expressions-in-cap-notes-on-part-3/) for a clarification.
+
+## A question on reusable expressions
 
 [31:30](https://www.youtube.com/watch?v=s4IZR1LBRrA&t=1890s) At this point we start to look at one of the two questions that were asked at the very end of [part 1](/blog/posts/2026/03/05/cds-expressions-in-cap-notes-on-part-1/) by Ben: "_Would it be possible to build an expression and then re-use it for different assertions?_".
 
@@ -214,6 +218,8 @@ Uncaught:
 }
 ```
 
+## Connection and deployment to HANA
+
 [39:52](https://www.youtube.com/watch?v=s4IZR1LBRrA&t=2392s) To show that this entire approach is portable across, and abstract from the underlying database systms supported by CAP, Patrice proceeds at this point to show the same thing but with HANA.
 
 First, adding database support for HANA via the facet:
@@ -334,6 +340,8 @@ saving bindings to .cdsrc-private.json in profile hybrid
 successfully finished deployment
 ```
 
+## Going hybrid
+
 Right at the end we can see the bindings saved in a project-local `.cdsrc-private.json` file, under the "hybrid" profile name (see the [Hybrid Testing](https://cap.cloud.sap/docs/tools/cds-bind) topic in Capire); the binding information looks similar to this:
 
 ```json
@@ -438,7 +446,11 @@ Uncaught:
 }
 ```
 
+## A question on iteration and aggregation in expressions
+
 [46:27](https://www.youtube.com/watch?v=s4IZR1LBRrA&t=2787s) Next, Patrice turns to the second of the two questions asked in the previous episode, this time one from Stubbs: "_Can we iterate over composition items with expressions? Example calculate order total amount using line item amounts?_". I've written about the answer to this question in great detail in the post [Path expressions, nested projections, aggregations and expressions in queries with CQL and CXL in CAP](/blog/posts/2026/02/04/path-expressions-nested-projections-aggregations-and-expressions-in-queries-with-cql-and-cxl-in-cap/), so won't dwell any more on it in these notes here.
+
+## Exploring with cds.parse.expr
 
 [54:32](https://www.youtube.com/watch?v=s4IZR1LBRrA&t=3272s) Rounding off this episode, Patrice explores some of the brand new documentation in Capire for [CXL](https://cap.cloud.sap/docs/cds/cxl), and emphasises how easy it is to try things out in the cds REPL.
 
@@ -482,13 +494,13 @@ Definitely worth trying a few out yourself!
 
 ## Further info
 
-Patrice also has [some great notes for this
-part](https://github.com/patricebender/cxl-bookshop/blob/main/notes/notes-session2.md),
-definitely worth perusing too!
+- Patrice also has [some great notes for this
+  part](https://github.com/patricebender/cxl-bookshop/blob/main/notes/notes-session2.md)
 
 ## Footnotes
 
 1. The "hybrid" profile is used as default by `cds bind` so we can omit the `--profile hybrid` here:
+
     ```bash
     cds bind --exec -- cds repl --run .
     ```
