@@ -1,0 +1,1254 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>CDS expressions in CAP - notes on Part 3</title>
+		<meta name="description" content="Notes to accompany Part 3 of the mini-series on the core expression language in CDS.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="CDS expressions in CAP - notes on Part 3">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="Notes to accompany Part 3 of the mini-series on the core expression language in CDS.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2026/03/23/cds-expressions-in-cap-notes-on-part-3/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 60%, 70%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="cds-expressions-in-cap-notes-on-part-3">CDS expressions in CAP - notes on Part 3</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2026-03-23">23 March 2026</time></li>
+	<li><a href="/tags/cds/" class="post-tag">cds</a>, </li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/cql/" class="post-tag">cql</a>, </li>
+	<li><a href="/tags/cxl/" class="post-tag">cxl</a>, </li>
+	<li><a href="/tags/handsonsapdev/" class="post-tag">handsonsapdev</a></li>
+</ul>
+
+<p class="post-description-main">Notes to accompany Part 3 of the mini-series on the core expression language in CDS.</p>
+
+<p>See the <a href="/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/">series
+post</a>
+for an overview of all the episodes.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/FVEbvHMxOIY?si=QEIVl56gayLYkbg0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay;
+clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen=""></iframe>
+<h2 id="introduction">Introduction</h2>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=0s">00:00</a> Introduction.</p>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=192s">03:12</a> Patrice confirms
+that the constraints that we looked at in the previous part are checked in an
+&quot;after&quot; phase handler.</p>
+<h2 id="revisiting-core-cxl-building-blocks">Revisiting core CXL building blocks</h2>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=355s">05:55</a> Patrice jumps into
+the cds REPL to revisit some of the CXL building blocks, such as literals:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> cds<span class="token punctuation">.</span>parse<span class="token punctuation">.</span>expr<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string"> 1 </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span>
+<span class="token operator">></span> cds<span class="token punctuation">.</span>parse<span class="token punctuation">.</span>expr<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string"> true </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span></code></pre>
+<p>unary operators:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> cds<span class="token punctuation">.</span>parse<span class="token punctuation">.</span>expr<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string"> +1 </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">{</span> <span class="token literal-property property">xpr</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'+'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span></code></pre>
+<p>binary operators, including some that are common in programming languages, such
+as <code>!=</code> which is translated to <code>IS NOT</code> in SQL:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">SELECT title from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Books<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> where stock != null</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">.</span><span class="token function">toSQL</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+  <span class="token literal-property property">sql</span><span class="token operator">:</span> '<span class="token constant">SELECT</span> title <span class="token constant">AS</span> <span class="token string">"title"</span> <span class="token constant">FROM</span> <span class="token punctuation">(</span>
+    <span class="token constant">SELECT</span> <span class="token string">"$B"</span><span class="token punctuation">.</span>title
+    <span class="token constant">FROM</span> sap_capire_bookshop_Books <span class="token keyword">as</span> <span class="token string">"$B"</span>
+    <span class="token constant">WHERE</span> <span class="token string">"$B"</span><span class="token punctuation">.</span>stock is not <span class="token constant">NULL</span>
+  <span class="token punctuation">)</span>'<span class="token punctuation">,</span>
+  <span class="token literal-property property">values</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<blockquote>
+<p>This is <a href="https://cap.cloud.sap/docs/releases/2024/jun24#new-option-cds-features-sql-simple-queries">simplified SQL without
+JSON</a>,
+in a cds REPL session invoked thus:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token assign-left variable">CDS_FEATURES_SQL__SIMPLE__QUERIES</span><span class="token operator">=</span><span class="token number">2</span> cds r <span class="token parameter variable">-r</span> <span class="token builtin class-name">.</span></code></pre>
+</blockquote>
+<h2 id="functions-cast-and-predicates">Functions, CAST and predicates</h2>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=598s">09:58</a> Next up is a look
+at the function syntax, which Patrice shows with an example in the cds REPL,
+emphasising that the arguments are just expressions:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> cds<span class="token punctuation">.</span>parse<span class="token punctuation">.</span>expr<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string"> someFunction( (1+1), true ) </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">{</span>
+  <span class="token literal-property property">func</span><span class="token operator">:</span> <span class="token string">'someFunction'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">args</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">xpr</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token string">'+'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=1045s">17:25</a> We take a brief
+look at <code>CAST</code>, a special function:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> cds<span class="token punctuation">.</span>parse<span class="token punctuation">.</span>expr<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string"> cast( 1 as String ) </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">cast</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'String'</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span></code></pre>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=1146s">19:06</a> And then we
+look at the family of predicates available, such as <code>[NOT] LIKE</code>, <code>IS [NOT] NULL</code>, <code>[NOT] BETWEEN ... AND ...</code>, <code>[NOT] IN ( ... )</code> and <code>[NOT] EXISTS ...</code>.</p>
+<h2 id="adding-a-calculated-element">Adding a calculated element</h2>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=1310s">21:50</a> Patrice shows an
+example at the &quot;db&quot; level in the <code>db/schema.cds</code> file, by adding a calculated
+element (the sort that we might alternatively find in queries, i.e. in CQL) to
+the CDL definition of the <code>Authors</code> entity which currently looks like this:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token keyword">entity</span> Authors : managed {
+  <span class="token cqlkeywords keyword">key</span> ID            : <span class="token type builtin">Integer</span>;
+      name          : <span class="token type builtin">String(111)</span> <span class="token annotation important">@mandatory;</span>
+      address       : <span class="token association-composition keyword">Association to Addresses</span>;
+      academicTitle : <span class="token type builtin">String(111)</span>;
+      dateOfBirth   : <span class="token type builtin">Date</span>;
+      dateOfDeath   : <span class="token type builtin">Date</span>;
+      placeOfBirth  : <span class="token type builtin">String</span>;
+      placeOfDeath  : <span class="token type builtin">String</span>;
+      books         : <span class="token association-composition keyword">Association to many Books</span>
+                        <span class="token cqlkeywords keyword">on</span> books.author = $self;
+}</code></pre>
+<p>Adding a Boolean element <code>isAlive</code> can be done via an expression, in various
+ways, such as:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds">isAlive : <span class="token type builtin">Boolean </span>= case
+  <span class="token cdl-keyword keyword">when</span> dateOfDeath is null <span class="token cdl-keyword keyword">then</span> true
+  <span class="token cdl-keyword keyword">else</span> false
+<span class="token cdl-keyword keyword">end</span>;</code></pre>
+<p>Or with the concise ternary expression beloved of JavaScript (and other)
+programmers:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds">isAlive : <span class="token type builtin">Boolean </span>= dateOfDeath is null ? true : false</code></pre>
+<blockquote>
+<p>Of course, this was purely to illustrate the <code>? :</code> syntax; an even less verbose version would be:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds">isAlive : <span class="token type builtin">Boolean </span>= dateOfDeath is null;</code></pre>
+</blockquote>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=1440s">24:00</a> This calculated
+element is virtual, i.e. not manifested in the underlying table definition,
+which Patrice shows with:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">cds compile <span class="token parameter variable">-2</span> sql db/schema.cds</code></pre>
+<p>which emits this DDL, with no sign of the <code>isAlive</code> field:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">TABLE</span> sap_capire_bookshop_Authors <span class="token punctuation">(</span>
+  createdAt TIMESTAMP_TEXT<span class="token punctuation">,</span>
+  createdBy NVARCHAR<span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  modifiedAt TIMESTAMP_TEXT<span class="token punctuation">,</span>
+  modifiedBy NVARCHAR<span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  ID <span class="token keyword">INTEGER</span> <span class="token operator">NOT</span> <span class="token boolean">NULL</span><span class="token punctuation">,</span>
+  name NVARCHAR<span class="token punctuation">(</span><span class="token number">111</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  address_ID <span class="token keyword">INTEGER</span><span class="token punctuation">,</span>
+  academicTitle NVARCHAR<span class="token punctuation">(</span><span class="token number">111</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  dateOfBirth DATE_TEXT<span class="token punctuation">,</span>
+  dateOfDeath DATE_TEXT<span class="token punctuation">,</span>
+  placeOfBirth NVARCHAR<span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  placeOfDeath NVARCHAR<span class="token punctuation">(</span><span class="token number">255</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+  <span class="token keyword">PRIMARY</span> <span class="token keyword">KEY</span><span class="token punctuation">(</span>ID<span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre>
+<p>The calculated element only plays a role in queries, and in the context of
+views or projections. And we have one of those, in the form of the
+<code>AdminService</code> which looks like this:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> {sap.capire.bookshop <span class="token cqlkeywords keyword">as</span> my} <span class="token from keyword">from</span> '../db/schema';
+
+<span class="token keyword">service</span> AdminService {
+  <span class="token keyword">entity</span> Books   <span class="token cqlkeywords keyword">as</span> <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> my.Books;
+  <span class="token keyword">entity</span> Authors <span class="token cqlkeywords keyword">as</span> <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> my.Authors;
+}
+
+<span class="token single-line-comment comment">// ...</span></code></pre>
+<p>Compiling <code>srv/admin-service.cds</code>:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">cds compile <span class="token parameter variable">-2</span> sql srv/admin-service.cds</code></pre>
+<p>shows us where this manifests, in the DDL for this <code>Authors</code> projection:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">VIEW</span> AdminService_Authors <span class="token keyword">AS</span> <span class="token keyword">SELECT</span>
+  Authors_0<span class="token punctuation">.</span>createdAt<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>createdBy<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>modifiedAt<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>modifiedBy<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>ID<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>name<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>address_ID<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>academicTitle<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>dateOfBirth<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>dateOfDeath<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>placeOfBirth<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>placeOfDeath<span class="token punctuation">,</span>
+  <span class="token keyword">CASE</span> <span class="token keyword">WHEN</span> Authors_0<span class="token punctuation">.</span>dateOfDeath <span class="token operator">IS</span> <span class="token boolean">NULL</span> <span class="token keyword">THEN</span> <span class="token boolean">TRUE</span> <span class="token keyword">ELSE</span> <span class="token boolean">FALSE</span> <span class="token keyword">END</span> <span class="token keyword">AS</span> isAlive
+<span class="token keyword">FROM</span> sap_capire_bookshop_Authors <span class="token keyword">AS</span> Authors_0<span class="token punctuation">;</span></code></pre>
+<blockquote>
+<p>This, incidentally, is a great example of both shifting left and down, where
+the convenience mechanism that results in an <code>isAlive</code> Boolean value is not
+calculated by any requester (based on the <code>dateOfDeath</code> value that <em>is</em>
+available, once the dataset has been retrieved), or added to any transient
+dynamic queries, or even added as adornments to one or more service
+definitions that have projections on the authors data.</p>
+<p>Instead, it is defined once, quietly and gently, at the &quot;db&quot; level, and
+reified where appropriate, and available automatically. As Patrice puts it a
+bit later on, this is &quot;centralising our common expressions into one place -
+our domain model&quot;.</p>
+<p>See the <a href="#further-info">Further info</a> section for links to more reading on this.</p>
+</blockquote>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=1600s">26:40</a> In the context of
+a question asked by VishalK, Patrice notes that there are two forms of
+<a href="https://cap.cloud.sap/docs/cds/cdl#calculated-elements">calculated elements</a>,
+on-read (as here) and also on-write.</p>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=1700s">28:20</a> Patrice
+illustrates the expression that has been constructed (in CXN) for this
+<code>isAlive</code> calculated element by looking directly at it in the cds REPL:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> Authors<span class="token punctuation">.</span>elements<span class="token punctuation">[</span><span class="token string">'isAlive'</span><span class="token punctuation">]</span>
+Boolean <span class="token punctuation">{</span>
+  <span class="token string-property property">'@Core.Computed'</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">'cds.Boolean'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">value</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">xpr</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">'case'</span><span class="token punctuation">,</span>
+      <span class="token string">'when'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'dateOfDeath'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token string">'is'</span><span class="token punctuation">,</span>
+      <span class="token string">'null'</span><span class="token punctuation">,</span>
+      <span class="token string">'then'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token string">'else'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token string">'end'</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="using-the-calculated-element-in-queries">Using the calculated element in queries</h2>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=1766s">29:26</a> Having looked at
+how the calculated element at the &quot;db&quot; level is manifested in the DDL for the
+<code>AdminService</code>'s projection, Patrice now shows how it comes into play in a
+query, in the cds REPL:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Books<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> { title, author.name }
+  where author.isAlive = true
+  </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Mistborn: The Final Empire'</span><span class="token punctuation">,</span> <span class="token literal-property property">author_name</span><span class="token operator">:</span> <span class="token string">'Brandon Sanderson'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'The Well of Ascension'</span><span class="token punctuation">,</span> <span class="token literal-property property">author_name</span><span class="token operator">:</span> <span class="token string">'Brandon Sanderson'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token operator">...</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Wind and Truth'</span><span class="token punctuation">,</span> <span class="token literal-property property">author_name</span><span class="token operator">:</span> <span class="token string">'Brandon Sanderson'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<blockquote>
+<p>The condition could be written more simply as <code>where author.isAlive</code> here
+too.</p>
+</blockquote>
+<p>An illustration of the opposite might look like this (again, using terser
+condition syntax, instead of, say, <code>where isAlive = false</code>):</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Authors<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> { name, books.title }
+  where isAlive = false
+  </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Emily Brontë'</span><span class="token punctuation">,</span> <span class="token literal-property property">books_title</span><span class="token operator">:</span> <span class="token string">'Wuthering Heights'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Charlotte Brontë'</span><span class="token punctuation">,</span> <span class="token literal-property property">books_title</span><span class="token operator">:</span> <span class="token string">'Jane Eyre'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Edgar Allen Poe'</span><span class="token punctuation">,</span> <span class="token literal-property property">books_title</span><span class="token operator">:</span> <span class="token string">'Eleonora'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Edgar Allen Poe'</span><span class="token punctuation">,</span> <span class="token literal-property property">books_title</span><span class="token operator">:</span> <span class="token string">'The Raven'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Richard Carpenter'</span><span class="token punctuation">,</span> <span class="token literal-property property">books_title</span><span class="token operator">:</span> <span class="token string">'Catweazle'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'J. R. R. Tolkien'</span><span class="token punctuation">,</span> <span class="token literal-property property">books_title</span><span class="token operator">:</span> <span class="token string">'Beren and Lúthien'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'J. R. R. Tolkien'</span><span class="token punctuation">,</span> <span class="token literal-property property">books_title</span><span class="token operator">:</span> <span class="token string">'The Children of Húrin'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token operator">...</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'J. R. R. Tolkien'</span><span class="token punctuation">,</span> <span class="token literal-property property">books_title</span><span class="token operator">:</span> <span class="token string">'Unfinished Tales'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<blockquote>
+<p>Here also the condition could be written more simply as <code>where not isAlive</code>.</p>
+</blockquote>
+<h2 id="target-references">Target references</h2>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=1991s">33:11</a> There was a brief
+discussion about the &quot;Books&quot; reference in the previous query, which looked like
+this:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token keyword">from</span> ${Books}</code></pre>
+<p>This is the more precise approach to specifying the target of the query - the
+entity represented by (contained in) the <code>Books</code> variable injected into the cds
+REPL session, which resolves thus:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> Books<span class="token punctuation">.</span>name
+sap<span class="token punctuation">.</span>capire<span class="token punctuation">.</span>bookshop<span class="token punctuation">.</span>Books</code></pre>
+<p>When we use a literal value instead, like this:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">SELECT</span> <span class="token keyword">from</span> Books</code></pre>
+<p>then CAP can often resolve the reference, but caution must be used here in case
+there are other entities, in different scopes, but with the same name; in this
+case using the template string interpolation (<code>${ ... }</code>) will allow us to be
+specific.</p>
+<h2 id="query-details-and-the-phased-translation-to-native-sql">Query details and the phased translation to native SQL</h2>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=2105s">35:05</a> At this point
+Patrice digs in a little deeper to the query. First, from the CQL (which was
+then modified at <a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=2185s">36:25</a>,
+so that the <code>from</code> reference is to <code>sap.capire.bookshop.Books</code> rather than just
+<code>Books</code>), we see the CQN representation which includes an expression notation
+for the <code>isAlive</code> check:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q <span class="token operator">=</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Books<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> { title, author.name }
+  where author.isAlive = false
+  </span><span class="token template-punctuation string">`</span></span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Books'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'title'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'author'</span><span class="token punctuation">,</span> <span class="token string">'name'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'author'</span><span class="token punctuation">,</span> <span class="token string">'isAlive'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token string">'='</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Using the <code>toSQL()</code> method on the query object, we see the
+SQL<a href="#footnotes"><sup>1</sup></a> and the injectable values:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q<span class="token punctuation">.</span><span class="token function">toSQL</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+  <span class="token literal-property property">sql</span><span class="token operator">:</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">SELECT json_insert('{}','$."title"',title,'$."author_name"',author_name) as _json_ FROM (SELECT "$B".title,author.name as author_name FROM sap_capire_bookshop_Books as "$B" left JOIN sap_capire_bookshop_Authors as author ON author.ID = "$B".author_ID WHERE (case when author.dateOfDeath is null then ? else ? end) = ?)</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span>
+  <span class="token literal-property property">values</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span> <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<p>And the SQL, when formatted nicely, looks like this:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">SELECT</span>
+  json_insert<span class="token punctuation">(</span>
+    <span class="token string">'{}'</span><span class="token punctuation">,</span> <span class="token string">'$."title"'</span><span class="token punctuation">,</span> title<span class="token punctuation">,</span> <span class="token string">'$."author_name"'</span><span class="token punctuation">,</span> author_name
+  <span class="token punctuation">)</span> <span class="token keyword">as</span> _json_
+<span class="token keyword">FROM</span>
+  <span class="token punctuation">(</span>
+    <span class="token keyword">SELECT</span>
+      Books<span class="token punctuation">.</span>title<span class="token punctuation">,</span>
+      author<span class="token punctuation">.</span>name <span class="token keyword">as</span> author_name
+    <span class="token keyword">FROM</span> sap_capire_bookshop_Books <span class="token keyword">as</span> Books
+      <span class="token keyword">left</span> <span class="token keyword">JOIN</span> sap_capire_bookshop_Authors <span class="token keyword">as</span> author
+      <span class="token keyword">ON</span> author<span class="token punctuation">.</span>ID <span class="token operator">=</span> Books<span class="token punctuation">.</span>author_ID
+    <span class="token keyword">WHERE</span>
+      <span class="token punctuation">(</span>
+        <span class="token keyword">case</span>
+          <span class="token keyword">when</span> author<span class="token punctuation">.</span>dateOfDeath <span class="token operator">is</span> <span class="token boolean">null</span> <span class="token keyword">then</span> ?
+          <span class="token keyword">else</span> ?
+        <span class="token keyword">end</span>
+      <span class="token punctuation">)</span> <span class="token operator">=</span> ?
+  <span class="token punctuation">)</span></code></pre>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=2310s">38:30</a> We've jumped from
+CQL almost directly to the (SQLite dialect<a href="#footnotes"><sup>2</sup></a> of) SQL
+here, but Patrice now explains the multi-step process here.</p>
+<p>Between the CQL (and CXL), and its machine-readable CQN (and CXN) equivalents,
+and the ultimate persistence-layer-specific SQL, there's an intermediate
+&quot;normalised&quot; format. This is often referred to as &quot;CAP-style SQL&quot;, or the &quot;SQL
+variant of CQL&quot;. Using the <code>forSQL()</code> method on the query object (as opposed to
+the <code>toSQL()</code> we used just now), we can get this intermediate format:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q<span class="token punctuation">.</span><span class="token function">forSQL</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token literal-property property">join</span><span class="token operator">:</span> <span class="token string">'left'</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">args</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Books'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'$B'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Authors'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'author'</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">]</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">on</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'author'</span><span class="token punctuation">,</span> <span class="token string">'ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token string">'='</span><span class="token punctuation">,</span>
+        <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$B'</span><span class="token punctuation">,</span> <span class="token string">'author_ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span>
+      <span class="token punctuation">]</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$B'</span><span class="token punctuation">,</span> <span class="token string">'title'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'author'</span><span class="token punctuation">,</span> <span class="token string">'name'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'author_name'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span>
+        <span class="token literal-property property">xpr</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+          <span class="token string">'case'</span><span class="token punctuation">,</span>
+          <span class="token string">'when'</span><span class="token punctuation">,</span>
+          <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'author'</span><span class="token punctuation">,</span> <span class="token string">'dateOfDeath'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+          <span class="token string">'is'</span><span class="token punctuation">,</span>
+          <span class="token string">'null'</span><span class="token punctuation">,</span>
+          <span class="token string">'then'</span><span class="token punctuation">,</span>
+          <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+          <span class="token string">'else'</span><span class="token punctuation">,</span>
+          <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+          <span class="token string">'end'</span>
+        <span class="token punctuation">]</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token string">'='</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>As we can see, we can recognise both CXL (CXN) style expressions, as well as
+SQL-style constructions such as JOINs. At this point this is is still in a form
+that is not SQL database system specific (i.e. not SQLite, Postgres or HANA
+specific SQL).</p>
+<p>And as opposed to this neutral &quot;normalised&quot; format from <code>forSQL()</code>, we get the
+database-specific dialect with <code>toSQL()</code>.</p>
+<h2 id="a-question-on-with-associations-and-the-previous-db-adapters">A question on WITH ASSOCIATIONS and the previous db adapters</h2>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=2480s">41:20</a> At this point
+ArtlessSoul asks a question to which Patrice responds by explaining the
+difference between how path expressions were handled (translated to SQL) in the
+now-legacy database services which were in play before the current major CAP
+version.</p>
+<p>It had not been possible at the time to transform all path expressions to the
+required JOINs that would be needed to represent them at a SQL level. One way
+to address this at the time, specifically for HANA, had been to push down such
+associations to the database, which supported them with a <code>WITH ASSOCIATIONS</code>
+native feature (see the <a href="https://cap.cloud.sap/docs/guides/databases/hana#native-associations">Native
+Associations</a>
+section of the SAP HANA topic in Capire).</p>
+<p>While HANA would be the typical target database runtime for production, it had
+thus not been previously possible to test associations in development, i.e.
+outside the HANA context.</p>
+<p>But thanks to the new database adapters with the current major release, all
+associations are possible for all supported databases due to improvements in
+how they're managed and translated by the CAP runtime, and therefore a much
+higher development and testing confidence can be achieved.</p>
+<h2 id="exploring-function-expressions">Exploring function expressions</h2>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=2701s">45:01</a> Patrice starts to round
+off this episode with a nice example to illustrate function expressions. The example
+is another calculated element on the <code>Authors</code> entity, for the author's age:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds">age : <span class="token type builtin">Integer </span>= years_between(dateOfBirth, coalesce(dateOfDeath, current_date));</code></pre>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=2798s">46:38</a> But before
+continuing, he connects and deploys to the HANA Cloud service he has already
+set up in his account, following the same <a href="/blog/posts/2026/03/09/cds-expressions-in-cap-notes-on-part-2/#connection-and-deployment-to-hana">connection and deployment to
+HANA</a>
+procedure from part 2, and then at
+<a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=2900s">48:20</a> he starts the cds
+REPL using the hybrid profile, also following the same procedure from part 2
+(see the <a href="/blog/posts/2026/03/09/cds-expressions-in-cap-notes-on-part-2/#going-hybrid">Going
+hybrid</a>
+section of part 2's notes for details).</p>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=2950s">49:10</a> At this point we take a look at what happens under the hood -- in HANA -- for this new <code>age</code> element, step by step.</p>
+<p>First, step 1, from CQL to CQN and the query object:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q <span class="token operator">=</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Authors<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> { name, age }</span><span class="token template-punctuation string">`</span></span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Authors'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'name'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'age'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Next, step 2, taking a look at the intermediate &quot;normalised&quot; version of the query, using <code>forSQL()</code>:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q<span class="token punctuation">.</span><span class="token function">forSQL</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Authors'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'$A'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$A'</span><span class="token punctuation">,</span> <span class="token string">'name'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span>
+        <span class="token literal-property property">args</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+          <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$A'</span><span class="token punctuation">,</span> <span class="token string">'dateOfBirth'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+          <span class="token punctuation">{</span>
+            <span class="token literal-property property">func</span><span class="token operator">:</span> <span class="token string">'coalesce'</span><span class="token punctuation">,</span>
+            <span class="token literal-property property">args</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+              <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$A'</span><span class="token punctuation">,</span> <span class="token string">'dateOfDeath'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+              <span class="token punctuation">{</span> <span class="token literal-property property">func</span><span class="token operator">:</span> <span class="token string">'current_date'</span> <span class="token punctuation">}</span>
+            <span class="token punctuation">]</span>
+          <span class="token punctuation">}</span>
+        <span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">func</span><span class="token operator">:</span> <span class="token string">'years_between'</span><span class="token punctuation">,</span>
+        <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'age'</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>From a column perspective, there are two:</p>
+<ul>
+<li>a reference to the <code>name</code> element in <code>sap.capire.bookshop.Authors</code></li>
+<li>the evaluation of a function <code>years_between</code>, the arguments to which are
+<ul>
+<li>a reference to the <code>dateOfBirth</code> element</li>
+<li>the evaluation of another function <code>coalesce</code>, the arguments to which are
+<ul>
+<li>a reference to the <code>dateOfDeath</code> element</li>
+<li>the evaluation of yet another function <code>current_date</code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>Running this query gives us what we expect:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> q
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">30</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Emily Brontë'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">36</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Charlotte Brontë'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">40</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Edgar Allen Poe'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">82</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Richard Carpenter'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">50</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Brandon Sanderson'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">81</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'J. R. R. Tolkien'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=3065s">51:05</a> After adding the <code>isAlive</code> element back into the query, Patrice now takes a look at the actual SQL resolved for this query ... in the context of the hybrid profile, which means in the context of a HANA database:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Authors<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> {name, age, isAlive }</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">.</span><span class="token function">toSQL</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>sql</code></pre>
+<p>This results in SQL that, when formatted, looks like this:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">SELECT</span>
+  Authors<span class="token punctuation">.</span>name <span class="token keyword">as</span> <span class="token string">"name"</span><span class="token punctuation">,</span>
+  years_between <span class="token punctuation">(</span>
+    Authors<span class="token punctuation">.</span>dateOfBirth<span class="token punctuation">,</span>
+    <span class="token keyword">coalesce</span><span class="token punctuation">(</span>Authors<span class="token punctuation">.</span>dateOfDeath<span class="token punctuation">,</span> current_utcdate<span class="token punctuation">)</span>
+  <span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token string">"age"</span><span class="token punctuation">,</span>
+  <span class="token keyword">case</span>
+    <span class="token keyword">when</span> Authors<span class="token punctuation">.</span>dateOfDeath <span class="token operator">is</span> <span class="token boolean">null</span> <span class="token keyword">then</span> <span class="token boolean">true</span>
+    <span class="token keyword">else</span> <span class="token boolean">false</span>
+  <span class="token keyword">end</span> <span class="token keyword">as</span> <span class="token string">"isAlive"</span>
+<span class="token keyword">FROM</span>
+  sap_capire_bookshop_Authors <span class="token keyword">as</span> Authors</code></pre>
+<p>There's pretty much a 1-to-1 correlation between the CDL we have used to define our <code>Authors</code> entity, and the HANA-flavoured SQL here.</p>
+<h2 id="portable-functions">Portable functions</h2>
+<p>And that's because HANA implements the <code>years_between</code> function natively.
+Unlike SQLite, for which more heavy lifting is done by the compiler team, to
+essentially provide us with &quot;a set of portable functions (and also operators)
+which are automatically translated for us to the best-possible
+database-specific native SQL equivalents&quot;. That quote is from Capire's
+<a href="https://cap.cloud.sap/docs/guides/databases/cap-level-dbs">CAP-Level Database
+Support</a> topic which
+is well worth a read.</p>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=3167s">52:47</a> To illustrate this, Patrice starts a new cds REPL session in the context of the default (development) profile which implies SQLite:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">cds repl <span class="token parameter variable">--run</span> <span class="token builtin class-name">.</span></code></pre>
+<p>This time, the same query (<code>SELECT from ${Authors} { name, age }</code>) results in the same CQN of course, as well as the same normalised CAP-style SQL (via <code>forSQL()</code>) as before, but the resulting database-specific SQL(via <code>toSQL().sql</code>) is quite different<a href="#footnotes"><sup>3</sup></a>:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">SELECT</span>
+  json_insert <span class="token punctuation">(</span><span class="token string">'{}'</span><span class="token punctuation">,</span> <span class="token string">'$."name"'</span><span class="token punctuation">,</span> name<span class="token punctuation">,</span> <span class="token string">'$."age"'</span><span class="token punctuation">,</span> age<span class="token punctuation">)</span> <span class="token keyword">as</span> _json_
+<span class="token keyword">FROM</span>
+  <span class="token punctuation">(</span>
+    <span class="token keyword">SELECT</span>
+      <span class="token string">"$A"</span><span class="token punctuation">.</span>name<span class="token punctuation">,</span>
+      floor<span class="token punctuation">(</span>
+        <span class="token punctuation">(</span>
+          <span class="token punctuation">(</span>
+            <span class="token punctuation">(</span>
+              cast<span class="token punctuation">(</span>
+                strftime <span class="token punctuation">(</span><span class="token string">'%Y'</span><span class="token punctuation">,</span> <span class="token keyword">coalesce</span><span class="token punctuation">(</span><span class="token string">"$A"</span><span class="token punctuation">.</span>dateOfDeath<span class="token punctuation">,</span> <span class="token keyword">current_date</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token keyword">Integer</span>
+              <span class="token punctuation">)</span> <span class="token operator">-</span> cast<span class="token punctuation">(</span>strftime <span class="token punctuation">(</span><span class="token string">'%Y'</span><span class="token punctuation">,</span> <span class="token string">"$A"</span><span class="token punctuation">.</span>dateOfBirth<span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token keyword">Integer</span><span class="token punctuation">)</span>
+            <span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">12</span>
+          <span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token punctuation">(</span>
+            cast<span class="token punctuation">(</span>
+              strftime <span class="token punctuation">(</span><span class="token string">'%m'</span><span class="token punctuation">,</span> <span class="token keyword">coalesce</span><span class="token punctuation">(</span><span class="token string">"$A"</span><span class="token punctuation">.</span>dateOfDeath<span class="token punctuation">,</span> <span class="token keyword">current_date</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token keyword">Integer</span>
+            <span class="token punctuation">)</span> <span class="token operator">-</span> cast<span class="token punctuation">(</span>strftime <span class="token punctuation">(</span><span class="token string">'%m'</span><span class="token punctuation">,</span> <span class="token string">"$A"</span><span class="token punctuation">.</span>dateOfBirth<span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token keyword">Integer</span><span class="token punctuation">)</span>
+          <span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token punctuation">(</span>
+            <span class="token punctuation">(</span>
+              <span class="token keyword">case</span>
+                <span class="token keyword">when</span> <span class="token punctuation">(</span>
+                  cast<span class="token punctuation">(</span>
+                    strftime <span class="token punctuation">(</span><span class="token string">'%Y%m'</span><span class="token punctuation">,</span> <span class="token keyword">coalesce</span><span class="token punctuation">(</span><span class="token string">"$A"</span><span class="token punctuation">.</span>dateOfDeath<span class="token punctuation">,</span> <span class="token keyword">current_date</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token keyword">Integer</span>
+                  <span class="token punctuation">)</span> <span class="token operator">&lt;</span> cast<span class="token punctuation">(</span>strftime <span class="token punctuation">(</span><span class="token string">'%Y%m'</span><span class="token punctuation">,</span> <span class="token string">"$A"</span><span class="token punctuation">.</span>dateOfBirth<span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token keyword">Integer</span><span class="token punctuation">)</span>
+                <span class="token punctuation">)</span> <span class="token keyword">then</span> <span class="token punctuation">(</span>
+                  cast<span class="token punctuation">(</span>
+                    strftime <span class="token punctuation">(</span>
+                      <span class="token string">'%d%H%M%S%f0000'</span><span class="token punctuation">,</span>
+                      <span class="token keyword">coalesce</span><span class="token punctuation">(</span><span class="token string">"$A"</span><span class="token punctuation">.</span>dateOfDeath<span class="token punctuation">,</span> <span class="token keyword">current_date</span><span class="token punctuation">)</span>
+                    <span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token keyword">Integer</span>
+                  <span class="token punctuation">)</span> <span class="token operator">></span> cast<span class="token punctuation">(</span>
+                    strftime <span class="token punctuation">(</span><span class="token string">'%d%H%M%S%f0000'</span><span class="token punctuation">,</span> <span class="token string">"$A"</span><span class="token punctuation">.</span>dateOfBirth<span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token keyword">Integer</span>
+                  <span class="token punctuation">)</span>
+                <span class="token punctuation">)</span>
+                <span class="token keyword">else</span> <span class="token punctuation">(</span>
+                  cast<span class="token punctuation">(</span>
+                    strftime <span class="token punctuation">(</span>
+                      <span class="token string">'%d%H%M%S%f0000'</span><span class="token punctuation">,</span>
+                      <span class="token keyword">coalesce</span><span class="token punctuation">(</span><span class="token string">"$A"</span><span class="token punctuation">.</span>dateOfDeath<span class="token punctuation">,</span> <span class="token keyword">current_date</span><span class="token punctuation">)</span>
+                    <span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token keyword">Integer</span>
+                  <span class="token punctuation">)</span> <span class="token operator">&lt;</span> cast<span class="token punctuation">(</span>
+                    strftime <span class="token punctuation">(</span><span class="token string">'%d%H%M%S%f0000'</span><span class="token punctuation">,</span> <span class="token string">"$A"</span><span class="token punctuation">.</span>dateOfBirth<span class="token punctuation">)</span> <span class="token keyword">as</span> <span class="token keyword">Integer</span>
+                  <span class="token punctuation">)</span>
+                <span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token operator">-</span><span class="token number">1</span>
+              <span class="token keyword">end</span>
+            <span class="token punctuation">)</span>
+          <span class="token punctuation">)</span>
+        <span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">12</span>
+      <span class="token punctuation">)</span> <span class="token keyword">as</span> age
+    <span class="token keyword">FROM</span>
+      sap_capire_bookshop_Authors <span class="token keyword">as</span> <span class="token string">"$A"</span>
+  <span class="token punctuation">)</span></code></pre>
+<p>As Patrice reminds us, this is another example of <a href="https://github.com/qmacro/capref/blob/main/axioms/AXI001.md">AXI001 What not how</a> in action.</p>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=3405s">56:45</a> To wrap this section up, Patrice adds back in the <code>isAlive</code> element to the query before executing it, to show that this works too, albeit resulting in a different<a href="#footnotes"><sup>4</sup></a> representation of true and false, as SQLite has no Boolean data type:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Authors<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> {name, age, isAlive }</span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Emily Brontë'</span><span class="token punctuation">,</span> <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">30</span><span class="token punctuation">,</span> <span class="token literal-property property">isAlive</span><span class="token operator">:</span> <span class="token number">0</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Charlotte Brontë'</span><span class="token punctuation">,</span> <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">36</span><span class="token punctuation">,</span> <span class="token literal-property property">isAlive</span><span class="token operator">:</span> <span class="token number">0</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Edgar Allen Poe'</span><span class="token punctuation">,</span> <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">40</span><span class="token punctuation">,</span> <span class="token literal-property property">isAlive</span><span class="token operator">:</span> <span class="token number">0</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Richard Carpenter'</span><span class="token punctuation">,</span> <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">82</span><span class="token punctuation">,</span> <span class="token literal-property property">isAlive</span><span class="token operator">:</span> <span class="token number">0</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Brandon Sanderson'</span><span class="token punctuation">,</span> <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">50</span><span class="token punctuation">,</span> <span class="token literal-property property">isAlive</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'J. R. R. Tolkien'</span><span class="token punctuation">,</span> <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">81</span><span class="token punctuation">,</span> <span class="token literal-property property">isAlive</span><span class="token operator">:</span> <span class="token number">0</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<h2 id="support-in-cdl-as-well-as-cql">Support in CDL as well as CQL</h2>
+<p><a href="https://www.youtube.com/watch?v=FVEbvHMxOIY&amp;t=3505s">58:25</a> Wrapping up, Patrice makes the very good point that this portability afforded by CAP to support different database runtimes is not only at the &quot;runtime&quot; level, i.e. in queries (as we've seen in these examples), but also at the persistence, or data definition level (in particular for views). To illustrate this, Patrice shows us that the view DDL is constructed appropriately, first in the production profile context, i.e. for HANA:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token punctuation">;</span> cds build <span class="token parameter variable">--production</span>
+building project with <span class="token punctuation">{</span>
+  versions: <span class="token punctuation">{</span> cds: <span class="token string">'9.8.0'</span>, compiler: <span class="token string">'6.8.0'</span>, dk: <span class="token string">'9.4.3'</span> <span class="token punctuation">}</span>,
+  target: <span class="token string">'gen'</span>,
+  tasks: <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span> src: <span class="token string">'db'</span>, for: <span class="token string">'hana'</span>, options: <span class="token punctuation">{</span> model: <span class="token punctuation">[</span> <span class="token string">'db'</span>, <span class="token string">'srv'</span>, <span class="token string">'@sap/cds/srv/outbox'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span>,
+    <span class="token punctuation">{</span> src: <span class="token string">'srv'</span>, for: <span class="token string">'nodejs'</span>, options: <span class="token punctuation">{</span> model: <span class="token punctuation">[</span> <span class="token string">'db'</span>, <span class="token string">'srv'</span>, <span class="token string">'@sap/cds/srv/outbox'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">done</span> <span class="token operator">></span> wrote output to:
+   gen/db/package.json
+   gen/db/src/.hdiconfig
+   gen/db/src/gen/.hdiconfig
+   gen/db/src/gen/.hdinamespace
+   gen/db/src/gen/AdminService.Authors.hdbview
+   gen/db/src/gen/AdminService.Books.hdbview
+   <span class="token punctuation">..</span>. more. Run with <span class="token assign-left variable">DEBUG</span><span class="token operator">=</span>build to show all files.
+
+build completed <span class="token keyword">in</span> <span class="token number">2438</span> ms</code></pre>
+<p>The DDL for the <code>Authors</code> projection in the <code>AdminService</code> (in <code>gen/db/src/gen/AdminService.Authors.hdbview</code>) looks like this, where the HANA native <code>years_between</code> function is available:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">VIEW</span> AdminService_Authors <span class="token keyword">AS</span> <span class="token keyword">SELECT</span>
+  Authors_0<span class="token punctuation">.</span>createdAt<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>createdBy<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>modifiedAt<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>modifiedBy<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>ID<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>name<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>address_ID<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>academicTitle<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>dateOfBirth<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>dateOfDeath<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>placeOfBirth<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>placeOfDeath<span class="token punctuation">,</span>
+  <span class="token keyword">CASE</span> <span class="token keyword">WHEN</span> Authors_0<span class="token punctuation">.</span>dateOfDeath <span class="token operator">IS</span> <span class="token boolean">NULL</span> <span class="token keyword">THEN</span> <span class="token boolean">TRUE</span> <span class="token keyword">ELSE</span> <span class="token boolean">FALSE</span> <span class="token keyword">END</span> <span class="token keyword">AS</span> isAlive<span class="token punctuation">,</span>
+  years_between<span class="token punctuation">(</span>Authors_0<span class="token punctuation">.</span>dateOfBirth<span class="token punctuation">,</span> <span class="token keyword">coalesce</span><span class="token punctuation">(</span>Authors_0<span class="token punctuation">.</span>dateOfDeath<span class="token punctuation">,</span> <span class="token keyword">current_date</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">AS</span> age
+<span class="token keyword">FROM</span> sap_capire_bookshop_Authors <span class="token keyword">AS</span> Authors_0</code></pre>
+<p>In contrast, when, <a href="#adding-a-calculated-element">like earlier</a>, we compile the <code>AdminService</code> definitions in the default development profile context i.e. for SQLite:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">cds compile <span class="token parameter variable">-2</span> sql srv/admin-service.cds</code></pre>
+<p>we get this for the <code>Authors</code> projection:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">CREATE</span> <span class="token keyword">VIEW</span> AdminService_Authors <span class="token keyword">AS</span>
+<span class="token keyword">SELECT</span>
+  Authors_0<span class="token punctuation">.</span>createdAt<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>createdBy<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>modifiedAt<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>modifiedBy<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>ID<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>name<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>address_ID<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>academicTitle<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>dateOfBirth<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>dateOfDeath<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>placeOfBirth<span class="token punctuation">,</span>
+  Authors_0<span class="token punctuation">.</span>placeOfDeath<span class="token punctuation">,</span>
+  <span class="token keyword">CASE</span>
+    <span class="token keyword">WHEN</span> Authors_0<span class="token punctuation">.</span>dateOfDeath <span class="token operator">IS</span> <span class="token boolean">NULL</span> <span class="token keyword">THEN</span> <span class="token boolean">TRUE</span>
+    <span class="token keyword">ELSE</span> <span class="token boolean">FALSE</span>
+  <span class="token keyword">END</span> <span class="token keyword">AS</span> isAlive<span class="token punctuation">,</span>
+  floor<span class="token punctuation">(</span>
+    <span class="token punctuation">(</span>
+      <span class="token punctuation">(</span>
+        <span class="token punctuation">(</span>
+          <span class="token punctuation">(</span>
+            CAST<span class="token punctuation">(</span>
+              strftime <span class="token punctuation">(</span>
+                <span class="token string">'%Y'</span><span class="token punctuation">,</span>
+                <span class="token keyword">coalesce</span><span class="token punctuation">(</span>Authors_0<span class="token punctuation">.</span>dateOfDeath<span class="token punctuation">,</span> <span class="token keyword">current_date</span><span class="token punctuation">)</span>
+              <span class="token punctuation">)</span> <span class="token keyword">AS</span> <span class="token keyword">Integer</span>
+            <span class="token punctuation">)</span> <span class="token operator">-</span> CAST<span class="token punctuation">(</span>strftime <span class="token punctuation">(</span><span class="token string">'%Y'</span><span class="token punctuation">,</span> Authors_0<span class="token punctuation">.</span>dateOfBirth<span class="token punctuation">)</span> <span class="token keyword">AS</span> <span class="token keyword">Integer</span><span class="token punctuation">)</span>
+          <span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token number">12</span>
+        <span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token punctuation">(</span>
+          CAST<span class="token punctuation">(</span>
+            strftime <span class="token punctuation">(</span>
+              <span class="token string">'%m'</span><span class="token punctuation">,</span>
+              <span class="token keyword">coalesce</span><span class="token punctuation">(</span>Authors_0<span class="token punctuation">.</span>dateOfDeath<span class="token punctuation">,</span> <span class="token keyword">current_date</span><span class="token punctuation">)</span>
+            <span class="token punctuation">)</span> <span class="token keyword">AS</span> <span class="token keyword">Integer</span>
+          <span class="token punctuation">)</span> <span class="token operator">-</span> CAST<span class="token punctuation">(</span>strftime <span class="token punctuation">(</span><span class="token string">'%m'</span><span class="token punctuation">,</span> Authors_0<span class="token punctuation">.</span>dateOfBirth<span class="token punctuation">)</span> <span class="token keyword">AS</span> <span class="token keyword">Integer</span><span class="token punctuation">)</span>
+        <span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token punctuation">(</span>
+          <span class="token keyword">CASE</span> <span class="token comment">/* For backward intervals: if the composite (day + time) of y is greater than x, add 1. */</span>
+            <span class="token keyword">WHEN</span> CAST<span class="token punctuation">(</span>
+              strftime <span class="token punctuation">(</span>
+                <span class="token string">'%Y%m'</span><span class="token punctuation">,</span>
+                <span class="token keyword">coalesce</span><span class="token punctuation">(</span>Authors_0<span class="token punctuation">.</span>dateOfDeath<span class="token punctuation">,</span> <span class="token keyword">current_date</span><span class="token punctuation">)</span>
+              <span class="token punctuation">)</span> <span class="token keyword">AS</span> <span class="token keyword">Integer</span>
+            <span class="token punctuation">)</span> <span class="token operator">&lt;</span> CAST<span class="token punctuation">(</span>
+              strftime <span class="token punctuation">(</span><span class="token string">'%Y%m'</span><span class="token punctuation">,</span> Authors_0<span class="token punctuation">.</span>dateOfBirth<span class="token punctuation">)</span> <span class="token keyword">AS</span> <span class="token keyword">Integer</span>
+            <span class="token punctuation">)</span> <span class="token keyword">THEN</span> <span class="token punctuation">(</span>
+              CAST<span class="token punctuation">(</span>
+                strftime <span class="token punctuation">(</span>
+                  <span class="token string">'%d%H%M%S%f0000'</span><span class="token punctuation">,</span>
+                  <span class="token keyword">coalesce</span><span class="token punctuation">(</span>Authors_0<span class="token punctuation">.</span>dateOfDeath<span class="token punctuation">,</span> <span class="token keyword">current_date</span><span class="token punctuation">)</span>
+                <span class="token punctuation">)</span> <span class="token keyword">AS</span> <span class="token keyword">Integer</span>
+              <span class="token punctuation">)</span> <span class="token operator">></span> CAST<span class="token punctuation">(</span>
+                strftime <span class="token punctuation">(</span><span class="token string">'%d%H%M%S%f0000'</span><span class="token punctuation">,</span> Authors_0<span class="token punctuation">.</span>dateOfBirth<span class="token punctuation">)</span> <span class="token keyword">AS</span> <span class="token keyword">Integer</span>
+              <span class="token punctuation">)</span>
+            <span class="token punctuation">)</span> <span class="token comment">/* For forward intervals: if the composite of y is less than x, subtract 1. */</span>
+            <span class="token keyword">ELSE</span> <span class="token punctuation">(</span>
+              CAST<span class="token punctuation">(</span>
+                strftime <span class="token punctuation">(</span>
+                  <span class="token string">'%d%H%M%S%f0000'</span><span class="token punctuation">,</span>
+                  <span class="token keyword">coalesce</span><span class="token punctuation">(</span>Authors_0<span class="token punctuation">.</span>dateOfDeath<span class="token punctuation">,</span> <span class="token keyword">current_date</span><span class="token punctuation">)</span>
+                <span class="token punctuation">)</span> <span class="token keyword">AS</span> <span class="token keyword">Integer</span>
+              <span class="token punctuation">)</span> <span class="token operator">&lt;</span> CAST<span class="token punctuation">(</span>
+                strftime <span class="token punctuation">(</span><span class="token string">'%d%H%M%S%f0000'</span><span class="token punctuation">,</span> Authors_0<span class="token punctuation">.</span>dateOfBirth<span class="token punctuation">)</span> <span class="token keyword">AS</span> <span class="token keyword">Integer</span>
+              <span class="token punctuation">)</span>
+            <span class="token punctuation">)</span> <span class="token operator">*</span> <span class="token operator">-</span><span class="token number">1</span>
+          <span class="token keyword">END</span>
+        <span class="token punctuation">)</span>
+      <span class="token punctuation">)</span>
+    <span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token number">12</span>
+  <span class="token punctuation">)</span> <span class="token keyword">AS</span> age
+<span class="token keyword">FROM</span>
+  sap_capire_bookshop_Authors <span class="token keyword">AS</span> Authors_0<span class="token punctuation">;</span></code></pre>
+<p>Phew!</p>
+<h2 id="further-info">Further info</h2>
+<ul>
+<li><a href="/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/">Constraints, expressions and axioms in action</a></li>
+<li><a href="/blog/posts/2026/02/09/shift-left-with-cap/">Shift left with CAP</a></li>
+</ul>
+<h2 id="footnotes">Footnotes</h2>
+<ol>
+<li>
+<p>This is what was show on Patrice's screen; what you will likely get instead is SQL that is almost the same, except that a technical alias name is used for the <code>FROM</code> target, i.e. you will likely see <code>&quot;$B&quot;</code> instead of <code>Books</code>, like this:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">SELECT</span>
+  json_insert<span class="token punctuation">(</span>
+    <span class="token string">'{}'</span><span class="token punctuation">,</span> <span class="token string">'$."title"'</span><span class="token punctuation">,</span> title<span class="token punctuation">,</span> <span class="token string">'$."author_name"'</span><span class="token punctuation">,</span> author_name
+  <span class="token punctuation">)</span> <span class="token keyword">as</span> _json_
+<span class="token keyword">FROM</span>
+  <span class="token punctuation">(</span>
+    <span class="token keyword">SELECT</span>
+      <span class="token string">"$B"</span><span class="token punctuation">.</span>title<span class="token punctuation">,</span>
+      author<span class="token punctuation">.</span>name <span class="token keyword">as</span> author_name
+    <span class="token keyword">FROM</span> sap_capire_bookshop_Books <span class="token keyword">as</span> <span class="token string">"$B"</span>
+      <span class="token keyword">left</span> <span class="token keyword">JOIN</span> sap_capire_bookshop_Authors <span class="token keyword">as</span> author
+      <span class="token keyword">ON</span> author<span class="token punctuation">.</span>ID <span class="token operator">=</span> <span class="token string">"$B"</span><span class="token punctuation">.</span>author_ID
+    <span class="token keyword">WHERE</span>
+      <span class="token punctuation">(</span>
+        <span class="token keyword">case</span>
+          <span class="token keyword">when</span> author<span class="token punctuation">.</span>dateOfDeath <span class="token operator">is</span> <span class="token boolean">null</span> <span class="token keyword">then</span> ?
+          <span class="token keyword">else</span> ?
+        <span class="token keyword">end</span>
+      <span class="token punctuation">)</span> <span class="token operator">=</span> ?
+  <span class="token punctuation">)</span></code></pre>
+<p>Technical aliases are discussed in a later episode in this series.</p>
+</li>
+<li>
+<p>The SQL that we see here is the SQLite dialect as we're running in development mode by default.</p>
+</li>
+<li>
+<p>Notice that the <code>coalesce</code> function is available natively not only in HANA but also in SQLite.</p>
+</li>
+<li>
+<p>When using the hybrid profile and connected to HANA, this is how the query runs:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Authors<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string"> {name, age, isAlive }</span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">30</span><span class="token punctuation">,</span> <span class="token literal-property property">isAlive</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Emily Brontë'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">36</span><span class="token punctuation">,</span> <span class="token literal-property property">isAlive</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Charlotte Brontë'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">40</span><span class="token punctuation">,</span> <span class="token literal-property property">isAlive</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Edgar Allen Poe'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">82</span><span class="token punctuation">,</span> <span class="token literal-property property">isAlive</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Richard Carpenter'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">50</span><span class="token punctuation">,</span> <span class="token literal-property property">isAlive</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Brandon Sanderson'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">81</span><span class="token punctuation">,</span> <span class="token literal-property property">isAlive</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'J. R. R. Tolkien'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+</li>
+</ol>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2026/03/09/cds-expressions-in-cap-notes-on-part-2/">CDS expressions in CAP - notes on Part 2</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2026/03/23/cds-expressions-in-cap-notes-on-part-3/` was built on 2026-03-22T10:01:11.481Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
