@@ -21,9 +21,9 @@ for an overview of all the episodes.
 
 [00:00](https://www.youtube.com/watch?v=aiE20i5BP70&t=0s) A rather lengthy introduction and recap (sorry Patrice!).
 
-## The case-when-then-end expression
+## The case-when-then-else-end expression
 
-[09:30](https://www.youtube.com/watch?v=s4IZR1LBRrA&t=570s) Patrice reviews and re-explains the `case ... when ... then ... else` expression in the `@assert` annotation, noting that if neither of the conditions match then the expression evaluates to null:
+[09:30](https://www.youtube.com/watch?v=s4IZR1LBRrA&t=570s) Patrice reviews and re-explains the `CASE ... WHEN ... THEN ... ELSE ... END` expression in the `@assert` annotation, noting that if neither of the conditions match then the expression evaluates to null:
 
 ```cds
 annotate AdminService.Books:stock with @assert: (
