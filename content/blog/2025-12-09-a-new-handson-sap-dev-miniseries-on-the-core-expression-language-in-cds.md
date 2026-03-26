@@ -21,7 +21,7 @@ expressions in CDS.
 - Part 1 [replay](https://www.youtube.com/watch?v=aiE20i5BP70) (16 Jan 2026) [notes](/blog/posts/2026/03/05/cds-expressions-in-cap-notes-on-part-1/)
 - Part 2 [replay](https://www.youtube.com/watch?v=s4IZR1LBRrA) (23 Jan 2026) [notes](/blog/posts/2026/03/09/cds-expressions-in-cap-notes-on-part-2/)
 - Part 3 [replay](https://www.youtube.com/watch?v=FVEbvHMxOIY) (30 Jan 2026) [notes](/blog/posts/2026/03/23/cds-expressions-in-cap-notes-on-part-3/)
-- Part 4 [replay](https://www.youtube.com/watch?v=XD71N7YYuGA) (06 Feb 2026)
+- Part 4 [replay](https://www.youtube.com/watch?v=XD71N7YYuGA) (06 Feb 2026) [notes](/blog/posts/2026/03/27/cds-expressions-in-cap-notes-on-part-4/)
 - Part 5 [replay](https://www.youtube.com/watch?v=I2Y3uC10Cs8) (13 Feb 2026)
 - Part 6 [replay](https://www.youtube.com/watch?v=OPOH3agULQ0) (20 Feb 2026)
 - Part 7 [replay](https://www.youtube.com/watch?v=TqfHXKKHEEU) (27 Feb 2026)
