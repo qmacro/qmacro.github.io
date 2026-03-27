@@ -708,7 +708,9 @@ example, contrasting the two approaches and result sets, based on the books from
 Brandon Sanderson, two of which include the word "Mistborn":
 
 ```javascript
-> await cds.ql`select title from ${Books} where author.name like '%Sanderson'`
+> await cds.ql`
+  select title from ${Books} where author.name like '%Sanderson'
+  `
 [
   { title: 'Mistborn: The Final Empire' },
   { title: 'The Well of Ascension' },
@@ -723,7 +725,10 @@ Brandon Sanderson, two of which include the word "Mistborn":
 First, the less convenient approach:
 
 ```javascript
-> q = cds.ql`select from ${Authors} { name } where books.title like '%Mistborn%'`
+> q = cds.ql`
+  select from ${Authors} { name }
+  where books.title like '%Mistborn%'
+  `
 cds.ql {
   SELECT: {
     from: { ref: [ 'sap.capire.bookshop.Authors' ] },
@@ -741,7 +746,10 @@ cds.ql {
 And then the approach using `EXISTS`:
 
 ```javascript
-> q = cds.ql`SELECT from ${Authors} { name } where exists books[title like '%Mistborn%']`
+> q = cds.ql`
+  select from ${Authors} { name }
+  where exists books[title like '%Mistborn%']
+  `
 cds.ql {
   SELECT: {
     from: { ref: [ 'sap.capire.bookshop.Authors' ] },
