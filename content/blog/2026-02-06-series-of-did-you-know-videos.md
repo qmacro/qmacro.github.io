@@ -24,32 +24,79 @@ episodes. Use the 📺 link to jump directly to the section in the news episode.
 
 ### 1 The cds REPL
 
-📺 [Did you know](https://www.youtube.com/watch?v=5-mzMGS1gHo&t=139s): that the cds REPL is great for exploring your CAP services? More info: [A reCAP intro to the cds REPL](/blog/posts/2025/07/21/a-recap-intro-to-the-cds-repl/) (_SAP Developer News 29 Jan 2026, with DJ_).
+📺 [Did you know](https://www.youtube.com/watch?v=5-mzMGS1gHo&t=139s): that the
+cds REPL is great for exploring your CAP services? More info: [A reCAP intro to
+the cds REPL](/blog/posts/2025/07/21/a-recap-intro-to-the-cds-repl/) (_SAP
+Developer News 29 Jan 2026, with DJ_).
 
 ### 2 Mocking auth in CAP
 
-📺 [Did you know](https://www.youtube.com/watch?v=HqlUHFtW0g4&t=184s): that CAP has a "mocked" authentication strategy you can use in local development so you don't have to put off this important part of your domain design? More info: [Authentication Strategies](https://cap.cloud.sap/docs/node.js/authentication#strategies) (_SAP Developer News 05 Feb 2026, with DJ_).
+📺 [Did you know](https://www.youtube.com/watch?v=HqlUHFtW0g4&t=184s): that CAP
+has a "mocked" authentication strategy you can use in local development so you
+don't have to put off this important part of your domain design? More info:
+[Authentication
+Strategies](https://cap.cloud.sap/docs/node.js/authentication#strategies) (_SAP
+Developer News 05 Feb 2026, with DJ_).
 
 ### 3 Debugging apps on CF
 
-📺 [Did you know](https://www.youtube.com/watch?v=aU3Eu2SlvxE&t=449s): that it's easy to debug your CAP Node.js apps running on Cloud Foundry? More info: The [Debugging with cds debug](https://cap.cloud.sap/docs/tools/cds-cli#cds-debug) section of the CLI topic in Capire (_SAP Developer News 12 Feb 2026, with DJ_).
+📺 [Did you know](https://www.youtube.com/watch?v=aU3Eu2SlvxE&t=449s): that
+it's easy to debug your CAP Node.js apps running on Cloud Foundry? More info:
+The [Debugging with cds
+debug](https://cap.cloud.sap/docs/tools/cds-cli#cds-debug) section of the CLI
+topic in Capire (_SAP Developer News 12 Feb 2026, with DJ_).
 
 ### 4 Released Objects in ADT
 
-📺 [Did you know](https://www.youtube.com/watch?v=-PQk6qfZLeQ&t=247s): that the released objects that are available for developer extensibility are displayed in the Project Explorer of ABAP Development Tools? More info: The [Released Development Objects](https://help.sap.com/docs/SAP_S4HANA_CLOUD/6aa39f1ac05441e5a23f484f31e477e7/7e27832a2d494e0b98359a7f1c6edefe.html) section of the Developer Extensibility documentation in the SAP Help Portal (_SAP Developer News 19 Feb 2026, with Shilpa_).
+📺 [Did you know](https://www.youtube.com/watch?v=-PQk6qfZLeQ&t=247s): that the
+released objects that are available for developer extensibility are displayed
+in the Project Explorer of ABAP Development Tools? More info: The [Released
+Development
+Objects](https://help.sap.com/docs/SAP_S4HANA_CLOUD/6aa39f1ac05441e5a23f484f31e477e7/7e27832a2d494e0b98359a7f1c6edefe.html)
+section of the Developer Extensibility documentation in the SAP Help Portal
+(_SAP Developer News 19 Feb 2026, with Shilpa_).
 
 ### 5 Search ABAP CDS objects using Annotations
 
-📺 [Did you know](https://www.youtube.com/watch?v=MI7CC4ji5z0&t=390s): that you can search the CDS View entity by the annotations used? More info: The guide to [the ABAP Development Tools for Eclipse](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/about-abap-development-tools-user-guide) in the SAP Help Portal (_SAP Developer News 26 Feb 2026, with Shilpa_).
+📺 [Did you know](https://www.youtube.com/watch?v=MI7CC4ji5z0&t=390s): that you
+can search the CDS View entity by the annotations used? More info: The guide to
+[the ABAP Development Tools for
+Eclipse](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/about-abap-development-tools-user-guide)
+in the SAP Help Portal (_SAP Developer News 26 Feb 2026, with Shilpa_).
 
 ### 6 Privileged access in ADT
 
-📺 [Did you know](https://www.youtube.com/watch?v=g6hDrE2ERyI&t=226s): that you can check if your data model can access the relevant data without using an access control? More info: The guide to [the ABAP Development Tools for Eclipse](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/about-abap-development-tools-user-guide) in the SAP Help Portal (_SAP Developer News 05 Mar 2026, with Shilpa_).
+📺 [Did you know](https://www.youtube.com/watch?v=g6hDrE2ERyI&t=226s): that you
+can check if your data model can access the relevant data without using an
+access control? More info: The guide to [the ABAP Development Tools for
+Eclipse](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/about-abap-development-tools-user-guide)
+in the SAP Help Portal (_SAP Developer News 05 Mar 2026, with Shilpa_).
 
 ### 7 AI Launchpad Model Library
 
-📺 [Did you know](https://www.youtube.com/watch?v=3Uc8l3b5600&t=395s): that you can use the Model Library in Generative AI Hub on SAP AI Launchpad to explore the LLMs SAP is offering managed, hosted or provided remotely? More info: The [SAP AI Launchpad Model Library](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/model-library) documentation in the SAP Help Portal (_SAP Developer News 12 Mar 2026, with Kevin_).
+📺 [Did you know](https://www.youtube.com/watch?v=3Uc8l3b5600&t=395s): that you
+can use the Model Library in Generative AI Hub on SAP AI Launchpad to explore
+the LLMs SAP is offering managed, hosted or provided remotely? More info: The
+[SAP AI Launchpad Model
+Library](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/model-library)
+documentation in the SAP Help Portal (_SAP Developer News 12 Mar 2026, with
+Kevin_).
 
 ### 8 Orchestration Client in SAP Cloud SDK for AI
 
-📺 [Did you know](https://www.youtube.com/watch?v=TODO&t=TODOs): that you can use the orchestration client from the SAP Cloud SDK for AI to create a full AI orchestration flow in CAP? More info: The [SAP Cloud SDK for AI – Chat Completion documentation](https://sap.github.io/ai-sdk/docs/js/orchestration/chat-completion) (_SAP Developer News 19 Mar 2026, with Kevin_). 👈 LATEST
+📺 [Did you know](https://www.youtube.com/watch?v=-I5nYXrnATE&t=356s): that you
+can use the orchestration client from the SAP Cloud SDK for AI to create a full
+AI orchestration flow in CAP? More info: The [SAP Cloud SDK for AI – Chat
+Completion
+documentation](https://sap.github.io/ai-sdk/docs/js/orchestration/chat-completion)
+(_SAP Developer News 19 Mar 2026, with Kevin_).
+
+### 9 Orchestration Client configuration
+
+📺 [Did you know](https://www.youtube.com/watch?v=VLy14Vy4L2U&t=298s): that you
+can configure an AI orchestration in AI Launchpad and use it to configure the
+orchestration client from the SAP Cloud SDK for AI? More info:
+[Orchestration Workflow
+AI](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/orchestration-4953dc10c6dd48fe85f37b41109dffe2?q=orchestration+workflow+ai)
+in the SAP Help Portal (_SAP Developer News 26 Mar 2026, with Kevin_). 👈
+LATEST
