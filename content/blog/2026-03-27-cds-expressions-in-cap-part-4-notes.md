@@ -514,6 +514,8 @@ for which there are no "non sellers", i.e. no books with more than 100 in
 stock. We can deal with this in various ways, see the [next
 section](#a-look-at-the-exists-predicate).
 
+## Element reference expressions
+
 [51:02](https://www.youtube.com/watch?v=XD71N7YYuGA&t=3062s) Based on a question
 from me going back to the CDL definition of `nonSeller`, and how it is basically
 a reference to an existing element (`books`), Patrice shows that this is a
