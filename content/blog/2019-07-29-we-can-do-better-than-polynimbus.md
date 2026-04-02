@@ -1,6 +1,8 @@
 ---
 date: 2019-07-29
 title: We can do better than 'polynimbus'
+tags:
+  - pedantry
 ---
 
 My attention was drawn to an interesting blog post over on the [SAP Community](https://community.sap.com): "[Are you polynimbus](https://blogs.sap.com/2019/07/29/are-you-polynimbus/)". The word "polynimbus" jumped out at me, and not particularly in a good way. Here's why.

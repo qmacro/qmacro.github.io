@@ -6,6 +6,7 @@ tags:
   - language
   - atom
   - odata
+  - pedantry
 ---
 If I suggest that an alternative title for this could be "Blog post, not blog!" you'll get a good idea of what this is about. Plus there's a bonus bit on how blogs, blog posts and feeds relate to OData.
 
