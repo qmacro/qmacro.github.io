@@ -96,7 +96,10 @@ documentation](https://sap.github.io/ai-sdk/docs/js/orchestration/chat-completio
 📺 [Did you know](https://www.youtube.com/watch?v=VLy14Vy4L2U&t=298s): that you
 can configure an AI orchestration in AI Launchpad and use it to configure the
 orchestration client from the SAP Cloud SDK for AI? More info:
-[Orchestration Workflow
-AI](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/orchestration-4953dc10c6dd48fe85f37b41109dffe2?q=orchestration+workflow+ai)
-in the SAP Help Portal (_SAP Developer News 26 Mar 2026, with Kevin_). 👈
-LATEST
+[Orchestration Workflow AI](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/orchestration-4953dc10c6dd48fe85f37b41109dffe2?q=orchestration+workflow+ai) in the SAP Help Portal (_SAP Developer News 26 Mar 2026, with Kevin_).
+
+### 10 Test Orchestration configuration
+
+📺 [Did you know](https://www.youtube.com/watch?v=OOy_Firo61Y&t=157s): that you can test the orchestration configuration directly in AI Launchpad against various LLMs? More info:
+[Test Your Orchestration Workflow](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/test-your-orchestration-workflow?q=orchestration+workflow+ai)
+in the SAP Help Portal (_SAP Developer News 02 Apr 2026, with Kevin_). 👈 LATEST
