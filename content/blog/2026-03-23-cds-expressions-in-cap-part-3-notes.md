@@ -812,7 +812,8 @@ Phew!
 
 ## Further info
 
-- [Constraints, expressions and axioms in action](/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/)
+- [Constraints, expressions and axioms in
+  action](/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/)
 - [Shift left with CAP](/blog/posts/2026/02/09/shift-left-with-cap/)
 
 ## Footnotes

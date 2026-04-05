@@ -495,11 +495,12 @@ Definitely worth trying a few out yourself!
 ## Further info
 
 - Patrice also has [some great notes for this
-  part](https://github.com/patricebender/cxl-bookshop/blob/main/notes/notes-session2.md)
+  part](https://github.com/patricebender/cxl-bookshop/blob/main/notes/notes-session2.md).
 
 ## Footnotes
 
-1. The "hybrid" profile is used as default by `cds bind` so we can omit the `--profile hybrid` here:
+1. The "hybrid" profile is used as default by `cds bind` so we can omit the
+   `--profile hybrid` here:
 
     ```bash
     cds bind --exec -- cds repl --run .

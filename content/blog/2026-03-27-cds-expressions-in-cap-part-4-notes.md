@@ -781,4 +781,4 @@ checking across to-many relationships.
 ## Further info
 
 - Patrice also has [some great notes for this
-  part](https://github.com/patricebender/cxl-bookshop/blob/main/notes/notes-session4.md)
+  part](https://github.com/patricebender/cxl-bookshop/blob/main/notes/notes-session4.md).
