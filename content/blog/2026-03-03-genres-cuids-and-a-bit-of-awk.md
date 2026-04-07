@@ -110,6 +110,8 @@ simple, in one-liners. I have written some [notes](#notes) below on how the
 script works.
 
 ```awk
+#!/usr/bin/awk -f
+
 function getparent(sid) {
   if (! parent[sid]) return ""
   return getparent(parent[sid]) "/" name[parent[sid]]
@@ -124,10 +126,9 @@ BEGIN {
 NR == 1
 
 NR > 1 {
-  sid = NR - 1
-  id[$1] = sid
+  sid = $1
   name[sid] = $3
-  parent[sid] = id[$2]
+  parent[sid] = $2
   print sid, parent[sid], $3
   system("mkdir -p '/tmp/" DIR getparent(sid) "/" $3 "'")
 }
