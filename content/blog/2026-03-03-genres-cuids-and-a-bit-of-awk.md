@@ -129,7 +129,7 @@ NR > 1 {
   name[sid] = $3
   parent[sid] = id[$2]
   print sid, parent[sid], $3
-  system("mkdir -p /tmp/" DIR getparent(sid) "/" $3)
+  system("mkdir -p '/tmp/" DIR getparent(sid) "/" $3 "'")
 }
 ```
 
