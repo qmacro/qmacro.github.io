@@ -102,4 +102,10 @@ orchestration client from the SAP Cloud SDK for AI? More info:
 
 📺 [Did you know](https://www.youtube.com/watch?v=OOy_Firo61Y&t=157s): that you can test the orchestration configuration directly in AI Launchpad against various LLMs? More info:
 [Test Your Orchestration Workflow](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/test-your-orchestration-workflow?q=orchestration+workflow+ai)
-in the SAP Help Portal (_SAP Developer News 02 Apr 2026, with Kevin_). 👈 LATEST
+in the SAP Help Portal (_SAP Developer News 02 Apr 2026, with Kevin_).
+
+### 11 AI agents (Generative AI Hub & LangGraph)
+
+📺 [Did you know](https://www.youtube.com/watch?v=Ams8yzY-x-A&t=202s): that you can build AI agents using LangGraph and Generative AI Hub? More info:
+[CrewAI example connecting to SAP Generative AI Hub via LiteLLM](https://sap-contributions.github.io/litellm-agentic-examples/_notebooks/examples/crewai_litellm_lib.html)
+(_SAP Developer News 09 Apr 2026, with Nora_). 👈 LATEST
