@@ -5,6 +5,7 @@ tags:
   - cds
   - cap
   - cql
+  - forward-declared-joins
   - cxl
   - handsonsapdev
   - exists
@@ -315,11 +316,11 @@ which looks like this:
 
 ![path expression syntax diagram](/images/2026/03/path-expression-syntax-diagram.png)
 
-## A brief digression on the term "forward declared join"
+## A brief digression on the term "forward-declared join"
 
 At this point ([32:30](https://www.youtube.com/watch?v=XD71N7YYuGA&t=1950s))
 I'm unable to resist surfacing a phrase that is also used in this context, and
-that is "forward declared join", which Daniel Hutzel and I touched upon [in
+that is "forward-declared join", which Daniel Hutzel and I touched upon [in
 part 9 of The Art and Science of
 CAP](/blog/posts/2025/02/21/tasc-notes-part-9/#whats-in-a-name). Patrice nicely
 explains what this term is, and how the concept it represents, is present in
@@ -381,7 +382,7 @@ cds.ql {
 Note that the name of the association element `books` becomes the alias for the
 target of the traversal.
 
-So here we're seeing the time element of a forward declared join i.e. a path
+So here we're seeing the time element of a forward-declared join i.e. a path
 expression, in that the join is manifested "just in time". By the way, with
 `toSQL()` we can see that the actual database engine specific SQL (SQLite in
 this case) looks like this (with the `json_insert` removed):
