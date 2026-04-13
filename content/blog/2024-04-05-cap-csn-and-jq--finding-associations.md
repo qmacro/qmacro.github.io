@@ -4,6 +4,10 @@ date: 2024-04-05
 tags:
   - cap
   - jq
+  - cdl
+  - csn
+  - cds
+  - aspects
 ---
 In CAP, relationships between entities can be expressed with associations. In digging into how these are represented internally, I found jq yet again to be invaluable in parsing out info from the internal representation of the definitions. Here's what I did.
 
