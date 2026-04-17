@@ -108,4 +108,10 @@ in the SAP Help Portal (_SAP Developer News 02 Apr 2026, with Kevin_).
 
 📺 [Did you know](https://www.youtube.com/watch?v=Ams8yzY-x-A&t=202s): that you can build AI agents using LangGraph and Generative AI Hub? More info:
 [CrewAI example connecting to SAP Generative AI Hub via LiteLLM](https://sap-contributions.github.io/litellm-agentic-examples/_notebooks/examples/crewai_litellm_lib.html)
-(_SAP Developer News 09 Apr 2026, with Nora_). 👈 LATEST
+(_SAP Developer News 09 Apr 2026, with Nora_).
+
+### 12 AI Launchpad Leaderboard
+
+📺 [Did you know](https://www.youtube.com/watch?v=mJrmidot-G4&t=265s): that you can compare foundation models in AI Launchpad using the leaderboard? More info:
+[The Model Library](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/model-library) in the SAP Help Portal for SAP AI Launchpad topics
+(_SAP Developer News 16 Apr 2026, with Nora_). 👈 LATEST
