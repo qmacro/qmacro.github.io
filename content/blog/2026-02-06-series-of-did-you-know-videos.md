@@ -100,18 +100,33 @@ orchestration client from the SAP Cloud SDK for AI? More info:
 
 ### 10 Test Orchestration configuration
 
-📺 [Did you know](https://www.youtube.com/watch?v=OOy_Firo61Y&t=157s): that you can test the orchestration configuration directly in AI Launchpad against various LLMs? More info:
-[Test Your Orchestration Workflow](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/test-your-orchestration-workflow?q=orchestration+workflow+ai)
+📺 [Did you know](https://www.youtube.com/watch?v=OOy_Firo61Y&t=157s): that you
+can test the orchestration configuration directly in AI Launchpad against
+various LLMs? More info: [Test Your Orchestration
+Workflow](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/test-your-orchestration-workflow?q=orchestration+workflow+ai)
 in the SAP Help Portal (_SAP Developer News 02 Apr 2026, with Kevin_).
 
 ### 11 AI agents (Generative AI Hub & LangGraph)
 
-📺 [Did you know](https://www.youtube.com/watch?v=Ams8yzY-x-A&t=202s): that you can build AI agents using LangGraph and Generative AI Hub? More info:
-[CrewAI example connecting to SAP Generative AI Hub via LiteLLM](https://sap-contributions.github.io/litellm-agentic-examples/_notebooks/examples/crewai_litellm_lib.html)
+📺 [Did you know](https://www.youtube.com/watch?v=Ams8yzY-x-A&t=202s): that you
+can build AI agents using LangGraph and Generative AI Hub? More info: [CrewAI
+example connecting to SAP Generative AI Hub via
+LiteLLM](https://sap-contributions.github.io/litellm-agentic-examples/_notebooks/examples/crewai_litellm_lib.html)
 (_SAP Developer News 09 Apr 2026, with Nora_).
 
 ### 12 AI Launchpad Leaderboard
 
-📺 [Did you know](https://www.youtube.com/watch?v=mJrmidot-G4&t=265s): that you can compare foundation models in AI Launchpad using the leaderboard? More info:
-[The Model Library](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/model-library) in the SAP Help Portal for SAP AI Launchpad topics
-(_SAP Developer News 16 Apr 2026, with Nora_). 👈 LATEST
+📺 [Did you know](https://www.youtube.com/watch?v=mJrmidot-G4&t=265s): that you
+can compare foundation models in AI Launchpad using the leaderboard? More info:
+[The Model
+Library](https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/model-library)
+in the SAP Help Portal for SAP AI Launchpad topics (_SAP Developer News 16 Apr
+2026, with Nora_).
+
+### 13 Override default auth while using xsuaa (CAP)
+
+📺 [Did you know](https://www.youtube.com/watch?v=9Dkj4TBOexk&t=204s): that you can
+override the default authentication behaviour for CAP service endpoints using a
+feature flag? More info: [Authentication in Production - Enforced by
+Default](https://cap.cloud.sap/docs/node.js/authentication#enforced-by-default)
+in Capire. (_SAP Developer News 23 Apr 2026, with Shrini_). 👈 LATEST
