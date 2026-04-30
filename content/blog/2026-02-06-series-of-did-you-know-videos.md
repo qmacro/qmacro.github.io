@@ -129,4 +129,12 @@ in the SAP Help Portal for SAP AI Launchpad topics (_SAP Developer News 16 Apr
 override the default authentication behaviour for CAP service endpoints using a
 feature flag? More info: [Authentication in Production - Enforced by
 Default](https://cap.cloud.sap/docs/node.js/authentication#enforced-by-default)
-in Capire. (_SAP Developer News 23 Apr 2026, with Shrini_). 👈 LATEST
+in Capire. (_SAP Developer News 23 Apr 2026, with Shrini_).
+
+### 14 Global canvas in Build Apps
+
+📺 [Did you know](https://www.youtube.com/watch?v=pvwdRgImGQY&t=717s): that you
+can define logic in the Global Canvas and trigger it from any point in your
+app? More info: [SAP Build Apps - Trigger
+Event](https://help.sap.com/docs/build-apps/service-guide/trigger-event) in the
+SAP Help Portal. (_SAP Developer News 30 Apr 2026, with Shrini_). 👈 LATEST
