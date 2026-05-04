@@ -1,6 +1,6 @@
 ---
 title: CDS expressions in CAP - notes on Part 6
-date: 2026-04-13
+date: 2026-05-04
 tags:
   - cds
   - cap
