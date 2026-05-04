@@ -1,0 +1,1641 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>CDS expressions in CAP - notes on Part 6</title>
+		<meta name="description" content="Notes to accompany Part 6 of the mini-series on the core expression language in CDS.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="CDS expressions in CAP - notes on Part 6">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="Notes to accompany Part 6 of the mini-series on the core expression language in CDS.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2026/04/13/cds-expressions-in-cap-notes-on-part-6/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 60%, 70%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="cds-expressions-in-cap-notes-on-part-6">CDS expressions in CAP - notes on Part 6</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2026-04-13">13 April 2026</time></li>
+	<li><a href="/tags/cds/" class="post-tag">cds</a>, </li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/cql/" class="post-tag">cql</a>, </li>
+	<li><a href="/tags/cxl/" class="post-tag">cxl</a>, </li>
+	<li><a href="/tags/subqueries/" class="post-tag">subqueries</a>, </li>
+	<li><a href="/tags/handsonsapdev/" class="post-tag">handsonsapdev</a></li>
+</ul>
+
+<p class="post-description-main">Notes to accompany Part 6 of the mini-series on the core expression language in CDS.</p>
+
+<p>See the <a href="/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/">series
+post</a>
+for an overview of all the episodes.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/OPOH3agULQ0?si=OGKgMWDVcOp8fRQO" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay;
+clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen=""></iframe>
+<h2 id="introduction">Introduction</h2>
+<p><a href="https://www.youtube.com/watch?v=OPOH3agULQ0&amp;t=0s">00:00</a> Introduction and
+recap.</p>
+<p><a href="https://www.youtube.com/watch?v=OPOH3agULQ0&amp;t=347s">05:47</a> Patrice takes over
+and looks at the <a href="https://cap.cloud.sap/docs/cds/cxl#expressions-expr">syntax diagram in the CXL topic of
+Capire</a> and the specific
+<a href="https://cap.cloud.sap/docs/cds/cxl#path-expressions-ref">path expression
+diagram</a>. He remarks
+that one of the cool things about path expressions is that you can chain
+navigations together, as is shown in one of the examples that follow the
+diagram:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">assoc[filter].struct.assoc.element</code></pre>
+<p>Such navigation paths are materialised at some point (on use) into constructs
+such as:</p>
+<ul>
+<li>an <code>EXISTS</code> subquery</li>
+<li>a <code>LEFT JOIN</code></li>
+<li>a correlated subquery (for the expands)</li>
+</ul>
+<p>These path expressions in particular (as well as CXL in general) can be used
+everywhere; Patrice gives examples:</p>
+<ul>
+<li>in CDL models (when defining the schema or service projections)</li>
+<li>in annotation expressions (when referring to a path or element)</li>
+<li>in queries (written in CQL)</li>
+</ul>
+<p><a href="https://www.youtube.com/watch?v=OPOH3agULQ0&amp;t=626s">10:26</a> As good things come
+in threes, or so they say, here's a final three-bullet point list (making a
+total of three lists, too), where Patrice enumerates the different contexts in
+which we used the <code>nonSeller</code> association-like calculated element (<code>nonSeller = books[ stock &gt; 170 ]</code>), in the previous episode:</p>
+<ul>
+<li>with <a href="/blog/posts/2026/04/07/cds-expressions-in-cap-notes-on-part-5/#digging-into-the-condition">the <code>EXISTS</code>
+predicate</a></li>
+<li>in <a href="/blog/posts/2026/04/07/cds-expressions-in-cap-notes-on-part-5/#using-a-path-expression-in-the-column-list">path expressions in the column
+list</a></li>
+<li>in a <a href="/blog/posts/2026/04/07/cds-expressions-in-cap-notes-on-part-5/#nested-expands">nested
+expand</a>
+construct</li>
+</ul>
+<p><a href="https://www.youtube.com/watch?v=OPOH3agULQ0&amp;t=749s">12:29</a> We get a glimpse
+behind the scenes at the <code>@cap-js/db-service</code> mechanisms, where Patrice shows
+the function that is used to generate aliases, in the context of the new (to us
+in this series) style of aliases shown in the normalised, intermediate
+CAP-style SQL:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Authors<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">
+  {name}
+  where exists nonSeller
+  </span><span class="token template-punctuation string">`</span></span><span class="token punctuation">.</span><span class="token function">forSQL</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Authors'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'$A'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$A'</span><span class="token punctuation">,</span> <span class="token string">'name'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">'exists'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span>
+        <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Books'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'$n'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+            <span class="token punctuation">{</span>
+              <span class="token literal-property property">xpr</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$n'</span><span class="token punctuation">,</span> <span class="token string">'author_ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+                <span class="token string">'='</span><span class="token punctuation">,</span>
+                <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$A'</span><span class="token punctuation">,</span> <span class="token string">'ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span>
+              <span class="token punctuation">]</span>
+            <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'and'</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">xpr</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$n'</span><span class="token punctuation">,</span> <span class="token string">'stock'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token string">'>'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">170</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span>
+          <span class="token punctuation">]</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>These <code>$</code>-prefixed short alias names are &quot;technical&quot; aliases. There's a
+function that Patrice dives into, specifically <code>getImplicitAlias</code> in
+<code>@cap-js/db-service/lib/utils.js</code>, that has a <code>useTechnicalAlias</code> parameter
+which defaults to <code>true</code>.</p>
+<blockquote>
+<p>At this point we'll make the transition to having these technical aliases
+shown in our CAP-style SQL, as shown in this example, instead of the
+human-centric ones we've had so far.</p>
+</blockquote>
+<h2 id="looking-at-the-genres-entity-definition">Looking at the genres entity definition</h2>
+<p><a href="https://www.youtube.com/watch?v=OPOH3agULQ0&amp;t=962s">16:02</a> Patrice takes some
+time to explain the reason for the technical aliases, using the recursively
+structured <code>Genres</code> entity definition as an example:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token keyword">entity</span> Genres : sap.common.CodeList {
+  <span class="token cqlkeywords keyword">key</span> ID       : <span class="token type builtin">Integer</span>;
+      parent   : <span class="token association-composition keyword">Association to Genres</span>;
+      children : <span class="token association-composition keyword">Composition of many Genres</span>
+                   <span class="token cqlkeywords keyword">on</span> children.parent = $self;
+}</code></pre>
+<p>Querying the genre information in Patrice's sample project we see the general idea:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Genres<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">
+  { name, parent { * } }
+  </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Fiction'</span><span class="token punctuation">,</span> <span class="token literal-property property">parent</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Drama'</span><span class="token punctuation">,</span> <span class="token literal-property property">parent</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Fiction'</span><span class="token punctuation">,</span> <span class="token literal-property property">descr</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">parent_ID</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Poetry'</span><span class="token punctuation">,</span> <span class="token literal-property property">parent</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Fiction'</span><span class="token punctuation">,</span> <span class="token literal-property property">descr</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">parent_ID</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Fantasy'</span><span class="token punctuation">,</span> <span class="token literal-property property">parent</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Fiction'</span><span class="token punctuation">,</span> <span class="token literal-property property">descr</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">parent_ID</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Science Fiction'</span><span class="token punctuation">,</span> <span class="token literal-property property">parent</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Fiction'</span><span class="token punctuation">,</span> <span class="token literal-property property">descr</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">parent_ID</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Romance'</span><span class="token punctuation">,</span> <span class="token literal-property property">parent</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Fiction'</span><span class="token punctuation">,</span> <span class="token literal-property property">descr</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">parent_ID</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Mystery'</span><span class="token punctuation">,</span> <span class="token literal-property property">parent</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Fiction'</span><span class="token punctuation">,</span> <span class="token literal-property property">descr</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">parent_ID</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Thriller'</span><span class="token punctuation">,</span> <span class="token literal-property property">parent</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Fiction'</span><span class="token punctuation">,</span> <span class="token literal-property property">descr</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">parent_ID</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Dystopia'</span><span class="token punctuation">,</span> <span class="token literal-property property">parent</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Fiction'</span><span class="token punctuation">,</span> <span class="token literal-property property">descr</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">parent_ID</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Fairy Tale'</span><span class="token punctuation">,</span> <span class="token literal-property property">parent</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Fiction'</span><span class="token punctuation">,</span> <span class="token literal-property property">descr</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">10</span><span class="token punctuation">,</span> <span class="token literal-property property">parent_ID</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Non-Fiction'</span><span class="token punctuation">,</span> <span class="token literal-property property">parent</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Biography'</span><span class="token punctuation">,</span> <span class="token literal-property property">parent</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Non-Fiction'</span><span class="token punctuation">,</span> <span class="token literal-property property">descr</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span> <span class="token literal-property property">parent_ID</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Autobiography'</span><span class="token punctuation">,</span> <span class="token literal-property property">parent</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Biography'</span><span class="token punctuation">,</span> <span class="token literal-property property">descr</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">21</span><span class="token punctuation">,</span> <span class="token literal-property property">parent_ID</span><span class="token operator">:</span> <span class="token number">20</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Essay'</span><span class="token punctuation">,</span> <span class="token literal-property property">parent</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Non-Fiction'</span><span class="token punctuation">,</span> <span class="token literal-property property">descr</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span> <span class="token literal-property property">parent_ID</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Speech'</span><span class="token punctuation">,</span> <span class="token literal-property property">parent</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Non-Fiction'</span><span class="token punctuation">,</span> <span class="token literal-property property">descr</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span> <span class="token literal-property property">parent_ID</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+</code></pre>
+<p>To help visualise the genre hierarchy, here it is <a href="/blog/posts/2026/03/03/genres-cuids-and-a-bit-of-awk/">represented in a tree
+structure</a>:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">/tmp/genres/
+├── Fiction (10)
+│   ├── Drama
+│   ├── Dystopia
+│   ├── Fairy Tale
+│   ├── Fantasy
+│   ├── Mystery
+│   ├── Poetry
+│   ├── Romance
+│   ├── Science Fiction
+│   └── Thriller
+└── Non-Fiction (20)
+    ├── Biography (21)
+    │   └── Autobiography
+    ├── Essay
+    └── Speech</code></pre>
+<blockquote>
+<p>Because we'll be referring to them later in this post, the IDs for <code>Fiction</code>,
+<code>Non-Fiction</code> and <code>Biography</code> (genres that are &quot;parents&quot;) are shown in
+brackets.</p>
+</blockquote>
+<h2 id="an-introduction-to-scoped-queries">An introduction to scoped queries</h2>
+<p><a href="https://www.youtube.com/watch?v=OPOH3agULQ0&amp;t=1004s">16:44</a> At this point
+Patrice introduces us to &quot;scoped queries&quot;, where we can traverse the <code>FROM</code>
+with a path expression like construct:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Genres<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">:parent
+  { name }
+  </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Fiction'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Non-Fiction'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Biography'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>Here's another &quot;wait, what's this and what's going on?!&quot; moment in this series
+:-)</p>
+<p>Let's have a look at the CQN:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q <span class="token operator">=</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Genres<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">:parent
+  { name }
+  </span><span class="token template-punctuation string">`</span></span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Genres'</span><span class="token punctuation">,</span> <span class="token string">'parent'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'name'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>The value for <code>from</code> looks very much like a path expression - a <code>ref</code> with a
+value that is an array of multiple elements <code>[ 'sap.capire.bookshop.Books', 'parent' ]</code>.</p>
+<p>Next, let's have a look at the CAP-style SQL:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q<span class="token punctuation">.</span><span class="token function">forSQL</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Genres'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'$p'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$p'</span><span class="token punctuation">,</span> <span class="token string">'name'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">'exists'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span>
+        <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Genres'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'$G'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$G'</span><span class="token punctuation">,</span> <span class="token string">'parent_ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'='</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$p'</span><span class="token punctuation">,</span> <span class="token string">'ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span>
+          <span class="token punctuation">]</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Taking a moment to <a href="/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#initial-recognition">stare at
+this</a>
+the mist starts to clear. Looking at this intermediate form, we see:</p>
+<ul>
+<li>there's an <code>EXISTS</code> clause that's been materialised</li>
+<li>the &quot;lead&quot; and &quot;related&quot; entities involved are the same, here (<code>Genres</code>)</li>
+<li>the main query retrieves the genre name</li>
+<li>the subquery returns something based on a condition that correlates a
+relationship within this single entity</li>
+<li>that condition is that the ID of the genre whose name we're retrieving in the
+main query ... matches a parent ID value, at least once</li>
+</ul>
+<p>In other words, &quot;retrieve the genres that are parents&quot; (i.e. that have children).</p>
+<p>This can be stretched out to another path level, to retrieve genres that are
+&quot;grandparents&quot; (i.e. that are parents of parents):</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q <span class="token operator">=</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Genres<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">:parent.parent
+  { name }
+  </span><span class="token template-punctuation string">`</span></span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Genres'</span><span class="token punctuation">,</span> <span class="token string">'parent'</span><span class="token punctuation">,</span> <span class="token string">'parent'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'name'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>This returns just a single result in the set:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> q
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Non-Fiction'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>This makes sense, as we can see in the tree structure earlier, <code>Non-Fiction</code> is
+the only genre that is a parent of a parent:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">/tmp/genres/
+...
+└── Non-Fiction (20)
+    ├── Biography (21)
+    │   └── Autobiography
+    ├── Essay
+    └── Speech</code></pre>
+<h3 id="further-examples-of-scoped-queries">Further examples of scoped queries</h3>
+<p>I initially struggled with this example. Illustrative as it was (especially
+with the <code>parent.parent</code> part), it was one that was a little complicated due to
+its self-referential nature.</p>
+<p>So I used the power &amp; utility of the cds REPL to explore more, and things
+started to make sense. For example, this query gives us the genres for books
+written by authors 40 years old or younger (Carpenter and the two Brontë
+sisters):</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q <span class="token operator">=</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from Authors[age &lt;= 40]:books.genre
+  { name }
+  </span><span class="token template-punctuation string">`</span></span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token punctuation">{</span>
+          <span class="token literal-property property">id</span><span class="token operator">:</span> <span class="token string">'Authors'</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'age'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token string">'&lt;='</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">40</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token string">'books'</span><span class="token punctuation">,</span>
+        <span class="token string">'genre'</span>
+      <span class="token punctuation">]</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'name'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token operator">></span> <span class="token keyword">await</span> q
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Drama'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Romance'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Mystery'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>Again we have a path expression traversal happening in the <code>from</code> part of the
+query, this time with an infix filter on the first part of the path. I used an
+infix filter here to make the example a little more interesting.</p>
+<p>I then wondered to myself what it would look and feel like to use an infix
+filter on a different part of the path, and came up with this:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q <span class="token operator">=</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Authors<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">:books[title like 'The %'].genre
+  { name }
+  </span><span class="token template-punctuation string">`</span></span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token string">'sap.capire.bookshop.Authors'</span><span class="token punctuation">,</span>
+        <span class="token punctuation">{</span>
+          <span class="token literal-property property">id</span><span class="token operator">:</span> <span class="token string">'books'</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'title'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token string">'like'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token string">'The %'</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token string">'genre'</span>
+      <span class="token punctuation">]</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'name'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>This produces the names of the genres of books that begin with the definite
+article (&quot;The ...&quot;):</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q <span class="token operator">=</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Authors<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">:books[title like 'The %'].genre
+  { name }
+  </span><span class="token template-punctuation string">`</span></span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+        <span class="token string">'sap.capire.bookshop.Authors'</span><span class="token punctuation">,</span>
+        <span class="token punctuation">{</span>
+          <span class="token literal-property property">id</span><span class="token operator">:</span> <span class="token string">'books'</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'title'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token string">'like'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token string">'The %'</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token string">'genre'</span>
+      <span class="token punctuation">]</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'name'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token operator">></span> <span class="token keyword">await</span> q
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Fantasy'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Mystery'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>At first I thought the first part of the path in this query would now be
+redundant, assuming that I could have just written:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q <span class="token operator">=</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Books<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">[title like 'The %'].genre
+  { name }
+  </span><span class="token template-punctuation string">`</span></span></code></pre>
+<p>But I was mistaken.</p>
+<p>The key to thinking about this is remembering the term &quot;scoped&quot;. To illustrate,
+let's adjust the postfix projection to have the book titles returned, and run
+the scoped query:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Authors<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">:books[title like 'The %']
+  { title }
+  </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'The Raven'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token operator">...</span> <span class="token punctuation">(</span><span class="token number">12</span> rows removed <span class="token keyword">for</span> brevity<span class="token punctuation">)</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'The Fall of Gondolin'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>Running the unscoped query returns the same result set, yes:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Books<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">[title like 'The %']
+  { title }
+  </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'The Raven'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token operator">...</span> <span class="token punctuation">(</span><span class="token number">12</span> rows removed <span class="token keyword">for</span> brevity<span class="token punctuation">)</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'The Fall of Gondolin'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>At this point let's add a book, but without a connection to an author, like this:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> <span class="token constant">INSERT</span><span class="token punctuation">.</span><span class="token function">into</span><span class="token punctuation">(</span>Books<span class="token punctuation">,</span><span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token constant">ID</span><span class="token operator">:</span><span class="token number">999</span><span class="token punctuation">,</span><span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'The Book With No Author!'</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+InsertResult <span class="token punctuation">{</span> <span class="token literal-property property">results</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">changes</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">lastInsertRowid</span><span class="token operator">:</span> <span class="token number">999</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span></code></pre>
+<p>Now re-running those queries gives us different result sets. First, the new
+book is included in the result set for the unscoped query:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Books<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">[title like 'The %']
+  { title }
+  </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'The Raven'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token operator">...</span> <span class="token punctuation">(</span><span class="token number">12</span> rows removed <span class="token keyword">for</span> brevity<span class="token punctuation">)</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'The Fall of Gondolin'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'The Book With No Author!'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>But it is <em>not</em> included in the result set for the scoped query:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Authors<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">:books[title like 'The %']
+  { title }
+  </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'The Raven'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token operator">...</span> <span class="token punctuation">(</span><span class="token number">12</span> rows removed <span class="token keyword">for</span> brevity<span class="token punctuation">)</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'The Fall of Gondolin'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>While both queries are materialised into <code>SELECT</code>s on
+<code>sap.capire.bookshop.Books</code>, the scoped query constrains the result set to
+those entries where there is an author, as we can see with the <code>EXISTS</code> in the
+intermediate SQL:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Authors<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">:books[title like 'The %']
+  { title }
+  </span><span class="token template-punctuation string">`</span></span><span class="token punctuation">.</span><span class="token function">forSQL</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Books'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'$b'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$b'</span><span class="token punctuation">,</span> <span class="token string">'title'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">'exists'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span>
+        <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Authors'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'$A'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$A'</span><span class="token punctuation">,</span> <span class="token string">'ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'='</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$b'</span><span class="token punctuation">,</span> <span class="token string">'author_ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span>
+          <span class="token punctuation">]</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token string">'and'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$b'</span><span class="token punctuation">,</span> <span class="token string">'title'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token string">'like'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token string">'The %'</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>See the section <a href="#combining-the-scoped-syntax-with-infix-filters">Combining the scoped syntax with infix
+filters</a> later on in these
+notes for more on this.</p>
+<h2 id="back-to-looking-at-the-technical-aliases">Back to looking at the technical aliases</h2>
+<p>At <a href="https://www.youtube.com/watch?v=OPOH3agULQ0&amp;t=1120s">18:40</a> Patrice steers
+us back to thinking about technical aliases by adding an explicit alias to the
+path expression in the query:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q <span class="token operator">=</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Genres<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">:parent as parent
+  { name, parent.ID }
+  </span><span class="token template-punctuation string">`</span></span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Genres'</span><span class="token punctuation">,</span> <span class="token string">'parent'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'parent'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'name'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'parent'</span><span class="token punctuation">,</span> <span class="token string">'ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Let's just see what this emits when executed:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> q
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Fiction'</span><span class="token punctuation">,</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">10</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Non-Fiction'</span><span class="token punctuation">,</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">20</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Biography'</span><span class="token punctuation">,</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">21</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>The alias is to the path expression in the query, and is an explicit one. It
+was also used explicitly in the <code>parent.ID</code> construct. There's also an implicit
+alias in that the referenced <code>name</code> element is really <code>parent.name</code>.</p>
+<p>But things get confusing if we want to refer to elements in the parent genre's
+parent, as Patrice demonstrates:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q <span class="token operator">=</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Genres<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">:parent as parent
+  { name, parent.parent.ID }
+  </span><span class="token template-punctuation string">`</span></span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Genres'</span><span class="token punctuation">,</span> <span class="token string">'parent'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'parent'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'name'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'parent'</span><span class="token punctuation">,</span> <span class="token string">'parent'</span><span class="token punctuation">,</span> <span class="token string">'ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Note the three level path expression:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'parent'</span><span class="token punctuation">,</span> <span class="token string">'parent'</span><span class="token punctuation">,</span> <span class="token string">'ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span></code></pre>
+<p>This returns:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> q
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Fiction'</span><span class="token punctuation">,</span> <span class="token literal-property property">parent_ID</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Non-Fiction'</span><span class="token punctuation">,</span> <span class="token literal-property property">parent_ID</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Biography'</span><span class="token punctuation">,</span> <span class="token literal-property property">parent_ID</span><span class="token operator">:</span> <span class="token number">20</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>which is what we should expect, in that <code>Fiction</code> and <code>Non-Fiction</code> are top
+level genres and have no parents.</p>
+<p>Clearly there's a high degree of potential confusion and conflict, and so
+technical aliases make more sense in the runtime (i.e. implicitly) as they have
+far less chance of clashing.</p>
+<blockquote>
+<p>At this point, it wouldn't be a bad idea to go and get a coffee and then come
+back for the rest of this write-up :-)</p>
+</blockquote>
+<h2 id="from-nested-expands-to-dot-notation-projections">From nested expands to dot notation projections</h2>
+<p><a href="https://www.youtube.com/watch?v=OPOH3agULQ0&amp;t=1382s">23:02</a> At this point we
+revisit a <a href="/blog/posts/2026/04/07/cds-expressions-in-cap-notes-on-part-5/#nested-expands">nested expand from last
+week</a>:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Authors<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">
+  { name, nonSeller { title, stock } }
+  where exists nonSeller
+  </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Richard Carpenter'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">nonSeller</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Catweazle'</span><span class="token punctuation">,</span> <span class="token literal-property property">stock</span><span class="token operator">:</span> <span class="token number">187</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'J. R. R. Tolkien'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">nonSeller</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Unfinished Tales'</span><span class="token punctuation">,</span> <span class="token literal-property property">stock</span><span class="token operator">:</span> <span class="token number">189</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'The Children of Húrin'</span><span class="token punctuation">,</span> <span class="token literal-property property">stock</span><span class="token operator">:</span> <span class="token number">203</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Beren and Lúthien'</span><span class="token punctuation">,</span> <span class="token literal-property property">stock</span><span class="token operator">:</span> <span class="token number">178</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'The Fall of Gondolin'</span><span class="token punctuation">,</span> <span class="token literal-property property">stock</span><span class="token operator">:</span> <span class="token number">195</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>Patrice reminds us that such an expand is &quot;just another postfix projection&quot;,
+which leads to the possibility of using <code>*</code> and <code>excluding</code> clauses, as we saw
+in the previous episode on this topic:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token punctuation">{</span> name<span class="token punctuation">,</span> nonSeller <span class="token punctuation">{</span> <span class="token operator">*</span> <span class="token punctuation">}</span> excluding <span class="token punctuation">{</span> <span class="token constant">ID</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span></code></pre>
+<p>With such expands being &quot;variants&quot; of postfix projections, we are then
+introduced to another variant, which looks similar but does something
+different.</p>
+<p>To illustrate, we move up to the service layer and go to the <code>Books</code> projection
+in the <code>CatalogService</code>, which currently looks like this, which includes a
+single element (the author name) from the <code>author</code> association:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token keyword">entity</span> Books       <span class="token cqlkeywords keyword">as</span>
+  <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> my.Books {
+    *,
+    author.name <span class="token cqlkeywords keyword">as</span> author
+  }
+  excluding {
+    createdBy,
+    modifiedBy
+  };</code></pre>
+<p>If we wanted to add another element from the <code>author</code> association, we could do this:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token keyword">entity</span> Books       <span class="token cqlkeywords keyword">as</span>
+  <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> my.Books {
+    *,
+    author.name <span class="token cqlkeywords keyword">as</span> author,
+    author.dateOfBirth
+  }
+  excluding {
+    createdBy,
+    modifiedBy
+  };</code></pre>
+<p>At <a href="https://www.youtube.com/watch?v=OPOH3agULQ0&amp;t=1587s">26:27</a> Patrice shows what this resolves to at the database layer, by running a build for HANA:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">cds build <span class="token parameter variable">--profile</span> production</code></pre>
+<p>This produces the HANA artifacts for deploying via the HDI container. One of these artifacts is the <code>gen/db/src/gen/CatalogService.Books.hdbview</code> file which contains the DDL statement to create the view that represents this projection:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">VIEW</span> CatalogService_Books <span class="token keyword">AS</span> <span class="token keyword">SELECT</span>
+  Books_0<span class="token punctuation">.</span>createdAt<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>modifiedAt<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>title<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>ID<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>descr<span class="token punctuation">,</span>
+  author_1<span class="token punctuation">.</span>name <span class="token keyword">AS</span> author<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>genre_ID<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>stock<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>price<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>currency_code<span class="token punctuation">,</span>
+  author_1<span class="token punctuation">.</span>dateOfBirth
+<span class="token keyword">FROM</span> <span class="token punctuation">(</span>
+  sap_capire_bookshop_Books <span class="token keyword">AS</span> Books_0
+  <span class="token keyword">LEFT</span> <span class="token keyword">JOIN</span> sap_capire_bookshop_Authors <span class="token keyword">AS</span> author_1
+    <span class="token keyword">ON</span> Books_0<span class="token punctuation">.</span>author_ID <span class="token operator">=</span> author_1<span class="token punctuation">.</span>ID
+<span class="token punctuation">)</span></code></pre>
+<blockquote>
+<p>Doing this for the CDL is the rough equivalent to when we've been examining
+the corresponding SQL for our queries in CQL, using <code>toSQL()</code> in the cds
+REPL.</p>
+</blockquote>
+<p>Here's what Patrice had to say about this DDL:</p>
+<ul>
+<li>technical aliases (<code>Books_0</code> and <code>author_1</code>) were used by the compiler, minimising ambiguities</li>
+<li>both <code>name</code> and <code>dateOfBirth</code> use the same <code>JOIN</code> node</li>
+</ul>
+<p>Now we have defined this and have confirmed at the DDL level what we expect to see, we can now explore the dot notation, which is essentially a little bit of syntactic sugar that is arguably easier on the eye:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token keyword">entity</span> Books       <span class="token cqlkeywords keyword">as</span>
+  <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> my.Books {
+    *,
+    author.{
+      <span class="token cdl-keyword keyword">name</span>,
+      dateOfBirth
+    }
+  }
+  excluding {
+    createdBy,
+    modifiedBy
+  };</code></pre>
+<p>We can easily think of this as opening another projection (on the <code>author</code>
+association) because of the use of braces, but be aware that this is not a
+nested expand, it is a shortcut to, or a summarised version of, multiple path
+expressions with the same root.</p>
+<p>A look at the compiled DDL for this variant shows that it's pretty much the
+same, i.e. still a flat list of elements, essentially:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">VIEW</span> CatalogService_Books <span class="token keyword">AS</span> <span class="token keyword">SELECT</span>
+  Books_0<span class="token punctuation">.</span>createdAt<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>modifiedAt<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>title<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>ID<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>descr<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>author_ID<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>genre_ID<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>stock<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>price<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>currency_code<span class="token punctuation">,</span>
+  author_1<span class="token punctuation">.</span>name <span class="token keyword">AS</span> name<span class="token punctuation">,</span>
+  author_1<span class="token punctuation">.</span>dateOfBirth <span class="token keyword">AS</span> dateOfBirth
+<span class="token keyword">FROM</span> <span class="token punctuation">(</span>
+  sap_capire_bookshop_Books <span class="token keyword">AS</span> Books_0
+  <span class="token keyword">LEFT</span> <span class="token keyword">JOIN</span> sap_capire_bookshop_Authors <span class="token keyword">AS</span> author_1
+    <span class="token keyword">ON</span> Books_0<span class="token punctuation">.</span>author_ID <span class="token operator">=</span> author_1<span class="token punctuation">.</span>ID
+<span class="token punctuation">)</span></code></pre>
+<blockquote>
+<p>We do get the <code>Books_0.author_ID</code> element additionally here, but that is of
+little consequence.</p>
+</blockquote>
+<h2 id="the-power-of-infix-filters">The power of infix filters</h2>
+<p>Patrice goes one step further at
+<a href="https://www.youtube.com/watch?v=OPOH3agULQ0&amp;t=1845s">30:45</a> to show how an
+infix filter might be added to this dot notation construct; the filter chosen
+isn't allowed in this context, but something like this is:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token keyword">entity</span> Books       <span class="token cqlkeywords keyword">as</span>
+  <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> my.Books {
+    *,
+    author[isAlive].{
+      <span class="token cdl-keyword keyword">name</span> <span class="token cqlkeywords keyword">as</span> thename,
+      dateOfBirth
+    }
+  }
+  excluding {
+    createdBy,
+    modifiedBy
+  };</code></pre>
+<blockquote>
+<p>In fact, Patrice uses this condition a little bit later on, albeit in a
+slightly longer form <code>isAlive = true</code>.</p>
+</blockquote>
+<p>There is a wider range of possibilities here in the context of queries, which
+Patrice then demonstrates in the cds REPL with:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Books<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">
+  {
+    title as book,
+    author[exists books[genre.name = 'Fantasy']].{ name, age }
+  }
+  </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token string">'Wuthering Heights'</span><span class="token punctuation">,</span> <span class="token literal-property property">author_name</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token literal-property property">author_age</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token string">'Jane Eyre'</span><span class="token punctuation">,</span> <span class="token literal-property property">author_name</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token literal-property property">author_age</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token string">'The Raven'</span><span class="token punctuation">,</span> <span class="token literal-property property">author_name</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token literal-property property">author_age</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token string">'Eleonora'</span><span class="token punctuation">,</span> <span class="token literal-property property">author_name</span><span class="token operator">:</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token literal-property property">author_age</span><span class="token operator">:</span> <span class="token keyword">null</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token string">'Catweazle'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">author_name</span><span class="token operator">:</span> <span class="token string">'Richard Carpenter'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">author_age</span><span class="token operator">:</span> <span class="token number">82</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token string">'Mistborn: The Final Empire'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">author_name</span><span class="token operator">:</span> <span class="token string">'Brandon Sanderson'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">author_age</span><span class="token operator">:</span> <span class="token number">50</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token literal-property property">book</span><span class="token operator">:</span> <span class="token string">'The Well of Ascension'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">author_name</span><span class="token operator">:</span> <span class="token string">'Brandon Sanderson'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">author_age</span><span class="token operator">:</span> <span class="token number">50</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token operator">...</span>
+<span class="token punctuation">]</span></code></pre>
+<p>Here we have a nested infix filter. Note that the condition construct only
+applies to the author data here, which explains why we have null values for
+some authors but not for others, within the books-led set.</p>
+<p>Patrice highlights that one of the advantages of this dot notation approach,
+when used with infix filters, is that we can define our path conditions up front
+and then specify what we want when we follow that path, without having to
+repeat it.</p>
+<p>This is also known as an inline nested projection.</p>
+<h3 id="infix-filter-construction">Infix filter construction</h3>
+<p>At <a href="https://www.youtube.com/watch?v=OPOH3agULQ0&amp;t=2196s">36:36</a> Patrice shows
+us the syntax diagram that describes <a href="https://cap.cloud.sap/docs/cds/cxl#infix-filters">infix
+filters</a></p>
+<p><img src="/images/2026/05/infix-filter-diagram.png" alt="infix filter diagram"></p>
+<p>and we talk a little about:</p>
+<ul>
+<li>the <code>where</code> keyword, which is optional and often omitted, similar to other
+keywords in CDL such as
+<a href="https://cap.cloud.sap/docs/cds/cdl#entity-definitions">define</a>.</li>
+<li>the main part which is an expression, which is thus essentially &quot;anything&quot;</li>
+</ul>
+<p>This latter point means that, depending on the context used, infix filters will
+be materialised into different shapes.</p>
+<h3 id="materialisation-in-ddl">Materialisation in DDL</h3>
+<p>To illustrate this somewhat, and to round this section out, at
+<a href="https://www.youtube.com/watch?v=OPOH3agULQ0&amp;t=2298s">38:18</a> Patrice modifies
+the infix filter condition in the CDL for the books projection to be
+<code>dateOfBirth &gt; 1900</code><a href="#footnotes"><sup>1</sup></a>:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token keyword">entity</span> Books       <span class="token cqlkeywords keyword">as</span>
+  <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> my.Books {
+    *,
+    author[dateOfBirth > 1900].{
+      <span class="token cdl-keyword keyword">name</span> <span class="token cqlkeywords keyword">as</span> thename,
+      dateOfBirth
+    }
+  }
+  excluding {
+    createdBy,
+    modifiedBy
+  };</code></pre>
+<p>This has the effect that the DDL for the corresponding view in HANA is defined
+like this:</p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">VIEW</span> CatalogService_Books <span class="token keyword">AS</span> <span class="token keyword">SELECT</span>
+  Books_0<span class="token punctuation">.</span>createdAt<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>modifiedAt<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>title<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>ID<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>descr<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>author_ID<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>genre_ID<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>stock<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>price<span class="token punctuation">,</span>
+  Books_0<span class="token punctuation">.</span>currency_code<span class="token punctuation">,</span>
+  author_1<span class="token punctuation">.</span>name <span class="token keyword">AS</span> thename<span class="token punctuation">,</span>
+  author_1<span class="token punctuation">.</span>dateOfBirth <span class="token keyword">AS</span> dateOfBirth
+<span class="token keyword">FROM</span> <span class="token punctuation">(</span>
+  sap_capire_bookshop_Books <span class="token keyword">AS</span> Books_0
+  <span class="token keyword">LEFT</span> <span class="token keyword">JOIN</span> sap_capire_bookshop_Authors <span class="token keyword">AS</span> author_1
+    <span class="token keyword">ON</span>
+      <span class="token punctuation">(</span>Books_0<span class="token punctuation">.</span>author_ID <span class="token operator">=</span> author_1<span class="token punctuation">.</span>ID<span class="token punctuation">)</span>
+      <span class="token operator">AND</span>
+      <span class="token punctuation">(</span>author_1<span class="token punctuation">.</span>dateOfBirth <span class="token operator">></span> <span class="token number">1900</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span></code></pre>
+<p>The infix filter is mixed in to the main foreign key matching part of the <code>ON</code>
+condition.</p>
+<h2 id="infix-filters-in-the-from-clause">Infix filters in the FROM clause</h2>
+<p>Infix filters can also be used in the <code>FROM</code> clause in queries, as Patrice shows at
+<a href="https://www.youtube.com/watch?v=OPOH3agULQ0&amp;t=2615s">43:35</a>:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Books<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">[where stock between 50 and 100]
+  { title, stock }
+  </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Wuthering Heights'</span><span class="token punctuation">,</span> <span class="token literal-property property">stock</span><span class="token operator">:</span> <span class="token number">95</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Jane Eyre'</span><span class="token punctuation">,</span> <span class="token literal-property property">stock</span><span class="token operator">:</span> <span class="token number">78</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'The Alloy of Law'</span><span class="token punctuation">,</span> <span class="token literal-property property">stock</span><span class="token operator">:</span> <span class="token number">67</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Shadows of Self'</span><span class="token punctuation">,</span> <span class="token literal-property property">stock</span><span class="token operator">:</span> <span class="token number">89</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Mistborn: Secret History'</span><span class="token punctuation">,</span> <span class="token literal-property property">stock</span><span class="token operator">:</span> <span class="token number">98</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span>
+</code></pre>
+<p>This is a nice syntactic sugar based variant, made even better by the use of
+the optional <code>where</code>, so we can read the entire construct (entity, infix filter
+condition and then the postfix projection) naturally, rather than e.g.:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Books<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">
+  { title, stock }
+  where stock between 50 and 100
+  </span><span class="token template-punctuation string">`</span></span></code></pre>
+<p>These variants are the same, which we can see if we compare their intermediate
+SQL (via <code>forSQL()</code>):</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript">cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Books'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'$B'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$B'</span><span class="token punctuation">,</span> <span class="token string">'title'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$B'</span><span class="token punctuation">,</span> <span class="token string">'stock'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$B'</span><span class="token punctuation">,</span> <span class="token string">'stock'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token string">'between'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">50</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token string">'and'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">100</span> <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="combining-the-scoped-syntax-with-infix-filters">Combining the scoped syntax with infix filters</h2>
+<p>To drive home two of the key concepts we've looked at, Patrice now combines
+them, starting at <a href="https://www.youtube.com/watch?v=OPOH3agULQ0&amp;t=2835s">47:15</a>.
+In other words, taking the scoped syntax variant of the <code>FROM</code> clause with a
+path expression constructed with a colon, and adding an infix filter.</p>
+<p>To illustrate this and start simply, we first see this, which is just the
+scoped query part:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q <span class="token operator">=</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Books<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">:author { name }</span><span class="token template-punctuation string">`</span></span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Books'</span><span class="token punctuation">,</span> <span class="token string">'author'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'name'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token operator">></span> <span class="token keyword">await</span> q
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Emily Brontë'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Charlotte Brontë'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Edgar Allen Poe'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Richard Carpenter'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Brandon Sanderson'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'J. R. R. Tolkien'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>This alone is worth dwelling on, when Patrice explains how he thinks about such
+constructs - reading from right to left: &quot;select those authors for whom exist
+(at least one) book(s)&quot;. The selection is on the <code>Authors</code> entity, but it is
+constrained by the books-authors relationship.</p>
+<p>If there was an author in the database for whom there were no corresponding
+book entries, this author would not be part of the result set. Rather than add
+an entry to show this, Patrice now adds on to this query an infix filter for the
+<code>Books</code> entity:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q <span class="token operator">=</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Books<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">[stock between 50 and 100]:author
+  { name }
+  </span><span class="token template-punctuation string">`</span></span></code></pre>
+<p>Looking at the intermediate SQL, we can see that this stock based condition in
+the infix filter becomes part of the <code>WHERE</code> clause of the subquery used in the
+<code>EXISTS</code>:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q<span class="token punctuation">.</span><span class="token function">forSQL</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Authors'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'$a'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$a'</span><span class="token punctuation">,</span> <span class="token string">'name'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">'exists'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span>
+        <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Books'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'$B'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$B'</span><span class="token punctuation">,</span> <span class="token string">'author_ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'='</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$a'</span><span class="token punctuation">,</span> <span class="token string">'ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'and'</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$B'</span><span class="token punctuation">,</span> <span class="token string">'stock'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'between'</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">50</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'and'</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">100</span> <span class="token punctuation">}</span>
+          <span class="token punctuation">]</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>This has the expected effect - a reduced result set:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> q
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Emily Brontë'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Charlotte Brontë'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Brandon Sanderson'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>And the possibilities don't end there, of course, which Patrice shows at this point by gratuitously adding another infix clause thus:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Books<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">[stock between 50 and 100]:author[order by name asc]
+  { name }
+  </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Brandon Sanderson'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Charlotte Brontë'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Emily Brontë'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>At this point in this writeup, I wonder about the contents of this second infix
+clause, in that it's not really a filter in the simple way I understand filters
+so I wanted to try to add something that feels more like an actual
+&quot;restrictive&quot; filter<a href="#footnotes"><sup>2</sup></a>, and that works too:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Books<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">[stock between 50 and 100]:author[name like '%Brontë']
+  { name }
+  </span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Emily Brontë'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'Charlotte Brontë'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<h2 id="disambiguating-elements-and-their-scoped-named-containers-with-colons">Disambiguating elements and their scoped named containers with colons</h2>
+<p>At <a href="https://www.youtube.com/watch?v=OPOH3agULQ0&amp;t=3000s">50:00</a> I ask Patrice
+to explain a little bit more about the use of the colon (<code>:</code>) when constructing
+a &quot;fully qualified&quot; element reference. Normally we would use a dot to express
+traversal through a relationship, such as <code>author.name</code>. But when it comes to
+including the &quot;container&quot; name, most commonly an entity, we must be precise and
+unambiguous, especially in the context of how the compiler will interpret what
+we express.</p>
+<p>With the use of <a href="https://cap.cloud.sap/docs/cds/cdl#namespaces">namespaces</a>,
+defined with either the <code>namespace</code> or <code>context</code> directives, or even just
+<a href="https://cap.cloud.sap/docs/cds/cdl#scoped-names">expressed explicitly</a> (e.g.
+<code>entity Foo.Bar { ... }</code>), a question arises: &quot;Where does the name of the
+container end and the name of the element (path) start?&quot;. Sometimes, a colon
+is needed to facilitate the answer to that question.</p>
+<p>Here's an example. Consider this simple model:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token keyword">namespace</span> a;
+
+<span class="token keyword">context</span> b.c {
+
+  <span class="token keyword">entity</span> D {
+    e : <span class="token type builtin">String</span>;
+  }
+
+}</code></pre>
+<p>If we wanted to annotate the element <code>e</code> with <code>@readonly</code><a href="#footnotes"><sup>3</sup></a>, we might write:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds">annotate a.b.c.D.e with <span class="token annotation important">@readonly;</span></code></pre>
+<p>However, the compiler would emit a warning:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">Artifact “a.b.c.D.e” has not been found</code></pre>
+<p>To disambiguate where the &quot;join&quot; is, we use a colon<a href="#footnotes"><sup>4</sup></a>:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds">annotate a.b.c.D : e with <span class="token annotation important">@readonly;</span></code></pre>
+<h2 id="summarising-infix-filters">Summarising infix filters</h2>
+<p>At <a href="https://www.youtube.com/watch?v=OPOH3agULQ0&amp;t=3178s">52:58</a> Patrice gives a
+nice summary concerning infix filters, which can be employed in many places -
+everywhere that you can use paths, effectively - and are materialised
+differently depending on where and how they're used:</p>
+<ul>
+<li>in a <code>LEFT JOIN</code></li>
+<li>in an <code>EXISTS</code> subquery</li>
+<li>in a correlated subquery</li>
+</ul>
+<blockquote>
+<p>Yes, it's not a coincidence that this is the same list that we considered <a href="#introduction">at
+the start of this episode</a>.</p>
+</blockquote>
+<p>Here follows examples of each of those.</p>
+<h3 id="in-a-service-projection-a-join-example">In a service projection (a JOIN example)</h3>
+<p>One of these places we saw was in the <code>Books</code> projection in the
+<code>CatalogService</code> (see the <a href="#materialisation-in-ddl">Materialisation in DDL</a>
+section):</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds">author[dateOfBirth > 1900].name <span class="token cqlkeywords keyword">as</span> authorName</code></pre>
+<p>This infix filter is materialised in the <code>JOIN</code></p>
+<pre class="language-sql" tabindex="0"><code class="language-sql"><span class="token keyword">VIEW</span> CatalogService_Books <span class="token keyword">AS</span> <span class="token keyword">SELECT</span>
+  <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+  Books_0<span class="token punctuation">.</span>author_ID<span class="token punctuation">,</span>
+  <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+  author_1<span class="token punctuation">.</span>name <span class="token keyword">AS</span> authorName<span class="token punctuation">,</span>
+  author_1<span class="token punctuation">.</span>dateOfBirth <span class="token keyword">AS</span> dateOfBirth
+<span class="token keyword">FROM</span> <span class="token punctuation">(</span>
+  sap_capire_bookshop_Books <span class="token keyword">AS</span> Books_0
+  <span class="token keyword">LEFT</span> <span class="token keyword">JOIN</span> sap_capire_bookshop_Authors <span class="token keyword">AS</span> author_1
+    <span class="token keyword">ON</span> <span class="token punctuation">(</span>Books_0<span class="token punctuation">.</span>author_ID <span class="token operator">=</span> author_1<span class="token punctuation">.</span>ID<span class="token punctuation">)</span>
+    <span class="token operator">AND</span> <span class="token punctuation">(</span>author_1<span class="token punctuation">.</span>dateOfBirth <span class="token operator">></span> <span class="token number">1900</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span></code></pre>
+<h3 id="in-a-scoped-query-an-exists-example">In a scoped query (an EXISTS example)</h3>
+<p>The infix filter in the scoped query we saw earlier (see the <a href="#combining-the-scoped-syntax-with-infix-filters">Combining the
+scoped syntax with infix
+filters</a> section):</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> q <span class="token operator">=</span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Books<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">[stock between 50 and 100]:author
+  { name }
+  </span><span class="token template-punctuation string">`</span></span></code></pre>
+<p>is pushed down and added to the <code>EXISTS</code> subquery when the query is
+materialised; we can see this nicely even in the intermediate (CAP-style) SQL:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript">cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Authors'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'$a'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$a'</span><span class="token punctuation">,</span> <span class="token string">'name'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">expand</span><span class="token operator">:</span> <span class="token string">'root'</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">orderBy</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'name'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token literal-property property">sort</span><span class="token operator">:</span> <span class="token string">'asc'</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">'exists'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span>
+        <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Books'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'$B'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$B'</span><span class="token punctuation">,</span> <span class="token string">'author_ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'='</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$a'</span><span class="token punctuation">,</span> <span class="token string">'ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'and'</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$B'</span><span class="token punctuation">,</span> <span class="token string">'stock'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'between'</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">50</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'and'</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">100</span> <span class="token punctuation">}</span>
+          <span class="token punctuation">]</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h3 id="in-an-expand-construction-a-correlated-subquery-example">In an expand construction (a correlated subquery example)</h3>
+<p>When the infix filter is used in the context of an expand (which will result in
+a nested result set) then the filter (<code>stock &gt; 10</code>) is pushed down into the
+context of the subquery constructed for the expand, and added to the correlated
+subquery's conditions.</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Authors<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">
+  { books[stock > 10] { title } }
+  </span><span class="token template-punctuation string">`</span></span><span class="token punctuation">.</span><span class="token function">forSQL</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Authors'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'$A'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">{</span>
+        <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Books'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'$b'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$b'</span><span class="token punctuation">,</span> <span class="token string">'title'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">expand</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">one</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$A'</span><span class="token punctuation">,</span> <span class="token string">'ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'='</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$b'</span><span class="token punctuation">,</span> <span class="token string">'author_ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'and'</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$b'</span><span class="token punctuation">,</span> <span class="token string">'stock'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'>'</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">10</span> <span class="token punctuation">}</span>
+          <span class="token punctuation">]</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'books'</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="expressiveness-in-infix-filters">Expressiveness in infix filters</h2>
+<p>Rounding off this episode at around
+<a href="https://www.youtube.com/watch?v=OPOH3agULQ0&amp;t=3433s">57:13</a> Patrice shows how
+expressive infix filters can be, with:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> cds<span class="token punctuation">.</span>ql<span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">
+  SELECT from </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>Books<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">[
+    stock between 50 and 100
+    and exists genre[name = 'Fantasy']
+  ]:author
+  { name }
+  </span><span class="token template-punctuation string">`</span></span><span class="token punctuation">.</span><span class="token function">forSQL</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+cds<span class="token punctuation">.</span>ql <span class="token punctuation">{</span>
+  <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Authors'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'$a'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$a'</span><span class="token punctuation">,</span> <span class="token string">'name'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">'exists'</span><span class="token punctuation">,</span>
+      <span class="token punctuation">{</span>
+        <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Books'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'$B'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$B'</span><span class="token punctuation">,</span> <span class="token string">'author_ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'='</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$a'</span><span class="token punctuation">,</span> <span class="token string">'ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'and'</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$B'</span><span class="token punctuation">,</span> <span class="token string">'stock'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'between'</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">50</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'and'</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">100</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+            <span class="token string">'and'</span><span class="token punctuation">,</span>
+            <span class="token string">'exists'</span><span class="token punctuation">,</span>
+            <span class="token punctuation">{</span>
+              <span class="token constant">SELECT</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+                <span class="token literal-property property">from</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'sap.capire.bookshop.Genres'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">as</span><span class="token operator">:</span> <span class="token string">'$g'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">columns</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token number">1</span> <span class="token punctuation">}</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+                <span class="token literal-property property">where</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+                  <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$g'</span><span class="token punctuation">,</span> <span class="token string">'ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+                  <span class="token string">'='</span><span class="token punctuation">,</span>
+                  <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$B'</span><span class="token punctuation">,</span> <span class="token string">'genre_ID'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+                  <span class="token string">'and'</span><span class="token punctuation">,</span>
+                  <span class="token punctuation">{</span> <span class="token literal-property property">ref</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'$g'</span><span class="token punctuation">,</span> <span class="token string">'name'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+                  <span class="token string">'='</span><span class="token punctuation">,</span>
+                  <span class="token punctuation">{</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token string">'Fantasy'</span> <span class="token punctuation">}</span>
+                <span class="token punctuation">]</span>
+              <span class="token punctuation">}</span>
+            <span class="token punctuation">}</span>
+          <span class="token punctuation">]</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>We can see how the extended, chained set of conditions is materialised:</p>
+<ul>
+<li>the stock condition becomes part of the <code>EXISTS</code> subquery's conditions</li>
+<li>the genre condition becomes an additional correlated subquery which itself
+then becomes part of the <code>EXISTS</code> conditions too</li>
+</ul>
+<p>That just about wraps it up for this episode, I hope you found some value in the video in these notes!</p>
+<h2 id="further-info">Further info</h2>
+<ul>
+<li><a href="/blog/posts/2026/03/03/genres-cuids-and-a-bit-of-awk/">Genres, cuids and a bit of AWK</a></li>
+</ul>
+<h2 id="footnotes">Footnotes</h2>
+<ol>
+<li>
+<p>I find it interesting how we can use the <code>&gt;</code> operator on <code>dateOfBirth</code> and
+supply only the first part of a value i.e. <code>1900</code>, as if it were a string
+style comparison.</p>
+</li>
+<li>
+<p>Later on in this episode at
+<a href="https://www.youtube.com/watch?v=OPOH3agULQ0&amp;t=3288s">54:48</a> I ask whether
+we can add such an <code>order by</code> in an infix filter at the schema level, and
+the answer helped me understand the difference between such &quot;post-condition&quot;
+filters and &quot;restrictive&quot;. The answer was &quot;no, not yet&quot;, but included an
+explanation which made a lot of sense - a restrictive filter (such as
+<code>stock &gt; 10</code>) can be added to the <code>WHERE</code> condition in the subquery or <code>JOIN</code>,
+whereas a &quot;post-condition&quot; filter (such as <code>order by name asc</code>) cannot.
+The latter is only really possible right now at the query level.</p>
+</li>
+<li>
+<p>Of course, this example assumes we do not want to, or cannot, add the
+annotation directly to the element where it occurs (<code>@readonly e : String</code>).</p>
+</li>
+<li>
+<p>The language server based CDS formatter has inserted the spaces either side
+of the colon, which is a nice touch.</p>
+</li>
+</ol>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2026/04/07/cds-expressions-in-cap-notes-on-part-5/">CDS expressions in CAP - notes on Part 5</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2026/04/13/cds-expressions-in-cap-notes-on-part-6/` was built on 2026-05-04T10:27:58.621Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
