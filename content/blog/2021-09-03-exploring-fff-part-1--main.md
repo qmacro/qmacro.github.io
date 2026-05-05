@@ -5,6 +5,7 @@ tags:
   - autodidactics
   - fff
   - shell
+  - shellcheck
 ---
 _Here's what I learned from starting to read the source code to fff - in particular, the main function._
 

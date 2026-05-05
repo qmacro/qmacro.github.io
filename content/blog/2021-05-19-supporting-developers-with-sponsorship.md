@@ -3,6 +3,7 @@ date: 2021-05-19
 title: Supporting developers with sponsorship
 tags:
   - community
+  - shellcheck
 ---
 
 _I've started to use the sponsors facility on GitHub to support developers. Here's my thinking._

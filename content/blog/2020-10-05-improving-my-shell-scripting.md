@@ -1,19 +1,20 @@
 ---
 date: 2020-10-05
 title: Improving my shell scripting
+tags:
+  - shellcheck
+description: I'm using a style guide along with the shellcheck and shfmt tools to help me improve the quality and consistency of my shell scripts.
 ---
-
-_I'm using a style guide along with the `shellcheck` and `shfmt` tools to help me improve the quality and consistency of my shell scripts._
 
 I'm doubling down on shell scripting, in particular Bash shell scripting. This is for many reasons, not least because I think that in the age of cloud and containers, shell environments are more important than ever. And what better shell than the Unix style shell; the design dates back decades but is still in my eyes one of the most wondrous things in tech even today, with its beautiful simplicity and its [simple beauty](https://en.wikipedia.org/wiki/Unix_philosophy#:~:text=The%20Unix%20philosophy%20is%20documented,%2C%20as%20yet%20unknown%2C%20program.).
 
-**Style Guide**
+## Style guide
 
 While watching a live stream replay by [Mr Rob](https://rwx.gg), specifically [Google Shell Scripting Guide, Yes, Yes, 1000 Times Yes!](https://www.youtube.com/watch?v=UGCw6wXv1Ao), I came across the [Google Shell Style Guide](https://google.github.io/styleguide/shellguide.html) and it's succinct enough to digest in a single sitting, and well written enough to comprehend in that time, too.
 
 I've decided to use this style guide as a general reference for my scripts and plan to implement changes to some of my existing scripts over time.
 
-**Shellcheck**
+## shellcheck
 
 I discovered the [`shellcheck`](https://github.com/koalaman/shellcheck) shell script analysis tool recently and my goodness me has it made a significant impact on not only the quality of what I write, but also on my understanding of Bash shell syntax! It's available as an online tool, but far more importantly as a command line tool that will highlight issues with your shell code. A linter, basically.
 
@@ -23,7 +24,7 @@ I use Vim as my primary editing environment and use the [Asynchronous Linting En
 
 If you're writing shell scripts, get `shellcheck` installed and wired up to your editor now.
 
-**shfmt**
+## shfmt
 
 My son Joseph used to write a lot of Go, and I was fascinated by the philosophy of what the [`gofmt`](https://golang.org/cmd/gofmt/) formatting tool represented. Go programmers all expected code to be formatted the same way via this tool, and it's natural for them to have their code (re)formatted when they save it in the editor. I know that this is anathema to some programmers, which is why it caught my eye.
 
