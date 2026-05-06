@@ -84,7 +84,7 @@ Why do this? Well, it makes sense that if I'm going to pick another session to j
 
 ### Presenting the list for selection
 
-This reduced list is then piped into `fzf`, about which I've written a couple of posts on this autodidactics blog before:
+This reduced list is then piped into `fzf`, about which I've written a couple of posts on this autodidactics blog (now a [tag-based collection](/tags/autodidactics/)) before:
 
 * [fzf - the basics part 1 - layout](/blog/posts/2021/02/02/fzf-the-basics-1-layout/)
 * [fzf - the basics part 2 - search results](/blog/posts/2021/02/07/fzf-the-basics-2-search-results/)

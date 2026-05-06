@@ -5,9 +5,8 @@ tags:
   - tools
   - meta
   - thoughts
+description: I'm trying out a new way of sharing thoughts in a GitHub issues based journal style blog called "Thinking Aloud".
 ---
-
-_I'm trying out a new way of sharing thoughts in a GitHub issues based journal style blog called [Thinking Aloud](https://github.com/qmacro/thinking-aloud)._
 
 TL;DR - My [Thinking Aloud repo](https://github.com/qmacro/thinking-aloud) is where I am experimenting with journalling via GitHub issues. Check out the [issues themselves](https://github.com/qmacro/thinking-aloud/issues?q=is%3Aissue+is%3Aopen+label%3Aentry), the [rendered versions of recent entries](https://github.com/qmacro/thinking-aloud/blob/main/recent.md), the [Atom feed](https://raw.githubusercontent.com/qmacro/thinking-aloud/main/feed.xml) or the [GitHub Actions workflows](https://github.com/qmacro/thinking-aloud/tree/main/.github/workflows) with which I automate some of the process.
 
@@ -25,7 +24,9 @@ Of course, I also publish on the [SAP Community](https://community.sap.com) blog
 
 **My autodidactics blog**
 
-In the middle of last year I started a new, secondary blog [autodidactics](/blog/posts/) to share things I'd learned (I endeavour to be a life long learner). I was inspired to create such a blog having seen [Simon Willison's TIL (Today I Learned)](https://til.simonwillison.net/) site.
+> This is now a collection of posts here on this blog, tagged with [autodidactics](/tags/autodidactics/).
+
+In the middle of last year I started a new, secondary blog "autodidactics" to share things I'd learned (I endeavour to be a life long learner). I was inspired to create such a blog having seen [Simon Willison's TIL (Today I Learned)](https://til.simonwillison.net/) site.
 
 Moreover, I did very definitely feel I needed a place to share smaller nuggets of information that I'd learned; this in turn was triggered by reading some of [rwxrob](https://rwxrob.live/)'s repository of [dotfiles and scripts](https://github.com/rwxrob/dotfiles/).
 
@@ -33,7 +34,7 @@ Ever since I read through the entire source code base of the original Jabber (XM
 
 **Twitter**
 
-And of course, when it comes to sharing thoughts, there's always [Twitter](https://twitter.com/qmacro), which has been referred to as a "microblogging" platform, in the same way that [identi.ca](https://wiki.p2pfoundation.net/Identica) was. The key difference between Twitter and identi.ca was that the former is centralised, and the latter (sadly no longer in operation) was distributed. With identi.ca I felt in more control of my microblogging efforts. Don't get me wrong, Twitter is a great platform for conversation and ideas, but it's still centralised.
+And of course, when it comes to sharing thoughts, there's always [Twitter](/tweets/qmacro), which has been referred to as a "microblogging" platform, in the same way that [identi.ca](https://wiki.p2pfoundation.net/Identica) was. The key difference between Twitter and identi.ca was that the former is centralised, and the latter (sadly no longer in operation) was distributed. With identi.ca I felt in more control of my microblogging efforts. Don't get me wrong, Twitter is a great platform for conversation and ideas, but it's still centralised.
 
 **Journalling**
 
