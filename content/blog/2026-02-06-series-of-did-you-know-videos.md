@@ -137,4 +137,13 @@ in Capire. (_SAP Developer News 23 Apr 2026, with Shrini_).
 can define logic in the Global Canvas and trigger it from any point in your
 app? More info: [SAP Build Apps - Trigger
 Event](https://help.sap.com/docs/build-apps/service-guide/trigger-event) in the
-SAP Help Portal. (_SAP Developer News 30 Apr 2026, with Shrini_). 👈 LATEST
+SAP Help Portal. (_SAP Developer News 30 Apr 2026, with Shrini_).
+
+### 15 Prompt Registry in Generative AI Hub
+
+📺 [Did you know](https://www.youtube.com/watch?v=bLwvT_R43HM&t=197s): that you
+can store your prompts in the prompt registry and easily reuse them later? More
+info: [Prompt
+Registry](https://help.sap.com/docs/sap-ai-core/generative-ai/prompt-registry)
+documentation in the SAP Help Portal. (_SAP Developer News 08 May 2026, with
+Nora_). 👈 LATEST
