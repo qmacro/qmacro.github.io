@@ -5,11 +5,297 @@
   <subtitle>Reserving the right to be wrong</subtitle>
   <link href="https://qmacro.org/feed/feed.xml" rel="self" />
   <link href="https://qmacro.org/blog/" />
-  <updated>2026-05-04T00:00:00Z</updated>
+  <updated>2026-05-11T00:00:00Z</updated>
   <id>https://qmacro.org/blog/</id>
   <author>
     <name>DJ Adams</name>
   </author>
+  <entry>
+    <title>Local-first dev with CAP Node.js - mocking auth</title>
+    <link href="https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js-mocking-auth/" />
+    <updated>2026-05-11T00:00:00Z</updated>
+    <id>https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js-mocking-auth/</id>
+    <content type="html">&lt;p&gt;This post is related to a talk I&#39;m putting together:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Local-first development with CAP Node.js - mock all the things!&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;As developers we need to be free of distractions plus a tight and speedy
+development loop. But definitely not at the expense of ignoring or postponing
+important design decisions. CAP&#39;s mocking facilities abstracts us from much
+tedium and ceremony, allowing us to iterate fast on data, auth, messaging and
+remote services while we develop. This session shows you what, and how.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;There are a couple of aspects of development that come together for the perfect
+(positive) storm of focused rapid iteration that results in a solid and
+complete foundation for a production offering, from the outset. They are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;a tight feedback loop within which we can iterate rapidly on design and
+implementation&lt;/li&gt;
+&lt;li&gt;local-first facilities for everything we need to get going, with minimum
+setup and configuration&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;As part of this second aspect, being able to easily fold in key design
+requirements and real world facilities from the very start means that we don&#39;t
+avoid them, or put them off until it&#39;s too late. Instead, we can embrace and
+address them right from the start of the iteration cycles, and avoid the
+build-up of design debt. The CAP development kit includes tools and affordances
+that make this easy for us to do, in the form of mocking.&lt;/p&gt;
+&lt;p&gt;This particular post focuses on mocking &amp;quot;auth&amp;quot; (both authentication and
+authorization).&lt;/p&gt;
+&lt;h2 id=&quot;the-mocked-authentication-strategy&quot;&gt;The mocked authentication strategy&lt;/h2&gt;
+&lt;p&gt;The &lt;a href=&quot;https://cap.cloud.sap/docs/node.js/authentication#strategies&quot;&gt;Authentication
+Strategies&lt;/a&gt;
+section of the Node.js Security topic in Capire explains the different
+strategies available, and the &amp;quot;mocked&amp;quot; strategy comes with pre-defined users
+that can be used, with their various levels of authorisations, to explore,
+define and test security-related constructs. This mock user configuration can
+be modified and extended too, but what comes out of the box is definitely
+enough to get started.&lt;/p&gt;
+&lt;h2 id=&quot;working-through-an-example&quot;&gt;Working through an example&lt;/h2&gt;
+&lt;p&gt;In the rest of this post, we&#39;ll work through an example of mocking auth, based
+on content in the
+&lt;a href=&quot;https://github.com/qmacro/cap-nodejs-local-first-development/tree/main/auth&quot;&gt;auth/&lt;/a&gt;
+directory of the talk repository.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Note that what&#39;s absent here is any form of auth implementation - all
+declarations available are automatically enforced by CAP&#39;s generic service
+providers.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;the-service-definition&quot;&gt;The service definition&lt;/h3&gt;
+&lt;p&gt;In
+&lt;a href=&quot;https://github.com/qmacro/cap-nodejs-local-first-development/blob/main/auth/srv/main.cds&quot;&gt;srv/main.cds&lt;/a&gt;
+there&#39;s a single service defined, with a couple of entities that are simple
+projections on to the entities in the data model:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; northwind &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;../db/schema&#39;;
+
+&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; Main {
+
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Products   &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; northwind.Products;
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Categories &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; northwind.Categories;
+
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Starting a CAP server in local development mode with &lt;code&gt;cds watch&lt;/code&gt; shows us that
+the mocked authentication strategy is in play by default:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; using auth strategy &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; kind&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;mocked&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; serving Main &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;at:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;/odata/v4/main&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;decl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;srv/main.cds:4&#39;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As we haven&#39;t yet addressed any auth requirements in our CDS model, access is
+currently open to all, as we can see&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js-mocking-auth/#footnotes&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--include&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;localhost:4004/odata/v4/Main/Products?$top=1&#39;&lt;/span&gt;
+HTTP/1.1 &lt;span class=&quot;token number&quot;&gt;200&lt;/span&gt; OK
+OData-Version: &lt;span class=&quot;token number&quot;&gt;4.0&lt;/span&gt;
+Content-Type: application/json&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token assign-left variable&quot;&gt;charset&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;utf-8
+Content-Length: &lt;span class=&quot;token number&quot;&gt;105&lt;/span&gt;
+
+&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token string&quot;&gt;&quot;@odata.context&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&lt;span class=&quot;token variable&quot;&gt;$metadata&lt;/span&gt;#BasicProducts&quot;&lt;/span&gt;,
+  &lt;span class=&quot;token string&quot;&gt;&quot;value&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token string&quot;&gt;&quot;ID&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;,
+      &lt;span class=&quot;token string&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Chai&quot;&lt;/span&gt;,
+      &lt;span class=&quot;token string&quot;&gt;&quot;supplier&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Exotic Liquids&quot;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;examine-the-pre-defined-users-and-their-authorisations&quot;&gt;Examine the pre-defined users and their authorisations&lt;/h3&gt;
+&lt;p&gt;We can take a look at the pre-defined user data that is defined for the mocked
+authentication strategy, with:&lt;/p&gt;
+&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;cds &lt;span class=&quot;token function&quot;&gt;env&lt;/span&gt; requires.auth.users&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;which will emit something like this:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  alice&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; tenant&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &#39;t1&#39;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; roles&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &#39;admin&#39; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  bob&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; tenant&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &#39;t1&#39;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; roles&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &#39;cds.ExtensionDeveloper&#39; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  carol&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; tenant&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &#39;t1&#39;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; roles&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &#39;admin&#39;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &#39;cds.ExtensionDeveloper&#39; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  dave&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; tenant&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &#39;t1&#39;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; roles&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &#39;admin&#39; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; features&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  erin&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; tenant&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &#39;t2&#39;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; roles&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &#39;admin&#39;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &#39;cds.ExtensionDeveloper&#39; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  fred&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; tenant&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &#39;t2&#39;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; features&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &#39;isbn&#39; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  me&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; tenant&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &#39;t1&#39;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; features&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &#39;*&#39; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  yves&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; roles&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &#39;internal-user&#39; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &#39;*&#39;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;restrict-the-service&quot;&gt;Restrict the service&lt;/h3&gt;
+&lt;p&gt;Let&#39;s annotate the service with some basic role based access control (RBAC)
+requirements - that of needing to authenticate, via the pseudo-role
+&lt;code&gt;authenticated-user&lt;/code&gt;. We can use the
+&lt;a href=&quot;https://cap.cloud.sap/docs/guides/security/authorization#requires&quot;&gt;@requires&lt;/a&gt;
+annotation:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; northwind &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;../db/schema&#39;;
+
+&lt;span class=&quot;token annotation important&quot;&gt;@requires:&lt;/span&gt; &#39;authenticated-user&#39;
+&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; Main {
+
+  ...
+
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The same &lt;code&gt;curl&lt;/code&gt; request as before now fails with an appropriate HTTP 401 status
+code:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;HTTP&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1.1&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;401&lt;/span&gt; Unauthorized
+&lt;span class=&quot;token property&quot;&gt;WWW-Authenticate:&lt;/span&gt; Basic realm&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;Users&quot;&lt;/span&gt;
+&lt;span class=&quot;token property&quot;&gt;Content-Type:&lt;/span&gt; text&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;plain&lt;span class=&quot;token operator&quot;&gt;;&lt;/span&gt; charset&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;utf&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;8&lt;/span&gt;
+&lt;span class=&quot;token property&quot;&gt;Content-Length:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;12&lt;/span&gt;
+
+Unauthorized&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;authenticate-with-a-pre-defined-user&quot;&gt;Authenticate with a pre-defined user&lt;/h3&gt;
+&lt;p&gt;We can re-try the request with one of the pre-defined
+users&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js-mocking-auth/#footnotes&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;; because the requirement is just for the
+pseudo-role &lt;code&gt;authenticated-user&lt;/code&gt;, we don&#39;t need any particular actual role
+allocated to the user, we just need to be successfully authenticated (and so
+identified) in this case:&lt;/p&gt;
+&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--user&lt;/span&gt; alice: &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--include&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;localhost:4004/odata/v4/Main/Products?$top=1&#39;&lt;/span&gt;
+HTTP/1.1 &lt;span class=&quot;token number&quot;&gt;200&lt;/span&gt; OK
+OData-Version: &lt;span class=&quot;token number&quot;&gt;4.0&lt;/span&gt;
+Content-Type: application/json&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token assign-left variable&quot;&gt;charset&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;utf-8
+Content-Length: &lt;span class=&quot;token number&quot;&gt;105&lt;/span&gt;
+
+&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token string&quot;&gt;&quot;@odata.context&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&lt;span class=&quot;token variable&quot;&gt;$metadata&lt;/span&gt;#BasicProducts&quot;&lt;/span&gt;,
+  &lt;span class=&quot;token string&quot;&gt;&quot;value&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token string&quot;&gt;&quot;ID&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;,
+      &lt;span class=&quot;token string&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Chai&quot;&lt;/span&gt;,
+      &lt;span class=&quot;token string&quot;&gt;&quot;supplier&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Exotic Liquids&quot;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;try-some-finer-grained-access-restrictions&quot;&gt;Try some finer-grained access restrictions&lt;/h3&gt;
+&lt;p&gt;With the
+&lt;a href=&quot;https://cap.cloud.sap/docs/guides/security/authorization#restrict-annotation&quot;&gt;@restrict&lt;/a&gt;
+we can define finer grained access requirements&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js-mocking-auth/#footnotes&quot;&gt;&lt;sup&gt;3&lt;/sup&gt;&lt;/a&gt; in
+privilege building blocks of this form:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; grant&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&amp;lt;events&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; to&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&amp;lt;roles&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; where&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&amp;lt;filter-condition&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Let&#39;s now add privilege requirements for the &lt;code&gt;Categories&lt;/code&gt; entity, like this:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; northwind &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;../db/schema&#39;;
+
+&lt;span class=&quot;token annotation important&quot;&gt;@requires:&lt;/span&gt; &#39;authenticated-user&#39;
+&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; Main {
+
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Products   &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; northwind.Products;
+
+  &lt;span class=&quot;token annotation important&quot;&gt;@restrict:&lt;/span&gt; [
+    {
+      grant: &#39;WRITE&#39;,
+      to   : &#39;buyer-admin&#39;
+    },
+    {
+      grant: &#39;READ&#39;,
+      to   : &#39;any&#39;
+    }
+  ]
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Categories &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; northwind.Categories;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This says that any (authenticated) user can read the categories, but only a
+user with the &lt;code&gt;buyer-admin&lt;/code&gt; role can perform &amp;quot;write&amp;quot;-semantic operations.&lt;/p&gt;
+&lt;h3 id=&quot;confirm-read-operations-are-permitted&quot;&gt;Confirm read operations are permitted&lt;/h3&gt;
+&lt;p&gt;Let&#39;s check that &amp;quot;read&amp;quot;-semantic operations are allowed for authenticated users
+(remember that the entity access is also governed by the &lt;code&gt;authenticated-user&lt;/code&gt;
+pseudo-role restriction on the service that contains it):&lt;/p&gt;
+&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--user&lt;/span&gt; alice: &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--include&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;localhost:4004/odata/v4/Main/Categories?$top=1&#39;&lt;/span&gt;
+HTTP/1.1 &lt;span class=&quot;token number&quot;&gt;200&lt;/span&gt; OK
+OData-Version: &lt;span class=&quot;token number&quot;&gt;4.0&lt;/span&gt;
+Content-Type: application/json&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token assign-left variable&quot;&gt;charset&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;utf-8
+Content-Length: &lt;span class=&quot;token number&quot;&gt;155&lt;/span&gt;
+
+&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token string&quot;&gt;&quot;@odata.context&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&lt;span class=&quot;token variable&quot;&gt;$metadata&lt;/span&gt;#Categories&quot;&lt;/span&gt;,
+  &lt;span class=&quot;token string&quot;&gt;&quot;value&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token string&quot;&gt;&quot;CategoryID&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;,
+      &lt;span class=&quot;token string&quot;&gt;&quot;CategoryName&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Beverages&quot;&lt;/span&gt;,
+      &lt;span class=&quot;token string&quot;&gt;&quot;Description&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Soft drinks, coffees, teas, beers, and ales&quot;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Looks OK.&lt;/p&gt;
+&lt;h3 id=&quot;try-a-write-operation&quot;&gt;Try a write operation&lt;/h3&gt;
+&lt;p&gt;Now for a &amp;quot;write&amp;quot;-semantic operation. Let&#39;s go big and try DELETE:&lt;/p&gt;
+&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--user&lt;/span&gt; alice: &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--include&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--request&lt;/span&gt; DELETE &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;localhost:4004/odata/v4/Main/Categories/1&#39;&lt;/span&gt;
+HTTP/1.1 &lt;span class=&quot;token number&quot;&gt;403&lt;/span&gt; Forbidden
+OData-Version: &lt;span class=&quot;token number&quot;&gt;4.0&lt;/span&gt;
+Content-Type: application/json&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token assign-left variable&quot;&gt;charset&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;utf-8
+Content-Length: &lt;span class=&quot;token number&quot;&gt;74&lt;/span&gt;
+
+&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token string&quot;&gt;&quot;error&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token string&quot;&gt;&quot;message&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Forbidden&quot;&lt;/span&gt;,
+    &lt;span class=&quot;token string&quot;&gt;&quot;code&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;403&quot;&lt;/span&gt;,
+    &lt;span class=&quot;token string&quot;&gt;&quot;@Common.numericSeverity&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Alice, with the &lt;code&gt;admin&lt;/code&gt; role, is denied.&lt;/p&gt;
+&lt;h3 id=&quot;add-a-user-and-role-to-for-the-mocked-strategy&quot;&gt;Add a user and role to for the mocked strategy&lt;/h3&gt;
+&lt;p&gt;We can also modify and add to the pre-defined user definitions for the mocked
+authentication strategy. Let&#39;s do that by adding some configuration in a
+separate &lt;code&gt;.cdsrc.json&lt;/code&gt; file in the project, defining a new user Polly with
+a couple of roles:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;cds&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;requires&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;auth&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;users&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+          &lt;span class=&quot;token property&quot;&gt;&quot;polly&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;token property&quot;&gt;&quot;roles&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+              &lt;span class=&quot;token string&quot;&gt;&quot;buyer-admin&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+              &lt;span class=&quot;token string&quot;&gt;&quot;head-office&quot;&lt;/span&gt;
+            &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+          &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;One of the roles here is &lt;code&gt;buyer-admin&lt;/code&gt;, so let&#39;s now try authenticating the previous
+request as this new user:&lt;/p&gt;
+&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--user&lt;/span&gt; polly: &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--include&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--request&lt;/span&gt; DELETE &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;localhost:4004/odata/v4/Main/Categories/1&#39;&lt;/span&gt;
+HTTP/1.1 &lt;span class=&quot;token number&quot;&gt;204&lt;/span&gt; No Content
+OData-Version: &lt;span class=&quot;token number&quot;&gt;4.0&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Success!&lt;/p&gt;
+&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
+&lt;p&gt;With the mocked authentication strategy, we can embrace and work on the
+important aspect of securing our app or service right from the very start. CAP
+makes it easy to do the right things here.&lt;/p&gt;
+&lt;p&gt;For more information, see the
+&lt;a href=&quot;https://cap.cloud.sap/docs/node.js/authentication&quot;&gt;Authentication&lt;/a&gt; topic in
+Capire.&lt;/p&gt;
+&lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;The JSON output in these examples has been pretty-printed for readability here.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;code&gt;--user&lt;/code&gt; option for &lt;code&gt;curl&lt;/code&gt; allows us to specify a username and password
+separated by a colon, so &lt;code&gt;alice:&lt;/code&gt; here is just the username combined with an
+empty password (there are no passwords for these users). If we&#39;d just
+specified &lt;code&gt;--user alice&lt;/code&gt; without a colon, then &lt;code&gt;curl&lt;/code&gt; would have prompted
+us for a password - we could have then just pressed Enter but this is one
+step we can avoid.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;In fact, &lt;code&gt;@requires&lt;/code&gt; is just a convenience shortcut for &lt;code&gt;@restrict&lt;/code&gt;. The annotation&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token annotation important&quot;&gt;@requires:&lt;/span&gt; &#39;authenticated-user&#39;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;that we used earlier is equivalent to&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token annotation important&quot;&gt;@restrict:&lt;/span&gt; [ { grant: &#39;*&#39;, to: &#39;authenticated-user&#39; } ]&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+  </entry>
   <entry>
     <title>CDS expressions in CAP - notes on Part 6</title>
     <link href="https://qmacro.org/blog/posts/2026/05/04/cds-expressions-in-cap-notes-on-part-6/" />
@@ -4710,121 +4996,6 @@ open&lt;/a&gt;. See also
 the &lt;a href=&quot;https://cap.cloud.sap/docs/guides/protocols/odata&quot;&gt;Serving OData APIs&lt;/a&gt;
 topic in Capire for what facilities like this are available.&lt;/li&gt;
 &lt;/ol&gt;
-</content>
-  </entry>
-  <entry>
-    <title>Series of &quot;Did You Know&quot; videos</title>
-    <link href="https://qmacro.org/blog/posts/2026/02/06/series-of-did-you-know-videos/" />
-    <updated>2026-02-06T00:00:00Z</updated>
-    <id>https://qmacro.org/blog/posts/2026/02/06/series-of-did-you-know-videos/</id>
-    <content type="html">&lt;p&gt;In the run up to SAP TechEd 2025, the Developer Advocates put together a series
-of short videos on tech topics, in a &amp;quot;Did You Know&amp;quot; series. A bit like our
-collection of YouTube Shorts &amp;quot;Good To Know&amp;quot; series (on &lt;a href=&quot;https://www.youtube.com/watch?v=0C-CcBKX1hI&amp;amp;list=PL6RpkC85SLQDZ18v94otZSJJrpcNkPPV9&quot;&gt;CAP
-Node.js&lt;/a&gt;
-and on &lt;a href=&quot;https://www.youtube.com/watch?v=q8WYkzBf0qs&amp;amp;list=PL6RpkC85SLQAd1pKjxrPpkOwia5RFw0DE&quot;&gt;ABAP
-Cloud&lt;/a&gt;),
-but in landscape mode with a bit more detail.&lt;/p&gt;
-&lt;h2 id=&quot;the-series&quot;&gt;The series&lt;/h2&gt;
-&lt;p&gt;Here&#39;s an overview of that &amp;quot;Did You Know&amp;quot; series; this list will be updated
-over the coming weeks as we add them one by one to upcoming &lt;a href=&quot;https://www.youtube.com/playlist?list=PL6RpkC85SLQAVBSQXN9522_1jNvPavBgg&quot;&gt;SAP Developer
-News&lt;/a&gt;
-episodes. Use the 📺 link to jump directly to the section in the news episode.&lt;/p&gt;
-&lt;h3 id=&quot;1-the-cds-repl&quot;&gt;1 The cds REPL&lt;/h3&gt;
-&lt;p&gt;📺 &lt;a href=&quot;https://www.youtube.com/watch?v=5-mzMGS1gHo&amp;amp;t=139s&quot;&gt;Did you know&lt;/a&gt;: that the
-cds REPL is great for exploring your CAP services? More info: &lt;a href=&quot;https://qmacro.org/blog/posts/2025/07/21/a-recap-intro-to-the-cds-repl/&quot;&gt;A reCAP intro to
-the cds REPL&lt;/a&gt; (&lt;em&gt;SAP
-Developer News 29 Jan 2026, with DJ&lt;/em&gt;).&lt;/p&gt;
-&lt;h3 id=&quot;2-mocking-auth-in-cap&quot;&gt;2 Mocking auth in CAP&lt;/h3&gt;
-&lt;p&gt;📺 &lt;a href=&quot;https://www.youtube.com/watch?v=HqlUHFtW0g4&amp;amp;t=184s&quot;&gt;Did you know&lt;/a&gt;: that CAP
-has a &amp;quot;mocked&amp;quot; authentication strategy you can use in local development so you
-don&#39;t have to put off this important part of your domain design? More info:
-&lt;a href=&quot;https://cap.cloud.sap/docs/node.js/authentication#strategies&quot;&gt;Authentication
-Strategies&lt;/a&gt; (&lt;em&gt;SAP
-Developer News 05 Feb 2026, with DJ&lt;/em&gt;).&lt;/p&gt;
-&lt;h3 id=&quot;3-debugging-apps-on-cf&quot;&gt;3 Debugging apps on CF&lt;/h3&gt;
-&lt;p&gt;📺 &lt;a href=&quot;https://www.youtube.com/watch?v=aU3Eu2SlvxE&amp;amp;t=449s&quot;&gt;Did you know&lt;/a&gt;: that
-it&#39;s easy to debug your CAP Node.js apps running on Cloud Foundry? More info:
-The &lt;a href=&quot;https://cap.cloud.sap/docs/tools/cds-cli#cds-debug&quot;&gt;Debugging with cds
-debug&lt;/a&gt; section of the CLI
-topic in Capire (&lt;em&gt;SAP Developer News 12 Feb 2026, with DJ&lt;/em&gt;).&lt;/p&gt;
-&lt;h3 id=&quot;4-released-objects-in-adt&quot;&gt;4 Released Objects in ADT&lt;/h3&gt;
-&lt;p&gt;📺 &lt;a href=&quot;https://www.youtube.com/watch?v=-PQk6qfZLeQ&amp;amp;t=247s&quot;&gt;Did you know&lt;/a&gt;: that the
-released objects that are available for developer extensibility are displayed
-in the Project Explorer of ABAP Development Tools? More info: The &lt;a href=&quot;https://help.sap.com/docs/SAP_S4HANA_CLOUD/6aa39f1ac05441e5a23f484f31e477e7/7e27832a2d494e0b98359a7f1c6edefe.html&quot;&gt;Released
-Development
-Objects&lt;/a&gt;
-section of the Developer Extensibility documentation in the SAP Help Portal
-(&lt;em&gt;SAP Developer News 19 Feb 2026, with Shilpa&lt;/em&gt;).&lt;/p&gt;
-&lt;h3 id=&quot;5-search-abap-cds-objects-using-annotations&quot;&gt;5 Search ABAP CDS objects using Annotations&lt;/h3&gt;
-&lt;p&gt;📺 &lt;a href=&quot;https://www.youtube.com/watch?v=MI7CC4ji5z0&amp;amp;t=390s&quot;&gt;Did you know&lt;/a&gt;: that you
-can search the CDS View entity by the annotations used? More info: The guide to
-&lt;a href=&quot;https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/about-abap-development-tools-user-guide&quot;&gt;the ABAP Development Tools for
-Eclipse&lt;/a&gt;
-in the SAP Help Portal (&lt;em&gt;SAP Developer News 26 Feb 2026, with Shilpa&lt;/em&gt;).&lt;/p&gt;
-&lt;h3 id=&quot;6-privileged-access-in-adt&quot;&gt;6 Privileged access in ADT&lt;/h3&gt;
-&lt;p&gt;📺 &lt;a href=&quot;https://www.youtube.com/watch?v=g6hDrE2ERyI&amp;amp;t=226s&quot;&gt;Did you know&lt;/a&gt;: that you
-can check if your data model can access the relevant data without using an
-access control? More info: The guide to &lt;a href=&quot;https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/about-abap-development-tools-user-guide&quot;&gt;the ABAP Development Tools for
-Eclipse&lt;/a&gt;
-in the SAP Help Portal (&lt;em&gt;SAP Developer News 05 Mar 2026, with Shilpa&lt;/em&gt;).&lt;/p&gt;
-&lt;h3 id=&quot;7-ai-launchpad-model-library&quot;&gt;7 AI Launchpad Model Library&lt;/h3&gt;
-&lt;p&gt;📺 &lt;a href=&quot;https://www.youtube.com/watch?v=3Uc8l3b5600&amp;amp;t=395s&quot;&gt;Did you know&lt;/a&gt;: that you
-can use the Model Library in Generative AI Hub on SAP AI Launchpad to explore
-the LLMs SAP is offering managed, hosted or provided remotely? More info: The
-&lt;a href=&quot;https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/model-library&quot;&gt;SAP AI Launchpad Model
-Library&lt;/a&gt;
-documentation in the SAP Help Portal (&lt;em&gt;SAP Developer News 12 Mar 2026, with
-Kevin&lt;/em&gt;).&lt;/p&gt;
-&lt;h3 id=&quot;8-orchestration-client-in-sap-cloud-sdk-for-ai&quot;&gt;8 Orchestration Client in SAP Cloud SDK for AI&lt;/h3&gt;
-&lt;p&gt;📺 &lt;a href=&quot;https://www.youtube.com/watch?v=-I5nYXrnATE&amp;amp;t=356s&quot;&gt;Did you know&lt;/a&gt;: that you
-can use the orchestration client from the SAP Cloud SDK for AI to create a full
-AI orchestration flow in CAP? More info: The &lt;a href=&quot;https://sap.github.io/ai-sdk/docs/js/orchestration/chat-completion&quot;&gt;SAP Cloud SDK for AI – Chat
-Completion
-documentation&lt;/a&gt;
-(&lt;em&gt;SAP Developer News 19 Mar 2026, with Kevin&lt;/em&gt;).&lt;/p&gt;
-&lt;h3 id=&quot;9-orchestration-client-configuration&quot;&gt;9 Orchestration Client configuration&lt;/h3&gt;
-&lt;p&gt;📺 &lt;a href=&quot;https://www.youtube.com/watch?v=VLy14Vy4L2U&amp;amp;t=298s&quot;&gt;Did you know&lt;/a&gt;: that you
-can configure an AI orchestration in AI Launchpad and use it to configure the
-orchestration client from the SAP Cloud SDK for AI? More info:
-&lt;a href=&quot;https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/orchestration-4953dc10c6dd48fe85f37b41109dffe2?q=orchestration+workflow+ai&quot;&gt;Orchestration Workflow AI&lt;/a&gt; in the SAP Help Portal (&lt;em&gt;SAP Developer News 26 Mar 2026, with Kevin&lt;/em&gt;).&lt;/p&gt;
-&lt;h3 id=&quot;10-test-orchestration-configuration&quot;&gt;10 Test Orchestration configuration&lt;/h3&gt;
-&lt;p&gt;📺 &lt;a href=&quot;https://www.youtube.com/watch?v=OOy_Firo61Y&amp;amp;t=157s&quot;&gt;Did you know&lt;/a&gt;: that you
-can test the orchestration configuration directly in AI Launchpad against
-various LLMs? More info: &lt;a href=&quot;https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/test-your-orchestration-workflow?q=orchestration+workflow+ai&quot;&gt;Test Your Orchestration
-Workflow&lt;/a&gt;
-in the SAP Help Portal (&lt;em&gt;SAP Developer News 02 Apr 2026, with Kevin&lt;/em&gt;).&lt;/p&gt;
-&lt;h3 id=&quot;11-ai-agents-generative-ai-hub-and-langgraph&quot;&gt;11 AI agents (Generative AI Hub &amp;amp; LangGraph)&lt;/h3&gt;
-&lt;p&gt;📺 &lt;a href=&quot;https://www.youtube.com/watch?v=Ams8yzY-x-A&amp;amp;t=202s&quot;&gt;Did you know&lt;/a&gt;: that you
-can build AI agents using LangGraph and Generative AI Hub? More info: &lt;a href=&quot;https://sap-contributions.github.io/litellm-agentic-examples/_notebooks/examples/crewai_litellm_lib.html&quot;&gt;CrewAI
-example connecting to SAP Generative AI Hub via
-LiteLLM&lt;/a&gt;
-(&lt;em&gt;SAP Developer News 09 Apr 2026, with Nora&lt;/em&gt;).&lt;/p&gt;
-&lt;h3 id=&quot;12-ai-launchpad-leaderboard&quot;&gt;12 AI Launchpad Leaderboard&lt;/h3&gt;
-&lt;p&gt;📺 &lt;a href=&quot;https://www.youtube.com/watch?v=mJrmidot-G4&amp;amp;t=265s&quot;&gt;Did you know&lt;/a&gt;: that you
-can compare foundation models in AI Launchpad using the leaderboard? More info:
-&lt;a href=&quot;https://help.sap.com/docs/ai-launchpad/sap-ai-launchpad/model-library&quot;&gt;The Model
-Library&lt;/a&gt;
-in the SAP Help Portal for SAP AI Launchpad topics (&lt;em&gt;SAP Developer News 16 Apr
-2026, with Nora&lt;/em&gt;).&lt;/p&gt;
-&lt;h3 id=&quot;13-override-default-auth-while-using-xsuaa-cap&quot;&gt;13 Override default auth while using xsuaa (CAP)&lt;/h3&gt;
-&lt;p&gt;📺 &lt;a href=&quot;https://www.youtube.com/watch?v=9Dkj4TBOexk&amp;amp;t=204s&quot;&gt;Did you know&lt;/a&gt;: that you can
-override the default authentication behaviour for CAP service endpoints using a
-feature flag? More info: &lt;a href=&quot;https://cap.cloud.sap/docs/node.js/authentication#enforced-by-default&quot;&gt;Authentication in Production - Enforced by
-Default&lt;/a&gt;
-in Capire. (&lt;em&gt;SAP Developer News 23 Apr 2026, with Shrini&lt;/em&gt;).&lt;/p&gt;
-&lt;h3 id=&quot;14-global-canvas-in-build-apps&quot;&gt;14 Global canvas in Build Apps&lt;/h3&gt;
-&lt;p&gt;📺 &lt;a href=&quot;https://www.youtube.com/watch?v=pvwdRgImGQY&amp;amp;t=717s&quot;&gt;Did you know&lt;/a&gt;: that you
-can define logic in the Global Canvas and trigger it from any point in your
-app? More info: &lt;a href=&quot;https://help.sap.com/docs/build-apps/service-guide/trigger-event&quot;&gt;SAP Build Apps - Trigger
-Event&lt;/a&gt; in the
-SAP Help Portal. (&lt;em&gt;SAP Developer News 30 Apr 2026, with Shrini&lt;/em&gt;).&lt;/p&gt;
-&lt;h3 id=&quot;15-prompt-registry-in-generative-ai-hub&quot;&gt;15 Prompt Registry in Generative AI Hub&lt;/h3&gt;
-&lt;p&gt;📺 &lt;a href=&quot;https://www.youtube.com/watch?v=bLwvT_R43HM&amp;amp;t=197s&quot;&gt;Did you know&lt;/a&gt;: that you
-can store your prompts in the prompt registry and easily reuse them later? More
-info: &lt;a href=&quot;https://help.sap.com/docs/sap-ai-core/generative-ai/prompt-registry&quot;&gt;Prompt
-Registry&lt;/a&gt;
-documentation in the SAP Help Portal. (&lt;em&gt;SAP Developer News 08 May 2026, with
-Nora&lt;/em&gt;). 👈 LATEST&lt;/p&gt;
 </content>
   </entry>
 </feed>

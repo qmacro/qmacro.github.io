@@ -1,0 +1,858 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Local-first dev with CAP Node.js - mocking auth</title>
+		<meta name="description" content="In this post I provider a taster of what&#39;s possible regarding mock auth in CAP Node.js local-first development.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="Local-first dev with CAP Node.js - mocking auth">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="In this post I provider a taster of what&#39;s possible regarding mock auth in CAP Node.js local-first development.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js-mocking-auth/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 60%, 70%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="local-first-dev-with-cap-node-js-mocking-auth">Local-first dev with CAP Node.js - mocking auth</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2026-05-11">11 May 2026</time></li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/auth/" class="post-tag">auth</a>, </li>
+	<li><a href="/tags/mocking/" class="post-tag">mocking</a>, </li>
+	<li><a href="/tags/local/" class="post-tag">local</a></li>
+</ul>
+
+<p class="post-description-main">In this post I provider a taster of what's possible regarding mock auth in CAP Node.js local-first development.</p>
+
+<p>This post is related to a talk I'm putting together:</p>
+<blockquote>
+<p><strong>Local-first development with CAP Node.js - mock all the things!</strong></p>
+<p>As developers we need to be free of distractions plus a tight and speedy
+development loop. But definitely not at the expense of ignoring or postponing
+important design decisions. CAP's mocking facilities abstracts us from much
+tedium and ceremony, allowing us to iterate fast on data, auth, messaging and
+remote services while we develop. This session shows you what, and how.</p>
+</blockquote>
+<h2 id="introduction">Introduction</h2>
+<p>There are a couple of aspects of development that come together for the perfect
+(positive) storm of focused rapid iteration that results in a solid and
+complete foundation for a production offering, from the outset. They are:</p>
+<ul>
+<li>a tight feedback loop within which we can iterate rapidly on design and
+implementation</li>
+<li>local-first facilities for everything we need to get going, with minimum
+setup and configuration</li>
+</ul>
+<p>As part of this second aspect, being able to easily fold in key design
+requirements and real world facilities from the very start means that we don't
+avoid them, or put them off until it's too late. Instead, we can embrace and
+address them right from the start of the iteration cycles, and avoid the
+build-up of design debt. The CAP development kit includes tools and affordances
+that make this easy for us to do, in the form of mocking.</p>
+<p>This particular post focuses on mocking &quot;auth&quot; (both authentication and
+authorization).</p>
+<h2 id="the-mocked-authentication-strategy">The mocked authentication strategy</h2>
+<p>The <a href="https://cap.cloud.sap/docs/node.js/authentication#strategies">Authentication
+Strategies</a>
+section of the Node.js Security topic in Capire explains the different
+strategies available, and the &quot;mocked&quot; strategy comes with pre-defined users
+that can be used, with their various levels of authorisations, to explore,
+define and test security-related constructs. This mock user configuration can
+be modified and extended too, but what comes out of the box is definitely
+enough to get started.</p>
+<h2 id="working-through-an-example">Working through an example</h2>
+<p>In the rest of this post, we'll work through an example of mocking auth, based
+on content in the
+<a href="https://github.com/qmacro/cap-nodejs-local-first-development/tree/main/auth">auth/</a>
+directory of the talk repository.</p>
+<blockquote>
+<p>Note that what's absent here is any form of auth implementation - all
+declarations available are automatically enforced by CAP's generic service
+providers.</p>
+</blockquote>
+<h3 id="the-service-definition">The service definition</h3>
+<p>In
+<a href="https://github.com/qmacro/cap-nodejs-local-first-development/blob/main/auth/srv/main.cds">srv/main.cds</a>
+there's a single service defined, with a couple of entities that are simple
+projections on to the entities in the data model:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> northwind <span class="token from keyword">from</span> '../db/schema';
+
+<span class="token keyword">service</span> Main {
+
+  <span class="token keyword">entity</span> Products   <span class="token cqlkeywords keyword">as</span> <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> northwind.Products;
+  <span class="token keyword">entity</span> Categories <span class="token cqlkeywords keyword">as</span> <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> northwind.Categories;
+
+}</code></pre>
+<p>Starting a CAP server in local development mode with <code>cds watch</code> shows us that
+the mocked authentication strategy is in play by default:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> using auth strategy <span class="token operator">{</span> kind<span class="token operator">:</span> <span class="token string">'mocked'</span> <span class="token operator">}</span>
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> serving Main <span class="token operator">{</span>
+  <span class="token property">at:</span> <span class="token punctuation">[</span> <span class="token string">'/odata/v4/main'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">decl:</span> <span class="token string">'srv/main.cds:4'</span>
+<span class="token operator">}</span></code></pre>
+<p>As we haven't yet addressed any auth requirements in our CDS model, access is
+currently open to all, as we can see<a href="#footnotes"><sup>1</sup></a>:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> <span class="token function">curl</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--include</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--url</span> <span class="token string">'localhost:4004/odata/v4/Main/Products?$top=1'</span>
+HTTP/1.1 <span class="token number">200</span> OK
+OData-Version: <span class="token number">4.0</span>
+Content-Type: application/json<span class="token punctuation">;</span> <span class="token assign-left variable">charset</span><span class="token operator">=</span>utf-8
+Content-Length: <span class="token number">105</span>
+
+<span class="token punctuation">{</span>
+  <span class="token string">"@odata.context"</span><span class="token builtin class-name">:</span> <span class="token string">"<span class="token variable">$metadata</span>#BasicProducts"</span>,
+  <span class="token string">"value"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token string">"ID"</span><span class="token builtin class-name">:</span> <span class="token number">1</span>,
+      <span class="token string">"name"</span><span class="token builtin class-name">:</span> <span class="token string">"Chai"</span>,
+      <span class="token string">"supplier"</span><span class="token builtin class-name">:</span> <span class="token string">"Exotic Liquids"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<h3 id="examine-the-pre-defined-users-and-their-authorisations">Examine the pre-defined users and their authorisations</h3>
+<p>We can take a look at the pre-defined user data that is defined for the mocked
+authentication strategy, with:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cds <span class="token function">env</span> requires.auth.users</code></pre>
+<p>which will emit something like this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  alice<span class="token operator">:</span> <span class="token punctuation">{</span> tenant<span class="token operator">:</span> 't1'<span class="token punctuation">,</span> roles<span class="token operator">:</span> <span class="token punctuation">[</span> 'admin' <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  bob<span class="token operator">:</span> <span class="token punctuation">{</span> tenant<span class="token operator">:</span> 't1'<span class="token punctuation">,</span> roles<span class="token operator">:</span> <span class="token punctuation">[</span> 'cds.ExtensionDeveloper' <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  carol<span class="token operator">:</span> <span class="token punctuation">{</span> tenant<span class="token operator">:</span> 't1'<span class="token punctuation">,</span> roles<span class="token operator">:</span> <span class="token punctuation">[</span> 'admin'<span class="token punctuation">,</span> 'cds.ExtensionDeveloper' <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  dave<span class="token operator">:</span> <span class="token punctuation">{</span> tenant<span class="token operator">:</span> 't1'<span class="token punctuation">,</span> roles<span class="token operator">:</span> <span class="token punctuation">[</span> 'admin' <span class="token punctuation">]</span><span class="token punctuation">,</span> features<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  erin<span class="token operator">:</span> <span class="token punctuation">{</span> tenant<span class="token operator">:</span> 't2'<span class="token punctuation">,</span> roles<span class="token operator">:</span> <span class="token punctuation">[</span> 'admin'<span class="token punctuation">,</span> 'cds.ExtensionDeveloper' <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  fred<span class="token operator">:</span> <span class="token punctuation">{</span> tenant<span class="token operator">:</span> 't2'<span class="token punctuation">,</span> features<span class="token operator">:</span> <span class="token punctuation">[</span> 'isbn' <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  me<span class="token operator">:</span> <span class="token punctuation">{</span> tenant<span class="token operator">:</span> 't1'<span class="token punctuation">,</span> features<span class="token operator">:</span> <span class="token punctuation">[</span> '*' <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  yves<span class="token operator">:</span> <span class="token punctuation">{</span> roles<span class="token operator">:</span> <span class="token punctuation">[</span> 'internal-user' <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  '*'<span class="token operator">:</span> <span class="token boolean">true</span>
+<span class="token punctuation">}</span></code></pre>
+<h3 id="restrict-the-service">Restrict the service</h3>
+<p>Let's annotate the service with some basic role based access control (RBAC)
+requirements - that of needing to authenticate, via the pseudo-role
+<code>authenticated-user</code>. We can use the
+<a href="https://cap.cloud.sap/docs/guides/security/authorization#requires">@requires</a>
+annotation:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> northwind <span class="token from keyword">from</span> '../db/schema';
+
+<span class="token annotation important">@requires:</span> 'authenticated-user'
+<span class="token keyword">service</span> Main {
+
+  ...
+
+}</code></pre>
+<p>The same <code>curl</code> request as before now fails with an appropriate HTTP 401 status
+code:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">HTTP<span class="token operator">/</span><span class="token number">1.1</span> <span class="token number">401</span> Unauthorized
+<span class="token property">WWW-Authenticate:</span> Basic realm<span class="token operator">=</span><span class="token string">"Users"</span>
+<span class="token property">Content-Type:</span> text<span class="token operator">/</span>plain<span class="token operator">;</span> charset<span class="token operator">=</span>utf<span class="token operator">-</span><span class="token number">8</span>
+<span class="token property">Content-Length:</span> <span class="token number">12</span>
+
+Unauthorized</code></pre>
+<h3 id="authenticate-with-a-pre-defined-user">Authenticate with a pre-defined user</h3>
+<p>We can re-try the request with one of the pre-defined
+users<a href="#footnotes"><sup>2</sup></a>; because the requirement is just for the
+pseudo-role <code>authenticated-user</code>, we don't need any particular actual role
+allocated to the user, we just need to be successfully authenticated (and so
+identified) in this case:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> <span class="token function">curl</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--user</span> alice: <span class="token punctuation">\</span>
+  <span class="token parameter variable">--include</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--url</span> <span class="token string">'localhost:4004/odata/v4/Main/Products?$top=1'</span>
+HTTP/1.1 <span class="token number">200</span> OK
+OData-Version: <span class="token number">4.0</span>
+Content-Type: application/json<span class="token punctuation">;</span> <span class="token assign-left variable">charset</span><span class="token operator">=</span>utf-8
+Content-Length: <span class="token number">105</span>
+
+<span class="token punctuation">{</span>
+  <span class="token string">"@odata.context"</span><span class="token builtin class-name">:</span> <span class="token string">"<span class="token variable">$metadata</span>#BasicProducts"</span>,
+  <span class="token string">"value"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token string">"ID"</span><span class="token builtin class-name">:</span> <span class="token number">1</span>,
+      <span class="token string">"name"</span><span class="token builtin class-name">:</span> <span class="token string">"Chai"</span>,
+      <span class="token string">"supplier"</span><span class="token builtin class-name">:</span> <span class="token string">"Exotic Liquids"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<h3 id="try-some-finer-grained-access-restrictions">Try some finer-grained access restrictions</h3>
+<p>With the
+<a href="https://cap.cloud.sap/docs/guides/security/authorization#restrict-annotation">@restrict</a>
+we can define finer grained access requirements<a href="#footnotes"><sup>3</sup></a> in
+privilege building blocks of this form:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span> grant<span class="token operator">:</span>&lt;events><span class="token punctuation">,</span> to<span class="token operator">:</span>&lt;roles><span class="token punctuation">,</span> where<span class="token operator">:</span>&lt;filter-condition> <span class="token punctuation">}</span></code></pre>
+<p>Let's now add privilege requirements for the <code>Categories</code> entity, like this:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> northwind <span class="token from keyword">from</span> '../db/schema';
+
+<span class="token annotation important">@requires:</span> 'authenticated-user'
+<span class="token keyword">service</span> Main {
+
+  <span class="token keyword">entity</span> Products   <span class="token cqlkeywords keyword">as</span> <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> northwind.Products;
+
+  <span class="token annotation important">@restrict:</span> [
+    {
+      grant: 'WRITE',
+      to   : 'buyer-admin'
+    },
+    {
+      grant: 'READ',
+      to   : 'any'
+    }
+  ]
+  <span class="token keyword">entity</span> Categories <span class="token cqlkeywords keyword">as</span> <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> northwind.Categories;
+}</code></pre>
+<p>This says that any (authenticated) user can read the categories, but only a
+user with the <code>buyer-admin</code> role can perform &quot;write&quot;-semantic operations.</p>
+<h3 id="confirm-read-operations-are-permitted">Confirm read operations are permitted</h3>
+<p>Let's check that &quot;read&quot;-semantic operations are allowed for authenticated users
+(remember that the entity access is also governed by the <code>authenticated-user</code>
+pseudo-role restriction on the service that contains it):</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> <span class="token function">curl</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--user</span> alice: <span class="token punctuation">\</span>
+  <span class="token parameter variable">--include</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--url</span> <span class="token string">'localhost:4004/odata/v4/Main/Categories?$top=1'</span>
+HTTP/1.1 <span class="token number">200</span> OK
+OData-Version: <span class="token number">4.0</span>
+Content-Type: application/json<span class="token punctuation">;</span> <span class="token assign-left variable">charset</span><span class="token operator">=</span>utf-8
+Content-Length: <span class="token number">155</span>
+
+<span class="token punctuation">{</span>
+  <span class="token string">"@odata.context"</span><span class="token builtin class-name">:</span> <span class="token string">"<span class="token variable">$metadata</span>#Categories"</span>,
+  <span class="token string">"value"</span><span class="token builtin class-name">:</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">{</span>
+      <span class="token string">"CategoryID"</span><span class="token builtin class-name">:</span> <span class="token number">1</span>,
+      <span class="token string">"CategoryName"</span><span class="token builtin class-name">:</span> <span class="token string">"Beverages"</span>,
+      <span class="token string">"Description"</span><span class="token builtin class-name">:</span> <span class="token string">"Soft drinks, coffees, teas, beers, and ales"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Looks OK.</p>
+<h3 id="try-a-write-operation">Try a write operation</h3>
+<p>Now for a &quot;write&quot;-semantic operation. Let's go big and try DELETE:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> <span class="token function">curl</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--user</span> alice: <span class="token punctuation">\</span>
+  <span class="token parameter variable">--include</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--request</span> DELETE <span class="token punctuation">\</span>
+  <span class="token parameter variable">--url</span> <span class="token string">'localhost:4004/odata/v4/Main/Categories/1'</span>
+HTTP/1.1 <span class="token number">403</span> Forbidden
+OData-Version: <span class="token number">4.0</span>
+Content-Type: application/json<span class="token punctuation">;</span> <span class="token assign-left variable">charset</span><span class="token operator">=</span>utf-8
+Content-Length: <span class="token number">74</span>
+
+<span class="token punctuation">{</span>
+  <span class="token string">"error"</span><span class="token builtin class-name">:</span> <span class="token punctuation">{</span>
+    <span class="token string">"message"</span><span class="token builtin class-name">:</span> <span class="token string">"Forbidden"</span>,
+    <span class="token string">"code"</span><span class="token builtin class-name">:</span> <span class="token string">"403"</span>,
+    <span class="token string">"@Common.numericSeverity"</span><span class="token builtin class-name">:</span> <span class="token number">4</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Alice, with the <code>admin</code> role, is denied.</p>
+<h3 id="add-a-user-and-role-to-for-the-mocked-strategy">Add a user and role to for the mocked strategy</h3>
+<p>We can also modify and add to the pre-defined user definitions for the mocked
+authentication strategy. Let's do that by adding some configuration in a
+separate <code>.cdsrc.json</code> file in the project, defining a new user Polly with
+a couple of roles:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"cds"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"requires"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"auth"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"users"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          <span class="token property">"polly"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token property">"roles"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+              <span class="token string">"buyer-admin"</span><span class="token punctuation">,</span>
+              <span class="token string">"head-office"</span>
+            <span class="token punctuation">]</span>
+          <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>One of the roles here is <code>buyer-admin</code>, so let's now try authenticating the previous
+request as this new user:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> <span class="token function">curl</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--user</span> polly: <span class="token punctuation">\</span>
+  <span class="token parameter variable">--include</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--request</span> DELETE <span class="token punctuation">\</span>
+  <span class="token parameter variable">--url</span> <span class="token string">'localhost:4004/odata/v4/Main/Categories/1'</span>
+HTTP/1.1 <span class="token number">204</span> No Content
+OData-Version: <span class="token number">4.0</span></code></pre>
+<p>Success!</p>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>With the mocked authentication strategy, we can embrace and work on the
+important aspect of securing our app or service right from the very start. CAP
+makes it easy to do the right things here.</p>
+<p>For more information, see the
+<a href="https://cap.cloud.sap/docs/node.js/authentication">Authentication</a> topic in
+Capire.</p>
+<h2 id="footnotes">Footnotes</h2>
+<ol>
+<li>
+<p>The JSON output in these examples has been pretty-printed for readability here.</p>
+</li>
+<li>
+<p>The <code>--user</code> option for <code>curl</code> allows us to specify a username and password
+separated by a colon, so <code>alice:</code> here is just the username combined with an
+empty password (there are no passwords for these users). If we'd just
+specified <code>--user alice</code> without a colon, then <code>curl</code> would have prompted
+us for a password - we could have then just pressed Enter but this is one
+step we can avoid.</p>
+</li>
+<li>
+<p>In fact, <code>@requires</code> is just a convenience shortcut for <code>@restrict</code>. The annotation</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token annotation important">@requires:</span> 'authenticated-user'</code></pre>
+<p>that we used earlier is equivalent to</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token annotation important">@restrict:</span> [ { grant: '*', to: 'authenticated-user' } ]</code></pre>
+</li>
+</ol>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2026/05/04/cds-expressions-in-cap-notes-on-part-6/">CDS expressions in CAP - notes on Part 6</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2026/05/11/local-first-dev-with-cap-node-js-mocking-auth/` was built on 2026-05-11T17:18:04.158Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
