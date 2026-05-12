@@ -86,7 +86,7 @@ the mocked authentication strategy is in play by default:
 ```log
 [cds] - using auth strategy { kind: 'mocked' }
 [cds] - serving Main {
-  at: [ '/odata/v4/main' ],
+  at: [ '/main' ],
   decl: 'srv/main.cds:4'
 }
 ```
@@ -97,7 +97,7 @@ currently open to all, as we can see[<sup>1</sup>](#footnotes):
 ```shell
 ; curl \
   --include \
-  --url 'localhost:4004/odata/v4/Main/Products?$top=1'
+  --url 'localhost:4004/main/Products?$top=1'
 HTTP/1.1 200 OK
 OData-Version: 4.0
 Content-Type: application/json; charset=utf-8
@@ -183,7 +183,7 @@ identified) in this case:
 ; curl \
   --user alice: \
   --include \
-  --url 'localhost:4004/odata/v4/Main/Products?$top=1'
+  --url 'localhost:4004/main/Products?$top=1'
 HTTP/1.1 200 OK
 OData-Version: 4.0
 Content-Type: application/json; charset=utf-8
@@ -225,7 +225,7 @@ service Main {
   @restrict: [
     {
       grant: 'WRITE',
-      to   : 'buyer-admin'
+      to   : 'buyer'
     },
     {
       grant: 'READ',
@@ -237,7 +237,7 @@ service Main {
 ```
 
 This says that any (authenticated) user can read the categories, but only a
-user with the `buyer-admin` role can perform "write"-semantic operations.
+user with the `buyer` role can perform "write"-semantic operations.
 
 ### Confirm read operations are permitted
 
@@ -249,7 +249,7 @@ pseudo-role restriction on the service that contains it):
 ; curl \
   --user alice: \
   --include \
-  --url 'localhost:4004/odata/v4/Main/Categories?$top=1'
+  --url 'localhost:4004/main/Categories?$top=1'
 HTTP/1.1 200 OK
 OData-Version: 4.0
 Content-Type: application/json; charset=utf-8
@@ -278,7 +278,7 @@ Now for a "write"-semantic operation. Let's go big and try DELETE:
   --user alice: \
   --include \
   --request DELETE \
-  --url 'localhost:4004/odata/v4/Main/Categories/1'
+  --url 'localhost:4004/main/Categories/1'
 HTTP/1.1 403 Forbidden
 OData-Version: 4.0
 Content-Type: application/json; charset=utf-8
@@ -298,9 +298,8 @@ Alice, with the `admin` role, is denied.
 ### Add a user and role to for the mocked strategy
 
 We can also modify and add to the pre-defined user definitions for the mocked
-authentication strategy. Let's do that by adding some configuration in a
-separate `.cdsrc.json` file in the project, defining a new user Polly with
-a couple of roles:
+authentication strategy. Let's do that, adding a couple of extra roles for
+Alice in a separate `.cdsrc.json` file in the project:
 
 ```json
 {
@@ -308,9 +307,10 @@ a couple of roles:
     "requires": {
       "auth": {
         "users": {
-          "polly": {
+          "alice": {
             "roles": [
-              "buyer-admin",
+              "admin",
+              "buyer",
               "head-office"
             ]
           }
@@ -321,15 +321,14 @@ a couple of roles:
 }
 ```
 
-One of the roles here is `buyer-admin`, so let's now try authenticating the previous
-request as this new user:
+One of the roles is `buyer`, so let's now retry the previous request:
 
 ```shell
 ; curl \
-  --user polly: \
+  --user alice: \
   --include \
   --request DELETE \
-  --url 'localhost:4004/odata/v4/Main/Categories/1'
+  --url 'localhost:4004/main/Categories/1'
 HTTP/1.1 204 No Content
 OData-Version: 4.0
 ```
