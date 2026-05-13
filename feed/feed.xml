@@ -5,17 +5,453 @@
   <subtitle>Reserving the right to be wrong</subtitle>
   <link href="https://qmacro.org/feed/feed.xml" rel="self" />
   <link href="https://qmacro.org/blog/" />
-  <updated>2026-05-11T00:00:00Z</updated>
+  <updated>2026-05-13T00:00:00Z</updated>
   <id>https://qmacro.org/blog/</id>
   <author>
     <name>DJ Adams</name>
   </author>
   <entry>
+    <title>Local-first dev with CAP Node.js - mocking remote services</title>
+    <link href="https://qmacro.org/blog/posts/2026/05/13/local-first-dev-with-cap-node-js-mocking-remote-services/" />
+    <updated>2026-05-13T00:00:00Z</updated>
+    <id>https://qmacro.org/blog/posts/2026/05/13/local-first-dev-with-cap-node-js-mocking-remote-services/</id>
+    <content type="html">&lt;p&gt;This post is one of &lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js/&quot;&gt;a series on local-first development with CAP
+Node.js&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&quot;calesi-and-mocking-remote-services&quot;&gt;Calesi and mocking remote services&lt;/h2&gt;
+&lt;p&gt;In the context of &lt;a href=&quot;https://cap.cloud.sap/docs/guides/integration/calesi&quot;&gt;CAP-Level Service
+Integration&lt;/a&gt; (aka
+&amp;quot;Calesi&amp;quot;) we can mash up remote and local services, and in the full spirit of
+CAP generally, run everything &lt;a href=&quot;https://cap.cloud.sap/docs/guides/integration/calesi#mocked-out-of-the-box&quot;&gt;in airplane
+mode&lt;/a&gt;,
+i.e. fully locally.&lt;/p&gt;
+&lt;h2 id=&quot;working-through-an-example&quot;&gt;Working through an example&lt;/h2&gt;
+&lt;p&gt;In this post, we&#39;ll work through an example of mocking a remote service, based
+on content in the
+&lt;a href=&quot;https://github.com/qmacro/cap-nodejs-local-first-development/tree/main/remoteservice&quot;&gt;remoteservice/&lt;/a&gt;
+directory of the repo set up for the related
+&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js/#talk&quot;&gt;talk&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;We start with an almost empty project directory, save for a basic
+&lt;code&gt;package.json&lt;/code&gt; file which we only really have at this point so we can check the
+changes in it that are introduced when we import a remote service API
+definition. All operations are done in the context of this project directory.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The other files in this directory in the repo are related to performing and
+resetting the demo during the talk version of this post.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;examining-and-importing-the-candidate-remote-service&quot;&gt;Examining and importing the candidate remote service&lt;/h2&gt;
+&lt;p&gt;At &lt;a href=&quot;https://odd.cfapps.eu10.hana.ondemand.com/&quot;&gt;https://odd.cfapps.eu10.hana.ondemand.com/&lt;/a&gt; there&#39;s the
+&lt;a href=&quot;https://odd.cfapps.eu10.hana.ondemand.com/northbreeze&quot;&gt;northbreeze&lt;/a&gt; OData V4
+service with Products, Categories and Suppliers&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/13/local-first-dev-with-cap-node-js-mocking-remote-services/#footnotes&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;. The
+service&#39;s API is available as the &lt;a href=&quot;https://odd.cfapps.eu10.hana.ondemand.com/northbreeze/$metadata&quot;&gt;metadata
+document&lt;/a&gt; so
+let&#39;s grab that:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;https://odd.cfapps.eu10.hana.ondemand.com/northbreeze/$metadata&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; northbreeze.edmx&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and use &lt;a href=&quot;https://cap.cloud.sap/docs/guides/services/consuming-services#import-api-definition&quot;&gt;cds
+import&lt;/a&gt;
+to import it to our project:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;cds &lt;span class=&quot;token function&quot;&gt;import&lt;/span&gt; northbreeze.edmx&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This emits:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; updated &lt;span class=&quot;token file-path string&quot;&gt;./package.json&lt;/span&gt;
+
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; imported API to srv&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;external&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; use it in your CDS models through the likes of&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;
+
+using &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; northbreeze as external &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt; from &lt;span class=&quot;token string&quot;&gt;&#39;./external/northbreeze&#39;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and the EDMX API definition, along with the CAP-focused CSN equivalent that was
+created at import, are moved into an &lt;code&gt;external/&lt;/code&gt; directory within a standard
+&lt;code&gt;srv/&lt;/code&gt; directory (which itself is
+&lt;a href=&quot;https://en.wikipedia.org/wiki/Autovivification&quot;&gt;autovivified&lt;/a&gt; at this point):&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;
+├── &lt;span class=&quot;token domain constant&quot;&gt;package.json&lt;/span&gt;
+└── srv&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;
+    └── external&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;
+        ├── &lt;span class=&quot;token domain constant&quot;&gt;northbreeze.csn&lt;/span&gt;
+        └── &lt;span class=&quot;token domain constant&quot;&gt;northbreeze.edmx&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;mocking-is-automatically-and-immediately-initiated&quot;&gt;Mocking is automatically and immediately initiated&lt;/h3&gt;
+&lt;p&gt;At this point too, the CAP server restarts and shows:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; loaded model from &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; file&lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;s&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;
+
+  srv&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;external&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csn
+
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; using bindings from&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; registry&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;~/.cds-services.json&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; connect to db &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; sqlite &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;:memory:&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; successfully deployed to in&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;memory database&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; mocking northbreeze &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;at:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;/odata/v4/northbreeze&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;decl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;srv/external/northbreeze.csn:170&#39;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; server listening on &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;http://localhost:4004&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This is because &lt;code&gt;cds watch&lt;/code&gt; is actually shorthand for:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;cds serve all --with-mocks --in-memory?&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and if we read the help for &lt;code&gt;--with-mocks&lt;/code&gt; we see this:&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Use this in combination with the variants serving multiple services.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;It starts in-process mock services for all required services configured in
+package.json#cds.requires, which don&#39;t have external bindings in the current
+process environment.&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Note that by default, this feature is disabled in production and must be
+enabled with configuration &#39;features.mocked_bindings=true&#39;.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;That&#39;s right - mocking is already being done for our imported remote service!
+It&#39;s in-process, i.e. within the same CAP server process that we started with
+&lt;code&gt;cds watch&lt;/code&gt;.&lt;/p&gt;
+&lt;h3 id=&quot;the-package-json-file-is-extended&quot;&gt;The package.json file is extended&lt;/h3&gt;
+&lt;p&gt;As part of the import process, &lt;code&gt;package.json&lt;/code&gt; was modified in two key areas:&lt;/p&gt;
+&lt;pre class=&quot;language-diff&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-diff&quot;&gt;&lt;span class=&quot;token coord&quot;&gt;--- a/remoteservice/package.json&lt;/span&gt;
+&lt;span class=&quot;token coord&quot;&gt;+++ b/remoteservice/package.json&lt;/span&gt;
+&lt;span class=&quot;token coord&quot;&gt;@@ -4,7 +4,10 @@&lt;/span&gt;
+&lt;span class=&quot;token unchanged&quot;&gt;&lt;span class=&quot;token prefix unchanged&quot;&gt; &lt;/span&gt;  &quot;description&quot;: &quot;Demonstrating local-first support for remote services&quot;,
+&lt;span class=&quot;token prefix unchanged&quot;&gt; &lt;/span&gt;  &quot;dependencies&quot;: {
+&lt;span class=&quot;token prefix unchanged&quot;&gt; &lt;/span&gt;    &quot;@sap/cds&quot;: &quot;^9&quot;,
+&lt;/span&gt;&lt;span class=&quot;token deleted-sign deleted&quot;&gt;&lt;span class=&quot;token prefix deleted&quot;&gt;-&lt;/span&gt;    &quot;express&quot;: &quot;^4&quot;
+&lt;/span&gt;&lt;span class=&quot;token inserted-sign inserted&quot;&gt;&lt;span class=&quot;token prefix inserted&quot;&gt;+&lt;/span&gt;    &quot;express&quot;: &quot;^4&quot;,
+&lt;span class=&quot;token prefix inserted&quot;&gt;+&lt;/span&gt;    &quot;@sap-cloud-sdk/connectivity&quot;: &quot;^4&quot;,
+&lt;span class=&quot;token prefix inserted&quot;&gt;+&lt;/span&gt;    &quot;@sap-cloud-sdk/http-client&quot;: &quot;^4&quot;,
+&lt;span class=&quot;token prefix inserted&quot;&gt;+&lt;/span&gt;    &quot;@sap-cloud-sdk/resilience&quot;: &quot;^4&quot;
+&lt;/span&gt;&lt;span class=&quot;token unchanged&quot;&gt;&lt;span class=&quot;token prefix unchanged&quot;&gt; &lt;/span&gt;  },
+&lt;span class=&quot;token prefix unchanged&quot;&gt; &lt;/span&gt;  &quot;devDependencies&quot;: {
+&lt;span class=&quot;token prefix unchanged&quot;&gt; &lt;/span&gt;    &quot;@cap-js/sqlite&quot;: &quot;^2&quot;
+&lt;/span&gt;&lt;span class=&quot;token coord&quot;&gt;@@ -12,5 +15,13 @@&lt;/span&gt;
+&lt;span class=&quot;token unchanged&quot;&gt;&lt;span class=&quot;token prefix unchanged&quot;&gt; &lt;/span&gt;  &quot;scripts&quot;: {
+&lt;span class=&quot;token prefix unchanged&quot;&gt; &lt;/span&gt;    &quot;start&quot;: &quot;cds-serve&quot;
+&lt;span class=&quot;token prefix unchanged&quot;&gt; &lt;/span&gt;  },
+&lt;/span&gt;&lt;span class=&quot;token deleted-sign deleted&quot;&gt;&lt;span class=&quot;token prefix deleted&quot;&gt;-&lt;/span&gt;  &quot;private&quot;: true
+&lt;span class=&quot;token prefix deleted&quot;&gt;-&lt;/span&gt;}
+&lt;/span&gt;&lt;span class=&quot;token inserted-sign inserted&quot;&gt;&lt;span class=&quot;token prefix inserted&quot;&gt;+&lt;/span&gt;  &quot;private&quot;: true,
+&lt;span class=&quot;token prefix inserted&quot;&gt;+&lt;/span&gt;  &quot;cds&quot;: {
+&lt;span class=&quot;token prefix inserted&quot;&gt;+&lt;/span&gt;    &quot;requires&quot;: {
+&lt;span class=&quot;token prefix inserted&quot;&gt;+&lt;/span&gt;      &quot;northbreeze&quot;: {
+&lt;span class=&quot;token prefix inserted&quot;&gt;+&lt;/span&gt;        &quot;kind&quot;: &quot;odata&quot;,
+&lt;span class=&quot;token prefix inserted&quot;&gt;+&lt;/span&gt;        &quot;model&quot;: &quot;srv/external/northbreeze&quot;
+&lt;span class=&quot;token prefix inserted&quot;&gt;+&lt;/span&gt;      }
+&lt;span class=&quot;token prefix inserted&quot;&gt;+&lt;/span&gt;    }
+&lt;span class=&quot;token prefix inserted&quot;&gt;+&lt;/span&gt;  }
+&lt;span class=&quot;token prefix inserted&quot;&gt;+&lt;/span&gt;}
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;the SAP Cloud SDK libraries were added - for marshalling of, connection to and
+communication with remote destinations&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/13/local-first-dev-with-cap-node-js-mocking-remote-services/#footnotes&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;the remote service is added as &amp;quot;required&amp;quot;, with the name &lt;code&gt;northbreeze&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;reviewing-the-situation&quot;&gt;Reviewing the situation&lt;/h2&gt;
+&lt;p&gt;This in-process mocking of the required remote service &amp;quot;northbreeze&amp;quot; means that
+in the CAP server context that exists for our project, we have that remote
+service available to us:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2026/05/northbreeze-available.png&quot; alt=&quot;northbreeze remote service available&quot;&gt;&lt;/p&gt;
+&lt;p&gt;But while the mocked remote service is already fully formed, even in this
+&amp;quot;in-process&amp;quot; mode, there&#39;s no data. Let&#39;s add some so we can better explore the
+service.&lt;/p&gt;
+&lt;h2 id=&quot;add-data-for-the-mocked-remote-service&quot;&gt;Add data for the mocked remote service&lt;/h2&gt;
+&lt;p&gt;Using CAP&#39;s mock data facilities, we can easily come up
+with some mock data. Because of CAP&#39;s &lt;a href=&quot;https://github.com/qmacro/capref/blob/main/axioms/AXI003.md&quot;&gt;convention over
+configuration&lt;/a&gt;
+axiom, this works even for mocked remote services. As an erstwhile Perl
+programmer, I appreciate this
+&lt;a href=&quot;https://perldoc.perl.org/perlsyn#DESCRIPTION:~:text=This%20is%20known%20as%20Do%20What%20I%20Mean%2C%20abbreviated%20DWIM.&quot;&gt;DWIM&lt;/a&gt;-style approach.&lt;/p&gt;
+&lt;h3 id=&quot;have-some-data-generated&quot;&gt;Have some data generated&lt;/h3&gt;
+&lt;p&gt;Let&#39;s first have CAP generate some data for us:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;cds &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token function&quot;&gt;add&lt;/span&gt; data &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--filter&lt;/span&gt; Categories &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--records&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;10&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This creates a CSV file with an appropriate name and in the expected place for
+initial data:&lt;/p&gt;
+&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;./
+├── db/
+│   └── data/
+│       └── northbreeze.Categories.csv
+├── package.json
+└── srv/
+    └── external/
+        ├── northbreeze.csn
+        └── northbreeze.edmx&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;retrieve-data-and-use-that-too&quot;&gt;Retrieve data and use that too&lt;/h3&gt;
+&lt;p&gt;Given this is about gathering some data to exercise the mocked remote service,
+it&#39;s likely that the actual remote service has data that we can perhaps use
+too.&lt;/p&gt;
+&lt;p&gt;Being an OData V4 service, the data available, in the form of, say, an
+entityset, is going to be in JSON format by default. But that&#39;s fine, the CAP
+server&#39;s data mechanism can deal with this too. So let&#39;s grab the Products data
+from the actual remote service and place it alongside the Categories data we
+have:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--silent&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;https://odd.cfapps.eu10.hana.ondemand.com/northbreeze/Products&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; jq .value &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; db/data/northbreeze.Products.json&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can mix CSV and JSON data with ease:&lt;/p&gt;
+&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;./
+├── db/
+│   └── data/
+│       └── northbreeze.Categories.csv
+:       └── northbreeze.Products.json&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and it&#39;s picked up as we would hope:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; connect to db &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; sqlite &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;:memory:&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Products&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;json
+  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Categories&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; successfully deployed to in&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;memory database&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;switching-to-a-separate-mocking-process&quot;&gt;Switching to a separate mocking process&lt;/h2&gt;
+&lt;p&gt;So far the required remote service has been mocked in-process.&lt;/p&gt;
+&lt;p&gt;But for local development with a scenario that is closer to the eventual
+production scenario we can also have that service mocked in a separate process.
+One effect of this is that real wire API calls are made between your local
+service and the separately mocked (but still locally running) remote service.&lt;/p&gt;
+&lt;p&gt;Before continuing, let&#39;s stop the current CAP server.&lt;/p&gt;
+&lt;p&gt;Now let&#39;s revisit the in-process mocking, but in the context of a local to
+remote proxy definition for an entity. Following that, we&#39;ll then switch to
+separate process based mocking.&lt;/p&gt;
+&lt;h3 id=&quot;set-up-a-local-to-remote-proxy-definition&quot;&gt;Set up a local to remote proxy definition&lt;/h3&gt;
+&lt;p&gt;One of the simplest forms of service mashup is surfacing a remote entity as a
+local one. This may not be entirely useful, but it demonstrates the atomic
+structure of more involved scenarios, and is nice and simple so as not to get
+in the way of understanding here.&lt;/p&gt;
+&lt;p&gt;First, add the following service definition in &lt;code&gt;srv/main.cds&lt;/code&gt;, remembering that
+the &lt;code&gt;using&lt;/code&gt; directive here brings in the &lt;code&gt;northbreeze&lt;/code&gt; scope from the imported
+remote service definition that was created with the &lt;code&gt;cds import&lt;/code&gt; earlier:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; {northbreeze} &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;./external/northbreeze&#39;;
+
+&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; Main {
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Products &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; northbreeze.Products;
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In the following sections, we&#39;ll see the difference between in-process and
+external process mocking.&lt;/p&gt;
+&lt;h3 id=&quot;restart-the-single-cap-server-process&quot;&gt;Restart the single CAP server process&lt;/h3&gt;
+&lt;p&gt;Restart the CAP server with &lt;code&gt;cds watch&lt;/code&gt;, whereupon we will see:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; loaded model from &lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt; file&lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;s&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;
+
+  srv&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;main&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;cds
+  srv&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;external&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csn
+
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; using bindings from&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; registry&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;~/.cds-services.json&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; connect to db &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; sqlite &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;:memory:&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Products&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;json
+  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Categories&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; successfully deployed to in&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;memory database&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; serving Main &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;at:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;/odata/v4/main&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;decl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;srv/main.cds:3&#39;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; mocking northbreeze &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;at:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;/odata/v4/northbreeze&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;decl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;srv/external/northbreeze.csn:170&#39;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In other words:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;the overall CDS model is built from the local definition we&#39;ve just created,
+plus the definitions from the remote service&lt;/li&gt;
+&lt;li&gt;initial data is loaded from the CSV and JSON files in &lt;code&gt;db/data/&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;the local &lt;em&gt;provided&lt;/em&gt; service &lt;code&gt;Main&lt;/code&gt; is served&lt;/li&gt;
+&lt;li&gt;the remote &lt;em&gt;required&lt;/em&gt; service &lt;code&gt;northbreeze&lt;/code&gt; is also served, mocked in-process&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Moreover, when we request a &lt;code&gt;Products&lt;/code&gt; resource from the local &lt;code&gt;Main&lt;/code&gt; service
+at &lt;code&gt;/odata/v4/main&lt;/code&gt;, which as we know from our service definition is a
+projection onto the corresponding entity in the remote service definition:&lt;/p&gt;
+&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;localhost:4004/odata/v4/main/Products?$top=1&#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;we get a successful result:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;@odata.context&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;$metadata#Products&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;value&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;ProductID&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;ProductName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Chai&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;QuantityPerUnit&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;10 boxes x 20 bags&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;UnitPrice&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;18&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;Category_CategoryID&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;Supplier_SupplierID&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;UnitsInStock&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;39&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;UnitsOnOrder&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;ReorderLevel&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;Discontinued&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This is due to the in-process based connectivity available in the single CAP
+server process.&lt;/p&gt;
+&lt;p&gt;Let&#39;s stop the CAP server at this point.&lt;/p&gt;
+&lt;h3 id=&quot;mock-the-remote-service-in-a-separate-process&quot;&gt;Mock the remote service in a separate process&lt;/h3&gt;
+&lt;p&gt;In a second terminal window, let&#39;s now start the standalone mocking of the
+required &lt;code&gt;northbreeze&lt;/code&gt; service with the &lt;code&gt;cds mock&lt;/code&gt; command, like this:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;cds mock northbreeze&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We should see output like this:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; using bindings from&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; registry&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;~/.cds-services.json&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; connect to db &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; sqlite &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; database&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;:memory:&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Products&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;json
+  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Categories&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; successfully deployed to in&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;memory database&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; mocking northbreeze &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;at:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;/odata/v4/northbreeze&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;decl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;srv/external/northbreeze.csn:170&#39;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; server listening on &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;http://localhost:42623&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The initial data is loaded as before, the &lt;code&gt;northbreeze&lt;/code&gt; service is served, but
+crucially:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;the provided &lt;code&gt;Main&lt;/code&gt; service is not served (as we haven&#39;t asked it to be)&lt;/li&gt;
+&lt;li&gt;the required &lt;code&gt;northbreeze&lt;/code&gt; service is available on a non-standard (in fact
+random) port 42623&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We can successfully request resources in this mocked remote service at
+&lt;code&gt;http://localhost:42623/odata/v4/northbreeze&lt;/code&gt;.&lt;/p&gt;
+&lt;h3 id=&quot;start-a-normal-cap-server-process-to-have-the-local-service-served&quot;&gt;Start a normal CAP server process to have the local service served&lt;/h3&gt;
+&lt;p&gt;Now in the first terminal window, let&#39;s restart the CAP server with &lt;code&gt;cds watch&lt;/code&gt;, and we should now see:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; using bindings from&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; registry&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;~/.cds-services.json&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; connect to db &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; sqlite &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;:memory:&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; successfully deployed to in&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;memory database&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; serving Main &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;at:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;/odata/v4/main&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;decl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;srv/main.cds:3&#39;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; server listening on &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;http://localhost:4004&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now, there&#39;s no initial data loaded, because that belongs to the required
+remote &lt;code&gt;northbreeze&lt;/code&gt; service and thus not relevant here, because only the
+&lt;code&gt;Main&lt;/code&gt; service is being served.&lt;/p&gt;
+&lt;p&gt;Why is only the provided &lt;code&gt;Main&lt;/code&gt; service being served, and not the required
+remote &lt;code&gt;northbreeze&lt;/code&gt; service, like before?&lt;/p&gt;
+&lt;h3 id=&quot;get-to-know-the-binding-registry&quot;&gt;Get to know the binding registry&lt;/h3&gt;
+&lt;p&gt;To answer that question, we need to recall that highlighted part of the help
+for the mocking option to &lt;code&gt;cds serve&lt;/code&gt; earlier:&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;It starts in-process mock services for all required services configured in
+package.json#cds.requires, &lt;strong&gt;which don&#39;t have external bindings in the current
+process environment&lt;/strong&gt;.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Here, in our local-first development context, our &amp;quot;current process environment&amp;quot;
+is effectively any (and all) CAP server process(es) running locally.&lt;/p&gt;
+&lt;p&gt;You might have noticed this line appearing in previous CAP server output
+samples in this post:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; using bindings from&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; registry&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;~/.cds-services.json&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As they start up and shut down, local CAP server processes read and write to
+this registry file &lt;code&gt;~/.cds-services.json&lt;/code&gt;. They read it to see what services
+are available (that they might be requiring), and write to it to record the
+services they&#39;re providing (for other locally running CAP server processes).&lt;/p&gt;
+&lt;p&gt;When we started the separate CAP server to mock the &lt;code&gt;northbreeze&lt;/code&gt; remote
+service with &lt;code&gt;cds mock northbreeze&lt;/code&gt;, information was written to this file,
+recording the fact that this &lt;code&gt;northbreeze&lt;/code&gt; service is &amp;quot;provided&amp;quot;:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;cds&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;provides&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;northbreeze&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;endpoints&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+          &lt;span class=&quot;token property&quot;&gt;&quot;odata&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;/odata/v4/northbreeze&quot;&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;server&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;17250&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;servers&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;17250&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;root&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;file:///work/gh/github.com/qmacro/cap-nodejs-local-first-development/remoteservice&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;url&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;http://localhost:42623&quot;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As we can see, it also records where the provision is, in this case at
+&lt;code&gt;http://localhost:42623&lt;/code&gt;, which is at the port that the mock server is
+listening on.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;This is why a random port is not such a problem here.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;retry-the-local-to-remote-proxy-part-1&quot;&gt;Retry the local to remote proxy - part 1&lt;/h3&gt;
+&lt;p&gt;Now that we have two CAP server processes running, one mocking the required
+remote service &lt;code&gt;northbreeze&lt;/code&gt;, and the other serving the local service &lt;code&gt;Main&lt;/code&gt;,
+let&#39;s retry that same request (to get the product data from the mocked remote
+service, proxied through the local service definition):&lt;/p&gt;
+&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;localhost:4004/odata/v4/main/Products?$top=1&#39;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Oh dear:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;error&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;message&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Entity &#92;&quot;Main.Products&#92;&quot; is annotated with &#92;&quot;@cds.persistence.skip&#92;&quot; and cannot be served generically.&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;code&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;501&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;@Common.numericSeverity&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The in-process connectivity available (provided for convenience) cannot be used
+here, and we have to implement some basic query and connectivity logic which is
+exactly what we will have to do in a productive scenario anyway.&lt;/p&gt;
+&lt;p&gt;So let&#39;s do that, using the simplest thing that could possibly work - adding
+this to a corresponding &lt;code&gt;srv/main.js&lt;/code&gt; file:&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; cds &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;@sap/cds&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+module&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;exports &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;service&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;impl&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;async&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; northbreeze &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;connect&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;northbreeze&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;on&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;READ&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Products&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;async&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;req&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;query&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;When a query arrives to read &lt;code&gt;Products&lt;/code&gt; data, send it across to &lt;code&gt;northbreeze&lt;/code&gt;
+and pass back whatever is returned.&lt;/p&gt;
+&lt;p&gt;Once the CAP server in the first terminal window restarts because of this
+change, note that there&#39;s a new log line in the output:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; connect to northbreeze &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; odata &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;http://localhost:42623/odata/v4/northbreeze&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This is a direct result of the &lt;code&gt;await cds.connect.to(&#39;northbreeze&#39;)&lt;/code&gt; line
+above.&lt;/p&gt;
+&lt;h3 id=&quot;retry-the-local-to-remote-proxy-part-2&quot;&gt;Retry the local to remote proxy - part 2&lt;/h3&gt;
+&lt;p&gt;With this simple implementation in place, retrying that same request again will
+result in some very satisfying log output in both CAP server processes.&lt;/p&gt;
+&lt;p&gt;Before we do, stop the CAP server in the first terminal window and restart it
+specifying &lt;code&gt;DEBUG=remote&lt;/code&gt; like this, to get more log output detail for remote
+related activities:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token assign-left variable&quot;&gt;DEBUG&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;remote cds &lt;span class=&quot;token function&quot;&gt;watch&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now, after retrying the request for a final time, we see this log output in the
+first (&lt;code&gt;Main&lt;/code&gt;) CAP server log output:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;remote&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; GET &lt;span class=&quot;token url&quot;&gt;http://localhost:42623/odata/v4/northbreeze/Products?$select=ProductID&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;ProductName&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;QuantityPerUnit&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;UnitPrice&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;Category_CategoryID&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;Supplier_SupplierID&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;UnitsInStock&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;UnitsOnOrder&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;ReorderLevel&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;Discontinued&lt;span class=&quot;token operator&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;$&lt;/span&gt;top&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;headers:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;accept:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;application/json,text/plain&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token string&quot;&gt;&#39;x-correlation-id&#39;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;ff4da315-ec6e-4e89-97d4-85f96b270ed6&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token string&quot;&gt;&#39;x-correlationid&#39;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;ff4da315-ec6e-4e89-97d4-85f96b270ed6&#39;&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;remote&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; Executing via native fetch&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can see that there&#39;s an HTTP request, specifically an OData QUERY operation,
+that&#39;s been constructed and sent to the URL where the remote service is being
+provided&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/13/local-first-dev-with-cap-node-js-mocking-remote-services/#footnotes&quot;&gt;&lt;sup&gt;3&lt;/sup&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;And in the CAP server process in the second terminal window, where we&#39;re
+separately mocking the &lt;code&gt;northbreeze&lt;/code&gt; remote service on 42623, we see that OData
+QUERY operation arrive:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;odata&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; GET &lt;span class=&quot;token file-path string&quot;&gt;/odata/v4/northbreeze/Products&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token string&quot;&gt;&#39;$select&#39;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;ProductID,ProductName,QuantityPerUnit,UnitPrice,Category_CategoryID,Supplier_SupplierID,UnitsInStock,UnitsOnOrder,ReorderLevel,Discontinued&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token string&quot;&gt;&#39;$top&#39;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;1&#39;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;A true inter-process remote service call. All running locally, and orchestrated
+in the simplest way possible.&lt;/p&gt;
+&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
+&lt;p&gt;This post has just scratched the surface of what&#39;s possible when it comes to
+working in local-first development mode, with remote services. For more
+information and stuff that you can practise yourself, we have the &lt;a href=&quot;https://github.com/SAP-samples/cap-service-integration-codejam/&quot;&gt;CAP Service
+Integration
+CodeJam&lt;/a&gt;
+exercises publicly available for you. Happy learning!&lt;/p&gt;
+&lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&amp;quot;odd&amp;quot; is short for OData Deep Dive, and the service is used in the
+corresponding SAP Tutorial Navigator mission that I&#39;m rewriting currently -
+see &lt;a href=&quot;https://qmacro.org/blog/posts/2026/02/02/odata-deep-dive-rewrite-in-the-open/&quot;&gt;OData Deep Dive rewrite in the
+open&lt;/a&gt; for
+details.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Note that &lt;a href=&quot;https://cap.cloud.sap/docs/releases/2026/apr26#n-o-cloud-sdk&quot;&gt;since the CAP Apr 2026
+release&lt;/a&gt;, the
+SAP Cloud SDK is no longer mandatory for remote communication in
+development scenarios.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;We can also see, via the &amp;quot;Executing via native fetch&amp;quot; line, that the
+&lt;a href=&quot;https://cap.cloud.sap/docs/releases/2026/apr26#node-native-fetch-api&quot;&gt;Node-native Fetch API is in use here now, since Apr
+2026&lt;/a&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+  </entry>
+  <entry>
     <title>Local-first dev with CAP Node.js</title>
     <link href="https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js/" />
     <updated>2026-05-11T00:00:00Z</updated>
     <id>https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js/</id>
-    <content type="html">&lt;p&gt;This series post is related to a talk I&#39;m putting together:&lt;/p&gt;
+    <content type="html">&lt;p&gt;&lt;a name=&quot;talk&quot;&gt;&lt;/a&gt;
+This series post is related to a talk I&#39;m putting together:&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;Local-first development with CAP Node.js - mock all the things!&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;As developers we need to be free of distractions plus a tight and speedy
@@ -24,13 +460,15 @@ important design decisions. CAP&#39;s mocking facilities abstracts us from much
 tedium and ceremony, allowing us to iterate fast on data, auth, messaging and
 remote services while we develop. This session shows you what, and how.&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;You can read more about this context in the section below.&lt;/p&gt;
+&lt;p&gt;There&#39;s a repo for the themes and demos in this talk at
+&lt;a href=&quot;https://github.com/qmacro/cap-nodejs-local-first-development/&quot;&gt;https://github.com/qmacro/cap-nodejs-local-first-development/&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;You can read more about the context of this talk in the section below.&lt;/p&gt;
 &lt;h2 id=&quot;the-posts&quot;&gt;The posts&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js-mocking-auth/&quot;&gt;Mocking auth&lt;/a&gt; (11 May)&lt;/li&gt;
-&lt;li&gt;Mocking remote services (coming soon) (14 May)&lt;/li&gt;
-&lt;li&gt;Mocking messaging (planned)&lt;/li&gt;
-&lt;li&gt;Mocking data (planned)&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/13/local-first-dev-with-cap-node-js-mocking-remote-services/&quot;&gt;Mocking remote services&lt;/a&gt; (13 May)&lt;/li&gt;
+&lt;li&gt;Mocking data (coming soon)&lt;/li&gt;
+&lt;li&gt;Mocking messaging (coming soon)&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&quot;more-context&quot;&gt;More context&lt;/h2&gt;
 &lt;p&gt;There are a couple of aspects of development that come together for the perfect
@@ -67,7 +505,7 @@ define and test security-related constructs. This mock user configuration can
 be modified and extended too, but what comes out of the box is definitely
 enough to get started.&lt;/p&gt;
 &lt;h2 id=&quot;working-through-an-example&quot;&gt;Working through an example&lt;/h2&gt;
-&lt;p&gt;In the rest of this post, we&#39;ll work through an example of mocking auth, based
+&lt;p&gt;In this post, we&#39;ll work through an example of mocking auth, based
 on content in the
 &lt;a href=&quot;https://github.com/qmacro/cap-nodejs-local-first-development/tree/main/auth&quot;&gt;auth/&lt;/a&gt;
 directory of the talk repository.&lt;/p&gt;
@@ -4516,104 +4954,6 @@ about AWK than genre data.&lt;/li&gt;
 specifically refers to Perl which as I&#39;ve mentioned was heavily influenced
 by AWK as well as other contemporary languages and tools.&lt;/li&gt;
 &lt;/ol&gt;
-</content>
-  </entry>
-  <entry>
-    <title>Improving the SAP Community together, one comment at a time</title>
-    <link href="https://qmacro.org/blog/posts/2026/02/17/improving-the-sap-community-together-one-comment-at-a-time/" />
-    <updated>2026-02-17T00:00:00Z</updated>
-    <id>https://qmacro.org/blog/posts/2026/02/17/improving-the-sap-community-together-one-comment-at-a-time/</id>
-    <content type="html">&lt;p&gt;As a Developer Advocate, I have the privilege of working with some amazing
-colleagues in that team, but also in the wider Developer and Community
-Relations organisation. For the size of the community, it&#39;s a small
-group, and the folks are working hard to keep the wheels on the bus and
-rolling in the right direction. But they can only do so much. In this post, I
-want to highlight a challenge for us all, and how we can, again, collectively,
-tackle it together.&lt;/p&gt;
-&lt;h2 id=&quot;the-challenge&quot;&gt;The challenge&lt;/h2&gt;
-&lt;p&gt;I&#39;m talking about content quality, which to a greater or lesser degree has for
-a long time been a topic of debate both in the questions area and also the blog
-post area. My relationship with the SAP Community platform goes back to day 1,
-with SDN.&lt;/p&gt;
-&lt;p&gt;Actually, it goes back to well before that - creating and running the first
-online SAP community in 1995, and co-creating the SAP Developer Network has
-caused me to never stop caring for and worrying about those platforms, the
-people, and the content.&lt;/p&gt;
-&lt;h2 id=&quot;blog-post-quality&quot;&gt;Blog post quality&lt;/h2&gt;
-&lt;p&gt;The quality of some blog posts on the SAP Community platform could be better. I
-know it. You know it. We all know it. The number of people like you and me who
-worry about this sort of thing is far outweighed by the larger number of folks
-that make up the entire community.&lt;/p&gt;
-&lt;p&gt;Over time various folks have attempted to help educate folks so that they
-create better content. Here are some posts from me on this topic:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2014/01/09/help-us-to-help-you-share-your-code/&quot;&gt;Help us to help you - share your
-code&lt;/a&gt; (2014)&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2019/11/25/help-us-to-help-you-good-questions-beget-good-answers/&quot;&gt;Help us to help you - good questions beget good
-answers&lt;/a&gt;
-(2019)&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2018/08/27/monday-morning-thoughts-a-good-blog-post/&quot;&gt;Monday morning thoughts: a good blog
-post&lt;/a&gt;
-(2018)&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2018/11/05/monday-morning-thoughts-on-starting-blogging/&quot;&gt;Monday morning thoughts: on starting
-blogging&lt;/a&gt;
-(2018)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;These attempts have worked, but only to a certain extent. Not only that, but we
-have AI content generation to contend with too. While used appropriately, and
-with thought, this approach can produce great results. But it can also produce
-poor content, especially when the human component in this equation is not
-entirely engaged with the purpose and process. Moreover, the ease with which poor
-content can be produced is astounding. And so the problem has got worse over time,
-and I can only see that progression accelerating.&lt;/p&gt;
-&lt;h2 id=&quot;the-sap-community-belongs-to-us&quot;&gt;The SAP Community belongs to us&lt;/h2&gt;
-&lt;p&gt;Like you, seeing blog posts that don&#39;t belong makes me sad and frustrated. So,
-what should we do in this situation?&lt;/p&gt;
-&lt;h3 id=&quot;report-important-issues-to-the-moderators&quot;&gt;Report important issues to the moderators&lt;/h3&gt;
-&lt;p&gt;Well, first, there&#39;s a decision to be
-made. Does the blog post break the important parts of the &lt;a href=&quot;https://pages.community.sap.com/resources/rules-of-engagement&quot;&gt;Rules Of
-Engagement&lt;/a&gt;?
-What are the important parts? Well, a bit of common sense will help. Does it
-defame, injure or harass? Is the content illegal? Report it to the moderators.&lt;/p&gt;
-&lt;h3 id=&quot;feel-empowered-to-call-other-issues-out-yourself&quot;&gt;Feel empowered to call other issues out yourself&lt;/h3&gt;
-&lt;p&gt;In other cases, don&#39;t report it. Use your voice publicly, by attaching a comment
-to the post, explaining briefly what you consider inappropriate, or just plain
-incorrect. Encourage your fellow SAP Community members to upvote your comment if
-they agree.&lt;/p&gt;
-&lt;p&gt;Use the power of the collective, the power of the shared heart, to highlight,
-educate, and yes, if you want to think of it in this way, to shame the author
-into adjusting or removing the post and changing their ways.&lt;/p&gt;
-&lt;p&gt;This is how society works. And the SAP Community platform is an online society.
-So feel empowered to treat it as one. Call the person out. Gently, politely,
-firmly, however you see fit. You be the judge - we&#39;re all adults here. Don&#39;t
-treat it as a kindergarten and go to the teacher whenever you dislike
-something.&lt;/p&gt;
-&lt;p&gt;Why? Because the teachers are in short supply. The moderators behind the scenes
-are working flat out on an ever increasing load of reports. Some that I would
-definitely class as important, but many, many others that I&#39;d class as trivial
-and inappropriate.&lt;/p&gt;
-&lt;h3 id=&quot;celebrate-good-posts&quot;&gt;Celebrate good posts&lt;/h3&gt;
-&lt;p&gt;Calling out bad posts like this is important. Upvoting such call-out comments is
-also important.&lt;/p&gt;
-&lt;p&gt;But as well as calling out bad posts, remember to celebrate good ones by adding
-comments of praise or encouragement. Or just upvote them. That is the least you
-can do, it only takes a second.&lt;/p&gt;
-&lt;h3 id=&quot;the-power-of-filtering-and-natural-selection&quot;&gt;The power of filtering and natural selection&lt;/h3&gt;
-&lt;p&gt;Calling out poor content by leaving a comment helps educate, even gently
-admonish, if needed. But upvoting and adding multiple positive comments helps
-even more, not only to highlight good content, but also to feed the filter
-mechanisms that can surface content that you want to see, controlled in part
-by you.&lt;/p&gt;
-&lt;h2 id=&quot;final-thoughts&quot;&gt;Final thoughts&lt;/h2&gt;
-&lt;p&gt;Thanks for reading this far. Here&#39;s a TL;DR (yes, I know it should go at the top,
-but think of it as the call to action instead).&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Stop reporting poor quality content, and similar transgressions. Call the
-authors out yourself. Everyone is a member, and everyone is a moderator. And if
-we moderate ourselves with respect, honesty and firmness, we just might turn
-this giant sea-going cargo ship towards a better quality future for the community
-platform that belongs to all of us.&lt;/em&gt;&lt;/p&gt;
-&lt;hr&gt;
-&lt;p&gt;&lt;a href=&quot;https://community.sap.com/t5/community-corner-blog-posts/improving-the-sap-community-together-one-comment-at-a-time/bc-p/14330635&quot;&gt;Also posted on the SAP Community platform&lt;/a&gt;.&lt;/p&gt;
 </content>
   </entry>
 </feed>
