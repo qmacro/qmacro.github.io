@@ -25,7 +25,7 @@ enough to get started.
 
 ## Working through an example
 
-In the rest of this post, we'll work through an example of mocking auth, based
+In this post, we'll work through an example of mocking auth, based
 on content in the
 [auth/](https://github.com/qmacro/cap-nodejs-local-first-development/tree/main/auth)
 directory of the talk repository.

@@ -13,6 +13,7 @@ tags:
 description: Here's an overview of a set of related posts on mocking, in the context of local-first development with CAP Node.js.
 ---
 
+<a name="talk"></a>
 This series post is related to a talk I'm putting together:
 
 > **Local-first development with CAP Node.js - mock all the things!**
@@ -23,14 +24,17 @@ This series post is related to a talk I'm putting together:
 > tedium and ceremony, allowing us to iterate fast on data, auth, messaging and
 > remote services while we develop. This session shows you what, and how.
 
-You can read more about this context in the section below.
+There's a repo for the themes and demos in this talk at
+<https://github.com/qmacro/cap-nodejs-local-first-development/>.
+
+You can read more about the context of this talk in the section below.
 
 ## The posts
 
 - [Mocking auth](/blog/posts/2026/05/11/local-first-dev-with-cap-node-js-mocking-auth/) (11 May)
-- Mocking remote services (coming soon) (14 May)
-- Mocking messaging (planned)
-- Mocking data (planned)
+- [Mocking remote services](/blog/posts/2026/05/13/local-first-dev-with-cap-node-js-mocking-remote-services/) (13 May)
+- Mocking data (coming soon)
+- Mocking messaging (coming soon)
 
 ## More context
 
