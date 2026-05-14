@@ -749,6 +749,292 @@ that make this easy for us to do, in the form of mocking.&lt;/p&gt;
 </content>
   </entry>
   <entry>
+    <title>Local-first dev with CAP Node.js - mocking data</title>
+    <link href="https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js-mocking-data/" />
+    <updated>2026-05-11T00:00:00Z</updated>
+    <id>https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js-mocking-data/</id>
+    <content type="html">&lt;p&gt;This post is one of &lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js/&quot;&gt;a series on local-first development with CAP
+Node.js&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&quot;initial-test-and-sample-data-terminology&quot;&gt;Initial, test and sample data - terminology&lt;/h2&gt;
+&lt;p&gt;Mocking data is likely the most common and useful of the various local-first
+development mechanisms that provide mock facilities.&lt;/p&gt;
+&lt;p&gt;Before we start digging in, it&#39;s worth spending a minute on terminology used in
+the CAP development ecosphere in general and in Capire in particular.&lt;/p&gt;
+&lt;p&gt;There are three terms widely used in the context of mocking data: &amp;quot;initial&amp;quot;, &amp;quot;test&amp;quot;
+and &amp;quot;sample&amp;quot;.&lt;/p&gt;
+&lt;h3 id=&quot;initial-data&quot;&gt;Initial data&lt;/h3&gt;
+&lt;p&gt;This is real data that is intended for use beyond development. In other words,
+it&#39;s data that will be deployed not only in development but also in production
+scenarios. Conventionally, initial data is placed in a &lt;code&gt;data/&lt;/code&gt; directory within
+the &lt;code&gt;db/&lt;/code&gt; directory.&lt;/p&gt;
+&lt;h3 id=&quot;test-data&quot;&gt;Test data&lt;/h3&gt;
+&lt;p&gt;This is data for development and testing only. It is data that is not intended
+for production. Conventionally, test data is placed in a &lt;code&gt;data/&lt;/code&gt; directory
+within a &lt;code&gt;test/&lt;/code&gt; directory in the project, and will not be deployed in
+non-development scenarios.&lt;/p&gt;
+&lt;h3 id=&quot;sample-data&quot;&gt;Sample data&lt;/h3&gt;
+&lt;p&gt;Unlike &amp;quot;initial&amp;quot; or &amp;quot;test&amp;quot;, &amp;quot;sample&amp;quot; is a looser term that is not specifically
+recognised in Capire. However, it&#39;s implicitly part of the local-first
+development approach in that it refers to data that is provided in the context
+of a sample application or service, which itself is not intended for
+production.&lt;/p&gt;
+&lt;p&gt;In other words, what we might refer to as sample data is normally found in the
+same place as initial data, i.e. typically in a &lt;code&gt;db/data/&lt;/code&gt; directory, but won&#39;t
+make it to production because the entire project will never be deployed there.&lt;/p&gt;
+&lt;p&gt;An example of sample data is the set of files in the
+&lt;a href=&quot;https://github.com/capire/bookshop/tree/main/db/data&quot;&gt;db/data/&lt;/a&gt; directory in
+the &lt;a href=&quot;https://github.com/capire/bookshop/&quot;&gt;@capire/bookshop&lt;/a&gt; sample.&lt;/p&gt;
+&lt;h2 id=&quot;understanding-the-mock-data-structure&quot;&gt;Understanding the mock data structure&lt;/h2&gt;
+&lt;p&gt;Following CAP&#39;s strong &lt;a href=&quot;https://github.com/qmacro/capref/blob/main/axioms/AXI003.md&quot;&gt;convention over
+configuration&lt;/a&gt;
+approach, which is especially useful in development mode, mock data is, by
+default:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;in CSV format&lt;/li&gt;
+&lt;li&gt;organised into files, one per entity&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;and the contents (of all types) are automatically deployed to the database in
+development mode.&lt;/p&gt;
+&lt;p&gt;The file names are normally based on the entity&#39;s scope and name. For example,
+given the &lt;code&gt;db/schema.cds&lt;/code&gt; content in the aforementioned &lt;code&gt;@capire/bookshop&lt;/code&gt;
+sample:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; { Currency, cuid, managed, sap } &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;@sap/cds/common&#39;;
+&lt;span class=&quot;token keyword&quot;&gt;namespace&lt;/span&gt; sap.capire.bookshop;
+
+&lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Books : managed {
+
+  ...
+
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;then the &lt;a href=&quot;https://github.com/capire/bookshop/blob/main/db/data/sap.capire.bookshop-Books.csv&quot;&gt;corresponding mock data file for this
+entity&lt;/a&gt;
+is:&lt;/p&gt;
+&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;db/data/sap.capire.bookshop-Books.csv&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Its location suggests that it is initial data, but the fact that it&#39;s a sample
+app suggests that we can consider it sample data here.&lt;/p&gt;
+&lt;h2 id=&quot;working-through-an-example&quot;&gt;Working through an example&lt;/h2&gt;
+&lt;p&gt;In this post, we&#39;ll work through an example of mocking data, based on content
+in the
+&lt;a href=&quot;https://github.com/qmacro/cap-nodejs-local-first-development/tree/main/data&quot;&gt;data/&lt;/a&gt;
+directory of the
+&lt;a href=&quot;https://github.com/qmacro/cap-nodejs-local-first-development/&quot;&gt;repo&lt;/a&gt; set up
+for the related talk.&lt;/p&gt;
+&lt;p&gt;This directory contains a simplified &amp;quot;Northwind&amp;quot; sample with three entities
+&lt;code&gt;Products&lt;/code&gt;, &lt;code&gt;Suppliers&lt;/code&gt; and &lt;code&gt;Categories&lt;/code&gt; in a &lt;code&gt;db/schema.cds&lt;/code&gt; file, exposed in
+a simple service in &lt;code&gt;srv/main.cds&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; northwind &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;../db/schema&#39;;
+
+&lt;span class=&quot;token annotation important&quot;&gt;@rest&lt;/span&gt;  &lt;span class=&quot;token annotation important&quot;&gt;@path:&lt;/span&gt; &#39;/northbreeze&#39;
+&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; northbreeze {
+
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Products   &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; northwind.Products;
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Suppliers  &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; northwind.Suppliers;
+  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Categories &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; northwind.Categories;
+
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;To keep things even simpler, this service has been annotated with &lt;code&gt;@rest&lt;/code&gt; for
+a simpler HTTP API surface&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js-mocking-data/#footnotes&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;starting-the-server&quot;&gt;Starting the server&lt;/h3&gt;
+&lt;p&gt;Starting a CAP server in development mode with &lt;code&gt;cds watch&lt;/code&gt;, we see:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; connect to db &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; sqlite &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;:memory:&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; successfully deployed to in&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;memory database&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This tells us that the Data Definition Language (DDL) statements for the
+tables and views have been deployed.&lt;/p&gt;
+&lt;p&gt;But by following the links via &lt;a href=&quot;http://localhost:4004&quot;&gt;http://localhost:4004&lt;/a&gt;, such as &lt;a href=&quot;http://localhost:4004/northbreeze/Products&quot;&gt;http://localhost:4004/northbreeze/Products&lt;/a&gt;, we see there is no data.&lt;/p&gt;
+&lt;h3 id=&quot;creating-initial-data-files&quot;&gt;Creating initial data files&lt;/h3&gt;
+&lt;p&gt;We can add the &amp;quot;data&amp;quot; facet to the project to generate initial data files, which will have the right names, be put in the right place, and have CSV header lines that reflect the entity structures.&lt;/p&gt;
+&lt;p&gt;Let&#39;s do that now, with:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;cds &lt;span class=&quot;token function&quot;&gt;add&lt;/span&gt; data&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This emits:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token property&quot;&gt;Adding facet:&lt;/span&gt; data
+adding headers only&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; use &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;records to create random entries
+  creating db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northwind&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Categories&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+  creating db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northwind&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Products&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+  creating db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northwind&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Suppliers&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+
+Successfully added features to your project&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Let&#39;s check the CSV headers:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;head&lt;/span&gt; db/data/*&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This should show something like this:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northwind&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Categories&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;
+CategoryID&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;CategoryName&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;Description
+
+&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northwind&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Products&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;
+ProductID&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;ProductName&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;QuantityPerUnit&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;UnitPrice&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;Category_CategoryID&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;Supplier_SupplierID&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;UnitsInStock&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;UnitsOnOrder&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;ReorderLevel&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;Discontinued
+
+&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northwind&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Suppliers&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;
+SupplierID&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;CompanyName&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;ContactName&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;ContactTitle&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;Address&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;City&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;Region&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;PostalCode&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;Country&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;Phone&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;Fax&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;HomePage&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;It&#39;s a great starting point if we want to add our own data records manually.&lt;/p&gt;
+&lt;h3 id=&quot;adding-generated-data&quot;&gt;Adding generated data&lt;/h3&gt;
+&lt;p&gt;But what if we wanted to get started with mock data even quicker? With the
+&lt;code&gt;--records&lt;/code&gt; option, we can have &amp;quot;random&amp;quot; records generated for us. Let&#39;s try
+that now, using also the &lt;code&gt;--force&lt;/code&gt; option to ensure the CSV files are created
+anew:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;cds &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token function&quot;&gt;add&lt;/span&gt; data &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--records&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--force&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;While the generated data is largely random (as the output above already
+mentioned), note that relationships are honoured, and foreign keys are
+generated appropriately for some (not all) entities so that we can immediately
+try following such relationships.&lt;/p&gt;
+&lt;p&gt;For example, we can explore the relationships with this OData style URL
+construct
+&lt;a href=&quot;http://localhost:4004/northbreeze/Suppliers?$select=CompanyName&amp;amp;$expand=Products($select=ProductName;$expand=Category)&quot;&gt;http://localhost:4004/northbreeze/Suppliers?$select=CompanyName&amp;amp;$expand=Products($select=ProductName;$expand=Category)&lt;/a&gt;
+which will produce something like this:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;CompanyName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;CompanyName-18484714&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;Products&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;Category&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+          &lt;span class=&quot;token property&quot;&gt;&quot;CategoryID&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;13848306&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          &lt;span class=&quot;token property&quot;&gt;&quot;CategoryName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;CategoryName-13848306&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          &lt;span class=&quot;token property&quot;&gt;&quot;Description&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Description-13848306&quot;&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;ProductName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;ProductName-16110827&quot;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;Category&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+          &lt;span class=&quot;token property&quot;&gt;&quot;CategoryID&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;13848306&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          &lt;span class=&quot;token property&quot;&gt;&quot;CategoryName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;CategoryName-13848306&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          &lt;span class=&quot;token property&quot;&gt;&quot;Description&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Description-13848306&quot;&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;ProductName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;ProductName-16110828&quot;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;Category&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+          &lt;span class=&quot;token property&quot;&gt;&quot;CategoryID&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;13848306&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          &lt;span class=&quot;token property&quot;&gt;&quot;CategoryName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;CategoryName-13848306&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          &lt;span class=&quot;token property&quot;&gt;&quot;Description&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Description-13848306&quot;&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;ProductName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;ProductName-16110829&quot;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;CompanyName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;CompanyName-20258347&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;Products&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;CompanyName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;CompanyName-20258348&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;Products&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;using-more-realistic-data&quot;&gt;Using more realistic data&lt;/h3&gt;
+&lt;p&gt;If you already have some data that you can transform into the appropriate CSV shape, then you can use that directly. In the &lt;a href=&quot;https://github.com/qmacro/cap-nodejs-local-first-development/tree/main/data/.csv&quot;&gt;.csv/&lt;/a&gt; directory of our example, there are CSV files for each of the entities, with some realistic data (from Northwind).&lt;/p&gt;
+&lt;p&gt;Let&#39;s copy those over into &lt;code&gt;db/data/&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;cp&lt;/span&gt; .csv/* db/data/&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This enables us to move forward with our development alongside our domain expert, with more familiar business data to work with.&lt;/p&gt;
+&lt;h3 id=&quot;using-non-csv-data&quot;&gt;Using non-CSV data&lt;/h3&gt;
+&lt;p&gt;It&#39;s not just CSV data that the mock data mechanism supports. If you have JSON in the right &amp;quot;shape&amp;quot;, you can use this too.&lt;/p&gt;
+&lt;p&gt;And it just so happens (not by accident) that the &amp;quot;shape&amp;quot; is exactly that of an OData V4 entityset, specifically the contents of the &lt;code&gt;value&lt;/code&gt; node (i.e. not including the &lt;code&gt;@odata.context&lt;/code&gt;). Here&#39;s an example from a cut down version of Northwind:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://odd.cfapps.eu10.hana.ondemand.com/northbreeze/Products&quot;&gt;https://odd.cfapps.eu10.hana.ondemand.com/northbreeze/Products&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;We can use this directly in a JSON file where we&#39;d normally find a CSV file. Let&#39;s retrieve that category data and use it&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js-mocking-data/#footnotes&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;rm&lt;/span&gt; db/data/northwind-Products.csv &lt;span class=&quot;token comment&quot;&gt;# we don&#39;t want duplicate data errors&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--silent&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;https://odd.cfapps.eu10.hana.ondemand.com/northbreeze/Products&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;|&lt;/span&gt; jq .value &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; db/data/northwind-Products.json&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;check-the-data-is-surfaced&quot;&gt;Check the data is surfaced&lt;/h3&gt;
+&lt;p&gt;Let&#39;s use the cds REPL for a change, to check that this data is also valid and surfaced. We can already tell that it is very likely OK, given the log message emitted when the CAP server restarted:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; connect to db &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; sqlite &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;:memory:&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northwind&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Suppliers&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northwind&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Products&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;json
+  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northwind&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;Categories&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; successfully deployed to in&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;memory database&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Starting the cds REPL and getting it to load and run a server for the current project with &lt;code&gt;cds repl --run .&lt;/code&gt;, we see:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+Following variables are made available in your repl&#39;s global context&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;
+
+&lt;span class=&quot;token property&quot;&gt;from cds.entities:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+  Products&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  Categories&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  Suppliers&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token property&quot;&gt;from cds.services:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+  db&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  northbreeze&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+
+Simply type e&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;g&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt; northbreeze in the prompt to use the respective objects&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can use the relatively new &lt;a href=&quot;https://cap.cloud.sap/docs/releases/2026/feb26#query-mode-in-cds-repl&quot;&gt;query
+mode&lt;/a&gt;
+with the &lt;code&gt;.ql&lt;/code&gt; command:&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ql
+cql&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now, within the &lt;code&gt;cql&amp;gt;&lt;/code&gt; prompt, we can try out a query like this:&lt;/p&gt;
+&lt;pre class=&quot;language-sql&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-sql&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;select&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;from&lt;/span&gt; Products&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;UnitsInStock &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &#92;
+{ ProductName &lt;span class=&quot;token keyword&quot;&gt;as&lt;/span&gt; name&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; Supplier&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;CompanyName &lt;span class=&quot;token keyword&quot;&gt;as&lt;/span&gt; supplier }&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;which should emit something like this:&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Chef Anton&#39;s Gumbo Mix&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;supplier&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;New Orleans Cajun Delights&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Alice Mutton&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;supplier&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Pavlova Ltd.&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Thüringer Rostbratwurst&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;supplier&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Plutzer Lebensmittelgroßmärkte AG&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Gorgonzola Telino&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;supplier&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Formaggi Fortini s.r.l.&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Perth Pasties&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;supplier&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;G&#39;day Mate&quot;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This is the equivalent of &lt;a href=&quot;http://localhost:4004/northbreeze/Products?$filter=UnitsInStock%20eq%200&amp;amp;$select=ProductName&amp;amp;$expand=Supplier($select=CompanyName)&quot;&gt;http://localhost:4004/northbreeze/Products?$filter=UnitsInStock eq 0&amp;amp;$select=ProductName&amp;amp;$expand=Supplier($select=CompanyName)&lt;/a&gt; which produces:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;ProductName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Chef Anton&#39;s Gumbo Mix&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;Supplier&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;CompanyName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;New Orleans Cajun Delights&quot;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;ProductName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Alice Mutton&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;Supplier&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;CompanyName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Pavlova Ltd.&quot;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;ProductName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Thüringer Rostbratwurst&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;Supplier&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;CompanyName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Plutzer Lebensmittelgroßmärkte AG&quot;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;ProductName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Gorgonzola Telino&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;Supplier&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;CompanyName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Formaggi Fortini s.r.l.&quot;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;ProductName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Perth Pasties&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;Supplier&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;CompanyName&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;G&#39;day Mate&quot;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
+&lt;p&gt;Getting started on that local-first tight development loop is easy with CAP,
+and made easier with the data mocking facilities. By the way, there&#39;s another
+example of using JSON in this context in the &lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/13/local-first-dev-with-cap-node-js-mocking-remote-services/&quot;&gt;mocking remote
+services&lt;/a&gt;
+post which is also in &lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js/&quot;&gt;this
+series&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Although, surprisingly, or wonderfully, depending on your perspective, OData
+system query options like &lt;code&gt;$filter&lt;/code&gt;, &lt;code&gt;$select&lt;/code&gt; and &lt;code&gt;$expand&lt;/code&gt; work perfectly
+fine too. The beauty of OData is the formalisation and standardisation,
+which is naturally and logically lacking in something (REST) that is mainly
+an architectural style.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;It&#39;s the same data as in the equivalent CSV file, but that&#39;s not important,
+what&#39;s important is the different format.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+  </entry>
+  <entry>
     <title>CDS expressions in CAP - notes on Part 6</title>
     <link href="https://qmacro.org/blog/posts/2026/05/04/cds-expressions-in-cap-notes-on-part-6/" />
     <updated>2026-05-04T00:00:00Z</updated>
@@ -4704,256 +4990,6 @@ to:&lt;/p&gt;
 &lt;li&gt;Patrice also has &lt;a href=&quot;https://github.com/patricebender/cxl-bookshop/blob/main/notes/notes-session1.md&quot;&gt;some great notes for this
 part&lt;/a&gt;.&lt;/li&gt;
 &lt;/ul&gt;
-</content>
-  </entry>
-  <entry>
-    <title>Genres, cuids and a bit of AWK</title>
-    <link href="https://qmacro.org/blog/posts/2026/03/03/genres-cuids-and-a-bit-of-awk/" />
-    <updated>2026-03-03T00:00:00Z</updated>
-    <id>https://qmacro.org/blog/posts/2026/03/03/genres-cuids-and-a-bit-of-awk/</id>
-    <content type="html">&lt;p&gt;One of my goals this year is to learn more about the
-&lt;a href=&quot;https://www.awk.dev/&quot;&gt;AWK&lt;/a&gt; programming language. I&#39;m interested in not only
-the beauty of the language itself and the Unix history that surrounded it, but
-in how AWK shaped one of my favourite languages of all time, Perl.&lt;/p&gt;
-&lt;p&gt;In some ways AWK and &lt;a href=&quot;https://cap.cloud.sap/docs/&quot;&gt;CAP&lt;/a&gt; are similar, in that
-there&#39;s beauty, power and simplicity built in. These three attributes come
-about not least because it&#39;s about the code that you &lt;em&gt;don&#39;t&lt;/em&gt; have to write; the
-language (AWK) and &lt;a href=&quot;https://qmacro.org/blog/posts/2024/11/07/five-reasons-to-use-cap/#1-the-code-is-in-the-framework-not-outside-of-it&quot;&gt;the
-framework&lt;/a&gt;
-(CAP) take care of much of the ceremony, allowing you to focus on the heart of
-the task at hand, and to write the smallest amount of code necessary to get the job
-done and minimise the maintenance burden for yourself.&lt;/p&gt;
-&lt;h2 id=&quot;challenge&quot;&gt;Challenge&lt;/h2&gt;
-&lt;p&gt;It&#39;s from the CAP context that a small challenge arose. The initial data
-supplied with the &amp;quot;bookshop&amp;quot;
-&lt;a href=&quot;https://cap.cloud.sap/docs/tools/cds-cli#sample&quot;&gt;sample&lt;/a&gt; contains Books,
-Authors and Genres. But I don&#39;t like the aesthetics of the Genre IDs; they&#39;re
-GUIDs, as defined by the &lt;code&gt;cuid&lt;/code&gt; aspect in the schema:&lt;/p&gt;
-&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; {
-  cuid,
-  sap
-} &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;@sap/cds/common&#39;;
-
-&lt;span class=&quot;token keyword&quot;&gt;namespace&lt;/span&gt; sap.capire.bookshop;
-
-&lt;span class=&quot;token block-comment comment&quot;&gt;/** Hierarchically organized Code List for Genres */&lt;/span&gt;
-&lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Genres : cuid, sap.common.CodeList {
-  parent   : &lt;span class=&quot;token association-composition keyword&quot;&gt;Association to Genres&lt;/span&gt;;
-  children : &lt;span class=&quot;token association-composition keyword&quot;&gt;Composition of many Genres&lt;/span&gt;
-               &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; children.parent = $self;
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The corresponding initial data (in &lt;code&gt;db/data/sap.capire.bookshop.Genres.csv&lt;/code&gt;)
-looks like this (many records have been omitted for brevity):&lt;/p&gt;
-&lt;pre class=&quot;language-csv&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-csv&quot;&gt;&lt;span class=&quot;token value&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;parent_ID&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;name&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;10aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Fiction&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;11aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;10aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Drama&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;12aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;10aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Poetry&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;13aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;10aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Fantasy&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;131aaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;13aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Fairy Tale&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;132aaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;13aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Epic Fantasy&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;133aaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;13aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;High Fantasy&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;134aaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;13aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Gothic&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;14aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;10aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Science Fiction&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;141aaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;14aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Utopian and Dystopian&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;1411aaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;141aaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Utopian&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;1412aaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;141aaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Dystopian&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;14121aaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;1412aaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Cyberpunk&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;141211aa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;14121aaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Steampunk&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;...&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;18aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;10aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Short Story&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;19aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;10aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Graphic Novel&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;20aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Non-Fiction&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;21aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;20aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Biography&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;22aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;21aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Autobiography&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;23aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;20aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Essay&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;24aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;20aaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Speech&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;This hurts my eyes, and I wanted to rebuild this dataset with integer IDs,
-while keeping the same hierarchy&lt;a href=&quot;https://qmacro.org/blog/posts/2026/03/03/genres-cuids-and-a-bit-of-awk/#footnotes&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;. As a bonus, I
-wanted to be able to visualise that hierarchy too.&lt;/p&gt;
-&lt;h2 id=&quot;exploration&quot;&gt;Exploration&lt;/h2&gt;
-&lt;p&gt;While I was on a similar journey to &lt;a href=&quot;https://qmacro.org/tags/jq/&quot;&gt;learn more about jq&lt;/a&gt;, I built
-an interactive jq REPL style data explorer, using tools in my personal
-development environment (i.e. my Unix shell). I described that explorer (called
-&lt;a href=&quot;https://github.com/qmacro/dotfiles/blob/main/scripts/jqte&quot;&gt;jqte&lt;/a&gt;) in the blog
-post &lt;a href=&quot;https://qmacro.org/blog/posts/2024/01/09/a-simple-jq-repl-with-tmux-bash-vim-and-entr/&quot;&gt;A simple jq REPL with tmux, bash, vim and
-entr&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;I found &lt;code&gt;jqte&lt;/code&gt; so useful that I thought a similar AWK REPL style data explorer
-would be useful too, so I created one, called
-&lt;a href=&quot;https://github.com/qmacro/dotfiles/blob/main/scripts/ate&quot;&gt;ate&lt;/a&gt; (AWK terminal
-explorer, I guess).&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2026/03/ate.png&quot; alt=&quot;Exploring and manipulating the Genres CSV data with AWK in the &#39;ate&#39;
-tool&quot;&gt;&lt;/p&gt;
-&lt;p&gt;It&#39;s great, because:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;I can see the original data (top right)&lt;/li&gt;
-&lt;li&gt;I get immediate feedback and output (left) ...&lt;/li&gt;
-&lt;li&gt;... as soon as I modify any of my AWK incantations (bottom right)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&quot;solution&quot;&gt;Solution&lt;/h2&gt;
-&lt;p&gt;Here&#39;s the AWK script I came up with, bearing in mind that I&#39;ve not written
-very much AWK at all, and probably most of what I have written has been very
-simple, in one-liners. I have written some &lt;a href=&quot;https://qmacro.org/blog/posts/2026/03/03/genres-cuids-and-a-bit-of-awk/#notes&quot;&gt;notes&lt;/a&gt; below on how the
-script works.&lt;/p&gt;
-&lt;pre class=&quot;language-awk&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-awk&quot;&gt;&lt;span class=&quot;token hashbang comment&quot;&gt;#!/usr/bin/awk -f&lt;/span&gt;
-
-&lt;span class=&quot;token comment&quot;&gt;# - Reads in a CSV file of genres&lt;/span&gt;
-&lt;span class=&quot;token comment&quot;&gt;# - Emits a version with &quot;clean(er)&quot; IDs&lt;/span&gt;
-&lt;span class=&quot;token comment&quot;&gt;# - Creates a directory tree (in /tmp/genres/) representing the hierarchy&lt;/span&gt;
-
-&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;getparent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;sid&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt; parent&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;sid&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&quot;&lt;/span&gt;
-  &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;getparent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;parent&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;sid&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;/&quot;&lt;/span&gt; name&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;parent&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;sid&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;token keyword&quot;&gt;BEGIN&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  OFS &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; FS &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;,&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
-  DIR &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;genres&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
-  &lt;span class=&quot;token function&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;rm -rf /tmp/&quot;&lt;/span&gt; DIR&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-
-NR &lt;span class=&quot;token operator&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;
-
-NR &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  sid &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; NR &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;
-  id&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token variable&quot;&gt;$1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; sid
-  name&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;sid&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token variable&quot;&gt;$3&lt;/span&gt;
-  parent&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;sid&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; id&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token variable&quot;&gt;$2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
-  &lt;span class=&quot;token keyword&quot;&gt;print&lt;/span&gt; sid&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; parent&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;sid&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token variable&quot;&gt;$3&lt;/span&gt;
-  &lt;span class=&quot;token function&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;mkdir -p &#39;/tmp/&quot;&lt;/span&gt; DIR &lt;span class=&quot;token function&quot;&gt;getparent&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;sid&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;/&quot;&lt;/span&gt; &lt;span class=&quot;token variable&quot;&gt;$3&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&#39;&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;This script turns the above CSV records into ones that have (to me) much more
-pleasant identifiers:&lt;/p&gt;
-&lt;pre class=&quot;language-csv&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-csv&quot;&gt;&lt;span class=&quot;token value&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;parent_ID&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;name&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Fiction&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Drama&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Poetry&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Fantasy&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Fairy Tale&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Epic Fantasy&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;7&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;High Fantasy&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Gothic&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Science Fiction&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;9&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Utopian and Dystopian&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;11&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Utopian&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Dystopian&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;13&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;12&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Cyberpunk&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;14&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;13&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Steampunk&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;...&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;36&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Short Story&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;37&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Graphic Novel&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;38&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Non-Fiction&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;39&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;38&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Biography&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;40&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;39&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Autobiography&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;41&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;38&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Essay&lt;/span&gt;
-&lt;span class=&quot;token value&quot;&gt;42&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;38&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token value&quot;&gt;Speech&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;You may have noticed the &lt;code&gt;system( ... )&lt;/code&gt; call in the script. This is related to
-the visualisation part of the challenge.&lt;/p&gt;
-&lt;p&gt;To address this part, I had decided not to reinvent any wheels and use the
-venerable &lt;a href=&quot;https://en.wikipedia.org/wiki/Tree_(command)&quot;&gt;tree&lt;/a&gt; facility
-available almost everywhere, which is designed to show files and directories in
-a hierarchical view. So all I needed was to create a hierarchy of directories,
-where each directory was a genre, with optional parent and children, and then
-display it with &lt;code&gt;tree&lt;/code&gt;. The result looks like this:&lt;/p&gt;
-&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;/tmp/genres/
-├── Fiction
-│   ├── Adventure
-│   ├── Drama
-│   ├── Fantasy
-│   │   ├── Epic Fantasy
-│   │   ├── Fairy Tale
-│   │   ├── Gothic
-│   │   └── High Fantasy
-│   ├── Graphic Novel
-│   ├── Mystery
-│   │   ├── Cozy Mystery
-│   │   ├── Crime
-│   │   │   ├── Detective
-│   │   │   ├── Suspense
-│   │   │   └── Thriller
-│   │   │       ├── Legal Thriller
-│   │   │       ├── Medical Thriller
-│   │   │       ├── Police Procedural
-│   │   │       └── Spy Thriller
-│   │   └── Noir
-│   │       ├── Nordic Noir
-│   │       └── Tart Noir
-│   ├── Poetry
-│   ├── Romance
-│   │   ├── Contemporary Romance
-│   │   ├── Historical Romance
-│   │   └── Romantic Suspense
-│   ├── Science Fiction
-│   │   ├── Space Opera
-│   │   ├── Tech Noir
-│   │   ├── Time Travel
-│   │   └── Utopian and Dystopian
-│   │       ├── Dystopian
-│   │       │   └── Cyberpunk
-│   │       │       └── Steampunk
-│   │       └── Utopian
-│   └── Short Story
-└── Non-Fiction
-    ├── Biography
-    │   └── Autobiography
-    ├── Essay
-    └── Speech&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&quot;notes&quot;&gt;Notes&lt;/h2&gt;
-&lt;p&gt;Here are some notes on the content of the script, the small size of which is a
-testament to the power, beauty and simplicity of AWK and the Unix toolset,
-rather than any skill of mine.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Records, which contain fields, are processed one by one in AWK.&lt;/li&gt;
-&lt;li&gt;There&#39;s a &lt;code&gt;PATTERN - ACTION&lt;/code&gt; pair approach to thinking about what you want to
-happen for each record.&lt;/li&gt;
-&lt;li&gt;In each pair&#39;s case, the pattern come first, then the corresponding action is
-defined in a &lt;code&gt;{ ... }&lt;/code&gt; block.&lt;/li&gt;
-&lt;li&gt;If the pattern matches, then the action is carried out.&lt;/li&gt;
-&lt;li&gt;There are special patterns, one of which, &lt;code&gt;BEGIN&lt;/code&gt;, I use here to set a few
-things up.&lt;/li&gt;
-&lt;li&gt;There are many built-in variables; in the &lt;code&gt;BEGIN&lt;/code&gt; section I&#39;m setting the
-(input) field separator &lt;code&gt;FS&lt;/code&gt; and the output field separator &lt;code&gt;OFS&lt;/code&gt;; also used
-in this script is &lt;code&gt;NR&lt;/code&gt; which is the number of the record being currently
-processed.&lt;/li&gt;
-&lt;li&gt;As well as these built-in &amp;quot;system&amp;quot; variables, the variables &lt;code&gt;$1&lt;/code&gt;, &lt;code&gt;$2&lt;/code&gt;, &lt;code&gt;$3&lt;/code&gt;
-and so on refer to the individual fields in a record (and &lt;code&gt;$0&lt;/code&gt; refers to the
-entire record)&lt;/li&gt;
-&lt;li&gt;AWK can make system calls, as you can also see here where I remove any
-previously created directory hierarchy in &lt;code&gt;/tmp/genres/&lt;/code&gt; at the start.&lt;/li&gt;
-&lt;li&gt;The default action is to print the entire record, which I use for the first
-record (pattern &lt;code&gt;NR == 1&lt;/code&gt;) to pass through the CSV header line to the output
-untouched&lt;/li&gt;
-&lt;li&gt;Processing is done for each of the actual CSV records (where the pattern &lt;code&gt;NR &amp;gt; 1&lt;/code&gt; holds
-true, basically), where I derive a simple (integer) ID in &lt;code&gt;sid&lt;/code&gt;
-and then create lookups (using AWK&#39;s array structure which is associative)
-for the IDs, genre names, and genre parents (where appropriate).&lt;/li&gt;
-&lt;li&gt;Variables (including arrays) benefit from
-&lt;a href=&quot;https://en.wikipedia.org/wiki/Autovivification&quot;&gt;autovivification&lt;/a&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2026/03/03/genres-cuids-and-a-bit-of-awk/#footnotes&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;, which
-means I don&#39;t need to worry about declaring or initialising anything.&lt;/li&gt;
-&lt;li&gt;The &lt;code&gt;print&lt;/code&gt; statement is where I output the CSV records each with their (and
-their parent&#39;s) simpler IDs.&lt;/li&gt;
-&lt;li&gt;I also invoke a &lt;code&gt;mkdir&lt;/code&gt; command to create a directory within &lt;code&gt;/tmp/genres/&lt;/code&gt;
-to represent the current genre.&lt;/li&gt;
-&lt;li&gt;The core of this relies on the &lt;code&gt;getparent&lt;/code&gt; function defined at the top, which
-recursively backtracks to derive the complete parent path.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
-&lt;p&gt;I am still fascinated by the simplicity of command line tools, flat file data
-processing and little languages like AWK, whose size belies its power and
-utility.&lt;/p&gt;
-&lt;p&gt;If you want to learn a little more about AWK, I would definitely recommend the
-paper &lt;a href=&quot;https://www.awk.dev/awk.spe.pdf&quot;&gt;Awk - A Pattern Scanning and Processing
-Language&lt;/a&gt;, concise and compact, just like AWK.&lt;/p&gt;
-&lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;Yes I know there&#39;s also a corresponding &lt;code&gt;.texts.csv&lt;/code&gt; file that I should also
-convert, but I would rather just delete this file, as it&#39;s just initial data
-for testing in all cases, anyway. I may also want to change the type of the
-&lt;code&gt;Genres:ID&lt;/code&gt; element to &lt;code&gt;Integer&lt;/code&gt; itself. But basically, this excursion was more
-about AWK than genre data.&lt;/li&gt;
-&lt;li&gt;It&#39;s fascinating that the linked Wikipedia page entry on autovivification
-specifically refers to Perl which as I&#39;ve mentioned was heavily influenced
-by AWK as well as other contemporary languages and tools.&lt;/li&gt;
-&lt;/ol&gt;
 </content>
   </entry>
 </feed>
