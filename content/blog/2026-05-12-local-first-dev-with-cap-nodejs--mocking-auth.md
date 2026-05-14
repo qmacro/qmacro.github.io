@@ -1,6 +1,6 @@
 ---
 title: Local-first dev with CAP Node.js - mocking auth
-date: 2026-05-11
+date: 2026-05-12
 tags:
   - cap
   - auth

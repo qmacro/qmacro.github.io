@@ -31,9 +31,9 @@ You can read more about the context of this talk in the section below.
 
 ## The posts
 
-- [Mocking auth](/blog/posts/2026/05/11/local-first-dev-with-cap-node-js-mocking-auth/) (11 May)
+- [Mocking data](/blog/posts/2026/05/11/local-first-dev-with-cap-node-js-mocking-data/) (11 May)
+- [Mocking auth](/blog/posts/2026/05/12/local-first-dev-with-cap-node-js-mocking-auth/) (12 May)
 - [Mocking remote services](/blog/posts/2026/05/13/local-first-dev-with-cap-node-js-mocking-remote-services/) (13 May)
-- Mocking data (coming soon)
 - Mocking messaging (coming soon)
 
 ## More context
