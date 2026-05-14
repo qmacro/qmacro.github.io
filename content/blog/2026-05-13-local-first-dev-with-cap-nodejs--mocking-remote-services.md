@@ -6,7 +6,7 @@ tags:
   - remoteservices
   - mocking
   - local
-description: In this post I provider a taster of what's possible regarding mocking remote services in CAP Node.js local-first development.
+description: In this post I provider a taster of what's possible regarding mock remote services in CAP Node.js local-first development.
 ---
 
 This post is one of [a series on local-first development with CAP
