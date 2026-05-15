@@ -6,6 +6,7 @@ tags:
   - cap
   - tasc
   - gems
+  - aspects
 ---
 The phrase "separation of concerns" is one that I hear relatively often, but have never until now stopped to think properly about what it is, what it means. It's a concept discrete and important enough to have [its own Wikipedia page][1], but ultimately simple enough to understand in an instant. It's all about modularity, separating code (be that imperative code in a regular language, or declarative code such as we find in our CDS models) into distinct sections, each of which addresses a separate "concern", i.e. serves a separate purpose.
 
@@ -39,7 +40,7 @@ entity Books : managed {
 }
 ```
 
-The use of the `managed` aspect to bring basic change tracking, in the form of [managed data][7], to an entity. Blink and you've missed it. And that's the point. 
+The use of the `managed` aspect to bring basic change tracking, in the form of [managed data][7], to an entity. Blink and you've missed it. And that's the point.
 
 Instead of "polluting" the definition of the `Books` entity with annotations and elements for basic change tracking, like this:
 

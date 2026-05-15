@@ -401,7 +401,7 @@ output before the script ends. Nice!
 In case you're wondering about the `-r` option to the `read` builtin,
 it's to stop any backslashes in the input being interpreted
 inappropriately. I wrote about this in a recent post on my
-[Autodidactics blog](/tags/blog/posts/) - see [The read
+autodidactics blog (now a [tag-based collection](/tags/autodidactics)) - see [The read
 command](/blog/posts/2021/11/07/exploring-fff-part-2-get_ls_colors/#readcommand)
 section of [Exploring fff part 2 -
 get_ls_colors](/blog/posts/2021/11/07/exploring-fff-part-2-get_ls_colors/).

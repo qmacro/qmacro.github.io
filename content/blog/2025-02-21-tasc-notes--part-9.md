@@ -6,6 +6,7 @@ tags:
   - tasc
   - cap
   - cds
+  - forward-declared-joins
   - handsonsapdev
 ---
 For all resources related to this series, see the post [The Art and Science of CAP][2].
@@ -38,13 +39,13 @@ While Mr Big might have said "[names is for tombstones baby][6]" (a phrase which
 
 We've thought about this already in terms of one of the two main ways that CQL extends SQL, i.e. as a _path expression_. Another term to use which Daniel introduces us to now is a "flattening" which makes a lot of sense, in that we can think of and treat the items in this projection (alternatively the _attributes_ in this _tuple_ shape construction) as flat, as along the same(attribute/tuple) plane. This is of course despite whatever SQL is required to actually realise this query expression - in particular a JOIN (the `.` in the name gives us a clue to this respect).
 
-Talking of JOINs, we must note that, being a path expression, `author.name` benefits from the concept of a "forward declared join" (`author` represents the association). There's a brief mention of this concept in Capire for [associations in CDL][7]:
+Talking of JOINs, we must note that, being a path expression, `author.name` benefits from the concept of a "forward-declared join" (`author` represents the association). There's a brief mention of this concept in Capire for [associations in CDL][7]:
 
 > "Associations capture relationships between entities. They are like forward-declared joins added to a table definition in SQL."
 
 There's also a longer explanation in the dropdown box within the [Associations][49] section of the Best Practices topic in Capire.
 
-Like the concept of a "relvar", this is something I initially struggled to grok. But having previously asked around internally and got some great help from lovely colleagues (thanks Patrice, Sebastian and Adrian)[<sup>1</sup>](#footnotes), I think of forward declared joins as a sort of more abstract "preamble" description of a relationship, that might likely be realised by a JOIN at the SQL level. Think of it as an expression of join opportunities with additional info on relationship qualification, i.e. ON conditions, which here are pulled from the managed associations used in the CDS model.
+Like the concept of a "relvar", this is something I initially struggled to grok. But having previously asked around internally and got some great help from lovely colleagues (thanks Patrice, Sebastian and Adrian)[<sup>1</sup>](#footnotes), I think of forward-declared joins as a sort of more abstract "preamble" description of a relationship, that might likely be realised by a JOIN at the SQL level. Think of it as an expression of join opportunities with additional info on relationship qualification, i.e. ON conditions, which here are pulled from the managed associations used in the CDS model.
 
 So here `author.name` becomes a JOIN and we are implicitly using the name `author` as a table alias, referring to the `Authors` table that has been joined; Daniel then switches to compile-to-SQL mode and "emits":
 
@@ -71,9 +72,9 @@ The association from `Books` to `Authors` is a to-one association, and the bi-di
 await cds.ql `SELECT ID, name, books.title as book from Authors`
 ```
 
-At this point (around [31:10][13]) Daniel explains that the path expressions we've seen, simply expressed based on associations as forward declared joins, played an important role in weaning folks off [Object Relational Mapping][11], getting them to embrace query languages (SQL / CQL), by making it easy to express relationships like this ... without having to wrangle JOINs directly[<sup>2</sup>](#footnotes).
+At this point (around [31:10][13]) Daniel explains that the path expressions we've seen, simply expressed based on associations as forward-declared joins, played an important role in weaning folks off [Object Relational Mapping][11], getting them to embrace query languages (SQL / CQL), by making it easy to express relationships like this ... without having to wrangle JOINs directly[<sup>2</sup>](#footnotes).
 
-This new query which also has a path expression, this time based on the to-many association (forward declared join) going from `Authors` to `Books`, produces:
+This new query which also has a path expression, this time based on the to-many association (forward-declared join) going from `Authors` to `Books`, produces:
 
 ```json
 [
@@ -1063,7 +1064,7 @@ would work nicely too (noting here that [we redefined the value for `Authors` ea
 <a name="footnotes"></a>
 ## Footnotes
 
-1. You might also be interested to know that forward declared joins are a core part of [patent US10599650B2 "Enhancements for forward joins expressing relationships"][9], on which Daniel is named as a co-inventor.
+1. You might also be interested to know that forward-declared joins are a core part of [patent US10599650B2 "Enhancements for forward joins expressing relationships"][9], on which Daniel is named as a co-inventor.
 
 2. The thought of moving away from query languages towards ORMs and the complexities that come with them "merely" because of the struggle with JOIN syntax reminds me of the classic [Jamie Zawinski][12] quote: _Some people, when confronted with a problem, think "I know, I'll use regular expressions". Now they have two problems_.
 

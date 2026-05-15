@@ -5,6 +5,7 @@ tags:
   - autodidactics
   - fff
   - shell
+  - shellcheck
 ---
 Continuing to read and learn from the source code to fff - this time, the getls_colors function.
 <!--excerpt-->

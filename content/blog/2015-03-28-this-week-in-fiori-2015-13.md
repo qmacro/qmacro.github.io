@@ -9,8 +9,8 @@ tags:
 - rest
 - soap
 - twif
+- pedantry
 ---
-
 
 Well, another week has gone by, which means it must be time for This Week in Fiori! The Fiori juggernaut continues to rumble on, and this week was no exception. Let’s get to it!
 

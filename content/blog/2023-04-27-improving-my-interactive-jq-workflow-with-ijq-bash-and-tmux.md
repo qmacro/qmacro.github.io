@@ -7,6 +7,7 @@ tags:
   - bash
   - tmux
   - shell
+  - shellcheck
 ---
 I'm a big fan of ijq and how it allows me to explore JSON data interactively with jq expressions. With a small script I have improved my workflow by being able to capture the jq expression from ijq and use it easily on the command line.
 

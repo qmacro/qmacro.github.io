@@ -334,4 +334,4 @@ and also notes that the value of the `ref` is interpreted depending on the
 ## Further info
 
 - Patrice also has [some great notes for this
-  part](https://github.com/patricebender/cxl-bookshop/blob/main/notes/notes-session1.md)
+  part](https://github.com/patricebender/cxl-bookshop/blob/main/notes/notes-session1.md).

@@ -360,7 +360,7 @@ SQL[<sup>1</sup>](#footnotes) and the injectable values:
 ```javascript
 > q.toSQL()
 {
-  sql: `SELECT json_insert('{}','$."title"',title,'$."author_name"',author_name) as _json_ FROM (SELECT "$B".title,author.name as author_name FROM sap_capire_bookshop_Books as "$B" left JOIN sap_capire_bookshop_Authors as author ON author.ID = "$B".author_ID WHERE (case when author.dateOfDeath is null then ? else ? end) = ?)`,
+  sql: `SELECT json_insert('{}','$."title"',title,'$."author_name"',author_name) as _json_ FROM (SELECT Books.title,author.name as author_name FROM sap_capire_bookshop_Books as Books left JOIN sap_capire_bookshop_Authors as author ON author.ID = Books.author_ID WHERE (case when author.dateOfDeath is null then ? else ? end) = ?)`,
   values: [ 1, 0, 0 ]
 }
 ```
@@ -407,17 +407,17 @@ cds.ql {
     from: {
       join: 'left',
       args: [
-        { ref: [ 'sap.capire.bookshop.Books' ], as: '$B' },
+        { ref: [ 'sap.capire.bookshop.Books' ], as: 'Books' },
         { ref: [ 'sap.capire.bookshop.Authors' ], as: 'author' }
       ],
       on: [
         { ref: [ 'author', 'ID' ] },
         '=',
-        { ref: [ '$B', 'author_ID' ] }
+        { ref: [ 'Books', 'author_ID' ] }
       ]
     },
     columns: [
-      { ref: [ '$B', 'title' ] },
+      { ref: [ 'Books', 'title' ] },
       { ref: [ 'author', 'name' ], as: 'author_name' }
     ],
     where: [
@@ -516,16 +516,16 @@ Next, step 2, taking a look at the intermediate "normalised" version of the quer
 > q.forSQL()
 cds.ql {
   SELECT: {
-    from: { ref: [ 'sap.capire.bookshop.Authors' ], as: '$A' },
+    from: { ref: [ 'sap.capire.bookshop.Authors' ], as: 'Authors' },
     columns: [
-      { ref: [ '$A', 'name' ] },
+      { ref: [ 'Authors', 'name' ] },
       {
         args: [
-          { ref: [ '$A', 'dateOfBirth' ] },
+          { ref: [ 'Authors', 'dateOfBirth' ] },
           {
             func: 'coalesce',
             args: [
-              { ref: [ '$A', 'dateOfDeath' ] },
+              { ref: [ 'Authors', 'dateOfDeath' ] },
               { func: 'current_date' }
             ]
           }
@@ -611,44 +611,44 @@ SELECT
 FROM
   (
     SELECT
-      "$A".name,
+      "Authors".name,
       floor(
         (
           (
             (
               cast(
-                strftime ('%Y', coalesce("$A".dateOfDeath, current_date)) as Integer
-              ) - cast(strftime ('%Y', "$A".dateOfBirth) as Integer)
+                strftime ('%Y', coalesce("Authors".dateOfDeath, current_date)) as Integer
+              ) - cast(strftime ('%Y', "Authors".dateOfBirth) as Integer)
             ) * 12
           ) + (
             cast(
-              strftime ('%m', coalesce("$A".dateOfDeath, current_date)) as Integer
-            ) - cast(strftime ('%m', "$A".dateOfBirth) as Integer)
+              strftime ('%m', coalesce("Authors".dateOfDeath, current_date)) as Integer
+            ) - cast(strftime ('%m', "Authors".dateOfBirth) as Integer)
           ) + (
             (
               case
                 when (
                   cast(
-                    strftime ('%Y%m', coalesce("$A".dateOfDeath, current_date)) as Integer
-                  ) < cast(strftime ('%Y%m', "$A".dateOfBirth) as Integer)
+                    strftime ('%Y%m', coalesce("Authors".dateOfDeath, current_date)) as Integer
+                  ) < cast(strftime ('%Y%m', "Authors".dateOfBirth) as Integer)
                 ) then (
                   cast(
                     strftime (
                       '%d%H%M%S%f0000',
-                      coalesce("$A".dateOfDeath, current_date)
+                      coalesce("Authors".dateOfDeath, current_date)
                     ) as Integer
                   ) > cast(
-                    strftime ('%d%H%M%S%f0000', "$A".dateOfBirth) as Integer
+                    strftime ('%d%H%M%S%f0000', "Authors".dateOfBirth) as Integer
                   )
                 )
                 else (
                   cast(
                     strftime (
                       '%d%H%M%S%f0000',
-                      coalesce("$A".dateOfDeath, current_date)
+                      coalesce("Authors".dateOfDeath, current_date)
                     ) as Integer
                   ) < cast(
-                    strftime ('%d%H%M%S%f0000', "$A".dateOfBirth) as Integer
+                    strftime ('%d%H%M%S%f0000', "Authors".dateOfBirth) as Integer
                   )
                 ) * -1
               end
@@ -657,7 +657,7 @@ FROM
         ) / 12
       ) as age
     FROM
-      sap_capire_bookshop_Authors as "$A"
+      sap_capire_bookshop_Authors as "Authors"
   )
 ```
 
@@ -812,7 +812,8 @@ Phew!
 
 ## Further info
 
-- [Constraints, expressions and axioms in action](/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/)
+- [Constraints, expressions and axioms in
+  action](/blog/posts/2026/01/27/constraints-expressions-and-axioms-in-action/)
 - [Shift left with CAP](/blog/posts/2026/02/09/shift-left-with-cap/)
 
 ## Footnotes

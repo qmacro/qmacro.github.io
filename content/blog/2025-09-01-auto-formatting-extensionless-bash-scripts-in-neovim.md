@@ -8,6 +8,7 @@ tags:
   - neovim
   - lsp
   - shfmt
+  - shellcheck
 ---
 ## TL;DR
 

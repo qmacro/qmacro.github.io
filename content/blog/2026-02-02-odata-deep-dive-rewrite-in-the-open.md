@@ -79,22 +79,27 @@ Thanks!
 
 Here are links to the content for the OData Deep Dive tutorials so far.
 
-👉 Follow the hyperlinks in the "Link" columns to get to the tutorial content draft to read through.
+👉 Follow the hyperlinks in the **Link** columns to get to the tutorial content
+draft to read through.
+
+👉 Follow the "Published" hyperlinks in the **Status** columns to get to and
+work through the live tutorial in the SAP Tutorial Navigator.
 
 👉 Provide your comments, questions, proposals and thoughts using the specific
-feedback links in the "Action" column - these specific links will indicate the
+feedback links in the **Action** column - these specific links will indicate the
 particular tutorial in the title of the issue that is created.
 
-👉 Try out the tutorials that have already been published in the new [OData
-Deep Dive](https://developers.sap.com/mission.odata-deep-dive.html) mission.
+You can also jump directly to the new [OData Deep
+Dive](https://developers.sap.com/mission.odata-deep-dive.html) mission, to work
+through the tutorials that have been published so far.
 
 Nr|Link|Title|Status|Action
 -|-|-|-|-
-1|[Origins](https://github.com/qmacro/odata-dd-tutorials/blob/main/tutorials/odata-dd-1-origins/odata-dd-1-origins.md)|Learn about OData's origins|Published|[Feedback](https://github.com/qmacro/odata-dd-tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%201%20on%20%22Origins%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Origins%22%20tutorial.%20Thanks!)
-2|[Standards](https://github.com/qmacro/odata-dd-tutorials/blob/main/tutorials/odata-dd-2-standards/odata-dd-2-standards.md)|Get to know the OData standards resources on the Web|Published|[Feedback](https://github.com/qmacro/odata-dd-tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%202%20on%20%22Standards%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Standards%22%20tutorial.%20Thanks!)
-3|[Northbreeze](https://github.com/qmacro/odata-dd-tutorials/blob/main/tutorials/odata-dd-3-northbreeze/odata-dd-3-northbreeze.md)|Set up your own OData service|Published|[Feedback](https://github.com/qmacro/odata-dd-tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%203%20on%20%22Northbreeze%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Northbreeze%22%20tutorial.%20Thanks!)
-4|[Metadata](https://github.com/qmacro/odata-dd-tutorials/blob/main/tutorials/odata-dd-4-metadata/odata-dd-4-metadata.md)|Learn how to read OData metadata documents|Published|[Feedback](https://github.com/qmacro/odata-dd-tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%203%20on%20%22Metadata%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Metadata%22%20tutorial.%20Thanks!)
-5|[Vocabularies](https://github.com/qmacro/odata-dd-tutorials/blob/main/tutorials/odata-dd-5-vocabularies/odata-dd-5-vocabularies.md)|Understand how vocabularies are used in OData metadata documents|Published|[Feedback](https://github.com/qmacro/odata-dd-tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%205%20on%20%22Vocabularies%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Vocabularies%22%20tutorial.%20Thanks!)
-6|[Annotations](https://github.com/qmacro/odata-dd-tutorials/blob/main/tutorials/odata-dd-6-annotations/odata-dd-6-annotations.md)|Learn how to read annotations in OData metadata documents|Published|[Feedback](https://github.com/qmacro/odata-dd-tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%206%20on%20%22Annotations%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Annotations%22%20tutorial.%20Thanks!)
+1|[Origins](https://github.com/qmacro/odata-dd-tutorials/blob/main/tutorials/odata-dd-1-origins/odata-dd-1-origins.md)|Learn about OData's origins|[Published](https://developers.sap.com/tutorials/odata-dd-1-origins.html)|[Feedback](https://github.com/qmacro/odata-dd-tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%201%20on%20%22Origins%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Origins%22%20tutorial.%20Thanks!)
+2|[Standards](https://github.com/qmacro/odata-dd-tutorials/blob/main/tutorials/odata-dd-2-standards/odata-dd-2-standards.md)|Get to know the OData standards resources on the Web|[Published](https://developers.sap.com/tutorials/odata-dd-2-standards.html)|[Feedback](https://github.com/qmacro/odata-dd-tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%202%20on%20%22Standards%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Standards%22%20tutorial.%20Thanks!)
+3|[Northbreeze](https://github.com/qmacro/odata-dd-tutorials/blob/main/tutorials/odata-dd-3-northbreeze/odata-dd-3-northbreeze.md)|Set up your own OData service|[Published](https://developers.sap.com/tutorials/odata-dd-3-northbreeze.html)|[Feedback](https://github.com/qmacro/odata-dd-tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%203%20on%20%22Northbreeze%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Northbreeze%22%20tutorial.%20Thanks!)
+4|[Metadata](https://github.com/qmacro/odata-dd-tutorials/blob/main/tutorials/odata-dd-4-metadata/odata-dd-4-metadata.md)|Learn how to read OData metadata documents|[Published](https://developers.sap.com/tutorials/odata-dd-4-metadata.html)|[Feedback](https://github.com/qmacro/odata-dd-tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%203%20on%20%22Metadata%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Metadata%22%20tutorial.%20Thanks!)
+5|[Vocabularies](https://github.com/qmacro/odata-dd-tutorials/blob/main/tutorials/odata-dd-5-vocabularies/odata-dd-5-vocabularies.md)|Understand how vocabularies are used in OData metadata documents|[Published](https://developers.sap.com/tutorials/odata-dd-5-vocabularies.html)|[Feedback](https://github.com/qmacro/odata-dd-tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%205%20on%20%22Vocabularies%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Vocabularies%22%20tutorial.%20Thanks!)
+6|[Annotations](https://github.com/qmacro/odata-dd-tutorials/blob/main/tutorials/odata-dd-6-annotations/odata-dd-6-annotations.md)|Learn how to read annotations in OData metadata documents|[Published](https://developers.sap.com/tutorials/odata-dd-6-annotations.html)|[Feedback](https://github.com/qmacro/odata-dd-tutorials/issues/new?title=Early%20feedback%20on%20the%20new%20OData%20series,%20specifically%20Tutorial%206%20on%20%22Annotations%22&body=Let%20us%20know%20your%20thoughts%20on%20the%20%22Annotations%22%20tutorial.%20Thanks!)
 7|Queries|Take a look at entitysets and how OData query operations work|Planned|N/A
 
