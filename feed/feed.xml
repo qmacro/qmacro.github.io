@@ -5,11 +5,285 @@
   <subtitle>Reserving the right to be wrong</subtitle>
   <link href="https://qmacro.org/feed/feed.xml" rel="self" />
   <link href="https://qmacro.org/blog/" />
-  <updated>2026-05-13T00:00:00Z</updated>
+  <updated>2026-05-15T00:00:00Z</updated>
   <id>https://qmacro.org/blog/</id>
   <author>
     <name>DJ Adams</name>
   </author>
+  <entry>
+    <title>Local-first dev with CAP Node.js - mocking messaging</title>
+    <link href="https://qmacro.org/blog/posts/2026/05/15/local-first-dev-with-cap-node-js-mocking-messaging/" />
+    <updated>2026-05-15T00:00:00Z</updated>
+    <id>https://qmacro.org/blog/posts/2026/05/15/local-first-dev-with-cap-node-js-mocking-messaging/</id>
+    <content type="html">&lt;p&gt;This post is one of &lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js/&quot;&gt;a series on local-first development with CAP
+Node.js&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&quot;everything-is-an-event&quot;&gt;Everything is an event&lt;/h2&gt;
+&lt;p&gt;In &lt;a href=&quot;https://qmacro.org/blog/posts/2024/11/07/five-reasons-to-use-cap/&quot;&gt;Five reasons to use CAP&lt;/a&gt;,
+we see that &lt;a href=&quot;https://qmacro.org/blog/posts/2024/11/07/five-reasons-to-use-cap/#:~:text=%22Everything%20is%20an%20event%22&quot;&gt;everything is an
+event&lt;/a&gt;.
+Whether synchronous, such as via HTTP requests and responses for OData
+operations, or asynchronous, where messages are emitted and received for
+decoupled service-to-service communications.&lt;/p&gt;
+&lt;p&gt;The &lt;a href=&quot;https://cap.cloud.sap/docs/node.js/messaging&quot;&gt;Messaging&lt;/a&gt; topic in Capire
+has a great overview and an explanation of all the different message brokers
+that can be used. And there&#39;s one that is well suited for local-first
+development: &lt;a href=&quot;https://cap.cloud.sap/docs/node.js/messaging#file-based&quot;&gt;File
+based&lt;/a&gt; messaging.&lt;/p&gt;
+&lt;h2 id=&quot;working-through-an-example&quot;&gt;Working through an example&lt;/h2&gt;
+&lt;p&gt;In this post, we&#39;ll work through an example of mocking messaging using the
+file-based facility, with content in the
+&lt;a href=&quot;https://github.com/qmacro/cap-nodejs-local-first-development/tree/main/messaging&quot;&gt;messaging/&lt;/a&gt;
+directory of the repo set up for the related
+&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js/#talk&quot;&gt;talk&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The setup is a little different to the other mock examples in this series.
+First, there are two CAP services that will be in play. Second, neither of them
+have any entity definitions; in fact, only one has a CDS model at all, and that
+only has a service definition with an action and an event defined within it.&lt;/p&gt;
+&lt;h3 id=&quot;the-containing-project-definition&quot;&gt;The containing project definition&lt;/h3&gt;
+&lt;p&gt;Usually in an asynchronous event scenario there is an emitter and a receiver,
+and that&#39;s what we have here. They&#39;re both found within the &lt;code&gt;messaging/&lt;/code&gt;
+directory, which is the containing project for this example, and has been set
+up to use the Node.js
+&lt;a href=&quot;https://docs.npmjs.com/cli/v11/using-npm/workspaces&quot;&gt;workspaces&lt;/a&gt; concept, with
+this as the definition in &lt;code&gt;package.json&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;@qmacro/messaging&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;workspaces&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;token string&quot;&gt;&quot;*&quot;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;examining-the-emitter&quot;&gt;Examining the emitter&lt;/h3&gt;
+&lt;p&gt;Within the &lt;code&gt;emitter/&lt;/code&gt; subdirectory we have a CAP project which has been put
+together in the form of a package (like a
+&lt;a href=&quot;https://qmacro.org/blog/posts/2024/12/30/cap-node-js-plugins/&quot;&gt;plugin&lt;/a&gt; would be). The name
+declared in &lt;code&gt;emitter/package.json&lt;/code&gt; is &lt;code&gt;@qmacro/emitter&lt;/code&gt; and as well as the content in
+&lt;code&gt;srv/&lt;/code&gt; there&#39;s also a project root level &lt;code&gt;emitter/index.js&lt;/code&gt; which acts as the package
+entry point and contains:&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;using &lt;span class=&quot;token keyword&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;./srv/main&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&quot;the-emitter-service-definition&quot;&gt;The emitter service definition&lt;/h4&gt;
+&lt;p&gt;This emitter is where the service definition is found, which looks like this,
+in &lt;code&gt;emitter/srv/main.cds&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;namespace&lt;/span&gt; org.qmacro.emitter;
+
+&lt;span class=&quot;token annotation important&quot;&gt;@rest&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; EmitterService {
+  &lt;span class=&quot;token keyword&quot;&gt;action&lt;/span&gt; greet(greeting: &lt;span class=&quot;token type builtin&quot;&gt;String&lt;/span&gt;) &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;returns&lt;/span&gt; &lt;span class=&quot;token type builtin&quot;&gt;String&lt;/span&gt;;
+
+  &lt;span class=&quot;token keyword&quot;&gt;event&lt;/span&gt; Greeting.Received {
+    info : &lt;span class=&quot;token type builtin&quot;&gt;String&lt;/span&gt;;
+  }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The service defines:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;an action endpoint &lt;code&gt;greet&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;an event &lt;code&gt;Greeting.Received&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Note that while the term &amp;quot;action&amp;quot; has loaded meaning in the context of OData,
+it also serves to define a POST based &amp;quot;RPC&amp;quot; style target that is valid even
+in the context of the &amp;quot;REST&amp;quot; protocol, as declared here. The design of the
+event and also the signature of the action endpoint is deliberately as simple
+as possible for this example.&lt;/p&gt;
+&lt;p&gt;As we&#39;ll see shortly, to have an event be emitted in this example scenario, we
+need to make an HTTP POST request to the &lt;code&gt;/greet&lt;/code&gt; endpoint, with a payload body
+containing the greeting data.&lt;/p&gt;
+&lt;h4 id=&quot;the-emitter-service-implementation&quot;&gt;The emitter service implementation&lt;/h4&gt;
+&lt;p&gt;Every action definition needs an implementation, and this is what we have in
+&lt;code&gt;emitter/srv/main.js&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; cds &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;@sap/cds&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; log &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;emitter&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+
+module&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;exports &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;service&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;impl&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;async&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;on&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;greet&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;async&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;req&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; emitter &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;connect&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;org.qmacro.emitter.EmitterService&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;emitting Greeting.Received (&lt;/span&gt;&lt;span class=&quot;token interpolation&quot;&gt;&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;${&lt;/span&gt;req&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;data&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;greeting&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; emitter&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;emit&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;Greeting.Received&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;info&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; req&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;data&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;greeting &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;OK&#39;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And that&#39;s pretty much it!&lt;/p&gt;
+&lt;h3 id=&quot;messaging-configuration&quot;&gt;Messaging configuration&lt;/h3&gt;
+&lt;p&gt;But upon what messaging mechanism are we relying here? Well, that&#39;s defined as
+a requirement in the emitter&#39;s &lt;code&gt;emitter/package.json&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;@qmacro/emitter&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  ...
+  &lt;span class=&quot;token property&quot;&gt;&quot;cds&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;requires&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      ...
+      &lt;span class=&quot;token property&quot;&gt;&quot;messaging&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;kind&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;file-based-messaging&quot;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The value &lt;code&gt;file-based-messaging&lt;/code&gt; is what we want here, as described in &lt;a href=&quot;https://cap.cloud.sap/docs/node.js/messaging#file-based&quot;&gt;the
+corresponding Capire
+section&lt;/a&gt; where it
+tells us that a file is used as the message broker; that is, the emitter writes
+messages to the file, and the receiver reads (and then removes) messages from
+that file.&lt;/p&gt;
+&lt;p&gt;By default the file is &lt;code&gt;~/.cds-msg-box&lt;/code&gt;. This fits with the general approach of
+using hidden files in the developer&#39;s home directory (&lt;code&gt;~/.cds-services.json&lt;/code&gt; is
+another example), emphasising the point that this is design-time only, i.e.
+only for used in a local development context.&lt;/p&gt;
+&lt;h3 id=&quot;examining-the-receiver&quot;&gt;Examining the receiver&lt;/h3&gt;
+&lt;p&gt;The receiver in this setup is even simpler. It relies upon the emitter package,
+and defines it as a required service, in &lt;code&gt;receiver/package.json&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;@qmacro/receiver&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  ...
+  &lt;span class=&quot;token property&quot;&gt;&quot;dependencies&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;@qmacro/emitter&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;*&quot;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  ...
+  &lt;span class=&quot;token property&quot;&gt;&quot;cds&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;requires&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      ...
+      &lt;span class=&quot;token property&quot;&gt;&quot;EmitterService&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;service&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;org.qmacro.emitter.EmitterService&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;model&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;@qmacro/emitter&quot;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;messaging&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;kind&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;file-based-messaging&quot;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Like the emitter, it also defines a requirement on &lt;code&gt;file-based-messaging&lt;/code&gt;.&lt;/p&gt;
+&lt;h4 id=&quot;the-receiver-implementation&quot;&gt;The receiver implementation&lt;/h4&gt;
+&lt;p&gt;There&#39;s no CDS model in this simple receiver setup, just an implementation that
+is in the form of a &lt;a href=&quot;https://cap.cloud.sap/docs/node.js/cds-server#override-cds-server&quot;&gt;custom
+server&lt;/a&gt; in
+&lt;code&gt;receiver/server.js&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; cds &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;@sap/cds&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; log &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;receiver&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; eventID &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Greeting.Received&#39;&lt;/span&gt;
+
+cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;once&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;served&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;async&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;Setting up listener for &lt;/span&gt;&lt;span class=&quot;token interpolation&quot;&gt;&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;${&lt;/span&gt;eventID&lt;span class=&quot;token interpolation-punctuation punctuation&quot;&gt;}&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; EmitterService &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;await&lt;/span&gt; cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;connect&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;to&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;EmitterService&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  EmitterService&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;on&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;eventID&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;msg&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&#39;received:&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; msg&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;event&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; msg&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;data&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Once the CAP server has started up, a connection to the emitter service is made
+and a handler is registered for the &lt;code&gt;Greeting.Received&lt;/code&gt; event.&lt;/p&gt;
+&lt;p&gt;And that&#39;s all we need!&lt;/p&gt;
+&lt;h3 id=&quot;trying-it-out&quot;&gt;Trying it out&lt;/h3&gt;
+&lt;p&gt;We can try the entire construct out step by step to see what&#39;s going on. All
+the following invocations are based on being in the &lt;code&gt;messaging/&lt;/code&gt; project root
+directory.&lt;/p&gt;
+&lt;p&gt;Before we start, we&#39;ll install the dependencies from the project root with:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;npm&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;install&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&quot;starting-up-the-emitter&quot;&gt;Starting up the emitter&lt;/h4&gt;
+&lt;p&gt;Now, let&#39;s start the emitter up, and we&#39;ll specify &lt;code&gt;DEBUG&lt;/code&gt; level for the
+&lt;code&gt;queue&lt;/code&gt; component(s) for a more detailed insight as to what happens:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token assign-left variable&quot;&gt;DEBUG&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;queue cds &lt;span class=&quot;token function&quot;&gt;watch&lt;/span&gt; emitter&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We should see some familiar log output (some lines have been omitted for
+brevity):&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; using bindings from&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; registry&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;~/.cds-services.json&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;queue&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; Using non&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;scheduling&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;based event queue processing
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; connect to messaging &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; file&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;based&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;messaging
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; serving org&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;qmacro&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;emitter&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;EmitterService &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;at:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;/rest/emitter&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;decl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;emitter/srv/main.cds:4&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;impl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;emitter/srv/main.js&#39;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; server listening on &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;http://localhost:4006&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;file-based-messaging&lt;/code&gt; mechanism is brought into play, just before our
+emitter service is served.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Port 4006 is selected by means of the value in &lt;code&gt;emitter/.env&lt;/code&gt;; it has no
+special significance, except that it&#39;s one of a few ports (4004-4006 and
+9229) that I publish in my dev container in which I do all my work.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;The service is registered in the local development binding registry
+&lt;code&gt;~/.cds-services.json&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;cds&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;provides&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;org.qmacro.emitter.EmitterService&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;endpoints&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+          &lt;span class=&quot;token property&quot;&gt;&quot;rest&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;/rest/emitter&quot;&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;server&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;35678&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;servers&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;35678&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        ...
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As we&#39;ve seen in another blog post in this series, on &lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/13/local-first-dev-with-cap-node-js-mocking-remote-services/&quot;&gt;mocking remote
+services&lt;/a&gt;,
+this registry serves to provide information on services provided and required.&lt;/p&gt;
+&lt;h4 id=&quot;invoking-the-greet-action&quot;&gt;Invoking the greet action&lt;/h4&gt;
+&lt;p&gt;Normally at this point it would make sense to start up the receiver, to have
+the fully coordinated asynchronous setup. But we want to see things happen step
+by step, and if we were to start the receiver now, any message generated and
+emitted would be immediately consumed and we wouldn&#39;t see it &amp;quot;in transit&amp;quot;.&lt;/p&gt;
+&lt;p&gt;So at this point we&#39;ll invoke the &lt;code&gt;greet&lt;/code&gt; action that the emitter exposes, to
+have a message emitted.&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--request&lt;/span&gt; POST &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;localhost:4006/rest/emitter/greet&quot;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--data&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;{&quot;greeting&quot;:&quot;Understanding is everything!&quot;}&#39;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;From this, we get a simple &lt;code&gt;OK&lt;/code&gt;, as we&#39;d expect from the &lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/15/local-first-dev-with-cap-node-js-mocking-messaging/#the-emitter-service-implementation&quot;&gt;emitter service
+implementation&lt;/a&gt;. More interesting is what
+we see in the server log:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;rest&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; POST &lt;span class=&quot;token file-path string&quot;&gt;/rest/emitter/greet&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;emitter&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; emitting Greeting&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Received &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;Understanding is everything&lt;span class=&quot;token operator&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;persistent&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;queue&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; queue&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Write message to queue
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;persistent&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;queue&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; queue&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Fetch messages
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;persistent&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;queue&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; queue&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Process &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; message
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;persistent&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;queue&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; queue&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Messages modified &lt;span class=&quot;token operator&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;~&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;persistent&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;queue&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; queue&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Done&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;While the &lt;code&gt;[rest]&lt;/code&gt; log record is just recording the incoming POST request, and
+the &lt;code&gt;[emitter]&lt;/code&gt; log record was written by the emitter implementation (see
+above), most notably we see the core messaging mechanism in action, handling the
+queuing of the message. After all, queueing is a core part of everything that
+is asynchronous.&lt;/p&gt;
+&lt;h4 id=&quot;looking-at-the-message-queue&quot;&gt;Looking at the message queue&lt;/h4&gt;
+&lt;p&gt;As we know, the &lt;a href=&quot;https://cap.cloud.sap/docs/node.js/messaging#file-based&quot;&gt;file based messaging&lt;/a&gt; uses &lt;code&gt;~/.cds-msg-box&lt;/code&gt; by default as the queue. And if we look at that right now:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;cat&lt;/span&gt; ~/.cds-msg-box&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;we see the message, &amp;quot;in transit&amp;quot;, as it were (formatted here for easier reading):&lt;/p&gt;
+&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;org.qmacro.emitter.EmitterService.Greeting.Received {
+  &quot;data&quot;: {
+    &quot;info&quot;: &quot;Understanding is everything!&quot;
+  },
+  &quot;headers&quot;: {
+    &quot;x-correlation-id&quot;: &quot;80f83122-ecb7-49aa-8cdd-c465e2588374&quot;
+  }
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Half-way there!&lt;/p&gt;
+&lt;h4 id=&quot;starting-up-the-receiver&quot;&gt;Starting up the receiver&lt;/h4&gt;
+&lt;p&gt;Now we&#39;ve had a chance to examine the queue, we can start up the receiver:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;cds &lt;span class=&quot;token function&quot;&gt;watch&lt;/span&gt; receiver&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; bootstrapping from &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; file&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;receiver/server.js&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;queue&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; Using non&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;scheduling&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;based event queue processing
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; connect to messaging &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; file&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;based&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;messaging
+&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;receiver&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; Setting up listener for Greeting&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Received
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; server listening on &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;http://localhost:4005&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And directly following this, we see:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;receiver&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; received&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Greeting&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Received &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; info&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Understanding is everything!&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Not only that, but the queued message in &lt;code&gt;~/.cds-msg-box&lt;/code&gt; is now gone. Consumed!&lt;/p&gt;
+&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
+&lt;p&gt;Asynchronous messaging is yet another fundamentally important aspect of real
+life service design, delivery and orchestration, and we have no reason to put
+off designing and building that in our projects, as we can incorporate local
+mocking from the very start.&lt;/p&gt;
+&lt;p&gt;By the way, for automated tests, you might even want to look at &lt;a href=&quot;https://cap.cloud.sap/docs/node.js/messaging#local-messaging&quot;&gt;local
+messaging&lt;/a&gt; which
+takes place in-process, a little bit like in-process remote-service mocking,
+and is very useful for automated testing.&lt;/p&gt;
+</content>
+  </entry>
   <entry>
     <title>Local-first dev with CAP Node.js - mocking remote services</title>
     <link href="https://qmacro.org/blog/posts/2026/05/13/local-first-dev-with-cap-node-js-mocking-remote-services/" />
@@ -728,7 +1002,7 @@ remote services while we develop. This session shows you what, and how.&lt;/p&gt
 &lt;li&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js-mocking-data/&quot;&gt;Mocking data&lt;/a&gt; (11 May)&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/12/local-first-dev-with-cap-node-js-mocking-auth/&quot;&gt;Mocking auth&lt;/a&gt; (12 May)&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/13/local-first-dev-with-cap-node-js-mocking-remote-services/&quot;&gt;Mocking remote services&lt;/a&gt; (13 May)&lt;/li&gt;
-&lt;li&gt;Mocking messaging (coming soon)&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/15/local-first-dev-with-cap-node-js-mocking-messaging/&quot;&gt;Mocking messaging&lt;/a&gt; (15 May)&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&quot;more-context&quot;&gt;More context&lt;/h2&gt;
 &lt;p&gt;There are a couple of aspects of development that come together for the perfect
@@ -4730,266 +5004,6 @@ part&lt;/a&gt;.&lt;/li&gt;
 &lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;cds &lt;span class=&quot;token builtin class-name&quot;&gt;bind&lt;/span&gt; &lt;span class=&quot;token parameter variable&quot;&gt;--exec&lt;/span&gt; -- cds repl &lt;span class=&quot;token parameter variable&quot;&gt;--run&lt;/span&gt; &lt;span class=&quot;token builtin class-name&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-</content>
-  </entry>
-  <entry>
-    <title>CDS expressions in CAP - notes on Part 1</title>
-    <link href="https://qmacro.org/blog/posts/2026/03/05/cds-expressions-in-cap-notes-on-part-1/" />
-    <updated>2026-03-05T00:00:00Z</updated>
-    <id>https://qmacro.org/blog/posts/2026/03/05/cds-expressions-in-cap-notes-on-part-1/</id>
-    <content type="html">&lt;p&gt;See the &lt;a href=&quot;https://qmacro.org/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/&quot;&gt;series
-post&lt;/a&gt;
-for an overview of all the episodes.&lt;/p&gt;
-&lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/aiE20i5BP70?si=xSpl4uDc8j0Y1jll&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; referrerpolicy=&quot;strict-origin-when-cross-origin&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
-&lt;h2 id=&quot;introduction&quot;&gt;Introduction&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=aiE20i5BP70&amp;amp;t=0s&quot;&gt;00:00&lt;/a&gt; Introductions.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=aiE20i5BP70&amp;amp;t=300s&quot;&gt;05:00&lt;/a&gt; A first look at
-expressions in the context of &lt;a href=&quot;https://pages.github.tools.sap/cap/docs/releases/2025/dec25#declarative-constraints&quot;&gt;the new Declarative Constraints
-feature&lt;/a&gt;.&lt;/p&gt;
-&lt;h2 id=&quot;the-family-of-cds-languages&quot;&gt;The family of CDS languages&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=aiE20i5BP70&amp;amp;t=360s&quot;&gt;06:00&lt;/a&gt; An overview of CDS and
-the languages within the &lt;a href=&quot;https://cap.cloud.sap/docs/cds/&quot;&gt;CDS&lt;/a&gt; family (CDL &amp;amp;
-CSN, CQL &amp;amp; CQN and CXL &amp;amp; CXN).&lt;/p&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=aiE20i5BP70&amp;amp;t=425s&quot;&gt;07:05&lt;/a&gt; A first look at the
-&amp;quot;cxl-bookshop&amp;quot; project, specifically the entities and service definition.
-Patrice compiled (with &lt;code&gt;cds compile db/schema.cds&lt;/code&gt;) the schema level
-definitions to show the relationship between the human-first
-&lt;a href=&quot;https://cap.cloud.sap/docs/cds/cdl&quot;&gt;CDL&lt;/a&gt; (Conceptual Definition Language) and
-the corresponding machine-first &lt;a href=&quot;https://cap.cloud.sap/docs/cds/csn&quot;&gt;CSN&lt;/a&gt; (Core
-Schema Notation).&lt;/p&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=aiE20i5BP70&amp;amp;t=698s&quot;&gt;11:38&lt;/a&gt; Next in the CDS
-language family overview is the human-first
-&lt;a href=&quot;https://cap.cloud.sap/docs/cds/cql&quot;&gt;CQL&lt;/a&gt; (CDS Query Language) and
-corresponding machine-first equivalent
-&lt;a href=&quot;https://cap.cloud.sap/docs/cds/cqn&quot;&gt;CQN&lt;/a&gt; (CDS Query Notation). An example was
-given in the context of a cds REPL session (started with &lt;code&gt;cds repl --run .&lt;/code&gt;).
-The example uses a postfix projection to specify the desired column (element),
-instead of the more SQL-like &lt;code&gt;SELECT title from Books&lt;/code&gt; (the resulting query is
-the same):&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; q &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ql&lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt; SELECT from Books { title }&lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;
-cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ql &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token constant&quot;&gt;SELECT&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token literal-property property&quot;&gt;from&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Books&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;token literal-property property&quot;&gt;columns&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;title&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;This shows the CQL and the corresponding CQN.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=aiE20i5BP70&amp;amp;t=1198s&quot;&gt;19:58&lt;/a&gt; The final language
-pair, the human-first &lt;a href=&quot;https://cap.cloud.sap/docs/cds/cxl&quot;&gt;CXL&lt;/a&gt; (CDS Expression
-Language) and the corresponding machine-first
-&lt;a href=&quot;https://cap.cloud.sap/docs/cds/cxn&quot;&gt;CXN&lt;/a&gt; (CDS Expression Notation) (at this
-point the CXL documentation in Capire was still under construction, but exists
-now).&lt;/p&gt;
-&lt;h2 id=&quot;a-first-look-at-expressions&quot;&gt;A first look at expressions&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=aiE20i5BP70&amp;amp;t=1643s&quot;&gt;27:23&lt;/a&gt; Looking at very
-simple expressions, trying out the (context-free) expression parser
-&lt;code&gt;cds.parse.expr&lt;/code&gt; to parse a CXL expression to the internal CXN
-representation:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;parse&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;expr&lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt; 1 &lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Here&#39;s one with a binary operator (&lt;code&gt;+&lt;/code&gt;), taking two operands:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;parse&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;expr&lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt; 1 + 1 &lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;xpr&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;+&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;a name=&quot;annotation&quot;&gt;&lt;/a&gt;
-&lt;a href=&quot;https://www.youtube.com/watch?v=aiE20i5BP70&amp;amp;t=1741s&quot;&gt;29:01&lt;/a&gt; An example in the
-context of declarative constraints, where validation is added to a service
-entity (which makes sense as they act as functional facets to the underlying
-persistence layer), in particular, to the &lt;code&gt;stock&lt;/code&gt; element of the &lt;code&gt;Books&lt;/code&gt;
-entity:&lt;/p&gt;
-&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; {sap.capire.bookshop &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; my} &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;../db/schema&#39;;
-
-&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; AdminService {
-  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Books   &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; my.Books;
-  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Authors &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; my.Authors;
-}
-
-annotate AdminService.Books:stock with &lt;span class=&quot;token annotation important&quot;&gt;@assert:&lt;/span&gt; (
-  case
-    &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;when&lt;/span&gt; stock &amp;lt; 0 &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;then&lt;/span&gt; &#39;stock must not be negative&#39;
-    &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;when&lt;/span&gt; stock &gt; 1000 &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;then&lt;/span&gt; &#39;stock exceeds maximum limit of 1000&#39;
-  &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;end&lt;/span&gt;
-);&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Note that here we have:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;the &lt;code&gt;annotate&lt;/code&gt; directive (CDL)&lt;/li&gt;
-&lt;li&gt;the &lt;code&gt;@assert&lt;/code&gt; annotation (also CDL)&lt;/li&gt;
-&lt;li&gt;the &lt;code&gt;case ... when ... then ... end&lt;/code&gt; expression (CXL)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;There was a brief discussion on how &lt;a href=&quot;https://cap.cloud.sap/docs/cds/cdl#expressions-as-annotation-values&quot;&gt;expressions in
-annotations&lt;/a&gt;
-should be enclosed in parentheses (as used in this annotation example), which
-also allows full compiler support and also code completion.&lt;/p&gt;
-&lt;h2 id=&quot;exercising-the-constraint-in-the-cds-repl&quot;&gt;Exercising the constraint in the cds REPL&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=aiE20i5BP70&amp;amp;t=2098s&quot;&gt;34:58&lt;/a&gt; First, an overview
-of the entities:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; Object&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;AdminService&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;entities&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&#39;Books&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&#39;Authors&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&#39;Genres&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&#39;Genres.texts&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&#39;Currencies&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&#39;Currencies.texts&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&#39;Books.texts&#39;&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;and then some destructuring to get the &lt;code&gt;Books&lt;/code&gt; entity from the &lt;code&gt;AdminService&lt;/code&gt;:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; Books &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; AdminService&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;entities
-&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;object Function&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Next, the construction of an INSERT query via the &lt;a href=&quot;https://cap.cloud.sap/docs/node.js/cds-ql#insert&quot;&gt;fluent
-API&lt;/a&gt; (the statement is split
-across multiple lines for readability; use the REPL&#39;s &lt;code&gt;.editor&lt;/code&gt; command to
-paste in these multiple lines if you&#39;re playing along):&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; insert &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;INSERT&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;into&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;Books&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;entries&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;567&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;author_ID&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;180&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Foo&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;stock&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;568&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;author_ID&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;180&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Foo 2&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;stock&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1001&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;which gives:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;ql &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token constant&quot;&gt;INSERT&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token literal-property property&quot;&gt;into&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;AdminService.Books&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;token literal-property property&quot;&gt;entries&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
-      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;567&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;author_ID&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;180&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Foo&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;stock&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;568&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;author_ID&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;180&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;title&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Foo 2&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;stock&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1001&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;a name=&quot;invoking-run&quot;&gt;&lt;/a&gt;&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;At this point, this query was &lt;code&gt;await&lt;/code&gt;ed, with an unexpected result. That&#39;s
-because using &lt;code&gt;await&lt;/code&gt; on a query object will by default invoke &lt;code&gt;db.run()&lt;/code&gt;,
-sending that query object as an argument (i.e. &lt;code&gt;db.run(insert)&lt;/code&gt; here).
-However, this &lt;code&gt;db&lt;/code&gt; service is the &amp;quot;wrong&amp;quot; one - it&#39;s the persistence-layer
-database service, rather than the &lt;code&gt;AdminService&lt;/code&gt; at which level we have our
-declarative constraint. This is why the insertion of the two new book records
-was successful (at
-&lt;a href=&quot;https://www.youtube.com/watch?v=aiE20i5BP70&amp;amp;t=2390s&quot;&gt;39:50&lt;/a&gt;).&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Sending this to the &lt;code&gt;AdminService&lt;/code&gt; to be executed:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; AdminService&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;run&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;insert&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;shows us the result of the constraint:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; Uncaught &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;Error&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token constant&quot;&gt;MULTIPLE_ERRORS&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token literal-property property&quot;&gt;details&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;token literal-property property&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;400&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token literal-property property&quot;&gt;code&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;ASSERT&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token literal-property property&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;stock&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token literal-property property&quot;&gt;numericSeverity&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token string-property property&quot;&gt;&#39;@Common.numericSeverity&#39;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token literal-property property&quot;&gt;message&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;stock must not be negative&#39;&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;token literal-property property&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;400&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token literal-property property&quot;&gt;code&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;ASSERT&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token literal-property property&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;stock&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token literal-property property&quot;&gt;numericSeverity&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token string-property property&quot;&gt;&#39;@Common.numericSeverity&#39;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token literal-property property&quot;&gt;message&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;stock exceeds maximum limit of 1000&#39;&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&quot;comparing-entity-definitions-at-different-layers&quot;&gt;Comparing entity definitions at different layers&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=aiE20i5BP70&amp;amp;t=2785s&quot;&gt;46:25&lt;/a&gt; A brief comparison
-between the &lt;code&gt;Books&lt;/code&gt; definition at the persistence (&amp;quot;db&amp;quot;) level from
-&lt;code&gt;cds.entities&lt;/code&gt; and the &lt;code&gt;Books&lt;/code&gt; definition in the &lt;code&gt;AdminService&lt;/code&gt; at the service
-(&amp;quot;srv&amp;quot;) level. This is effectively the difference between A and B where:&lt;/p&gt;
-&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; {sap.capire.bookshop &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; my} &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;../db/schema&#39;;
-
-&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; AdminService {
-  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Books &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; my.Books;
-           ^                       ^
-           |                       |
-           B                       A&lt;/code&gt;&lt;/pre&gt;
-&lt;ul&gt;
-&lt;li&gt;A &lt;code&gt;my.Books&lt;/code&gt; is from &lt;code&gt;sap.capire.bookshop&lt;/code&gt; in &lt;code&gt;db/schema&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;B &lt;code&gt;Books&lt;/code&gt; is the entity defined in &lt;code&gt;AdminService&lt;/code&gt; as a projection on
-&lt;code&gt;my.Books&lt;/code&gt; in A&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Comparing the artifacts and their CSN shows differences that all make sense
-(each of these comparisons shows A first, then B):&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;the artifacts&#39; &lt;code&gt;name&lt;/code&gt; properties (&lt;code&gt;Books.name&lt;/code&gt;) are different:
-&lt;code&gt;sap.capire.bookshop.Books&lt;/code&gt; vs &lt;code&gt;AdminService.Books&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;reflecting this, the scope name prefixes are different in each reference,
-with A being &lt;code&gt;sap.capire.bookshop&lt;/code&gt; and B being &lt;code&gt;AdminService&lt;/code&gt;, for example:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token literal-property property&quot;&gt;author&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Association &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;
-  &lt;span class=&quot;token literal-property property&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;sap.capire.bookshop.Authors&#39;&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;vs&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token literal-property property&quot;&gt;author&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Association &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;
-  &lt;span class=&quot;token literal-property property&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;AdminService.Authors&#39;&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;each association in the service level CSN has an additional annotation
-&lt;code&gt;@Common.ValueList.viaAssociation&lt;/code&gt;, for example (although we didn&#39;t dwell on
-this at all):&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;  &lt;span class=&quot;token literal-property property&quot;&gt;genre&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Association &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token literal-property property&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;cds.Association&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;token literal-property property&quot;&gt;target&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;AdminService.Genres&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;token literal-property property&quot;&gt;keys&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;ID&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string-property property&quot;&gt;&#39;$generatedFieldName&#39;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;genre_ID&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;token string-property property&quot;&gt;&#39;@Common.ValueList.viaAssociation&#39;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token string-property property&quot;&gt;&#39;=&#39;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;genre&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;as pointed out in the conversation, the service level CSN has an extra
-&lt;code&gt;projection&lt;/code&gt; property, which makes sense given how this is defined:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token literal-property property&quot;&gt;projection&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;from&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;sap.capire.bookshop.Books&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;And perhaps most significantly:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;while the &lt;code&gt;stock&lt;/code&gt; element at the persistence level is defined like this:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token literal-property property&quot;&gt;stock&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Integer &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;cds.Integer&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;the projected version, thanks to the &lt;a href=&quot;https://qmacro.org/blog/posts/2026/03/05/cds-expressions-in-cap-notes-on-part-1/#annotation&quot;&gt;annotation&lt;/a&gt; applied
-specifically to &lt;code&gt;AdminService.Books:stock&lt;/code&gt;, is defined like this (where can
-see the expression in CXN form):&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token literal-property property&quot;&gt;stock&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; Integer &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token string-property property&quot;&gt;&#39;@assert&#39;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token string-property property&quot;&gt;&#39;=&#39;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;case when stock &amp;lt; 0 then &#39;stock must not be negative&#39; when stock &gt; 1000 then &#39;stock exceeds maximum limit of 1000&#39; end&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-    &lt;span class=&quot;token literal-property property&quot;&gt;xpr&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
-      &lt;span class=&quot;token string&quot;&gt;&#39;case&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token string&quot;&gt;&#39;when&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;stock&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token string&quot;&gt;&#39;&amp;lt;&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token string&quot;&gt;&#39;then&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;stock must not be negative&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token string&quot;&gt;&#39;when&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;stock&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token string&quot;&gt;&#39;&gt;&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1000&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token string&quot;&gt;&#39;then&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;val&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;stock exceeds maximum limit of 1000&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-      &lt;span class=&quot;token string&quot;&gt;&#39;end&#39;&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token literal-property property&quot;&gt;type&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;cds.Integer&#39;&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=aiE20i5BP70&amp;amp;t=3464s&quot;&gt;57:44&lt;/a&gt; Patrice describes the
-relationship between CXL, CQL and CDL in terms of &amp;quot;passenger&amp;quot; and &amp;quot;vehicle&amp;quot;, in
-that CXL expressions are &amp;quot;passengers&amp;quot; carried in the &amp;quot;vehicles&amp;quot; of CQL queries
-and / or CDL definitions (such as annotations and element definitions); Patrice
-illustrates this further by showing what a simple expression in CXL is parsed
-to:&lt;/p&gt;
-&lt;pre class=&quot;language-javascript&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; cds&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;parse&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;expr&lt;span class=&quot;token template-string&quot;&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt; author.books.genre.name &lt;/span&gt;&lt;span class=&quot;token template-punctuation string&quot;&gt;`&lt;/span&gt;&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;token literal-property property&quot;&gt;ref&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;author&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;books&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;genre&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;name&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;and also notes that the value of the &lt;code&gt;ref&lt;/code&gt; is interpreted depending on the
-&amp;quot;vehicle&amp;quot; in which it is being carried.&lt;/p&gt;
-&lt;h2 id=&quot;further-info&quot;&gt;Further info&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;Patrice also has &lt;a href=&quot;https://github.com/patricebender/cxl-bookshop/blob/main/notes/notes-session1.md&quot;&gt;some great notes for this
-part&lt;/a&gt;.&lt;/li&gt;
-&lt;/ul&gt;
 </content>
   </entry>
 </feed>

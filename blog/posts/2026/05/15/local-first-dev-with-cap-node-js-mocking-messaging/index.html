@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Local-first dev with CAP Node.js - mocking messaging</title>
+		<meta name="description" content="In this post I provider a taster of what&#39;s possible regarding mock messaging in CAP Node.js local-first development.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="Local-first dev with CAP Node.js - mocking messaging">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="In this post I provider a taster of what&#39;s possible regarding mock messaging in CAP Node.js local-first development.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2026/05/15/local-first-dev-with-cap-node-js-mocking-messaging/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 60%, 70%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="local-first-dev-with-cap-node-js-mocking-messaging">Local-first dev with CAP Node.js - mocking messaging</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2026-05-15">15 May 2026</time></li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/messaging/" class="post-tag">messaging</a>, </li>
+	<li><a href="/tags/mocking/" class="post-tag">mocking</a>, </li>
+	<li><a href="/tags/local/" class="post-tag">local</a></li>
+</ul>
+
+<p class="post-description-main">In this post I provider a taster of what's possible regarding mock messaging in CAP Node.js local-first development.</p>
+
+<p>This post is one of <a href="/blog/posts/2026/05/11/local-first-dev-with-cap-node-js/">a series on local-first development with CAP
+Node.js</a>.</p>
+<h2 id="everything-is-an-event">Everything is an event</h2>
+<p>In <a href="/blog/posts/2024/11/07/five-reasons-to-use-cap/">Five reasons to use CAP</a>,
+we see that <a href="/blog/posts/2024/11/07/five-reasons-to-use-cap/#:~:text=%22Everything%20is%20an%20event%22">everything is an
+event</a>.
+Whether synchronous, such as via HTTP requests and responses for OData
+operations, or asynchronous, where messages are emitted and received for
+decoupled service-to-service communications.</p>
+<p>The <a href="https://cap.cloud.sap/docs/node.js/messaging">Messaging</a> topic in Capire
+has a great overview and an explanation of all the different message brokers
+that can be used. And there's one that is well suited for local-first
+development: <a href="https://cap.cloud.sap/docs/node.js/messaging#file-based">File
+based</a> messaging.</p>
+<h2 id="working-through-an-example">Working through an example</h2>
+<p>In this post, we'll work through an example of mocking messaging using the
+file-based facility, with content in the
+<a href="https://github.com/qmacro/cap-nodejs-local-first-development/tree/main/messaging">messaging/</a>
+directory of the repo set up for the related
+<a href="/blog/posts/2026/05/11/local-first-dev-with-cap-node-js/#talk">talk</a>.</p>
+<p>The setup is a little different to the other mock examples in this series.
+First, there are two CAP services that will be in play. Second, neither of them
+have any entity definitions; in fact, only one has a CDS model at all, and that
+only has a service definition with an action and an event defined within it.</p>
+<h3 id="the-containing-project-definition">The containing project definition</h3>
+<p>Usually in an asynchronous event scenario there is an emitter and a receiver,
+and that's what we have here. They're both found within the <code>messaging/</code>
+directory, which is the containing project for this example, and has been set
+up to use the Node.js
+<a href="https://docs.npmjs.com/cli/v11/using-npm/workspaces">workspaces</a> concept, with
+this as the definition in <code>package.json</code>:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"@qmacro/messaging"</span><span class="token punctuation">,</span>
+  <span class="token property">"workspaces"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token string">"*"</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<h3 id="examining-the-emitter">Examining the emitter</h3>
+<p>Within the <code>emitter/</code> subdirectory we have a CAP project which has been put
+together in the form of a package (like a
+<a href="/blog/posts/2024/12/30/cap-node-js-plugins/">plugin</a> would be). The name
+declared in <code>emitter/package.json</code> is <code>@qmacro/emitter</code> and as well as the content in
+<code>srv/</code> there's also a project root level <code>emitter/index.js</code> which acts as the package
+entry point and contains:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript">using <span class="token keyword">from</span> <span class="token string">'./srv/main'</span><span class="token punctuation">;</span></code></pre>
+<h4 id="the-emitter-service-definition">The emitter service definition</h4>
+<p>This emitter is where the service definition is found, which looks like this,
+in <code>emitter/srv/main.cds</code>:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token keyword">namespace</span> org.qmacro.emitter;
+
+<span class="token annotation important">@rest</span>
+<span class="token keyword">service</span> EmitterService {
+  <span class="token keyword">action</span> greet(greeting: <span class="token type builtin">String</span>) <span class="token cdl-keyword keyword">returns</span> <span class="token type builtin">String</span>;
+
+  <span class="token keyword">event</span> Greeting.Received {
+    info : <span class="token type builtin">String</span>;
+  }
+}</code></pre>
+<p>The service defines:</p>
+<ul>
+<li>an action endpoint <code>greet</code></li>
+<li>an event <code>Greeting.Received</code></li>
+</ul>
+<p>Note that while the term &quot;action&quot; has loaded meaning in the context of OData,
+it also serves to define a POST based &quot;RPC&quot; style target that is valid even
+in the context of the &quot;REST&quot; protocol, as declared here. The design of the
+event and also the signature of the action endpoint is deliberately as simple
+as possible for this example.</p>
+<p>As we'll see shortly, to have an event be emitted in this example scenario, we
+need to make an HTTP POST request to the <code>/greet</code> endpoint, with a payload body
+containing the greeting data.</p>
+<h4 id="the-emitter-service-implementation">The emitter service implementation</h4>
+<p>Every action definition needs an implementation, and this is what we have in
+<code>emitter/srv/main.js</code>:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">const</span> cds <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'@sap/cds'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> log <span class="token operator">=</span> cds<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'emitter'</span><span class="token punctuation">)</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> cds<span class="token punctuation">.</span>service<span class="token punctuation">.</span><span class="token function">impl</span><span class="token punctuation">(</span><span class="token keyword">async</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span><span class="token string">'greet'</span><span class="token punctuation">,</span> <span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token parameter">req</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> emitter <span class="token operator">=</span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>connect<span class="token punctuation">.</span><span class="token function">to</span><span class="token punctuation">(</span><span class="token string">'org.qmacro.emitter.EmitterService'</span><span class="token punctuation">)</span>
+    <span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">emitting Greeting.Received (</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>req<span class="token punctuation">.</span>data<span class="token punctuation">.</span>greeting<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">)</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+    <span class="token keyword">await</span> emitter<span class="token punctuation">.</span><span class="token function">emit</span><span class="token punctuation">(</span><span class="token string">'Greeting.Received'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> <span class="token literal-property property">info</span><span class="token operator">:</span> req<span class="token punctuation">.</span>data<span class="token punctuation">.</span>greeting <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token string">'OK'</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre>
+<p>And that's pretty much it!</p>
+<h3 id="messaging-configuration">Messaging configuration</h3>
+<p>But upon what messaging mechanism are we relying here? Well, that's defined as
+a requirement in the emitter's <code>emitter/package.json</code>:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"@qmacro/emitter"</span><span class="token punctuation">,</span>
+  ...
+  <span class="token property">"cds"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"requires"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      ...
+      <span class="token property">"messaging"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"kind"</span><span class="token operator">:</span> <span class="token string">"file-based-messaging"</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>The value <code>file-based-messaging</code> is what we want here, as described in <a href="https://cap.cloud.sap/docs/node.js/messaging#file-based">the
+corresponding Capire
+section</a> where it
+tells us that a file is used as the message broker; that is, the emitter writes
+messages to the file, and the receiver reads (and then removes) messages from
+that file.</p>
+<p>By default the file is <code>~/.cds-msg-box</code>. This fits with the general approach of
+using hidden files in the developer's home directory (<code>~/.cds-services.json</code> is
+another example), emphasising the point that this is design-time only, i.e.
+only for used in a local development context.</p>
+<h3 id="examining-the-receiver">Examining the receiver</h3>
+<p>The receiver in this setup is even simpler. It relies upon the emitter package,
+and defines it as a required service, in <code>receiver/package.json</code>:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"@qmacro/receiver"</span><span class="token punctuation">,</span>
+  ...
+  <span class="token property">"dependencies"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"@qmacro/emitter"</span><span class="token operator">:</span> <span class="token string">"*"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  ...
+  <span class="token property">"cds"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"requires"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      ...
+      <span class="token property">"EmitterService"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"service"</span><span class="token operator">:</span> <span class="token string">"org.qmacro.emitter.EmitterService"</span><span class="token punctuation">,</span>
+        <span class="token property">"model"</span><span class="token operator">:</span> <span class="token string">"@qmacro/emitter"</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token property">"messaging"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"kind"</span><span class="token operator">:</span> <span class="token string">"file-based-messaging"</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Like the emitter, it also defines a requirement on <code>file-based-messaging</code>.</p>
+<h4 id="the-receiver-implementation">The receiver implementation</h4>
+<p>There's no CDS model in this simple receiver setup, just an implementation that
+is in the form of a <a href="https://cap.cloud.sap/docs/node.js/cds-server#override-cds-server">custom
+server</a> in
+<code>receiver/server.js</code>:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">const</span> cds <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'@sap/cds'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> log <span class="token operator">=</span> cds<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'receiver'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> eventID <span class="token operator">=</span> <span class="token string">'Greeting.Received'</span>
+
+cds<span class="token punctuation">.</span><span class="token function">once</span><span class="token punctuation">(</span><span class="token string">'served'</span><span class="token punctuation">,</span> <span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  <span class="token function">log</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Setting up listener for </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>eventID<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> EmitterService <span class="token operator">=</span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>connect<span class="token punctuation">.</span><span class="token function">to</span><span class="token punctuation">(</span><span class="token string">'EmitterService'</span><span class="token punctuation">)</span>
+  EmitterService<span class="token punctuation">.</span><span class="token function">on</span><span class="token punctuation">(</span>eventID<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">msg</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+    <span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'received:'</span><span class="token punctuation">,</span> msg<span class="token punctuation">.</span>event<span class="token punctuation">,</span> msg<span class="token punctuation">.</span>data<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre>
+<p>Once the CAP server has started up, a connection to the emitter service is made
+and a handler is registered for the <code>Greeting.Received</code> event.</p>
+<p>And that's all we need!</p>
+<h3 id="trying-it-out">Trying it out</h3>
+<p>We can try the entire construct out step by step to see what's going on. All
+the following invocations are based on being in the <code>messaging/</code> project root
+directory.</p>
+<p>Before we start, we'll install the dependencies from the project root with:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span></code></pre>
+<h4 id="starting-up-the-emitter">Starting up the emitter</h4>
+<p>Now, let's start the emitter up, and we'll specify <code>DEBUG</code> level for the
+<code>queue</code> component(s) for a more detailed insight as to what happens:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token assign-left variable">DEBUG</span><span class="token operator">=</span>queue cds <span class="token function">watch</span> emitter</code></pre>
+<p>We should see some familiar log output (some lines have been omitted for
+brevity):</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> using bindings from<span class="token operator">:</span> <span class="token operator">{</span> registry<span class="token operator">:</span> <span class="token string">'~/.cds-services.json'</span> <span class="token operator">}</span>
+
+<span class="token punctuation">[</span>queue<span class="token punctuation">]</span> <span class="token operator">-</span> Using non<span class="token operator">-</span>scheduling<span class="token operator">-</span>based event queue processing
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> connect to messaging <span class="token operator">></span> file<span class="token operator">-</span>based<span class="token operator">-</span>messaging
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> serving org<span class="token punctuation">.</span>qmacro<span class="token punctuation">.</span>emitter<span class="token punctuation">.</span>EmitterService <span class="token operator">{</span>
+  <span class="token property">at:</span> <span class="token punctuation">[</span> <span class="token string">'/rest/emitter'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">decl:</span> <span class="token string">'emitter/srv/main.cds:4'</span><span class="token punctuation">,</span>
+  <span class="token property">impl:</span> <span class="token string">'emitter/srv/main.js'</span>
+<span class="token operator">}</span>
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> server listening on <span class="token operator">{</span> url<span class="token operator">:</span> <span class="token string">'http://localhost:4006'</span> <span class="token operator">}</span></code></pre>
+<p>The <code>file-based-messaging</code> mechanism is brought into play, just before our
+emitter service is served.</p>
+<blockquote>
+<p>Port 4006 is selected by means of the value in <code>emitter/.env</code>; it has no
+special significance, except that it's one of a few ports (4004-4006 and
+9229) that I publish in my dev container in which I do all my work.</p>
+</blockquote>
+<p>The service is registered in the local development binding registry
+<code>~/.cds-services.json</code>:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"cds"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"provides"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"org.qmacro.emitter.EmitterService"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"endpoints"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          <span class="token property">"rest"</span><span class="token operator">:</span> <span class="token string">"/rest/emitter"</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"server"</span><span class="token operator">:</span> <span class="token number">35678</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"servers"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"35678"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        ...
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>As we've seen in another blog post in this series, on <a href="/blog/posts/2026/05/13/local-first-dev-with-cap-node-js-mocking-remote-services/">mocking remote
+services</a>,
+this registry serves to provide information on services provided and required.</p>
+<h4 id="invoking-the-greet-action">Invoking the greet action</h4>
+<p>Normally at this point it would make sense to start up the receiver, to have
+the fully coordinated asynchronous setup. But we want to see things happen step
+by step, and if we were to start the receiver now, any message generated and
+emitted would be immediately consumed and we wouldn't see it &quot;in transit&quot;.</p>
+<p>So at this point we'll invoke the <code>greet</code> action that the emitter exposes, to
+have a message emitted.</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">curl</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--request</span> POST <span class="token punctuation">\</span>
+  <span class="token parameter variable">--url</span> <span class="token string">"localhost:4006/rest/emitter/greet"</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--data</span> <span class="token string">'{"greeting":"Understanding is everything!"}'</span>
+<span class="token punctuation">}</span></code></pre>
+<p>From this, we get a simple <code>OK</code>, as we'd expect from the <a href="#the-emitter-service-implementation">emitter service
+implementation</a>. More interesting is what
+we see in the server log:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>rest<span class="token punctuation">]</span> <span class="token operator">-</span> POST <span class="token file-path string">/rest/emitter/greet</span>
+<span class="token punctuation">[</span>emitter<span class="token punctuation">]</span> <span class="token operator">-</span> emitting Greeting<span class="token punctuation">.</span>Received <span class="token operator">(</span>Understanding is everything<span class="token operator">!</span><span class="token operator">)</span>
+<span class="token punctuation">[</span>persistent<span class="token operator">-</span>queue<span class="token punctuation">]</span> <span class="token operator">-</span> queue<span class="token operator">:</span> Write message to queue
+<span class="token punctuation">[</span>persistent<span class="token operator">-</span>queue<span class="token punctuation">]</span> <span class="token operator">-</span> queue<span class="token operator">:</span> Fetch messages
+<span class="token punctuation">[</span>persistent<span class="token operator">-</span>queue<span class="token punctuation">]</span> <span class="token operator">-</span> queue<span class="token operator">:</span> Process <span class="token number">1</span> message
+<span class="token punctuation">[</span>persistent<span class="token operator">-</span>queue<span class="token punctuation">]</span> <span class="token operator">-</span> queue<span class="token operator">:</span> Messages modified <span class="token operator">(</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token operator">~</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">+</span><span class="token number">0</span><span class="token operator">)</span>
+<span class="token punctuation">[</span>persistent<span class="token operator">-</span>queue<span class="token punctuation">]</span> <span class="token operator">-</span> queue<span class="token operator">:</span> Done</code></pre>
+<p>While the <code>[rest]</code> log record is just recording the incoming POST request, and
+the <code>[emitter]</code> log record was written by the emitter implementation (see
+above), most notably we see the core messaging mechanism in action, handling the
+queuing of the message. After all, queueing is a core part of everything that
+is asynchronous.</p>
+<h4 id="looking-at-the-message-queue">Looking at the message queue</h4>
+<p>As we know, the <a href="https://cap.cloud.sap/docs/node.js/messaging#file-based">file based messaging</a> uses <code>~/.cds-msg-box</code> by default as the queue. And if we look at that right now:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">cat</span> ~/.cds-msg-box</code></pre>
+<p>we see the message, &quot;in transit&quot;, as it were (formatted here for easier reading):</p>
+<pre class="language-text" tabindex="0"><code class="language-text">org.qmacro.emitter.EmitterService.Greeting.Received {
+  "data": {
+    "info": "Understanding is everything!"
+  },
+  "headers": {
+    "x-correlation-id": "80f83122-ecb7-49aa-8cdd-c465e2588374"
+  }
+}</code></pre>
+<p>Half-way there!</p>
+<h4 id="starting-up-the-receiver">Starting up the receiver</h4>
+<p>Now we've had a chance to examine the queue, we can start up the receiver:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">cds <span class="token function">watch</span> receiver</code></pre>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> bootstrapping from <span class="token operator">{</span> file<span class="token operator">:</span> <span class="token string">'receiver/server.js'</span> <span class="token operator">}</span>
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token punctuation">[</span>queue<span class="token punctuation">]</span> <span class="token operator">-</span> Using non<span class="token operator">-</span>scheduling<span class="token operator">-</span>based event queue processing
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> connect to messaging <span class="token operator">></span> file<span class="token operator">-</span>based<span class="token operator">-</span>messaging
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token punctuation">[</span>receiver<span class="token punctuation">]</span> <span class="token operator">-</span> Setting up listener for Greeting<span class="token punctuation">.</span>Received
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> server listening on <span class="token operator">{</span> url<span class="token operator">:</span> <span class="token string">'http://localhost:4005'</span> <span class="token operator">}</span></code></pre>
+<p>And directly following this, we see:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>receiver<span class="token punctuation">]</span> <span class="token operator">-</span> received<span class="token operator">:</span> Greeting<span class="token punctuation">.</span>Received <span class="token operator">{</span> info<span class="token operator">:</span> <span class="token string">'Understanding is everything!'</span> <span class="token operator">}</span></code></pre>
+<p>Not only that, but the queued message in <code>~/.cds-msg-box</code> is now gone. Consumed!</p>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>Asynchronous messaging is yet another fundamentally important aspect of real
+life service design, delivery and orchestration, and we have no reason to put
+off designing and building that in our projects, as we can incorporate local
+mocking from the very start.</p>
+<p>By the way, for automated tests, you might even want to look at <a href="https://cap.cloud.sap/docs/node.js/messaging#local-messaging">local
+messaging</a> which
+takes place in-process, a little bit like in-process remote-service mocking,
+and is very useful for automated testing.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2026/05/13/local-first-dev-with-cap-node-js-mocking-remote-services/">Local-first dev with CAP Node.js - mocking remote services</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2026/05/15/local-first-dev-with-cap-node-js-mocking-messaging/` was built on 2026-05-15T09:57:25.693Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
