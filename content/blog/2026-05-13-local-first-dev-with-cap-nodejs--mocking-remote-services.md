@@ -188,6 +188,10 @@ axiom, this works even for mocked remote services. As an erstwhile Perl
 programmer, I appreciate this
 [DWIM](https://perldoc.perl.org/perlsyn#DESCRIPTION:~:text=This%20is%20known%20as%20Do%20What%20I%20Mean%2C%20abbreviated%20DWIM.)-style approach.
 
+> To dig in more to the mock data facilities in CAP, see the [mocking
+> data](blog/posts/2026/05/11/local-first-dev-with-cap-node-js-mocking-data/)
+> blog post in this series.
+
 ### Have some data generated
 
 Let's first have CAP generate some data for us:
@@ -362,7 +366,8 @@ Let's stop the CAP server at this point.
 ### Mock the remote service in a separate process
 
 In a second terminal window, let's now start the standalone mocking of the
-required `northbreeze` service with the `cds mock` command, like this:
+required `northbreeze` service with the `cds mock`
+command[<sup>3</sup>](#footnotes), like this:
 
 ```bash
 cds mock northbreeze
@@ -555,7 +560,7 @@ first (`Main`) CAP server log output:
 
 We can see that there's an HTTP request, specifically an OData QUERY operation,
 that's been constructed and sent to the URL where the remote service is being
-provided[<sup>3</sup>](#footnotes).
+provided[<sup>4</sup>](#footnotes).
 
 And in the CAP server process in the second terminal window, where we're
 separately mocking the `northbreeze` remote service on 42623, we see that OData
@@ -592,6 +597,12 @@ exercises publicly available for you. Happy learning!
    release](https://cap.cloud.sap/docs/releases/2026/apr26#n-o-cloud-sdk), the
    SAP Cloud SDK is no longer mandatory for remote communication in
    development scenarios.
+
+1. `cds mock servicename` is actually just shorthand for
+
+    ```bash
+    cds serve --mocked servicename --in-memory? --port 0
+    ```
 
 1. We can also see, via the "Executing via native fetch" line, that the
    [Node-native Fetch API is in use here now, since Apr
