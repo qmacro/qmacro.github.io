@@ -267,7 +267,7 @@ Content-Length: 74
 
 Alice, with the `admin` role, is denied.
 
-### Add a user and role to for the mocked strategy
+### Give the user more access in the mocked strategy
 
 We can also modify and add to the pre-defined user definitions for the mocked
 authentication strategy. Let's do that, adding a couple of extra roles for
