@@ -296,7 +296,6 @@ have a message emitted.
 
 ```bash
 curl \
-  --request POST \
   --url "localhost:4006/rest/emitter/greet" \
   --data '{"greeting":"Understanding is everything!"}'
 }
