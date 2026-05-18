@@ -381,3 +381,4 @@ By the way, for automated tests, you might even want to look at [local
 messaging](https://cap.cloud.sap/docs/node.js/messaging#local-messaging) which
 takes place in-process, a little bit like in-process remote-service mocking,
 and is very useful for automated testing.
+
