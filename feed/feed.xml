@@ -411,7 +411,7 @@ communication with remote destinations&lt;a href=&quot;https://qmacro.org/blog/p
 &lt;h2 id=&quot;reviewing-the-situation&quot;&gt;Reviewing the situation&lt;/h2&gt;
 &lt;p&gt;This in-process mocking of the required remote service &amp;quot;northbreeze&amp;quot; means that
 in the CAP server context that exists for our project, we have that remote
-service available to us:&lt;/p&gt;
+service as an endpoint available to us at &lt;a href=&quot;http://localhost:4004&quot;&gt;http://localhost:4004&lt;/a&gt;:&lt;/p&gt;
 &lt;p&gt;&lt;img src=&quot;https://qmacro.org/images/2026/05/northbreeze-available.png&quot; alt=&quot;northbreeze remote service available&quot;&gt;&lt;/p&gt;
 &lt;p&gt;But while the mocked remote service is already fully formed, even in this
 &amp;quot;in-process&amp;quot; mode, there&#39;s no data. Let&#39;s add some so we can better explore the
@@ -470,16 +470,39 @@ have:&lt;/p&gt;
   &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Products&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;json
   &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Categories&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
 &lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; successfully deployed to in&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;memory database&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;h2 id=&quot;switching-to-a-separate-mocking-process&quot;&gt;Switching to a separate mocking process&lt;/h2&gt;
-&lt;p&gt;So far the required remote service has been mocked in-process.&lt;/p&gt;
-&lt;p&gt;But for local development with a scenario that is closer to the eventual
-production scenario we can also have that service mocked in a separate process.
-One effect of this is that real wire API calls are made between your local
-service and the separately mocked (but still locally running) remote service.&lt;/p&gt;
-&lt;p&gt;Before continuing, let&#39;s stop the current CAP server.&lt;/p&gt;
-&lt;p&gt;Now let&#39;s revisit the in-process mocking, but in the context of a local to
-remote proxy definition for an entity. Following that, we&#39;ll then switch to
-separate process based mocking.&lt;/p&gt;
+&lt;h3 id=&quot;move-the-data-closer-to-the-service&quot;&gt;Move the data closer to the service&lt;/h3&gt;
+&lt;p&gt;While the data for this mocked external required service is perfectly fine in
+&lt;code&gt;db/data/&lt;/code&gt; and is picked up as we&#39;d expect, perhaps it makes more sense to keep
+it closer to the service definition, as a &amp;quot;bundle&amp;quot;, as it were. That will work
+too, with respect to the automatic data loading mechanism, so let&#39;s do that:&lt;/p&gt;
+&lt;pre class=&quot;language-bash&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-bash&quot;&gt;&lt;span class=&quot;token function&quot;&gt;mv&lt;/span&gt; db/data/ srv/external/&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now the external service is more self-contained:&lt;/p&gt;
+&lt;pre class=&quot;language-text&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;./
+├── db/
+├── package.json
+└── srv/
+    └── external/
+        ├── data/
+        │   ├── northbreeze.Categories.csv
+        │   └── northbreeze.Products.json
+        ├── northbreeze.csn
+        └── northbreeze.edmx&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&quot;switching-to-a-more-realistic-scenario&quot;&gt;Switching to a more realistic scenario&lt;/h2&gt;
+&lt;p&gt;There are a couple of aspects we should look at now, based on the very simple
+setup we have so far:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;the required remote service has been mocked in-process; ideally we want a
+local development scenario that is closer to the eventual production
+situation&lt;/li&gt;
+&lt;li&gt;it is also entirely independent, unrelated to any local service definitions&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Regarding the first aspect, we can also have a service mocked in a separate
+process, instead of being mocked in-process. One effect of this is that real
+wire API calls are made between your local service and the separately mocked
+(but still locally running) remote service.&lt;/p&gt;
+&lt;p&gt;Regarding the second aspect, we&#39;ll set up a local to remote proxy definition in
+our CDS model, for an entity. We&#39;ll do that first staying with in-process
+mocking, and then switch to separate process based mocking.&lt;/p&gt;
 &lt;h3 id=&quot;set-up-a-local-to-remote-proxy-definition&quot;&gt;Set up a local to remote proxy definition&lt;/h3&gt;
 &lt;p&gt;One of the simplest forms of service mashup is surfacing a remote entity as a
 local one. This may not be entirely useful, but it demonstrates the atomic
@@ -504,8 +527,8 @@ external process mocking.&lt;/p&gt;
 
 &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; using bindings from&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; registry&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;~/.cds-services.json&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; connect to db &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; sqlite &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;:memory:&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
-  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Products&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;json
-  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Categories&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from srv&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;external&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Products&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;json
+  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from srv&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;external&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Categories&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
 &lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; successfully deployed to in&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;memory database&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
 
 &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; serving Main &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
@@ -520,7 +543,7 @@ external process mocking.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;the overall CDS model is built from the local definition we&#39;ve just created,
 plus the definitions from the remote service&lt;/li&gt;
-&lt;li&gt;initial data is loaded from the CSV and JSON files in &lt;code&gt;db/data/&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;initial data is being loaded from the CSV and JSON files&lt;/li&gt;
 &lt;li&gt;the local &lt;em&gt;provided&lt;/em&gt; service &lt;code&gt;Main&lt;/code&gt; is served&lt;/li&gt;
 &lt;li&gt;the remote &lt;em&gt;required&lt;/em&gt; service &lt;code&gt;northbreeze&lt;/code&gt; is also served, mocked in-process&lt;/li&gt;
 &lt;/ul&gt;
@@ -557,8 +580,8 @@ command&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/13/local-first-dev
 &lt;p&gt;We should see output like this:&lt;/p&gt;
 &lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; using bindings from&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; registry&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;~/.cds-services.json&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; connect to db &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; sqlite &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; database&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;:memory:&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
-  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Products&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;json
-  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from db&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Categories&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
+  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from srv&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;external&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Products&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;json
+  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; init from srv&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;external&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;data&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;northbreeze&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;Categories&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;csv
 &lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; successfully deployed to in&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;memory database&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;
 
 &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; mocking northbreeze &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;

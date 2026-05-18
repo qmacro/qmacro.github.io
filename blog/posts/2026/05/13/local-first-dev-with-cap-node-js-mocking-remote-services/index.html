@@ -684,7 +684,7 @@ communication with remote destinations<a href="#footnotes"><sup>2</sup></a></li>
 <h2 id="reviewing-the-situation">Reviewing the situation</h2>
 <p>This in-process mocking of the required remote service &quot;northbreeze&quot; means that
 in the CAP server context that exists for our project, we have that remote
-service available to us:</p>
+service as an endpoint available to us at <a href="http://localhost:4004">http://localhost:4004</a>:</p>
 <p><img src="/images/2026/05/northbreeze-available.png" alt="northbreeze remote service available"></p>
 <p>But while the mocked remote service is already fully formed, even in this
 &quot;in-process&quot; mode, there's no data. Let's add some so we can better explore the
@@ -743,16 +743,39 @@ have:</p>
   <span class="token operator">></span> init from db<span class="token operator">/</span>data<span class="token operator">/</span>northbreeze<span class="token punctuation">.</span>Products<span class="token punctuation">.</span>json
   <span class="token operator">></span> init from db<span class="token operator">/</span>data<span class="token operator">/</span>northbreeze<span class="token punctuation">.</span>Categories<span class="token punctuation">.</span>csv
 <span class="token operator">/</span><span class="token operator">></span> successfully deployed to in<span class="token operator">-</span>memory database<span class="token punctuation">.</span></code></pre>
-<h2 id="switching-to-a-separate-mocking-process">Switching to a separate mocking process</h2>
-<p>So far the required remote service has been mocked in-process.</p>
-<p>But for local development with a scenario that is closer to the eventual
-production scenario we can also have that service mocked in a separate process.
-One effect of this is that real wire API calls are made between your local
-service and the separately mocked (but still locally running) remote service.</p>
-<p>Before continuing, let's stop the current CAP server.</p>
-<p>Now let's revisit the in-process mocking, but in the context of a local to
-remote proxy definition for an entity. Following that, we'll then switch to
-separate process based mocking.</p>
+<h3 id="move-the-data-closer-to-the-service">Move the data closer to the service</h3>
+<p>While the data for this mocked external required service is perfectly fine in
+<code>db/data/</code> and is picked up as we'd expect, perhaps it makes more sense to keep
+it closer to the service definition, as a &quot;bundle&quot;, as it were. That will work
+too, with respect to the automatic data loading mechanism, so let's do that:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">mv</span> db/data/ srv/external/</code></pre>
+<p>Now the external service is more self-contained:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">./
+├── db/
+├── package.json
+└── srv/
+    └── external/
+        ├── data/
+        │   ├── northbreeze.Categories.csv
+        │   └── northbreeze.Products.json
+        ├── northbreeze.csn
+        └── northbreeze.edmx</code></pre>
+<h2 id="switching-to-a-more-realistic-scenario">Switching to a more realistic scenario</h2>
+<p>There are a couple of aspects we should look at now, based on the very simple
+setup we have so far:</p>
+<ul>
+<li>the required remote service has been mocked in-process; ideally we want a
+local development scenario that is closer to the eventual production
+situation</li>
+<li>it is also entirely independent, unrelated to any local service definitions</li>
+</ul>
+<p>Regarding the first aspect, we can also have a service mocked in a separate
+process, instead of being mocked in-process. One effect of this is that real
+wire API calls are made between your local service and the separately mocked
+(but still locally running) remote service.</p>
+<p>Regarding the second aspect, we'll set up a local to remote proxy definition in
+our CDS model, for an entity. We'll do that first staying with in-process
+mocking, and then switch to separate process based mocking.</p>
 <h3 id="set-up-a-local-to-remote-proxy-definition">Set up a local to remote proxy definition</h3>
 <p>One of the simplest forms of service mashup is surfacing a remote entity as a
 local one. This may not be entirely useful, but it demonstrates the atomic
@@ -777,8 +800,8 @@ external process mocking.</p>
 
 <span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> using bindings from<span class="token operator">:</span> <span class="token operator">{</span> registry<span class="token operator">:</span> <span class="token string">'~/.cds-services.json'</span> <span class="token operator">}</span>
 <span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> connect to db <span class="token operator">></span> sqlite <span class="token operator">{</span> url<span class="token operator">:</span> <span class="token string">':memory:'</span> <span class="token operator">}</span>
-  <span class="token operator">></span> init from db<span class="token operator">/</span>data<span class="token operator">/</span>northbreeze<span class="token punctuation">.</span>Products<span class="token punctuation">.</span>json
-  <span class="token operator">></span> init from db<span class="token operator">/</span>data<span class="token operator">/</span>northbreeze<span class="token punctuation">.</span>Categories<span class="token punctuation">.</span>csv
+  <span class="token operator">></span> init from srv<span class="token operator">/</span>external<span class="token operator">/</span>data<span class="token operator">/</span>northbreeze<span class="token punctuation">.</span>Products<span class="token punctuation">.</span>json
+  <span class="token operator">></span> init from srv<span class="token operator">/</span>external<span class="token operator">/</span>data<span class="token operator">/</span>northbreeze<span class="token punctuation">.</span>Categories<span class="token punctuation">.</span>csv
 <span class="token operator">/</span><span class="token operator">></span> successfully deployed to in<span class="token operator">-</span>memory database<span class="token punctuation">.</span>
 
 <span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> serving Main <span class="token operator">{</span>
@@ -793,7 +816,7 @@ external process mocking.</p>
 <ul>
 <li>the overall CDS model is built from the local definition we've just created,
 plus the definitions from the remote service</li>
-<li>initial data is loaded from the CSV and JSON files in <code>db/data/</code></li>
+<li>initial data is being loaded from the CSV and JSON files</li>
 <li>the local <em>provided</em> service <code>Main</code> is served</li>
 <li>the remote <em>required</em> service <code>northbreeze</code> is also served, mocked in-process</li>
 </ul>
@@ -830,8 +853,8 @@ command<a href="#footnotes"><sup>3</sup></a>, like this:</p>
 <p>We should see output like this:</p>
 <pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> using bindings from<span class="token operator">:</span> <span class="token operator">{</span> registry<span class="token operator">:</span> <span class="token string">'~/.cds-services.json'</span> <span class="token operator">}</span>
 <span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> connect to db <span class="token operator">></span> sqlite <span class="token operator">{</span> database<span class="token operator">:</span> <span class="token string">':memory:'</span> <span class="token operator">}</span>
-  <span class="token operator">></span> init from db<span class="token operator">/</span>data<span class="token operator">/</span>northbreeze<span class="token punctuation">.</span>Products<span class="token punctuation">.</span>json
-  <span class="token operator">></span> init from db<span class="token operator">/</span>data<span class="token operator">/</span>northbreeze<span class="token punctuation">.</span>Categories<span class="token punctuation">.</span>csv
+  <span class="token operator">></span> init from srv<span class="token operator">/</span>external<span class="token operator">/</span>data<span class="token operator">/</span>northbreeze<span class="token punctuation">.</span>Products<span class="token punctuation">.</span>json
+  <span class="token operator">></span> init from srv<span class="token operator">/</span>external<span class="token operator">/</span>data<span class="token operator">/</span>northbreeze<span class="token punctuation">.</span>Categories<span class="token punctuation">.</span>csv
 <span class="token operator">/</span><span class="token operator">></span> successfully deployed to in<span class="token operator">-</span>memory database<span class="token punctuation">.</span>
 
 <span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> mocking northbreeze <span class="token operator">{</span>
@@ -1011,7 +1034,7 @@ development scenarios.</p>
 			</heading-anchors>
 		</main>
 
-		<!-- This page `/blog/posts/2026/05/13/local-first-dev-with-cap-node-js-mocking-remote-services/` was built on 2026-05-18T05:15:46.488Z -->
+		<!-- This page `/blog/posts/2026/05/13/local-first-dev-with-cap-node-js-mocking-remote-services/` was built on 2026-05-18T06:44:38.700Z -->
 		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
 	</body>
 </html>
