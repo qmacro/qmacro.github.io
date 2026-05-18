@@ -171,7 +171,7 @@ As part of the import process, `package.json` was modified in two key areas:
 
 This in-process mocking of the required remote service "northbreeze" means that
 in the CAP server context that exists for our project, we have that remote
-service available to us:
+service as an endpoint available to us at <http://localhost:4004>:
 
 ![northbreeze remote service available](/images/2026/05/northbreeze-available.png)
 
@@ -257,20 +257,50 @@ and it's picked up as we would hope:
 /> successfully deployed to in-memory database.
 ```
 
-## Switching to a separate mocking process
+### Move the data closer to the service
 
-So far the required remote service has been mocked in-process.
+While the data for this mocked external required service is perfectly fine in
+`db/data/` and is picked up as we'd expect, perhaps it makes more sense to keep
+it closer to the service definition, as a "bundle", as it were. That will work
+too, with respect to the automatic data loading mechanism, so let's do that:
 
-But for local development with a scenario that is closer to the eventual
-production scenario we can also have that service mocked in a separate process.
-One effect of this is that real wire API calls are made between your local
-service and the separately mocked (but still locally running) remote service.
+```bash
+mv db/data/ srv/external/
+```
 
-Before continuing, let's stop the current CAP server.
+Now the external service is more self-contained:
 
-Now let's revisit the in-process mocking, but in the context of a local to
-remote proxy definition for an entity. Following that, we'll then switch to
-separate process based mocking.
+```text
+./
+├── db/
+├── package.json
+└── srv/
+    └── external/
+        ├── data/
+        │   ├── northbreeze.Categories.csv
+        │   └── northbreeze.Products.json
+        ├── northbreeze.csn
+        └── northbreeze.edmx
+```
+
+## Switching to a more realistic scenario
+
+There are a couple of aspects we should look at now, based on the very simple
+setup we have so far:
+
+- the required remote service has been mocked in-process; ideally we want a
+  local development scenario that is closer to the eventual production
+  situation
+- it is also entirely independent, unrelated to any local service definitions
+
+Regarding the first aspect, we can also have a service mocked in a separate
+process, instead of being mocked in-process. One effect of this is that real
+wire API calls are made between your local service and the separately mocked
+(but still locally running) remote service.
+
+Regarding the second aspect, we'll set up a local to remote proxy definition in
+our CDS model, for an entity. We'll do that first staying with in-process
+mocking, and then switch to separate process based mocking.
 
 ### Set up a local to remote proxy definition
 
@@ -306,8 +336,8 @@ Restart the CAP server with `cds watch`, whereupon we will see:
 
 [cds] - using bindings from: { registry: '~/.cds-services.json' }
 [cds] - connect to db > sqlite { url: ':memory:' }
-  > init from db/data/northbreeze.Products.json
-  > init from db/data/northbreeze.Categories.csv
+  > init from srv/external/data/northbreeze.Products.json
+  > init from srv/external/data/northbreeze.Categories.csv
 /> successfully deployed to in-memory database.
 
 [cds] - serving Main {
@@ -324,7 +354,7 @@ In other words:
 
 - the overall CDS model is built from the local definition we've just created,
   plus the definitions from the remote service
-- initial data is loaded from the CSV and JSON files in `db/data/`
+- initial data is being loaded from the CSV and JSON files
 - the local _provided_ service `Main` is served
 - the remote _required_ service `northbreeze` is also served, mocked in-process
 
@@ -378,8 +408,8 @@ We should see output like this:
 ```log
 [cds] - using bindings from: { registry: '~/.cds-services.json' }
 [cds] - connect to db > sqlite { database: ':memory:' }
-  > init from db/data/northbreeze.Products.json
-  > init from db/data/northbreeze.Categories.csv
+  > init from srv/external/data/northbreeze.Products.json
+  > init from srv/external/data/northbreeze.Categories.csv
 /> successfully deployed to in-memory database.
 
 [cds] - mocking northbreeze {
