@@ -324,9 +324,9 @@ service Main {
 In the following sections, we'll see the difference between in-process and
 external process mocking.
 
-### Restart the single CAP server process
+### Examine the CAP server logs now
 
-Restart the CAP server with `cds watch`, whereupon we will see:
+Once the CAP server restarts, take a look at the log output:
 
 ```log
 [cds] - loaded model from 2 file(s):
@@ -350,7 +350,7 @@ Restart the CAP server with `cds watch`, whereupon we will see:
 }
 ```
 
-In other words:
+What we see is very useful and helps augment our understanding:
 
 - the overall CDS model is built from the local definition we've just created,
   plus the definitions from the remote service
