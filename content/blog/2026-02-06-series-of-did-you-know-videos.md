@@ -146,4 +146,12 @@ can store your prompts in the prompt registry and easily reuse them later? More
 info: [Prompt
 Registry](https://help.sap.com/docs/sap-ai-core/generative-ai/prompt-registry)
 documentation in the SAP Help Portal. (_SAP Developer News 08 May 2026, with
-Nora_). 👈 LATEST
+Nora_).
+
+### 17 Read Only Preview feature in ABAP Cleaner
+
+📺 [Did you know](https://youtu.be/o1--Kx2SmQY?si=xEgtdV3IJ21MDX9A&t=323): that
+you can use the Read-only Preview of ABAP Cleaner to preview your cleaned code
+without locking or changing it? More info: [ABAP
+Cleaner](https://github.com/SAP/abap-cleaner) on GitHub. (_SAP Developer News
+08 May 2026, with Sheena_). 👈 LATEST
