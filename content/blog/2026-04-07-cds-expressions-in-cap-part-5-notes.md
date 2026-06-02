@@ -805,7 +805,8 @@ like[<sup>7</sup>](#footnotes):
 ```sql
 SELECT
   case
-    when Authors.academicTitle is not null then Authors.academicTitle || ? || Authors.name
+    when Authors.academicTitle is not null
+    then Authors.academicTitle || ? || Authors.name
     else Authors.name
   end as fullName,
   (
@@ -944,7 +945,8 @@ strings!).
    ```sql
    SELECT
      case
-       when Authors.academicTitle is not null then Authors.academicTitle || ? || Authors.name
+       when Authors.academicTitle is not null
+       then Authors.academicTitle || ? || Authors.name
        else Authors.name
      end as "fullName"
    FROM
