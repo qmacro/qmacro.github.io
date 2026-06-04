@@ -162,4 +162,12 @@ Cleaner](https://github.com/SAP/abap-cleaner) on GitHub. (_SAP Developer News
 can maintain a synchronized ABAP Profile across your team by creating and
 sharing a team profile? More info: [ABAP
 Cleaner](https://github.com/SAP/abap-cleaner) on GitHub. (_SAP Developer News
-28 May 2026, with Sheena_). 👈 LATEST
+28 May 2026, with Sheena_).
+
+### 19 Standardize class definition
+
+📺 [Did you know](https://www.youtube.com/watch?v=RMQiC_-XaPQ&t=294s): that the
+Standardize Class Definition feature in ABAP Cleaner helps keep class
+definitions consistent, improving code readability and maintainability? More
+info: [ABAP Cleaner](https://github.com/SAP/abap-cleaner) on GitHub. (_SAP
+Developer News 04 Jun 2026, with Sheena_). 👈 LATEST
