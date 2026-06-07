@@ -30,8 +30,8 @@ Covered in their discussions were a couple of patterns that resonated with me:
 Both these patterns live and breathe strongly within CAP, from a philosophical
 standpoint but also from a place that drives the fundamental design of the
 framework and how it manifests for us developers. So I thought it would be
-worth both highlighting this episode, series, and podcast, and also drawing the
-dots between the patterns and where they are in CAP.
+worth both highlighting this episode, series, and podcast, while also
+connecting the patterns and where they are in CAP.
 
 ## Ports and adapters
 
