@@ -298,7 +298,6 @@ have a message emitted.
 curl \
   --url "localhost:4006/rest/emitter/greet" \
   --data '{"greeting":"Understanding is everything!"}'
-}
 ```
 
 From this, we get a simple `OK`, as we'd expect from the [emitter service
