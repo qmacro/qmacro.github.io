@@ -170,4 +170,11 @@ Cleaner](https://github.com/SAP/abap-cleaner) on GitHub. (_SAP Developer News
 Standardize Class Definition feature in ABAP Cleaner helps keep class
 definitions consistent, improving code readability and maintainability? More
 info: [ABAP Cleaner](https://github.com/SAP/abap-cleaner) on GitHub. (_SAP
-Developer News 04 Jun 2026, with Sheena_). 👈 LATEST
+Developer News 04 Jun 2026, with Sheena_).
+
+### 20 cds up
+
+📺 [Did you know](https://www.youtube.com/watch?v=AMfgRgIwtyg&t=262s): that you
+can build and deploy SAP CAP applications conveniently with a single command?
+More info: the [Deployment](https://cap.cloud.sap/docs/guides/deploy/) topic in
+Capire. (_SAP Developer News 11 Jun 2026, with Nico._). 👈 LATEST
