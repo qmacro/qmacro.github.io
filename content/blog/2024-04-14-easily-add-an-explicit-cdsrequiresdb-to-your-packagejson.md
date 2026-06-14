@@ -151,4 +151,4 @@ Good to know!
 
 ---
 
-You may want to read [Using @cap-js/sqlite in CF for your CAP services](/blog/posts/2024/04/15/using-cap-js-sqlite-in-cf-for-your-cap-services/) which is closely related to this, too, as well as [Running non-production CAP services in CF](blog/posts/2024/04/15/running-non-production-cap-services-in-cf/).
+You may want to read [Using @cap-js/sqlite in CF for your CAP services](/blog/posts/2024/04/15/using-cap-js-sqlite-in-cf-for-your-cap-services/) which is closely related to this, too, as well as [Running non-production CAP services in CF](/blog/posts/2024/04/15/running-non-production-cap-services-in-cf/).

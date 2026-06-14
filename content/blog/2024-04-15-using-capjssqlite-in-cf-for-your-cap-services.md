@@ -10,7 +10,7 @@ tags:
 I published a couple of short posts recently:
 
 - [Running non-production CAP services in CF](/blog/posts/2024/04/15/running-non-production-cap-services-in-cf/)
-- [Easily add an explicit cds.requires.db to your CAP project's package.json](/blog/posts/2024/04/14/easily-add-an-explicit-cds.requires.db-to-your-cap-project's-package.json/)
+- [Easily add an explicit cds.requires.db to your CAP project's package.json](/blog/posts/2024/04/14/easily-add-an-explicit-cds-requires-db-to-your-cap-projects-package-json/)
 
 Both of them are related to going from zero to cloud, while still in design time, as quickly as possible. Partly to learn about the differences and similarities, but also simply because you can, and it elicits very interesting insights into how things work.
 
