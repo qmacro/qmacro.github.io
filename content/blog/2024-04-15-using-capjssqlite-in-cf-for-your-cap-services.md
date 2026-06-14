@@ -9,8 +9,8 @@ tags:
 ---
 I published a couple of short posts recently:
 
-* [Running non-production CAP services in CF](/blog/posts/2024/04/15/running-non-production-cap-services-in-cf/)
-* [Easily add an explicit cds.requires.db to your CAP project's package.json](/blog/posts/2024/04/14/easily-add-an-explicit-cds.requires.db-to-your-cap-project's-package.json/)
+- [Running non-production CAP services in CF](/blog/posts/2024/04/15/running-non-production-cap-services-in-cf/)
+- [Easily add an explicit cds.requires.db to your CAP project's package.json](/blog/posts/2024/04/14/easily-add-an-explicit-cds.requires.db-to-your-cap-project's-package.json/)
 
 Both of them are related to going from zero to cloud, while still in design time, as quickly as possible. Partly to learn about the differences and similarities, but also simply because you can, and it elicits very interesting insights into how things work.
 
@@ -190,11 +190,11 @@ That's fine, I hear you say. Not unexpected! That's right. But it's also a clue 
 
 ## Addressing the behaviour - locally
 
-Under normal circumstances, this is correct behaviour, and doesn't need "fixing". But I find it fascinating to understand why things happen like this, and how they relate to other related areas. 
+Under normal circumstances, this is correct behaviour, and doesn't need "fixing". But I find it fascinating to understand why things happen like this, and how they relate to other related areas.
 
 So let's try to hack thing so they work in this runtime context.
 
-Actually, all one needs to do is to get `npm` to install the `@cap-js/sqlite` package so that it appears in the runtime (`dependencies`) section, rather than the design time (`devDependencies`) section. 
+Actually, all one needs to do is to get `npm` to install the `@cap-js/sqlite` package so that it appears in the runtime (`dependencies`) section, rather than the design time (`devDependencies`) section.
 
 So, in the project's root, running:
 
@@ -241,7 +241,7 @@ It turns out that exactly the same thing would happen if we push our CAP service
 
 So performing the `npm install --save-prod` before pushing to CF will in fact bring about the same effect.
 
-Note that when pushing, you'll still need to set the `NODE_ENV` to something other than production, using the approach described in [Running non-production CAP services in CF](/blog/posts/2024/04/15/running-non-production-cap-services-in-cf/), in other words: 
+Note that when pushing, you'll still need to set the `NODE_ENV` to something other than production, using the approach described in [Running non-production CAP services in CF](/blog/posts/2024/04/15/running-non-production-cap-services-in-cf/), in other words:
 
 ```shell
 cf push qmacro-test --no-start \
@@ -301,7 +301,7 @@ It [turns out](https://medium.com/@pere.solaclaver/set-up-staging-environment-in
 
 The value of `NPM_CONFIG_PRODUCTION` affects how `npm` behaves. Which in turn affects how the CAP project is set up once pushed to CF (because Node.js packages are installed in situ in CF, rather than transferred with the "push" operation, of course).
 
-And if `NPM_CONFIG_PRODUCTION` is set to `true`, which it is by default here, then any packages listed in the `package.json#devDependencies` are NOT installed. 
+And if `NPM_CONFIG_PRODUCTION` is set to `true`, which it is by default here, then any packages listed in the `package.json#devDependencies` are NOT installed.
 
 So, for example, if I start from scratch, with:
 
@@ -369,7 +369,7 @@ Restaging app qmacro-test in org
    added 114 packages, and audited 115 packages in 4s
    ...
 
-Restarting app qmacro-test in org 
+Restarting app qmacro-test in org
 ...
 
      state     since                  cpu    memory     disk       logging        details
@@ -432,38 +432,38 @@ Good to know!
 <a name="footnotes"></a>
 ## Footnotes
 
-1) The cds version I'm running right now is 7.8, as you can see from the output from `cds v`:
+1. The cds version I'm running right now is 7.8, as you can see from the output from `cds v`:
 
-```text
-@cap-js/cds-types: 0.2.0
-@sap/cds: 7.8.0
-@sap/cds-compiler: 4.8.0
-@sap/cds-dk (global): 7.8.1
-@sap/cds-fiori: 1.2.3
-@sap/cds-foss: 5.0.0
-@sap/cds-mtxs: 1.17.0
-@sap/eslint-plugin-cds: 2.6.7
-Node.js: v20.11.1
-home: /usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds
-```
+    ```text
+    @cap-js/cds-types: 0.2.0
+    @sap/cds: 7.8.0
+    @sap/cds-compiler: 4.8.0
+    @sap/cds-dk (global): 7.8.1
+    @sap/cds-fiori: 1.2.3
+    @sap/cds-foss: 5.0.0
+    @sap/cds-mtxs: 1.17.0
+    @sap/eslint-plugin-cds: 2.6.7
+    Node.js: v20.11.1
+    home: /usr/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds
+    ```
 
-2) A key [content negotiation](/tags/conneg/) header in HTTP requests is `Accept`, describing to the server what representation is desirable or acceptable for the resource being returned. Chrome sends this value (as one string, but split over lines here for readability):
+1. A key [content negotiation](/tags/conneg/) header in HTTP requests is `Accept`, describing to the server what representation is desirable or acceptable for the resource being returned. Chrome sends this value (as one string, but split over lines here for readability):
 
-```text
-text/html,
-application/xhtml+xml,
-application/xml;q=0.9,
-image/avif,
-image/webp,
-image/apng,
-*/*;q=0.8,
-application/signed-exchange;v=b3;q=0.7
-```
+    ```text
+    text/html,
+    application/xhtml+xml,
+    application/xml;q=0.9,
+    image/avif,
+    image/webp,
+    image/apng,
+    */*;q=0.8,
+    application/signed-exchange;v=b3;q=0.7
+    ```
 
-and curl sends this value: 
+    and curl sends this value:
 
-```text
-*/*
-```
+    ```text
+    */*
+    ```
 
-by default. So the server (the CAP server, in this case) endeavours to comply to the more specific request from Chrome by supplying the OData entity set resource in XML, while it will be able to "relax" a little bit and just sent the default representation (JSON) in response to the request from curl.
+    by default. So the server (the CAP server, in this case) endeavours to comply to the more specific request from Chrome by supplying the OData entity set resource in XML, while it will be able to "relax" a little bit and just sent the default representation (JSON) in response to the request from curl.

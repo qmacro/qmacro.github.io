@@ -10,7 +10,7 @@ Sometimes I want to run test CAP services not only locally, but in the cloud. I 
 
 ## Production mode in Cloud Foundry for CAP services
 
-If I use `cf push` to deploy a CAP service to CF, the environment variable `NODE_ENV` is set automatically to `production`. This in turn tells the CAP server that [production grade](https://cap.cloud.sap/docs/guides/deployment/to-cf#prepare-for-production) facilities are required. 
+If I use `cf push` to deploy a CAP service to CF, the environment variable `NODE_ENV` is set automatically to `production`. This in turn tells the CAP server that [production grade](https://cap.cloud.sap/docs/guides/deployment/to-cf#prepare-for-production) facilities are required.
 
 > In what follows, I use "service" to refer to what I'm building with CAP, because that's what it is, but "application" when I'm talking about it in terms of CF, as in CF terms, especially when it comes to the `cf` commands, it's considered an app not a service.
 
@@ -58,7 +58,7 @@ start command:   npm start
 Start unsuccessful
 ```
 
-Crashed! 
+Crashed!
 
 Note that the value of `NODE_ENV` was set to `production`.
 
@@ -175,4 +175,4 @@ Good to know!
 
 ---
 
-You may want to read [Using @cap-js/sqlite in CF for your CAP services](/blog/posts/2024/04/15/using-@cap-jssqlite-in-cf-for-your-cap-services/) which is closely related to this, too, as well as [Easily add an explicit cds.requires.db to your CAP project's package.json](/blog/posts/2024/04/14/easily-add-an-explicit-cds.requires.db-to-your-cap-project's-package.json/).
+You may want to read [Using @cap-js/sqlite in CF for your CAP services](/blog/posts/2024/04/15/using-cap-js-sqlite-in-cf-for-your-cap-services/) which is closely related to this, too, as well as [Easily add an explicit cds.requires.db to your CAP project's package.json](/blog/posts/2024/04/14/easily-add-an-explicit-cds-requires-db-to-your-cap-projects-package-json/).
