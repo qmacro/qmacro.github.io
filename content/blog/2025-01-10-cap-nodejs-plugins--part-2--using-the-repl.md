@@ -574,7 +574,9 @@ gained from this cds REPL session to write our actual plugin!
 The reason this line appears each and every time we start up the service, even
 in the REPL:
 
-```log [LOUD] - Starting up ... ```
+```log
+[LOUD] - Starting up ...
+```
 
 is because by default, the `log('Starting up ...')` call here in our plugin
 file `loud/cap-plugin.js`:
@@ -596,7 +598,8 @@ the `DEBUG` environment variable, for example like this:
 DEBUG=LOUD cds watch
 ```
 
-or even (turning everything up to 11):
+or even ([turning everything up to
+11](https://www.youtube.com/watch?v=uMSV4OteqBE)):
 
 ```shell
 DEBUG=all cds watch

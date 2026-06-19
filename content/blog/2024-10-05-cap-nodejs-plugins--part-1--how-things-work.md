@@ -133,7 +133,7 @@ the CAP server source code - let's dive in!
 
 ## Diving into the CAP server source code
 
-Taking a look inside `node_modules/@sapcds/lib/plugins.js` we can see all sorts
+Taking a look inside `node_modules/@sap/cds/lib/plugins.js` we can see all sorts
 of stuff, but I'm drawn to this `fetch` function:
 
 ```javascript

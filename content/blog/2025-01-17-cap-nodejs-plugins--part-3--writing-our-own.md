@@ -212,7 +212,9 @@ cds.once('served', _ => {
 
 Starting up the server:
 
-```shell DEBUG=LOUD cds w ```
+```shell
+DEBUG=LOUD cds w
+```
 
 we see the debug output from our plugin:
 
@@ -239,7 +241,8 @@ together into that `served` lifecycle event handler.
 
 We'll replace this line, in the handler above:
 
-```javascript log.debug(services.map(basicInfo))
+```javascript
+log.debug(services.map(basicInfo))
 ```
 
 with something that actually works through those services and does the right
@@ -273,7 +276,9 @@ First, replacing that `log.debug` line with this:
 gives us the following two lines in the CAP server output (when running with
 `DEBUG` set on for our `LOUD` logger identifier, of course):
 
-```log [LOUD] - Bookshop.Books -> genre [LOUD] - PlatonicForms.Colours -> name
+```log
+[LOUD] - Bookshop.Books -> genre
+[LOUD] - PlatonicForms.Colours -> name
 ```
 
 ### Setting up a handler to provide the effect
