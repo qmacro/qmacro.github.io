@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>CAP service authentication at design time and in production</title>
+		<meta name="description" content="In this short post I explain how the &quot;failsafe&quot; production auth mechanism is designed for resources served in a CAP context.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="CAP service authentication at design time and in production">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="In this short post I explain how the &quot;failsafe&quot; production auth mechanism is designed for resources served in a CAP context.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2026/06/19/cap-service-authentication-at-design-time-and-in-production/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 60%, 70%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="cap-service-authentication-at-design-time-and-in-production">CAP service authentication at design time and in production</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2026-06-19">19 June 2026</time></li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/auth/" class="post-tag">auth</a></li>
+</ul>
+
+<p class="post-description-main">In this short post I explain how the "failsafe" production auth mechanism is designed for resources served in a CAP context.</p>
+
+<p>Recently I wrote about <a href="/blog/posts/2026/05/12/local-first-dev-with-cap-node-js-mocking-auth/">mocking
+auth</a> in
+CAP for a rapid local-first development loop that allows you to embrace auth
+design rather than defer it to later.</p>
+<p>In development mode, unless otherwise stated (i.e. unless you add appropriate
+annotations such as <code>@readonly</code>, <code>@requires</code> or <code>@restrict</code>), all resources are
+accessible to everyone, even without authenticating. This is appropriate and
+fitting, helping to facilitate the tight feedback loop that folks love
+when developing with CAP.</p>
+<p>What about production? Is it the same there, i.e. do we have to ensure we lock
+down access before moving to production? Of course not. Here's how things work.</p>
+<h2 id="default-auth-settings-for-development">Default auth settings for development</h2>
+<p>In development mode, the default auth strategy is &quot;mocked&quot;, as we can see:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token punctuation">;</span> cds env requires<span class="token punctuation">.</span>auth
+<span class="token punctuation">{</span>
+  <span class="token literal-property property">restrict_all_services</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">kind</span><span class="token operator">:</span> <span class="token string">'mocked'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">users</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token literal-property property">alice</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">tenant</span><span class="token operator">:</span> <span class="token string">'t1'</span><span class="token punctuation">,</span> <span class="token literal-property property">roles</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'admin'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">bob</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">tenant</span><span class="token operator">:</span> <span class="token string">'t1'</span><span class="token punctuation">,</span> <span class="token literal-property property">roles</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'cds.ExtensionDeveloper'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">carol</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">tenant</span><span class="token operator">:</span> <span class="token string">'t1'</span><span class="token punctuation">,</span> <span class="token literal-property property">roles</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'admin'</span><span class="token punctuation">,</span> <span class="token string">'cds.ExtensionDeveloper'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token operator">...</span>
+    <span class="token literal-property property">yves</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">roles</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'internal-user'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token string-property property">'*'</span><span class="token operator">:</span> <span class="token boolean">true</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">tenants</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">t1</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">features</span><span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'isbn'</span> <span class="token punctuation">]</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token literal-property property">t2</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">features</span><span class="token operator">:</span> <span class="token string">'*'</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Notice also the <code>restrict_all_services</code> property, which is set to <code>false</code>
+by default in development mode too.</p>
+<p>This property is at the core of the &quot;failsafe&quot; production auth mechanism that
+means that even if you do nothing with regards to auth for your services, they
+will be protected in production and only available to users who provide
+appropriate authentication.</p>
+<h2 id="default-auth-settings-for-production">Default auth settings for production</h2>
+<p>In the <a href="https://cap.cloud.sap/docs/node.js/authentication#authentication-in-production">Authentication in
+Production</a>
+section in Capire, we read, in the &quot;Enforced by Default&quot; subsection:</p>
+<blockquote>
+<p>In a productive scenario with an authentication strategy configured, for
+example the default <code>jwt</code>, all CAP service endpoints are authenticated by
+default, regardless of the authorization model. That is, all services without
+<code>@restrict</code> or <code>@requires</code> implicitly get <code>@requires: 'authenticated-user'</code>.</p>
+<p>This can be disabled via feature flag
+<code>cds.requires.auth.restrict_all_services: false</code>, or by using <code>mocked</code>
+authentication explicitly in production</p>
+</blockquote>
+<p>We can check that the default auth strategy is <code>jwt</code> in production, like this:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token punctuation">;</span> <span class="token constant">NODE_ENV</span><span class="token operator">=</span>production cds env requires<span class="token punctuation">.</span>auth
+<span class="token punctuation">{</span> <span class="token literal-property property">kind</span><span class="token operator">:</span> <span class="token string">'jwt'</span><span class="token punctuation">,</span> <span class="token literal-property property">vcap</span><span class="token operator">:</span> <span class="token punctuation">{</span> <span class="token literal-property property">label</span><span class="token operator">:</span> <span class="token string">'xsuaa'</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span></code></pre>
+<p>Notice also here that <code>restrict_all_services</code> is not there, and will thus have
+an undefined value:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token punctuation">;</span> <span class="token constant">NODE_ENV</span><span class="token operator">=</span>production cds env requires<span class="token punctuation">.</span>auth<span class="token punctuation">.</span>restrict_all_services
+<span class="token keyword">undefined</span></code></pre>
+<h2 id="understanding-the-mechanism">Understanding the mechanism</h2>
+<p>Now we understand the background, let's dig in to see how this works, to
+understand things better.</p>
+<p>In the runtime, there's <code>@sap/cds/lib/srv/protocols/https.js</code>, which contains:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">const</span> cds <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'../../index'</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> decodeURI <span class="token punctuation">}</span> <span class="token operator">=</span> cds<span class="token punctuation">.</span>utils
+<span class="token keyword">const</span> express <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'express'</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> <span class="token constant">PROD</span> <span class="token operator">=</span> process<span class="token punctuation">.</span>env<span class="token punctuation">.</span><span class="token constant">NODE_ENV</span> <span class="token operator">===</span> <span class="token string">'production'</span>
+<span class="token keyword">const</span> restrict_all <span class="token operator">=</span> cds<span class="token punctuation">.</span>env<span class="token punctuation">.</span>requires<span class="token punctuation">.</span>auth<span class="token operator">?.</span>restrict_all_services <span class="token operator">!==</span> <span class="token boolean">false</span>
+<span class="token keyword">const</span> authenticated <span class="token operator">=</span> <span class="token constant">PROD</span> <span class="token operator">&amp;&amp;</span> restrict_all <span class="token operator">?</span> <span class="token punctuation">[</span><span class="token string">'authenticated-user'</span><span class="token punctuation">]</span> <span class="token operator">:</span> <span class="token boolean">false</span>
+
+<span class="token keyword">class</span> <span class="token class-name">HttpAdapter</span> <span class="token punctuation">{</span>
+
+  <span class="token comment">// ...</span>
+
+  <span class="token comment">/**
+   * Returns a handler to check required roles, or null if no check required.
+   * @returns {express.RequestHandler|null}
+   */</span>
+  <span class="token keyword">get</span> <span class="token function">requires</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> d <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>service<span class="token punctuation">.</span>definition<span class="token punctuation">;</span> <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>d<span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token keyword">null</span>
+    <span class="token keyword">const</span> rr <span class="token operator">=</span> d<span class="token punctuation">[</span><span class="token string">'@requires'</span><span class="token punctuation">]</span> <span class="token operator">||</span> d<span class="token punctuation">[</span><span class="token string">'@restrict'</span><span class="token punctuation">]</span><span class="token operator">?.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token parameter">r</span> <span class="token operator">=></span> r<span class="token punctuation">.</span>to<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">flat</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">r</span> <span class="token operator">=></span> r<span class="token punctuation">)</span>
+    <span class="token keyword">const</span> roles <span class="token operator">=</span> <span class="token operator">!</span>rr<span class="token operator">?.</span>length <span class="token operator">?</span> authenticated <span class="token operator">:</span> Array<span class="token punctuation">.</span><span class="token function">isArray</span><span class="token punctuation">(</span>rr<span class="token punctuation">)</span> <span class="token operator">?</span> rr <span class="token operator">:</span> <span class="token punctuation">[</span>rr<span class="token punctuation">]</span>
+    <span class="token keyword">return</span> <span class="token keyword">super</span><span class="token punctuation">.</span>requires <span class="token operator">=</span> roles <span class="token operator">&amp;&amp;</span> <span class="token keyword">function</span> <span class="token function">requires</span> <span class="token punctuation">(</span><span class="token parameter">req<span class="token punctuation">,</span> res<span class="token punctuation">,</span> next</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> user <span class="token operator">=</span> cds<span class="token punctuation">.</span>context<span class="token punctuation">.</span>user
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>roles<span class="token punctuation">.</span><span class="token function">some</span><span class="token punctuation">(</span><span class="token parameter">role</span> <span class="token operator">=></span> user<span class="token punctuation">.</span><span class="token function">has</span><span class="token punctuation">(</span>role<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">next</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">//> ok</span>
+      <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>user<span class="token punctuation">.</span>_is_anonymous<span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token function">next</span><span class="token punctuation">(</span><span class="token number">401</span><span class="token punctuation">)</span> <span class="token comment">//> request login</span>
+      <span class="token keyword">else</span> cds<span class="token punctuation">.</span><span class="token function">error</span> <span class="token punctuation">(</span><span class="token number">403</span><span class="token punctuation">,</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">User '</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>user<span class="token punctuation">.</span>id<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">' is lacking required roles: [</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>roles<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">]</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+
+  <span class="token comment">// ...</span>
+<span class="token punctuation">}</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> HttpAdapter</code></pre>
+<p><em>This is from a <code>@sap/cds</code> runtime version 9.9.1 at the time of writing.</em></p>
+<p>If we <a href="/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#initial-recognition">stare
+at</a>
+this for a moment, we see that:</p>
+<ul>
+<li><code>authenticated</code> is set to the value <code>['authenticated-user']</code> if we're in
+production and the <code>restrict_all_services</code> value is NOT explicitly set to
+<code>false</code></li>
+<li>then, in the handler that gathers and checks for the specific roles required
+when a resource is requested, if there are no roles explicitly set as
+required for the service, then this <code>authenticated-user</code> role is used
+(remember, <code>authenticated-user</code> is a
+<a href="https://cap.cloud.sap/docs/guides/security/cap-users#pseudo-roles">pseudo-role</a>)</li>
+</ul>
+<p>In other words, if you haven't set a value explicitly for
+<code>restrict_all_services</code> then this will &quot;fail safely&quot; in production.</p>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>So there you have it. I mean, it's sort of obvious when you think about it, but
+I think it's always nice to &quot;understand by reading&quot; and spend a bit of time to
+dwell on the mechanism.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2026/06/04/book-overflow-and-two-architectural-patterns-in-cap/">Book Overflow and two architectural patterns in CAP</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2026/06/19/cap-service-authentication-at-design-time-and-in-production/` was built on 2026-06-19T08:18:59.799Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
