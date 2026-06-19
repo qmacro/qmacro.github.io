@@ -177,4 +177,12 @@ Developer News 04 Jun 2026, with Sheena_).
 📺 [Did you know](https://www.youtube.com/watch?v=AMfgRgIwtyg&t=262s): that you
 can build and deploy SAP CAP applications conveniently with a single command?
 More info: the [Deployment](https://cap.cloud.sap/docs/guides/deploy/) topic in
-Capire. (_SAP Developer News 11 Jun 2026, with Nico._). 👈 LATEST
+Capire. (_SAP Developer News 11 Jun 2026, with Nico._).
+
+### 21 WHERE clause in READ statement
+
+📺 [Did you know](https://www.youtube.com/watch?v=ybqcfUaND_Y&t=257s): that you can
+use a WHERE clause in a READ statement in ABAP? More info: the [READ TABLE,
+where_cond](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPREAD_TABLE_WHERE.html)
+topic in the ABAP documentation. (_SAP Developer News 18 Jun 2026, with
+Rich._). 👈 LATEST
