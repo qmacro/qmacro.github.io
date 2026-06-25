@@ -8,7 +8,7 @@ tags:
   - annotations
 description: In this post I explore the new Status-Transition Flows in CAP with a simple example.
 ---
-The [November 2025 release](https://cap.cloud.sap/docs/releases/nov25) of CAP heralded [a beta version of Status-Transition Flows](https://cap.cloud.sap/docs/releases/nov25#status-transition-flows), moving us up yet another gear in the journey towards declarative nirvana.
+The [November 2025 release](https://cap.cloud.sap/docs/releases/nov25) of CAP heralded [a beta version of Status-Transition Flows](https://cap.cloud.sap/docs/releases/2025/nov25#status-transition-flows), moving us up yet another gear in the journey towards declarative nirvana.
 
 ## Background
 
@@ -22,7 +22,7 @@ annotate Travels with @flow.status: Status actions {
 };
 ```
 
-Of course, this is only part of how things are set up; following the link at the end of this section of the release notes leads us to [the relevant Capire section within the Providing Services topic](https://cap.cloud.sap/docs/guides/providing-services#status-transition-flows), where we can see some of the rest of the CDS model (domain model and service definition specifically) that goes to make up the sample.
+Of course, this is only part of how things are set up; following the link at the end of this section of the release notes leads us to [the relevant Capire section within the Providing Services topic](https://cap.cloud.sap/docs/guides/services/status-flows), where we can see some of the rest of the CDS model (domain model and service definition specifically) that goes to make up the sample.
 
 I wanted to write my own example, complete but also as simple as possible, so I could then [stare at it](/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#initial-recognition) for a while to let things sink in. Here's what I came up with.
 
@@ -85,7 +85,7 @@ With regards to the service definition:
 Finally there's the annotation:
 
 - It's separate to the annotation target, and arguably easier to read that way; moreover, it would likely (or at least possibly) be in a separate file if it weren't so deliberately simple (see [Separating concerns and focusing on the important stuff](/blog/posts/2024/11/04/separating-concerns-and-focusing-on-the-important-stuff/))
-- It has been written in accordance with the description in the [Modelling Flows](https://cap.cloud.sap/docs/guides/providing-services#modeling-flows) section of the [Providing Services](https://cap.cloud.sap/docs/guides/providing-services) topic in Capire
+- It has been written in accordance with the description in the [Modelling Status Flows](https://cap.cloud.sap/docs/guides/services/status-flows#modeling-status-flows) section of the [Status-Transition Flows](https://cap.cloud.sap/docs/guides/services/status-flows) topic in Capire
 
 ### Digging in to the annotation
 
@@ -115,7 +115,9 @@ annotate Switches actions {
 
 Separating these out like this makes it a bit easier for me to grok what's going on.
 
-First, we're blessing the `Switches` entity with the Status-Transition Flows ability; at this level, we must specify the element to be used for the status. It's the `status` element that's important, and we do that here by targeting the entire entity with the annotation and then specifying the element as a secondary piece of information. We could have annotated the element directly, like this:
+First, we're blessing the `Switches` entity with the Status-Transition Flows ability; at this level, we must specify the element to be used for the status. It's the `status` element that's important, and we do that here by targeting the entire entity with the annotation and then specifying the element as a secondary piece of information.
+
+We could have annotated the element directly, like this:
 
 ```cds
 context qmacro {
@@ -323,7 +325,7 @@ Excellent!
 
 Of course, there's a lot more that this new Status-Transition Flows feature offers, but for now, I'm glad I took a first look with this simple example.
 
-For further explorations and explanations, see Simon Engel's great session [Status Transition Flows in CAP](https://www.youtube.com/watch?v=1XolXCjN5IQ) from Devtoberfest earlier this year, as well as the [coverage in Capire](https://cap.cloud.sap/docs/guides/providing-services#status-transition-flows).
+For further explorations and explanations, see Simon Engel's great session [Status Transition Flows in CAP](https://www.youtube.com/watch?v=1XolXCjN5IQ) from Devtoberfest earlier this year, as well as the [coverage in Capire](https://cap.cloud.sap/docs/guides/services/status-flows).
 
 And remember, this is a beta feature right now, so a great time to try it out for yourself.
 
@@ -342,7 +344,7 @@ And remember, this is a beta feature right now, so a great time to try it out fo
     ]
     ```
 
-    This means that it's a default ("well-known") location for CDS model definitions.
+    This means that it's a default ("well-known") location for CDS model definitions. See also [Why I use services.cds in simple CDS model examples](/blog/posts/2026/01/02/why-i-use-services-cds-in-simple-cds-model-examples/).
 
 1. What's really going to blow your mind is that `annotate` is really [just a shortcut variant](https://cap.cloud.sap/docs/cds/cdl#the-annotate-directive) of `extend`.
 
