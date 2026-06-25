@@ -15,11 +15,12 @@ following on from last week's post in this [Monday morning thoughts
 series](/tags/mondaymorningthoughts/), on
 [abstraction](/blog/posts/2018/07/16/monday-morning-thoughts:-abstraction/).
 
-Then, in browsing the content of my bookshelves, I came across a copy of
-a wonderful course on SAP assembler macro programming, called IT400 and
-written by Peter Skov.
+Then, in browsing the content of my bookshelves, I came across a copy of a
+wonderful course on SAP assembler macro programming for R/2, called IT-400
+and written by Peter Skov.
 
-![](/images/2018/07/it-400.png)
+![a photo of the front cover of a reproduced copy of
+IT-400](/images/2018/07/it-400.png)
 
 (I'd lost my original copy; this new copy was courtesy of Chris Whealy,
 a good friend and fellow curious companion - he was one half of our
@@ -75,7 +76,7 @@ features that made the Atom both quirky and much loved. With 6502
 assembler or the mainframe [370 assembly
 language](https://en.wikipedia.org/wiki/IBM_Basic_assembly_language_and_successors) upon
 which the R/2 systems that I worked with was based (and the subject of
-the IT400 course), while you felt close to the machine, you were very
+the IT-400 course), while you felt close to the machine, you were very
 far away from your fellow programmers and an abstract layer of intent.
 
 You had to spell out exactly how you want the machine to go about some
@@ -96,7 +97,8 @@ It's a session I've given before in a number of different forms
 
 It was for the hands-on format that I created a 20 page worksheet which is available for all online:
 
-![](/images/2018/07/worksheet.png)
+![a screenshot of the cover page of "Functional Programming for your UI5
+Apps - Hands-On Worksheet"](/images/2018/07/worksheet.png)
 
 [Functional Programming for your UI5 Apps - Hands-On
 Worksheet](https://docs.google.com/document/d/1Nx2PFqObMtir0rSzjU804PAAVkC3j4lZTtfRRoLSocQ/)
@@ -156,10 +158,10 @@ aEntities
 
 We can "say" this out loud as follows:
 
--   take the array of entities
--   filter them down to those whose namespace is "sap.ui.core"
--   fold* the filtered entities together, accumulating the
-    "sampleCount" property values
+- take the array of entities
+- filter them down to those whose namespace is "sap.ui.core"
+- fold* the filtered entities together, accumulating the "sampleCount"
+  property values
 
 *I'm deliberately using the word "fold" here because that is what
 reduce is called in other functional languages. But that too is a
@@ -217,7 +219,7 @@ session](https://www.youtube.com/watch?v=R8Z25evYw0o&list=PLHUs_FUbq4dWi0NJg0o6-
 version of the worksheet in the form of a [presentation](https://docs.google.com/presentation/d/1tSQkrIUneHENJqqAogFkcyw2Hztxk-SL497w1RH6emg/). The recording is
 one in a whole series of recordings from the UI5con Bangalore event.
 
-![](/images/2018/07/ui5conflyer.png)
+![An image of the UI5con@SAP Bangalore 2018 flyer](/images/2018/07/ui5conflyer.png)
 
 ---
 
