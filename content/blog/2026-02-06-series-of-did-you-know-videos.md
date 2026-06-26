@@ -185,4 +185,12 @@ Capire. (_SAP Developer News 11 Jun 2026, with Nico._).
 use a WHERE clause in a READ statement in ABAP? More info: the [READ TABLE,
 where_cond](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPREAD_TABLE_WHERE.html)
 topic in the ABAP documentation. (_SAP Developer News 18 Jun 2026, with
-Rich._). 👈 LATEST
+Rich._).
+
+### 22 GenAI in SAP Build Process Automation (SBPA)
+
+📺 [Did you know](https://www.youtube.com/watch?v=TwS3jXUcqBE&t=225s): that you
+can enable and use Generative AI feature in SAP Build Process Automation? More
+info: the blog post [Create SAP Build Apps applications in minutes with
+AI](https://community.sap.com/t5/application-development-and-automation-blog-posts/create-sap-build-apps-applications-in-minutes-with-ai/ba-p/14054862)
+(_SAP Developer News 25 Jun 2026, with Rekha._). 👈 LATEST
