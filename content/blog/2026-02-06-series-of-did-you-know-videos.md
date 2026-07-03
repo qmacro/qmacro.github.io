@@ -193,4 +193,11 @@ Rich._).
 can enable and use Generative AI feature in SAP Build Process Automation? More
 info: the blog post [Create SAP Build Apps applications in minutes with
 AI](https://community.sap.com/t5/application-development-and-automation-blog-posts/create-sap-build-apps-applications-in-minutes-with-ai/ba-p/14054862)
-(_SAP Developer News 25 Jun 2026, with Rekha._). 👈 LATEST
+(_SAP Developer News 25 Jun 2026, with Rekha._).
+
+### 23 Schema evolution in CAP
+
+📺 [Did you know](https://www.youtube.com/watch?v=B3f_Tkk9_b0&t=205s): that
+CAP supports schema evolution? More
+info: the [Schema Evolution](https://cap.cloud.sap/docs/guides/databases/schema-evolution)
+topic in Capire (_SAP Developer News 02 Jul 2026, with Ajay._). 👈 LATEST
