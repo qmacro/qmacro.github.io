@@ -13,7 +13,7 @@ Terence Eden recently published a post titled [This blog is written in
 en-GB](https://shkspr.mobi/blog/2026/07/this-blog-is-written-in-en-gb/). Before
 I even read the post, I knew what it was going to be about, and that I had to
 [make that
-change](https://github.com/qmacro/qmacro.github.io/commit/0119c30b9494671a064718a634bf1ee3f89d9666),
+change](https://github.com/qmacro/qmacro.github.io/commit/0119c30b9494671a064718a634bf1ee3f89d9666)
 myself too, for the same reasons as I'd guessed he was going to explain.
 
 Terence expresses those reasons very well, so I won't try to reproduce them
