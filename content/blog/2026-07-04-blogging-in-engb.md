@@ -41,7 +41,7 @@ Williams](https://jayacunzo.com/blog/your-move-chief).
 
 In turn, that post reminded me of the classic quote:
 
-"The computer can't tell you the emotional story. It can give you the exact
-mathematical design, but what's missing is the eyebrows."
+"The computer can't tell you the emotional story. It can give you the
+exact mathematical design, but what's missing is the eyebrows."
 
 If you don't know who uttered that ... go and find out.
