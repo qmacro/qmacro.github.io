@@ -11,9 +11,11 @@ tags:
 description: Some brief thoughts on history and how we used to have to make things work, sometimes in painstaking detail.
 ---
 
-My good friend and colleague [Antonio](https://ajmaradiaga.com/) shared [some
+My good friend and colleague [Antonio](https://ajmaradiaga.com/) shared
+[some
 thoughts](https://www.linkedin.com/posts/ajmaradiaga_today-i-bumped-into-this-blog-post-the-share-7480610580723183616-je3k/)
-today about a post he'd just read: [The Last People Who Know How It
+today (also, see update below) about a post he'd just read: [The Last People
+Who Know How It
 Works](https://unix.foo/posts/last-people-who-know-how-it-works/).
 
 I was composing a reply to Antonio's thoughts on LinkedIn, but then thought
@@ -76,3 +78,7 @@ That road is a road to pain and regret.
 Anyway, I don't want this last thought to take anything away from the post -
 [it's still a lovely
 read](https://unix.foo/posts/last-people-who-know-how-it-works/).
+
+---
+
+Update: Antonio has put his thoughts on his own post now too, kudos: [A simple reflection on how things work, curiosity and friction](https://ajmaradiaga.com/how-it-works/).
