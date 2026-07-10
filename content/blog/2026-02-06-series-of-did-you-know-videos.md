@@ -177,7 +177,7 @@ Developer News 04 Jun 2026, with Sheena_).
 📺 [Did you know](https://www.youtube.com/watch?v=AMfgRgIwtyg&t=262s): that you
 can build and deploy SAP CAP applications conveniently with a single command?
 More info: the [Deployment](https://cap.cloud.sap/docs/guides/deploy/) topic in
-Capire. (_SAP Developer News 11 Jun 2026, with Nico._).
+Capire. (_SAP Developer News 11 Jun 2026, with Nico_).
 
 ### 21 WHERE clause in READ statement
 
@@ -185,7 +185,7 @@ Capire. (_SAP Developer News 11 Jun 2026, with Nico._).
 use a WHERE clause in a READ statement in ABAP? More info: the [READ TABLE,
 where_cond](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPREAD_TABLE_WHERE.html)
 topic in the ABAP documentation. (_SAP Developer News 18 Jun 2026, with
-Rich._).
+Rich_).
 
 ### 22 GenAI in SAP Build Process Automation (SBPA)
 
@@ -193,11 +193,19 @@ Rich._).
 can enable and use Generative AI feature in SAP Build Process Automation? More
 info: the blog post [Create SAP Build Apps applications in minutes with
 AI](https://community.sap.com/t5/application-development-and-automation-blog-posts/create-sap-build-apps-applications-in-minutes-with-ai/ba-p/14054862)
-(_SAP Developer News 25 Jun 2026, with Rekha._).
+(_SAP Developer News 25 Jun 2026, with Rekha_).
 
 ### 23 Schema evolution in CAP
 
 📺 [Did you know](https://www.youtube.com/watch?v=B3f_Tkk9_b0&t=205s): that
 CAP supports schema evolution? More
 info: the [Schema Evolution](https://cap.cloud.sap/docs/guides/databases/schema-evolution)
-topic in Capire (_SAP Developer News 02 Jul 2026, with Ajay._). 👈 LATEST
+topic in Capire (_SAP Developer News 02 Jul 2026, with Ajay_).
+
+### 24 CAP cds add test
+
+📺 [Did you know](https://www.youtube.com/watch?v=rCaDZ93y1Kw&t=1040s):
+that CAP 'cds add test' generates the initial test scripts?
+More info: the [cds add](https://cap.cloud.sap/docs/tools/cds-cli#cds-add)
+section of the CDS Command Line Interface (CLI) topic in Capire
+(_SAP Developer News 09 Jul 2026, with Ajay_).
