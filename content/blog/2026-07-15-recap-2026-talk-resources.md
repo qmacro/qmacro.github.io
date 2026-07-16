@@ -12,14 +12,14 @@ tags:
 description: Resources related to our talk at reCAP 2026.
 ---
 
-At [reCAP](https://recap-conf.dev/) this year, I am honoured to share a talk
+At [reCAP](https://recap-conf.dev/) this year, I was honoured to share a talk
 slot with [Patrice
 Bender](https://www.linkedin.com/in/patrice-bender-64a816118/), a good friend
 and adjacent colleague from the CAP Compiler team, and cohost / copresenter on
 the [Hands-on SAP Dev mini-series on the core expression language in
 CDS](/blog/posts/2025/12/09/a-new-hands-on-sap-dev-mini-series-on-the-core-expression-language-in-cds/).
 
-The [talk](https://recap-conf.dev/program.html) is titled **Expressions
+The [talk](https://recap-conf.dev/program.html) was titled **Expressions
 and Abstractions - Two Developer Superpowers in CAP**, with the following
 overview:
 
