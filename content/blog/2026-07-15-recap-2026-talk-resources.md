@@ -2,6 +2,7 @@
 title: reCAP 2026 talk resources
 date: 2026-07-15
 tags:
+  - cap
   - recap
   - talk
   - cxl
