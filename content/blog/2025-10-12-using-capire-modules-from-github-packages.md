@@ -73,6 +73,29 @@ This token now needs to be associated with the registry, by adding another line 
 //npm.pkg.github.com/:_authToken=THE-TOKEN-JUST-GENERATED
 ```
 
+## Shortcut
+
+Now you understand how things are wired up, you can happily continue to
+maintain the contents of `.npmrc` this way. Alternatively, you can use the
+following to do the same thing, i.e. to maintain values for the two properties
+we've just added to that file:
+
+```bash
+npm login \
+  --scope @capire \
+  --auth-type legacy \
+  --registry=https://npm.pkg.github.com
+```
+
+After supplying your GitHub user for the Username and the value of the token
+for the Password, you'll see a message like this:
+
+```log
+Logged in to scope @capire on https://npm.pkg.github.com/.
+```
+
+and the two properties will have been maintained in `.npmrc`.
+
 ## Installing a package
 
 Once this is done, `npm install` or `npm add` will complete successfully:
