@@ -3,6 +3,7 @@ title: An Amazing 36 Hours at SAP Labs Israel
 date: 2013-10-03
 tags:
   - sapcommunity
+  - river
 ---
 I'm sitting in TLV airport waiting for my flight back to MAN via FRA. I've just spent a whirlwind 36 hours, more or less, in an amazing developer engine also known as SAP Labs Israel. Before I start though, I want to extend my gratitude and thanks to all those who made me so welcome (which is basically *everyone*) and especially to Rafi Bryl, Amir Blich, Gabi Koifman and Keren Golan.
 
