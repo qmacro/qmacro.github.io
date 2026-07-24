@@ -1,0 +1,920 @@
+<!doctype html>
+<html lang="en-GB">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Timeless principles, agnostic design and ports &amp; adapters</title>
+		<meta name="description" content="The timeless principle of agnostic design, aka minimal assumptions, is strongly present in CAP. In this post I explain what this principle represents, based on the corresponding section of Daniel Hutzel&#39;s keynote at reCAP 2026.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="Timeless principles, agnostic design and ports &amp; adapters">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="The timeless principle of agnostic design, aka minimal assumptions, is strongly present in CAP. In this post I explain what this principle represents, based on the corresponding section of Daniel Hutzel&#39;s keynote at reCAP 2026.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2026/07/23/timeless-principles-agnostic-design-and-ports-and-adapters/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 60%, 70%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="timeless-principles-agnostic-design-and-ports-and-adapters">Timeless principles, agnostic design and ports &amp; adapters</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2026-07-23">23 July 2026</time></li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/principles/" class="post-tag">principles</a>, </li>
+	<li><a href="/tags/axioms/" class="post-tag">axioms</a>, </li>
+	<li><a href="/tags/agnosticdesign/" class="post-tag">agnosticdesign</a>, </li>
+	<li><a href="/tags/hexagonalarchitecture/" class="post-tag">hexagonalarchitecture</a>, </li>
+	<li><a href="/tags/repl/" class="post-tag">repl</a></li>
+</ul>
+
+<p class="post-description-main">The timeless principle of agnostic design, aka minimal assumptions, is strongly present in CAP. In this post I explain what this principle represents, based on the corresponding section of Daniel Hutzel's keynote at reCAP 2026.</p>
+
+<p>I wrote recently about Hexagonal Architecture, alternatively known as Ports &amp;
+Adapters, in <a href="/blog/posts/2026/06/04/book-overflow-and-two-architectural-patterns-in-cap/#ports-and-adapters">Book Overflow and two architectural patterns in
+CAP</a>.
+The core idea is based on having a deliberately agnostic approach to
+mechanisms, resources and services beyond - located in the outer concentric
+circles, as it were - a given core service.</p>
+<p>Think of this in a similar way to &quot;late cut&quot; integration, where the actual
+location, shape of, and connection to a required service is left until the
+last minute.</p>
+<p>The agnostic design approach is not new, and indeed as Daniel mentions in his
+keynote, has in the past been referred to as &quot;minimal assumptions&quot;, which crops
+up in various disciplines, including statistics &amp; data analysis, where it
+conveys the approach of &quot;<em>deriving valid conclusions using the fewest possible
+restrictive parameters</em>&quot;<a href="#footnotes"><sup>1</sup></a>.</p>
+<p>This approach brings many advantages, not least the ability for CAP developers
+to enjoy a tight and rapid development loop, where
+<a href="/blog/posts/2026/05/11/local-first-dev-with-cap-node-js/">local-first</a> is the
+mantra, and mocking plus remote proxies are key enablers.</p>
+<p>Moreover it allows us to shift <em>left</em> the important business of design,
+including auth, consumption nuances and extended domain design, exactly because
+we can shift <em>right</em> the dirty work of connectivity and gnarly setups.</p>
+<p>But that's only one half of the story. The other half is that, right from the
+get-go, we're ready to adapt and adopt new services, or different endpoint
+locations, because we haven't tightly coupled our app or service design with a
+specific technology or protocol.</p>
+<h2 id="the-wonder-of-cds-service-bindings">The wonder of cds.service.bindings</h2>
+<p>To illustrate this, I want to convey the wonder of one of Daniel's live demos
+in the keynote. Indeed, this blog post was triggered by something very
+specific, when Daniel accessed <code>cds.service.bindings</code> in the cds REPL.</p>
+<p>I have talked about the local service binding registry (<code>~/.cds-services.json</code>)
+and explained its purpose, in many places, including:</p>
+<ul>
+<li><a href="https://github.com/SAP-samples/cap-local-development-workshop">CAP local
+development</a>
+(workshop)</li>
+<li><a href="https://github.com/SAP-samples/cap-service-integration-codejam">Service integration with SAP Cloud Application Programming
+Model</a>
+(CodeJam)</li>
+<li><a href="https://github.com/SAP-samples/cap-tour-hands-on">A hands-on tour of CAP</a>
+(CodeJam)</li>
+</ul>
+<p>Let's break down what we mean by &quot;local service binding registry&quot;:</p>
+<ul>
+<li>local: it's local to my machine, both highlighted and constrained by the
+location of this file, the developer user's home
+directory<a href="#footnotes"><sup>2</sup></a> - you can't get much more &quot;my machine&quot;
+specific than that!</li>
+<li>service: required services, that are likely going to be remote in a
+production scenario</li>
+<li>binding: information that is needed to be able to connect and authenticate
+with such services, such as URL &amp; credentials, often collected into a
+<a href="https://help.sap.com/docs/excise-tax-management/administration/sap-btp-creating-and-configuring-destination">destination</a>
+in production scenarios</li>
+<li>registry: a sort of table of contents, or list of what's currently available</li>
+</ul>
+<p>Such a local registry is at the heart of how agnostic design's innermost set
+of concentric circles (the local machine) can function in CAP.</p>
+<p>Seeing Daniel retrieve this binding information directly in the cds REPL was a
+magic moment for me. It both elevated the combined concepts I've mentioned above,
+plus made the registry content tangible and thus worthy of attention.</p>
+<h2 id="exploring-the-first-two-circles">Exploring the first two circles</h2>
+<p>Let's explore the two innermost circles<a href="#footnotes"><sup>3</sup></a>, the ones
+<em>within</em> the local machine.</p>
+<pre class="language-text" tabindex="0"><code class="language-text"> ┌──────────────────────────┐
+ │     external process     │
+ │ ************************ │
+ │ * ┌──────────────────┐ * │
+ │ * │ separate process │ * │
+ │ * │  ┌────────────┐  │ * │
+ │ * │  │ in-process │  │ * │
+ │ * │  │            │  │ * │
+ │ * │  └────────────┘  │ *<---- local machine
+ │ * └──────────────────┘ * │
+ │ ************************ │
+ └──────────────────────────┘</code></pre>
+<p>We can run a single CAP server, that will serve one or more services, via one
+or more protocols. That's denoted by the core &quot;in-process&quot; circle in this
+diagram here. When we have a required service without
+service bindings available, these are mocked also by the same CAP server.</p>
+<blockquote>
+<p>At this point I often refer to the help text for the <code>--with-mocks</code> option
+for <code>cds serve</code> which goes like this (emphasis mine):</p>
+<p><em>Use this in combination with the variants serving multiple services.
+<strong>It starts in-process mock services for all required services configured
+in <code>package.json#cds.requires</code>, which don't have external bindings
+in the current process environment.</strong>
+Note that by default, this feature is disabled in production and must be
+enabled with configuration <code>features.mocked_bindings=true</code>.</em></p>
+</blockquote>
+<p>We can run multiple CAP servers on the same machine, choosing different
+ports<a href="#footnotes"><sup>4</sup></a>. From the perspective of the &quot;in-process&quot;
+innermost circle, the next circle out, marked &quot;separate process&quot;, represents
+these other CAP servers.</p>
+<p>This &quot;local machine&quot; universe, combined with CAP's local-first affordances,
+is exactly what we need to experiment with agnostic design here.</p>
+<p>This demo follows roughly the same path as Daniel took in his keynote, with
+some slight variations.</p>
+<h3 id="start-monitoring-the-local-service-binding-registry">Start monitoring the local service binding registry</h3>
+<p>It's helpful to see what happens as things progress, so let's use one terminal
+window to keep an eye on the local service binding registry's contents. Here's
+how I would do it:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token function">touch</span> ~/.cds-services.json <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> <span class="token function">watch</span> <span class="token parameter variable">-c</span> jq <span class="token parameter variable">-C</span> <span class="token builtin class-name">.</span> ~/.cds-services.json</code></pre>
+<blockquote>
+<p>I use <code>touch</code> first to make sure the file exists before trying to monitor it;
+this command will create the file, empty, if it doesn't. If it has already
+been populated with information from previously running CAP servers (that have
+since been stopped) then it may already contain some empty registry structure
+that looks like this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"cds"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"provides"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"servers"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+</blockquote>
+<h3 id="create-a-simple-cap-project-a">Create a simple CAP project A</h3>
+<p>First, let's create a simple <code>tiny-sample</code> facet based CAP project &quot;A&quot; then
+immediately launch a cds REPL and have the CAP server start
+up<a href="#footnotes"><sup>5</sup></a>:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash">cds init <span class="token parameter variable">--add</span> tiny-sample proj-A <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> cds repl <span class="token parameter variable">--run</span> proj-A</code></pre>
+<p>Log output like this will be emitted:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token property">Adding facet:</span> tiny<span class="token operator">-</span>sample
+
+Successfully initialized CAP project
+<span class="token property">Continue with:</span> code proj<span class="token operator">-</span>A
+
+Welcome to cds repl <span class="token number">v10.0.3</span>
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> using bindings from<span class="token operator">:</span> <span class="token operator">{</span> registry<span class="token operator">:</span> <span class="token string">'~/.cds-services.json'</span> <span class="token operator">}</span>
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> loaded model from <span class="token number">1</span> file<span class="token operator">(</span>s<span class="token operator">)</span><span class="token operator">:</span>
+
+  proj<span class="token operator">-</span>A<span class="token operator">/</span>srv<span class="token operator">/</span>cat<span class="token operator">-</span>service<span class="token punctuation">.</span>cds
+
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> connect to db <span class="token operator">></span> sqlite <span class="token operator">{</span> database<span class="token operator">:</span> <span class="token string">':memory:'</span> <span class="token operator">}</span>
+  <span class="token operator">></span> init from proj<span class="token operator">-</span>A<span class="token operator">/</span>db<span class="token operator">/</span>data<span class="token operator">/</span>CatalogService<span class="token punctuation">.</span>Books<span class="token punctuation">.</span>csv
+<span class="token operator">/</span><span class="token operator">></span> successfully deployed to in<span class="token operator">-</span>memory database<span class="token punctuation">.</span>
+
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> using auth strategy <span class="token operator">{</span> kind<span class="token operator">:</span> <span class="token string">'mocked'</span> <span class="token operator">}</span>
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> serving CatalogService <span class="token operator">{</span>
+  <span class="token property">at:</span> <span class="token punctuation">[</span> <span class="token string">'/odata/v4/catalog'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">decl:</span> <span class="token string">'proj-A/srv/cat-service.cds:1'</span>
+<span class="token operator">}</span>
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> server listening on <span class="token operator">{</span> url<span class="token operator">:</span> <span class="token string">'http://localhost:33475'</span> <span class="token operator">}</span>
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> server <span class="token number">v10.0.3</span> launched in <span class="token number">209</span> ms
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> <span class="token punctuation">[</span> terminate with <span class="token operator">^</span>C <span class="token punctuation">]</span>
+
+<span class="token separator comment">------------------------------------------------------------------------</span>
+Following variables are made available in your repl's global context<span class="token operator">:</span>
+
+<span class="token property">from cds.entities:</span> <span class="token operator">{</span>
+<span class="token operator">}</span>
+
+<span class="token property">from cds.services:</span> <span class="token operator">{</span>
+  db<span class="token punctuation">,</span>
+  CatalogService<span class="token punctuation">,</span>
+<span class="token operator">}</span>
+
+Simply type e<span class="token punctuation">.</span>g<span class="token punctuation">.</span> CatalogService in the prompt to use the respective objects<span class="token punctuation">.</span></code></pre>
+<p>So far, so (very) good. Notice that the CAP server is started on a random port,
+which is the default behaviour when running in a REPL context (as it's
+effectively more of a &quot;throwaway&quot; server that might be spun up to run some
+tests against).</p>
+<p>Notice also that there's a service called <code>CatalogService</code> that's available.</p>
+<h3 id="check-the-local-service-binding-registry">Check the local service binding registry</h3>
+<p>In the registry, we now see something like this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"cds"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"provides"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"CatalogService"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"endpoints"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+          <span class="token property">"odata"</span><span class="token operator">:</span> <span class="token string">"/odata/v4/catalog"</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"server"</span><span class="token operator">:</span> <span class="token number">58557</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"servers"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"58557"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"root"</span><span class="token operator">:</span> <span class="token string">"file:///tmp/proj-A"</span><span class="token punctuation">,</span>
+        <span class="token property">"url"</span><span class="token operator">:</span> <span class="token string">"http://localhost:33475"</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>This tells us (and any CAP server running in the same binding context, i.e.
+this local machine) that there's a service called <code>CatalogService</code> that is
+provided. There's information on what the endpoints are, and what protocols
+these endpoints speak, and also the URL. In other words, this is the binding
+context for the <code>CatalogService</code> that is listed as being provided (note the
+<code>cds.provides</code> property that contains it)!</p>
+<h3 id="connect-and-consume-catalogservice-locally">Connect and consume CatalogService locally</h3>
+<p>Within the REPL, if we now have a quick look at the <code>CatalogService</code>, we see
+that it's an instance of the <code>ApplicationService</code> class, effectively a locally
+available service:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> CatalogService
+ApplicationService <span class="token punctuation">{</span>
+  <span class="token literal-property property">handlers</span><span class="token operator">:</span> <span class="token punctuation">[</span>EventHandlers<span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'CatalogService'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">[</span>Object<span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">kind</span><span class="token operator">:</span> <span class="token string">'app-service'</span><span class="token punctuation">,</span>
+  <span class="token operator">...</span>
+  <span class="token literal-property property">path</span><span class="token operator">:</span> <span class="token string">'/odata/v4/catalog'</span><span class="token punctuation">,</span>
+  <span class="token string-property property">'$linkProviders'</span><span class="token operator">:</span> <span class="token punctuation">[</span>Array<span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<p>We can consume that service directly, whereupon we'll get the result we
+probably expect:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> CatalogService<span class="token punctuation">.</span><span class="token function">read</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Books</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Wuthering Heights'</span><span class="token punctuation">,</span> <span class="token literal-property property">author</span><span class="token operator">:</span> <span class="token string">'Emily Brontë'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Jane Eyre'</span><span class="token punctuation">,</span> <span class="token literal-property property">author</span><span class="token operator">:</span> <span class="token string">'Charlotte Brontë'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'The Raven'</span><span class="token punctuation">,</span> <span class="token literal-property property">author</span><span class="token operator">:</span> <span class="token string">'Edgar Allen Poe'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Eleonora'</span><span class="token punctuation">,</span> <span class="token literal-property property">author</span><span class="token operator">:</span> <span class="token string">'Edgar Allen Poe'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Catweazle'</span><span class="token punctuation">,</span> <span class="token literal-property property">author</span><span class="token operator">:</span> <span class="token string">'Richard Carpenter'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>We can be explicit and <a href="https://cap.cloud.sap/docs/node.js/core-services#connecting-to-required-services--cdsconnect">connect to</a> the service, a &quot;required&quot; service, like this, too:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> catsrv <span class="token operator">=</span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>connect<span class="token punctuation">.</span><span class="token function">to</span><span class="token punctuation">(</span><span class="token string">'CatalogService'</span><span class="token punctuation">)</span>
+ApplicationService <span class="token punctuation">{</span>
+  <span class="token literal-property property">handlers</span><span class="token operator">:</span> <span class="token punctuation">[</span>EventHandlers<span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'CatalogService'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">[</span>Object<span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">kind</span><span class="token operator">:</span> <span class="token string">'app-service'</span><span class="token punctuation">,</span>
+  <span class="token operator">...</span>
+  <span class="token literal-property property">path</span><span class="token operator">:</span> <span class="token string">'/odata/v4/catalog'</span><span class="token punctuation">,</span>
+  <span class="token string-property property">'$linkProviders'</span><span class="token operator">:</span> <span class="token punctuation">[</span>Array<span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<p>We effectively get the same <code>ApplicationService</code> instance, and can use it in
+the same way:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> catsrv<span class="token punctuation">.</span><span class="token function">read</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Books</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Wuthering Heights'</span><span class="token punctuation">,</span> <span class="token literal-property property">author</span><span class="token operator">:</span> <span class="token string">'Emily Brontë'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Jane Eyre'</span><span class="token punctuation">,</span> <span class="token literal-property property">author</span><span class="token operator">:</span> <span class="token string">'Charlotte Brontë'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'The Raven'</span><span class="token punctuation">,</span> <span class="token literal-property property">author</span><span class="token operator">:</span> <span class="token string">'Edgar Allen Poe'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Eleonora'</span><span class="token punctuation">,</span> <span class="token literal-property property">author</span><span class="token operator">:</span> <span class="token string">'Edgar Allen Poe'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Catweazle'</span><span class="token punctuation">,</span> <span class="token literal-property property">author</span><span class="token operator">:</span> <span class="token string">'Richard Carpenter'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<h2 id="consume-the-provided-service-from-elsewhere">Consume the provided service from elsewhere</h2>
+<p>We don't even need to set up a second project to require (consume) this
+provided service, we can just start a second cds REPL session and do everything
+there.</p>
+<p>While keeping the current cds REPL session open, let's start a second cds REPL
+session in a new terminal window. This should represent a distinctly separate
+CAP consumer context and so let's start this second cds REPL session
+completely separate from the <code>proj-A/</code> area to emphasise that point. Daniel used
+his home directory for that, so let's do that too:</p>
+<pre class="language-bash" tabindex="0"><code class="language-bash"><span class="token builtin class-name">cd</span> ~ <span class="token operator">&amp;&amp;</span> cds repl</code></pre>
+<h4 id="fetch-the-service-bindings">Fetch the service bindings</h4>
+<p>In the session that we get, which is announced like this:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">Welcome to cds repl v10.0.3
+></code></pre>
+<p>we can access the service bindings, like this:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token keyword">await</span> cds<span class="token punctuation">.</span>service<span class="token punctuation">.</span>bindings</code></pre>
+<p>This fetches the service bindings from the registry and makes them available in
+the current process:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> using bindings from<span class="token operator">:</span> <span class="token operator">{</span> registry<span class="token operator">:</span> <span class="token string">'~/.cds-services.json'</span> <span class="token operator">}</span>
+Bindings <span class="token operator">{</span>
+  <span class="token property">provides:</span> <span class="token operator">{</span>
+    <span class="token property">CatalogService:</span> <span class="token operator">{</span> endpoints<span class="token operator">:</span> <span class="token operator">{</span> odata<span class="token operator">:</span> <span class="token string">'/odata/v4/catalog'</span> <span class="token operator">}</span><span class="token punctuation">,</span> server<span class="token operator">:</span> <span class="token number">58557</span> <span class="token operator">}</span>
+  <span class="token operator">}</span><span class="token punctuation">,</span>
+  <span class="token property">servers:</span> <span class="token operator">{</span>
+    <span class="token string">'58557'</span><span class="token operator">:</span> <span class="token operator">{</span> root<span class="token operator">:</span> <span class="token string">'file:///tmp/proj-A'</span><span class="token punctuation">,</span> url<span class="token operator">:</span> <span class="token string">'http://localhost:33475'</span> <span class="token operator">}</span>
+  <span class="token operator">}</span>
+<span class="token operator">}</span></code></pre>
+<p>We even see that log line familiar to us from our <code>cds watch</code> sessions, being
+explicit about from where the bindings are being fetched:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> using bindings from<span class="token operator">:</span> <span class="token operator">{</span> registry<span class="token operator">:</span> <span class="token string">'~/.cds-services.json'</span> <span class="token operator">}</span></code></pre>
+<h4 id="connect-to-the-service">Connect to the service</h4>
+<p>Like we did in the other cds REPL session, let's now use <code>cds.connect.to</code>:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> cs <span class="token operator">=</span> <span class="token keyword">await</span> cds<span class="token punctuation">.</span>connect<span class="token punctuation">.</span><span class="token function">to</span><span class="token punctuation">(</span><span class="token string">'CatalogService'</span><span class="token punctuation">)</span>
+RemoteService <span class="token punctuation">{</span>
+  <span class="token literal-property property">handlers</span><span class="token operator">:</span> <span class="token punctuation">[</span>EventHandlers<span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'CatalogService'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">[</span>Object<span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">kind</span><span class="token operator">:</span> <span class="token string">'odata'</span><span class="token punctuation">,</span>
+  <span class="token operator">...</span>
+  <span class="token literal-property property">requestTimeout</span><span class="token operator">:</span> <span class="token number">60000</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">csrf</span><span class="token operator">:</span> <span class="token keyword">undefined</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">csrfInBatch</span><span class="token operator">:</span> <span class="token keyword">undefined</span>
+<span class="token punctuation">}</span></code></pre>
+<p>This time, it's not an instance of the <code>ApplicationService</code> class, it's an
+instance of the <code>RemoteService</code> class!</p>
+<h4 id="send-a-query-to-the-service">Send a query to the service</h4>
+<p>What's more, we can interact with that service ... as if it were local:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token operator">></span> <span class="token keyword">await</span> cs<span class="token punctuation">.</span><span class="token function">read</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">Books</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+<span class="token punctuation">[</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Wuthering Heights'</span><span class="token punctuation">,</span> <span class="token literal-property property">author</span><span class="token operator">:</span> <span class="token string">'Emily Brontë'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Jane Eyre'</span><span class="token punctuation">,</span> <span class="token literal-property property">author</span><span class="token operator">:</span> <span class="token string">'Charlotte Brontë'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'The Raven'</span><span class="token punctuation">,</span> <span class="token literal-property property">author</span><span class="token operator">:</span> <span class="token string">'Edgar Allen Poe'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Eleonora'</span><span class="token punctuation">,</span> <span class="token literal-property property">author</span><span class="token operator">:</span> <span class="token string">'Edgar Allen Poe'</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span> <span class="token constant">ID</span><span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">'Catweazle'</span><span class="token punctuation">,</span> <span class="token literal-property property">author</span><span class="token operator">:</span> <span class="token string">'Richard Carpenter'</span> <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>Wham!</p>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>Going back to the concentric circles, this is a effectively an example of the
+two that are within the confines of the local machine. One, the provided
+service, exists as if it were remote (with a URL) in the eyes of the consuming
+service (or REPL context here).</p>
+<p>CAP's adoption of minimal assumptions in service provision and consumption is
+so complete that the lines become blurred between local and remote, thanks to
+the power of remote proxies that do the heavy lifting of query transport across
+the wire for us.</p>
+<p>This really is hard evidence of one of CAP's &quot;magic made simple&quot; moments, and
+is explained further in the <a href="https://cap.cloud.sap/docs/get-started/bookshop#cap-level-integration">CAP-level
+Integration</a>
+section of the Bookshop topic in Capire.</p>
+<hr>
+<h2 id="footnotes">Footnotes</h2>
+<ol>
+<li>
+<p>See <a href="https://www.tandfonline.com/doi/abs/10.1080/01621459.1962.10500545">Non-Linear Regression with Minimal
+Assumptions</a></p>
+</li>
+<li>
+<p>The symbol for a user's home directory is the tilde (<code>~</code>). I'm guessing some
+of you know why it's this symbol, but for those of you who don't, have a
+look at the keyboard of the <a href="https://en.wikipedia.org/wiki/ADM-3A">ADM-3A</a>
+terminal, specifically in the top right. <a href="https://en.wikipedia.org/wiki/ADM-3A">Bill
+Joy</a>, erstwhile employee of Sun and
+perhaps more importantly creator of both <code>vi</code> and the C Shell (<code>csh</code>), used
+an ADM-3A and it was in the C Shell where the tilde came to represent a
+user's home directory.</p>
+<p>Also on that same key is the caret (<code>^</code>), which also represents &quot;home&quot;
+(beginning of a line) in regular expression dialects. Coincidence? I think
+not! :-)</p>
+<p><img src="/images/2026/07/adm-3a-home-key.png" alt="ADM-3A home key"></p>
+</li>
+<li>
+<p>OK, it may not have escaped your notice that these are not circles. Just
+pretend they are.</p>
+</li>
+<li>
+<p>It's the concept of a <a href="https://en.wikipedia.org/wiki/Network_socket">socket</a>
+that we must bear in mind, which is the combination of protocol, address
+(hostname / IP) and port. But that's a story for another time.</p>
+</li>
+<li>
+<p>We can actually just specify the project location as a single argument and
+the same thing will happen: <code>cds repl proj-A</code>.</p>
+</li>
+</ol>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2026/07/15/recap-2026-talk-resources/">reCAP 2026 talk resources</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2026/07/23/timeless-principles-agnostic-design-and-ports-and-adapters/` was built on 2026-07-24T16:15:12.477Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
