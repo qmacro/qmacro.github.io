@@ -1,6 +1,6 @@
 ---
-title: Timeless principles, agnostic design and ports & adapters
-date: 2026-07-23
+title: Timeless principles, agnostic design and the power of CAP's abstractions
+date: 2026-07-24
 tags:
   - cap
   - principles
