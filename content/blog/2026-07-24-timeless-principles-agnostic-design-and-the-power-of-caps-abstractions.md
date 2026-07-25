@@ -87,18 +87,18 @@ Let's explore the two innermost circles[<sup>3</sup>](#footnotes), the ones
 _within_ the local machine.
 
 ```text
- ┌──────────────────────────┐
- │     external process     │
- │ ************************ │
- │ * ┌──────────────────┐ * │
- │ * │ separate process │ * │
- │ * │  ┌────────────┐  │ * │
- │ * │  │ in-process │  │ * │
- │ * │  │            │  │ * │
- │ * │  └────────────┘  │ *<---- local machine
- │ * └──────────────────┘ * │
- │ ************************ │
- └──────────────────────────┘
+ +--------------------------+
+ |     external process     |
+ | ************************ |
+ | * +------------------+ * |
+ | * | separate process | * |
+ | * |  +------------+  | * |
+ | * |  | in-process |  | * |
+ | * |  |            |  | * |
+ | * |  +------------+  | *<---- local machine
+ | * +------------------+ * |
+ | ************************ |
+ +--------------------------+
 ```
 
 We can run a single CAP server, that will serve one or more services, via one
