@@ -10,8 +10,12 @@ description: What I took from a couple of great podcast episodes I listened to t
 ---
 
 I'm walking in the cool mornings at the moment, as the problem with my right
-knee is preventing me from running right now, which is driving me bonkers. On
-the walk this morning, I listened to a couple of episodes from two great
+knee is preventing me from running right now, which is driving me bonkers.
+
+![View from the narrowboat stern this morning just before I set off on the walk](/images/2026/07/morning-from-the-stern.jpg)
+_View from the narrowboat stern this morning just before I set off on the walk._
+
+On the walk this morning, I listened to a couple of episodes from two great
 podcasts I'm subscribed to - [Hansleminutes](https://hanselminutes.com/) and
 [Soft Skills Engineering](https://softskills.audio/).
 
