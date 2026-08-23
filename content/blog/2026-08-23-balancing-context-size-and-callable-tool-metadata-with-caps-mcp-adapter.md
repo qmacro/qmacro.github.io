@@ -4,6 +4,9 @@ date: 2026-08-23
 tags:
   - cap
   - mcp
+  - jq
+  - inspector
+  - bookshop
 description: Some notes on both sides of the per_action_tool setting of CAP's MCP adapter plugin.
 ---
 
