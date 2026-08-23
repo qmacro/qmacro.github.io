@@ -260,7 +260,7 @@ this for a moment, we see that it's rather generic.
 
 Moreover, the description includes instructions that require the use of the
 `describe` tool first, before working out which (if any) call can be made. The
-descriptions we have in our doc comments ("Place an order for a given book,
+info we have in our doc comments ("Place an order for a given book,
 specifying quantity required" and "Return the total value of all stock") aren't
 even surfaced here.
 
@@ -300,11 +300,11 @@ descriptions:
 ```
 
 This time, instead of the generic `call` tool, we get individual tools,
-complete with unique descriptions (the descriptions from the doc comments).
+complete with unique descriptions (from the doc comments).
 
 Also, note that the simple `call` tool info earlier didn't have any parameter
 detail for either of the actual actions; instead, there was an instruction to
-"use describe to see available parameters.".
+"use describe to see available parameters".
 
 But now, for each callable action, all the parameter details are available. Let's
 look at the details for the `submitOrder` action, with `.tools[2]`:
