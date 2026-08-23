@@ -149,6 +149,14 @@ npx @modelcontextprotocol/inspector \
 
 plus some actual method, with the `--method` option.
 
+> We're sending an auth header - the encoded value is `alice:` (there's no
+password) as `alice` is one of the users available by default in the mocked
+authentication strategy which is in effect by default when running in
+development mode - see [Local-first dev with CAP Node.js - mocking
+auth](/blog/posts/2026/05/12/local-first-dev-with-cap-node-js-mocking-auth/).
+This is to address the `authenticated-user` pseudo-role requirement for the
+`submitOrder` action later.
+
 ## Tools list
 
 By default, the MCP adapter offers up to three tools per service annotated with
@@ -167,14 +175,6 @@ npx @modelcontextprotocol/inspector \
   --method tools/list \
   > tools.json
 ```
-
-> We're sending an auth header - the encoded value is `alice:` (there's no
-password) as `alice` is one of the users available by default in the mocked
-authentication strategy which is in effect by default when running in
-development mode - see [Local-first dev with CAP Node.js - mocking
-auth](/blog/posts/2026/05/12/local-first-dev-with-cap-node-js-mocking-auth/).
-This is to address the `authenticated-user` pseudo-role requirement for the
-`submitOrder` action later.
 
 This returns quite a bit of output, in JSON, so we're redirecting that to a
 `tools.json` file, where we can use `jq` to explore it separately.
