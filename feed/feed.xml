@@ -6,11 +6,290 @@
   <subtitle>Reserving the right to be wrong</subtitle>
   <link href="https://qmacro.org/feed/feed.xml" rel="self" />
   <link href="https://qmacro.org/blog/" />
-  <updated>2026-07-29T00:00:00Z</updated>
+  <updated>2026-08-23T00:00:00Z</updated>
   <id>https://qmacro.org/blog/</id>
   <author>
     <name>DJ Adams</name>
   </author>
+  <entry>
+    <title>Balancing context size and callable tool metadata with CAP&#39;s MCP adapter</title>
+    <link href="https://qmacro.org/blog/posts/2026/08/23/balancing-context-size-and-callable-tool-metadata-with-caps-mcp-adapter/" />
+    <updated>2026-08-23T00:00:00Z</updated>
+    <id>https://qmacro.org/blog/posts/2026/08/23/balancing-context-size-and-callable-tool-metadata-with-caps-mcp-adapter/</id>
+    <content type="html">&lt;p&gt;CAP &lt;a href=&quot;https://cap.cloud.sap/docs/guides/protocols/mcp&quot;&gt;supports the Model Context
+Protocol&lt;/a&gt;, and treats it
+beautifully as &amp;quot;just another protocol&amp;quot;. The support comes in the form of the
+&lt;a href=&quot;https://github.com/cap-js/mcp&quot;&gt;@cap-js/mcp&lt;/a&gt; plugin, which has these &lt;a href=&quot;https://github.com/cap-js/mcp#feature-flags&quot;&gt;feature
+flags&lt;/a&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;cds&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;mcp&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;per_action_tool&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;prefix&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;format&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;cql&quot;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In this post I want to explore the &lt;code&gt;per_action_tool&lt;/code&gt; setting.&lt;/p&gt;
+&lt;h2 id=&quot;sample-service&quot;&gt;Sample service&lt;/h2&gt;
+&lt;p&gt;To illustrate, let&#39;s use the classic
+&lt;a href=&quot;https://github.com/capire/bookshop&quot;&gt;capire/bookshop&lt;/a&gt; sample project which,
+amongst other resources, has a service defined in &lt;code&gt;srv/cat-service.cds&lt;/code&gt; like
+this:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; { sap.capire.bookshop &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; my } &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;../db/schema&#39;;
+
+&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; CatalogService &lt;span class=&quot;token annotation important&quot;&gt;@(path:&#39;browse&#39;)&lt;/span&gt; {
+
+  &lt;span class=&quot;token block-comment comment&quot;&gt;/** For displaying lists of Books */&lt;/span&gt;
+  &lt;span class=&quot;token annotation important&quot;&gt;@readonly&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; ListOfBooks &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; Books {
+    *, currency.symbol &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; currency,
+  }
+  excluding { descr };
+
+  &lt;span class=&quot;token block-comment comment&quot;&gt;/** For display in details pages */&lt;/span&gt;
+  &lt;span class=&quot;token annotation important&quot;&gt;@readonly&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Books &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; my.Books {
+    *, &lt;span class=&quot;token single-line-comment comment&quot;&gt;// all fields with the following denormalizations:&lt;/span&gt;
+    author.name &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; author,
+    genre.name &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; genre,
+  } excluding { createdBy, modifiedBy };
+
+  &lt;span class=&quot;token annotation important&quot;&gt;@requires:&lt;/span&gt; &#39;authenticated-user&#39;
+  &lt;span class=&quot;token keyword&quot;&gt;action&lt;/span&gt; submitOrder ( book: Books:ID, quantity: &lt;span class=&quot;token type builtin&quot;&gt;Integer &lt;/span&gt;);
+}
+
+&lt;span class=&quot;token single-line-comment comment&quot;&gt;// Serve via OData, HCQL and REST&lt;/span&gt;
+annotate CatalogService with &lt;span class=&quot;token annotation important&quot;&gt;@odata&lt;/span&gt; &lt;span class=&quot;token annotation important&quot;&gt;@hcql&lt;/span&gt; &lt;span class=&quot;token annotation important&quot;&gt;@rest;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The service has:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;entities &lt;code&gt;ListOfBooks&lt;/code&gt; and &lt;code&gt;Books&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;an unbound action &lt;code&gt;submitOrder&lt;/code&gt; (for which authentication is needed)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We&#39;ll begin by adding the MCP adapter plugin to the project like this:&lt;/p&gt;
+&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token function&quot;&gt;npm&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;add&lt;/span&gt; @cap-js/mcp&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;extending-the-service-definition&quot;&gt;Extending the service definition&lt;/h3&gt;
+&lt;p&gt;Extending the definition slightly will help us dig in and understand the different
+approaches that we can control with &lt;code&gt;per_action_tool&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;To keep things simple, let&#39;s just add content to the existing &lt;code&gt;srv/cat-service.cds&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;First, let&#39;s add a &lt;a href=&quot;https://cap.cloud.sap/docs/guides/protocols/mcp#adding-context-information&quot;&gt;doc
+comment&lt;/a&gt;
+to the &lt;code&gt;submitOrder&lt;/code&gt; action, so it looks like this:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;  &lt;span class=&quot;token annotation important&quot;&gt;@requires:&lt;/span&gt; &#39;authenticated-user&#39;
+  &lt;span class=&quot;token block-comment comment&quot;&gt;/** Place an order for a given book, specifying quantity required */&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;action&lt;/span&gt; submitOrder ( book: Books:ID, quantity: &lt;span class=&quot;token type builtin&quot;&gt;Integer &lt;/span&gt;);&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now let&#39;s define another action in the service, by adding this at the end of
+the file:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;extend&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; CatalogService with {
+  &lt;span class=&quot;token block-comment comment&quot;&gt;/** Return the total value of all stock */&lt;/span&gt;
+  &lt;span class=&quot;token keyword&quot;&gt;action&lt;/span&gt; stockValue ();
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Finally, let&#39;s actually add the &lt;code&gt;@mcp&lt;/code&gt; annotation, on a further line at the
+end of the file:&lt;/p&gt;
+&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;annotate CatalogService with &lt;span class=&quot;token annotation important&quot;&gt;@mcp;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&quot;a-running-cap-server&quot;&gt;A running CAP server&lt;/h3&gt;
+&lt;p&gt;We&#39;ll be running a CAP server, started with &lt;code&gt;DEBUG=mcp cds watch&lt;/code&gt;, throughout
+the explorations here; the log output that we need to know about looks like
+this:&lt;/p&gt;
+&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;mcp&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; Adapter initialized &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; service&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;CatalogService&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; serving CatalogService &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;at:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;token string&quot;&gt;&#39;/odata/v4/browse&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token string&quot;&gt;&#39;/rest/browse&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token string&quot;&gt;&#39;/hcql/browse&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token string&quot;&gt;&#39;/mcp/browse&#39;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;decl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;srv/cat-service.cds:3&#39;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;impl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;srv/cat-service.js&#39;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;mcp&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; registering MCP services&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;CatalogService&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; server listening on &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; url&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;http://localhost:4004&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This tells us that the MCP adapter is accessible at &lt;code&gt;http://localhost:4004/mcp/browse&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&quot;inspector&quot;&gt;Inspector&lt;/h2&gt;
+&lt;p&gt;To assist exploration, let&#39;s use the &lt;a href=&quot;https://github.com/modelcontextprotocol/inspector&quot;&gt;MCP
+inspector&lt;/a&gt; tool, which can
+be operated in GUI, TUI or CLI mode. We&#39;ll use the CLI mode here to keep things
+simple.&lt;/p&gt;
+&lt;p&gt;The basic inspector CLI call to connect to and interact with the MCP server provided
+by the MCP adapter looks like this:&lt;/p&gt;
+&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;npx @modelcontextprotocol/inspector &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--cli&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--header&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Authorization: Basic YWxpY2U6Cg==&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--transport&lt;/span&gt; http &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  --server-url http://localhost:4004/mcp/browse&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;plus some actual method, with the &lt;code&gt;--method&lt;/code&gt; option.&lt;/p&gt;
+&lt;h2 id=&quot;tools-list&quot;&gt;Tools list&lt;/h2&gt;
+&lt;p&gt;By default, the MCP adapter offers up to three tools per service annotated with
+&lt;code&gt;@mcp&lt;/code&gt;, in response to the
+&lt;a href=&quot;https://modelcontextprotocol.io/specification/2025-06-18/server/tools#listing-tools&quot;&gt;tools/list&lt;/a&gt;
+request.&lt;/p&gt;
+&lt;p&gt;We can see this with the inspector, using the basic CLI call plus &lt;code&gt;--method tools/list&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;npx @modelcontextprotocol/inspector &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--cli&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--header&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;Authorization: Basic YWxpY2U6Cg==&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--transport&lt;/span&gt; http &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  --server-url http://localhost:4004/mcp/browse &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token parameter variable&quot;&gt;--method&lt;/span&gt; tools/list &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
+  &lt;span class=&quot;token operator&quot;&gt;&gt;&lt;/span&gt; tools.json&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;We&#39;re sending an auth header - the encoded value is &lt;code&gt;alice:&lt;/code&gt; (there&#39;s no
+password) as &lt;code&gt;alice&lt;/code&gt; is one of the users available by default in the mocked
+authentication strategy which is in effect by default when running in
+development mode - see &lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/12/local-first-dev-with-cap-node-js-mocking-auth/&quot;&gt;Local-first dev with CAP Node.js - mocking
+auth&lt;/a&gt;.
+This is to address the &lt;code&gt;authenticated-user&lt;/code&gt; pseudo-role requirement for the
+&lt;code&gt;submitOrder&lt;/code&gt; action later.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;This returns quite a bit of output, in JSON, so we&#39;re redirecting that to a
+&lt;code&gt;tools.json&lt;/code&gt; file, where we can use &lt;code&gt;jq&lt;/code&gt; to explore it separately.&lt;/p&gt;
+&lt;p&gt;Let&#39;s first reduce the JSON response to simply see what the tool names are and
+how they&#39;re described:&lt;/p&gt;
+&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;jq &lt;span class=&quot;token string&quot;&gt;&#39;[.tools[]|{(.name):.description}]|add&#39;&lt;/span&gt; tools.json&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Echoing Perl&#39;s &lt;a href=&quot;https://en.wiktionary.org/wiki/TMTOWTDI&quot;&gt;TMTOWTDI&lt;/a&gt; tradition,
+one could also achieve the same result with the jq expression
+&lt;code&gt;.tools|map({(.name):.description})|add&lt;/code&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;This produces:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;describe&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Describe the data model of CatalogService service. Returns an overview of all entities and actions with descriptions. Specify &#39;entity&#39; to get element details, or &#39;action&#39; to get parameter details.&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;query&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Query any entity in CatalogService service.Ensure to first use the `describe` tool to discover an entity&#39;s available fields.&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;call&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Call an unbound action or function in CatalogService service. Use describe to discover available actions and their parameters.&quot;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;describe&lt;/code&gt; and &lt;code&gt;query&lt;/code&gt; tools are fairly standard and nearly always supplied
+(except when the caller has no access). The &lt;code&gt;call&lt;/code&gt; tool, returned when there
+are actions or functions available, is the focus of this post and of the
+&lt;code&gt;per_action_tool&lt;/code&gt; setting.&lt;/p&gt;
+&lt;h2 id=&quot;the-generic-call-tool&quot;&gt;The generic call tool&lt;/h2&gt;
+&lt;p&gt;Let&#39;s dig in to the details supplied with the &lt;code&gt;call&lt;/code&gt; tool. With:&lt;/p&gt;
+&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;jq &lt;span class=&quot;token string&quot;&gt;&#39;.tools[]|select(.name==&quot;call&quot;)&#39;&lt;/span&gt; tools.json&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;we see this output:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;call&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;description&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Call an unbound action or function in CatalogService service. Use describe to discover available actions and their parameters.&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;inputSchema&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;type&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;object&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;properties&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;action&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;type&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;string&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;enum&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+          &lt;span class=&quot;token string&quot;&gt;&quot;submitOrder&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+          &lt;span class=&quot;token string&quot;&gt;&quot;stockValue&quot;&lt;/span&gt;
+        &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;description&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;The action or function to call&quot;&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;parameters&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;description&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Parameters for the action. Use describe to see available parameters.&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;type&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;object&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;properties&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;additionalProperties&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;required&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+      &lt;span class=&quot;token string&quot;&gt;&quot;action&quot;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;$schema&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;https://json-schema.org/draft/2020-12/schema&quot;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;annotations&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;readOnlyHint&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;destructiveHint&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;idempotentHint&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;openWorldHint&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If we &lt;a href=&quot;https://qmacro.org/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#initial-recognition&quot;&gt;stare
+at&lt;/a&gt;
+this for a moment, we see that it&#39;s rather generic.&lt;/p&gt;
+&lt;p&gt;Moreover, the description includes instructions that require the use of the
+&lt;code&gt;describe&lt;/code&gt; tool first, before working out which (if any) call can be made. The
+descriptions we have in our doc comments (&amp;quot;Place an order for a given book,
+specifying quantity required&amp;quot; and &amp;quot;Return the total value of all stock&amp;quot;) aren&#39;t
+even surfaced here.&lt;/p&gt;
+&lt;p&gt;All we have is a simple enumerated list of action names in &lt;code&gt;inputSchema.properties.enum&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&quot;per-action-tools&quot;&gt;Per-action tools&lt;/h2&gt;
+&lt;p&gt;Let&#39;s now contrast that &lt;em&gt;&amp;quot;describe&amp;quot; + &amp;quot;query&amp;quot; + single &amp;quot;call&amp;quot; tool&lt;/em&gt; set, with what we get
+if we set the MCP adapter plugin&#39;s &lt;code&gt;per_action_tool&lt;/code&gt; feature flag to &lt;code&gt;true&lt;/code&gt;. We can do
+that in many ways; let&#39;s keep things simple and add a &lt;code&gt;mcp.per_action_tool&lt;/code&gt; property
+to the &lt;code&gt;.cdsrc.yaml&lt;/code&gt; file that already exists in the project, like this:&lt;/p&gt;
+&lt;pre class=&quot;language-yaml&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-yaml&quot;&gt;&lt;span class=&quot;token key atrule&quot;&gt;cds&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;mcp&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;per_action_tool&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean important&quot;&gt;true&lt;/span&gt;
+  &lt;span class=&quot;token key atrule&quot;&gt;requires&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+    &lt;span class=&quot;token key atrule&quot;&gt;&quot;[production]&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt;
+      &lt;span class=&quot;token key atrule&quot;&gt;auth&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;:&lt;/span&gt; mocked &lt;span class=&quot;token comment&quot;&gt;# as a sample app run with mocked auth also in production&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;When we restart the CAP server, and make a &lt;code&gt;tools/list&lt;/code&gt; request again,
+we get the same response detail for the &lt;code&gt;describe&lt;/code&gt; and &lt;code&gt;query&lt;/code&gt;
+tools, but the detail for the actions available looks completely different.&lt;/p&gt;
+&lt;p&gt;Let&#39;s examine the JSON output again. First, with
+&lt;code&gt;.tools|map({(.name):.description})|add&lt;/code&gt; we can see the tools and their
+descriptions:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;describe&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Describe the data model of CatalogService service. Returns an overview of all entities and actions with descriptions. Specify &#39;entity&#39; to get element details, or &#39;action&#39; to get parameter details.&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;query&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Query any entity in CatalogService service.Ensure to first use the `describe` tool to discover an entity&#39;s available fields.&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;submitOrder&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Call action submitOrder in CatalogService&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;stockValue&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Return the total value of all stock&quot;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This time, instead of the generic &lt;code&gt;call&lt;/code&gt; tool, we get individual tools,
+complete with unique descriptions (the descriptions from the doc comments).&lt;/p&gt;
+&lt;p&gt;Also, note that the simple &lt;code&gt;call&lt;/code&gt; tool info earlier didn&#39;t have any parameter
+detail for either of the actual actions; instead, there was an instruction to
+&amp;quot;use describe to see available parameters.&amp;quot;.&lt;/p&gt;
+&lt;p&gt;But now, for each callable action, all the parameter details are available. Let&#39;s
+look at the details for the &lt;code&gt;submitOrder&lt;/code&gt; action, with &lt;code&gt;.tools[2]&lt;/code&gt;:&lt;/p&gt;
+&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;submitOrder&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;description&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Call action submitOrder in CatalogService&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;inputSchema&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;type&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;object&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;properties&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;book&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;type&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;integer&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;minimum&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;-9007199254740991&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;maximum&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;9007199254740991&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+      &lt;span class=&quot;token property&quot;&gt;&quot;quantity&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;type&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;integer&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;minimum&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;-9007199254740991&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;token property&quot;&gt;&quot;maximum&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;9007199254740991&lt;/span&gt;
+      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;$schema&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;https://json-schema.org/draft/2020-12/schema&quot;&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+  &lt;span class=&quot;token property&quot;&gt;&quot;annotations&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;readOnlyHint&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;destructiveHint&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;idempotentHint&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token property&quot;&gt;&quot;openWorldHint&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;false&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The included &lt;code&gt;inputSchema&lt;/code&gt; describes the two properties required (&lt;code&gt;book&lt;/code&gt; and &lt;code&gt;quantity&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;So in this case, no pre-action-call discovery step is needed, no extra describe
+step need be executed just to find out what these actions are, whether they
+might be useful and how to call them.&lt;/p&gt;
+&lt;h2 id=&quot;comparing-the-options&quot;&gt;Comparing the options&lt;/h2&gt;
+&lt;p&gt;Which option is better? &lt;code&gt;per_action_tool: true&lt;/code&gt; or &lt;code&gt;per_action_tool: false&lt;/code&gt;?
+Well, that depends of course. There&#39;s a balance to be had.&lt;/p&gt;
+&lt;p&gt;Returning a single generic &lt;code&gt;call&lt;/code&gt; tool, merely flagging that there&#39;s a facility
+to make calls to specific actions and functions, with a simple list of them,
+makes for quite a concise response. This in turn means that the size of the
+context where this is stored remains relatively small. But the downside is that
+there are going to be extra roundtrips required to accomplish anything
+meaningful, as a &lt;code&gt;describe&lt;/code&gt; call is necessary to find out more.&lt;/p&gt;
+&lt;p&gt;Describing separate &lt;code&gt;call&lt;/code&gt;-type tools means that the context is potentially
+going to get much larger, if there are many actions and functions available.
+However the upside is that they&#39;re likely immediately comprehensible and
+usable.&lt;/p&gt;
+&lt;p&gt;The MCP adapter plugin team has taken the decision to default to &amp;quot;safe&amp;quot; and
+simple, to avoid exploding the context size unexpectedly, which makes sense. In
+other words, the default is &lt;code&gt;per_action_tool: false&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Only you can make the decision to change the value for that feature flag, based
+on your service definitions, and other circumstances. Certainly if you only
+have a small number of actions, then it&#39;s worth considering turning on the
+&lt;code&gt;per_action_tool&lt;/code&gt; flag. But if you have many, you may wish not to.&lt;/p&gt;
+&lt;p&gt;But now at least you know what the flag does, why, and how it affects things.&lt;/p&gt;
+&lt;h2 id=&quot;further-info&quot;&gt;Further info&lt;/h2&gt;
+&lt;p&gt;This topic is also covered in &lt;a href=&quot;https://www.youtube.com/watch?v=Nu_bEVFM7DM&quot;&gt;Part 3 of CAP in the age of
+AI&lt;/a&gt;.&lt;/p&gt;
+</content>
+  </entry>
   <entry>
     <title>Knowledge and netiquette in today&#39;s AI era</title>
     <link href="https://qmacro.org/blog/posts/2026/07/29/knowledge-and-netiquette-in-todays-ai-era/" />
@@ -1505,266 +1784,6 @@ development scenarios.&lt;/p&gt;
 &lt;p&gt;We can also see, via the &amp;quot;Executing via native fetch&amp;quot; line, that the
 &lt;a href=&quot;https://cap.cloud.sap/docs/releases/2026/apr26#node-native-fetch-api&quot;&gt;Node-native Fetch API is in use here now, since Apr
 2026&lt;/a&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-</content>
-  </entry>
-  <entry>
-    <title>Local-first dev with CAP Node.js - mocking auth</title>
-    <link href="https://qmacro.org/blog/posts/2026/05/12/local-first-dev-with-cap-node-js-mocking-auth/" />
-    <updated>2026-05-12T00:00:00Z</updated>
-    <id>https://qmacro.org/blog/posts/2026/05/12/local-first-dev-with-cap-node-js-mocking-auth/</id>
-    <content type="html">&lt;p&gt;This post is one of &lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/11/local-first-dev-with-cap-node-js/&quot;&gt;a series on local-first development with CAP
-Node.js&lt;/a&gt;.&lt;/p&gt;
-&lt;h2 id=&quot;the-mocked-authentication-strategy&quot;&gt;The mocked authentication strategy&lt;/h2&gt;
-&lt;p&gt;The &lt;a href=&quot;https://cap.cloud.sap/docs/node.js/authentication#strategies&quot;&gt;Authentication
-Strategies&lt;/a&gt;
-section of the Node.js Security topic in Capire explains the different
-strategies available, and the &amp;quot;mocked&amp;quot; strategy comes with pre-defined users
-that can be used, with their various levels of authorisations, to explore,
-define and test security-related constructs. This mock user configuration can
-be modified and extended too, but what comes out of the box is definitely
-enough to get started.&lt;/p&gt;
-&lt;h2 id=&quot;working-through-an-example&quot;&gt;Working through an example&lt;/h2&gt;
-&lt;p&gt;In this post, we&#39;ll work through an example of mocking auth, based
-on content in the
-&lt;a href=&quot;https://github.com/qmacro/cap-nodejs-local-first-development/tree/main/auth&quot;&gt;auth/&lt;/a&gt;
-directory of the talk repository.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Note that what&#39;s absent here is any form of auth implementation - all
-declarations available are automatically enforced by CAP&#39;s generic service
-providers.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h3 id=&quot;the-service-definition&quot;&gt;The service definition&lt;/h3&gt;
-&lt;p&gt;In
-&lt;a href=&quot;https://github.com/qmacro/cap-nodejs-local-first-development/blob/main/auth/srv/main.cds&quot;&gt;srv/main.cds&lt;/a&gt;
-there&#39;s a single service defined, with a couple of entities that are simple
-projections on to the entities in the data model:&lt;/p&gt;
-&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; northwind &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;../db/schema&#39;;
-
-&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; Main {
-
-  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Products   &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; northwind.Products;
-  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Categories &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; northwind.Categories;
-
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Starting a CAP server in local development mode with &lt;code&gt;cds watch&lt;/code&gt; shows us that
-the mocked authentication strategy is in play by default:&lt;/p&gt;
-&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; using auth strategy &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt; kind&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;mocked&#39;&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;cds&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt; serving Main &lt;span class=&quot;token operator&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;at:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;/main&#39;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;decl:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;srv/main.cds:4&#39;&lt;/span&gt;
-&lt;span class=&quot;token operator&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;As we haven&#39;t yet addressed any auth requirements in our CDS model, access is
-currently open to all, as we can see&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/12/local-first-dev-with-cap-node-js-mocking-auth/#footnotes&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/a&gt;:&lt;/p&gt;
-&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-  &lt;span class=&quot;token parameter variable&quot;&gt;--include&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;localhost:4004/main/Products?$top=1&#39;&lt;/span&gt;
-HTTP/1.1 &lt;span class=&quot;token number&quot;&gt;200&lt;/span&gt; OK
-OData-Version: &lt;span class=&quot;token number&quot;&gt;4.0&lt;/span&gt;
-Content-Type: application/json&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token assign-left variable&quot;&gt;charset&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;utf-8
-Content-Length: &lt;span class=&quot;token number&quot;&gt;105&lt;/span&gt;
-
-&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&quot;@odata.context&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&lt;span class=&quot;token variable&quot;&gt;$metadata&lt;/span&gt;#BasicProducts&quot;&lt;/span&gt;,
-  &lt;span class=&quot;token string&quot;&gt;&quot;value&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;token string&quot;&gt;&quot;ID&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;,
-      &lt;span class=&quot;token string&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Chai&quot;&lt;/span&gt;,
-      &lt;span class=&quot;token string&quot;&gt;&quot;supplier&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Exotic Liquids&quot;&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&quot;examine-the-pre-defined-users-and-their-authorisations&quot;&gt;Examine the pre-defined users and their authorisations&lt;/h3&gt;
-&lt;p&gt;We can take a look at the pre-defined user data that is defined for the mocked
-authentication strategy, with:&lt;/p&gt;
-&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;cds &lt;span class=&quot;token function&quot;&gt;env&lt;/span&gt; requires.auth.users&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;which will emit something like this:&lt;/p&gt;
-&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  alice&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; tenant&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &#39;t1&#39;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; roles&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &#39;admin&#39; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  bob&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; tenant&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &#39;t1&#39;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; roles&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &#39;cds.ExtensionDeveloper&#39; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  carol&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; tenant&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &#39;t1&#39;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; roles&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &#39;admin&#39;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &#39;cds.ExtensionDeveloper&#39; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  dave&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; tenant&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &#39;t1&#39;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; roles&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &#39;admin&#39; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; features&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  erin&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; tenant&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &#39;t2&#39;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; roles&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &#39;admin&#39;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &#39;cds.ExtensionDeveloper&#39; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  fred&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; tenant&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &#39;t2&#39;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; features&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &#39;isbn&#39; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  me&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; tenant&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &#39;t1&#39;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; features&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &#39;*&#39; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  yves&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; roles&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt; &#39;internal-user&#39; &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-  &#39;*&#39;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token boolean&quot;&gt;true&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&quot;restrict-the-service&quot;&gt;Restrict the service&lt;/h3&gt;
-&lt;p&gt;Let&#39;s annotate the service with some basic role based access control (RBAC)
-requirements - that of needing to authenticate, via the pseudo-role
-&lt;code&gt;authenticated-user&lt;/code&gt;. We can use the
-&lt;a href=&quot;https://cap.cloud.sap/docs/guides/security/authorization#requires&quot;&gt;@requires&lt;/a&gt;
-annotation:&lt;/p&gt;
-&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; northwind &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;../db/schema&#39;;
-
-&lt;span class=&quot;token annotation important&quot;&gt;@requires:&lt;/span&gt; &#39;authenticated-user&#39;
-&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; Main {
-
-  ...
-
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The same &lt;code&gt;curl&lt;/code&gt; request as before now fails with an appropriate HTTP 401 status
-code:&lt;/p&gt;
-&lt;pre class=&quot;language-log&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-log&quot;&gt;HTTP&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1.1&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;401&lt;/span&gt; Unauthorized
-&lt;span class=&quot;token property&quot;&gt;WWW-Authenticate:&lt;/span&gt; Basic realm&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;Users&quot;&lt;/span&gt;
-&lt;span class=&quot;token property&quot;&gt;Content-Type:&lt;/span&gt; text&lt;span class=&quot;token operator&quot;&gt;/&lt;/span&gt;plain&lt;span class=&quot;token operator&quot;&gt;;&lt;/span&gt; charset&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;utf&lt;span class=&quot;token operator&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;8&lt;/span&gt;
-&lt;span class=&quot;token property&quot;&gt;Content-Length:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;12&lt;/span&gt;
-
-Unauthorized&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&quot;authenticate-with-a-pre-defined-user&quot;&gt;Authenticate with a pre-defined user&lt;/h3&gt;
-&lt;p&gt;We can re-try the request with one of the pre-defined
-users&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/12/local-first-dev-with-cap-node-js-mocking-auth/#footnotes&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/a&gt;; because the requirement is just for the
-pseudo-role &lt;code&gt;authenticated-user&lt;/code&gt;, we don&#39;t need any particular actual role
-allocated to the user, we just need to be successfully authenticated (and so
-identified) in this case:&lt;/p&gt;
-&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-  &lt;span class=&quot;token parameter variable&quot;&gt;--user&lt;/span&gt; alice: &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-  &lt;span class=&quot;token parameter variable&quot;&gt;--include&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;localhost:4004/main/Products?$top=1&#39;&lt;/span&gt;
-HTTP/1.1 &lt;span class=&quot;token number&quot;&gt;200&lt;/span&gt; OK
-OData-Version: &lt;span class=&quot;token number&quot;&gt;4.0&lt;/span&gt;
-Content-Type: application/json&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token assign-left variable&quot;&gt;charset&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;utf-8
-Content-Length: &lt;span class=&quot;token number&quot;&gt;105&lt;/span&gt;
-
-&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&quot;@odata.context&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&lt;span class=&quot;token variable&quot;&gt;$metadata&lt;/span&gt;#BasicProducts&quot;&lt;/span&gt;,
-  &lt;span class=&quot;token string&quot;&gt;&quot;value&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;token string&quot;&gt;&quot;ID&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;,
-      &lt;span class=&quot;token string&quot;&gt;&quot;name&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Chai&quot;&lt;/span&gt;,
-      &lt;span class=&quot;token string&quot;&gt;&quot;supplier&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Exotic Liquids&quot;&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&quot;try-some-finer-grained-access-restrictions&quot;&gt;Try some finer-grained access restrictions&lt;/h3&gt;
-&lt;p&gt;With the
-&lt;a href=&quot;https://cap.cloud.sap/docs/guides/security/authorization#restrict-annotation&quot;&gt;@restrict&lt;/a&gt;
-we can define finer grained access requirements&lt;a href=&quot;https://qmacro.org/blog/posts/2026/05/12/local-first-dev-with-cap-node-js-mocking-auth/#footnotes&quot;&gt;&lt;sup&gt;3&lt;/sup&gt;&lt;/a&gt; in
-privilege building blocks of this form:&lt;/p&gt;
-&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt; grant&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&amp;lt;events&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; to&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&amp;lt;roles&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; where&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&amp;lt;filter-condition&gt; &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Let&#39;s now add privilege requirements for the &lt;code&gt;Categories&lt;/code&gt; entity, like this:&lt;/p&gt;
-&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token using keyword&quot;&gt;using&lt;/span&gt; northwind &lt;span class=&quot;token from keyword&quot;&gt;from&lt;/span&gt; &#39;../db/schema&#39;;
-
-&lt;span class=&quot;token annotation important&quot;&gt;@requires:&lt;/span&gt; &#39;authenticated-user&#39;
-&lt;span class=&quot;token keyword&quot;&gt;service&lt;/span&gt; Main {
-
-  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Products   &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; northwind.Products;
-
-  &lt;span class=&quot;token annotation important&quot;&gt;@restrict:&lt;/span&gt; [
-    {
-      grant: &#39;WRITE&#39;,
-      to   : &#39;buyer&#39;
-    },
-    {
-      grant: &#39;READ&#39;,
-      to   : &#39;any&#39;
-    }
-  ]
-  &lt;span class=&quot;token keyword&quot;&gt;entity&lt;/span&gt; Categories &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;as&lt;/span&gt; &lt;span class=&quot;token cdl-keyword keyword&quot;&gt;projection&lt;/span&gt; &lt;span class=&quot;token cqlkeywords keyword&quot;&gt;on&lt;/span&gt; northwind.Categories;
-}&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;This says that any (authenticated) user can read the categories, but only a
-user with the &lt;code&gt;buyer&lt;/code&gt; role can perform &amp;quot;write&amp;quot;-semantic operations.&lt;/p&gt;
-&lt;h3 id=&quot;confirm-read-operations-are-permitted&quot;&gt;Confirm read operations are permitted&lt;/h3&gt;
-&lt;p&gt;Let&#39;s check that &amp;quot;read&amp;quot;-semantic operations are allowed for authenticated users
-(remember that the entity access is also governed by the &lt;code&gt;authenticated-user&lt;/code&gt;
-pseudo-role restriction on the service that contains it):&lt;/p&gt;
-&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-  &lt;span class=&quot;token parameter variable&quot;&gt;--user&lt;/span&gt; alice: &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-  &lt;span class=&quot;token parameter variable&quot;&gt;--include&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;localhost:4004/main/Categories?$top=1&#39;&lt;/span&gt;
-HTTP/1.1 &lt;span class=&quot;token number&quot;&gt;200&lt;/span&gt; OK
-OData-Version: &lt;span class=&quot;token number&quot;&gt;4.0&lt;/span&gt;
-Content-Type: application/json&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token assign-left variable&quot;&gt;charset&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;utf-8
-Content-Length: &lt;span class=&quot;token number&quot;&gt;155&lt;/span&gt;
-
-&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&quot;@odata.context&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;&lt;span class=&quot;token variable&quot;&gt;$metadata&lt;/span&gt;#Categories&quot;&lt;/span&gt;,
-  &lt;span class=&quot;token string&quot;&gt;&quot;value&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;token string&quot;&gt;&quot;CategoryID&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;,
-      &lt;span class=&quot;token string&quot;&gt;&quot;CategoryName&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Beverages&quot;&lt;/span&gt;,
-      &lt;span class=&quot;token string&quot;&gt;&quot;Description&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Soft drinks, coffees, teas, beers, and ales&quot;&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Looks OK.&lt;/p&gt;
-&lt;h3 id=&quot;try-a-write-operation&quot;&gt;Try a write operation&lt;/h3&gt;
-&lt;p&gt;Now for a &amp;quot;write&amp;quot;-semantic operation. Let&#39;s go big and try DELETE:&lt;/p&gt;
-&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-  &lt;span class=&quot;token parameter variable&quot;&gt;--user&lt;/span&gt; alice: &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-  &lt;span class=&quot;token parameter variable&quot;&gt;--include&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-  &lt;span class=&quot;token parameter variable&quot;&gt;--request&lt;/span&gt; DELETE &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;localhost:4004/main/Categories/1&#39;&lt;/span&gt;
-HTTP/1.1 &lt;span class=&quot;token number&quot;&gt;403&lt;/span&gt; Forbidden
-OData-Version: &lt;span class=&quot;token number&quot;&gt;4.0&lt;/span&gt;
-Content-Type: application/json&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token assign-left variable&quot;&gt;charset&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt;utf-8
-Content-Length: &lt;span class=&quot;token number&quot;&gt;74&lt;/span&gt;
-
-&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token string&quot;&gt;&quot;error&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token string&quot;&gt;&quot;message&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;Forbidden&quot;&lt;/span&gt;,
-    &lt;span class=&quot;token string&quot;&gt;&quot;code&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&quot;403&quot;&lt;/span&gt;,
-    &lt;span class=&quot;token string&quot;&gt;&quot;@Common.numericSeverity&quot;&lt;/span&gt;&lt;span class=&quot;token builtin class-name&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Alice, with the &lt;code&gt;admin&lt;/code&gt; role, is denied.&lt;/p&gt;
-&lt;h3 id=&quot;give-the-user-more-access-in-the-mocked-strategy&quot;&gt;Give the user more access in the mocked strategy&lt;/h3&gt;
-&lt;p&gt;We can also modify and add to the pre-defined user definitions for the mocked
-authentication strategy. Let&#39;s do that, adding a couple of extra roles for
-Alice in a separate &lt;code&gt;.cdsrc.json&lt;/code&gt; file in the project:&lt;/p&gt;
-&lt;pre class=&quot;language-json&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-json&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-  &lt;span class=&quot;token property&quot;&gt;&quot;cds&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;token property&quot;&gt;&quot;requires&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-      &lt;span class=&quot;token property&quot;&gt;&quot;auth&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;token property&quot;&gt;&quot;users&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-          &lt;span class=&quot;token property&quot;&gt;&quot;alice&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
-            &lt;span class=&quot;token property&quot;&gt;&quot;roles&quot;&lt;/span&gt;&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
-              &lt;span class=&quot;token string&quot;&gt;&quot;admin&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-              &lt;span class=&quot;token string&quot;&gt;&quot;buyer&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
-              &lt;span class=&quot;token string&quot;&gt;&quot;head-office&quot;&lt;/span&gt;
-            &lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;
-          &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-        &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-      &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;One of the roles is &lt;code&gt;buyer&lt;/code&gt;, so let&#39;s now retry the previous request:&lt;/p&gt;
-&lt;pre class=&quot;language-shell&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-shell&quot;&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;curl&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-  &lt;span class=&quot;token parameter variable&quot;&gt;--user&lt;/span&gt; alice: &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-  &lt;span class=&quot;token parameter variable&quot;&gt;--include&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-  &lt;span class=&quot;token parameter variable&quot;&gt;--request&lt;/span&gt; DELETE &lt;span class=&quot;token punctuation&quot;&gt;&#92;&lt;/span&gt;
-  &lt;span class=&quot;token parameter variable&quot;&gt;--url&lt;/span&gt; &lt;span class=&quot;token string&quot;&gt;&#39;localhost:4004/main/Categories/1&#39;&lt;/span&gt;
-HTTP/1.1 &lt;span class=&quot;token number&quot;&gt;204&lt;/span&gt; No Content
-OData-Version: &lt;span class=&quot;token number&quot;&gt;4.0&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Success!&lt;/p&gt;
-&lt;h2 id=&quot;wrapping-up&quot;&gt;Wrapping up&lt;/h2&gt;
-&lt;p&gt;With the mocked authentication strategy, we can embrace and work on the
-important aspect of securing our app or service right from the very start. CAP
-makes it easy to do the right things here.&lt;/p&gt;
-&lt;p&gt;For more information, see the
-&lt;a href=&quot;https://cap.cloud.sap/docs/node.js/authentication&quot;&gt;Authentication&lt;/a&gt; topic in
-Capire.&lt;/p&gt;
-&lt;h2 id=&quot;footnotes&quot;&gt;Footnotes&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;The JSON output in these examples has been pretty-printed for readability here.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;--user&lt;/code&gt; option for &lt;code&gt;curl&lt;/code&gt; allows us to specify a username and password
-separated by a colon, so &lt;code&gt;alice:&lt;/code&gt; here is just the username combined with an
-empty password (there are no passwords for these users). If we&#39;d just
-specified &lt;code&gt;--user alice&lt;/code&gt; without a colon, then &lt;code&gt;curl&lt;/code&gt; would have prompted
-us for a password - we could have then just pressed Enter but this is one
-step we can avoid.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;In fact, &lt;code&gt;@requires&lt;/code&gt; is just a convenience shortcut for &lt;code&gt;@restrict&lt;/code&gt;. The annotation&lt;/p&gt;
-&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token annotation important&quot;&gt;@requires:&lt;/span&gt; &#39;authenticated-user&#39;&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;that we used earlier is equivalent to&lt;/p&gt;
-&lt;pre class=&quot;language-cds&quot; tabindex=&quot;0&quot;&gt;&lt;code class=&quot;language-cds&quot;&gt;&lt;span class=&quot;token annotation important&quot;&gt;@restrict:&lt;/span&gt; [ { grant: &#39;*&#39;, to: &#39;authenticated-user&#39; } ]&lt;/code&gt;&lt;/pre&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
 </content>

@@ -1,0 +1,849 @@
+<!doctype html>
+<html lang="en-GB">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Balancing context size and callable tool metadata with CAP&#39;s MCP adapter</title>
+		<meta name="description" content="Some notes on both sides of the per_action_tool setting of CAP&#39;s MCP adapter plugin.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="Balancing context size and callable tool metadata with CAP&#39;s MCP adapter">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="Some notes on both sides of the per_action_tool setting of CAP&#39;s MCP adapter plugin.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2026/08/23/balancing-context-size-and-callable-tool-metadata-with-caps-mcp-adapter/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 60%, 70%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="balancing-context-size-and-callable-tool-metadata-with-caps-mcp-adapter">Balancing context size and callable tool metadata with CAP&#39;s MCP adapter</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2026-08-23">23 August 2026</time></li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/mcp/" class="post-tag">mcp</a></li>
+</ul>
+
+<p class="post-description-main">Some notes on both sides of the per_action_tool setting of CAP's MCP adapter plugin.</p>
+
+<p>CAP <a href="https://cap.cloud.sap/docs/guides/protocols/mcp">supports the Model Context
+Protocol</a>, and treats it
+beautifully as &quot;just another protocol&quot;. The support comes in the form of the
+<a href="https://github.com/cap-js/mcp">@cap-js/mcp</a> plugin, which has these <a href="https://github.com/cap-js/mcp#feature-flags">feature
+flags</a>:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"cds"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"mcp"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"per_action_tool"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+      <span class="token property">"prefix"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+      <span class="token property">"format"</span><span class="token operator">:</span> <span class="token string">"cql"</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>In this post I want to explore the <code>per_action_tool</code> setting.</p>
+<h2 id="sample-service">Sample service</h2>
+<p>To illustrate, let's use the classic
+<a href="https://github.com/capire/bookshop">capire/bookshop</a> sample project which,
+amongst other resources, has a service defined in <code>srv/cat-service.cds</code> like
+this:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> { sap.capire.bookshop <span class="token cqlkeywords keyword">as</span> my } <span class="token from keyword">from</span> '../db/schema';
+
+<span class="token keyword">service</span> CatalogService <span class="token annotation important">@(path:'browse')</span> {
+
+  <span class="token block-comment comment">/** For displaying lists of Books */</span>
+  <span class="token annotation important">@readonly</span> <span class="token keyword">entity</span> ListOfBooks <span class="token cqlkeywords keyword">as</span> <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> Books {
+    *, currency.symbol <span class="token cqlkeywords keyword">as</span> currency,
+  }
+  excluding { descr };
+
+  <span class="token block-comment comment">/** For display in details pages */</span>
+  <span class="token annotation important">@readonly</span> <span class="token keyword">entity</span> Books <span class="token cqlkeywords keyword">as</span> <span class="token cdl-keyword keyword">projection</span> <span class="token cqlkeywords keyword">on</span> my.Books {
+    *, <span class="token single-line-comment comment">// all fields with the following denormalizations:</span>
+    author.name <span class="token cqlkeywords keyword">as</span> author,
+    genre.name <span class="token cqlkeywords keyword">as</span> genre,
+  } excluding { createdBy, modifiedBy };
+
+  <span class="token annotation important">@requires:</span> 'authenticated-user'
+  <span class="token keyword">action</span> submitOrder ( book: Books:ID, quantity: <span class="token type builtin">Integer </span>);
+}
+
+<span class="token single-line-comment comment">// Serve via OData, HCQL and REST</span>
+annotate CatalogService with <span class="token annotation important">@odata</span> <span class="token annotation important">@hcql</span> <span class="token annotation important">@rest;</span></code></pre>
+<p>The service has:</p>
+<ul>
+<li>entities <code>ListOfBooks</code> and <code>Books</code></li>
+<li>an unbound action <code>submitOrder</code> (for which authentication is needed)</li>
+</ul>
+<p>We'll begin by adding the MCP adapter plugin to the project like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">npm</span> <span class="token function">add</span> @cap-js/mcp</code></pre>
+<h3 id="extending-the-service-definition">Extending the service definition</h3>
+<p>Extending the definition slightly will help us dig in and understand the different
+approaches that we can control with <code>per_action_tool</code>.</p>
+<p>To keep things simple, let's just add content to the existing <code>srv/cat-service.cds</code>.</p>
+<p>First, let's add a <a href="https://cap.cloud.sap/docs/guides/protocols/mcp#adding-context-information">doc
+comment</a>
+to the <code>submitOrder</code> action, so it looks like this:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds">  <span class="token annotation important">@requires:</span> 'authenticated-user'
+  <span class="token block-comment comment">/** Place an order for a given book, specifying quantity required */</span>
+  <span class="token keyword">action</span> submitOrder ( book: Books:ID, quantity: <span class="token type builtin">Integer </span>);</code></pre>
+<p>Now let's define another action in the service, by adding this at the end of
+the file:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token keyword">extend</span> <span class="token keyword">service</span> CatalogService with {
+  <span class="token block-comment comment">/** Return the total value of all stock */</span>
+  <span class="token keyword">action</span> stockValue ();
+}</code></pre>
+<p>Finally, let's actually add the <code>@mcp</code> annotation, on a further line at the
+end of the file:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds">annotate CatalogService with <span class="token annotation important">@mcp;</span></code></pre>
+<h3 id="a-running-cap-server">A running CAP server</h3>
+<p>We'll be running a CAP server, started with <code>DEBUG=mcp cds watch</code>, throughout
+the explorations here; the log output that we need to know about looks like
+this:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>mcp<span class="token punctuation">]</span> <span class="token operator">-</span> Adapter initialized <span class="token operator">{</span> service<span class="token operator">:</span> <span class="token string">'CatalogService'</span> <span class="token operator">}</span>
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> serving CatalogService <span class="token operator">{</span>
+  <span class="token property">at:</span> <span class="token punctuation">[</span>
+    <span class="token string">'/odata/v4/browse'</span><span class="token punctuation">,</span>
+    <span class="token string">'/rest/browse'</span><span class="token punctuation">,</span>
+    <span class="token string">'/hcql/browse'</span><span class="token punctuation">,</span>
+    <span class="token string">'/mcp/browse'</span>
+  <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">decl:</span> <span class="token string">'srv/cat-service.cds:3'</span><span class="token punctuation">,</span>
+  <span class="token property">impl:</span> <span class="token string">'srv/cat-service.js'</span>
+<span class="token operator">}</span>
+<span class="token punctuation">[</span>mcp<span class="token punctuation">]</span> <span class="token operator">-</span> registering MCP services<span class="token operator">:</span> <span class="token punctuation">[</span> <span class="token string">'CatalogService'</span> <span class="token punctuation">]</span>
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> server listening on <span class="token operator">{</span> url<span class="token operator">:</span> <span class="token string">'http://localhost:4004'</span> <span class="token operator">}</span></code></pre>
+<p>This tells us that the MCP adapter is accessible at <code>http://localhost:4004/mcp/browse</code>.</p>
+<h2 id="inspector">Inspector</h2>
+<p>To assist exploration, let's use the <a href="https://github.com/modelcontextprotocol/inspector">MCP
+inspector</a> tool, which can
+be operated in GUI, TUI or CLI mode. We'll use the CLI mode here to keep things
+simple.</p>
+<p>The basic inspector CLI call to connect to and interact with the MCP server provided
+by the MCP adapter looks like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">npx @modelcontextprotocol/inspector <span class="token punctuation">\</span>
+  <span class="token parameter variable">--cli</span>
+  <span class="token parameter variable">--header</span> <span class="token string">'Authorization: Basic YWxpY2U6Cg=='</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--transport</span> http <span class="token punctuation">\</span>
+  --server-url http://localhost:4004/mcp/browse</code></pre>
+<p>plus some actual method, with the <code>--method</code> option.</p>
+<h2 id="tools-list">Tools list</h2>
+<p>By default, the MCP adapter offers up to three tools per service annotated with
+<code>@mcp</code>, in response to the
+<a href="https://modelcontextprotocol.io/specification/2025-06-18/server/tools#listing-tools">tools/list</a>
+request.</p>
+<p>We can see this with the inspector, using the basic CLI call plus <code>--method tools/list</code>:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">npx @modelcontextprotocol/inspector <span class="token punctuation">\</span>
+  <span class="token parameter variable">--cli</span>
+  <span class="token parameter variable">--header</span> <span class="token string">'Authorization: Basic YWxpY2U6Cg=='</span> <span class="token punctuation">\</span>
+  <span class="token parameter variable">--transport</span> http <span class="token punctuation">\</span>
+  --server-url http://localhost:4004/mcp/browse <span class="token punctuation">\</span>
+  <span class="token parameter variable">--method</span> tools/list <span class="token punctuation">\</span>
+  <span class="token operator">></span> tools.json</code></pre>
+<blockquote>
+<p>We're sending an auth header - the encoded value is <code>alice:</code> (there's no
+password) as <code>alice</code> is one of the users available by default in the mocked
+authentication strategy which is in effect by default when running in
+development mode - see <a href="/blog/posts/2026/05/12/local-first-dev-with-cap-node-js-mocking-auth/">Local-first dev with CAP Node.js - mocking
+auth</a>.
+This is to address the <code>authenticated-user</code> pseudo-role requirement for the
+<code>submitOrder</code> action later.</p>
+</blockquote>
+<p>This returns quite a bit of output, in JSON, so we're redirecting that to a
+<code>tools.json</code> file, where we can use <code>jq</code> to explore it separately.</p>
+<p>Let's first reduce the JSON response to simply see what the tool names are and
+how they're described:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">jq <span class="token string">'[.tools[]|{(.name):.description}]|add'</span> tools.json</code></pre>
+<blockquote>
+<p>Echoing Perl's <a href="https://en.wiktionary.org/wiki/TMTOWTDI">TMTOWTDI</a> tradition,
+one could also achieve the same result with the jq expression
+<code>.tools|map({(.name):.description})|add</code>.</p>
+</blockquote>
+<p>This produces:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"describe"</span><span class="token operator">:</span> <span class="token string">"Describe the data model of CatalogService service. Returns an overview of all entities and actions with descriptions. Specify 'entity' to get element details, or 'action' to get parameter details."</span><span class="token punctuation">,</span>
+  <span class="token property">"query"</span><span class="token operator">:</span> <span class="token string">"Query any entity in CatalogService service.Ensure to first use the `describe` tool to discover an entity's available fields."</span><span class="token punctuation">,</span>
+  <span class="token property">"call"</span><span class="token operator">:</span> <span class="token string">"Call an unbound action or function in CatalogService service. Use describe to discover available actions and their parameters."</span>
+<span class="token punctuation">}</span></code></pre>
+<p>The <code>describe</code> and <code>query</code> tools are fairly standard and nearly always supplied
+(except when the caller has no access). The <code>call</code> tool, returned when there
+are actions or functions available, is the focus of this post and of the
+<code>per_action_tool</code> setting.</p>
+<h2 id="the-generic-call-tool">The generic call tool</h2>
+<p>Let's dig in to the details supplied with the <code>call</code> tool. With:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">jq <span class="token string">'.tools[]|select(.name=="call")'</span> tools.json</code></pre>
+<p>we see this output:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"call"</span><span class="token punctuation">,</span>
+  <span class="token property">"description"</span><span class="token operator">:</span> <span class="token string">"Call an unbound action or function in CatalogService service. Use describe to discover available actions and their parameters."</span><span class="token punctuation">,</span>
+  <span class="token property">"inputSchema"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"object"</span><span class="token punctuation">,</span>
+    <span class="token property">"properties"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"action"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"string"</span><span class="token punctuation">,</span>
+        <span class="token property">"enum"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+          <span class="token string">"submitOrder"</span><span class="token punctuation">,</span>
+          <span class="token string">"stockValue"</span>
+        <span class="token punctuation">]</span><span class="token punctuation">,</span>
+        <span class="token property">"description"</span><span class="token operator">:</span> <span class="token string">"The action or function to call"</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token property">"parameters"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"description"</span><span class="token operator">:</span> <span class="token string">"Parameters for the action. Use describe to see available parameters."</span><span class="token punctuation">,</span>
+        <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"object"</span><span class="token punctuation">,</span>
+        <span class="token property">"properties"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token property">"additionalProperties"</span><span class="token operator">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"required"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token string">"action"</span>
+    <span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token property">"$schema"</span><span class="token operator">:</span> <span class="token string">"https://json-schema.org/draft/2020-12/schema"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"annotations"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"readOnlyHint"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">"destructiveHint"</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token property">"idempotentHint"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">"openWorldHint"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>If we <a href="/blog/posts/2017/02/19/the-beauty-of-recursion-and-list-machinery/#initial-recognition">stare
+at</a>
+this for a moment, we see that it's rather generic.</p>
+<p>Moreover, the description includes instructions that require the use of the
+<code>describe</code> tool first, before working out which (if any) call can be made. The
+descriptions we have in our doc comments (&quot;Place an order for a given book,
+specifying quantity required&quot; and &quot;Return the total value of all stock&quot;) aren't
+even surfaced here.</p>
+<p>All we have is a simple enumerated list of action names in <code>inputSchema.properties.enum</code>.</p>
+<h2 id="per-action-tools">Per-action tools</h2>
+<p>Let's now contrast that <em>&quot;describe&quot; + &quot;query&quot; + single &quot;call&quot; tool</em> set, with what we get
+if we set the MCP adapter plugin's <code>per_action_tool</code> feature flag to <code>true</code>. We can do
+that in many ways; let's keep things simple and add a <code>mcp.per_action_tool</code> property
+to the <code>.cdsrc.yaml</code> file that already exists in the project, like this:</p>
+<pre class="language-yaml" tabindex="0"><code class="language-yaml"><span class="token key atrule">cds</span><span class="token punctuation">:</span>
+  <span class="token key atrule">mcp</span><span class="token punctuation">:</span>
+    <span class="token key atrule">per_action_tool</span><span class="token punctuation">:</span> <span class="token boolean important">true</span>
+  <span class="token key atrule">requires</span><span class="token punctuation">:</span>
+    <span class="token key atrule">"[production]"</span><span class="token punctuation">:</span>
+      <span class="token key atrule">auth</span><span class="token punctuation">:</span> mocked <span class="token comment"># as a sample app run with mocked auth also in production</span></code></pre>
+<p>When we restart the CAP server, and make a <code>tools/list</code> request again,
+we get the same response detail for the <code>describe</code> and <code>query</code>
+tools, but the detail for the actions available looks completely different.</p>
+<p>Let's examine the JSON output again. First, with
+<code>.tools|map({(.name):.description})|add</code> we can see the tools and their
+descriptions:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"describe"</span><span class="token operator">:</span> <span class="token string">"Describe the data model of CatalogService service. Returns an overview of all entities and actions with descriptions. Specify 'entity' to get element details, or 'action' to get parameter details."</span><span class="token punctuation">,</span>
+  <span class="token property">"query"</span><span class="token operator">:</span> <span class="token string">"Query any entity in CatalogService service.Ensure to first use the `describe` tool to discover an entity's available fields."</span><span class="token punctuation">,</span>
+  <span class="token property">"submitOrder"</span><span class="token operator">:</span> <span class="token string">"Call action submitOrder in CatalogService"</span><span class="token punctuation">,</span>
+  <span class="token property">"stockValue"</span><span class="token operator">:</span> <span class="token string">"Return the total value of all stock"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>This time, instead of the generic <code>call</code> tool, we get individual tools,
+complete with unique descriptions (the descriptions from the doc comments).</p>
+<p>Also, note that the simple <code>call</code> tool info earlier didn't have any parameter
+detail for either of the actual actions; instead, there was an instruction to
+&quot;use describe to see available parameters.&quot;.</p>
+<p>But now, for each callable action, all the parameter details are available. Let's
+look at the details for the <code>submitOrder</code> action, with <code>.tools[2]</code>:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"submitOrder"</span><span class="token punctuation">,</span>
+  <span class="token property">"description"</span><span class="token operator">:</span> <span class="token string">"Call action submitOrder in CatalogService"</span><span class="token punctuation">,</span>
+  <span class="token property">"inputSchema"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"object"</span><span class="token punctuation">,</span>
+    <span class="token property">"properties"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"book"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"integer"</span><span class="token punctuation">,</span>
+        <span class="token property">"minimum"</span><span class="token operator">:</span> <span class="token number">-9007199254740991</span><span class="token punctuation">,</span>
+        <span class="token property">"maximum"</span><span class="token operator">:</span> <span class="token number">9007199254740991</span>
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token property">"quantity"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"integer"</span><span class="token punctuation">,</span>
+        <span class="token property">"minimum"</span><span class="token operator">:</span> <span class="token number">-9007199254740991</span><span class="token punctuation">,</span>
+        <span class="token property">"maximum"</span><span class="token operator">:</span> <span class="token number">9007199254740991</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"$schema"</span><span class="token operator">:</span> <span class="token string">"https://json-schema.org/draft/2020-12/schema"</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"annotations"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"readOnlyHint"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">"destructiveHint"</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token property">"idempotentHint"</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+    <span class="token property">"openWorldHint"</span><span class="token operator">:</span> <span class="token boolean">false</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>The included <code>inputSchema</code> describes the two properties required (<code>book</code> and <code>quantity</code>).</p>
+<p>So in this case, no pre-action-call discovery step is needed, no extra describe
+step need be executed just to find out what these actions are, whether they
+might be useful and how to call them.</p>
+<h2 id="comparing-the-options">Comparing the options</h2>
+<p>Which option is better? <code>per_action_tool: true</code> or <code>per_action_tool: false</code>?
+Well, that depends of course. There's a balance to be had.</p>
+<p>Returning a single generic <code>call</code> tool, merely flagging that there's a facility
+to make calls to specific actions and functions, with a simple list of them,
+makes for quite a concise response. This in turn means that the size of the
+context where this is stored remains relatively small. But the downside is that
+there are going to be extra roundtrips required to accomplish anything
+meaningful, as a <code>describe</code> call is necessary to find out more.</p>
+<p>Describing separate <code>call</code>-type tools means that the context is potentially
+going to get much larger, if there are many actions and functions available.
+However the upside is that they're likely immediately comprehensible and
+usable.</p>
+<p>The MCP adapter plugin team has taken the decision to default to &quot;safe&quot; and
+simple, to avoid exploding the context size unexpectedly, which makes sense. In
+other words, the default is <code>per_action_tool: false</code>.</p>
+<p>Only you can make the decision to change the value for that feature flag, based
+on your service definitions, and other circumstances. Certainly if you only
+have a small number of actions, then it's worth considering turning on the
+<code>per_action_tool</code> flag. But if you have many, you may wish not to.</p>
+<p>But now at least you know what the flag does, why, and how it affects things.</p>
+<h2 id="further-info">Further info</h2>
+<p>This topic is also covered in <a href="https://www.youtube.com/watch?v=Nu_bEVFM7DM">Part 3 of CAP in the age of
+AI</a>.</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2026/07/29/knowledge-and-netiquette-in-todays-ai-era/">Knowledge and netiquette in today&#39;s AI era</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2026/08/23/balancing-context-size-and-callable-tool-metadata-with-caps-mcp-adapter/` was built on 2026-08-23T15:54:45.781Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
