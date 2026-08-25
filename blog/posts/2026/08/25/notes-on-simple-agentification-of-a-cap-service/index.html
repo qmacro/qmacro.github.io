@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en-GB">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Notes on simple agentification of a CAP service</title>
+		<meta name="description" content="A short note-to-self on what I did when trying out the new agents plugin for CAP.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="Notes on simple agentification of a CAP service">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="A short note-to-self on what I did when trying out the new agents plugin for CAP.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2026/08/25/notes-on-simple-agentification-of-a-cap-service/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 60%, 70%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="notes-on-simple-agentification-of-a-cap-service">Notes on simple agentification of a CAP service</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2026-08-25">25 August 2026</time></li>
+	<li><a href="/tags/cap/" class="post-tag">cap</a>, </li>
+	<li><a href="/tags/ai/" class="post-tag">ai</a>, </li>
+	<li><a href="/tags/agents/" class="post-tag">agents</a></li>
+</ul>
+
+<p class="post-description-main">A short note-to-self on what I did when trying out the new agents plugin for CAP.</p>
+
+<h2 id="baseline">Baseline</h2>
+<p>The <a href="https://www.npmjs.com/package/@cap-js/agents">plugin for building agents based on the A2A
+protocol</a> is here.</p>
+<p>I start with the simple <a href="https://github.com/capire/bookshop">bookshop</a> project
+and add the plugin:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">gh repo clone capire/bookshop <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> <span class="token builtin class-name">cd</span> bookshop <span class="token punctuation">\</span>
+  <span class="token operator">&amp;&amp;</span> <span class="token function">npm</span> <span class="token function">add</span> @cap-js/agents</code></pre>
+<h2 id="agentification">Agentification</h2>
+<p>I apply the <code>@agent</code> annotation to the <code>CatalogService</code> in <code>srv/cat-agent.cds</code>:</p>
+<pre class="language-cds" tabindex="0"><code class="language-cds"><span class="token using keyword">using</span> { CatalogService } <span class="token from keyword">from</span> './cat-<span class="token keyword">service</span>';
+
+annotate CatalogService with <span class="token annotation important">@agent;</span></code></pre>
+<h2 id="startup-and-development-mode">Startup and development mode</h2>
+<p>I start up a CAP server and ask for debug level output for the agents component:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token assign-left variable">DEBUG</span><span class="token operator">=</span>agents cds <span class="token function">watch</span></code></pre>
+<p>and observe the log output:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>agents<span class="token punctuation">]</span> <span class="token operator">-</span> Adapter initialized <span class="token operator">{</span> service<span class="token operator">:</span> <span class="token string">'CatalogService'</span> <span class="token operator">}</span>
+<span class="token punctuation">[</span>cds<span class="token punctuation">]</span> <span class="token operator">-</span> serving CatalogService <span class="token operator">{</span>
+  <span class="token property">at:</span> <span class="token punctuation">[</span> <span class="token string">'/odata/v4/browse'</span><span class="token punctuation">,</span> <span class="token string">'/rest/browse'</span><span class="token punctuation">,</span> <span class="token string">'/hcql/browse'</span><span class="token punctuation">,</span> <span class="token string">'/a2a/browse'</span> <span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">decl:</span> <span class="token string">'srv/cat-service.cds:3'</span><span class="token punctuation">,</span>
+  <span class="token property">impl:</span> <span class="token string">'srv/cat-service.js'</span>
+<span class="token operator">}</span></code></pre>
+<ul>
+<li><a href="http://localhost:4004/a2a/browse">http://localhost:4004/a2a/browse</a> is an A2A JSON-RPC endpoint that is
+expecting POST requests</li>
+<li><a href="http://localhost:4004/a2a/browse/.well-known/agent-card.json">http://localhost:4004/a2a/browse/.well-known/agent-card.json</a> is the <a href="https://agent2agent.info/docs/concepts/agentcard/">agent
+card</a></li>
+<li><a href="http://localhost:4004/a2a/browse/preview/">http://localhost:4004/a2a/browse/preview/</a> is a helper preview page that
+provides a chat UI</li>
+</ul>
+<p>In this default (development) mode, the plugin will mock an LLM, sending a
+response like this to a chat message:</p>
+<blockquote>
+<p>[Mock LLM] This is a mocked response from @cap-js/agents development mode. No real LLM was invoked.</p>
+<p>Tool result: count: 5
+data[3]{createdAt,modifiedAt,ID,author,title,genre,stock,price,currency}:
+&quot;2026-08-25T12:44:18.880Z&quot;,&quot;2026-08-25T12:44:18.880Z&quot;,201,Emily Brontë,Wuthering Heights,Drama,12,&quot;11.11&quot;,£
+&quot;2026-08-25T12:44:18.880Z&quot;,&quot;2026-08-25T12:44:18.880Z&quot;,207,Charlotte Brontë,Jane Eyre,Drama,11,&quot;12.34&quot;,£
+&quot;2026-08-25T12:44:18.880Z&quot;,&quot;2026-08-25T12:44:18.880Z&quot;,251,Edgar Allan Poe,The Raven -- 11% discount!,Mystery,333,&quot;13.13&quot;,$</p>
+</blockquote>
+<h2 id="connecting-to-a-real-llm">Connecting to a real LLM</h2>
+<p>Connecting to an actual LLM is described on the plugin's
+<a href="https://github.com/cap-js/agents/blob/HEAD/.docs/connectivity.md">Connectivity</a>
+page.</p>
+<p>I have access to an AI Core instance by means of a service key in a file
+called <code>aicore.json</code> in the project's parent directory. I also know that the
+orchestration facilities that are needed are not in the default resource group,
+for that instance, but in a resource group called &quot;codejam-genai&quot;.</p>
+<h3 id="set-the-aicore-service-key-env-var">Set the AICORE_SERVICE_KEY env var</h3>
+<p>Assigning the service key JSON data to the environment variable
+<code>AICORE_SERVICE_KEY</code> will allow the plugin to make the connection.</p>
+<p>I use <code>jq</code>'s <code>--compact-output</code> (<code>-c</code>) to remove whitespace and have the entire
+JSON value as one string:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token builtin class-name">export</span> <span class="token assign-left variable">AICORE_SERVICE_KEY</span><span class="token operator">=</span><span class="token string">"<span class="token variable"><span class="token variable">$(</span>jq <span class="token parameter variable">-c</span> <span class="token builtin class-name">.</span> <span class="token punctuation">..</span>/aicore.json<span class="token variable">)</span></span>"</span></code></pre>
+<h3 id="specify-the-llm-type-and-resource-group">Specify the LLM type and resource group</h3>
+<p>I need to specify the resource group &quot;codejam-genai&quot;, and for that I can use
+some plugin configuration, specifically <code>cds.requires.llm.resourceGroup</code>. As
+I'm going to be specifying a child of the <code>llm</code> node here, I should be
+sure to explicitly specify the value for the <code>kind</code> too (based on the way
+configuration merging takes place). This makes sense anyway as resource groups
+are somewhat AI Core specific.</p>
+<p>There's already a <code>.cdsrc.yaml</code> file in the project with a <code>cds.requires.auth</code>
+node, so I add the configuration to the end, so it looks like this:</p>
+<pre class="language-yaml" tabindex="0"><code class="language-yaml"><span class="token key atrule">cds</span><span class="token punctuation">:</span>
+  <span class="token key atrule">requires</span><span class="token punctuation">:</span>
+    <span class="token key atrule">"[production]"</span><span class="token punctuation">:</span>
+      <span class="token key atrule">auth</span><span class="token punctuation">:</span> mocked <span class="token comment"># as a sample app run with mocked auth also in production</span>
+    <span class="token key atrule">llm</span><span class="token punctuation">:</span>
+      <span class="token key atrule">kind</span><span class="token punctuation">:</span> <span class="token string">'aicore'</span>
+      <span class="token key atrule">resourceGroup</span><span class="token punctuation">:</span> <span class="token string">'codejam-genai'</span></code></pre>
+<h2 id="restart">Restart</h2>
+<p>After restarting the CAP server (the &quot;watch&quot; mode ignores YAML file changes right now)
+the response to the chat message is from a real LLM, and looks like this:</p>
+<blockquote>
+<p>Hello! How can I help you today? I can assist you with browsing books,
+checking availability, or placing orders through the CatalogService. Feel
+free to ask anything! 😊</p>
+</blockquote>
+<p>Here's what is emitted in the CAP server log, too:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token punctuation">[</span>agents<span class="token punctuation">]</span> <span class="token operator">-</span> request <span class="token operator">{</span>
+  <span class="token property">conversation:</span> <span class="token string">'-'</span><span class="token punctuation">,</span>
+  <span class="token property">service:</span> <span class="token string">'CatalogService'</span><span class="token punctuation">,</span>
+  <span class="token property">method:</span> <span class="token string">'message/send'</span><span class="token punctuation">,</span>
+  <span class="token property">text:</span> <span class="token string">'hi'</span>
+<span class="token operator">}</span>
+<span class="token punctuation">[</span>agents<span class="token punctuation">]</span> <span class="token operator">-</span> Initializing LLM <span class="token operator">{</span> model<span class="token operator">:</span> <span class="token string">'anthropic--claude-4.6-sonnet'</span><span class="token punctuation">,</span> deepAgent<span class="token operator">:</span> <span class="token boolean">false</span> <span class="token operator">}</span>
+<span class="token punctuation">[</span>agents<span class="token punctuation">]</span> <span class="token operator">-</span> completed <span class="token operator">{</span>
+  <span class="token property">conversation:</span> <span class="token string">'407e65ad'</span><span class="token punctuation">,</span>
+  <span class="token property">service:</span> <span class="token string">'CatalogService'</span><span class="token punctuation">,</span>
+  <span class="token property">duration:</span> <span class="token string">'3.9s'</span>
+<span class="token operator">}</span></code></pre>
+<h2 id="summary">Summary</h2>
+<p>This is just the basics, scratching the surface. The plugin also has support
+for defining an agent's identity, behaviour and skills in Markdown, plus a
+human-in-the-loop feature. There's plenty of more advanced facilities too.</p>
+<p>But for now, so far so good!</p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2026/08/23/balancing-context-size-and-callable-tool-metadata-with-caps-mcp-adapter/">Balancing context size and callable tool metadata with CAP&#39;s MCP adapter</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2026/08/25/notes-on-simple-agentification-of-a-cap-service/` was built on 2026-08-25T14:25:39.170Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
