@@ -36,6 +36,6 @@ But what’s more fabulous: Tarpipe has been ideal for my son [Joseph](http://jc
 
 on black and white low-res displays.
 
-After explaining a few concepts, Joseph was totally up and away, building [his first workflow](http://www.flickr.com/photos/8583308@N05/3392375982/) which is pretty impressive! (I’m a biased, [proud dad](http://www.flickr.com/photos/qmacro/3397440933/) of course :-) And now we’re off looking at [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo!_Pipes) too, and he’s asking how we can link the two services together.
+After explaining a few concepts, Joseph was totally up and away, building [his first workflow](http://www.flickr.com/photos/8583308@N05/3392375982/) which is pretty impressive! (I’m a biased, [proud dad](http://www.flickr.com/photos/qmacro/3397440933/) of course :-) And now we’re off looking at [Yahoo! Pipes](https://en.wikipedia.org/wiki/Yahoo_Pipes) too, and he’s asking how we can link the two services together.
 
 Hello, new programming world.
