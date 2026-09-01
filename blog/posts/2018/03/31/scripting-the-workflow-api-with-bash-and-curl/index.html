@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="en-GB">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Scripting the Workflow API with bash and curl</title>
+		<meta name="description" content="There&#39;s an API for the SAP Cloud Platform Workflow service. Let&#39;s explore!">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="Scripting the Workflow API with bash and curl">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="There&#39;s an API for the SAP Cloud Platform Workflow service. Let&#39;s explore!">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2018/03/31/scripting-the-workflow-api-with-bash-and-curl/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 60%, 70%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="scripting-the-workflow-api-with-bash-and-curl">Scripting the Workflow API with bash and curl</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2018-03-31">31 March 2018</time></li>
+	<li><a href="/tags/sapcommunity/" class="post-tag">sapcommunity</a>, </li>
+	<li><a href="/tags/googlecloudshell/" class="post-tag">googlecloudshell</a>, </li>
+	<li><a href="/tags/api/" class="post-tag">api</a>, </li>
+	<li><a href="/tags/scp/" class="post-tag">scp</a>, </li>
+	<li><a href="/tags/workflow/" class="post-tag">workflow</a>, </li>
+	<li><a href="/tags/shell/" class="post-tag">shell</a></li>
+</ul>
+
+<p class="post-description-main">There's an API for the SAP Cloud Platform Workflow service. Let's explore!</p>
+
+<p>I've written about the SAP Cloud Platform (SCP) Workflow service
+before, including a 10-part series called <a href="/blog/posts/2018/01/16/discovering-scp-workflow/">Discovering SCP
+Workflow</a>
+that is possibly more than you wanted to read, but hey.</p>
+<p>The fact that the Workflow service has an API shouldn't be a surprise
+to anyone. The fact that it's well designed, is informed by
+Representational State Transfer (REST) principles and <a href="https://help.sap.com/doc/72317aec52144df8bc04798fd232a585/Cloud/en-US/wfs-core-api-docu.html">nicely
+documented</a> may
+come as a pleasant surprise to some. (I'm a fan of REST as an approach
+to integration - see <a href="/blog/posts/2004/06/24/forget-soap-build-real-web-services-with-the-icf/">Forget SOAP -- build real web services with the
+ICF</a> from
+2004 for some background).</p>
+<p>In hacking around with the Workflow service to create the series of blog
+posts, and in preparation for my ASUG Webinar I'm giving next week (Wed
+04 Apr - see <a href="https://www.asug.com/events/biti-introduction-to-sap-cloud-platform-workflow">BITI: Introduction to SAP Cloud Platform
+Workflow</a>
+for how to sign up), I found myself repeatedly creating multiple
+instances of workflow definitions, more than I needed, and wanted a
+convenient way to tidy things up. You can use the rather excellent
+<a href="/blog/posts/2018/01/08/discovering-scp-workflow-the-monitor/">Workflow
+Monitor</a>
+app to terminate instances but you can only terminate them one at a
+time, and are prompted for confirmation on each one (which is a good
+thing on the whole).</p>
+<h2 id="using-the-api-to-cancel-instances">Using the API to cancel instances</h2>
+<p>So I decided to learn more about the Workflow API by using it to clean
+up redundant running workflow instances, specifically by setting their
+status to &quot;CANCELED&quot; so they disappear from view. (Yes, I'm still
+struggling to look at the odd spelling of that word too, but I'm trying
+to embrace that foreign English version that seems to be the standard in
+these parts).</p>
+<p>The relevant section of the API documentation for what I needed is
+<a href="https://help.sap.com/doc/72317aec52144df8bc04798fd232a585/Cloud/en-US/wfs-core-api-docu.html#api-WorkflowInstances-v1WorkflowInstancesWorkflowInstanceIdPatch">here</a>, describing
+the PATCH method on /v1/workflow-instances/{workflowInstanceId}
+resources, with a payload that looks like this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span> <span class="token property">"status"</span> <span class="token operator">:</span> <span class="token string">"CANCELED"</span> <span class="token punctuation">}</span></code></pre>
+<p>I wondered if I could write a simple script that would help me clean up
+instances of the workflow definition I was working with (the
+&quot;untappdrecommendation&quot; one, relating to the subject of the
+Discovering SCP Workflow series). By the way, I'm creating multiple
+instances of the workflow definition through another script on the
+Google Apps platform, relating to my beer checkins, which is the subject
+of the Discovering SCP Workflow series.</p>
+<p>I'd been looking into the nuances of the CSRF token in <a href="/blog/posts/2018/01/14/discovering-scp-workflow-instance-initiation/">Discovering SCP
+Workflow -- Instance
+Initiation</a> and
+had found a sweet spot on the command line with the venerable
+<a href="https://curl.haxx.se/">curl</a> - the Swiss Army Knife of command line
+tools for HTTP and more. Of course, that command line was in the cloud,
+in the form of my personal <a href="https://cloud.google.com/shell/docs/">Cloud
+Shell</a> courtesy of the Google
+Cloud Platform (read more about my thoughts on and use of the Google
+Cloud Shell in <a href="/blog/posts/2018/03/26/monday-morning-thoughts-cloud-native/">Monday morning thoughts: Cloud
+Native</a>).</p>
+<h2 id="writing-a-shell-script">Writing a shell script</h2>
+<p>So I wrote a shell script, in particular a
+<a href="https://en.wikipedia.org/wiki/Bash_(Unix_shell)">bash</a> flavoured one,
+that did the trick. Before I dive into it, I wanted to relate to you a
+little story.</p>
+<p>One of my heroes is <a href="https://en.wikipedia.org/wiki/Randal_L._Schwartz">Randal
+Schwartz</a>, who was
+partially responsible for how I successfully managed to branch out from
+the SAP ecosphere in the '90s and discover Open Source, first through
+the wonderful* language Perl. He <a href="http://www.stonehenge.com/merlyn/columns.html">wrote columns in various
+magazines</a>, each one
+describing and explaining a Perl script that he'd written. I used to
+spend my lunchtime with a sandwich and a cup of tea, pouring over these
+columns and learning how he wrote Perl, and by osmosis, learning Perl
+myself. <a href="/blog/posts/2003/07/12/thanks-randal/">Thanks,
+Randal</a>.</p>
+<p>*yes, you may think differently, but I'll fight you in a dark corner
+over it if necessary!</p>
+<p>With that in mind, I'll present this short script in the style of one
+of Randal's columns, in his honour. There are some caveats before I
+start though - the presentation of this script is in the &quot;warts and
+all&quot; style, as though I'd just finished making a batch of slightly
+uneven <a href="https://www.bbcgoodfood.com/recipes/5569/welsh-cakes">Welsh
+cakes</a>, and you
+came by the house and I invited you in to the kitchen for a cup of tea
+and one of the cakes. There's still a mess on the worktops and some
+flour on the floor, but they're definitely edible and taste nice with
+the tea.</p>
+<p>First, here's the script in its entirety.</p>
+<pre class="language-text" tabindex="0"><code class="language-text"> 1 #!/bin/bash
+ 2
+ 3 # Cancel all running instances of a given workflow definition
+ 4 # USE WITH CAUTION!
+ 5
+ 6 USER=p481810
+ 7 COOKIES=cookiejar-${USER}.dat
+ 8 INSTANCEDATA=instances.dat
+ 9 TOKENDATA=headers.dat
+10 DEFINITIONID=$1
+11 WFS_API_ROOT=https://bpmworkflowruntimewfs-${USER}trial.hanatrial.ondemand.com/workflow-service/rest
+12 STATUSPAYLOAD={"status":"CANCELED"}
+13
+14 # Abort if no definition ID has been specified
+15 [ -z "$DEFINITIONID" ] && echo Specify a definition ID && exit 1
+16
+17 echo WARNING: This will cancel ALL instances for workflow definition "${DEFINITIONID}"
+18 echo Please enter password for $USER
+19 read -s PASS
+20
+21 rm -f $INSTANCEDATA
+22 rm -f $TOKENDATA
+23
+24
+25 # Retrieve the RUNNING instances for the given workflow definition
+26 curl \
+27   --user $USER:$PASS \
+28   --output $INSTANCEDATA \
+29   --silent \
+30   "$WFS_API_ROOT/v1/workflow-instances?definitionId=${DEFINITIONID}&status=RUNNING"
+31
+32
+33 # Retrieve CSRF token
+34 curl \
+35   --user $USER:$PASS \
+36   --header "X-CSRF-Token: Fetch" \
+37   --cookie-jar $COOKIES \
+38   --verbose \
+39   "$WFS_API_ROOT/v1/xsrf-token" 2> $TOKENDATA
+40
+41 TOKEN=`grep '< X-CSRF-Token' $TOKENDATA | awk '{print $3}'`
+42
+43
+44 # Process each instance ID - send PATCH with cancel status
+45 for INSTANCEID in `jq --raw-output '.[] .id' $INSTANCEDATA`; do
+46   echo Canceling $INSTANCEID
+47   curl \
+48     --user $USER:$PASS \
+49     --request PATCH \
+50     --header "X-CSRF-Token: $TOKEN" \
+51     --header "Content-Type: application/json" \
+52     --cookie $COOKIES \
+53     --data $STATUSPAYLOAD \
+54     "$WFS_API_ROOT/v1/workflow-instances/${INSTANCEID}"
+55   sleep 0.5
+56
+57 done</code></pre>
+<h2 id="a-tour-of-the-script">A tour of the script</h2>
+<p>After the <a href="https://en.wikipedia.org/wiki/Shebang_(Unix)">shebang</a> on
+Line 1 and some comments on Lines 3-4, we start with some general
+variables in Lines 6-12 that we'll use throughout the script:</p>
+<ul>
+<li>I've hardcoded my username relating to my personal SCP trial (this
+is my pre-SAP ID as that's where I have all the related workflow
+definitions).</li>
+<li>the COOKIES variable points to a user-specific file where I'll be
+asking curl to store cookies returned in responses, and to use them
+in subsequent requests. This is to address <a href="/blog/posts/2018/01/14/discovering-scp-workflow-instance-initiation/">the context required
+when using CSRF tokens</a>.</li>
+<li>via the INSTANCEDATA variable, I use a file called instances.dat to
+store the output of a request to the Workflow API to retrieve a list
+of the running instances of my workflow definition.</li>
+<li>TOKENDATA points to a third file used to capture the header output
+of a curl request to Fetch the CSRF token.</li>
+<li>There's a single parameter that needs to be supplied on the command
+line when invoking this script, and that's the ID of the workflow
+definition. This ID is captured (via $1) in the DEFINITIONID
+variable.</li>
+<li>The Workflow API pattern means there's a &quot;root&quot; URL, and each of
+the API facilities are relative to that root. This root is specific
+to my user ID, and held in the WFS_API_ROOT variable (for some
+reason I'd decided I wanted to use underscores in that name, ah
+well).</li>
+<li>When calling PATCH on the individual workflow instances we want to
+cancel, we send a payload. This payload is of type application/json,
+and stored in the STATUSPAYLOAD variable for later use.</li>
+</ul>
+<p>Line 15 just check that a workflow definition ID has actually been
+supplied, and aborts if it hasn't. It doesn't do any checking to see
+if that definition actually exists, we'll find out soon enough anyway.</p>
+<p>Then, in Lines 17-19, we're off. After giving a warning, we ask for the
+password, and bash's builtin
+<a href="http://wiki.bash-hackers.org/commands/builtin/read">read</a> allows us to
+read it from the terminal - securely (invisibly) with the '-s'
+option - into the PASS variable.</p>
+<p>Lines 21-22 clean up before we start, removing any trace of previous
+instance details or CSRF tokens.</p>
+<p>The first thing we have to do is retrieve the list of running instances
+for the given workflow definition. This is done in Lines 26-30 with a
+single curl command (note that the backslash at the end of the lines
+here and elsewhere allow the continuation of a command on separate
+lines - i.e. the entire curl command spans lines all these lines). We
+supply credentials, ask for the output to be written to the INSTANCEDATA
+file and ask curl to be quiet about any download progress statistics.
+The actual Workflow API resource we're making a request to (relative to
+the Workflow API root) is:</p>
+<pre class="language-url" tabindex="0"><code class="language-url"><span class="token path"><span class="token path-separator">/</span>v1<span class="token path-separator">/</span>workflow-instances</span></code></pre>
+<p>and we're qualifying that request by a couple of query parameters, one
+to restrict the request to instances for the given workflow definition,
+and the other to restrict it to instances in the &quot;RUNNING&quot; state.</p>
+<p>In case you hadn't guessed, the default method used by curl is GET.</p>
+<p>Lines 34-39 make another curl request to fetch a CSRF token. We're
+going to be making non-read-only requests next, which means that we need
+a token. The curl command follows the same approach as the previous one,
+but this time includes the &quot;X-CSRF-Token: Fetch&quot; header, and specifies
+the COOKIES file to store cookies in that come back in the response.
+These will define the important context in which the token is valid.
+Instead of asking curl to be silent like last time, this time we're
+asking it to be verbose, which means that details of the request and the
+response, including the crucial HTTP headers, are shown.</p>
+<p>The request headers are shown prefixed by a &quot;&gt;&quot; sign, and the
+response headers are prefixed with a &quot;&lt;&quot; sign. Those signs help us to
+think about (and see) the headers and tell at a glance whether they're
+outgoing (&quot;&gt;&quot;) or incoming (&quot;&lt;&quot;).</p>
+<p>The relative Workflow API resource requested in this call is:</p>
+<pre class="language-url" tabindex="0"><code class="language-url"><span class="token path"><span class="token path-separator">/</span>v1<span class="token path-separator">/</span>xsrf-token</span></code></pre>
+<p>Line 41 is where we pull out the &quot;incoming&quot; response header
+X-CSRF-Token, in which the requested CSRF token is supplied in response
+to the Fetch request. First we pull the header line out with grep, then
+use awk to grab the third item in the line, positionally and (by
+default) separated by whitespace. The header line will look like this:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token operator">&lt;</span> X<span class="token operator">-</span>CSRF<span class="token operator">-</span>Token<span class="token operator">:</span> <span class="token hash constant">F1F2B62E97BB0CF95AB126AE732E3E15</span></code></pre>
+<p>This token (F1F2 ...) is stored in the TOKEN variable.</p>
+<p>Then in Lines 44-57 comes the final but crucial flourish. We process the
+instances, calling PATCH and cancelling them one by one.</p>
+<p>How do we know which instances there are to process? Well, the response
+to the original /v1/workflow-instances request is stored in the file
+pointed to by the INSTANCEDATA variable. This is typically what the
+response will look like:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">[</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"6f23fba7-34c9-11e8-b586-00163e5a9e8b"</span><span class="token punctuation">,</span>
+    <span class="token property">"definitionId"</span><span class="token operator">:</span> <span class="token string">"untappdrecommendation"</span><span class="token punctuation">,</span>
+    <span class="token property">"definitionVersion"</span><span class="token operator">:</span> <span class="token string">"37"</span><span class="token punctuation">,</span>
+    <span class="token property">"subject"</span><span class="token operator">:</span> <span class="token string">"Untappd Recommendation"</span><span class="token punctuation">,</span>
+    <span class="token property">"status"</span><span class="token operator">:</span> <span class="token string">"RUNNING"</span><span class="token punctuation">,</span>
+    <span class="token property">"businessKey"</span><span class="token operator">:</span> <span class="token string">"2506750"</span><span class="token punctuation">,</span>
+    <span class="token property">"startedAt"</span><span class="token operator">:</span> <span class="token string">"2018-03-31T09:53:59.251Z"</span><span class="token punctuation">,</span>
+    <span class="token property">"startedBy"</span><span class="token operator">:</span> <span class="token string">"P481810"</span><span class="token punctuation">,</span>
+    <span class="token property">"completedAt"</span><span class="token operator">:</span> <span class="token null keyword">null</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">{</span>
+    <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"6e9b1c8b-34c9-11e8-b586-00163e5a9e8b"</span><span class="token punctuation">,</span>
+    <span class="token property">"definitionId"</span><span class="token operator">:</span> <span class="token string">"untappdrecommendation"</span><span class="token punctuation">,</span>
+    <span class="token property">"definitionVersion"</span><span class="token operator">:</span> <span class="token string">"37"</span><span class="token punctuation">,</span>
+    <span class="token property">"subject"</span><span class="token operator">:</span> <span class="token string">"Untappd Recommendation"</span><span class="token punctuation">,</span>
+    <span class="token property">"status"</span><span class="token operator">:</span> <span class="token string">"RUNNING"</span><span class="token punctuation">,</span>
+    <span class="token property">"businessKey"</span><span class="token operator">:</span> <span class="token string">"2544284"</span><span class="token punctuation">,</span>
+    <span class="token property">"startedAt"</span><span class="token operator">:</span> <span class="token string">"2018-03-31T09:53:58.354Z"</span><span class="token punctuation">,</span>
+    <span class="token property">"startedBy"</span><span class="token operator">:</span> <span class="token string">"P481810"</span><span class="token punctuation">,</span>
+    <span class="token property">"completedAt"</span><span class="token operator">:</span> <span class="token null keyword">null</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">]</span></code></pre>
+<p>If you look closely, you'll see that this particular example contains
+two instances. The response may contain more, or might even contain none
+(in which case there are no instances to process and we're done!).</p>
+<p>Assuming we're processing the INSTANCEDATA above, we want to get a list
+of instance IDs so they look like this:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">6f23fba7-34c9-11e8-b586-00163e5a9e8b
+6e9b1c8b-34c9-11e8-b586-00163e5a9e8b</code></pre>
+<p>How should we go about this? Well, we can use the powerful
+'<a href="https://stedolan.github.io/jq/">jq</a>', which is described as &quot;a
+lightweight and flexible command-line JSON processor&quot;. I recorded a
+short video last year on this command - <a href="https://www.youtube.com/watch?v=yI5IQooQzW4">Using jq to parse out SCP
+destination info</a>.</p>
+<p>Line 44 is where we use jq, inside of backticks in a &quot;for ... do ...
+done&quot; construction. If you're wondering, if you put something in
+backticks, that something is executed and the result is what is actually
+represented and processed. So in Line 44, read it in your mind as
+follows:</p>
+<p><em>&quot;For each of the instances that result from calling &quot;jq --raw-output
+'.[] .id' $INSTANCEDATA&quot;, put the value each time into the
+INSTANCEID variable, and do the following ...&quot;</em></p>
+<p>So that jq invocation will turn the JSON above into the two lines of IDs
+(6f23... and 6e9b...).</p>
+<p>And for each instance ID in the INSTANCEID variable, we make a curl
+command, in Lines 46-53, to make a PATCH request to this relative
+Workflow API resource:</p>
+<pre class="language-url" tabindex="0"><code class="language-url"><span class="token path"><span class="token path-separator">/</span>v1<span class="token path-separator">/</span>workflow-instances<span class="token path-separator">/</span></span>&lt;workflowInstanceId></code></pre>
+<p>This time, as well as passing the credentials, we specify to curl that
+we want the PATCH method (rather than the default GET), we send the CSRF
+token that we've just fetched, specify the payload we're about to
+supply is of type &quot;application/json&quot;, send the cookies that we will
+have received from the CSRF token fetch request, and supply the payload
+as we saw earlier, setting the status of the instance to &quot;CANCELED&quot;.</p>
+<p>Of course, in Line 55, to play nicely with the Workflow API, we wait for
+500ms between each of these calls, as there may be many.</p>
+<p>And that's about it!</p>
+<p>I recorded a quick screencast of this in action, to give you an idea of
+how it works in practice. Here it is: <a href="https://youtu.be/DIoyt5Q6JuI">Scripting the Workflow API with
+bash and curl</a>.</p>
+<p>Happy hacking!</p>
+<p>This blog post was brought to you by the <a href="/tweets/qmacro/status/979974391588061184">Ashton
+canal</a>, the
+Propellerheads album
+<a href="https://open.spotify.com/album/4r7N5CAbYNbcdEFK7OKj5V">Decksandrumsandrockandroll</a>
+(a classic, by now, surely?) and Pact Coffee's <a href="https://www.pactcoffee.com/coffees/la-esperanza-pacamara">La Esperanza
+Pacamara</a>.</p>
+<hr>
+<p><a href="https://community.sap.com/t5/technology-blogs-by-sap/scripting-the-workflow-api-with-bash-and-curl/ba-p/13364396">Originally published on SAP Community</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2018/03/26/monday-morning-thoughts-cloud-native/">Monday morning thoughts: cloud native</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2018/04/05/introduction-to-sap-cloud-platform-workflow-summary/">Introduction to SAP Cloud Platform Workflow - Summary</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2018/03/31/scripting-the-workflow-api-with-bash-and-curl/` was built on 2026-09-01T11:58:31.137Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
