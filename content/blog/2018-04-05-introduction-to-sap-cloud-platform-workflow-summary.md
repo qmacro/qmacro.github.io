@@ -3,10 +3,10 @@ title: "Introduction to SAP Cloud Platform Workflow - Summary"
 date: 2018-04-05
 tags:
   - sapcommunity
+  - scp
+  - codetalk
+description: Yesterday I gave a webcast for ASUG entitled "Introduction to SAP Cloud Platform Workflow". This is a short post that pulls together all the resources related to that webcast.
 ---
-*Yesterday I gave a webcast for ASUG entitled "Introduction to SAP Cloud
-Platform Workflow". This is a short post that pulls together all the
-resources related to that webcast.*
 
 The SAP Cloud Platform Workflow service is a relatively new service (it
 was made available mid 2017) but already has many features and it's
@@ -45,24 +45,24 @@ Service Tasks.
 During the webcast, I'd shown a slide with links to various useful
 resources. Here they are too:
 
--   [SAP Cloud Platform
-    Workflow](https://help.sap.com/viewer/product/WORKFLOW_SERVICE/Cloud/en-US)
-    on the SAP Help Portal
--   [Blog posts on SAP Cloud Platform
-    Workflow](https://blogs.sap.com/tags/73554900100800000555/) here on
-    the SAP Community
--   [SAP Cloud Platform Workflow Learning
-    Journey](https://help.sap.com/doc/0c3db190da2c4866a1f2906763d4f59a/Cloud/en-US/34c3e8adf5234d91b9b4cdee94b9306b.html)
-    on the SAP Help Portal
--   [Free Trial
-    Account](https://account.hanatrial.ondemand.com/cockpit#/home/trialhome)
-    on the SAP Cloud Platform
--   [SAP Cloud Platform Workflow
-    API](https://api.sap.com/shell/discover/contentpackage/SAPCPWorkflowAPIs/api/SAP_CP_Workflow)
-    on the SAP API Hub
--   [Episode 27 on SCP
-    Workflow](https://open.sap.com/static/podcastgen/index.php?name=2017-03-29_sapcp_podcast_episode27_mar2017.mp3)
-    on the SAP Cloud Platform Podcast
+- [SAP Cloud Platform
+  Workflow](https://help.sap.com/viewer/product/WORKFLOW_SERVICE/Cloud/en-US)
+  on the SAP Help Portal
+- [Blog posts on SAP Cloud Platform
+  Workflow](https://blogs.sap.com/tags/73554900100800000555/) here on
+  the SAP Community
+- [SAP Cloud Platform Workflow Learning
+  Journey](https://help.sap.com/doc/0c3db190da2c4866a1f2906763d4f59a/Cloud/en-US/34c3e8adf5234d91b9b4cdee94b9306b.html)
+  on the SAP Help Portal
+- [Free Trial
+  Account](https://account.hanatrial.ondemand.com/cockpit#/home/trialhome)
+  on the SAP Cloud Platform
+- [SAP Cloud Platform Workflow
+  API](https://api.sap.com/shell/discover/contentpackage/SAPCPWorkflowAPIs/api/SAP_CP_Workflow)
+  on the SAP API Hub
+- [Episode 27 on SCP
+  Workflow](https://open.sap.com/static/podcastgen/index.php?name=2017-03-29_sapcp_podcast_episode27_mar2017.mp3)
+  on the SAP Cloud Platform Podcast
 
 Finally, this webcast was just one in an entire series that's happening
 over 2018. Tammy Powlas put together a great post summarising all of

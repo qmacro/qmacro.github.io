@@ -1,15 +1,19 @@
 ---
 date: 2018-01-10
 title: Consumption-based SCP Pricing - Initial Thoughts
+tags:
+  - scp
+  - cloud
+description: Looking at the the new pricing approach for SAP Cloud Platform.
 ---
 
 Back in August 2017 I [made some observations on SAP Cloud Platform Pricing](/blog/posts/2017/08/08/sap-cloud-platform-pricing/). I had been somewhat underwhelmed by the clarity and flexibility, particularly for smaller projects and businesses.
 
-This week saw the [announcement](https://twitter.com/steinermatt/status/950297124461101056) of a brand new pricing approach and website for the SAP Cloud Platform (SCP), which, judging by the reaction, was a very welcome piece of news. To many, the key change is the introduction of a consumption-based pricing model, as an alternative to the existing subscription-based model. Not only that, but the website offers a pricing estimation calculator which, if I've done things right, shows that consumption-based costs for the small project I described in my earlier post are not unreasonable. 
+This week saw the [announcement](https://twitter.com/steinermatt/status/950297124461101056) of a brand new pricing approach and website for the SAP Cloud Platform (SCP), which, judging by the reaction, was a very welcome piece of news. To many, the key change is the introduction of a consumption-based pricing model, as an alternative to the existing subscription-based model. Not only that, but the website offers a pricing estimation calculator which, if I've done things right, shows that consumption-based costs for the small project I described in my earlier post are not unreasonable.
 
-It's still early days but the situation looks much better. As well as the cost, which I'll get to shortly, there are improvements in the two areas that were causing concern last time I looked - clarity and flexibility. 
+It's still early days but the situation looks much better. As well as the cost, which I'll get to shortly, there are improvements in the two areas that were causing concern last time I looked - clarity and flexibility.
 
-The very fact that the consumption-based model allows you to pick what services you want, without having to perform mental gymnastics while looking at a complex PDF document (which still exists for the subscription-based model), is a big plus. There's also a guided section which shows which services are additionally required, if any, and lets you add those to the estimate. For example, the use of the Workflow service requires the Portal and Web IDE services. The fact that you can turn the dial up and down on units (number of users, site visits, etc) and see the estimate change accordingly, is great. 
+The very fact that the consumption-based model allows you to pick what services you want, without having to perform mental gymnastics while looking at a complex PDF document (which still exists for the subscription-based model), is a big plus. There's also a guided section which shows which services are additionally required, if any, and lets you add those to the estimate. For example, the use of the Workflow service requires the Portal and Web IDE services. The fact that you can turn the dial up and down on units (number of users, site visits, etc) and see the estimate change accordingly, is great.
 
 ![estimate]( {{ "/images/2018/01/Screenshot-2018-01-10-at-06.33.12.png" | url }})
 

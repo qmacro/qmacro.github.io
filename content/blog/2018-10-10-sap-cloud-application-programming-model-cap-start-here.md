@@ -3,7 +3,10 @@ title: "SAP Cloud Application Programming Model (CAP) - start here"
 date: 2018-10-10
 tags:
   - sapcommunity
+  - cap
+description: An overview of the key resources for folks wanting to get started with CAP.
 ---
+
 *Note: While this blog post was originally published in 2018, it's been
 updated for 2020 and now also for 2021 thanks to great help and
 input from the excellent Iwona Hahn. Take a few mins to have a fresh
@@ -104,19 +107,19 @@ corridors at SAP TechEd over the last couple of years.
 
 There was an array of sessions at SAP TechEd Barcelona - check out the
 [Agenda
-Builder](https://sessioncatalog.sapevents.com/go/agendabuilder.sessions/?l=221&locale=en_US) to
+Builder](https://sessioncatalog.sapevents.com/go/agendabuilder.sessions/?l=221&locale=en_US) to
 find out more.
 
 Here are a couple of them:
 
--   CNA376 "Build Applications with the Programming Model on SAP Cloud
-    Platform" - hands-on workshop (2hr)
--   CNA652 "Less Than One Hour to a SaaS Application with SAP Cloud
-    Platform" -  CodeJam (mini-edition) (1hr)
+- CNA376 "Build Applications with the Programming Model on SAP Cloud
+  Platform" - hands-on workshop (2hr)
+- CNA652 "Less Than One Hour to a SaaS Application with SAP Cloud
+  Platform" -  CodeJam (mini-edition) (1hr)
 
 The exercise material "spaceflight" for CNA376 is [on
-GitHub](https://github.com/SAP/cloud-sample-spaceflight-node) for
-both [Node](https://github.com/SAP/cloud-sample-spaceflight-node) and
+GitHub](https://github.com/SAP/cloud-sample-spaceflight-node) for
+both [Node.js](https://github.com/SAP/cloud-sample-spaceflight-node) and
 [Java](https://github.com/SAP/cloud-sample-spaceflight-java).
 
 If you're wanting a brief overview of CAP, you could watch this brief
@@ -167,7 +170,7 @@ On SAP's unofficial community podcast, [Coffee Corner
 Radio](https://anchor.fm/sap-community-podcast/), there's a [16 minute
 pod bite
 (#5)](https://anchor.fm/sap-community-podcast/episodes/Pod-bite-5---DJ-Adams---interview-with-Rui-Nogueira-e1n1mu)
-where I interview Rui Nogueira on the Application Programming Model.
+where I interview Rui Nogueira on the Application Programming Model.
 
 On SAP CodeTalk, there's [a short interview with Ian Thain and me
 talking about CAP at a high level](https://www.youtube.com/watch?v=GhEpcB7x4UA).
@@ -199,16 +202,16 @@ Happy hacking!
 exercise materials for CNA376*
 
 *21 Dec 2018 - replaced reference to the original user tag
-[applicationprogrammingmodel](https://blogs.sap.com/tag/applicationprogrammingmodel/) with
+[applicationprogrammingmodel](https://blogs.sap.com/tag/applicationprogrammingmodel/) with
 the new tag [SAP Cloud Application Programming
-Model](https://blogs.sap.com/tags/9f13aee1-834c-4105-8e43-ee442775e5ce/) (hat
-tip to Mike Doyle for the
+Model](https://blogs.sap.com/tags/9f13aee1-834c-4105-8e43-ee442775e5ce/) (hat
+tip to Mike Doyle for the
 [reminder](https://blogs.sap.com/2018/10/10/application-programming-model-start-here/#comment-446336))*
 
 *03 Jan 2019 - added info on finding tutorials by tag via a URL (hat tip
-to A. Pfohlmann). Also added info on how to see what's new with the
+to A. Pfohlmann). Also added info on how to see what's new with the
 Application Programming Model, via an answer in the Community Q&A
-from another community member*
+from another community member*
 
 *25 Mar 2020 - major update with huge help from Iwona Hahn*
 

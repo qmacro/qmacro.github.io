@@ -3,16 +3,20 @@ title: "The Business Rules service - overview and getting started"
 date: 2018-05-22
 tags:
   - sapcommunity
+  - businessrules
+  - scp
+description: Some resources to help you get started with this service on SCP.
 ---
-The Business Rules service is available on the SAP Cloud Platform (SCP)
-and is categorised within the "Integration" section, along with other
-services such as the Workflow service, and in fact the two services
-complement each other very well - I like to think of them as siblings.
+The Business Rules service is available on the SAP Cloud Platform (SCP) and is
+categorised within the "Integration" section, along with other services such as
+the Workflow service, and in fact the two services complement each other very
+well - I like to think of them as siblings.
 
 ![](/images/2018/05/Screen-Shot-2018-05-22-at-11.23.37.png)
 
 Last week I was honoured to appear [as a guest on the SAP CodeTalk series
-hosted by Ian Thain](https://www.youtube.com/watch?v=3pLz7xCXPHM) and the subject was the Business Rules service.
+hosted by Ian Thain](https://www.youtube.com/watch?v=3pLz7xCXPHM) and the
+subject was the Business Rules service.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/3pLz7xCXPHM?si=p9yfXi5sEWpOmlzs" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 

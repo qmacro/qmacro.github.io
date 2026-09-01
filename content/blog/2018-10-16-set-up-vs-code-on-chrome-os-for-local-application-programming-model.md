@@ -3,10 +3,11 @@ title: "Set up VS Code on Chrome OS for local Application Programming Model deve
 date: 2018-10-16
 tags:
   - sapcommunity
+  - cap
+  - chromeos
+  - vscode
+description: In this post I walk through the process I used to set up a development environment for CAP on my Chromebook.
 ---
-
-*In this post I walk through the process I used to set up a development
-environment for CAP on my Chromebook.*
 
 (See the [Updates](#updates) section end of this post for a couple of
 notes on things that have changed since this content was published.)
@@ -17,7 +18,7 @@ practicality. I have a lot of devices running it - a Google Pixelbook as
 well as an older Samsung Chromebook, an ASUS Chromebit and a shiny new
 ASUS Chromebox - the N005U. I even have a version of Chrome OS running
 on my old iMac 24", via Neverware's
-[CloudReady](https://www.neverware.com/) system.
+[CloudReady](https://www.neverware.com/) system.
 
 The advent of beta support for Linux on Chrome OS is very interesting
 and an opportunity for me to try out running Visual Studio Code (VSCode)
@@ -56,7 +57,7 @@ VS Code is available for different platforms from the "[Download Visual
 Studio Code](https://code.visualstudio.com/download)" page. As the
 image is Debian GNU/Linux 9 (you can see this in the /etc/issue file), I
 chose the 64 bit .deb file. At the time of writing, this
-is code_1.28.1-1539281690_amd64.deb reflecting VS Code version 1.28.
+is code_1.28.1-1539281690_amd64.deb reflecting VS Code version 1.28.
 
 While I was in download mode, I went to the [SAP Development Tools for
 Cloud](https://tools.hana.ondemand.com/#cloud) download page and
@@ -134,7 +135,7 @@ Simple! That gave me node version 8.12.0 and npm version 6.4.1.
 CDS is at the heart of the Application Programming Model and there's
 command line support in the form of a tool called 'cds' in the
 '@sap' npm namespace, available from the SAP NPM registry. Read more
-about this registry in this post by sven.kohlhaas "[SAP NPM Registry
+about this registry in this post by Sven Kohlhaas "[SAP NPM Registry
 launched: Making the lives of Node.js developers
 easier](https://blogs.sap.com/2017/05/16/sap-npm-registry-launched-making-the-lives-of-node.js-developers-easier/)".
 
@@ -142,7 +143,7 @@ To make use of the '@sap' namespaced modules, it's necessary to tell
 npm about this registry:
 
 ```shell
-npm config set @sap:registry https://npm.sap.com
+npm config set @sap:registry https://npm.sap.com
 ```
 
 Now we can install the cds tool. I did it globally, rather than for a
@@ -150,17 +151,15 @@ specific Node.js project. Note that because of the nice side effect of
 nvm mentioned earlier, globally still means within my user space:
 
 ```shell
-npm i -g @sap/cds
+npm i -g @sap/cds
 ```
 
 That's the cds tool installed.
 
-If you're following the SAP TechEd related set of exercises that I
-mentioned in "[Application Programming Model for SAP Cloud Platform --
-start
-here](https://blogs.sap.com/2018/10/10/application-programming-model-start-here/)",
-then you probably also want to explicitly install the cds generator
-too:
+If you're following the SAP TechEd related set of exercises that I mentioned in
+"[Application Programming Model for SAP Cloud Platform -- start
+here](/blog/posts/2018/10/10/sap-cloud-application-programming-model-cap-start-here/)",
+then you probably also want to explicitly install the cds generator too:
 
 ```shell
 npm i -g @sap/generator-cds
