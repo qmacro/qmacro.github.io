@@ -7,6 +7,8 @@ tags:
 description: Mostly a note-to-self on what is created when one initialises a new agentic-first project using the Joule Studio CLI with Claude Code.
 ---
 
+> This is an "open draft", a work in progress.
+
 This assumes that Claude Code is installed, along with the Joule Studio CLI,
 also known as `jl`. It also assumes the creation of a new (as yet completely
 empty) project directory called `proj/`, and that we're in that directory.
@@ -123,3 +125,5 @@ ui5-wcr — MCP for UI5 Web Components projects
 ```
 
 So the MCP server that is to be started with `jl mcp start` is actually a proxy for multiple MCP servers, listed here. The MCP inspector shows that when sent the `tools/list` request, the MCP server return
+
+
