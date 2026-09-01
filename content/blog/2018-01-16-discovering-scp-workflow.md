@@ -2,8 +2,7 @@
 date: 2018-01-16
 title: Discovering SCP Workflow
 tags:
-  - workflow
-  - scp
+  - sapcommunity
   - seriespost
 ---
 
