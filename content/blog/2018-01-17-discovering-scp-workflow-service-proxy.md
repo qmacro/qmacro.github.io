@@ -2,6 +2,8 @@
 title: "Discovering SCP Workflow - Service Proxy"
 date: 2018-01-17
 tags:
+  - adl
+  - googlecloudfunctions
   - scp
   - workflow
   - sapcommunity

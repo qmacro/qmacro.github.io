@@ -2,6 +2,9 @@
 title: "Discovering SCP Workflow - User Tasks"
 date: 2018-01-20
 tags:
+  - untappd
+  - api
+  - ui5
   - scp
   - workflow
   - sapcommunity

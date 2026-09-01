@@ -2,6 +2,8 @@
 title: "Discovering SCP Workflow - Recommendation UI"
 date: 2018-01-24
 tags:
+  - untappd
+  - ui5
   - scp
   - workflow
   - sapcommunity

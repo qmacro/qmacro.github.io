@@ -2,6 +2,10 @@
 title: "Discovering SCP Workflow - Component Startup"
 date: 2018-01-22
 tags:
+  - ui5
+  - webide
+  - api
+  - untappd
   - scp
   - workflow
   - sapcommunity

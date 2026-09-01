@@ -2,6 +2,9 @@
 title: "Discovering SCP Workflow - Using Postman"
 date: 2018-01-16
 tags:
+  - xsrf
+  - postman
+  - api
   - scp
   - workflow
   - sapcommunity

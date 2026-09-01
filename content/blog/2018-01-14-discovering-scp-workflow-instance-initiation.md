@@ -2,6 +2,8 @@
 title: "Discovering SCP Workflow - Instance Initiation"
 date: 2018-01-14
 tags:
+  - api
+  - xsrf
   - scp
   - workflow
   - sapcommunity
@@ -335,7 +337,7 @@ instance of.
 
 Pretty simple.
 
-## Avoiding the "gotcha".
+## Avoiding the "gotcha"
 
 It's worth examining how XSRF tokens work, and how AJAX requests work
 implicitly, so you don't fall foul of the idea of session context, or
