@@ -1,0 +1,1013 @@
+<!doctype html>
+<html lang="en-GB">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Discovering SCP Workflow - Instance Initiation</title>
+		<meta name="description" content="In this post we explore the part of the SCP Workflow API that deals with workflow instances, and look at how we initiate a new workflow instance, paying particular attention to how we request, and then use, a cross site request forgery (XSRF) token.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="Discovering SCP Workflow - Instance Initiation">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="In this post we explore the part of the SCP Workflow API that deals with workflow instances, and look at how we initiate a new workflow instance, paying particular attention to how we request, and then use, a cross site request forgery (XSRF) token.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2018/01/14/discovering-scp-workflow-instance-initiation/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 60%, 70%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="discovering-scp-workflow-instance-initiation">Discovering SCP Workflow - Instance Initiation</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2018-01-14">14 January 2018</time></li>
+	<li><a href="/tags/api/" class="post-tag">api</a>, </li>
+	<li><a href="/tags/xsrf/" class="post-tag">xsrf</a>, </li>
+	<li><a href="/tags/scp/" class="post-tag">scp</a>, </li>
+	<li><a href="/tags/workflow/" class="post-tag">workflow</a>, </li>
+	<li><a href="/tags/sapcommunity/" class="post-tag">sapcommunity</a></li>
+</ul>
+
+<p class="post-description-main">In this post we explore the part of the SCP Workflow API that deals with workflow instances, and look at how we initiate a new workflow instance, paying particular attention to how we request, and then use, a cross site request forgery (XSRF) token.</p>
+
+<p>Previous post in this series: <a href="/blog/posts/2018/01/08/discovering-scp-workflow-the-monitor/">Discovering SCP Workflow - The
+Monitor</a>.</p>
+<p>This post is part of a series, a guide to which can be found here:
+<a href="/blog/posts/2018/01/16/discovering-scp-workflow/">Discovering SCP
+Workflow</a>.</p>
+<p>In <a href="/blog/posts/2018/01/08/discovering-scp-workflow-the-monitor/">Discovering SCP Workflow - The
+Monitor</a>, we saw
+that the Workflow API exposes these main entities:</p>
+<ul>
+<li>Workflow Definitions</li>
+<li>Workflow Instances</li>
+<li>User Task Instances</li>
+<li>Messages</li>
+</ul>
+<p>We also understand that a workflow instance is a specific occurrence of
+a given workflow definition. So one might guess, again correctly, that
+as the Workflow API is informed by
+<a href="https://blogs.sap.com/2010/01/07/representational-state-transfer-rest-and-sap/">REST</a>
+principles, we should look to the Workflow Instances entity to see how
+we might start a new workflow instance using the appropriate HTTP
+method.</p>
+<h2 id="workflow-instance-operations">Workflow instance operations</h2>
+<p>In the <a href="https://api.sap.com/shell/discover/contentpackage/SAPCPWorkflowAPIs/api/SAP_CP_Workflow">API
+documentation</a>,
+the operations for Workflow Instances are shown as follows:</p>
+<p><img src="/images/2018/01/Screenshot-2018-01-13-at-12.31.05.png" alt=""></p>
+<p>Considering that initiating a new workflow instance is certainly not
+idempotent, our eyes are drawn towards:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">POST /v1/workflow-instances</code></pre>
+<p>While our eyes are wandering over the operations summary, they also
+surely fall upon the path info given for some of the operations ...
+whereupon we can surmise that workflow instances have context, error
+messages, and execution logs (in fact, we looked at some execution logs
+in <a href="/blog/posts/2018/01/08/discovering-scp-workflow-the-monitor/">Discovering SCP Workflow - The
+Monitor</a>).
+Perhaps we'll cover that in another installment.</p>
+<h2 id="creating-a-new-instance">Creating a new instance</h2>
+<p>Looking in more detail at the requirements for the POST operation call,
+we can see the following:</p>
+<ul>
+<li>the resource here is protected against cross site request forgery and an XSRF
+token will need to be supplied in each request</li>
+<li>the payload to supply is to be in JSON format, with two properties:
+<ul>
+<li>definitionId: the ID of the actual workflow definition</li>
+<li>context: the data pertaining to the particular workflow instance to be
+initiated</li>
+</ul>
+</li>
+</ul>
+<p>It's great to see that a successful response returns HTTP status code
+201 CREATED, as it should, in a RESTful sense. As far as I can see, the
+Location header, that should normally accompany a 201 response, is
+missing (and the request URL is certainly not the location of the newly
+created resource, which is the alternative when no Location header is
+supplied). But let's leave that for another time.</p>
+<p>Regardless, the process is therefore fairly straightforward. Let's have
+a look at some sample code from Archana Shukla's post <a href="https://blogs.sap.com/2017/10/15/part-2-start-workflow-from-your-html5-application/">Part 2: Start
+Workflow from your HTML5
+application</a>
+to embed the process into our brains.</p>
+<h3 id="fetching-the-xsrf-token">Fetching the XSRF token</h3>
+<p>First, we have the _fetchToken function defined thus:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token function-variable function">_fetchToken</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> token<span class="token punctuation">;</span>
+    $<span class="token punctuation">.</span><span class="token function">ajax</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+        <span class="token literal-property property">url</span><span class="token operator">:</span> <span class="token string">"/bpmworkflowruntime/rest/v1/xsrf-token"</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">method</span><span class="token operator">:</span> <span class="token string">"GET"</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">async</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">headers</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token string-property property">"X-CSRF-Token"</span><span class="token operator">:</span> <span class="token string">"Fetch"</span>
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token function-variable function">success</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">result<span class="token punctuation">,</span> xhr<span class="token punctuation">,</span> data</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            token <span class="token operator">=</span> data<span class="token punctuation">.</span><span class="token function">getResponseHeader</span><span class="token punctuation">(</span><span class="token string">"X-CSRF-Token"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> token<span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>This _fetchToken method is called before the main POST method (that's
+the one that actually initiates the new instance). Let's look closely.</p>
+<p>There's a GET request made to the following URL:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">/bpmworkflowruntime/rest/v1/xsrf-token</code></pre>
+<p>This URL is of course abstracted by the destination target entry in the
+app's neo-app.json descriptor file, which has an entryPath defined as
+&quot;/workflow-service&quot;:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+    <span class="token property">"path"</span><span class="token operator">:</span> <span class="token string">"bpmworkflowruntime"</span><span class="token punctuation">,</span>
+    <span class="token property">"target"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"destination"</span><span class="token punctuation">,</span>
+        <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"bpmworkflowruntime"</span><span class="token punctuation">,</span>
+        <span class="token property">"entryPath"</span><span class="token operator">:</span> <span class="token string">"/workflow-service"</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"description"</span><span class="token operator">:</span> <span class="token string">"Workflow Service Runtime"</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="digression-resource-urls-and-how-to-think-about-them">Digression: Resource URLs and how to think about them</h2>
+<p>It's worth stopping briefly to consider what this means and in what way
+we look at this Workflow API (and APIs for other services), particularly
+around how we think about different parts of the path info.</p>
+<p>By the way, the &quot;path info&quot; is that part of the url that starts after
+the hostname and (optional) port, running up to any query parameters. So
+for example, in the URL</p>
+<pre class="language-url" tabindex="0"><code class="language-url"><span class="token scheme">http<span class="token scheme-delimiter">:</span></span><span class="token authority"><span class="token authority-delimiter">//</span><span class="token host">host.example.com</span><span class="token port-segment"><span class="token port-delimiter">:</span><span class="token port">8080</span></span></span><span class="token path"><span class="token path-separator">/</span>something<span class="token path-separator">/</span>something-else<span class="token path-separator">/</span>this</span><span class="token query"><span class="token query-delimiter">?</span><span class="token pair"><span class="token key">n</span>=<span class="token value">42</span></span></span></code></pre>
+<p>the path info part is:</p>
+<pre class="language-url" tabindex="0"><code class="language-url"><span class="token path"><span class="token path-separator">/</span>something<span class="token path-separator">/</span>something-else<span class="token path-separator">/</span>this</span></code></pre>
+<p>So, back to the digression.</p>
+<p>When you enable the Workflow service in the SCP cockpit, a new
+destination &quot;bpmworkflowruntime&quot; appears, with the URL pattern that
+looks like this for production accounts:</p>
+<pre class="language-url" tabindex="0"><code class="language-url"><span class="token scheme">https<span class="token scheme-delimiter">:</span></span><span class="token authority"><span class="token authority-delimiter">//</span><span class="token host">bpmworkflowruntimewfs-</span></span>&lt;user>.hana.ondemand.com</code></pre>
+<p>and this for trial accounts:</p>
+<pre class="language-url" tabindex="0"><code class="language-url"><span class="token scheme">https<span class="token scheme-delimiter">:</span></span><span class="token authority"><span class="token authority-delimiter">//</span><span class="token host">bpmworkflowruntimewfs-</span></span>&lt;user>trial.hanatrial.ondemand.com</code></pre>
+<p>So, with this in mind, and looking at the pattern defined for the
+Workflow API production URL, as described in the <a href="https://api.sap.com/shell/discover/contentpackage/SAPCPWorkflowAPIs/api/SAP_CP_Workflow?section=OVERVIEW">Overview
+section</a>
+of the Workflow API documentation on the API Hub:</p>
+<pre class="language-url" tabindex="0"><code class="language-url"><span class="token scheme">https<span class="token scheme-delimiter">:</span></span><span class="token authority"><span class="token authority-delimiter">//</span><span class="token host">bpmworkflowruntime</span></span>{provideracctname}-{consumeracctname}
+  .hana.ondemand.com
+  /workflow-service/rest</code></pre>
+<p>(split for legibility) we can see that &quot;wfs&quot; is the provider account
+name, and that</p>
+<pre class="language-url" tabindex="0"><code class="language-url"><span class="token path"><span class="token path-separator">/</span>workflowservice<span class="token path-separator">/</span>rest</span></code></pre>
+<p>is the &quot;root&quot; part of the path info for the Workflow API resources. In
+other words, this &quot;root&quot; part is common to all resource URLs in the
+Workflow API.</p>
+<p>Taking my trial account for example, it resolves to this:</p>
+<pre class="language-url" tabindex="0"><code class="language-url"><span class="token scheme">https<span class="token scheme-delimiter">:</span></span><span class="token authority"><span class="token authority-delimiter">//</span><span class="token host">bpmworkflowruntimewfs-p481810trial</span></span>
+  .hanatrial.ondemand.com
+  /workflow-service/rest</code></pre>
+<p>A complete URL for a given API resource, such as for the workflow
+instances, would look like this:</p>
+<pre class="language-url" tabindex="0"><code class="language-url"><span class="token scheme">https<span class="token scheme-delimiter">:</span></span><span class="token authority"><span class="token authority-delimiter">//</span><span class="token host">bpmworkflowruntimewfs-p481810trial</span></span>
+  .hanatrial.ondemand.com
+  /workflow-service/rest/v1/workflow-instances</code></pre>
+<p>You can see that after the &quot;root&quot; part of the path info, we have the
+resource-specific part:</p>
+<pre class="language-url" tabindex="0"><code class="language-url"><span class="token path"><span class="token path-separator">/</span>v1<span class="token path-separator">/</span>workflow-instances</span></code></pre>
+<p>This might seem like an unnecessary diversion, but I think it's
+important to understand how resource identifiers (URLs) are structured,
+so you can think about them in an appropriate way, and have that
+thinking permeate your code and configuration.</p>
+<p>So I think here it might be nicer to have a destination target entry
+like this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+    <span class="token property">"path"</span><span class="token operator">:</span> <span class="token string">"workflowservice"</span><span class="token punctuation">,</span>                  &lt;---
+    <span class="token property">"target"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"destination"</span><span class="token punctuation">,</span>
+        <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"bpmworkflowruntime"</span><span class="token punctuation">,</span>
+        <span class="token property">"entryPath"</span><span class="token operator">:</span> <span class="token string">"/workflow-service/rest"</span>   &lt;---
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token property">"description"</span><span class="token operator">:</span> <span class="token string">"Workflow Service Runtime"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>where the value for the &quot;path&quot; property is deliberately different (so
+that we don't confuse it with an actual API resource path info
+section), and the value for the &quot;entryPath&quot; property reflects the full
+&quot;root&quot; value &quot;/workflow-service/rest&quot;. This is so that when we
+construct relative URLs in our code that relies on these destination
+target abstractions, we focus solely on the individual and unique
+resource name that we're interested in, for example:</p>
+<pre class="language-url" tabindex="0"><code class="language-url"><span class="token path"><span class="token path-separator">/</span>workflowservice<span class="token path-separator">/</span>v1<span class="token path-separator">/</span>workflow-instances</span></code></pre>
+<p>which says to me <em>&quot;the /v1/workflow-instances API resource provided by the
+workflow service abstraction&quot;.</em></p>
+<p>I think this is preferable to having the resource name mixed in with
+some portion of the API root, and something that might or might not be
+(in our minds) part of a real URL that looks possibly broken and
+therefore confusing, like this example:</p>
+<pre class="language-url" tabindex="0"><code class="language-url"><span class="token path"><span class="token path-separator">/</span>bpmworkflowruntime<span class="token path-separator">/</span>rest<span class="token path-separator">/</span>v1<span class="token path-separator">/</span>xsrf-token</span></code></pre>
+<p>This digression is somewhat academic and by no means a criticism of the
+code in the other blog post, but I thought it was worth at least sharing
+what's in my head on this subject.</p>
+<p>Anyway, let's leave the digression there, and get back to looking at
+the XSRF token fetching part. Taking a second look at the _fetchToken
+code above, we see that an HTTP GET request is made to the XSRF handling
+endpoint:</p>
+<p><img src="/images/2018/01/Screenshot-2018-01-14-at-08.31.44.png" alt=""></p>
+<p>The one thing I have to say here is that it irks me more than it should
+that there's an inconsistency between the terms XSRF and CSRF, but
+beyond that, it's pretty straightforward.</p>
+<p><em>&quot;Please give me an XSRF token&quot;.</em></p>
+<p>Notice that the call that is made via AJAX is done in a synchronous way.
+This is of course because we need the token before making the main call
+(the HTTP POST). There are other ways to achieve this, avoiding setting
+the synchronous mode, and also avoiding callback hell, by making use of
+promises, which we'll look at in the next installment.</p>
+<h3 id="making-the-post-operation">Making the POST operation</h3>
+<p>The token received in the previous step can (and must) now be used in
+making this call:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">POST /v1/workflow-instances</code></pre>
+<p>The code in Archana's post looks like this:</p>
+<pre class="language-javascript" tabindex="0"><code class="language-javascript"><span class="token function-variable function">_startInstance</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">token</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">var</span> model <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">getView</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getModel</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">var</span> inputValue <span class="token operator">=</span> model<span class="token punctuation">.</span><span class="token function">getProperty</span><span class="token punctuation">(</span><span class="token string">"/text"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    $<span class="token punctuation">.</span><span class="token function">ajax</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+        <span class="token literal-property property">url</span><span class="token operator">:</span> <span class="token string">"/bpmworkflowruntime/rest/v1/workflow-instances"</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">method</span><span class="token operator">:</span> <span class="token string">"POST"</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">async</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">contentType</span><span class="token operator">:</span> <span class="token string">"application/json"</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">headers</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+            <span class="token string-property property">"X-CSRF-Token"</span><span class="token operator">:</span> token
+        <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">data</span><span class="token operator">:</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+            <span class="token literal-property property">definitionId</span><span class="token operator">:</span> <span class="token operator">&lt;</span>your workflow <span class="token constant">ID</span><span class="token operator">></span><span class="token punctuation">,</span>
+            <span class="token literal-property property">context</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+                <span class="token literal-property property">text</span><span class="token operator">:</span> inputValue
+            <span class="token punctuation">}</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        <span class="token function-variable function">success</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">result<span class="token punctuation">,</span> xhr<span class="token punctuation">,</span> data</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            model<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span><span class="token string">"/result"</span><span class="token punctuation">,</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span></code></pre>
+<p>Following the digression above, we'd actually want to make a call to
+the abstracted URL as shown earlier:</p>
+<pre class="language-url" tabindex="0"><code class="language-url"><span class="token path"><span class="token path-separator">/</span>workflowservice<span class="token path-separator">/</span>v1<span class="token path-separator">/</span>workflow-instances</span></code></pre>
+<p>provided that we'd made the requisite definition in neo-app.json.</p>
+<p>The token needs to be supplied using the same header as previously, i.e.
+&quot;X-CSRF-Token&quot;, in place of the &quot;Fetch&quot; value.</p>
+<p>And it's in the body of this POST request that the details required to
+initiate a new workflow instance are supplied, in JSON format. The API
+Hub documentation states that there are two properties, &quot;context&quot; and
+&quot;definitionId&quot;. The former is to supply contextual data relating to
+the particular instance of the workflow definition to be initiated.
+We'll look at the detail of that context in another post. The latter is
+to specify the ID of the workflow definition we want to create an
+instance of.</p>
+<p>Pretty simple.</p>
+<h2 id="avoiding-the-gotcha">Avoiding the &quot;gotcha&quot;</h2>
+<p>It's worth examining how XSRF tokens work, and how AJAX requests work
+implicitly, so you don't fall foul of the idea of session context, or
+rather the lack of it. Erm, like I did.</p>
+<p>When you request an XSRF token, it's for your session. How is that
+implemented and controlled? If you could fetch a token and give it to
+someone else to use, the XSRF mechanism wouldn't be very effective. So
+when a token is returned in response to a &quot;Fetch&quot; request, it's valid
+only for that session - as determined by cookies returned in the
+response. If you use the token outside the context of those cookies in a
+subsequent request, it's not going to work.</p>
+<p>So is there some magic going on in how the pair of requests are made in
+the code we've examined?</p>
+<p>Well, insofar as <a href="https://www.bennadel.com/blog/1995-ajax-requests-get-and-set-cookies-like-any-other-http-request.htm">AJAX requests get and set cookies like any other HTTP
+request</a>,
+there is. When making HTTP requests via the AJAX mechanism, cookie
+handling is done for you automatically. So in the second request (the
+HTTP POST), the token is sent, but also cookies, received in the
+response to the first request, are sent as well.</p>
+<p>I guess what I'm trying to say is that the magic happens not because
+it's magic, but because there's implicit work going on for you, of
+which you may not have been aware.</p>
+<h3 id="trying-to-use-a-token-without-a-session-context">Trying to use a token without a session context</h3>
+<p>Let's see this in action by using <a href="https://curl.haxx.se/">curl</a>, the
+command line tool for HTTP and a general Swiss Army knife for exploring
+APIs.</p>
+<p>First, we'll issue a curl command as the equivalent of our _fetchToken
+procedure:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">curl</span>
+  <span class="token parameter variable">--user</span> p481810
+  <span class="token parameter variable">--header</span> <span class="token string">"X-CSRF-Token: Fetch"</span>
+  <span class="token parameter variable">--verbose</span>
+  https://bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com/workflow-service/rest/v1/xsrf-token</code></pre>
+<p>After being prompted for my password, the HTTP request is made and the
+response is received. Details of both are shown in the output because of
+the --verbose option. Here are some of them (the &quot;&gt;&quot; denotes
+outgoing data, i.e. the request, and the &quot;&lt;&quot; denotes incoming data,
+i.e. the response):</p>
+<pre class="language-text" tabindex="0"><code class="language-text">> GET /workflow-service/rest/v1/xsrf-token HTTP/1.1
+> Host: bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com
+> User-Agent: curl/7.52.1
+> Accept: */*
+> X-CSRF-Token: Fetch
+>
+< HTTP/1.1 200 OK
+< Expires: Thu, 01 Jan 1970 00:00:00 UTC
+< Set-Cookie: JSESSIONID=123DCEB713926E0833B45B08247623385CB269BB3A8454790E69372D32DE4538; Path=/workflow-service; Secure; HttpOnly
+< Set-Cookie: JTENANTSESSIONID_p481810trial=SsaDu1sHjWIX0mDPAJFk0HEr03CSSGyjyWvZ4MrATas%3D; Domain=.hanatrial.ondemand.com; Path=/; Secure; HttpOnly
+< X-CSRF-Token: 10D04A3B50DDE972188AA980DFDC56D9
+< X-Content-Type-Options: nosniff
+< Content-Length: 0
+< Date: Sun, 14 Jan 2018 14:08:09 GMT
+< Server: SAP
+< Set-Cookie: BIGipServer~jpaas_folder~bpmworkflowruntimewfs.hanatrial.ondemand.com=!kCiZlq6atWogI9Y9I+xE
+tZ891eMS7LkmQdYIxDKM2/HAS5x8xPPhIrAnkPWcRYM1eqXm10QSr+s4Cg==; path=/; httponly; secure
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+<</code></pre>
+<p>An XSRF token is returned in response to the Fetch request, as you can
+see. Let's use this token in a subsequent HTTP request - this time a
+POST request to try to initiate a new workflow instance. The body of the
+POST request is in the data.json file, which contains this:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"definitionId"</span> <span class="token operator">:</span> <span class="token string">"testworkflow"</span><span class="token punctuation">,</span>
+  <span class="token property">"context"</span> <span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"thing"</span> <span class="token operator">:</span> <span class="token string">"banana"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>OK, first we set an environmental variable to make the received token
+available:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">export CSRFTOKEN=10D04A3B50DDE972188AA980DFDC56D9</code></pre>
+<p>Now we can issue the curl command, sending the token in blissful
+ignorance of the consequences:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">curl</span>
+  <span class="token parameter variable">--user</span> p481810
+  <span class="token parameter variable">--header</span> <span class="token string">"Content-Type: application/json"</span>
+  <span class="token parameter variable">--header</span> <span class="token string">"X-CSRF-Token: <span class="token variable">$CSRFTOKEN</span>"</span>
+  <span class="token parameter variable">--verbose</span>
+  <span class="token parameter variable">--data</span> @data.json
+  https://bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com/workflow-service/rest/v1/workflow-instances</code></pre>
+<p>What do we get? Let's see:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">> POST /workflow-service/rest/v1/workflow-instances HTTP/1.1
+> Host: bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com
+> User-Agent: curl/7.52.1
+> Accept: */*
+> Content-Type: application/json
+> X-CSRF-Token: 10D04A3B50DDE972188AA980DFDC56D9
+> Content-Length: 69
+>
+} [69 bytes data]
+< HTTP/1.1 403 Forbidden
+< Set-Cookie: JSESSIONID=173976D361754979CF900BA9AF9F6197307474F0C7A9AD2619150D371E7EED50; Path=/workflow-service; Secure; HttpOnly
+< Set-Cookie: JTENANTSESSIONID_p481810trial=lzs6Yz6%2B3pVlPR3kN5ueBmmq1Bm2vr7YsgVJXxrEqM0%3D; Domain=.hanatrial.ondemand.com; Path=/; Secure; HttpOnly
+< X-CSRF-Token: Required
+< Content-Type: text/html;charset=utf-8
+< Content-Language: en
+< Content-Length: 121
+< Date: Sun, 14 Jan 2018 14:10:04 GMT
+< Server: SAP
+< Set-Cookie: BIGipServer~jpaas_folder~bpmworkflowruntimewfs.hanatrial.ondemand.com=!2Ca7XcLdsg/zzGE9I+xEtZ891eMS7FbugL2TfgJqsHWcgxEC4eqkZJXXbqbJ0xdPDieESOQ1VuZKCQ==; path=/; httponly; secure
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+<</code></pre>
+<pre class="language-html" tabindex="0"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">></span></span>Error report<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">></span></span>HTTP Status 403 - CSRF nonce validation failed<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">></span></span></code></pre>
+<p>Oops! HTTP status code 403 with an error about CSRF nonce validation
+failure! In other words, our request to create a new workflow instance
+has been denied, despite sending the token that we were given.</p>
+<h3 id="using-the-token-with-the-correct-session-context">Using the token with the correct session context</h3>
+<p>Let's try that again, but this time we'll ask curl to capture cookies
+and store them, and then reuse them in the subsequent request:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">curl</span>
+  <span class="token parameter variable">--user</span> p481810
+  <span class="token parameter variable">--header</span> <span class="token string">"X-CSRF-Token: Fetch"</span>
+  --cookie-jar cookiejar.dat
+  <span class="token parameter variable">--verbose</span>
+  https://bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com/workflow-service/rest/v1/xsrf-token</code></pre>
+<p>Note the use of the --cookie-jar parameter, which result in the &quot;Added
+cookie&quot; messages in the output regarding  cookies being added:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">> GET /workflow-service/rest/v1/xsrf-token HTTP/1.1
+> Host: bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com
+> User-Agent: curl/7.52.1
+> Accept: */*
+> X-CSRF-Token: Fetch
+>
+< HTTP/1.1 200 OK
+< Cache-Control: private
+< Expires: Thu, 01 Jan 1970 00:00:00 UTC
+* Added cookie JSESSIONID="2C505C957AD0B1E76BD0535F0AF66C10DD824F88F2FF5F3463DD56AF5020E8D0" for domain bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com, path /workflow-service, expire 0
+< Set-Cookie: JSESSIONID=2C505C957AD0B1E76BD0535F0AF66C10DD824F88F2FF5F3463DD56AF5020E8D0; Path=/workflow-service; Secure; HttpOnly
+* Added cookie JTENANTSESSIONID_p481810trial="iIN12zFf3bAmLNOQA3tuM4YVkPI2WgN060d0hgv%2B6W4%3D" for domain hanatrial.ondemand.com, path /, expire 0
+< Set-Cookie: JTENANTSESSIONID_p481810trial=iIN12zFf3bAmLNOQA3tuM4YVkPI2WgN060d0hgv%2B6W4%3D; Domain=.hanatrial.ondemand.com; Path=/; Secure; HttpOnly
+< X-CSRF-Token: 63BAF126EF5C164C1945D64192B6E2C6
+< X-Content-Type-Options: nosniff
+< Content-Length: 0
+< Date: Sun, 14 Jan 2018 16:51:44 GMT
+< Server: SAP
+* Added cookie BIGipServer~jpaas_folder~bpmworkflowruntimewfs.hanatrial.ondemand.com="!kdw/bjE6WrgieXWwDhtcRsHHmTA76BykeAKzJSQCxdxLV7mHZYmet6Q6LvtTA6c9gdNjkRxfo0Gi4So=" for domain bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com, path /, expire 0
+< Set-Cookie: BIGipServer~jpaas_folder~bpmworkflowruntimewfs.hanatrial.ondemand.com=!kdw/bjE6WrgieXWwDhtcRsHHmTA76BykeAKzJSQCxdxLV7mHZYmet6Q6LvtTA6c9gdNjkRxfo0Gi4So=; path=/; httponly; secure
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+<</code></pre>
+<p>If you're like me, you'll want to see what's inside cookiejar.dat
+while reading this post. Here you go:</p>
+<pre class="language-texst" tabindex="0"><code class="language-texst"># Netscape HTTP Cookie File
+# https://curl.haxx.se/docs/http-cookies.html
+# This file was generated by libcurl! Edit at your own risk.
+
+#HttpOnly_bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com     FALSE   /workflow-service       TRUE    0    JSESSIONID       2C505C957AD0B1E76BD0535F0AF66C10DD824F88F2FF5F3463DD56AF5020E8D0
+#HttpOnly_.hanatrial.ondemand.com       TRUE    /       TRUE    0       JTENANTSESSIONID_p481810trial   iIN12zFf3bAmLNOQA3tuM4YVkPI2WgN060d0hgv%2B6W4%3D
+#HttpOnly_bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com     FALSE   /       TRUE    0       BIGipServer~jpaas_folder~bpmworkflowruntimewfs.hanatrial.ondemand.com !kdw/bjE6WrgieXWwDhtcRsHHmTA76BykeAKzJSQCxdxLV7mHZYmet6Q6LvtTA6c9gdNjkRxfo0Gi4So=</code></pre>
+<p>So now we have the cookies stored, let's set anew our CSRFTOKEN
+variable with the token just received:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">export CSRFTOKEN=63BAF126EF5C164C1945D64192B6E2C6</code></pre>
+<p>and retry the POST request, this time using those cookies captured just
+now with the --cookie-jar parameter:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">curl</span>
+  <span class="token parameter variable">--user</span> p481810
+  <span class="token parameter variable">--header</span> <span class="token string">"Content-Type: application/json"</span>
+  <span class="token parameter variable">--header</span> <span class="token string">"X-CSRF-Token: <span class="token variable">$CSRFTOKEN</span>"</span>
+  <span class="token parameter variable">--cookie</span> cookiejar.dat
+  <span class="token parameter variable">--verbose</span>
+  <span class="token parameter variable">--data</span> @data.json
+  https://bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com/workflow-service/rest/v1/workflow-instances</code></pre>
+<p>Et voila:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">> POST /workflow-service/rest/v1/workflow-instances HTTP/1.1
+> Host: bpmworkflowruntimewfs-p481810trial.hanatrial.ondemand.com
+> User-Agent: curl/7.52.1
+> Accept: */*
+> Cookie: JSESSIONID=2C505C957AD0B1E76BD0535F0AF66C10DD824F88F2FF5F3463DD56AF5020E8D0; BIGipServer~jpaas_folder~bpmworkflowruntimewfs.hanatrial.ondemand.com=!kdw/bjE6WrgieXWwDhtcRsHHmTA76BykeAKzJSQCxdxLV7mHZYmet6Q6LvtTA6c9gdNjkRxfo0Gi4So=; JTENANTSESSIONID_p481810trial=iIN12zFf3bAmLNOQA3tuM4YVkPI2WgN060d0hgv%2B6W4%3D
+> Content-Type: application/json
+> Content-Length: 69
+>
+< HTTP/1.1 201 Created
+< X-Content-Type-Options: nosniff
+< Content-Type: application/json
+< Transfer-Encoding: chunked
+< Date: Sun, 14 Jan 2018 17:03:25 GMT
+< Server: SAP
+< Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+<
+{
+  "id":"d5bca4c9-f94c-11e7-a369-00163e4ef3ca",
+  "definitionId":"testworkflow",
+  "definitionVersion":"10",
+  "subject":"TestWorkflow",
+  "status":"RUNNING",
+  "businessKey":"",
+  "startedAt":"2018-01-14T17:03:25.686Z",
+  "startedBy":"P481810",
+  "completedAt":null
+}</code></pre>
+<p>Phew - thank goodness for AJAX requests, that handle these cookie
+shenanigans for you!</p>
+<p>OK, I think that's enough for this post. We now understand how to
+initiate a new workflow instance, and understand what goes on under the
+hood.</p>
+<p>In the next installment, I'll take you through how I use
+<a href="https://www.getpostman.com/">Postman</a> and its environment features to
+provide me with a very comfortable debugging UI to explore the Workflow
+API and my data contained within it.</p>
+<p>Next post in this series: <a href="/blog/posts/2018/01/16/discovering-scp-workflow-using-postman/">Discovering SAP Workflow - Using
+Postman</a>.</p>
+<hr>
+<p><a href="https://community.sap.com/t5/technology-blogs-by-members/discovering-scp-workflow-instance-initiation/ba-p/13353657">Originally published on SAP Community</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2018/01/10/consumption-based-scp-pricing-initial-thoughts/">Consumption-based SCP Pricing - Initial Thoughts</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2018/01/16/discovering-scp-workflow-using-postman/">Discovering SCP Workflow - Using Postman</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2018/01/14/discovering-scp-workflow-instance-initiation/` was built on 2026-09-01T08:38:57.688Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
