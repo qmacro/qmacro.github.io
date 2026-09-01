@@ -6,6 +6,7 @@ tags:
   - workflow
   - sapcommunity
   - seriespost
+description: A ten part in-depth series exploring the SAP Cloud Platform Workflow service.
 ---
 
 The SAP Cloud Platform Workflow service is a key component in the next
@@ -22,22 +23,53 @@ read them in order.
 
 ## Blog post series
 
-Part 1: [The Monitor](/blog/posts/2018/01/08/discovering-scp-workflow-the-monitor/) - notes on the workflow monitor app that is part of the SAP Cloud Platform Workflow service.
+Part 1: [The
+Monitor](/blog/posts/2018/01/08/discovering-scp-workflow-the-monitor/) - notes
+on the workflow monitor app that is part of the SAP Cloud Platform Workflow
+service.
 
-Part 2: [Instance Initiation](/blog/posts/2018/01/14/discovering-scp-workflow-instance-initiation/) - an exploration of the part of the SCP Workflow API that deals with workflow instances, looking at how we initiate a new workflow instance, and paying particular attention to how we request, and then use, a cross site request forgery (XSRF) token.
+Part 2: [Instance
+Initiation](/blog/posts/2018/01/14/discovering-scp-workflow-instance-initiation/)
+- an exploration of the part of the SCP Workflow API that deals with workflow
+instances, looking at how we initiate a new workflow instance, and paying
+particular attention to how we request, and then use, a cross site request
+forgery (XSRF) token.
 
-Part 3: [Using Postman](/blog/posts/2018/01/16/discovering-scp-workflow-using-postman/) - an explanation of how I use Postman to explore the Workflow API, making the most of some of Postman’s great features.
+Part 3: [Using
+Postman](/blog/posts/2018/01/16/discovering-scp-workflow-using-postman/) - an
+explanation of how I use Postman to explore the Workflow API, making the most
+of some of Postman’s great features.
 
-Part 4: [Service Proxy](/blog/posts/2018/01/17/discovering-scp-workflow-service-proxy/) - the presentation of a small proxy service I wrote to handle the minutiae of initiating a new workflow instance.
+Part 4: [Service
+Proxy](/blog/posts/2018/01/17/discovering-scp-workflow-service-proxy/) - the
+presentation of a small proxy service I wrote to handle the minutiae of
+initiating a new workflow instance.
 
-Part 5: [Workflow Definition](/blog/posts/2018/01/18/discovering-scp-workflow-workflow-definition/) - a look at the simple (beer recommendation) scenario I came up with to trial a workflow definition, and that workflow definition itself.
+Part 5: [Workflow
+Definition](/blog/posts/2018/01/18/discovering-scp-workflow-workflow-definition/)
+- a look at the simple (beer recommendation) scenario I came up with to trial a
+workflow definition, and that workflow definition itself.
 
-Part 6: [User Tasks](/blog/posts/2018/01/20/discovering-scp-workflow-user-tasks/) - an examination of user tasks within the wider context of workflow definitions, along with task UIs and how they fit into the context of the My Inbox app.
+Part 6: [User
+Tasks](/blog/posts/2018/01/20/discovering-scp-workflow-user-tasks/) - an
+examination of user tasks within the wider context of workflow definitions,
+along with task UIs and how they fit into the context of the My Inbox app.
 
-Part 7: [Component Startup](/blog/posts/2018/01/22/discovering-scp-workflow-component-startup/) - an investigation into how a task UI starts up, where it gets the right data to display, and how it interacts with the My Inbox "host" app.
+Part 7: [Component
+Startup](/blog/posts/2018/01/22/discovering-scp-workflow-component-startup/) -
+an investigation into how a task UI starts up, where it gets the right data to
+display, and how it interacts with the My Inbox "host" app.
 
-Part 8: [Recommendation UI](/blog/posts/2018/01/24/discovering-scp-workflow-recommendation-ui/) - a look at the specific task UI I wrote for the beer recommendation workflow.
+Part 8: [Recommendation
+UI](/blog/posts/2018/01/24/discovering-scp-workflow-recommendation-ui/) - a
+look at the specific task UI I wrote for the beer recommendation workflow.
 
-Part 9: [Script Tasks](/blog/posts/2018/01/26/discovering-scp-workflow-script-tasks/) - a look at what they are, and how you can use them to manipulate the context of a workflow from within a running instance.
+Part 9: [Script
+Tasks](/blog/posts/2018/01/26/discovering-scp-workflow-script-tasks/) - a look
+at what they are, and how you can use them to manipulate the context of a
+workflow from within a running instance.
 
-Part 10: [Service Tasks](/blog/posts/2018/01/29/discovering-scp-workflow-service-tasks/) - a brief excursion into calling other services from within a workflow, using the beer recommendation workflow scenario as an example.
+Part 10: [Service
+Tasks](/blog/posts/2018/01/29/discovering-scp-workflow-service-tasks/) - a
+brief excursion into calling other services from within a workflow, using the
+beer recommendation workflow scenario as an example.
