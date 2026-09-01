@@ -2,6 +2,8 @@
 title: "Discovering SCP Workflow - Using Postman"
 date: 2018-01-16
 tags:
+  - scp
+  - workflow
   - sapcommunity
 ---
 

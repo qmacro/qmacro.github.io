@@ -2,6 +2,8 @@
 title: "Discovering SCP Workflow - The Monitor"
 date: 2018-01-08
 tags:
+  - scp
+  - workflow
   - sapcommunity
 description: Notes on the workflow monitor app that is part of the SAP Cloud Platform Workflow service.
 ---

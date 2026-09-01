@@ -2,6 +2,8 @@
 title: "Discovering SCP Workflow - Workflow Definition"
 date: 2018-01-18
 tags:
+  - scp
+  - workflow
   - sapcommunity
 description: Now that we've covered how to kickstart a workflow instance, It's time to look at the overall picture of what we're building.
 ---

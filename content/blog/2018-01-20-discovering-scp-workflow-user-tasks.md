@@ -2,6 +2,8 @@
 title: "Discovering SCP Workflow - User Tasks"
 date: 2018-01-20
 tags:
+  - scp
+  - workflow
   - sapcommunity
 description: Looking at the user task - present recommendations.
 ---

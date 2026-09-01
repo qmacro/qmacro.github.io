@@ -2,6 +2,8 @@
 title: "Discovering SCP Workflow - Component Startup"
 date: 2018-01-22
 tags:
+  - scp
+  - workflow
   - sapcommunity
 description: In this post we'll look into how a task UI starts up, where it gets the right data to display, and how it interacts with the My Inbox "host" app.
 ---

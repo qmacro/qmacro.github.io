@@ -2,6 +2,8 @@
 title: "Discovering SCP Workflow - Service Proxy"
 date: 2018-01-17
 tags:
+  - scp
+  - workflow
   - sapcommunity
 description: In this post I present a small proxy service I wrote to handle the minutiae of initiating a new workflow instance.
 ---
