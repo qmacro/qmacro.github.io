@@ -6,8 +6,17 @@ tags:
   - cap
   - cds
   - handsonsapdev
+  - episode-notes
+  - aspect-oriented-programming
+  - services-as-interfaces
+  - everything-is-an-event
+  - best-practices
+  - bad-practices
+  - capire
+  - code-generation
+  - agnostic-by-design
 ---
-These are the raw, unedited notes I took to summarise [The Art and Science of CAP part 2][1], one episode in a mini series with Daniel Hutzel to explore the philosophy, the background, the technology history and layers that support and inform the SAP Cloud Application Programming Model. 
+These are the raw, unedited notes I took to summarise [The Art and Science of CAP part 2][1], one episode in a mini series with Daniel Hutzel to explore the philosophy, the background, the technology history and layers that support and inform the SAP Cloud Application Programming Model.
 
 For all resources related to this series, see the post [The Art and Science of CAP][99].
 
@@ -28,7 +37,7 @@ New concepts & design principles map for 10,000 metre view:
 
 ![key concepts diagram][2]
 
-and for a way into the key concepts Domain Models, Services, Events, Querying, and Agnostic-By-Design ... and, added live, Data (business services are data centric in nature). 
+and for a way into the key concepts Domain Models, Services, Events, Querying, and Agnostic-By-Design ... and, added live, Data (business services are data centric in nature).
 
 Services-as-interfaces, services-are-interfaces. Even e.g. the database layers are services (we say "service" not "driver"). Everything is a service. And everything that happens is an event.
 
@@ -37,7 +46,7 @@ Events, .on(...), sync (request / response) and async (events) are effectively t
 The "C" in CDL ... stands for Conceptual!
 
 [1]: https://www.youtube.com/watch?v=gXsqOFArqCw&list=PL6RpkC85SLQAe45xlhIfhTYB9G0mdRVjI&index=3
-[2]: https://cap.cloud.sap/docs/assets/key-concepts.drawio.FB4Z2Ypd.svg
+[2]: /images/2024/11/key-concepts-diagram.png
 [3]: https://de.wikipedia.org/wiki/Schnapszahl
 [4]: https://pages.github.tools.sap/cap/docs/cds/aspects
 [99]: /blog/posts/2024/12/06/the-art-and-science-of-cap/

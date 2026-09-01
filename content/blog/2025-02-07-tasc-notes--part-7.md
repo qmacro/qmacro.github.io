@@ -8,6 +8,25 @@ tags:
   - cds
   - aspects
   - handsonsapdev
+  - episode-notes
+  - cdl
+  - node-js
+  - cds-repl
+  - aspect-oriented-programming
+  - prototype-inheritance
+  - functional-programming
+  - relational-model
+  - domain-driven-design
+  - extensibility
+  - bad-practices
+  - best-practices
+  - calesi
+  - code-generation
+  - computing-history
+  - smalltalk
+  - lisp
+  - language-history
+  - software-philosophy
 ---
 For all resources related to this series, see the post [The Art and Science of CAP][2].
 

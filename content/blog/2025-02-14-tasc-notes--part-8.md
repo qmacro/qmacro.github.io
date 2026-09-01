@@ -7,6 +7,22 @@ tags:
   - cap
   - cds
   - handsonsapdev
+  - episode-notes
+  - cql
+  - node-js
+  - cds-repl
+  - relational-model
+  - set-theory
+  - closures
+  - functional-programming
+  - nested-projections
+  - query-building
+  - path-expressions
+  - sqlite
+  - local-development
+  - npm-workspaces
+  - developer-experience
+  - capire
 ---
 For all resources related to this series, see the post [The Art and Science of CAP][2].
 

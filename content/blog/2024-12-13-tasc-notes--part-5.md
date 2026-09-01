@@ -7,6 +7,27 @@ tags:
   - cds
   - aspects
   - handsonsapdev
+  - episode-notes
+  - cql
+  - cqn
+  - cdl
+  - node-js
+  - cds-repl
+  - query-building
+  - infix-filters
+  - nested-projections
+  - odata
+  - event-driven-architecture
+  - everything-is-an-event
+  - messaging
+  - service-mocking
+  - service-integration
+  - remote-services
+  - grow-as-you-go
+  - developer-experience
+  - docker
+  - npm-workspaces
+  - closures
 ---
 These are the notes summarising what was covered in [The Art and Science of CAP part 5][2], one episode in a mini series with Daniel Hutzel to explore the philosophy, the background, the technology history and layers that support and inform the SAP Cloud Application Programming Model.
 
