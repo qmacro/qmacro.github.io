@@ -1,6 +1,6 @@
 ---
 title: TASC Notes - Part 7
-description: These are the notes summarising what was covered in The Art and Science of CAP part 7, one episode in a mini series with Daniel Hutzel to explore the philosophy, the background, the technology history and layers that support and inform the SAP Cloud Application Programming Model.
+description: Notes on part 7 of The Art and Science of CAP, a mini series with Daniel Hutzel exploring the philosophy, the background, the technology history and layers that support and inform the SAP Cloud Application Programming Model.
 date: 2025-02-07
 tags:
   - tasc
