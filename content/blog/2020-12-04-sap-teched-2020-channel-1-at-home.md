@@ -5,6 +5,7 @@ tags:
   - sap
   - conference
   - community
+  - teched
 ---
 *I'll be watching all the Channel 1 content as it happens from the
 comfort of my TV - as well as interacting with individual sessions on my

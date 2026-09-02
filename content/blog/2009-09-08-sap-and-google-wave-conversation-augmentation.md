@@ -1,14 +1,6 @@
 ---
 date: 2009-09-08
 title: SAP and Google Wave - Conversation Augmentation
-- sapcommunity
-- appengine
-- dashboard-tag
-- http
-- python
-- rest
-- sap
-- wave
 tags:
   - sap
   - http

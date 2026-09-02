@@ -6,6 +6,7 @@ tags:
   - community
   - conference
   - opinion
+  - inside-track
 ---
 
 Earlier this month, around 40 folks gathered for a two day event in Manchester's Northern Quarter for SAP Inside Track Manchester 2016. Read on to find out more about this event and others like it, and how the days played out.

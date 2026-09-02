@@ -5,6 +5,7 @@ tags:
   - sap
   - conference
   - community
+  - teched
 ---
 *SAP TechEd 2020 is fast approaching, and in many ways it will be a
 different experience for all of us. Then again, there's one thing that

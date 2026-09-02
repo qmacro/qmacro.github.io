@@ -1,15 +1,6 @@
 ---
 date: 2009-09-09
 title: Mainframes and the cloud - everything old is new again
-- appengine
-- azure
-- cloudcomputing
-- ec2
-- ibm
-- ims
-- mainframe
-- mvs
-- sap
 tags:
   - computing-history
   - mainframe

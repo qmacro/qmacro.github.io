@@ -1,13 +1,6 @@
 ---
 date: 2014-03-18
 title: OpenUI5 CodeTalk Links
-- fiori
-- github
-- opensource
-- openui5
-- sap
-- sapui5
-- ui5
 tags:
   - openui5
   - fiori

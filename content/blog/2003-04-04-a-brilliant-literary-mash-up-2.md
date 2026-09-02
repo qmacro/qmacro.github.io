@@ -1,7 +1,6 @@
 ---
 date: 2003-04-04
 title: '"A brilliant literary mash-up"...'
-- books
 description: The fusion of Hogwarts and Molesworth.
 tags:
   - books

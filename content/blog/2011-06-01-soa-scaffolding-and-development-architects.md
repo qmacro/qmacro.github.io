@@ -1,10 +1,6 @@
 ---
 date: 2011-06-01
 title: SOA scaffolding and development architects
-- architecture
-- development
-- rest
-- soa
 tags:
   - rest
   - architecture

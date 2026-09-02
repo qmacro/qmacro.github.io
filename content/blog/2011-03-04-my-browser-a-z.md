@@ -1,11 +1,6 @@
 ---
 date: 2011-03-04
 title: My browser A-Z
-- browser
-- chrome
-- omnibar
-- url
-- web
 tags:
   - tools
   - web

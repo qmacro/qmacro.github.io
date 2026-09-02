@@ -1,13 +1,6 @@
 ---
 date: 2014-09-08
 title: This Week in Fiori (2014-36)
-- course
-- iview
-- opensap
-- openui5
-- portal
-- sap
-- twif
 tags:
   - fiori
   - openui5

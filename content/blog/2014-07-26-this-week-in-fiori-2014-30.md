@@ -1,15 +1,6 @@
 ---
 date: 2014-07-26
 title: This Week in Fiori (2014-30)
-- fiori
-- multicombobox
-- openui5
-- oscon
-- sap
-- sap-m
-- sapui5
-- ui5
-- twif
 tags:
   - fiori
   - openui5

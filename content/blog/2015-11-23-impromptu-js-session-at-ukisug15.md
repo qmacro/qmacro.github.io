@@ -1,17 +1,13 @@
 ---
 date: 2015-11-23
 title: Impromptu JS session at UKISUG15
-- fiori
-- javascript
-- js
-- ui5
-- ukisug15
 tags:
   - fiori
   - javascript
   - openui5
   - talk
   - conference
+  - ukisug
 ---
 
 

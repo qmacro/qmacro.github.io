@@ -1,15 +1,6 @@
 ---
 date: 2015-03-28
 title: This Week in Fiori (2015-13)
-- fiori
-- json
-- odata
-- opensap
-- rest
-- soap
-- twif
-- pedantry
-- twif
 tags:
   - fiori
   - odata

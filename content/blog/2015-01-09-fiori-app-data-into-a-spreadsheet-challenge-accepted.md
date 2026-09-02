@@ -1,14 +1,6 @@
 ---
 date: 2015-01-09
 title: Fiori App Data into a Spreadsheet? Challenge Accepted!
-- appsscript
-- fiori
-- google
-- javascript
-- json
-- odata
-- sap
-- spreadsheet
 tags:
   - fiori
   - google-apps-script

@@ -1,10 +1,6 @@
 ---
 date: 2010-11-01
 title: 'Google Visualization API: Manchester GTUG Talk'
-- google
-- gtug
-- mangtug
-- visualization
 tags:
   - google
   - talk

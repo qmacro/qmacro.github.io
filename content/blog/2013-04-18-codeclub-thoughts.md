@@ -1,12 +1,6 @@
 ---
 date: 2013-04-18
 title: CodeClub Thoughts
-- codeclub
-- manchester
-- scratch
-- stem
-- stemnet
-- woodhouses
 tags:
   - education
   - community

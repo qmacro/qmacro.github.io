@@ -1,9 +1,6 @@
 ---
 date: 2004-02-21
 title: Tim O'Reilly and the three 'C's
-- fosdem
-- keynote
-- timoreilly
 description: Well, I made it to FOSDEM this morning with time to spare.
 tags:
   - conference

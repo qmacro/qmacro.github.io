@@ -1,17 +1,13 @@
 ---
 date: 2014-07-22
 title: OpenUI5 Tutorial at OSCON 2014
-- openui5
-- oscon
-- sap
-- tutorial
-- ui5
 tags:
   - openui5
   - conference
   - open-source
   - tutorial
   - talk
+  - oscon
 ---
 
 

@@ -1,12 +1,6 @@
 ---
 date: 2011-11-08
 title: SAP Developer Center
-- developercenter
-- gateway
-- hana
-- sap
-- sapteched
-- sup
 tags:
   - sap
   - odata

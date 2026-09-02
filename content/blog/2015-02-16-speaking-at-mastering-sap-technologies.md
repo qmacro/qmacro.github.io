@@ -7,6 +7,7 @@ tags:
   - openui5
   - talk
   - conference
+  - mastering-sap
 ---
 Next week I’m travelling to Johannesburg, to attend and speak at the [Mastering SAP Technologies conference](http://www.masteringsap.co.za/tech). It’s a great honour to have been invited, and I’m excited at the prospect of the topics covered in the [agenda](http://www.masteringsap.co.za/tech/agenda).
 

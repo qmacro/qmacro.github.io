@@ -1,8 +1,6 @@
 ---
 date: 2011-11-08
 title: Movember - please donate!
-- charity
-- movember
 tags:
   - personal
   - community

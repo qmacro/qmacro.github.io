@@ -1,7 +1,6 @@
 ---
 date: 2015-04-22
 title: openSAP Experiences
-- opensap
 tags:
   - sap
   - learning

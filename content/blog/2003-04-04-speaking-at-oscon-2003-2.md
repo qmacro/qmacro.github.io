@@ -1,13 +1,12 @@
 ---
 date: 2003-04-04
 title: Speaking at OSCON 2003
-- oscon
-- speaking
 description: Always an honour and a privilege.
 tags:
   - talk
   - conference
   - open-source
+  - oscon
 ---
 
 

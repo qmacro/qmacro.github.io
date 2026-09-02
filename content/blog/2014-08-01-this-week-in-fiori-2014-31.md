@@ -1,14 +1,6 @@
 ---
 date: 2014-08-01
 title: This Week in Fiori (2014-31)
-- fiori
-- launchpad
-- odata
-- opensap
-- sap
-- twif
-- ui5
-- uxexplorer
 tags:
   - fiori
   - odata

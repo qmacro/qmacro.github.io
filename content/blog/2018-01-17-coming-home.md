@@ -1,14 +1,6 @@
 ---
 date: 2018-01-17
 title: Coming Home
-- ibm
-- ims
-- mainframe
-- sap
-- terminal
-- devrel
-- r2
-- career
 description: On joining SAP as a Developer Advocate.
 tags:
   - sap

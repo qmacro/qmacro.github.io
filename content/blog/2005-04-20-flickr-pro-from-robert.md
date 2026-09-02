@@ -1,7 +1,6 @@
 ---
 date: 2005-04-20
 title: Flickr Pro from Robert
-- flickr
 description: I’m going to have to think of ways to make use of the extra bandwidth and picture storage capabilities, aren’t I?
 tags:
   - personal

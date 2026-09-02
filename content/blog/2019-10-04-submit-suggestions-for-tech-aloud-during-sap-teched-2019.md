@@ -6,6 +6,7 @@ tags:
   - sap
   - conference
   - community
+  - teched
 ---
 *Learn how you can submit suggestions for content to be included in the
 Tech Aloud podcast.*

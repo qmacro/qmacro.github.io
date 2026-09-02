@@ -1,12 +1,6 @@
 ---
 date: 2013-08-10
 title: "#YRS2013 Hacks on Github"
-- git
-- github
-- hacks
-- json
-- opensource
-- yrs2013
 tags:
   - github
   - open-source

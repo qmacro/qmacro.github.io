@@ -1,8 +1,6 @@
 ---
 date: 2002-10-14
 title: "'Practical RDF' book up for public review"
-- books
-- rdf
 description: Shelley Powers' new book.
 tags:
   - rdf

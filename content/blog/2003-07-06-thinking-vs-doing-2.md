@@ -1,9 +1,6 @@
 ---
 date: 2003-07-06
 title: Thinking vs doing
-- foaf
-- rdf
-- thinking
 description: In the past, I’ve mentioned to friends some of the thinking I’ve had about the Semantic Web, RDF, and related stuff (FOAF, RSS, and so on).
 tags:
   - rdf

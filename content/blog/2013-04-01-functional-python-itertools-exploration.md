@@ -1,13 +1,6 @@
 ---
 date: 2013-04-01
 title: Functional Python - Itertools Exploration
-- 30days
-- codeclub
-- coderdojo
-- functional
-- itertools
-- madlabu18
-- python
 tags:
   - python
   - functional-programming

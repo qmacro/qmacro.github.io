@@ -6,6 +6,7 @@ tags:
   - community
   - running
   - conference
+  - teched
 ---
 Roll, walk or run a 5K distance during this SAP TechEd week (Nov 15-19)
 and share a picture with us here! Read more in this blog

@@ -1,13 +1,6 @@
 ---
 date: 2015-04-14
 title: This Week in Fiori (2015-15)
-- fiori
-- personas
-- sapphire
-- sapphirenow
-- twif
-- ux
-- webide
 tags:
   - fiori
   - this-week-in-fiori

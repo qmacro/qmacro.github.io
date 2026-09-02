@@ -1,8 +1,6 @@
 ---
 date: 2005-02-25
 title: Weblog happy in new home - note new URLs!
-- feed-tag
-- weblogs
 description: Cool URIs don't change ... much.
 tags:
   - blogging

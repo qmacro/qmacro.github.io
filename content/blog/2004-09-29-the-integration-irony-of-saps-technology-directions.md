@@ -1,9 +1,6 @@
 ---
 date: 2004-09-29
 title: The integration irony of SAP's technology directions
-- history
-- integration
-- sap
 description: I’ve finally realised what it is that’s been bugging me about the new arena of SAP technology.
 tags:
   - sap

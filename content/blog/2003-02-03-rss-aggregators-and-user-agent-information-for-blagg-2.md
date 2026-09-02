@@ -1,11 +1,6 @@
 ---
 date: 2003-02-03
 title: RSS aggregators and user-agent information for Blagg
-- aggregators
-- blosxom
-- etag
-- rss-tag
-- wget
 description: Tool reuse a la Unix philosophy, and more on building out the future in tiny steps.
 tags:
   - rss

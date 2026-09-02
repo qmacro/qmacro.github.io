@@ -1,7 +1,6 @@
 ---
 date: 2004-09-06
 title: The Curious Incident Of The Dog In The Night-Time
-- books
 description: I bought three books at Manchester airport yesterday.
 tags:
   - books

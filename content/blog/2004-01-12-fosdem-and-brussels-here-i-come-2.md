@@ -1,16 +1,13 @@
 ---
 date: 2004-01-12
 title: FOSDEM and Brussels, here I come!
-- brussels
-- fosdem
-- jabber
-- speaking
 description: I’ve been umming and arring over conferences this year.
 tags:
   - conference
   - jabber
   - open-source
   - talk
+  - fosdem
 ---
 
 One that I don’t want to miss is [FOSDEM](http://www.fosdem.org/) – the Free and Open source Software Developers European Meeting, on a weekend next month in Brussels.

@@ -1,7 +1,6 @@
 ---
 date: 2002-09-22
 title: The case of the missing rdf:Description
-- rdf
 tags:
   - rdf
   - xml

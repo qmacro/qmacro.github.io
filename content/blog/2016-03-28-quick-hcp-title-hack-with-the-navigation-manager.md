@@ -1,11 +1,6 @@
 ---
 date: 2016-03-28
 title: Quick HCP title hack with the Navigation Manager
-- chrome
-- cockpit
-- developertools
-- hcp
-- html5
 tags:
   - btp
   - tools

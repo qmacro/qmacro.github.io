@@ -1,7 +1,6 @@
 ---
 date: 2005-07-21
 title: Whither SAP?
-- sap
 description: I’ve been thinking a lot recently about where SAP is going and what SAP is doing today, especially in the light of where it went and what it did in the past. To be honest, the thinking has been triggered by frustration at the nuts and bolts of SAP technical matters, particularly in the area of service support and basis work.
 tags:
   - sap

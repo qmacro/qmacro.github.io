@@ -1,9 +1,6 @@
 ---
 date: 2014-09-14
 title: Scratching an itch - UI5 Icon Finder
-- icons
-- singlefileapps
-- ui5
 tags:
   - openui5
   - tools

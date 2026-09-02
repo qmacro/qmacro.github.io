@@ -1,13 +1,6 @@
 ---
 date: 2017-04-30
 title: Google Cloud Functions + Sheets + Apps Script + Actions On Google = WIN
-- appsscript
-- conferences
-- google
-- actionsongoogle
-- googleassistant
-- apiai
-- cloudnext
 tags:
   - google-apps-script
   - google

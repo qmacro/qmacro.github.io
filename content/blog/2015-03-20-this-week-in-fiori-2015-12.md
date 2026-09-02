@@ -1,14 +1,6 @@
 ---
 date: 2015-03-20
 title: This Week in Fiori (2015-12)
-- fiori
-- fix
-- frontend
-- israel
-- masteringsap
-- saplabs
-- ui5
-- twif
 tags:
   - fiori
   - openui5

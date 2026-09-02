@@ -1,8 +1,6 @@
 ---
 date: 2005-11-28
 title: 'SAP and Open Source: the debate continues'
-- opensource
-- sap
 tags:
   - sap
   - open-source

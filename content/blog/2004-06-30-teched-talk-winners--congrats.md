@@ -6,6 +6,7 @@ tags:
   - sap
   - conference
   - community
+  - teched
 ---
 
 The winning talks look really good – I’m looking forward to hearing them. It’s interesting that two of the three are BW related. Seems like a hot topic.

@@ -1,8 +1,6 @@
 ---
 date: 2002-09-21
 title: More thoughts to ponder
-- rdf
-- rss-tag
 description: Here are two or three thoughtbites that I’ve come across over the past few days and that have stayed with me. I just thought I’d share them here as it’s the weekend and often a good time to think about things.
 tags:
   - rdf

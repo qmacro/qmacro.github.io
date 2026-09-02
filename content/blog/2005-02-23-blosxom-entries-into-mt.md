@@ -1,8 +1,6 @@
 ---
 date: 2005-02-23
 title: Blosxom entries into MT
-- blosxom
-- mt
 description: After setting up this blog, it was only natural to bring across my earlier blog posts that were previously served with Blosxom.
 tags:
   - blosxom

@@ -1,7 +1,6 @@
 ---
 date: 2005-11-26
 title: Acorn Atom and my start in computing
-- acornatom
 tags:
   - computing-history
   - personal

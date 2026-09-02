@@ -1,8 +1,6 @@
 ---
 date: 2005-02-26
 title: Postcode bookmarklet
-- bookmarklet
-- javascript
 description: We’ve been spending time recently looking at property in the North West.
 tags:
   - javascript

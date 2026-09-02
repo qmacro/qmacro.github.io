@@ -1,11 +1,6 @@
 ---
 date: 2010-06-21
 title: Getting started with Gmail Contextual Gadgets
-- appengine
-- contextual
-- dashboard-tag
-- gadgets
-- gmail
 tags:
   - google-apps-script
   - google

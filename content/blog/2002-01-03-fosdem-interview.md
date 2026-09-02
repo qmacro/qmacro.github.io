@@ -7,6 +7,7 @@ tags:
   - conference
   - open-source
   - interview
+  - fosdem
 ---
 
 Read how DJ Adams talks about Jabber ...

@@ -1,14 +1,6 @@
 ---
 date: 2011-10-16
 title: Reading List Mark 2 - Part 5
-- appsscript
-- google
-- gtug
-- madlab
-- mangtug
-- tasks
-- ui
-- urlfetch
 tags:
   - google-apps-script
   - google

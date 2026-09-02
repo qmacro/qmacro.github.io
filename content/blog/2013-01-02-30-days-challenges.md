@@ -1,7 +1,6 @@
 ---
 date: 2013-01-02
 title: 30 Days Challenges
-- 30days
 tags:
   - personal
   - learning

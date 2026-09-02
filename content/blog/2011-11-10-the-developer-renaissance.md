@@ -1,11 +1,6 @@
 ---
 date: 2011-11-10
 title: The Developer Renaissance
-- aiazkazi
-- interview
-- sapteched
-- teched
-- techedlive
 tags:
   - sap
   - conference

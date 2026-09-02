@@ -1,13 +1,6 @@
 ---
 date: 2010-10-11
 title: Not your father's SAP
-- abap
-- appengine
-- bpm
-- javascript
-- sap
-- webhooks
-- river
 description: Some thoughts following the Innovation Weekend 2010 at SAP.
 tags:
   - sap

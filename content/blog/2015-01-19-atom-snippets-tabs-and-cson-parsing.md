@@ -1,14 +1,6 @@
 ---
 date: 2015-01-19
 title: Atom, Snippets, Tabs and CSON parsing
-- atom
-- cson
-- cson-safe
-- openui5
-- sapui5
-- snippets
-- tabs
-- ui5
 tags:
   - openui5
   - tools

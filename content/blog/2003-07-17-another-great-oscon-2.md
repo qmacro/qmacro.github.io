@@ -1,13 +1,12 @@
 ---
 date: 2003-07-17
 title: Another great OSCON
-- oscon
-- sap
 description: Reflecting on another Open Source Convention.
 tags:
   - conference
   - sap
   - open-source
+  - oscon
 ---
 
 

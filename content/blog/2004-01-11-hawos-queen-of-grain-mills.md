@@ -1,11 +1,6 @@
 ---
 date: 2004-01-11
 title: Hawo's Queen of Grain Mills
-- baking
-- bread
-- grain
-- mill
-- veg
 description: I've been baking bread now for quite a while now. The bread baking bug first got ahold of me when visiting friends. They had a bread making machine – something that you put all the basic ingredients into, hit a button, and presto. Naturally we bought one soon after, and I was, well, "hooked".
 tags:
   - personal

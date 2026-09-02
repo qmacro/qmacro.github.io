@@ -1,18 +1,13 @@
 ---
 date: 2015-11-03
 title: Speaking at SAP TechEd EMEA 2015
-- bestpractices
-- fiori
-- hcp
-- saptd
-- sapteched
-- ui5
 tags:
   - fiori
   - openui5
   - sap
   - conference
   - talk
+  - teched
 ---
 
 

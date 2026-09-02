@@ -1,12 +1,6 @@
 ---
 date: 2014-03-24
 title: SAP Mentor Monday on UI5 - Links
-- fiori
-- mentormonday
-- openui5
-- sapui5
-- scn
-- ui5
 tags:
   - openui5
   - fiori

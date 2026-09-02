@@ -7,6 +7,7 @@ tags:
   - talk
   - conference
   - community
+  - recap
 ---
 
 At [reCAP](https://recap-conf.dev/) this year, I was honoured to share a talk

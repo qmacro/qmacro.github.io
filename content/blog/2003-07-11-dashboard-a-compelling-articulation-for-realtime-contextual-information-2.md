@@ -1,10 +1,6 @@
 ---
 date: 2003-07-11
 title: Dashboard, a compelling articulation for realtime contextual information
-- dashboard-tag
-- jabber
-- keynote
-- oscon
 description: Miguel de Icaza and Nat Friedman were keynoting at OSCON this morning.
 tags:
   - jabber

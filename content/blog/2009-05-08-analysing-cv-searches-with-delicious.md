@@ -1,12 +1,6 @@
 ---
 date: 2009-05-08
 title: Analysing CV searches with Delicious
-- cv
-- delicious
-- looselycoupled
-- perl
-- tags
-- urlspace
 tags:
   - perl
   - tools

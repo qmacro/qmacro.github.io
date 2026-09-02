@@ -1,12 +1,6 @@
 ---
 date: 2012-01-25
 title: 'SAP ICF course marketing: video!'
-- course
-- icf
-- madlab
-- omniversity
-- sap
-- video
 tags:
   - sap
   - http

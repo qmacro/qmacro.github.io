@@ -1,10 +1,6 @@
 ---
 date: 2015-03-15
 title: The maker's schedule, restraint and flow
-- flow
-- maker
-- pomodoro
-- work
 description: My thoughts on schedules and saying 'no'.
 tags:
   - career

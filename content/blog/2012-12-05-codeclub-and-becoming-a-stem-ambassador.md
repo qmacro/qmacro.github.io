@@ -1,14 +1,6 @@
 ---
 date: 2012-12-05
 title: CodeClub and becoming a STEM Ambassador
-- ambassador
-- codeclub
-- manchester
-- pi
-- raspberry
-- raspberrypi
-- stem
-- stemnet
 tags:
   - education
   - raspberry-pi

@@ -1,10 +1,6 @@
 ---
 date: 2011-02-03
 title: 'The past and future of SAP integration: guest Bluefin blog post'
-- app-tag
-- atom
-- rest
-- sap
 description: I wrote a guest blog post on the Bluefin Solutions website, about the Project Gateway.
 tags:
   - sap

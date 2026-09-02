@@ -1,10 +1,6 @@
 ---
 date: 2009-06-29
 title: Information vs Behaviour
-- architecture
-- rest
-- roa
-- soa
 description: Architectures, axioms and ROA vs SOA.
 tags:
   - rest

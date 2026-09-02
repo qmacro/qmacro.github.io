@@ -1,9 +1,6 @@
 ---
 date: 2014-02-05
 title: 'Alt-K: Reading Notes'
-- altk
-- kindle
-- reading
 tags:
   - books
   - personal

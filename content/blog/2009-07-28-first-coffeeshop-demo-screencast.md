@@ -1,12 +1,6 @@
 ---
 date: 2009-07-28
 title: First coffeeshop demo screencast
-- appengine
-- coffeeshop
-- http
-- pubsub
-- rest
-- screencast
 tags:
   - rest
   - http

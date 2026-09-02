@@ -1,9 +1,6 @@
 ---
 date: 2003-09-01
 title: Plums and the antithesis of technology
-- burymarket
-- plums
-- tech
 description: I haven’t been online much recently.
 tags:
   - personal

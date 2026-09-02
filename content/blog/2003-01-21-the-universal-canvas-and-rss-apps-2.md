@@ -1,10 +1,6 @@
 ---
 date: 2003-01-21
 title: The universal canvas and RSS apps
-- booktalk
-- enterprise
-- rss-tag
-- universalcanvas
 description: Thoughts on the applicability and utility of the format.
 tags:
   - rss

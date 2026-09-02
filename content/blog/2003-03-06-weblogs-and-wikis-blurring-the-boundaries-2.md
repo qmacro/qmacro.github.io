@@ -1,8 +1,6 @@
 ---
 date: 2003-03-06
 title: Weblogs and Wikis - Blurring the Boundaries
-- weblogs
-- wiki
 description: More on the crossover between blogging and wikis.
 tags:
   - blogging

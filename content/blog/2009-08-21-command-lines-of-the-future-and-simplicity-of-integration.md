@@ -1,19 +1,6 @@
 ---
 date: 2009-08-21
 title: Command lines of the future, and simplicity of integration
-- chatbot
-- http
-- irc
-- jabber
-- pubsubhubbub
-- purl
-- rest
-- roa
-- sap
-- soa
-- wave
-- webhooks
-- xmpp
 tags:
   - http
   - rest

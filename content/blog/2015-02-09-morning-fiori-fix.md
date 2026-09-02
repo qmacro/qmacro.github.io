@@ -1,9 +1,6 @@
 ---
 date: 2015-02-09
 title: Morning Fiori Fix
-- fiori
-- fix
-- ui5
 tags:
   - fiori
   - openui5

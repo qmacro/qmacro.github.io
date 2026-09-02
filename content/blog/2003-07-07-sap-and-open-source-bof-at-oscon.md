@@ -7,6 +7,7 @@ tags:
   - open-source
   - conference
   - community
+  - oscon
 ---
 
 If you're at OSCON or around the Portland area this Wednesday (9th July), come

@@ -1,13 +1,6 @@
 ---
 date: 2013-11-27
 title: SAP UK & Ireland User Group Conference - Demo Jam!
-- conference
-- demo
-- demojam
-- fiori
-- sap
-- sapui5
-- ukisug13
 tags:
   - fiori
   - sap

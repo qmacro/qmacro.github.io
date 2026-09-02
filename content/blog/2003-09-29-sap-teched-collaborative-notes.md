@@ -6,6 +6,7 @@ tags:
   - sap
   - conference
   - community
+  - teched
 ---
 Fantastic. It was a bit of a bumpy start – the online-registration process was a bit of a shambles, and I had to ring up to complete the transaction as the webpage (javascript?) was broken. Not a good advert for web-based commerce, is it? Anyway, after 3  (!)separate phone calls to the registration company I finally got the details I needed, and I’m off on the train via Koeln tomorrow down to Basel.
 

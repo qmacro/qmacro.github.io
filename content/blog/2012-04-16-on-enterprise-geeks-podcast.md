@@ -1,10 +1,6 @@
 ---
 date: 2012-04-16
 title: On Enterprise Geeks Podcast
-- dkom
-- enterprisegeeks
-- podcast
-- sap
 tags:
   - sap
   - community

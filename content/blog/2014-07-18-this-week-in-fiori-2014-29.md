@@ -1,14 +1,6 @@
 ---
 date: 2014-07-18
 title: This Week in Fiori (2014-29)
-- fiori
-- mobile
-- openui5
-- responsive
-- sap
-- sapui5
-- ui5
-- twif
 tags:
   - fiori
   - openui5

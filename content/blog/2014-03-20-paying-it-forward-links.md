@@ -1,17 +1,6 @@
 ---
 date: 2014-03-20
 title: Paying IT Forward Links
-- codeclub
-- coderdojo
-- coding
-- computationalthinking
-- kids
-- programming
-- python
-- scratch
-- stem
-- stemnet
-- yrs
 tags:
   - education
   - community

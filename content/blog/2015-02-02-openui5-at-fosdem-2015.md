@@ -1,16 +1,12 @@
 ---
 date: 2015-02-02
 title: OpenUI5 at FOSDEM 2015
-- brussels
-- fosdem
-- opensource
-- openui5
-- ui5
 tags:
   - openui5
   - conference
   - open-source
   - talk
+  - fosdem
 ---
 
 

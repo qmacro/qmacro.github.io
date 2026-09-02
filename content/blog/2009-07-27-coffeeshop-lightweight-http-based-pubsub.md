@@ -1,13 +1,6 @@
 ---
 date: 2009-07-27
 title: "'Coffeeshop' - lightweight HTTP-based pubsub"
-- appengine
-- coffeeshop
-- http
-- icf
-- pubsub
-- rest
-- sap
 description: About a lightweight, REST-orientated HTTP-based publish/subscribe implementation that I’ve been working on for the last few days.
 tags:
   - rest

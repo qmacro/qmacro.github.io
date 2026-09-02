@@ -1,7 +1,6 @@
 ---
 date: 2014-09-28
 title: This Week in Fiori (2014-39)
-- twif
 tags:
   - fiori
   - this-week-in-fiori

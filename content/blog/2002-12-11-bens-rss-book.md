@@ -1,7 +1,6 @@
 ---
 date: 2002-12-11
 title: Ben's RSS book
-- books
 description: A new book on RSS from Ben Hammersley.
 tags:
   - rss

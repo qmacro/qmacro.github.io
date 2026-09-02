@@ -1,13 +1,6 @@
 ---
 date: 2012-04-01
 title: 'The Developer Connection: Connect Like Never Before'
-- developers
-- dkom
-- gateway
-- sap
-- sapui5
-- scn
-- sdn
 tags:
   - sap
   - community

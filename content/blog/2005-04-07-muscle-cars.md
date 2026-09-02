@@ -1,7 +1,6 @@
 ---
 date: 2005-04-07
 title: Muscle cars
-- picture
 tags:
   - personal
 ---

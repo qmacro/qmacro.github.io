@@ -1,7 +1,6 @@
 ---
 date: 2005-11-17
 title: MoonOverFailsworth
-- picture
 tags:
   - personal
 ---

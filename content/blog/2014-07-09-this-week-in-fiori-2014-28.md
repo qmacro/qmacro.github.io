@@ -1,13 +1,6 @@
 ---
 date: 2014-07-09
 title: This Week in Fiori (2014-28)
-- design
-- fiori
-- picks
-- sap
-- twif
-- ui
-- ux
 tags:
   - fiori
   - openui5

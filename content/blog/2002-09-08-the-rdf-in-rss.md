@@ -1,8 +1,6 @@
 ---
 date: 2002-09-08
 title: The RDF in RSS
-- rdf
-- rss-tag
 description: Digging into the real truth about the RDF in RSS.
 tags:
   - rdf

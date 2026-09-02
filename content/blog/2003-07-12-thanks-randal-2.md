@@ -1,10 +1,6 @@
 ---
 date: 2003-07-12
 title: Thanks, Randal
-- beer
-- oscon
-- perl
-- randalschwartz
 description: Relaxing in an 80's arcade at OSCON.
 tags:
   - perl

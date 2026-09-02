@@ -1,10 +1,6 @@
 ---
 date: 2003-07-06
 title: Some ramblings on URIs and identity
-- foaf
-- identity
-- rdf
-- uri
 description: Coming back from a short break from the tech world recently, I started to reacquaint myself with FOAF and RDF, amongst other things.
 tags:
   - rdf

@@ -1,10 +1,6 @@
 ---
 date: 2011-05-31
 title: Danger! Graduate Conveyor-belt!
-- classics
-- education
-- greek
-- latin
 tags:
   - education
   - opinion

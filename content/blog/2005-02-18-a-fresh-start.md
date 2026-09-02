@@ -1,9 +1,6 @@
 ---
 date: 2005-02-18
 title: A fresh start
-- blogging
-- mailbox
-- rss-tag
 description: The perils and joys of self-hosting at a colo.
 tags:
   - blogging

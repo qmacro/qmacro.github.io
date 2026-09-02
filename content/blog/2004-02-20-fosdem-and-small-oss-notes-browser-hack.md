@@ -7,6 +7,7 @@ tags:
   - conference
   - tools
   - community
+  - fosdem
 ---
 Some people might wonder what this has to do with
 SAP, but don't forget that lots of people (including yours truly)

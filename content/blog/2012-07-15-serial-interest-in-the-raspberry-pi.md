@@ -1,15 +1,6 @@
 ---
 date: 2012-07-15
 title: Serial interest in the Raspberry Pi
-- atom
-- linux
-- madlab
-- raspberryjam
-- raspberrypi
-- retrocomputing
-- terminal
-- wy30
-- wyse
 tags:
   - raspberry-pi
   - computing-history

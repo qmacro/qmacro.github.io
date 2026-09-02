@@ -1,23 +1,6 @@
 ---
 date: 2009-05-18
 title: Twitter's success
-- bots
-- enterprise
-- http
-- identica
-- jabber
-- json
-- laconica
-- messaging
-- perl
-- pipeline
-- rest
-- rss-tag
-- soa
-- twitter
-- urlspace
-- web
-- xmpp
 description: Thoughts on messaging, microblogging, and Twitter's success.
 tags:
   - http

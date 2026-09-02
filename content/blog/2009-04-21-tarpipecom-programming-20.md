@@ -1,11 +1,6 @@
 ---
 date: 2009-04-21
 title: tarpipe.com - Programming 2.0?
-- beer
-- flickr
-- joseph
-- programming
-- tarpipe
 tags:
   - tools
   - web

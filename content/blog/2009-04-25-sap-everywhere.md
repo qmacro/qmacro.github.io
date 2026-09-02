@@ -1,9 +1,6 @@
 ---
 date: 2009-04-25
 title: SAP everywhere!
-- sap
-- sdn
-- twitter
 tags:
   - sap
   - community

@@ -1,12 +1,6 @@
 ---
 date: 2014-08-17
 title: This Week in Fiori (2014-33)
-- bestpractices
-- fiori
-- infrastructure
-- launchpad
-- sapui5
-- twif
 tags:
   - fiori
   - openui5

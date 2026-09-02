@@ -1,8 +1,6 @@
 ---
 date: 2005-02-28
 title: An overcorrection too far?
-- orm
-- wsdl
 description: Norman Walsh gives up ‘wrestling his way through the arcana of WSDL’.
 tags:
   - opinion

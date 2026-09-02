@@ -1,8 +1,6 @@
 ---
 date: 2005-04-25
 title: Ubuntu? Thanks. But no thanks.
-- fail
-- ubuntu
 description: Lots of people seem to be very impressed with Ubuntu, the slick new Linux distro based on Debian, running Gnome.
 tags:
   - linux

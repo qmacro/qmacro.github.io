@@ -1,10 +1,6 @@
 ---
 date: 2012-03-25
 title: SAPUI5 Powered SCN Forum Finder
-- sap
-- sapui5
-- scn
-- sdn
 tags:
   - openui5
   - sap

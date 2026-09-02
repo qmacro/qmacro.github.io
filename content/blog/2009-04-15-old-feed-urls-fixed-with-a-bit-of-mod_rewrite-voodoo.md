@@ -1,10 +1,6 @@
 ---
 date: 2009-04-15
 title: Old feed URLs fixed with a bit of mod_rewrite voodoo
-- apache
-- feeds
-- modrewrite
-- web
 tags:
   - web
   - tools

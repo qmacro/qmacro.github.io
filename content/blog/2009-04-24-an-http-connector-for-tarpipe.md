@@ -1,12 +1,6 @@
 ---
 date: 2009-04-24
 title: 'An HTTP connector for Tarpipe: ''tarbridge'''
-- bridge
-- email
-- http
-- smtp
-- tarbridge
-- tarpipe
 tags:
   - http
   - rest

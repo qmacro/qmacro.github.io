@@ -2,14 +2,6 @@
 date: 2015-01-03
 title: 'Running: 2014 in review, and some Clojure'
 - '2014'
-- analysis
-- clojure
-- endomondo
-- garmin
-- running
-- stats
-- tomtom
-- vim
 tags:
   - clojure
   - running

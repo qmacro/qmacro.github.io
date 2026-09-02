@@ -6,6 +6,8 @@ tags:
   - conference
   - community
   - learning
+  - devtoberfest
+  - teched
 ---
 Devtoberfest 2023 kicked off today, with a wealth of live sessions. Read on to find out why I think Devtoberfest is a great way for developers to get themselves ready for SAP TechEd.
 

@@ -5,6 +5,7 @@ tags:
   - sap
   - conference
   - community
+  - teched
 ---
 *All the information about the SAP TechEd 2020 Developer Keynote and
 related resources, in a single place for you.*

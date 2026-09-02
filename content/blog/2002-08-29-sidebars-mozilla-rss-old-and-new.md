@@ -1,10 +1,6 @@
 ---
 date: 2002-08-29
 title: 'Sidebars, Mozilla, RSS: old and new'
-- mozilla
-- rdf
-- rss-tag
-- xul
 description: RSS, RDF, XUL, XSLT and more.
 tags:
   - rss
