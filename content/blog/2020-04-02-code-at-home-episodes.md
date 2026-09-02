@@ -1,14 +1,12 @@
 ---
 date: 2020-04-02
 title: Code at Home episodes
+description: A summary of the Code at Home episodes streamed live and available as recordings on YouTube.
 tags:
   - community
   - learning
   - sap
 ---
-
-_This post summarises the episodes streamed live (and available as recordings) on YouTube. Find out more about the Code at Home initiative in the main blog post: [Let's learn to "Code at Home"](/blog/posts/2020/03/24/code-at-home/)._
-
 All the episodes are live streamed [on my YouTube channel](https://youtube.com/djadams-qmacro) and are then available on that same channel after the streams finish, as recordings. In this post are links to those recordings with a short description of each. You can easily spot the upcoming live streams and recordings as they always have the "Code at Home" background in the thumbnail, like this:
 
 ![Code at Home video thumbnails]( {{ "/images/2020/04/cahthumbnails.png" | url }})

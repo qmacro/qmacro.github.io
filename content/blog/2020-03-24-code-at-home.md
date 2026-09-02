@@ -2,14 +2,12 @@
 date: 2020-03-24
 title: Let's learn to "Code at Home"
 permalink: /blog/posts/2020/03/24/code-at-home/
+description: Information on the Code at Home initiative, what it is and what you need to join in.
 tags:
   - community
   - learning
   - sap
 ---
-
-_This post provides information on the simple Code at Home initiative - what it is and what you need to join in._
-
 - Episodes on Mondays and Fridays at 15:30 UK time.
 - Last episode in this first series will be Ep.20 on Mon 18 May.
 - Subscribe on YouTube and find all the upcoming episode links here: [youtube.com/djadams-qmacro](https://youtube.com/djadams-qmacro)

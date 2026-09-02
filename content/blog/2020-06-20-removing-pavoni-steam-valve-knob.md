@@ -1,13 +1,11 @@
 ---
 date: 2020-06-20
 title: Removing the knob on a La Pavoni steam valve
+description: How I went about removing the knob from the shaft of the steam valve on my La Pavoni lever coffee machine.
 tags:
   - coffee
   - personal
 ---
-
-_This post documents how I went about removing the knob from the shaft of the steam valve on my La Pavoni lever coffee machine._
-
 I've had my La Pavoni PL lever espresso coffee machine for just over a year, and I'm extremely happy with it. Recently I ordered some wooden replacement handles for it from a vendor on Etsy and when they finally arrived I set about replacing the factory standard bakelite handles with the wooden ones.
 
 Replacing them was easy except for one item - the knob on the steam valve shaft. The existing one was held in place by a metal split pin and seems to have a reputation of being hard to remove. I couldn't figure out the best way either; while I'd learned how to remove the shaft itself from this video on YouTube: [La Pavoni Lever Machines: How to Remove the Steam Valve Shaft](https://www.youtube.com/watch?v=xPj1VSGgyCY) I couldn't quite figure out how to remove the knob itself.

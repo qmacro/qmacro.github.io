@@ -1,14 +1,12 @@
 ---
 date: 2021-05-19
 title: Supporting developers with sponsorship
+description: Using the sponsors facility on GitHub to support developers whose work I value.
 tags:
   - community
   - open-source
   - opinion
 ---
-
-_I've started to use the sponsors facility on GitHub to support developers. Here's my thinking._
-
 There are many folks that I observe giving to the community. This giving takes many forms, such as providing software in an open source manner, supporting that software, sharing knowledge, and mentoring. I wanted to look into how I could provide a bit of support. I give to charity as part of my remuneration scheme, and I'm very fortunate to be able to do that. But that seems more of a "given" and not particularly specific, nor do I have any direct connection to the recipients.
 
 There are various ways to support individuals online - I've used the "buy me a coffee" approach, I've sent small amounts via PayPal to folks to say thanks (e.g. for the [Victor Mono font](https://rubjo.github.io/victor-mono/)), subscribed to folks on Twitch, gifted subscriptions, and so on. These are all avenues available to us, and I'd encourage you to look into them.

@@ -2,15 +2,13 @@
 date: 2020-03-22
 category: homelab
 title: Starting out with Raspberry Pi experiments
+description: Background on why I started experimenting with Raspberry Pis and the hardware components I set up.
 tags:
   - raspberry-pi
   - docker
   - brambleweeny
   - learning
 ---
-
-_This post provides some background to why I've started to experiment with Raspberry Pis, and to list the hardware components that I bought and set up with my son Joseph over the Christmas holidays._
-
 This is a post in the "[Brambleweeny Cluster Experiments](/blog/posts/2020/03/22/brambleweeny-cluster-experiments/)" series of blog posts, which accompanies the [YouTube live stream recording playlist](https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe) of the same name.
 
 Next post in this series: [Preparing the OS image](/blog/posts/2020/03/22/preparing-the-os-image/)

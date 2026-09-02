@@ -1,13 +1,12 @@
 ---
 title: OData query operations and URL encoding the system query options with curl
 date: 2023-08-08
+description: Using curl to send OData query operations with system query options that contain whitespace, letting curl handle the URL encoding.
 tags:
   - odata
   - http
   - shell
 ---
-_You can use curl to send OData query operations with system query options that contain whitespace, and have it URL encode that whitespace for you._
-
 We're running an [SAP Developer Challenge this month, on the topic of APIs](https://blogs.sap.com/2023/08/01/sap-developer-challenge-apis/). In a discussion relating to [Task 2 - Calculate Northbreeze product stock](https://groups.community.sap.com/t5/application-development/sap-developer-challenge-apis-task-2-calculate-northbreeze/td-p/277325), Wises shared his process and thoughts in [a nice reply to the task thread](https://groups.community.sap.com/t5/application-development/sap-developer-challenge-apis-task-2-calculate-northbreeze/m-p/277635/highlight/true#M2656), in which he said, about using `curl`:
 
 > I found that I have to manually replace blank(space) with %20 in the $filter block to be able to fetch an OData API.

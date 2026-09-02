@@ -1,14 +1,12 @@
 ---
 date: 2020-07-20
 title: In an mta.yaml file you can use the service-name parameter to point to an existing resource
+description: In mta.yaml files you can use the service-name parameter to point to an existing service instance with a different name than the resource.
 tags:
   - cloud-foundry
   - learning
   - til
 ---
-
-_In `mta.yaml` files you can use the `service-name` parameter to point to an existing service instance with a different name than the resource._
-
 When the contents of a [multi-target application file](https://help.sap.com/viewer/4505d0bdaf4948449b7f7379d24d0f0d/2.0.03/en-US/33548a721e6548688605049792d55295.html) file have been created or modified automatically for you, and there are references to generated service instance names, you don't have to globally replace those names to match whatever service instances you may already have, but instead you can add the `service-name` [parameter](https://help.sap.com/viewer/4505d0bdaf4948449b7f7379d24d0f0d/2.0.03/en-US/4050fee4c469498ebc31b10f2ae15ff2.html) in the resource definition.
 
 For example, when adding a new Workflow module to an existing (`mta.yaml`-based) project, the generator will add something like this:

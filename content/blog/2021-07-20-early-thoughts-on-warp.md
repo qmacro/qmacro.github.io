@@ -1,14 +1,12 @@
 ---
 date: 2021-07-20
 title: Early thoughts on Warp
+description: Some very early thoughts on Warp, the pro terminal designed for everyday use.
 tags:
   - shell
   - tools
   - opinion
 ---
-
-_Here are some very early thoughts on Warp, the "pro terminal designed for everyday use"._
-
 Today I was [pointed](https://twitter.com/Fidschenheimer/status/1417416096131518469) in Warp's direction on Twitter by [Christian Pfisterer](https://twitter.com/Fidschenheimer) and [Christian Drumm](https://twitter.com/ceedee666).
 
 To quote [Warp's website](https://www.warp.dev/):

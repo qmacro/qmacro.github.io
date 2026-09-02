@@ -2,15 +2,13 @@
 date: 2020-03-22
 category: homelab
 title: Brambleweeny Cluster Experiments
+description: An index of posts in the Brambleweeny Cluster Experiments series about building a Raspberry Pi cluster.
 tags:
   - raspberry-pi
   - docker
   - brambleweeny
   - seriespost
 ---
-
-_This is where the individual posts in the "Brambleweeny Cluster Experiments" series of blog posts are listed, in order._
-
 I'm experimenting with a cluster of Raspberry Pi computers, and sharing that experimentation as I make my slow progress towards enlightenment.
 
 ![The cluster]({{ "/images/2020/03/picluster.png" | url}})

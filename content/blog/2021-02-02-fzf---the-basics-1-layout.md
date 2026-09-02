@@ -1,15 +1,13 @@
 ---
 date: 2021-02-02
 title: fzf - the basics part 1 - layout
+description: What I learned from reading the first part of the fzf README about controlling the layout and appearance.
 tags:
   - tools
   - shell
   - fzf
   - learning
 ---
-
-_Here's what I learned from reading the first part of the fzf README and paying attention. Now I have a better setup and understanding of the basics, and in particular how to control the appearance._
-
 In the context of [doing less and doing it better](/blog/posts/2021/02/01/do-less-and-do-it-better/) I decided to start learning more about [`fzf`](https://github.com/junegunn/fzf), the "command line fuzzy finder". Learning more wasn't difficult, because despite using it for quite a while, I've never really read any of the documentation, and have thus only scratched its surface.
 
 So I started with the first part of the main [README](https://github.com/junegunn/fzf/blob/master/README.md), and here's what I found.

@@ -1,6 +1,7 @@
 ---
 title: Immutable layers, file deletion and image size in Docker
 date: 2024-10-26
+description: Digging into how the immutability of Docker image layers means you have to think carefully about creating and deleting content when building an image.
 tags:
   - docker
   - architecture

@@ -1,13 +1,12 @@
 ---
 date: 2021-05-10
 title: Solving mysterious unrendered markdown headings
+description: Getting to the bottom of why some headings in my Markdown content were not being rendered properly.
 tags:
   - markdown
   - tools
   - blogging
 ---
-_I finally spent some time getting to the bottom of why some headings in my markdown content weren't getting rendered properly._
-
 I've noticed over the years that occasionally the rendered version of my markdown content, in particular on GitHub (which is where most of my markdown content ends up), sometimes contains unrendered headings. Here's [an example](https://github.com/qmacro-org/test/blob/d6f348858dd5014d8b96060e4b8dd75999af431b/README.md):
 
 ![Rendered markdown showing an unrendered heading - on GitHub](/images/2021/05/unrendered-heading-github.png)

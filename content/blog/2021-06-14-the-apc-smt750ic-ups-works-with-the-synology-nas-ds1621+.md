@@ -1,14 +1,12 @@
 ---
 date: 2021-06-14
 title: The APC SMT750IC UPS works with the Synology NAS DS1621+
+description: Successfully configuring the APC SMT750IC UPS with the Synology NAS DS1621+ via USB for automatic shutdown.
 tags:
   - homelab
   - tools
   - personal
 ---
-
-_I've successfully configured this setup, and the USB connection from the UPS to the NAS does indeed work to tell the NAS to shut down._
-
 TL;DR - My Synology DS1621+ NAS recognises the USB-connected APC SMT750IC UPS and will shut itself down on signals sent from it.
 
 Since buying my Synology NAS DS1621+ a few weeks ago, we've had one power outage in the village. I'd been musing on the idea of getting a UPS for the NAS, and this event helped me come to a decision (a little late, perhaps, but there you go). It took me longer than it should have done to work out which UPS might be applicable and compatible. I couldn't find definitive confirmation that the UPS I was looking at was going to work with the NAS; in particular, I wanted to be as sure as I could that the USB connection would indeed be recognised by the NAS, which would receive power event signals and shut itself down as appropriate when the UPS had to switch to battery power.

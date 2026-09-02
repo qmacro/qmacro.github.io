@@ -1,14 +1,13 @@
 ---
 date: 2020-10-11
 title:  "MID$ and shell parameter expansion"
+description: The rich and varied abilities in Bash for accessing and manipulating values in variables through shell parameter expansion.
 tags:
   - shell
   - learning
   - til
   - computing-history
 ---
-_While perhaps misunderstood and potentially confusing due to the different options, the ability to access and manipulate values in variables in Bash is rich and varied._
-
 I've just set up [Exercism](https://exercism.io) on this machine so I could download challenges in the [Bash track](https://exercism.io/tracks/bash) and try to improve my Bash scripting fu. I spent a pleasant hour getting to know [bats](https://github.com/sstephenson/bats) - the Bash Automated Testing System, which Exercism uses for the Bash track, and looking at one of the easy challenges on Hamming in relation to DNA sequences. My solution, in case you're interested, is [here](https://exercism.io/my/solutions/50ef4a487c3641eda1b1af823ca7d9b2).
 
 In implementing the solution, I had to compare DNA sequences and determine how many differences between them there were - a count of where letters differed in the same positions. For example, while there are no differences in the pair of sequences GATTACA and GATTACA, there are two differences in the pair GATTACA and GCTTAGA. As much by luck as anything else, I stumbled upon this construct:

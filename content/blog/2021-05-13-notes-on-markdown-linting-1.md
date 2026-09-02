@@ -1,14 +1,12 @@
 ---
 date: 2021-05-13
 title: Notes on Markdown linting - part 1
+description: What I found out when I started to look into linting Markdown content.
 tags:
   - markdown
   - tools
   - linting
 ---
-
-_Here's what I found out when I started to look into linting Markdown content._
-
 Thanks to some great direction and enlightenment from my colleague [Tobias](https://github.com/shegox), I found myself getting my brain around Markdown linting. Of course, not what it is, but what the current possibilities are and how they might apply to my situation. I thought I'd write some notes on what I found (mostly for my future self).
 
 (See also [Notes on Markdown linting - part 2](/blog/posts/2021/05/14/notes-on-markdown-linting-part-2/) where I learn how to get Markdown linting working in GitHub Actions).

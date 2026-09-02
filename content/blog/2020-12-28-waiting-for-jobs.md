@@ -1,13 +1,12 @@
 ---
 date: 2020-12-28
 title:  "Waiting for jobs, and the concept of the shell"
+description: How Bash's wait builtin deepened my understanding of Bash scripting as a language.
 tags:
   - shell
   - learning
   - opinion
 ---
-_Bash's 'wait' builtin helps me understand Bash scripting as a language_
-
 I was browsing the source code of the main script in the [bash-http-monitoring](https://github.com/RaymiiOrg/bash-http-monitoring) project that had been shared on a social news site recently. The general idea was that it fired off a number of background web requests to run in parallel and eventually produce a report on the availability of various websites. Nice, neat and simple.
 
 In the main part of the project's `srvmon` script, I saw this:

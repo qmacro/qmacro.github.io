@@ -1,13 +1,12 @@
 ---
 title: Functional programming - baby steps
 date: 2017-05-14
+description: A gentle introduction to some core concepts in functional programming for those just starting out.
 tags:
   - functional-programming
   - javascript
   - learning
 ---
-_There's a lot of talk about functional programming these days. Some of the language seems impenetrable at first - immutability, first class functions, functions as values, and so on. If you're a programmer versed in more mainstream approaches, how do you start on the functional programming journey? Here's how I started, perhaps it will work for you too._
-
 ## Programming Paradigms
 
 There are a number of paradigms in programming. Imperative, procedural, object oriented, logic, declarative, and more. Self taught in the 1970s and early 1980s, I naturally found myself on the imperative and procedural side, with object orientation the panacea we all strived to reach. These days I've seen the light, and am heading in that direction. I started with a little toe in the water, and managed to take in a number of core functional programming concepts along the way:

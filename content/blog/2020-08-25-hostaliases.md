@@ -1,15 +1,13 @@
 ---
 date: 2020-08-25
 title: You can mask sensitive hostnames with wildcards and host aliases
+description: The HOSTALIASES feature works well when combined with wildcard host definitions in SSH config to mask sensitive hostnames.
 tags:
   - shell
   - tools
   - learning
   - til
 ---
-
-_The HOSTALIASES feature works well when combined with wildcard host definitions in SSH config_
-
 I run my own DNS locally via Pi-hole, but I also like to have SSH configuration to specify various options depending on the hosts I'm remotely connecting to. Usually it's the username to use, sometimes it's whether I want to do X11 forwarding, and so on.
 
 # Problem

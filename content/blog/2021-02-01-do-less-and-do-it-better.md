@@ -1,14 +1,12 @@
 ---
 date: 2021-02-01
 title: Do less and do it better
+description: Consolidating and improving existing skills rather than adding more in 2021, and the inspiration behind that decision.
 tags:
   - opinion
   - career
   - personal
 ---
-
-_In 2021 I want to consolidate and improve upon some skills I already have, rather than add more. Here's what I mean, and how I got inspired._
-
 In October last year Samir Talwar [tweeted](https://twitter.com/SamirTalwar/status/1318904227935227905) something simple yet profound: "_Do less, and do it better_".
 
 In my work and play I discover and start using various tools and technologies. The pace of change in this industry, coupled with the (not unpleasant) demands on what I have to produce, means that I often end up with only a shallow understanding of things. And sometimes these are things I use every day.

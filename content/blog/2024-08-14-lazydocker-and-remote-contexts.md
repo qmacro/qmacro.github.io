@@ -1,6 +1,7 @@
 ---
 title: Using lazydocker with SSH-based remote contexts
 date: 2024-08-24
+description: A quick hack to work around the current issue with lazydocker and SSH-based remote Docker context definitions.
 tags:
   - docker
   - shell

@@ -1,14 +1,12 @@
 ---
 date: 2021-04-04
 title: Mainframes, SDSF and GitHub Actions
+description: The combination of GitHub Actions workflows, mainframes and SDSF that I cannot get out of my head.
 tags:
   - github-actions
   - computing-history
   - opinion
 ---
-
-_GitHub Actions workflows, mainframes and SDSF. I can't get the combination out of my head._
-
 I started my computing adventure at the age of 11 on a minicomputer (see [Computer Unit 1979](/blog/posts/2020/11/03/computer-unit-1979/)) and then IBM mainframes featured heavily in the early and formational part of my career. Job definitions, job & step interdependencies, batch job execution and output management are in my blood.
 
 The reliability, predictability, and perhaps even the ceremony of defining a job, submitting it to the right execution class, have it run, at some time, and then poring over the output after execution was finished, is something that still appeals to me. Even in today's world of always-on, I'd like to think that realtime, the ultimate opposite to batch, is in some senses overrated, or at least misunderstood.

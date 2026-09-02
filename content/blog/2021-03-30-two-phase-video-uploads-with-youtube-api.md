@@ -1,15 +1,13 @@
 ---
 date: 2021-03-30
 title: Two-phase video uploads with YouTube API and curl
+description: How to use the YouTube API to upload a video with curl using a two-phase approach.
 tags:
   - shell
   - api
   - tools
   - learning
 ---
-
-_TIL how to use the YouTube API to upload a video, with `curl`, using a two-phase approach._
-
 I'm becoming more familiar with the YouTube API surface area, and a task recently required me to look into an efficient way of uploading videos to a YouTube channel. While I managed the upload technically, it was ultimately in vain due to a recent [change to the terms of service](https://developers.google.com/youtube/v3/revision_history#release_notes_07_28_2020). But it's still worth sharing the two-phase approach that I was able to take.
 
 The YouTube Data API has a [Videos: insert](https://developers.google.com/youtube/v3/docs/videos/insert) facility. It's worth reading through this, and, if you get the chance, through other areas of the API, because they're quite similar, and what appeared initially a little overwhelming to me has become more familiar.

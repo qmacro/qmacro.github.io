@@ -1,13 +1,12 @@
 ---
 date: 2020-10-06
 title:  "Desnowballification with set -o errexit"
+description: Using set -o errexit at the start of scripts to make them more robust and prevent error snowballing.
 tags:
   - shell
   - learning
   - til
 ---
-_I've started to use `set -o errexit` at the start of my scripts to make them more robust._
-
 There comes a time when you move from just hacking lines of shell script together into a file, to recognising that the file is now a script and that you want that script to run well, so you give it a little bit of help.
 
 In a similar way to the `-w` flag for Perl scripts, or even perhaps the [strict mode](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode) turned on in JavaScript files with `'use strict'`, there are flags that you can use for Bash scripts. A few weeks ago I read [Writing Robust Bash Shell Scripts](https://www.davidpashley.com/articles/writing-robust-shell-scripts/) by David Pashley, and it taught me about a couple of flags:

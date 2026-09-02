@@ -1,14 +1,12 @@
 ---
 date: 2021-05-22
 title: Adding a drive to my Synology NAS
+description: A brief summary of how things went adding a drive to my Synology DS1621+ NAS.
 tags:
   - homelab
   - tools
   - personal
 ---
-
-_A brief summary of how things went adding a drive to my Synology DS1621+ NAS._
-
 Earlier this month I took delivery of my first Network Attached Storage (NAS) device - a [Synology DS1621+](https://www.synology.com/en-uk/products/DS1621+). It has 6 drive bays. Note that you can sort of tell this from the model number:
 
 * DS: Disk Station (standalone, as opposed to rack mountable, for example)

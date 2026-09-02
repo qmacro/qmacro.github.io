@@ -1,14 +1,13 @@
 ---
 date: 2021-09-03
 title: Exploring fff part 1 - main
+description: What I learned from starting to read the source code of the fff file manager, focusing on the main function.
 tags:
   - shell
   - tools
   - learning
   - open-source
 ---
-_Here's what I learned from starting to read the source code to fff - in particular, the main function._
-
 [`fff`](https://github.com/dylanaraps/fff) is "a simple file manager written in Bash". As I'm always on the lookout to learn more about Bash, that description got my attention immediately. It's a small but perfectly formed offering, complete with man page and even a `Makefile` for installation. And the file manager executable\* itself is a single Bash script.
 
 \*I use this term deliberately, and it does make me stop and think every time I see scripts in a `bin` directory (where "bin" stands for binary). But that's a conversation for another time.

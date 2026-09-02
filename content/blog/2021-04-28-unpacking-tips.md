@@ -1,15 +1,13 @@
 ---
 date: 2021-04-28
 title: Unpacking Bash shell tips from a GitHub Actions workflow
+description: Unpacking Bash shell tips from a GitHub Actions workflow step, focusing on IFS and awk usage for pull request info.
 tags:
   - shell
   - github-actions
   - tools
   - learning
 ---
-
-_Someone shared a GitHub Actions workflow step which was written to find out some pull request info, but I thought even the first couple of shell lines, using IFS and awk, were worth staring at for a second or two._
-
 I don't know about you, but I find value in staring at other people's shell activities, so I thought I'd share what occurred to me as I did so on this occasion, in case it helps newcomers become a little more acquainted.
 
 A colleague wanted to find out something about the pull request ID when a workflow was triggered. This is a shortened version of what was shared:

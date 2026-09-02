@@ -1,14 +1,12 @@
 ---
 date: 2021-08-22
 title: Today's TIL trio
+description: Three mini TILs from today on minimum JSON, using tee, and netstat options.
 tags:
   - tools
   - learning
   - til
 ---
-
-_Here are three mini TILs from today, on minimum JSON, using `tee`, and `netstat` options._
-
 I enjoy finding time to catch up on reading blog posts and watching videos in my queue, but the time is often tinged with a slight uneasy feeling that I'm seeing things in passing which are not part of what the main content is about, and I'm not acknowledging or capturing that knowledge.
 
 Here are three very small things I learned (or was reminded of) in passing today, and I thought I'd share them.

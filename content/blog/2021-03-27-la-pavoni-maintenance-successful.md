@@ -1,13 +1,11 @@
 ---
 date: 2021-03-27
 title: La Pavoni maintenance successful
+description: Notes on successfully carrying out maintenance on my La Pavoni espresso machine that may help others too.
 tags:
   - coffee
   - personal
 ---
-
-_I've successfully carried out maintenance on my La Pavoni espresso machine, and you can too. Here are some notes that may help._
-
 I'd been slightly apprehensive about replacing the gaskets on my La Pavoni lever espresso machine, as I'm not particularly skilled at this kind of thing and didn't want to break anything. But I've just gone through the process and things seem to have worked out OK, and I wanted to share that information - because if I can do it, you can too.
 
 ![My La Pavoni in mid-maintenance]({{ "/images/2021/03/lapavonimaintenance.jpeg" | url }})

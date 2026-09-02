@@ -1,15 +1,13 @@
 ---
 date: 2021-02-07
 title: fzf - the basics part 2 - search results
+description: More on the fzf basics, this time focusing on controlling and understanding the search results.
 tags:
   - tools
   - shell
   - fzf
   - learning
 ---
-
-_Here’s more of what I learned from reading the first part of the fzf README and paying attention. Now I have a better setup and understanding of the basics and how to control the appearance, it's time to turn my attention to setting some defaults to control what I get in my search results._
-
 In [fzf - the basics part 1 - layout](/blog/posts/2021/02/02/fzf-the-basics-1-layout/) I shared what I learned about controlling `fzf`'s layout. In the examples I showed, based on directories and files in the [SAP TechEd 2020 Developer Keynote repository](https://github.com/SAP-samples/teched2020-developer-keynote) (which I'll use again in this post), `fzf` presented a total of over 17000 items from which to make my choice.
 
 That's a lot, and far more than I want to consider wading through.

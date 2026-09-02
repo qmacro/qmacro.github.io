@@ -1,15 +1,13 @@
 ---
 date: 2021-04-01
 title: New tmux panes and windows in the right directory
+description: How to be in the right directory when creating a new window or pane in tmux.
 tags:
   - tmux
   - tools
   - learning
   - til
 ---
-
-_I finally got round to looking into how to be in the "right" directory when I create a new window or pane in `tmux`. Here's what I did._
-
 I've been starting multiple `tmux` sessions, one for each project I'm working on, and ensuring that I'm in the "right" base directory for each of those projects before actually creating the corresponding `tmux` session. That way, each new window or pane I open places me in that project's base directory. Which isn't too bad.
 
 But I'm trying to move to a simpler workflow, and use fewer `tmux` sessions. This meant I hit on that possibly age-old issue of being in the "wrong" directory when I create a new window or pane, and having to `cd` to where I want to be. Which is usually *where I just was* before invoking the new window or pane command!

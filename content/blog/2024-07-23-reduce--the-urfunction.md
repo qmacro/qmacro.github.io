@@ -1,6 +1,7 @@
 ---
 title: reduce - the ur-function
 date: 2024-07-23
+description: Why I think of reduce as the ur-function, a primitive building block from which other functions like map and filter can be constructed.
 tags:
   - javascript
   - jq

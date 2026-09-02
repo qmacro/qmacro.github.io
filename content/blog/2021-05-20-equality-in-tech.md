@@ -1,13 +1,11 @@
 ---
 date: 2021-05-20
 title: Equality in tech
+description: A short statement on supporting equality in tech.
 tags:
   - community
   - opinion
 ---
-
-_I support equality in tech, and so should you._
-
 This should go without saying, but alas, we're not in an ideal world. Equality in tech should be the backbone, the basis, upon which we run our industry. But it's not.
 
 I interact a lot on social media, I live stream too. And I haven't had a single occasion where I've been harrassed in any way. I'd like to think that this is because everyone is spellbound by what I have to say and what I'm showing. But it's not. It's because I'm male.

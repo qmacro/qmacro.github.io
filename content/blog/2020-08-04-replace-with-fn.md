@@ -1,14 +1,12 @@
 ---
 date: 2020-08-04
 title: String.prototype.replace() can take a function
+description: You can use a function to dynamically provide the replacement value in a JavaScript replace operation.
 tags:
   - javascript
   - learning
   - til
 ---
-
-_You can use a function to dynamically provide the replacement value in a `replace` operation_
-
 I was pondering different approaches to solving the Codewars kata [Simple string reversal](https://www.codewars.com/kata/5a71939d373c2e634200008e), and having submitted my own, I started to browse other solutions. One that caught my eye was this, from users [Bubbler](https://www.codewars.com/users/Bubbler) and [Tellurian](https://www.codewars.com/users/Telllurian):
 
 ```javascript

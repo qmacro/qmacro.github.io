@@ -1,14 +1,12 @@
 ---
 date: 2021-05-14
 title: Notes on Markdown linting - part 2
+description: More on Markdown linting, this time in the context of GitHub Actions.
 tags:
   - markdown
   - tools
   - linting
 ---
-
-_More on Markdown linting, this time in the context of GitHub Actions._
-
 Yesterday I [wrote up some initial notes on my foray into Markdown linting](/blog/posts/2021/05/13/notes-on-markdown-linting-part-1/). Today I continue my journey of learning and discovery by attempting to get the Markdown linting working in a GitHub Action workflow, so I can have the checks done on pull requests.
 
 Beyond creating the workflow definition itself, there are only a few parts to getting Markdown content linted in the context of a pull request:

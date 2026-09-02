@@ -2,14 +2,12 @@
 date: 2020-04-05
 category: homelab
 title: Initial Pi configuration via Ansible
+description: Performing initial configuration of the freshly booted Raspberry Pis using Ansible.
 tags:
   - raspberry-pi
   - shell
   - brambleweeny
 ---
-
-_In the previous post we identified the freshly booted Pis on the network; now it's time to perform some initial configuration, using Ansible._
-
 This is a post in the "[Brambleweeny Cluster Experiments](/blog/posts/2020/03/22/brambleweeny-cluster-experiments/)" series of blog posts, which accompanies the [YouTube live stream recording playlist](https://www.youtube.com/playlist?list=PLfctWmgNyOIf9rXaZp9RSM2YVxAPGGthe) of the same name. The video linked here is the one that accompanies this blog post.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/vooBccHq6_4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
