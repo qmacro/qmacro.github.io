@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - architecture
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 This weekend I picked up on a conversation about RSS (alternatively

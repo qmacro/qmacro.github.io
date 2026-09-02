@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - blogging
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 Deep down I'm a shy person. I'm not great at casual conversation, and,

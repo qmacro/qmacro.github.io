@@ -5,7 +5,7 @@ description: SAP are running an Infotag on the Web Application Server in early S
 tags:
   - sap
   - abap
-  - sap-community
+  - sap-community-post
 ---
 It’s in Ratingen (Duesseldorf), just around the corner – literally, in fact – from where I used to hack on R/2 at Mitsubishi.
 

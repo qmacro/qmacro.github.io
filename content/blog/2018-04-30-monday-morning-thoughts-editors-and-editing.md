@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - tools
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 This weekend I continued to look into [Kubeless](https://kubeless.io/),

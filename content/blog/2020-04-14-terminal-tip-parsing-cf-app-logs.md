@@ -7,7 +7,7 @@ tags:
   - cloud-foundry
   - tools
   - til
-  - sap-community
+  - sap-community-post
 ---
 Further to my last [Terminal Tip on truncating CF
 output](/blog/posts/2020/04/07/terminal-tip:-truncating-cf-output/)

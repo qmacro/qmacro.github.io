@@ -7,7 +7,7 @@ tags:
   - sap
   - btp
   - interview
-  - sap-community
+  - sap-community-post
 ---
 
 Last week I was in Walldorf, and I managed to catch up with an old

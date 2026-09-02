@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - cloud
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 This weekend I discovered that one of my favourite online REPLs\* -

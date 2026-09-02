@@ -6,7 +6,7 @@ tags:
   - cap
   - cds
   - javascript
-  - sap-community
+  - sap-community-post
 ---
 *In this post, I show one way of using computed properties in CAP, using
 CDS and service events in Node.js.*

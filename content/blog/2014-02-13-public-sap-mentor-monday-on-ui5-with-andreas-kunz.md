@@ -6,7 +6,7 @@ tags:
   - openui5
   - sap
   - talk
-  - sap-community
+  - sap-community-post
 ---
 On Monday 24 March 2014 we will have a public SAP Mentor Monday session on the subject of UI5.
 

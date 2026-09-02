@@ -7,7 +7,7 @@ tags:
   - workflow
   - openui5
   - discovering-scp-workflow
-  - sap-community
+  - sap-community-post
 ---
 
 Previous post in this series: [Discovering SCP Workflow - Workflow

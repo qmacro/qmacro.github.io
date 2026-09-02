@@ -5,7 +5,7 @@ description: Returning to the SDN community after six years and reflecting on ho
 tags:
   - sap
   - javascript
-  - sap-community
+  - sap-community-post
 ---
 A few days ago, Mark Yolton pointed out to me that this Friday, 30th May will mark 6 years since my first SDN blog post “[The SAP/MySQL Partnership](/blog/posts/2003/05/30/the-sapmysql-partnership/)“, in SDN’s first month.
 

@@ -6,7 +6,7 @@ tags:
   - sap
   - abap
   - web
-  - sap-community
+  - sap-community-post
 ---
 
 The BSP mangles URLs. Deep down. In a [BSP In-Depth: URL

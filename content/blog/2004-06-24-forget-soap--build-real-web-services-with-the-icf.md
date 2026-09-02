@@ -9,7 +9,7 @@ tags:
   - api
   - opinion
   - architecture
-  - sap-community
+  - sap-community-post
 ---
 
 As an example of taking the [REST](https://web.archive.org/web/20040907010810/http://rest.blueoxen.net/cgi-bin/wiki.pl)ian approach to exposing your SAP data and functionality through services you can build with the excellent Internet Communication Framework (ICF) layer, I thought I’d show you how straightforward and natural data integration can be by using a spreadsheet as an example.

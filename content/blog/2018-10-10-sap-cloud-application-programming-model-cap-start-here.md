@@ -7,7 +7,7 @@ tags:
   - sap
   - btp
   - learning
-  - sap-community
+  - sap-community-post
 ---
 
 *Note: While this blog post was originally published in 2018, it's been

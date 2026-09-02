@@ -6,7 +6,7 @@ tags:
   - btp
   - cli
   - tools
-  - sap-community
+  - sap-community-post
 ---
 *Be informed about updates to where the btp CLI configuration is stored
 by default.*

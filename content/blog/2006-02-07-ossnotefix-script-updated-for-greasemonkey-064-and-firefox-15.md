@@ -6,7 +6,7 @@ tags:
   - sap
   - javascript
   - tools
-  - sap-community
+  - sap-community-post
 ---
 Last year, I got so frustrated at the pain of using the SAP Service Marketplace, and particularly OSS notes, that I got up and did something about it – I wrote ‘OssNoteFix’, a Greasemonkey script that:
 

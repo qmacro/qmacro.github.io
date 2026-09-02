@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - cloud
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 Sun Microsystems, an incredibly venerable hardware and software company

@@ -6,7 +6,7 @@ tags:
   - btp
   - workflow
   - talk
-  - sap-community
+  - sap-community-post
 ---
 
 The SAP Cloud Platform Workflow service is a relatively new service (it

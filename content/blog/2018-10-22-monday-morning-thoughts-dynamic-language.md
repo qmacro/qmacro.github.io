@@ -5,7 +5,7 @@ description: Musings on a particular function definition in JavaScript, and how 
 tags:
   - monday-morning-thoughts
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 On Friday evening, I

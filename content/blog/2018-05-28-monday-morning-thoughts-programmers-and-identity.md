@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - career
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 I watched [a couple of talks by Kevlin

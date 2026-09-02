@@ -8,7 +8,7 @@ tags:
   - computing-history
   - opinion
   - containers
-  - sap-community
+  - sap-community-post
 ---
 
 Another Monday morning is upon us, and it's a public holiday here in

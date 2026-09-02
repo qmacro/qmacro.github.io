@@ -6,7 +6,7 @@ tags:
   - sap
   - tools
   - javascript
-  - sap-community
+  - sap-community-post
 ---
 
 Ahh, [OSS notes](http://service.sap.com/notes) - a topic close to my heart:

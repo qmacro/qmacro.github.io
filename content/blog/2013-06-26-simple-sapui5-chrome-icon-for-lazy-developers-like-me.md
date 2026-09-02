@@ -5,7 +5,7 @@ description: Creating a simple Chrome hosted app icon to quickly navigate to the
 tags:
   - openui5
   - tools
-  - sap-community
+  - sap-community-post
 ---
 I created a Chrome “hosted app” manifest to get a large start page icon with which I could navigate directly to this excellent content resource. Now I can get to my favourite area on SCN in even less time! 🙂
 

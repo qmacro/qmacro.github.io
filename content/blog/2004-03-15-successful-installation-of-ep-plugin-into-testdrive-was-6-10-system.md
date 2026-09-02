@@ -5,7 +5,7 @@ description: I spent most of yesterday in the kitchen, my favourite place.
 tags:
   - sap
   - abap
-  - sap-community
+  - sap-community-post
 ---
 
 Everything

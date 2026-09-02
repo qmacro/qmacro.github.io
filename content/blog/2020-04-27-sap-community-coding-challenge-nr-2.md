@@ -5,7 +5,7 @@ description: Announcing the second SAP Community Coding Challenge with a fun puz
 tags:
   - learning
   - javascript
-  - sap-community
+  - sap-community-post
 ---
 Welcome to the second challenge in the **SAP Community Coding Challenge
 Series**. Just like the [first

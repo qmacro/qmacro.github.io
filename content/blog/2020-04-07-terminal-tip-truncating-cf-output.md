@@ -7,7 +7,7 @@ tags:
   - cloud-foundry
   - tools
   - til
-  - sap-community
+  - sap-community-post
 ---
 I am a big fan of the terminal, and it's my preferred work environment
 for many reasons.

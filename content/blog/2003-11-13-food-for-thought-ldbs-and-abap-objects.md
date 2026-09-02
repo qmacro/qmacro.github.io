@@ -6,7 +6,7 @@ tags:
   - sap
   - abap
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 During part of this week I've been fighting with an old adversary,[output

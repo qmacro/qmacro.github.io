@@ -7,7 +7,7 @@ tags:
   - open-source
   - opinion
   - abap
-  - sap-community
+  - sap-community-post
 ---
 
 Well this has certainly been an interesting few days in the intersecting

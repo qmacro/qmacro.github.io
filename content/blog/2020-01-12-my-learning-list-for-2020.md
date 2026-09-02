@@ -5,7 +5,7 @@ description: Sharing my learning aspirations for 2020 and reflecting on the prev
 tags:
   - learning
   - personal
-  - sap-community
+  - sap-community-post
 ---
 *Turning the page into a new year is often useful to reflect on the
 previous period and look forward to the next one. I usually don't set

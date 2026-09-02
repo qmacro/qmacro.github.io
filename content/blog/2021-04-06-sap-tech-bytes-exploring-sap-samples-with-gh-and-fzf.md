@@ -7,7 +7,7 @@ tags:
   - fzf
   - tools
   - sap
-  - sap-community
+  - sap-community-post
 ---
 *Discover repositories that might be useful for you by exploring them
 from the command line with a couple of powerful tools.*

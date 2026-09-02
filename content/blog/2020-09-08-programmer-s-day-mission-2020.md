@@ -5,7 +5,7 @@ description: Announcing the Programmer's Day mission on the SAP Community for ea
 tags:
   - sap
   - personal
-  - sap-community
+  - sap-community-post
 ---
 *Learn about Programmer's Day and how you can take part in a fun
 conversation that will earn you a special mission badge here on the SAP

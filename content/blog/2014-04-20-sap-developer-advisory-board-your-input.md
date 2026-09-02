@@ -5,7 +5,7 @@ description: Asking the SAP developer community for input ahead of the Developer
 tags:
   - sap
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 Gregor Wolf and I are attending the [SAP Developer Advisory Board](https://web.archive.org/web/20150716134515/http://board.sapdevcenter.com/) meeting on Tue 22 Apr 2014.
 

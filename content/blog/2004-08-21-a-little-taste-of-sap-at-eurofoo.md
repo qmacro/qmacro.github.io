@@ -7,7 +7,7 @@ tags:
   - conference
   - open-source
   - eurofoo
-  - sap-community
+  - sap-community-post
 ---
 I’m in Enschede (Netherlands) this weekend for EuroFoo – a mini-conference get-together for hackers and geeks of different persuasions. 
 

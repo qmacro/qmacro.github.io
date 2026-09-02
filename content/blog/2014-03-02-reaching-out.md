@@ -5,7 +5,7 @@ description: Examining SAP's journey of reaching out to the wider developer comm
 tags:
   - sap
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 As a technology company SAP is over 4 decades old. Over that time it's innovated at a tremendous pace, and along the way it has abstracted, invented and reinvented technologies like no other company I know. In parallel with this, there's been an incredible growth in community, business and technical. In this post I want to focus on the technical.
 

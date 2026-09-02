@@ -6,7 +6,7 @@ tags:
   - sap
   - conference
   - teched
-  - sap-community
+  - sap-community-post
 ---
 
 After registration, we went along to Shai Agassi’s keynote presentation. It was fairly interesting, but overall, there was a single key point that stayed with me: “unification” is the new “integration”.

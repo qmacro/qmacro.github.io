@@ -6,7 +6,7 @@ tags:
   - git
   - github
   - sap
-  - sap-community
+  - sap-community-post
 ---
 *If you've forked the SAP TechEd Developer Keynote repository on GitHub
 recently, there have been some additions and improvements. This post

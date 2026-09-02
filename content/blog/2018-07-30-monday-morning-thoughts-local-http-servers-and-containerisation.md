@@ -8,7 +8,7 @@ tags:
   - http
   - opinion
   - containers
-  - sap-community
+  - sap-community-post
 ---
 
 One of the periodicals I eagerly anticipated and regularly devoured

@@ -5,7 +5,7 @@ description: How can we make this key service less unpleasant to use?
 tags:
   - sap
   - tools
-  - sap-community
+  - sap-community-post
 ---
 I remember the time when OSS was a fledgling service, and it ran on an
 R/2 system in Walldorf. You accessed it via the R/2 SAPGUI just as any

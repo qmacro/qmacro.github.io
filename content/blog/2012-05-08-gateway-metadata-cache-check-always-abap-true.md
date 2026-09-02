@@ -6,7 +6,7 @@ tags:
   - sap
   - odata
   - abap
-  - sap-community
+  - sap-community-post
 ---
 
 Hi all

@@ -7,7 +7,7 @@ tags:
   - cds
   - cap
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 Earlier this morning, while following a tutorial, I came across this

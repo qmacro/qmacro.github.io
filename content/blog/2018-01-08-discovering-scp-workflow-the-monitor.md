@@ -7,7 +7,7 @@ tags:
   - fiori
   - workflow
   - discovering-scp-workflow
-  - sap-community
+  - sap-community-post
 ---
 
 This post is part of a series, a guide to which can be found here:

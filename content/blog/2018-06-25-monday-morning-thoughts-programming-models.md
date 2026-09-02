@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - cap
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 **Update (same day)**: I interviewed Rui Nogueira on the new Application

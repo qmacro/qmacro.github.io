@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - career
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 I'm in Las Vegas for the first SAP TechEd event of 2018 which starts in

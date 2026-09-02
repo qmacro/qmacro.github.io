@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - learning
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 On Friday I

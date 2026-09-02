@@ -4,7 +4,7 @@ date: 2019-11-25
 description: Suggesting key aspects of composing good questions to help community members provide better answers.
 tags:
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 *Composing good questions is important and will help your fellow
 community members answer them more easily. This post suggests some key

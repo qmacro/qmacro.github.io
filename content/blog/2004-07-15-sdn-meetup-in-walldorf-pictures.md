@@ -5,7 +5,7 @@ description: Sharing pictures from the SDN Meetup in Walldorf.
 tags:
   - sap
   - conference
-  - sap-community
+  - sap-community-post
 ---
 
 I arrived in Walldorf this morning and was met and looked after very

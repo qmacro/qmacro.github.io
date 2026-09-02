@@ -8,7 +8,7 @@ tags:
   - conference
   - talk
   - oscon
-  - sap-community
+  - sap-community-post
 ---
 What can the desperate open source hacker do in and around R/3? Plenty! If you’re going to OSCON, come along to our talk:
 

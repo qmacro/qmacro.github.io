@@ -5,7 +5,7 @@ description: Providing an update on the progress of the second SAP Community Cod
 tags:
   - learning
   - javascript
-  - sap-community
+  - sap-community-post
 ---
 *Here's a quick summary of where things are with the current SAP
 Community Coding Challenge, and what's to come.*

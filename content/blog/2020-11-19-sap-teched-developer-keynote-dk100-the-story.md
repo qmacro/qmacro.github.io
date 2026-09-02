@@ -6,7 +6,7 @@ tags:
   - sap
   - conference
   - teched
-  - sap-community
+  - sap-community-post
 ---
 *We got together to build a Developer Keynote for TechEd for you; this
 post gives you some context on what you'll see, and, following the

@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - computing-history
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 On my route into Manchester for Saturday's run with the [Mikkeller

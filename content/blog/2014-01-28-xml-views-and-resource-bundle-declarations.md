@@ -5,7 +5,7 @@ description: Looking at how resource bundle declarations work in SAPUI5 XML view
 tags:
   - openui5
   - sap
-  - sap-community
+  - sap-community-post
 ---
 Just a quick post on the train on the way down to London this morning.
 

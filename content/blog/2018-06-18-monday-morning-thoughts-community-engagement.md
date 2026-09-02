@@ -5,7 +5,7 @@ description: I think about some of the basic ingredients of a good online commun
 tags:
   - monday-morning-thoughts
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 I was re-listening to a great episode of the [Coffee Corner Radio

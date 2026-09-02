@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - debugging
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 In the [inaugural

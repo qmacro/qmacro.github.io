@@ -8,7 +8,7 @@ tags:
   - rest
   - talk
   - teched
-  - sap-community
+  - sap-community-post
 ---
 
 I went last year (in Basel), and was both impressed – by the quality of the session and tutorial content – and disappointed – at the lack of wifi and 'net access in general. One thing that was lacking overall last year was a sense of community; everyone was there on their own, with the whole event feeling more like an exhibition or computer fair, rather than a conference. That, or everyone was avoiding me ...

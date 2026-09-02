@@ -5,7 +5,7 @@ description: I keep hearing reports that the recent announcement of cooperation 
 tags:
   - sap
   - open-source
-  - sap-community
+  - sap-community-post
 ---
 What’s the deal? I don’t understand what’s not to like here. SAP aren’t giving up development of DBMS technology, they’re just giving up the marketing of it. And what a great injection for MySQL, makers of my favourite open source DB.
 

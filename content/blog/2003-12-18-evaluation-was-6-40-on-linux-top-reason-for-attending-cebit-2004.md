@@ -7,7 +7,7 @@ tags:
   - linux
   - conference
   - cebit
-  - sap-community
+  - sap-community-post
 ---
 
 ![A photo of (L to R) Piers, me and Peter](/images/2003/12/small_cebit_r3linux_38813.jpg)

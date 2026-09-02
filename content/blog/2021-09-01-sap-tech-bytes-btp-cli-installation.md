@@ -6,7 +6,7 @@ tags:
   - btp
   - cli
   - tools
-  - sap-community
+  - sap-community-post
 ---
 *Install the btp CLI to be ready to start exploring its features and
 functions.*

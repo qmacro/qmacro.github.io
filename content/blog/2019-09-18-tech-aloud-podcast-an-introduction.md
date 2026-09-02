@@ -6,7 +6,7 @@ tags:
   - podcast
   - cap
   - learning
-  - sap-community
+  - sap-community-post
 ---
 *I started a new podcast called Tech Aloud, where I read aloud blog
 posts and articles so you can consume them on the go. There's no

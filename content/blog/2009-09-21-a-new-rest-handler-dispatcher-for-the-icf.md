@@ -8,7 +8,7 @@ tags:
   - abap
   - http
   - api
-  - sap-community
+  - sap-community-post
 ---
 
 If you're not directly familiar with the ICF, allow me to paraphrase a part of

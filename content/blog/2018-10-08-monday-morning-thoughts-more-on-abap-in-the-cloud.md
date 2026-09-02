@@ -7,7 +7,7 @@ tags:
   - abap
   - cloud
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 Last month, Harald Kuck published a post "[SAP Cloud Platform ABAP

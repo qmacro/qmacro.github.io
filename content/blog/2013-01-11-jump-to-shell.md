@@ -5,7 +5,7 @@ description: Discovering how to jump to specific SAP Shell workset items from a 
 tags:
   - sap
   - tools
-  - sap-community
+  - sap-community-post
 ---
 During SAP TechEd 2012 I attended CD163 "SAP HANA - Application Services Basics" which really helped firm up my knowledge of XS, thanks to the great presentation and exercises. What was interesting was that not only was SAPUI5 used for the UI components of the demos and exercises, but even the code snippets that the attendees would have to type in were made available to copy-n-paste, via a simple SAPUI5 Shell interface.
 

@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - learning
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 On a run last week I listened to an episode of Scott Hanselman's

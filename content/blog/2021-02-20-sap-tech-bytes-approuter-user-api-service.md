@@ -5,7 +5,7 @@ description: Kicking the tyres of the new User API Service available in the SAP 
 tags:
   - btp
   - sap
-  - sap-community
+  - sap-community-post
 ---
 *Use a simple example to kick the tyres of the new User API Service
 available in the `@sap/approuter` NPM package.*

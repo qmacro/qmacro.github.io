@@ -6,7 +6,7 @@ tags:
   - sap
   - cloud
   - google
-  - sap-community
+  - sap-community-post
 ---
 
 The *[*announcement from Google

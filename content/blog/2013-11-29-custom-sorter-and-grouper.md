@@ -5,7 +5,7 @@ description: Learning how to control the order of groups in a sorted list using 
 tags:
   - openui5
   - sap
-  - sap-community
+  - sap-community-post
 ---
 *Learn how to control the order of groups in a sorted list. You don't do it directly with the grouper function, you do it with the sorter function.*
 

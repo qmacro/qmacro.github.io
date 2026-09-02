@@ -7,7 +7,7 @@ tags:
   - abap
   - cloud
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 A day or two ago [this

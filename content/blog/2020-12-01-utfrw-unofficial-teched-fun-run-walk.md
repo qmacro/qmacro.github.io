@@ -7,7 +7,7 @@ tags:
   - running
   - conference
   - teched
-  - sap-community
+  - sap-community-post
 ---
 *Let's get together virtually over the course of the SAP TechEd 2020
 virtual event and share our 5K walking or running experiences.*

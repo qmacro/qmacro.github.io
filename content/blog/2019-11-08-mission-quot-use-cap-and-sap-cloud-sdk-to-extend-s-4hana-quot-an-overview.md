@@ -7,7 +7,7 @@ tags:
   - sap
   - btp
   - conference
-  - sap-community
+  - sap-community-post
 ---
 *This post serves to outline what you can build in the "Use CAP and SAP
 Cloud SDK to Extend S/4HANA" mission created for SAP TechEd 2019.*

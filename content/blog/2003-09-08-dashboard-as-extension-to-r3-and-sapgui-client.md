@@ -6,7 +6,7 @@ tags:
   - sap
   - abap
   - tools
-  - sap-community
+  - sap-community-post
 ---
 Dashboard is an intriguing project headed up by [Nat Friedman](https://nat.org/). The concept is of a sidebar style window pane that is automatically populated on an ongoing basis with information related to whatever you’re doing, giving you extra context information that you can glance at while at work. Neat.
 

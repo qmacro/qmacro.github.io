@@ -5,7 +5,7 @@ description: Reflecting on ten years of the SAP Community Network and my involve
 tags:
   - sap
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 Happy Birthday, SAP Community Network, or, to give it it's original name (which gives you a clue to its origins) the SAP Developer Network - SDN.
 

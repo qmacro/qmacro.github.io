@@ -7,7 +7,7 @@ tags:
   - sap
   - architecture
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 In this post, I consider what CAP really is, what it gives us, and why we should consider it a fundamental piece of the puzzle in the cloud context and beyond.
 

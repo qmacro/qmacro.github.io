@@ -4,7 +4,7 @@ date: 2019-09-13
 description: Celebrating Programmers Day and reflecting on a couple of people who have inspired my growth as a programmer.
 tags:
   - personal
-  - sap-community
+  - sap-community-post
 ---
 *Today is Programmers Day, and I take a moment to reflect on a couple of
 folks who have inspired me in my growth as a programmer.*

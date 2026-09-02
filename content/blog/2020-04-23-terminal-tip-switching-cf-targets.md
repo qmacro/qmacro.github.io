@@ -7,7 +7,7 @@ tags:
   - cloud-foundry
   - tools
   - til
-  - sap-community
+  - sap-community-post
 ---
 Working with Cloud Foundry (CF) from the command line, I use the `cf`
 CLI a lot. As you perhaps may know already, due to the use of Multi

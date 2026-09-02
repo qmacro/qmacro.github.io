@@ -6,7 +6,7 @@ tags:
   - sap
   - learning
   - career
-  - sap-community
+  - sap-community-post
 ---
 
 Sitting in a traffic jam on the A34 this week, twice, I got the

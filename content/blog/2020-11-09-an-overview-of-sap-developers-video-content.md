@@ -5,7 +5,7 @@ description: Providing an overview of the wealth of video content for SAP develo
 tags:
   - sap
   - hands-on-sap-dev
-  - sap-community
+  - sap-community-post
 ---
 *There's a wealth of video content for SAP developers on the SAP
 Developers YouTube channel. Find out what it is, and how to navigate

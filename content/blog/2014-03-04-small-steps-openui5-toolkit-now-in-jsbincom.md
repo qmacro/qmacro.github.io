@@ -6,7 +6,7 @@ tags:
   - openui5
   - open-source
   - tools
-  - sap-community
+  - sap-community-post
 ---
 In our continued efforts to spread the word of SAPUI5 in general and OpenUI5 in particular, we try to make small steps forward.
 

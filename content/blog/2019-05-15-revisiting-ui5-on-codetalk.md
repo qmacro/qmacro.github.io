@@ -6,7 +6,7 @@ tags:
   - openui5
   - sap
   - talk
-  - sap-community
+  - sap-community-post
 ---
 *A few days ago Marius Obert and I took part in an SAP CodeTalk session
 with host Ian Thain, where we revisited the subject of UI5 - [SAP

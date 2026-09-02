@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - cloud
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 This weekend I was exploring some Cloud Foundry features on the SAP

@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - functional-programming
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 Serverless, cloud functions, functions-as-a-service. Three terms that

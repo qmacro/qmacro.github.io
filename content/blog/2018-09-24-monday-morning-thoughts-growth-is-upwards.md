@@ -7,7 +7,7 @@ tags:
   - cap
   - javascript
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 I live to the east of the centre Manchester, in beautiful countryside

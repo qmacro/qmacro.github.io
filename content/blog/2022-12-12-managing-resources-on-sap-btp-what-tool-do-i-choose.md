@@ -6,7 +6,7 @@ tags:
   - btp
   - sap
   - tools
-  - sap-community
+  - sap-community-post
 ---
 
 *There are myriad resources on the SAP Business Technology Platform, and

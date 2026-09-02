@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - web
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 Last week I watched someone I was with [apply for a job on

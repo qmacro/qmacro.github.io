@@ -5,7 +5,7 @@ description: Last week, during some preparation for my talk at TechEd on Thursda
 tags:
   - sap
   - abap
-  - sap-community
+  - sap-community-post
 ---
 
 Interface `IF_HTTP_EXTENSION`, which is what every ICF handler must implement (in the form of a single method `HANDLE_REQUEST`) has a couple of attributes, `FLOW_RC` and `LIFETIME_RC`. `FLOW_RC` is for controlling the flow of handler dispatching for a request. `LIFETIME_RC` is for controlling the lifetime of handlers for a sequence of requests. To quote the [documentation at help.sap.com](https://help.sap.com/docs/SAP_NETWEAVER_AS_ABAP_751_IP/753088fc00704d0a80e7fbd6803c8adb/48d60603553b3e49e10000000a421937.html?locale=en-US&version=7.51.6) on the latter:

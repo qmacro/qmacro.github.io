@@ -5,7 +5,7 @@ description: I think about what it means to me to be a part of the Developer Rel
 tags:
   - monday-morning-thoughts
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 It's been just over four months since I joined SAP's Developer

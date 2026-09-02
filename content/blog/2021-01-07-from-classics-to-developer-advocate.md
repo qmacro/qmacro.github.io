@@ -6,7 +6,7 @@ tags:
   - career
   - sap
   - personal
-  - sap-community
+  - sap-community-post
 ---
 *Here's my story of how I went from reading Classics at university to
 becoming a Developer Advocate at SAP.*

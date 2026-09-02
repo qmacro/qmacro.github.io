@@ -8,7 +8,7 @@ tags:
   - abap
   - http
   - api
-  - sap-community
+  - sap-community-post
 ---
 
 ## Background

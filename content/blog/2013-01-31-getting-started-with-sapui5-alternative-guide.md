@@ -5,7 +5,7 @@ description: Putting together an alternative getting started guide for SAPUI5 fo
 tags:
   - openui5
   - sap
-  - sap-community
+  - sap-community-post
 ---
 
 With reference to [my recent post about the 'sapui5bin'

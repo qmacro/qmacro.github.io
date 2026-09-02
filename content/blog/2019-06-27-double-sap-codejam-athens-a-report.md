@@ -5,7 +5,7 @@ description: Reporting on delivering two SAP CodeJams in Athens on CAP and Workf
 tags:
   - codejam
   - sap
-  - sap-community
+  - sap-community-post
 ---
 *Last week I travelled to Athens to give not one but two SAP CodeJams.
 It was exhausting but very rewarding. Read on to find out how it went.*

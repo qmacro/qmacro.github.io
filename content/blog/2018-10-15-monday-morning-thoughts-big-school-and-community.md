@@ -5,7 +5,7 @@ description: On my experience going from primary school to secondary school - "b
 tags:
   - monday-morning-thoughts
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 My first school, Norman House in New Moston, Manchester, was a small

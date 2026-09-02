@@ -5,7 +5,7 @@ description: I think about reuse and extension, in the context of the Applicatio
 tags:
   - monday-morning-thoughts
   - opinion
-  - sap-community
+  - sap-community-post
 ---
 
 Last week saw the Barcelona edition of SAP TechEd 2018, where SAP CTO

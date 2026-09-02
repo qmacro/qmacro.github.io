@@ -7,7 +7,7 @@ tags:
   - open-source
   - conference
   - oscon
-  - sap-community
+  - sap-community-post
 ---
 
 If you're at OSCON or around the Portland area this Wednesday (9th July), come
