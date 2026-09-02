@@ -1,5 +1,5 @@
 ---
-title: 10 tips to get you started on your Fiori development journey 
+title: 10 tips to get you started on your Fiori development journey
 date: 2015-03-02
 description: Offering ten practical tips for getting started on a Fiori development journey.
 tags:
@@ -11,9 +11,8 @@ tags:
 
 A developer's journey to a new set of technologies is a very personal one, but there are definitely a few pointers that I can give you based upon my own experience.
 
-Following on from my previous post [Can I build a Fiori app? Yes you can!](/blog/posts/2015/03/02/can-i-build-a-fiori-app-yes-you-can!/) here's a top ten list of tips for the next steps on your journey to become a Fiori developer.
+Following on from my previous post [Can I build a Fiori app? Yes you can!](/blog/posts/2015/03/02/can-i-build-a-fiori-app-yes-you-can/) here's a top ten list of tips for the next steps on your journey to become a Fiori developer.
 
-<br/>
 1. [Study the SAP Fiori design guidelines](#study-the-sap-fiori-design-guidelines)
 1. [Get to know the sap.m library in UI5](#get-to-know-the-sapm-library-in-ui5)
 1. [Understand components and routing](#understand-components-and-routing)
