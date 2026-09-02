@@ -1,7 +1,7 @@
 ---
 date: 2019-08-28
 title: Hitchhiker's style in Sea of Sorrows
-description: Exploring a possible link between a scene in Alien: Sea of Sorrows and a scene in The Hitchhiker's Guide To The Galaxy.
+description: "Exploring a possible link between a scene in Alien: Sea of Sorrows and a scene in The Hitchhiker's Guide To The Galaxy."
 tags:
   - personal
   - books
