@@ -1,6 +1,7 @@
 ---
 title: Recognising patterns and embracing the stream
 date: 2023-04-09
+description: Refactoring a jq implementation of an LED number display by recognising patterns and embracing the stream-oriented nature of the language.
 tags:
   - jq
   - json

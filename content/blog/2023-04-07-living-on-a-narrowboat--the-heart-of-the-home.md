@@ -1,6 +1,7 @@
 ---
 title: Living on a narrowboat - the stove as the heart of the home
 date: 2023-04-07
+description: Choosing a multifuel stove for my narrowboat, covering the factors I considered and why the stove is the heart of the home on the canal.
 tags:
   - narrowboat
   - personal

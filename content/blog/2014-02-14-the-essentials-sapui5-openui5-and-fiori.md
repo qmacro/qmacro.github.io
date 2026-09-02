@@ -1,6 +1,7 @@
 ---
 title: The essentials - SAPUI5, OpenUI5 and Fiori
 date: 2014-02-14
+description: An overview of SAPUI5, OpenUI5 and SAP Fiori, explaining what each is, how they relate to each other, and why they matter.
 tags:
   - openui5
   - fiori

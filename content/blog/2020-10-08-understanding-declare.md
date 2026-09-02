@@ -1,12 +1,12 @@
 ---
 date: 2020-10-08
 title:  "Understanding declare"
+description: Exploring the Bash builtin declare, its relationship to typeset and local, and how it can be used to set variable attributes.
 tags:
   - shell
   - learning
   - til
 ---
-_I've been looking into declare, and also how it compares to typeset and local. It turns out that there's a lot to know._
 
 After working my way through the small `ix` script in [Mr Rob](https://rwx.gg)'s [dotfiles](https://gitlab.com/rwxrob/dotfiles/-/tree/master), writing three posts [Using exec to jump](/blog/posts/2020/10/03/using-exec-to-jump/), [curl and multipart/form-data](/blog/posts/2020/10/04/curl-and-multipart-form-data/) and [Checking a command is available before use](/blog/posts/2020/10/04/check-command-available/) along the way, I've now turned my attention to the [`twitch`](https://gitlab.com/rwxrob/dotfiles/-/blob/master/scripts/twitch) script which he uses during his [live streams](twitch.tv/rwxrob). I haven't gone very far when I light upon this section:
 

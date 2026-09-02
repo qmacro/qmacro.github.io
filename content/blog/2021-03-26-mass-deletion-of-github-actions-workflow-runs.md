@@ -1,6 +1,7 @@
 ---
 date: 2021-03-26
 title: Mass deletion of GitHub Actions workflow runs
+description: A simple cleanup script for mass-deleting GitHub Actions workflow runs using gh, jq, fzf and the GitHub API.
 tags:
   - github-actions
   - shell
@@ -8,8 +9,6 @@ tags:
   - fzf
   - tools
 ---
-
-_Implementing a simple cleanup script for workflow runs, using `gh`, `jq`, `fzf` and the GitHub API_
 
 Yesterday, while [thinking aloud](https://github.com/qmacro/thinking-aloud/issues/13), I was wondering how best to mass-delete logs from GitHub Actions workflow runs. Such a feature isn't available in the Web based Actions UI and my lack of competence in the Actions area means that I have a lot of cruft from my trial and error approach to writing and executing workflows.
 
