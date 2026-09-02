@@ -446,57 +446,6 @@ If you are looking to learn "more than you ever wanted to know" about service in
 
 That wraps it up for the notes on this part 4, I hope you enjoyed them, and see you online!
 
----
-
-<a name="footnotes"></a>
-## Footnotes
-
-1. This Ruby idiom is a form of metaprogramming, which was popularised with Lisp ... which brings us back to McCarthy. Moreover, as Sinclair Target mentioned in his great article [How Lisp Became God's Own Programming Language][17] (which is also [available in audio format as an episode on my Tech Aloud podcast][18]), "Ruby is also a Lisp", expounded upon by Eric Kidd in his post [Why Ruby is an acceptable LISP][19].
-
-    Eric's post incidentally also shows how functions can be first class citizens, and even goes on to give a great example of a closure - the accumulator function, which in turn is from the appendix of Paul Graham's [Revenge of the Nerds][20] post. Here's the original accumulator function definition (named `foo` here) in Lisp:
-
-    ```lisp
-    (defun foo (n) (lambda (i) (incf n i)))
-    ```
-
-    and here is how we might express it in JavaScript:
-
-    ```javascript
-    foo = n => i => n += i
-    ```
-
-    Both implementations illustrate the concept of functions as first class citizens (the anonymous function `i => n += i` is returned as a value from a call to the named function `foo`) as well as the concept of a closure (`n` is "closed over", and therefore "captured", in the construct, and lives on inside that anonymous function). Here's a Node.js REPL session showing an example of use:
-
-    ```log
-    Welcome to Node.js v22.6.0.
-    Type ".help" for more information.
-    > foo = n => i => n += i
-    [Function: foo]
-    > mysum = foo(10)
-    [Function (anonymous)]
-    > mysum(2)
-    12
-    > mysum(3)
-    15
-    >
-    ```
-
-    Note also that the word "lambda", used here specifically and syntactically in Lisp as the symbol for an anonymous function, has become the de facto term for anonymous functions in general - for example, Python [uses the term][21], and AWS has a Functions-as-a-Service (FaaS) offering called [Lambda][22].
-
-    For an indication of how fundamental the concept of first class functions is (along with the closely related "higher order" function style), see [Functions as first class citizens in SICP Lecture 1A][45].
-
-2. Examples in this post are based on CAP Node.js version 8.5.1 (Nov 2024) rather than the 8.6.0 version that Daniel had, which is currently not available externally at the time of writing.
-
-3. Properly called [Arrow function expressions][32].
-
-4. `DVEBMGS00` anyone? (The `V` here is for "Verbucher" of course) :-)
-
-5. I suspect that the only reason `srv = new cds.Service` was wrapped in parentheses here was because Daniel had originally intended to immediately send something to the newly created server (but still capture a reference to that server), i.e. like this: `(srv = new cds.Service).send('foo',{bar:11})` but had then decided to break it down into individual steps.
-
-6. No further credential information exists here, as it's a design time only service running locally.
-
----
-
 <a name="appendix1"></a>
 ## Appendix - setting up a test environment
 
@@ -608,6 +557,55 @@ Simply type e.g. Books or db in the prompt to use the respective objects.
 ```
 
 whereupon you're ready to explore as we do in this post.
+
+---
+
+<a name="footnotes"></a>
+## Footnotes
+
+1. This Ruby idiom is a form of metaprogramming, which was popularised with Lisp ... which brings us back to McCarthy. Moreover, as Sinclair Target mentioned in his great article [How Lisp Became God's Own Programming Language][17] (which is also [available in audio format as an episode on my Tech Aloud podcast][18]), "Ruby is also a Lisp", expounded upon by Eric Kidd in his post [Why Ruby is an acceptable LISP][19].
+
+    Eric's post incidentally also shows how functions can be first class citizens, and even goes on to give a great example of a closure - the accumulator function, which in turn is from the appendix of Paul Graham's [Revenge of the Nerds][20] post. Here's the original accumulator function definition (named `foo` here) in Lisp:
+
+    ```lisp
+    (defun foo (n) (lambda (i) (incf n i)))
+    ```
+
+    and here is how we might express it in JavaScript:
+
+    ```javascript
+    foo = n => i => n += i
+    ```
+
+    Both implementations illustrate the concept of functions as first class citizens (the anonymous function `i => n += i` is returned as a value from a call to the named function `foo`) as well as the concept of a closure (`n` is "closed over", and therefore "captured", in the construct, and lives on inside that anonymous function). Here's a Node.js REPL session showing an example of use:
+
+    ```log
+    Welcome to Node.js v22.6.0.
+    Type ".help" for more information.
+    > foo = n => i => n += i
+    [Function: foo]
+    > mysum = foo(10)
+    [Function (anonymous)]
+    > mysum(2)
+    12
+    > mysum(3)
+    15
+    >
+    ```
+
+    Note also that the word "lambda", used here specifically and syntactically in Lisp as the symbol for an anonymous function, has become the de facto term for anonymous functions in general - for example, Python [uses the term][21], and AWS has a Functions-as-a-Service (FaaS) offering called [Lambda][22].
+
+    For an indication of how fundamental the concept of first class functions is (along with the closely related "higher order" function style), see [Functions as first class citizens in SICP Lecture 1A][45].
+
+2. Examples in this post are based on CAP Node.js version 8.5.1 (Nov 2024) rather than the 8.6.0 version that Daniel had, which is currently not available externally at the time of writing.
+
+3. Properly called [Arrow function expressions][32].
+
+4. `DVEBMGS00` anyone? (The `V` here is for "Verbucher" of course) :-)
+
+5. I suspect that the only reason `srv = new cds.Service` was wrapped in parentheses here was because Daniel had originally intended to immediately send something to the newly created server (but still capture a reference to that server), i.e. like this: `(srv = new cds.Service).send('foo',{bar:11})` but had then decided to break it down into individual steps.
+
+6. No further credential information exists here, as it's a design time only service running locally.
 
 
 
