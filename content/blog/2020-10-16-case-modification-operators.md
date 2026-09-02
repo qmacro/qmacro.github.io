@@ -1,13 +1,12 @@
 ---
 date: 2020-10-16
 title:  "Case modification operators in parameter substitution"
+description: In addition to the usual ways of uppercasing strings, Bash 4 brought case modification operators to the parameter substitution family.
 tags:
   - shell
   - learning
   - til
 ---
-_Today I learned that in addition to the usual ways of uppercasing strings, Bash 4 brought the addition of case modification operators to the parameter substitution family._
-
 Spending a pleasant coffee on my day off today I looked at tackling another challenge in [Exercism's bash track](https://exercism.io/tracks/bash) - [Acronym](https://exercism.io/tracks/bash/exercises/acronym/solutions/e70a7282d2fb4856bbeb1c2ae745d3c4). The requirement included ensuring that any generated acronym (I guess these might actually be initialisms, but that's a discussion for another time) was completely in uppercase, regardless of the source.
 
 In my solution, I resorted to the usual use of `tr`, like this:
@@ -22,6 +21,8 @@ All good. I like to peruse others' solutions, to learn from how they might have 
 OUTPUT=$(echo "$1" | sed -e 's/$/ /' -e 's/\([^ \-]\)[^ \-]*[ \-]/\1/g' -e 's/^ *//')
 echo ${OUTPUT^^}
 ```
+
+I was browsing
 
 What's that `^^` in the second line?
 

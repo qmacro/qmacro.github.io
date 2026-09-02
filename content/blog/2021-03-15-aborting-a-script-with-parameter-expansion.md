@@ -1,13 +1,12 @@
 ---
 date: 2021-03-15
 title: Aborting a script with parameter expansion
+description: Using the :? form of shell parameter expansion to abort a script if a required parameter value is not set.
 tags:
   - shell
   - learning
   - til
 ---
-
-_Use the :? form of shell parameter expansion to abort a script if a required parameter value is not set._
 
 I'm attracted to the somewhat arcane details of [Bash shell expansions][shell-expansions] and it was while looking up something completely different (more on that another time) that I decided to re-read the [parameter expansion][parameter-expansion] section of the GNU Bash manual.
 

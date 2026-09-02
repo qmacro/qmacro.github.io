@@ -1,13 +1,12 @@
 ---
 date: 2021-01-26
 title: Columnar layout with AWK
+description: A breakdown of a simple AWK script to format values into neatly aligned columns.
 tags:
   - shell
   - tools
   - til
 ---
-
-_Here's a breakdown of a simple AWK script I wrote to format values into neatly aligned columns_
 
 (Jump to the end for a couple of updates, thanks gioele and oh5nxo!)
 

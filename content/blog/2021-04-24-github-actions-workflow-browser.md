@@ -1,13 +1,12 @@
 ---
 date: 2021-04-24
 title: GitHub Actions workflow browser
+description: A simple workflow browser built with Bash, gh and fzf to help refer to previous workflow definitions while writing new ones.
 tags:
   - github-actions
   - tools
   - shell
 ---
-
-_I wrote a simple workflow browser to help me refer to previous workflow definitions while I'm writing a new one, as I'm still learning the syntax and techniques._
 
 With a programming or definition language, especially one that's new and powerful, it takes me a while to become comfortable writing scripts or definitions from scratch. I have a small amount of auto completion in my editor, but I'm not a fan - I prefer to learn by looking things up and then typing them in, rather than have words automatically completed for me.
 

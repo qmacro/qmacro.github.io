@@ -1,13 +1,12 @@
 ---
 date: 2021-07-26
 title: Reopening pull requests and GITHUB_ACTOR
+description: The GITHUB_ACTOR on a re-opened pull request reflects the person re-opening it, not the original creator.
 tags:
   - github-actions
   - learning
   - til
 ---
-
-_Today I learned that the `GITHUB_ACTOR` on a re-opened pull request reflects the person re-opening it, not the original creator._
 
 Over on the [Community Guidelines](https://github.com/SAP-docs/contribution-guidelines) content for SAP's [Open Documentation Initiative](https://blogs.sap.com/2021/05/20/introducing-the-open-documentation-initiative/) there was a [recent pull request](https://github.com/SAP-docs/contribution-guidelines/pull/64) (PR) that was opened by user `cyberpinguin`.
 

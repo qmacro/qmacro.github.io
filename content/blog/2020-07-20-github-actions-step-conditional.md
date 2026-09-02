@@ -1,6 +1,7 @@
 ---
 date: 2020-07-20
 title: git diff can emit different exit codes
+description: Combining git diff exit codes and the POSIX negation operator to control GitHub Actions job step execution based on git changes.
 tags:
   - github-actions
   - git
@@ -8,8 +9,6 @@ tags:
   - learning
   - til
 ---
-
-_You can combine git diff exit codes and the POSIX `!` operator to control GitHub Actions job step execution based on git changes._
 
 When defining a job step in GitHub Actions, you can specify a [condition](https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#job-status-check-functions) that must be met for a job step to run (in a broadly similar way to how things were in Job Control Language). In my [profile repo's builder workflow](https://github.com/qmacro/qmacro/blob/03246248853b563bb6774697e7156bfb183e3f0a/.github/workflows/build.yml), I wanted only to proceed with a git commit step if there were actual changes that had been made in a previous step.
 

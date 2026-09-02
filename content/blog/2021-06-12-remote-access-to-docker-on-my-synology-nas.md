@@ -1,13 +1,12 @@
 ---
 date: 2021-06-12
 title: Remote access to Docker on my Synology NAS
+description: Setting up remote command line access to the Docker install on my Synology NAS in the simplest way possible.
 tags:
   - docker
   - homelab
   - tools
 ---
-
-_Here's what I did to enable remote access to the Docker install on my Synology NAS._
 
 This post describes the steps I took to set up remote access to Docker running on my NAS, in the simplest and "smallest footprint" possible way I could find. There are other approaches, but this is what I did. It was a little less obvious than one might have expected, because of the way the Docker service is hosted on the NAS's operating system, and I ended up having to read around (see the reading list at the end).
 

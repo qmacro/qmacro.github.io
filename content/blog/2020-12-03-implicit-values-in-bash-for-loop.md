@@ -1,13 +1,12 @@
 ---
 date: 2020-12-03
 title:  "Implicit values in Bash for loop construct"
+description: Bash's for loop construct can use implicit values by iterating over the positional parameters when no list is specified.
 tags:
   - shell
   - learning
   - til
 ---
-_Bash's 'for loop' construct can use implicit values - who knew? Not me ..._
-
 I was browsing a [Superuser question and answer](https://superuser.com/questions/318067/how-to-iterate-over-all-pair-combinations-in-a-list-in-bash/732740) this morning and the code in the [accepted answer](https://superuser.com/a/318073/620229) looked like this:
 
 ```bash

@@ -2,13 +2,12 @@
 date: 2020-06-07
 category: homelab
 title: Remote mount setup on the Raspberry Pi
+description: Setting up mount points on a Raspberry Pi for connecting to an Apple Airport Time Capsule and Google Drive.
 tags:
   - raspberry-pi
   - linux
   - shell
 ---
-
-_This post documents what I did to set up mount points for, and connect to, an Apple Airport Time Capsule here on my homelab network and also my Google Drive._
 
 My interest in Raspberry Pis has increased over the last few months, and I've taken delivery of a couple of Pi Zero W models and another Pi 4, all from [The Pi Hut](https://thepihut.com/), which I can heartily recommend. Using the Pis more often, I wanted to connect them to some remote storage, specifically my old but still relevant network storage device - an Airport Time Capsule from Apple - and also be able to seamlessly read and write files on my Google Drive. This short post documents what I did, so I can refer back to it if I need to do it again. Perhaps it might be useful for you too.
 
