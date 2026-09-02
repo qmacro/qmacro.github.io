@@ -1,5 +1,6 @@
 ---
 title: TASC Notes - Part 4
+description: Notes on part 4 of The Art and Science of CAP, a mini series with Daniel Hutzel exploring the philosophy, the background, the technology history and layers that support and inform the SAP Cloud Application Programming Model.
 date: 2024-12-10
 tags:
   - tasc
