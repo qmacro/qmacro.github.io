@@ -6,7 +6,7 @@ tags:
   - raspberry-pi
   - docker
   - brambleweeny
-  - series-index
+  - seriespost
 ---
 
 _This is where the individual posts in the "Brambleweeny Cluster Experiments" series of blog posts are listed, in order._

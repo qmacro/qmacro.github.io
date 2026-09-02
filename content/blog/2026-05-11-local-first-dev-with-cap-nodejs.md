@@ -5,7 +5,7 @@ description: Here's an overview of a set of related posts on mocking, in the con
 tags:
   - cap
   - developer-experience
-  - series-index
+  - seriespost
 ---
 
 <a name="talk"></a>

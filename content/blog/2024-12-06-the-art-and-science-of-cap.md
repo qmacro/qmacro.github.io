@@ -7,7 +7,7 @@ tags:
   - cap
   - cds
   - hands-on-sap-dev
-  - series-index
+  - seriespost
 ---
 Here's a summary of the resources relating to the series called "The Art and Science of CAP" with Daniel Hutzel. The series consists of a number of episodes, broadcast live on the [Hands-on SAP Dev show][31], and available for viewing afterwards too.
 

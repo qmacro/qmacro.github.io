@@ -7,7 +7,7 @@ tags:
   - cds
   - npm
   - domain-modelling
-  - series-index
+  - seriespost
 ---
 
 - 01 Jan 2026 Part 1 [An introduction](/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/)

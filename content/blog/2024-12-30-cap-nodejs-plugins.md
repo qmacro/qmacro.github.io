@@ -7,7 +7,7 @@ tags:
   - cds
   - npm
   - javascript
-  - series-index
+  - seriespost
 ---
 
 There are three episodes, broadcast live on the [Hands-on SAP Dev

@@ -6,7 +6,7 @@ tags:
   - fiori
   - sap
   - learning
-  - series-index
+  - seriespost
 ---
 I’ve written about the [openSAP](http://open.sap.com) Massive Open Online Courses (MOOC) system in the past. I’m a big fan, particularly for the way the folks run the ship. They are “open” in the best possible ways.
 

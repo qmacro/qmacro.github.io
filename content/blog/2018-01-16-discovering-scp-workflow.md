@@ -6,7 +6,7 @@ tags:
   - btp
   - workflow
   - discovering-scp-workflow
-  - series-index
+  - seriespost
   - community
 ---
 

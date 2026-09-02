@@ -6,7 +6,7 @@ tags:
   - cds
   - cap
   - hands-on-sap-dev
-  - series-index
+  - seriespost
 ---
 After Devtoberfest comes TechEd and the long tail of conferences that lead into
 the holiday season. Then comes the new year, and a restart of our [long

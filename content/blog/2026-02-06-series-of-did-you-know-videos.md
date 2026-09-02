@@ -5,7 +5,7 @@ description: Here's a collection of pointers to short "Did You Know" videos from
 tags:
   - sap
   - community
-  - series-index
+  - seriespost
   - hands-on-sap-dev
 ---
 
