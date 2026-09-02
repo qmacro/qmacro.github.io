@@ -1,6 +1,7 @@
 ---
 title: "UTFRW - Unofficial TechEd Fun Run / Walk / Roll - Share Your Pics!"
 date: 2021-11-15
+description: Inviting people to walk, run or roll 5K during SAP TechEd week and share pictures.
 tags:
   - sap
   - community

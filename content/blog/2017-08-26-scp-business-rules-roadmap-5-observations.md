@@ -1,6 +1,7 @@
 ---
 date: 2017-08-26
 title: SCP Business Rules Roadmap - 5 Observations
+description: Sharing five observations on the SAP Cloud Platform Business Rules service roadmap.
 tags:
   - btp
   - sap

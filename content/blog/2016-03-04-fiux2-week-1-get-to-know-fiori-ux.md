@@ -1,6 +1,7 @@
 ---
 date: 2016-03-04
 title: '"fiux2" Week 1 - Get to know Fiori UX'
+description: Covering week 1 of the openSAP Fiori course 2016 edition on getting to know Fiori UX.
 tags:
   - fiori
   - sap

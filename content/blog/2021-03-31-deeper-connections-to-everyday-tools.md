@@ -1,6 +1,7 @@
 ---
 date: 2021-03-31
 title: Deeper connections to everyday tools
+description: Wanting to learn more about the everyday tools I use, because with some things ignorance is not bliss.
 tags:
   - tools
   - opinion

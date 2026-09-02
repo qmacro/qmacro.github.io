@@ -1,6 +1,7 @@
 ---
 date: 2022-05-30
 title: Reshaping data values using jq's with_entries
+description: Exploring a JSON file of valid tutorial tags using jq's with_entries to reshape the data.
 tags:
   - jq
   - json

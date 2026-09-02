@@ -1,6 +1,7 @@
 ---
 date: 2013-02-02
 title: '30 Day Challenge: No Beer!'
+description: Embarking on my February 30-day challenge of no beer after successfully completing a month without Twitter.
 tags:
   - personal
   - beer

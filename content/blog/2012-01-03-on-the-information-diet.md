@@ -1,6 +1,7 @@
 ---
 date: 2012-01-03
 title: On the Information Diet
+description: Reflecting on the movement to consume less information and produce more.
 tags:
   - opinion
   - learning

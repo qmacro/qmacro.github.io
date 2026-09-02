@@ -1,6 +1,7 @@
 ---
 date: 2009-05-08
 title: Analysing CV searches with Delicious
+description: Analysing search terms used to find my online CV using Perl and Delicious.
 tags:
   - perl
   - tools

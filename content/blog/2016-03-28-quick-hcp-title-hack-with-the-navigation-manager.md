@@ -1,6 +1,7 @@
 ---
 date: 2016-03-28
 title: Quick HCP title hack with the Navigation Manager
+description: Hacking the HCP cockpit title with the Navigation Manager using the Chrome Developer Tools.
 tags:
   - btp
   - tools

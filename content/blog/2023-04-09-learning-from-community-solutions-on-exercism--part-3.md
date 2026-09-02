@@ -1,6 +1,7 @@
 ---
 title: Learning from community solutions on Exercism - part 3
 date: 2023-04-09
+description: Dwelling on more small details in jq solutions to Exercism exercises.
 tags:
   - jq
   - learning

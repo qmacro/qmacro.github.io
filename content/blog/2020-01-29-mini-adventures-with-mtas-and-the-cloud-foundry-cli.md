@@ -1,6 +1,7 @@
 ---
 title: "Mini adventures with MTAs and the Cloud Foundry CLI"
 date: 2020-01-29
+description: Exploring MTAs and shell pipeline techniques with the Cloud Foundry CLI.
 tags:
   - cloud-foundry
   - shell

@@ -1,6 +1,7 @@
 ---
 title: Mobile Dev Course W3U3 Rewrite - XML Views - An Intro
 date: 2013-11-19
+description: Introducing the XML views branch of my W3U3 rewrite, rebuilding the JavaScript views in XML.
 tags:
   - openui5
   - fiori

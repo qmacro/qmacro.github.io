@@ -1,6 +1,7 @@
 ---
 title: Review of Fourth Dementia Old Ale from Kuhnhenn Brewing Company
 date: 2012-12-17
+description: Reviewing Fourth Dementia Old Ale from Kuhnhenn Brewing Company.
 tags:
   - beer
   - review

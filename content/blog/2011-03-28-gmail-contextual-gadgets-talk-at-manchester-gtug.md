@@ -1,6 +1,7 @@
 ---
 date: 2011-03-28
 title: Gmail Contextual Gadgets - talk at Manchester GTUG
+description: Giving a talk on Gmail Contextual Gadgets at the Manchester Google Technology User Group.
 tags:
   - google
   - talk

@@ -1,6 +1,7 @@
 ---
 title: Review of Saison from Dark Star
 date: 2011-05-31
+description: Reviewing Saison from Dark Star at Port Street Beer House in Manchester.
 tags:
   - beer
   - review

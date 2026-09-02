@@ -1,6 +1,7 @@
 ---
 title: "Submit suggestions for Tech Aloud during SAP TechEd 2019"
 date: 2019-10-04
+description: Explaining how to submit content suggestions for the Tech Aloud podcast during SAP TechEd 2019.
 tags:
   - podcast
   - sap

@@ -1,6 +1,7 @@
 ---
 date: 2015-01-02
 title: DNA is still in our DNA
+description: Reflecting on how SAP's DNA of innovation persists even as technologies like Internet Explorer fade away.
 tags:
   - sap
   - opinion

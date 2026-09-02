@@ -1,6 +1,7 @@
 ---
 date: 2009-09-08
 title: SAP and Google Wave - Conversation Augmentation
+description: Demonstrating integration between Google Wave and SAP, inspired by the Dashboard project from six years earlier.
 tags:
   - sap
   - http

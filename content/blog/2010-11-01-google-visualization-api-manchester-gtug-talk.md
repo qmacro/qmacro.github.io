@@ -1,6 +1,7 @@
 ---
 date: 2010-11-01
 title: 'Google Visualization API: Manchester GTUG Talk'
+description: Presenting on the Google Visualization API at the Manchester Google Technology User Group meetup.
 tags:
   - google
   - talk

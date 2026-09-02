@@ -1,6 +1,7 @@
 ---
 title: Improving my interactive jq workflow with ijq, bash and tmux
 date: 2023-04-27
+description: Improving my interactive jq workflow by capturing expressions from ijq for command line use.
 tags:
   - jq
   - shell

@@ -1,6 +1,7 @@
 ---
 title: Bash shell expansion inside double quotes
 date: 2023-08-25
+description: Exploring which Bash shell expansions still work inside double quotes in the context of an API challenge.
 tags:
   - shell
   - learning

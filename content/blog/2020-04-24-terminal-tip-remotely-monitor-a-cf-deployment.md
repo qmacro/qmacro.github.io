@@ -1,6 +1,7 @@
 ---
 title: "Terminal Tip: remotely monitor a CF deployment"
 date: 2020-04-24
+description: Remotely monitoring an ongoing Cloud Foundry MTA deployment from the terminal.
 tags:
   - shell
   - cloud-foundry

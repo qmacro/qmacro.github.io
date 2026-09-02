@@ -1,6 +1,7 @@
 ---
 date: 2015-03-28
 title: This Week in Fiori (2015-13)
+description: Covering week 13 of Fiori news including the Build Your Own SAP Fiori App openSAP course.
 tags:
   - fiori
   - odata

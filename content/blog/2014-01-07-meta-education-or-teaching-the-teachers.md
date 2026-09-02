@@ -1,6 +1,7 @@
 ---
 title: Meta education - or teaching the teachers
 date: 2014-01-07
+description: Exploring meta education and the importance of teaching teachers computational thinking skills.
 tags:
   - education
   - opinion

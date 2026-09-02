@@ -1,6 +1,7 @@
 ---
 title: Quick conversion of multiple values using with_entries in jq
 date: 2024-02-28
+description: Demonstrating how jq's with_entries is a powerful combination of to_entries and from_entries for value conversion.
 tags:
   - jq
   - json

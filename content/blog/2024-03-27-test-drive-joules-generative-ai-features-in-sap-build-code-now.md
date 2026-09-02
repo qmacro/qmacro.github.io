@@ -1,6 +1,7 @@
 ---
 title: Test drive Joule's generative AI features in SAP Build Code now!
 date: 2024-03-27
+description: Announcing the GA of SAP Build Code and the limited-time opportunity to test drive Joule's generative AI features.
 tags:
   - sap
   - ai

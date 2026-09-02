@@ -1,6 +1,7 @@
 ---
 title: Exploring codespaces as temporary dev containers
 date: 2024-01-26
+description: Exploring GitHub Codespaces as ephemeral, temporary dev container environments.
 tags:
   - docker
   - github

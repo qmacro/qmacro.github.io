@@ -1,6 +1,7 @@
 ---
 date: 2012-04-16
 title: On Enterprise Geeks Podcast
+description: Appearing on the Enterprise Geeks podcast after reconnecting at SAP DKOM.
 tags:
   - sap
   - community

@@ -1,6 +1,7 @@
 ---
 date: 2021-09-15
 title: Using functions more
+description: Exploring the benefits of using Bash functions more as a sweet spot between aliases and scripts.
 tags:
   - shell
   - functional-programming

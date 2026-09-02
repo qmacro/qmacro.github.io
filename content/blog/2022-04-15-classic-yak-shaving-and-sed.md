@@ -1,6 +1,7 @@
 ---
 date: 2022-04-15
 title: A classic example of yak shaving, and some stream editing
+description: Descending through multiple levels of classic yak shaving and ending up learning some stream editing.
 tags:
   - shell
   - tools

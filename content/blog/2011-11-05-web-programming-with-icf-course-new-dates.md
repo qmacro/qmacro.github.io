@@ -1,6 +1,7 @@
 ---
 date: 2011-11-05
 title: 'Web Programming with SAP''s ICF: new course dates'
+description: Announcing new dates for my Omniversity course on Web Programming with SAP's Internet Communication Framework.
 tags:
   - sap
   - http

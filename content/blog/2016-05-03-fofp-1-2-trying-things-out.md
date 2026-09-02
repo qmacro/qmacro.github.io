@@ -1,6 +1,7 @@
 ---
 date: 2016-05-03
 title: FOFP 1.2 Trying things out
+description: Setting up an environment to try out functional programming concepts interactively.
 tags:
   - functional-programming
   - javascript

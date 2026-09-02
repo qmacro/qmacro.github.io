@@ -1,6 +1,7 @@
 ---
 title: The evolution of the SAP community
 date: 2016-03-10
+description: Looking at how the SAP community has evolved over the years as I join the new Mentors Advisory Board.
 tags:
   - sap
   - community

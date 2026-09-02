@@ -1,6 +1,7 @@
 ---
 title: Help us to help you - share your code
 date: 2014-01-09
+description: Encouraging folks to share code via Gists and GitHub repos when asking for help with UI5 issues.
 tags:
   - openui5
   - github

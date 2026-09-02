@@ -1,6 +1,7 @@
 ---
 date: 2009-08-19
 title: 2nd coffeeshop REST/HTTP screencast
+description: Recording a second coffeeshop screencast highlighting its REST-orientated HTTP-based pubsub nature.
 tags:
   - rest
   - http

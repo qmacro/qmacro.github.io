@@ -1,6 +1,7 @@
 ---
 title: TIL - Two Tmux Plugin Manager features
 date: 2023-11-10
+description: Discovering two useful Tmux Plugin Manager features while revisiting my working environment setup.
 tags:
   - tmux
   - tools

@@ -1,6 +1,7 @@
 ---
 date: 2016-10-02
 title: F3C Part 5 - Closures
+description: Exploring closures as part of my FunFunFunction Companion series.
 tags:
   - functional-programming
   - javascript

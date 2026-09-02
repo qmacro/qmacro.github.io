@@ -1,6 +1,7 @@
 ---
 title: "Monday morning thoughts: debugging approach and Greasemonkey revival"
 date: 2018-04-23
+description: Thinking about debugging approaches and reviving Greasemonkey for improving the web experience.
 tags:
   - monday-morning-thoughts
   - debugging

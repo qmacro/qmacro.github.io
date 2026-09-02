@@ -1,6 +1,7 @@
 ---
 date: 2012-12-05
 title: CodeClub and becoming a STEM Ambassador
+description: Volunteering with CodeClub and becoming a STEM Ambassador to help kids learn to code.
 tags:
   - education
   - raspberry-pi

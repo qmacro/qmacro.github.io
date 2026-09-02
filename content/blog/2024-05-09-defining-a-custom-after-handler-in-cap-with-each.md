@@ -1,6 +1,7 @@
 ---
 title: Defining a custom 'after' handler in CAP with 'each'
 date: 2024-05-09
+description: Exploring the special behaviour of using the each parameter name when defining an after handler in CAP.
 tags:
   - cap
   - javascript

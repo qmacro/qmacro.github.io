@@ -1,6 +1,7 @@
 ---
 date: 2021-09-12
 title: Improving shell fu with practice
+description: Practising shell commands to improve my skills and expose myself to new knowledge.
 tags:
   - shell
   - learning

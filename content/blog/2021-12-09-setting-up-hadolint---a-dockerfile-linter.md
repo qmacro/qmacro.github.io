@@ -1,6 +1,7 @@
 ---
 date: 2021-12-09
 title: Setting up hadolint - a Dockerfile linter
+description: Setting up hadolint as a Dockerfile linter in my development environment.
 tags:
   - docker
   - tools

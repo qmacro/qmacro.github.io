@@ -1,6 +1,7 @@
 ---
 date: 2017-08-08
 title: SAP Cloud Platform Pricing
+description: Looking into SAP Cloud Platform pricing and finding it less than straightforward.
 tags:
   - btp
   - sap

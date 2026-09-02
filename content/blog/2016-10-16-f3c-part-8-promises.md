@@ -1,6 +1,7 @@
 ---
 date: 2016-10-16
 title: F3C Part 8 - Promises
+description: Exploring promises as part of my FunFunFunction Companion series.
 tags:
   - functional-programming
   - javascript

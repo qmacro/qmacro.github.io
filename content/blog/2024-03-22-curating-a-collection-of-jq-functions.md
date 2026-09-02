@@ -1,6 +1,7 @@
 ---
 title: Curating a collection of jq functions
 date: 2024-03-22
+description: Curating a personal collection of jq functions and exploring how the jq module system works.
 tags:
   - jq
   - functional-programming

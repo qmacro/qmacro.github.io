@@ -1,6 +1,7 @@
 ---
 date: 2015-03-02
 title: 'Can I build a Fiori app? Yes you can!'
+description: Making the case that building Fiori apps is achievable and explaining what it involves.
 tags:
   - fiori
   - openui5

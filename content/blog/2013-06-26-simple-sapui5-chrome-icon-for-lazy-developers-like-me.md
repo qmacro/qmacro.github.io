@@ -1,6 +1,7 @@
 ---
 title: Simple SAPUI5 Chrome icon for lazy developers like me
 date: 2013-06-26
+description: Creating a simple Chrome hosted app icon to quickly navigate to the SAPUI5 Developer Center on SCN.
 tags:
   - openui5
   - tools

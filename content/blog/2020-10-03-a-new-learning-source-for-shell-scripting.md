@@ -1,6 +1,7 @@
 ---
 date: 2020-10-03
 title: A new learning source for shell scripting
+description: Discovering Mr Rob's dotfiles and live streams as a new learning source for shell scripting.
 tags:
   - shell
   - learning

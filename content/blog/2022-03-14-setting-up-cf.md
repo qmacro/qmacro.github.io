@@ -1,6 +1,7 @@
 ---
 date: 2022-03-14
 title: Setting up my own Cloud Foundry
+description: Describing my journey getting a local Cloud Foundry up and running on Kubernetes.
 tags:
   - cloud-foundry
   - docker

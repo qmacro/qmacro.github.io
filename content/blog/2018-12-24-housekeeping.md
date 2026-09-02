@@ -1,6 +1,7 @@
 ---
 date: 2018-12-24
 title: Housekeeping
+description: Tidying up my blogging infrastructure and moving to a new domain and platform.
 tags:
   - blogging
   - tools

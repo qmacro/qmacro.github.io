@@ -1,6 +1,7 @@
 ---
 date: 2018-05-23
 title: Collaboration tools
+description: Setting out my preferences for collaboration tools that support realtime multi-user editing.
 tags:
   - tools
   - career

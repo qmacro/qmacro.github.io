@@ -1,6 +1,7 @@
 ---
 title: Separating concerns and focusing on the important stuff
 date: 2024-11-04
+description: Thinking properly about what separation of concerns means in the context of CDS and CAP.
 tags:
   - cds
   - cap

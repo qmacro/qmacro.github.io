@@ -1,6 +1,7 @@
 ---
 date: 2022-05-21
 title: Products by supplier in OData and jq
+description: Comparing OData resource requests with equivalent JSON shaping using jq.
 tags:
   - jq
   - odata

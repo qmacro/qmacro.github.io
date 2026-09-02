@@ -1,6 +1,7 @@
 ---
 date: 2014-07-09
 title: This Week in Fiori (2014-28)
+description: Covering week 28 of Fiori news including app analysis tools and technical content.
 tags:
   - fiori
   - openui5

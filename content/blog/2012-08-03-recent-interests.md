@@ -1,6 +1,7 @@
 ---
 date: 2012-08-03
 title: Recent Interests
+description: Visualising my recent blogging interests with a Wordle word cloud.
 tags:
   - personal
   - learning

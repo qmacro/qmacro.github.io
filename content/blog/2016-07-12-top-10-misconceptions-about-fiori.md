@@ -1,6 +1,7 @@
 ---
 title: Top 10 misconceptions about Fiori
 date: 2016-07-12
+description: Addressing the top ten misconceptions and misunderstandings about SAP Fiori.
 tags:
   - fiori
   - sap

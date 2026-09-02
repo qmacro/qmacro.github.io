@@ -1,6 +1,7 @@
 ---
 title: Allowing my intangible core to catch up with the rest of me...
 date: 2022-02-02
+description: Reflecting on narrowboat trips and allowing my intangible core to catch up with the rest of me.
 tags:
   - narrowboat
   - personal

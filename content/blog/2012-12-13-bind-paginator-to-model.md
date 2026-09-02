@@ -1,6 +1,7 @@
 ---
 title: "Bind Paginator to model?"
 date: 2012-12-13
+description: Experimenting with binding a SAPUI5 Paginator control to a model for automatic page calculation.
 tags:
   - openui5
   - sap

@@ -1,6 +1,7 @@
 ---
 date: 2012-04-17
 title: Two tools for Gateway trial host nplhost
+description: Recommending two useful tools, multitail and screen, for working with the SAP NetWeaver Gateway trial system.
 tags:
   - sap
   - odata

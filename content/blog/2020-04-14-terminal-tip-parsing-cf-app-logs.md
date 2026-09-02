@@ -1,6 +1,7 @@
 ---
 title: "Terminal Tip: parsing CF app logs"
 date: 2020-04-14
+description: Parsing Cloud Foundry application log output with shell tools for better readability.
 tags:
   - shell
   - cloud-foundry

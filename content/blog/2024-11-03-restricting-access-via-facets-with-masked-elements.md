@@ -1,6 +1,7 @@
 ---
 title: Restricting access via facets with masked elements
 date: 2024-11-03
+description: Exploring how to restrict access via projections with masked elements in CDS.
 tags:
   - cds
   - cap

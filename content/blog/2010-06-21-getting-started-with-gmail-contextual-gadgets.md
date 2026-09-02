@@ -1,6 +1,7 @@
 ---
 date: 2010-06-21
 title: Getting started with Gmail Contextual Gadgets
+description: Getting started with Gmail contextual gadgets and exploring their developer potential.
 tags:
   - google-apps-script
   - google

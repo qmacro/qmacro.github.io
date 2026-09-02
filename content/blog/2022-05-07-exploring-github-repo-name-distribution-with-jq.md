@@ -1,6 +1,7 @@
 ---
 date: 2022-05-07
 title: Exploring GitHub repo name distribution with jq
+description: Exploring the distribution of name prefixes for SAP-samples repositories on GitHub using jq.
 tags:
   - jq
   - github

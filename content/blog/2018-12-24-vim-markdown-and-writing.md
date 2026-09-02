@@ -1,6 +1,7 @@
 ---
 date: 2018-12-24
 title: Vim, Markdown and writing
+description: Rebuilding my writing workflow around Vim and Markdown for a more focused experience.
 tags:
   - neovim
   - markdown

@@ -1,6 +1,7 @@
 ---
 date: 2016-05-03
 title: FOFP 1.1 Introduction
+description: Introducing the fundamentals of functional programming with a definition and some context.
 tags:
   - functional-programming
   - javascript

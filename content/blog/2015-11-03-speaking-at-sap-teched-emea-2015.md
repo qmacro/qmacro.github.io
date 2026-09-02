@@ -1,6 +1,7 @@
 ---
 date: 2015-11-03
 title: Speaking at SAP TechEd EMEA 2015
+description: Looking forward to speaking at SAP TechEd EMEA 2015 in Barcelona with a packed schedule.
 tags:
   - fiori
   - openui5

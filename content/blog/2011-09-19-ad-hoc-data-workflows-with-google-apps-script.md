@@ -1,6 +1,7 @@
 ---
 date: 2011-09-19
 title: Ad-hoc Data Workflows with Google Apps Script
+description: Presenting on building ad-hoc data workflows with Google Apps Script at the Manchester GTUG.
 tags:
   - google-apps-script
   - google

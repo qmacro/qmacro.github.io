@@ -1,6 +1,7 @@
 ---
 date: 2005-11-28
 title: 'SAP and Open Source: the debate continues'
+description: Continuing the debate on SAP and open source following my earlier analysis and letter.
 tags:
   - sap
   - open-source

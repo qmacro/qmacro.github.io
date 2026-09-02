@@ -1,6 +1,7 @@
 ---
 title: UI5 features for building responsive apps
 date: 2015-02-23
+description: Exploring the responsive design features in UI5 for building Fiori apps that work across devices.
 tags:
   - openui5
   - fiori

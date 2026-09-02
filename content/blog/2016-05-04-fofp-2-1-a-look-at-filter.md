@@ -1,6 +1,7 @@
 ---
 date: 2016-05-04
 title: FOFP 2.1 A look at filter
+description: Looking at the filter higher-order function as part of the fundamentals of functional programming.
 tags:
   - functional-programming
   - javascript

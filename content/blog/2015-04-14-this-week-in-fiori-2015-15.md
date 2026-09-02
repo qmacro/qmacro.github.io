@@ -1,6 +1,7 @@
 ---
 date: 2015-04-14
 title: This Week in Fiori (2015-15)
+description: Covering week 15 of Fiori news including SAPPHIRE NOW and d-code event previews.
 tags:
   - fiori
   - this-week-in-fiori

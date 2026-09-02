@@ -1,6 +1,7 @@
 ---
 date: 2016-04-13
 title: Finding a wonderland number
+description: Solving a Wonderland Clojure Kata puzzle as a small evening exercise in functional thinking.
 tags:
   - functional-programming
   - clojure

@@ -1,6 +1,7 @@
 ---
 date: 2011-11-08
 title: SAP Developer Center
+description: Exploring the SAP Developer Center booth at SAP TechEd Madrid 2011.
 tags:
   - sap
   - odata

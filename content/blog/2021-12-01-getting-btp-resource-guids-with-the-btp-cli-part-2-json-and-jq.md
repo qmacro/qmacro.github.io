@@ -1,6 +1,7 @@
 ---
 title: "Getting BTP resource GUIDs with the btp CLI – part 2 - JSON and jq"
 date: 2021-12-01
+description: Exploring how the btp CLI supports JSON output and how to parse it with jq.
 tags:
   - btp
   - cli

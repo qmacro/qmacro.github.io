@@ -1,6 +1,7 @@
 ---
 title: A little taste of SAP at EuroFoo
 date: 2004-08-21
+description: Presenting a lightning talk on SAP at the EuroFoo mini-conference in Enschede.
 tags:
   - sap
   - conference

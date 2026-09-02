@@ -1,6 +1,7 @@
 ---
 date: 2014-07-02
 title: This Week in Fiori (2014-27)
+description: Launching the This Week in Fiori series with commentary on the growing interest in SAP Fiori and UX.
 tags:
   - fiori
   - openui5

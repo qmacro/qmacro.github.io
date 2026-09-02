@@ -1,6 +1,7 @@
 ---
 date: 2009-08-31
 title: Book review  - SAP Business ONE Implementation
+description: Reviewing the SAP Business ONE Implementation book by Wolfgang Niefert.
 tags:
   - sap
   - books

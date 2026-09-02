@@ -1,6 +1,7 @@
 ---
 title: Tmux plugin development with a local repo
 date: 2023-11-13
+description: Writing a simple Tmux plugin to learn how plugin development works with a local repo.
 tags:
   - tmux
   - tools

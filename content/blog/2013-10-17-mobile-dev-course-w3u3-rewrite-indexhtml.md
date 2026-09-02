@@ -1,6 +1,7 @@
 ---
 title: Mobile Dev Course W3U3 Rewrite - Index and Structure
 date: 2013-10-17
+description: Explaining my changes to the index.html file and general app structure in my W3U3 rewrite.
 tags:
   - openui5
   - fiori

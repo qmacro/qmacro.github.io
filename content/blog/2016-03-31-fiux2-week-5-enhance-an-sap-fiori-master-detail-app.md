@@ -1,6 +1,7 @@
 ---
 date: 2016-03-31
 title: '"fiux2" Week 5 - Enhance an SAP Fiori Master Detail App'
+description: Covering week 5 of the openSAP Fiori course on enhancing a master-detail app.
 tags:
   - fiori
   - sap

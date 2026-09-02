@@ -1,6 +1,7 @@
 ---
 date: 2021-12-23
 title: Truncation and neat terminal output
+description: Exploring the psFormat Docker configuration option and striving for neat terminal output.
 tags:
   - shell
   - tools

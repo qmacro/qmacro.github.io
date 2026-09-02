@@ -1,6 +1,7 @@
 ---
 title: Controlling automatic HTTP requests in CAP Node.js design time loops
 date: 2024-05-03
+description: Controlling automatic HTTP requests during CAP Node.js design time development loops.
 tags:
   - cap
   - developer-experience

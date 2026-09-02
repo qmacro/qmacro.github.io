@@ -1,6 +1,7 @@
 ---
 date: 2021-11-07
 title: Exploring fff part 2 - get_ls_colors
+description: Continuing to read and learn from the fff file manager source code, focusing on the get_ls_colors function.
 tags:
   - shell
   - tools

@@ -1,6 +1,7 @@
 ---
 date: 2016-05-03
 title: FOFP 1.4 A different approach with map
+description: Introducing the map function as a different approach to list processing.
 tags:
   - functional-programming
   - javascript

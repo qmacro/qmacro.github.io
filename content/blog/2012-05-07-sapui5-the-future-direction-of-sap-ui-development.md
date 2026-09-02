@@ -1,6 +1,7 @@
 ---
 title: SAPUI5 - the future direction of SAP UI development?
 date: 2012-05-07
+description: Looking at SAPUI5 as the future direction of SAP UI development.
 tags:
   - openui5
   - sap

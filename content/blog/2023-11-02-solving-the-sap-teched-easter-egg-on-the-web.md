@@ -1,6 +1,7 @@
 ---
 title: Solving the SAP TechEd Easter Egg on the Web
 date: 2023-11-02
+description: Solving the SAP TechEd 2023 Easter Egg, a Node.js puzzle found at the event in Bengaluru.
 tags:
   - sap
   - conference

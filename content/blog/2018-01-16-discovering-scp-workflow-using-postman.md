@@ -1,6 +1,7 @@
 ---
 title: "Discovering SCP Workflow - Using Postman"
 date: 2018-01-16
+description: Using Postman to explore and interact with the SCP Workflow API.
 tags:
   - btp
   - workflow

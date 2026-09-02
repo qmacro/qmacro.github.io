@@ -1,6 +1,7 @@
 ---
 date: 2015-02-09
 title: Morning Fiori Fix
+description: Investigating duplicate entries appearing in the Fiori App Reference Library.
 tags:
   - fiori
   - openui5

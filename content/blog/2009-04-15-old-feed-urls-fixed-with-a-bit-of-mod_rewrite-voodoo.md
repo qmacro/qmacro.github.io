@@ -1,6 +1,7 @@
 ---
 date: 2009-04-15
 title: Old feed URLs fixed with a bit of mod_rewrite voodoo
+description: Fixing old feed URLs with some Apache mod_rewrite rules to redirect feed bots to the right place.
 tags:
   - web
   - tools

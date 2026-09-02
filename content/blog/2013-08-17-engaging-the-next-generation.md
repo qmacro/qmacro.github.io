@@ -1,6 +1,7 @@
 ---
 title: Engaging the Next Generation
 date: 2013-08-17
+description: Reflecting on my involvement with Young Rewired State and engaging the next generation of coders.
 tags:
   - education
   - sap

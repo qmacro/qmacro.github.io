@@ -1,6 +1,7 @@
 ---
 date: 2014-01-02
 title: 'Quick hack: Calendar Inviter'
+description: Building a quick Google Apps Script hack to sync calendar events across multiple organisational calendars.
 tags:
   - google-apps-script
   - google

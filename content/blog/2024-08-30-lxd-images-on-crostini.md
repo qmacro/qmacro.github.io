@@ -1,6 +1,7 @@
 ---
 title: New source for LXD images on Crostini
 date: 2024-08-24
+description: Finding a new source for LXD images on ChromeOS Crostini after the default became unavailable.
 tags:
   - linux
   - tools

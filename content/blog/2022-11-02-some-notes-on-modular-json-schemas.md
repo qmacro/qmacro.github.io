@@ -1,6 +1,7 @@
 ---
 date: 2022-11-02
 title: Some notes on modular JSON Schema definitions
+description: Jotting down some notes on understanding how a modular JSON Schema definition might be constructed.
 tags:
   - json
   - tools

@@ -1,6 +1,7 @@
 ---
 title: "SDN Meetup in Walldorf - pictures"
 date: 2004-07-15
+description: Sharing pictures from the SDN Meetup in Walldorf.
 tags:
   - sap
   - community

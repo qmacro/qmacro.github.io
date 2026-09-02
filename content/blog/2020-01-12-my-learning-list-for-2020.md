@@ -1,6 +1,7 @@
 ---
 title: "My learning list for 2020"
 date: 2020-01-12
+description: Sharing my learning aspirations for 2020 and reflecting on the previous year.
 tags:
   - learning
   - community

@@ -1,6 +1,7 @@
 ---
 title: CAP, CDS, CDL, CSN and jq - finding associations
 date: 2024-04-05
+description: Using jq to parse association information from CSN, the internal representation of CDS definitions in CAP.
 tags:
   - cap
   - cds

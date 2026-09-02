@@ -1,6 +1,7 @@
 ---
 title: "Computed field example in CAP"
 date: 2019-08-21
+description: Showing one way of using computed properties in CAP using CDS and service events in Node.js.
 tags:
   - cap
   - cds

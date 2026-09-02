@@ -1,6 +1,7 @@
 ---
 title: "Getting Started with SAPUI5: Alternative Guide"
 date: 2013-01-31
+description: Putting together an alternative getting started guide for SAPUI5 focused on portability and independence.
 tags:
   - openui5
   - sap

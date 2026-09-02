@@ -1,6 +1,7 @@
 ---
 date: 2016-05-03
 title: FOFP 1.5 Creating functions
+description: Creating and composing functions as part of the fundamentals of functional programming.
 tags:
   - functional-programming
   - javascript

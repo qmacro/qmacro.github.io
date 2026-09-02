@@ -1,6 +1,7 @@
 ---
 title: SAPUI5 says "Hello OData" to NetWeaver Gateway
 date: 2012-02-13
+description: Exploring the newly released SAPUI5 beta and connecting it to NetWeaver Gateway via OData.
 tags:
   - openui5
   - odata

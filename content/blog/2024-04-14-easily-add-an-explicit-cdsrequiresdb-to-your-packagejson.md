@@ -1,6 +1,7 @@
 ---
 title: Easily add an explicit cds.requires.db to your CAP project's package.json
 date: 2024-04-14
+description: Using jq to easily add an explicit cds.requires.db entry to a CAP project's package.json.
 tags:
   - cap
   - jq

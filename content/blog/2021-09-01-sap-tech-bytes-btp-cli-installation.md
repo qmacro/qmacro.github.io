@@ -1,6 +1,7 @@
 ---
 title: "SAP Tech Bytes: btp CLI - installation"
 date: 2021-09-01
+description: Installing the btp CLI to start exploring its features for BTP administration.
 tags:
   - btp
   - cli

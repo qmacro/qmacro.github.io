@@ -1,6 +1,7 @@
 ---
 title: SAP CodeJam on Service Integration with CAP in Utrecht
 date: 2023-02-11
+description: Reporting on running an SAP CodeJam on Service Integration with CAP in Utrecht.
 tags:
   - codejam
   - cap

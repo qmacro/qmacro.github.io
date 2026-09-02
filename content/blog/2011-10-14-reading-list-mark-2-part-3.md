@@ -1,6 +1,7 @@
 ---
 date: 2011-10-14
 title: Reading List Mark 2 - Part 3
+description: Continuing the reading list app series, covering the UrlFetch Services for interacting with external APIs.
 tags:
   - google-apps-script
   - google

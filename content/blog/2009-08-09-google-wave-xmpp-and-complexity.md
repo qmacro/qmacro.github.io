@@ -1,6 +1,7 @@
 ---
 date: 2009-08-09
 title: Google Wave, XMPP and complexity
+description: Considering the complexity of Google Wave and XMPP versus the incremental approach of the web.
 tags:
   - jabber
   - http

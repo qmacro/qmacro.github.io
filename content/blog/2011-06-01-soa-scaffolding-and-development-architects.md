@@ -1,6 +1,7 @@
 ---
 date: 2011-06-01
 title: SOA scaffolding and development architects
+description: Reflecting on where SOA stands today and the role of development architects in service orientation.
 tags:
   - rest
   - architecture

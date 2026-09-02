@@ -1,6 +1,7 @@
 ---
 date: 2015-01-09
 title: Fiori App Data into a Spreadsheet? Challenge Accepted!
+description: Extracting data from the SAP Fiori App Reference Library into a Google Spreadsheet using OData and Apps Script.
 tags:
   - fiori
   - google-apps-script

@@ -1,6 +1,7 @@
 ---
 title: "Help us to help you - good questions beget good answers"
 date: 2019-11-25
+description: Suggesting key aspects of composing good questions to help community members provide better answers.
 tags:
   - community
   - opinion

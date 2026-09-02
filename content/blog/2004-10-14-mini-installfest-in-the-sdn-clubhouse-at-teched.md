@@ -1,6 +1,7 @@
 ---
 title: (Mini) Installfest in the SDN clubhouse at TechEd
 date: 2004-10-14
+description: Running a mini installfest with the latest WAS 6.40 demo system on a small Linux server at SAP TechEd.
 tags:
   - sap
   - conference

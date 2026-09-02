@@ -1,6 +1,7 @@
 ---
 date: 2013-10-04
 title: SheetAsJSON - Google Spreadsheet Data as JSON
+description: Explaining how to expose Google spreadsheet data as JSON via HTTP using Google Apps Script.
 tags:
   - google-apps-script
   - google

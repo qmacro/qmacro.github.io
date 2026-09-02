@@ -1,6 +1,7 @@
 ---
 title: Public Github repo sapui5bin available
 date: 2013-01-30
+description: Making my growing collection of runnable SAPUI5 snippets available as a public GitHub repo.
 tags:
   - openui5
   - sap

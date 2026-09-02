@@ -1,6 +1,7 @@
 ---
 title: Double SAP BTP goodness in Isernhagen
 date: 2023-04-16
+description: Reporting on a great double BTP event at Inwerken AG in Isernhagen near Hannover.
 tags:
   - codejam
   - btp

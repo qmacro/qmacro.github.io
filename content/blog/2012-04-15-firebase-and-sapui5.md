@@ -1,6 +1,7 @@
 ---
 date: 2012-04-15
 title: Firebase and SAPUI5
+description: Exploring Firebase as a backend-as-a-service in the context of SAPUI5 and realtime data.
 tags:
   - openui5
   - json

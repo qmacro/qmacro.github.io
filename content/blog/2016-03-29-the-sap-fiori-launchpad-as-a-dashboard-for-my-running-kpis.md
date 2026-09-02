@@ -1,6 +1,7 @@
 ---
 title: The SAP Fiori Launchpad as a dashboard for my running KPIs
 date: 2016-03-29
+description: Experimenting with using the SAP Fiori Launchpad to surface my running KPIs as live tiles.
 tags:
   - fiori
   - sap

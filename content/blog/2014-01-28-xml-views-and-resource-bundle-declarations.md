@@ -1,6 +1,7 @@
 ---
 title: XML Views and Resource Bundle Declarations
 date: 2014-01-28
+description: Looking at how resource bundle declarations work in SAPUI5 XML views.
 tags:
   - openui5
   - sap

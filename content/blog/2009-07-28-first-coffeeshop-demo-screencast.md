@@ -1,6 +1,7 @@
 ---
 date: 2009-07-28
 title: First coffeeshop demo screencast
+description: Recording a screencast demonstrating some of the basic features of my coffeeshop pubsub project.
 tags:
   - rest
   - http

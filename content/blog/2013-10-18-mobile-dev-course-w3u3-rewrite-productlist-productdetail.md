@@ -1,6 +1,7 @@
 ---
 title: Mobile Dev Course W3U3 Rewrite - ProductList, ProductDetail and SupplierDetail
 date: 2013-10-18
+description: Explaining the changes to the ProductList, ProductDetail and SupplierDetail views in my W3U3 rewrite.
 tags:
   - openui5
   - fiori

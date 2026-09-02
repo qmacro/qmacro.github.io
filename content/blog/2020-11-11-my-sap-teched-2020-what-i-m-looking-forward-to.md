@@ -1,6 +1,7 @@
 ---
 title: "My SAP TechEd 2020 - what I'm looking forward to"
 date: 2020-11-11
+description: Sharing what I'm looking forward to at SAP TechEd 2020 as a virtual event.
 tags:
   - sap
   - conference

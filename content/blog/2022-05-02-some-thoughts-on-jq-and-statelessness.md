@@ -1,6 +1,7 @@
 ---
 date: 2022-05-02
 title: Some thoughts on jq and statelessness
+description: Reflecting on jq's stateless nature after reading about zq as an alternative.
 tags:
   - jq
   - functional-programming

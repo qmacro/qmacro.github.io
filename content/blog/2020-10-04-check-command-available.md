@@ -1,6 +1,7 @@
 ---
 date: 2020-10-04
 title:  "Checking a command is available before use"
+description: Learning a useful pattern for checking whether a command is available before using it.
 tags:
   - shell
   - learning

@@ -1,6 +1,7 @@
 ---
 title: More on the comma as generator, and streaming with select in jq
 date: 2023-04-25
+description: Exploring the subtleties of the comma as a generator and streaming with select in jq.
 tags:
   - jq
   - json

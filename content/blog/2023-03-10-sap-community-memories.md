@@ -1,6 +1,7 @@
 ---
 title: SAP community memories
 date: 2023-03-10
+description: Contributing memories from the early days of the SAP Community to celebrate its 20th anniversary.
 tags:
   - sap
   - community

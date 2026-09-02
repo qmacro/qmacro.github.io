@@ -1,6 +1,7 @@
 ---
 date: 2011-10-04
 title: Automated email-to-task mechanism with Google Apps Script
+description: Looking at an example Google Apps Script that automates email-to-task conversion.
 tags:
   - google-apps-script
   - google

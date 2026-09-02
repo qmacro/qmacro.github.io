@@ -1,6 +1,7 @@
 ---
 title: "Terminal Tip: truncating CF output"
 date: 2020-04-07
+description: Truncating wide Cloud Foundry CLI output to make it more readable in the terminal.
 tags:
   - shell
   - cloud-foundry

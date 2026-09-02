@@ -1,6 +1,7 @@
 ---
 title: Turning an OData expand into a cds.ql CQL query with a projection function in CAP
 date: 2024-07-12
+description: Turning an OData expand into a cds.ql CQL query with a projection function in CAP.
 tags:
   - cap
   - cds

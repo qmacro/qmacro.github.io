@@ -1,6 +1,7 @@
 ---
 title: An Amazing 36 Hours at SAP Labs Israel
 date: 2013-10-03
+description: Recounting a whirlwind 36 hours visiting the developer engine that is SAP Labs Israel.
 tags:
   - sap
   - community

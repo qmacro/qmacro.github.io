@@ -1,6 +1,7 @@
 ---
 title: Ghost cratch fitted
 date: 2024-01-31
+description: Fitting a ghost cratch to the stern of my narrowboat for weather protection.
 tags:
   - narrowboat
   - personal

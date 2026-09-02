@@ -1,6 +1,7 @@
 ---
 title: The inaugural SAP architect and developer summit
 date: 2014-11-28
+description: Reflecting on my experience speaking at the inaugural SAP Architect and Developer Summit in Sydney.
 tags:
   - sap
   - conference

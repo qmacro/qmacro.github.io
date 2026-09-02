@@ -1,6 +1,7 @@
 ---
 title: Using @cap-js/sqlite in CF for your CAP services
 date: 2024-04-15
+description: Using the cap-js/sqlite package in Cloud Foundry for lightweight CAP service deployments.
 tags:
   - cap
   - cloud-foundry

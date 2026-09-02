@@ -1,6 +1,7 @@
 ---
 title: "Happy Programmers Day!"
 date: 2019-09-13
+description: Celebrating Programmers Day and reflecting on a couple of people who have inspired my growth as a programmer.
 tags:
   - community
   - personal

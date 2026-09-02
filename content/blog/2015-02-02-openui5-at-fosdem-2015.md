@@ -1,6 +1,7 @@
 ---
 date: 2015-02-02
 title: OpenUI5 at FOSDEM 2015
+description: Attending and presenting on OpenUI5 at FOSDEM 2015 in Brussels.
 tags:
   - openui5
   - conference

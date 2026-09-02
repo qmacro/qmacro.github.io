@@ -1,6 +1,7 @@
 ---
 date: 2012-07-15
 title: Serial interest in the Raspberry Pi
+description: Attending the Manchester Raspberry Jam and connecting a vintage Wyse terminal to a Raspberry Pi.
 tags:
   - raspberry-pi
   - computing-history

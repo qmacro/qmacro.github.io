@@ -1,6 +1,7 @@
 ---
 date: 2014-10-19
 title: Speaking at the SAP Architect & Developer Summit
+description: Preparing to speak at the inaugural SAP Architect and Developer Summit in Sydney.
 tags:
   - fiori
   - openui5

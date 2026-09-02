@@ -1,6 +1,7 @@
 ---
 date: 2021-12-14
 title: Controlling Chrome from the CLI
+description: Using the chrome-cli tool to open URLs in different tabs from the command line.
 tags:
   - shell
   - tools

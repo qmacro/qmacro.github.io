@@ -1,6 +1,7 @@
 ---
 title: Mercia Marina to Shobnall Fields and Burton-on-Trent
 date: 2023-07-21
+description: Cruising from Mercia Marina to Shobnall Fields and Burton-on-Trent on the canal.
 tags:
   - narrowboat
   - personal

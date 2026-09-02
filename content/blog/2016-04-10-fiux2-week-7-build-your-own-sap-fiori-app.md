@@ -1,6 +1,7 @@
 ---
 date: 2016-04-10
 title: '"fiux2" Week 7 - Build Your Own SAP Fiori App'
+description: Covering the final week of the openSAP Build Your Own SAP Fiori App in the Cloud course.
 tags:
   - fiori
   - sap

@@ -1,6 +1,7 @@
 ---
 title: "SAP Tech Bytes: btp CLI – logging in"
 date: 2021-09-07
+description: Logging in with the btp CLI and finding a subaccount for subsequent activities.
 tags:
   - btp
   - cli

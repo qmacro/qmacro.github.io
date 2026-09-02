@@ -1,6 +1,7 @@
 ---
 title: Simple script for previewing CDS models in CSN - cdsray
 date: 2024-04-17
+description: Building a simple cdsray script for previewing CDS models in their CSN representation.
 tags:
   - cap
   - cds

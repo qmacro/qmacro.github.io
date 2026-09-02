@@ -1,6 +1,7 @@
 ---
 title: Custom Sorting and Grouping
 date: 2013-11-29
+description: Learning how to control the order of groups in a sorted list using the sorter function rather than the grouper.
 tags:
   - openui5
   - sap

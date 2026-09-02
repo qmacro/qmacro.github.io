@@ -1,6 +1,7 @@
 ---
 date: 2013-08-10
 title: "#YRS2013 Hacks on Github"
+description: Celebrating the use of GitHub and open source at the Young Rewired State Festival of Code weekend.
 tags:
   - github
   - open-source

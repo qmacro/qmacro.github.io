@@ -1,6 +1,7 @@
 ---
 title: Living on a narrowboat - embracing constraints
 date: 2023-01-16
+description: Embracing the constraints of living on a narrowboat as a positive force.
 tags:
   - narrowboat
   - personal

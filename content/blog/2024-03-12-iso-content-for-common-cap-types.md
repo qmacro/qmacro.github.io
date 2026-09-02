@@ -1,6 +1,7 @@
 ---
 title: ISO content for common CAP types
 date: 2024-03-12
+description: Exploring the NPM package that provides default ISO-based content for CAP common types like countries and currencies.
 tags:
   - cap
   - cds

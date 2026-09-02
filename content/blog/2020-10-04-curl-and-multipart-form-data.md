@@ -1,6 +1,7 @@
 ---
 date: 2020-10-04
 title:  "curl and multipart/form-data"
+description: Discovering how curl handles multipart/form-data including reading from standard input.
 tags:
   - shell
   - http

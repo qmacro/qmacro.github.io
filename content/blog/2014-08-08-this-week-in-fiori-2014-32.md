@@ -1,6 +1,7 @@
 ---
 date: 2014-08-08
 title: This Week in Fiori (2014-32)
+description: Covering week 32 of Fiori news and TechEd-related content.
 tags:
   - fiori
   - openui5

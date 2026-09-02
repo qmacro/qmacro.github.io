@@ -1,6 +1,7 @@
 ---
 date: 2011-10-16
 title: Reading List Mark 2 - Part 5
+description: Wrapping up the reading list app series by putting it all together and using the User Interface services.
 tags:
   - google-apps-script
   - google

@@ -1,6 +1,7 @@
 ---
 date: 2014-02-05
 title: 'Alt-K: Reading Notes'
+description: Describing my workflow for saving articles to the Kindle with the Send to Kindle Chrome extension.
 tags:
   - books
   - personal

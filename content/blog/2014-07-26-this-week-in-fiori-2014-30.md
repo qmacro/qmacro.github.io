@@ -1,6 +1,7 @@
 ---
 date: 2014-07-26
 title: This Week in Fiori (2014-30)
+description: Covering week 30 of Fiori news fresh from OSCON in Portland.
 tags:
   - fiori
   - openui5

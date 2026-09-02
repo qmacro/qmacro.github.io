@@ -1,6 +1,7 @@
 ---
 date: 2005-11-26
 title: Acorn Atom and my start in computing
+description: Reminiscing about how I got into computing, starting with the Acorn Atom.
 tags:
   - computing-history
   - personal

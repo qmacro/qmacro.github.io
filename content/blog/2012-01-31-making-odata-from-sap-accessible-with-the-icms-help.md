@@ -1,6 +1,7 @@
 ---
 title: Making OData from SAP accessible with the ICM's help
 date: 2012-01-31
+description: Using the SAP Internet Communication Manager to make OData from NetWeaver Gateway more accessible.
 tags:
   - sap
   - odata

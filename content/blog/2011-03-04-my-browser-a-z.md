@@ -1,6 +1,7 @@
 ---
 date: 2011-03-04
 title: My browser A-Z
+description: Listing my browser A-Z, the URLs that appear on a single letter press based on past browsing.
 tags:
   - tools
   - web

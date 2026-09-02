@@ -1,6 +1,7 @@
 ---
 title: Devtoberfest - the best developer prep for SAP TechEd
 date: 2023-09-18
+description: Explaining why Devtoberfest is a great way for developers to prepare for SAP TechEd.
 tags:
   - sap
   - conference

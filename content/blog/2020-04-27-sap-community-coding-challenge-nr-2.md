@@ -1,6 +1,7 @@
 ---
 title: "SAP Community Coding Challenge Nr.2"
 date: 2020-04-27
+description: Announcing the second SAP Community Coding Challenge with a fun puzzle to solve.
 tags:
   - community
   - learning

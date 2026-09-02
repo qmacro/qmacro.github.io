@@ -1,6 +1,7 @@
 ---
 title: "Updating your fork of the Developer Keynote repository"
 date: 2021-01-06
+description: Showing how to update your fork of the SAP TechEd Developer Keynote repository with new material.
 tags:
   - git
   - github

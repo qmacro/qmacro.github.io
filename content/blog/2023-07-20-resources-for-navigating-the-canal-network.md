@@ -1,6 +1,7 @@
 ---
 title: Resources for navigating the canal network
 date: 2023-07-20
+description: Sharing resources and tools for navigating the UK canal network.
 tags:
   - narrowboat
   - tools

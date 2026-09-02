@@ -1,6 +1,7 @@
 ---
 title: Give me a browser, and I'll give you the world
 date: 2015-09-28
+description: Exploring how a web-only developer workflow is possible right now using cloud-based tools.
 tags:
   - openui5
   - fiori

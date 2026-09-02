@@ -1,6 +1,7 @@
 ---
 date: 2016-10-19
 title: F3C Parts 9 and 10 - Functors
+description: Exploring functors as part of my FunFunFunction Companion series.
 tags:
   - functional-programming
   - javascript

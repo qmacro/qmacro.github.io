@@ -1,6 +1,7 @@
 ---
 title: "Double SAP CodeJam Athens - a report"
 date: 2019-06-27
+description: Reporting on delivering two SAP CodeJams in Athens on CAP and Workflow.
 tags:
   - codejam
   - sap

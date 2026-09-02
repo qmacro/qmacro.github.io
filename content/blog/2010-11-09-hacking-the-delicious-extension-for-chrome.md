@@ -1,6 +1,7 @@
 ---
 date: 2010-11-09
 title: Hacking the Delicious extension for Chrome
+description: Hacking the Delicious bookmarking extension for Chrome to fix some annoyances after switching from Firefox.
 tags:
   - javascript
   - tools

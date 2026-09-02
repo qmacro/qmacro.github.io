@@ -1,6 +1,7 @@
 ---
 date: 2015-03-20
 title: This Week in Fiori (2015-12)
+description: Covering week 12 of Fiori news including Mastering SAP Technologies and more.
 tags:
   - fiori
   - openui5

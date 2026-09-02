@@ -1,6 +1,7 @@
 ---
 title: 'SAP and Open Source: an analysis and letter to SAP and Shai'
 date: 2005-11-17
+description: Analysing SAP's position on open source and writing an open letter to SAP and Shai Agassi.
 tags:
   - sap
   - open-source

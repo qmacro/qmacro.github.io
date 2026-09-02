@@ -1,6 +1,7 @@
 ---
 date: 2014-03-20
 title: Paying IT Forward Links
+description: Sharing links from my SAP CodeTalk session on teaching kids computational thinking and coding.
 tags:
   - education
   - community

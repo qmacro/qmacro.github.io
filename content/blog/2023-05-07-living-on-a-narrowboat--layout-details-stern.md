@@ -1,6 +1,7 @@
 ---
 title: Living on a narrowboat - layout details of the stern
 date: 2023-05-07
+description: Describing the layout details of the stern on my narrowboat.
 tags:
   - narrowboat
   - personal

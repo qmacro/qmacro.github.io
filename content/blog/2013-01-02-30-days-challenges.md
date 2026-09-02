@@ -1,6 +1,7 @@
 ---
 date: 2013-01-02
 title: 30 Days Challenges
+description: Starting a series of 30-day challenges inspired by Matt Cutts as an alternative to New Year's resolutions.
 tags:
   - personal
   - learning

@@ -1,6 +1,7 @@
 ---
 title: "Tech Aloud podcast - an introduction"
 date: 2019-09-18
+description: Providing an introduction to my Tech Aloud podcast and the themes emerging from the first episodes.
 tags:
   - podcast
   - cap

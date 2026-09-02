@@ -1,6 +1,7 @@
 ---
 title: "SAP Community Coding Challenge 2 - Update"
 date: 2020-05-26
+description: Providing an update on the progress of the second SAP Community Coding Challenge.
 tags:
   - community
   - learning

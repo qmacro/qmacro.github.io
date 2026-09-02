@@ -1,6 +1,7 @@
 ---
 date: 2014-07-26
 title: Keyed vs Non-Keyed Root JSON Elements & UI5 Binding
+description: Exploring the difference between keyed and non-keyed root JSON elements in UI5 data binding.
 tags:
   - openui5
   - json

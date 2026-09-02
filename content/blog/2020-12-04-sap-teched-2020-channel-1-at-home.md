@@ -1,6 +1,7 @@
 ---
 title: "SAP TechEd 2020 Channel 1 at home"
 date: 2020-12-04
+description: Watching all the SAP TechEd 2020 Channel 1 content from the comfort of my TV at home.
 tags:
   - sap
   - conference

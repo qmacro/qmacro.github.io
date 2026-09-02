@@ -1,6 +1,7 @@
 ---
 date: 2017-04-29
 title: YABP - Yet Another Blogging Platform
+description: Reflecting on my history of blogging platforms and the latest move.
 tags:
   - blogging
   - tools

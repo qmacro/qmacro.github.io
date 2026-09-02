@@ -1,6 +1,7 @@
 ---
 date: 2011-11-02
 title: Moving on ... to Bluefin Solutions
+description: Moving on from contracting to joining Bluefin Solutions.
 tags:
   - career
   - sap

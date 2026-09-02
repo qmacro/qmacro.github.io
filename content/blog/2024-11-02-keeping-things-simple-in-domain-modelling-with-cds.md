@@ -1,6 +1,7 @@
 ---
 title: Keeping things simple in domain modelling with CDS
 date: 2024-11-02
+description: Keeping things simple in CDS domain modelling and remembering to involve the domain expert.
 tags:
   - cds
   - cap

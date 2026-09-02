@@ -1,6 +1,7 @@
 ---
 date: 2012-03-25
 title: SAPUI5 Powered SCN Forum Finder
+description: Building a SAPUI5-powered forum finder to help locate the old SDN forums on the new SCN platform.
 tags:
   - openui5
   - sap

@@ -1,6 +1,7 @@
 ---
 title: "Terminal Tip: switching CF targets"
 date: 2020-04-23
+description: Switching between Cloud Foundry targets efficiently from the command line.
 tags:
   - shell
   - cloud-foundry

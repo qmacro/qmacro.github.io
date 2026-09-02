@@ -1,6 +1,7 @@
 ---
 date: 2022-02-28
 title: Exercism and jq
+description: Exploring what a jq track might look like on the Exercism learning platform.
 tags:
   - jq
   - shell

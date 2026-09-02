@@ -1,6 +1,7 @@
 ---
 title: Curing my stove aboard the narrowboat
 date: 2023-07-22
+description: Curing my new stove aboard the narrowboat on the first cool day since launch.
 tags:
   - narrowboat
   - personal

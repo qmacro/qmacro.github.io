@@ -1,6 +1,7 @@
 ---
 date: 2014-07-22
 title: OpenUI5 Tutorial at OSCON 2014
+description: Presenting an OpenUI5 tutorial at OSCON 2014 in Portland with colleagues from SAP.
 tags:
   - openui5
   - conference

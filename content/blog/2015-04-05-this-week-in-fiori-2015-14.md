@@ -1,6 +1,7 @@
 ---
 date: 2015-04-05
 title: This Week in Fiori (2015-14)
+description: Covering week 14 of Fiori news with ABAP, OData and UI5 content.
 tags:
   - fiori
   - openui5

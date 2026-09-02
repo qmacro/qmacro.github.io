@@ -1,6 +1,7 @@
 ---
 date: 2009-08-21
 title: Command lines of the future, and simplicity of integration
+description: Thinking about chat-style interfaces as command lines of the future and their implications for integration.
 tags:
   - http
   - rest

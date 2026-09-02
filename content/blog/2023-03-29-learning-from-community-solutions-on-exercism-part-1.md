@@ -1,6 +1,7 @@
 ---
 title: Learning from community solutions on Exercism - part 1
 date: 2023-03-29
+description: Learning from community solutions on the jq track in Exercism, starting with some interesting patterns.
 tags:
   - jq
   - learning

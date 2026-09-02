@@ -1,6 +1,7 @@
 ---
 title: 10 tips to get you started on your Fiori development journey 
 date: 2015-03-02
+description: Offering ten practical tips for getting started on a Fiori development journey.
 tags:
   - fiori
   - openui5

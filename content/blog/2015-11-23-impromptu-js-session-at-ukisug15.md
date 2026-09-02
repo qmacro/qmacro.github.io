@@ -1,6 +1,7 @@
 ---
 date: 2015-11-23
 title: Impromptu JS session at UKISUG15
+description: Running an impromptu JavaScript session at UKISUG15 to introduce the language behind Fiori.
 tags:
   - fiori
   - javascript

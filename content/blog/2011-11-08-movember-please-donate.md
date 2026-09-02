@@ -1,6 +1,7 @@
 ---
 date: 2011-11-08
 title: Movember - please donate!
+description: Taking part in Movember and asking for donations to raise awareness of men's health.
 tags:
   - personal
   - community

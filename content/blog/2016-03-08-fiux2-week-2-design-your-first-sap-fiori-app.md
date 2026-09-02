@@ -1,6 +1,7 @@
 ---
 date: 2016-03-08
 title: '"fiux2" Week 2 - Design Your First SAP Fiori App'
+description: Covering week 2 of the openSAP Fiori course on designing your first SAP Fiori app.
 tags:
   - fiori
   - sap

@@ -1,6 +1,7 @@
 ---
 title: Reaching Out
 date: 2014-03-02
+description: Examining SAP's journey of reaching out to the wider developer community over four decades.
 tags:
   - community
   - sap

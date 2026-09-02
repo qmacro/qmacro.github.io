@@ -1,6 +1,7 @@
 ---
 title: CAP is important because it's not important
 date: 2019-11-06
+description: Considering what CAP really is, what it gives us, and why its transparency is what makes it important.
 tags:
   - cap
   - sap

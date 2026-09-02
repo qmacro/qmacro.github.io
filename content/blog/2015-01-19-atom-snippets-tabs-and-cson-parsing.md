@@ -1,6 +1,7 @@
 ---
 date: 2015-01-19
 title: Atom, Snippets, Tabs and CSON parsing
+description: Debugging a CSON parsing error in my UI5 snippets package for the Atom editor.
 tags:
   - openui5
   - tools

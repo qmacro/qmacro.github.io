@@ -1,6 +1,7 @@
 ---
 date: 2009-05-21
 title: Tarpipe REST connector in 5 minutes
+description: Demonstrating the new Tarpipe REST connector with a quick five-minute example.
 tags:
   - rest
   - http

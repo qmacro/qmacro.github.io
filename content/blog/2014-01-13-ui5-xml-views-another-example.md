@@ -1,6 +1,7 @@
 ---
 title: UI5 XML Views - Another Example
 date: 2014-01-13
+description: Providing another example of UI5 XML views with event handling and controller logic.
 tags:
   - openui5
   - sap

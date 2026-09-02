@@ -1,6 +1,7 @@
 ---
 date: 2016-10-02
 title: F3C Part 4 - Reduce advanced
+description: Exploring advanced uses of reduce as part of my FunFunFunction Companion series.
 tags:
   - functional-programming
   - javascript

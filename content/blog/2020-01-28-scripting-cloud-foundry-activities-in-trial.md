@@ -1,6 +1,7 @@
 ---
 title: "Scripting Cloud Foundry activities in trial"
 date: 2020-01-28
+description: Sharing a script for recreating my Business Rules environment in the Cloud Foundry trial using the CLI.
 tags:
   - shell
   - cloud-foundry

@@ -1,6 +1,7 @@
 ---
 title: Selecting the related endpoints from a GitHub API response using jq's with_entries
 date: 2023-06-12
+description: Using jq's with_entries to select the related API endpoints from a GitHub API response.
 tags:
   - jq
   - github

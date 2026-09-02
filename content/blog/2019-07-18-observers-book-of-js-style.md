@@ -1,6 +1,7 @@
 ---
 date: 2019-07-18
 title: The Observer's Book of JS Style
+description: Reflecting on JavaScript coding style through the lens of an Observer's Book approach.
 tags:
   - javascript
   - opinion

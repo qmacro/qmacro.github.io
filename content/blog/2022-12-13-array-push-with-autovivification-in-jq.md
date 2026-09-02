@@ -1,6 +1,7 @@
 ---
 title: Array push with autovivification in jq
 date: 2022-12-13
+description: Making a note about array push with autovivification in jq while working on Advent of Code.
 tags:
   - jq
   - json

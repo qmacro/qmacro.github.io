@@ -1,6 +1,7 @@
 ---
 title: SAP Developer Advisory Board - Your Input!
 date: 2014-04-20
+description: Asking the SAP developer community for input ahead of the Developer Advisory Board meeting.
 tags:
   - sap
   - community

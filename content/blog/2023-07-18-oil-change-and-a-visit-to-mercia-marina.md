@@ -1,6 +1,7 @@
 ---
 title: Oil change and a visit to Mercia Marina
 date: 2023-07-18
+description: Performing the first oil change service on my narrowboat engine during a visit to Mercia Marina.
 tags:
   - narrowboat
   - personal

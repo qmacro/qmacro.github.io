@@ -1,6 +1,7 @@
 ---
 title: Functions as first class citizens in SICP Lecture 1A
 date: 2024-12-16
+description: Exploring functions as first class citizens in SICP Lecture 1A and drawing parallels with queries in CAP.
 tags:
   - functional-programming
   - cap

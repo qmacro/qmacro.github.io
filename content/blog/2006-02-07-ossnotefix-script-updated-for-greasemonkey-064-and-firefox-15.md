@@ -1,6 +1,7 @@
 ---
 title: OssNoteFix script updated for Greasemonkey 0.6.4 and Firefox 1.5
 date: 2006-02-07
+description: Updating my OssNoteFix Greasemonkey script to work with newer versions of Greasemonkey and Firefox.
 tags:
   - sap
   - community

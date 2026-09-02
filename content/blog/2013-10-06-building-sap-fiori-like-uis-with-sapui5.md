@@ -1,6 +1,7 @@
 ---
 title: Building SAP Fiori-like UIs with SAPUI5
 date: 2013-10-06
+description: Previewing my SAP TechEd sessions on building SAP Fiori-like UIs with SAPUI5.
 tags:
   - openui5
   - fiori

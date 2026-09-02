@@ -1,6 +1,7 @@
 ---
 title: Highest value in JS - different ways
 date: 2024-07-23
+description: Exploring different ways to find the highest value in a JavaScript array as part of the Developer Challenge.
 tags:
   - javascript
   - functional-programming

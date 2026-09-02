@@ -1,6 +1,7 @@
 ---
 title: Extracting blog post dates from URLs with jq
 date: 2022-11-08
+description: Using jq to extract and sort blog post dates embedded in URLs from a JSON array of GitHub issues.
 tags:
   - jq
   - json

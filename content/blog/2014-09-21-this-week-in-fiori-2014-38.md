@@ -1,6 +1,7 @@
 ---
 date: 2014-09-21
 title: This Week in Fiori (2014-38)
+description: Covering week 38 of Fiori news following SAP Inside Track Sheffield and a CodeJam in Liverpool.
 tags:
   - fiori
   - openui5

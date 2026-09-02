@@ -1,6 +1,7 @@
 ---
 date: 2015-03-13
 title: This Week In Fiori (2015-11)
+description: Reviving the This Week in Fiori series for 2015.
 tags:
   - fiori
   - openui5

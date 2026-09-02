@@ -1,6 +1,7 @@
 ---
 title: Automatic validation in OData and REST calls with CAP
 date: 2024-07-24
+description: Exploring the automatic validation of data coming into CAP-based service endpoints via OData and REST.
 tags:
   - cap
   - cds

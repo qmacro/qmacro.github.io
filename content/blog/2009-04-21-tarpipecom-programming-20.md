@@ -1,6 +1,7 @@
 ---
 date: 2009-04-21
 title: tarpipe.com - Programming 2.0?
+description: Exploring whether tarpipe.com represents an early example of a Programming 2.0 concept.
 tags:
   - tools
   - web

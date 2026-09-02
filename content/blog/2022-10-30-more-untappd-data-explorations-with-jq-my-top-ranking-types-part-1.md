@@ -1,6 +1,7 @@
 ---
 date: 2022-10-30
 title: More Untappd data explorations with jq - my top ranking beer types (part 1)
+description: Exploring my Untappd data to discover my top ranking beer types, starting with the data preparation.
 tags:
   - jq
   - beer

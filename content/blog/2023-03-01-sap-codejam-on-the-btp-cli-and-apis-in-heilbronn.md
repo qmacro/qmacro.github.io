@@ -1,6 +1,7 @@
 ---
 title: SAP CodeJam on the btp CLI and APIs in Heilbronn
 date: 2023-03-01
+description: Reporting on delivering an SAP CodeJam on the btp CLI and APIs in Heilbronn.
 tags:
   - codejam
   - btp

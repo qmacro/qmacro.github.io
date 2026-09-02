@@ -1,6 +1,7 @@
 ---
 date: 2019-09-17
 title: New podcast - Tech Aloud
+description: Introducing my new Tech Aloud podcast where I read tech articles and blog posts aloud.
 tags:
   - podcast
   - community

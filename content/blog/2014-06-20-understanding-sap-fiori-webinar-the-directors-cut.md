@@ -1,6 +1,7 @@
 ---
 title: Understanding SAP Fiori Webinar - The Director's Cut
 date: 2014-06-20
+description: Following up our Understanding SAP Fiori webinar with a deeper dive Director's Cut video.
 tags:
   - fiori
   - sap

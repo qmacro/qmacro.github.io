@@ -1,6 +1,7 @@
 ---
 date: 2020-10-03
 title:  "Using exec to jump"
+description: Exploring how the exec builtin in Bash replaces the current process with a new one.
 tags:
   - shell
   - learning

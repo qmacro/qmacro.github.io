@@ -1,6 +1,7 @@
 ---
 date: 2022-05-21
 title: Exploring JSON with interactive jq
+description: Using ijq, the interactive jq wrapper, to explore JSON data with immediate visual feedback.
 tags:
   - jq
   - json

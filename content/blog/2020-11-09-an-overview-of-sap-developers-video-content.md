@@ -1,6 +1,7 @@
 ---
 title: "An overview of SAP Developers video content"
 date: 2020-11-09
+description: Providing an overview of the wealth of video content for SAP developers on the YouTube channel.
 tags:
   - sap
   - community

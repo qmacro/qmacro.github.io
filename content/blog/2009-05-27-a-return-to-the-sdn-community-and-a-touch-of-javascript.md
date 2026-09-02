@@ -1,6 +1,7 @@
 ---
 title: A return to the SDN community, and a touch of Javascript
 date: 2009-05-27
+description: Returning to the SDN community after six years and reflecting on how it has grown.
 tags:
   - sap
   - community

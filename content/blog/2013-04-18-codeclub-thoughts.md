@@ -1,6 +1,7 @@
 ---
 date: 2013-04-18
 title: CodeClub Thoughts
+description: Sharing thoughts and experiences from leading a CodeClub at my local primary school.
 tags:
   - education
   - community

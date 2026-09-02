@@ -1,6 +1,7 @@
 ---
 title: "Getting BTP resource GUIDs with the btp CLI - part 1"
 date: 2021-11-24
+description: Learning how to use the btp CLI to determine resource GUIDs in a BTP global account.
 tags:
   - btp
   - cli

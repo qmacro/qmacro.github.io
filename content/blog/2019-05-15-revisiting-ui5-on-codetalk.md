@@ -1,6 +1,7 @@
 ---
 title: "Revisiting UI5 on CodeTalk"
 date: 2019-05-15
+description: Revisiting the subject of UI5 in a CodeTalk session with Marius Obert and Ian Thain.
 tags:
   - openui5
   - sap

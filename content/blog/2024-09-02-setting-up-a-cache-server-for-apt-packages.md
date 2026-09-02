@@ -1,6 +1,7 @@
 ---
 title: Setting up a cache server for apt packages
 date: 2024-09-03
+description: Setting up an apt-cacher-ng based cache server for Debian apt packages in my homeops context.
 tags:
   - homelab
   - linux

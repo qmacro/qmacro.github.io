@@ -1,6 +1,7 @@
 ---
 date: 2002-09-22
 title: The case of the missing rdf:Description
+description: Investigating why an rdf:Description element can be omitted from certain RDF serialisations.
 tags:
   - rdf
   - xml

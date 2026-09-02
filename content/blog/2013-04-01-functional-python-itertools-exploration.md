@@ -1,6 +1,7 @@
 ---
 date: 2013-04-01
 title: Functional Python - Itertools Exploration
+description: Exploring functional programming concepts in Python through itertools as part of my ongoing 30-day challenges.
 tags:
   - python
   - functional-programming

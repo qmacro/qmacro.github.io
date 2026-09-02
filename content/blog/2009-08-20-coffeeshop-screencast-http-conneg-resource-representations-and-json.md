@@ -1,6 +1,7 @@
 ---
 date: 2009-08-20
 title: 'Coffeeshop screencast: HTTP conneg, resource representations and JSON'
+description: Showing HTTP content negotiation, resource representations and JSON support in coffeeshop.
 tags:
   - rest
   - http

@@ -1,6 +1,7 @@
 ---
 date: 2022-10-28
 title: Untappd data with jq - my top brewery countries
+description: Exploring my Untappd checkin data with jq to find my top brewery countries.
 tags:
   - jq
   - beer

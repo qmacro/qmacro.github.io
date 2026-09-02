@@ -1,6 +1,7 @@
 ---
 date: 2011-03-28
 title: JSON and Other Animals - talk at Manchester jQuery Meetup
+description: Presenting on JSON, AJAX and JSONP at the Manchester jQuery Meetup at MadLab.
 tags:
   - json
   - javascript

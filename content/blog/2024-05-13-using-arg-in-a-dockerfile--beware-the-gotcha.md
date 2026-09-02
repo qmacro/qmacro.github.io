@@ -1,6 +1,7 @@
 ---
 title: Using ARG in a Dockerfile - beware the gotcha
 date: 2024-05-13
+description: Learning about the subtle gotcha with ARG and FROM instruction ordering in Dockerfile definitions.
 tags:
   - docker
   - tools

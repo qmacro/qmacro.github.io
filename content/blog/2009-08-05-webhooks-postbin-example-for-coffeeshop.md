@@ -1,6 +1,7 @@
 ---
 date: 2009-08-05
 title: Webhooks postbin example for Coffeeshop
+description: Demonstrating webhooks with coffeeshop using the PostBin developer utility.
 tags:
   - rest
   - http

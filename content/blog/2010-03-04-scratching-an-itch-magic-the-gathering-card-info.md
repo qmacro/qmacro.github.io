@@ -1,6 +1,7 @@
 ---
 date: 2010-03-04
 title: Scratching an itch - Magic The Gathering card info
+description: Scratching an itch by building a quick tool to look up Magic The Gathering card information.
 tags:
   - python
   - http

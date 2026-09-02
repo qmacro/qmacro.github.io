@@ -1,6 +1,7 @@
 ---
 title: Digging into CSN diffs for CDS models
 date: 2024-06-01
+description: Building a csndiff script to understand CSN changes as I build up CDS models incrementally.
 tags:
   - cap
   - cds

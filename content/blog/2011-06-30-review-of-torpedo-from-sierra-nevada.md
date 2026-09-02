@@ -1,6 +1,7 @@
 ---
 title: Review of Torpedo from Sierra Nevada
 date: 2011-06-30
+description: Reviewing Torpedo IPA from Sierra Nevada at Port Street Beer House's American Beer Festival.
 tags:
   - beer
   - review

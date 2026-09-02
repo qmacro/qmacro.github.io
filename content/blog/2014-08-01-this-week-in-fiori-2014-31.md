@@ -1,6 +1,7 @@
 ---
 date: 2014-08-01
 title: This Week in Fiori (2014-31)
+description: Covering week 31 of Fiori news including the UX Explorer and OData-related content.
 tags:
   - fiori
   - odata

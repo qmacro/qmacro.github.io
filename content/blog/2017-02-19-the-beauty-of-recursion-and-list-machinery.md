@@ -1,6 +1,7 @@
 ---
 date: 2017-02-19
 title: The beauty of recursion and list machinery
+description: Exploring the beautiful patterns inherent in recursion and list processing in functional programming.
 tags:
   - functional-programming
   - learning

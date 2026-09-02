@@ -1,6 +1,7 @@
 ---
 title: Jump to Shell Workset Item from URL
 date: 2013-01-11
+description: Discovering how to jump to specific SAP Shell workset items from a URL.
 tags:
   - sap
   - tools

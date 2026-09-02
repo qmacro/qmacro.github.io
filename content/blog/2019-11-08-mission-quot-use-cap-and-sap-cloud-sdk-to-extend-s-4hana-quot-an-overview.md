@@ -1,6 +1,7 @@
 ---
 title: "Mission 'Use CAP and SAP Cloud SDK to Extend S/4HANA' - an overview"
 date: 2019-11-08
+description: Outlining the Use CAP and SAP Cloud SDK to Extend S/4HANA mission created for SAP TechEd 2019.
 tags:
   - cap
   - sap

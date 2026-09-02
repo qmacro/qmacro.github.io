@@ -1,6 +1,7 @@
 ---
 title: "Programmer's Day Mission 2020"
 date: 2020-09-08
+description: Announcing the Programmer's Day mission on the SAP Community for earning a special badge.
 tags:
   - community
   - sap

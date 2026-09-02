@@ -1,6 +1,7 @@
 ---
 title: "SAP TechEd Developer Keynote - Info Central"
 date: 2021-02-23
+description: Gathering all the information about the SAP TechEd 2020 Developer Keynote and related resources in one place.
 tags:
   - sap
   - conference

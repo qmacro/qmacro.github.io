@@ -1,6 +1,7 @@
 ---
 date: 2016-05-03
 title: FOFP 1.3 Some basic list processing
+description: Exploring basic list processing with imperative and functional approaches.
 tags:
   - functional-programming
   - javascript

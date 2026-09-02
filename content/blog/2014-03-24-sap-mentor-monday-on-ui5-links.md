@@ -1,6 +1,7 @@
 ---
 date: 2014-03-24
 title: SAP Mentor Monday on UI5 - Links
+description: Collecting links from the public SAP Mentor Monday session on UI5 with Andreas Kunz.
 tags:
   - openui5
   - fiori

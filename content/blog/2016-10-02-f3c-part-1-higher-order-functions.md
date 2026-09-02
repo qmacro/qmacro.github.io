@@ -1,6 +1,7 @@
 ---
 date: 2016-10-02
 title: F3C Part 1 - Higher-order functions
+description: Exploring higher-order functions as part of my FunFunFunction Companion series on functional programming.
 tags:
   - functional-programming
   - javascript

@@ -1,6 +1,7 @@
 ---
 date: 2005-11-17
 title: MoonOverFailsworth
+description: Capturing a photo of an enormous moon rising over Failsworth.
 tags:
   - personal
 ---

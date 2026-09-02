@@ -1,6 +1,7 @@
 ---
 date: 2015-03-09
 title: Why I'm Staying Close to UI5
+description: Explaining why I'm staying close to UI5 in response to an article about staying clear of it.
 tags:
   - openui5
   - fiori

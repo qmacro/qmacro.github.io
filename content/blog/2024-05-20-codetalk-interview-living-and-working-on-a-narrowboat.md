@@ -1,6 +1,7 @@
 ---
 title: CodeTalk interview - living and working on a narrowboat
 date: 2024-05-20
+description: Appearing on CodeTalk to discuss living and working on my narrowboat.
 tags:
   - narrowboat
   - interview

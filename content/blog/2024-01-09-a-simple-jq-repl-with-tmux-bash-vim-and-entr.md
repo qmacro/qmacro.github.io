@@ -1,6 +1,7 @@
 ---
 title: A simple jq REPL with tmux, bash, vim and entr
 date: 2024-01-09
+description: Building a simple jq REPL with tmux, Bash, Vim and entr for exploring JSON datasets.
 tags:
   - jq
   - shell

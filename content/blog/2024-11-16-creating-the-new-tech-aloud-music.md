@@ -1,6 +1,7 @@
 ---
 title: Creating the new Tech Aloud intro and outro music
 date: 2024-11-16
+description: Reviving my Tech Aloud podcast and creating new intro and outro music with JavaScript.
 tags:
   - podcast
   - javascript

@@ -1,6 +1,7 @@
 ---
 title: Improve your CAP dev container shell prompt
 date: 2024-04-11
+description: Improving the shell prompt in a CAP dev container for a better development experience.
 tags:
   - cap
   - shell

@@ -1,6 +1,7 @@
 ---
 date: 2011-11-10
 title: The Developer Renaissance
+description: Interviewing SAP's Aiaz Kazi on the developer renaissance at SAP TechEd in Madrid.
 tags:
   - sap
   - conference

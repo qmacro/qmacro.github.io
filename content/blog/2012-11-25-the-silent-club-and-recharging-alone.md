@@ -1,6 +1,7 @@
 ---
 date: 2012-11-25
 title: The Silent Club and Recharging Alone
+description: Reflecting on the Silent Club concept and the importance of recharging alone as an introvert.
 tags:
   - personal
   - opinion

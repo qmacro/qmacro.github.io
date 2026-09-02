@@ -1,6 +1,7 @@
 ---
 title: Review of Red Rice Ale from Hitachino Nest
 date: 2012-02-28
+description: Reviewing Red Rice Ale from Japan's Kiuchi brewery at Port Street Beer House.
 tags:
   - beer
   - review

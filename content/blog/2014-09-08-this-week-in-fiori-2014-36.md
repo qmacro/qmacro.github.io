@@ -1,6 +1,7 @@
 ---
 date: 2014-09-08
 title: This Week in Fiori (2014-36)
+description: Covering week 36 of Fiori news including openSAP courses and portal integration.
 tags:
   - fiori
   - openui5

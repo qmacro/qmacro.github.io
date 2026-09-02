@@ -1,6 +1,7 @@
 ---
 title: Building blocks for the future normal 
 date: 2015-08-06
+description: Arguing that understanding UI5 is key to embracing the future normal of SAP with S/4HANA and Fiori.
 tags:
   - sap
   - opinion

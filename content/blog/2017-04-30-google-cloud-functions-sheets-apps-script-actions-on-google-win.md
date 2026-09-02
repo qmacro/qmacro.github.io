@@ -1,6 +1,7 @@
 ---
 date: 2017-04-30
 title: Google Cloud Functions + Sheets + Apps Script + Actions On Google = WIN
+description: Combining Google Cloud Functions, Sheets, Apps Script and Actions on Google into a perfect storm of technology.
 tags:
   - google-apps-script
   - google

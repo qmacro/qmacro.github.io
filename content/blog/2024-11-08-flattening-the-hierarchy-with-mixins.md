@@ -1,6 +1,7 @@
 ---
 title: Flattening the hierarchy with mixins
 date: 2024-11-08
+description: Exploring how mixins in CDS help flatten a hierarchy between application and foundation teams.
 tags:
   - cds
   - cap

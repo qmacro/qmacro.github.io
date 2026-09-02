@@ -1,6 +1,7 @@
 ---
 title: A deep dive into OData and CDS annotations
 date: 2023-03-10
+description: Taking a deep dive into OData and CDS annotations following my live stream series on OData basics.
 tags:
   - odata
   - cds

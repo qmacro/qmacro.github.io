@@ -1,6 +1,7 @@
 ---
 date: 2021-10-29
 title: Embracing jq and JSON
+description: Finding that exploring objects in a complex JSON structure is not as scary as I thought with jq.
 tags:
   - jq
   - json

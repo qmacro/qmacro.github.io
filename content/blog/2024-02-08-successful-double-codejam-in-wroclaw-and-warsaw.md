@@ -1,6 +1,7 @@
 ---
 title: Successful double CodeJam in Wroclaw and Warsaw
 date: 2024-02-08
+description: Reporting on two successful SAP CodeJams in Wroclaw and Warsaw, Poland.
 tags:
   - codejam
   - cap

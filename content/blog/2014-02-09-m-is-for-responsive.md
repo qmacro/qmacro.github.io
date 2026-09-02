@@ -1,6 +1,7 @@
 ---
 title: M is for 'responsive'
 date: 2014-02-09
+description: Exploring what responsive design means in the context of Fiori and the mobile revolution.
 tags:
   - openui5
   - fiori

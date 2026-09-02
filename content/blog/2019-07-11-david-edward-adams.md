@@ -1,6 +1,7 @@
 ---
 date: 2019-07-11
 title: David Edward Adams
+description: Remembering my dad, David Edward Adams, who passed away peacefully on 11 July 2019.
 tags:
   - personal
 ---

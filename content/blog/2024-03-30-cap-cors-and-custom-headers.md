@@ -1,6 +1,7 @@
 ---
 title: CAP, CORS and custom headers
 date: 2024-03-30
+description: Digging into CORS support in CAP, covering CORS headers, preflight requests and custom header handling.
 tags:
   - cap
   - javascript

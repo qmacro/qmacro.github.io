@@ -1,6 +1,7 @@
 ---
 date: 2016-03-17
 title: '"fiux2" Week 3 - Get Ready to Create Your First App'
+description: Covering week 3 of the openSAP Fiori course on getting ready to create your first app.
 tags:
   - fiori
   - sap

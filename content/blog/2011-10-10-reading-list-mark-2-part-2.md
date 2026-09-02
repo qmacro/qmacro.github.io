@@ -1,6 +1,7 @@
 ---
 date: 2011-10-10
 title: Reading List Mark 2 - Part 2
+description: Continuing the reading list app series, covering the Tasks API for retrieving and inserting tasklists.
 tags:
   - google-apps-script
   - google

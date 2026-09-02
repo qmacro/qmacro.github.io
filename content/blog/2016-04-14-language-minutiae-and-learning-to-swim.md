@@ -1,6 +1,7 @@
 ---
 date: 2016-04-14
 title: Language minutiae and learning to SWIM
+description: Discovering small language details in Clojure while solving puzzles and learning to SWIM.
 tags:
   - functional-programming
   - learning

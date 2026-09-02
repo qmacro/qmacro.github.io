@@ -1,6 +1,7 @@
 ---
 title: Mobile Dev Course W3U3 Rewrite - XML Views - An Analysis
 date: 2013-12-02
+description: Analysing the differences between JavaScript and XML view implementations in my W3U3 rewrite.
 tags:
   - openui5
   - fiori

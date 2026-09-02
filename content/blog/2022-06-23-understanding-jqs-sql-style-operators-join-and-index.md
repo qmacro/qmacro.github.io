@@ -1,6 +1,7 @@
 ---
 date: 2022-06-23
 title: Understanding jq's SQL style operators JOIN and INDEX
+description: Exploring jq's JOIN and INDEX operators based on a Stack Overflow answer.
 tags:
   - jq
   - json

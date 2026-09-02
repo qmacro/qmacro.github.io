@@ -1,6 +1,7 @@
 ---
 title: The elements of programming with respect to CDL and SICP
 date: 2024-12-09
+description: Drawing parallels between the elements of programming in SICP and CDS's Conceptual Definition Language.
 tags:
   - cap
   - cds

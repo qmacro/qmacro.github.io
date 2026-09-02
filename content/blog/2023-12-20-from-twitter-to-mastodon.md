@@ -1,6 +1,7 @@
 ---
 title: From Twitter to Mastodon
 date: 2023-12-20
+description: Moving off Twitter at the end of 2023 and explaining the reasons for the switch to Mastodon.
 tags:
   - web
   - community

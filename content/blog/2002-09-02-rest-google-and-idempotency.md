@@ -1,6 +1,7 @@
 ---
 date: 2002-09-02
 title: REST, Google, and idempotency
+description: Pondering the apparent conundrum of REST, Google and idempotency that Sam Ruby presented to Mark Baker.
 tags:
   - rest
   - http

@@ -1,6 +1,7 @@
 ---
 title: REpresentational State Transfer (REST) and SAP
 date: 2010-01-07
+description: Exploring how REST as an architectural style applies to SAP integration scenarios.
 tags:
   - rest
   - sap

@@ -1,6 +1,7 @@
 ---
 date: 2022-05-28
 title: Multiple level filters in jq
+description: Using jq to shape JSON representations of OData with filtering at two levels.
 tags:
   - jq
   - odata

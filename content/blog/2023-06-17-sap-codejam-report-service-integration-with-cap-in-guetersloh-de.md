@@ -1,6 +1,7 @@
 ---
 title: SAP CodeJam report - service integration with CAP in Guetersloh, DE
 date: 2023-06-17
+description: Reporting on delivering an SAP CodeJam on service integration with CAP in Guetersloh.
 tags:
   - codejam
   - cap

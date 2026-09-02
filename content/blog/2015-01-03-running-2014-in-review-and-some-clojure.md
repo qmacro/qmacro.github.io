@@ -1,6 +1,7 @@
 ---
 date: 2015-01-03
 title: 'Running: 2014 in review, and some Clojure'
+description: Reviewing my 2014 running stats and doing some simple data analysis in Clojure.
 tags:
   - clojure
   - running

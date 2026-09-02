@@ -1,6 +1,7 @@
 ---
 date: 2014-08-31
 title: This Week in Fiori (2014-35)
+description: Covering week 35 of Fiori news including catalogue design, TechEd previews and an all-SAP affair.
 tags:
   - fiori
   - sap

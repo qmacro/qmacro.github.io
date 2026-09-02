@@ -1,6 +1,7 @@
 ---
 title: Mocking up the Payroll Control Center Fiori App
 date: 2014-02-16
+description: Mocking up a Fiori-style Payroll Control Center app to demonstrate how quickly such UIs can be built.
 tags:
   - fiori
   - openui5

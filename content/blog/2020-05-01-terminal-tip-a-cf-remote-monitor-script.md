@@ -1,6 +1,7 @@
 ---
 title: "Terminal Tip: a CF remote monitor script"
 date: 2020-05-01
+description: Building a script to find and remotely monitor an ongoing Cloud Foundry multi-target app deployment.
 tags:
   - shell
   - cloud-foundry

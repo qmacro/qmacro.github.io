@@ -1,6 +1,7 @@
 ---
 title: "SAP TechEd Developer Keynote DK100 - The Story"
 date: 2020-11-19
+description: Telling the story behind the SAP TechEd Developer Keynote DK100 that we built together.
 tags:
   - sap
   - conference

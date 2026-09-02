@@ -1,6 +1,7 @@
 ---
 date: 2014-10-19
 title: This Week in Fiori (2014-42)
+description: Covering week 42 of Fiori news, the most significant week number.
 tags:
   - fiori
   - openui5

@@ -1,6 +1,7 @@
 ---
 date: 2005-12-16
 title: Java and Gosling's FUD - madness or desperation?
+description: Questioning James Gosling's FUD about dynamic languages in the context of Java's declining dominance.
 tags:
   - java
   - open-source

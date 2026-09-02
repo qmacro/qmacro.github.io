@@ -1,6 +1,7 @@
 ---
 title: Learning from exploring a question on jq
 date: 2022-12-28
+description: Exploring different ways of achieving a simple JSON reformulation goal with jq and explaining my thinking.
 tags:
   - jq
   - json

@@ -1,6 +1,7 @@
 ---
 title: I'm moving onto a narrowboat
 date: 2023-01-02
+description: Announcing my decision to have a narrowboat built and to live and work from it.
 tags:
   - narrowboat
   - personal

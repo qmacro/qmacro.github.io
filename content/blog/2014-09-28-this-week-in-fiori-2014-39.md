@@ -1,6 +1,7 @@
 ---
 date: 2014-09-28
 title: This Week in Fiori (2014-39)
+description: Covering week 39 of Fiori news with links to stories and articles.
 tags:
   - fiori
   - this-week-in-fiori

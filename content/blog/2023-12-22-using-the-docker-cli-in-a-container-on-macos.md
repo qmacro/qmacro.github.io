@@ -1,6 +1,7 @@
 ---
 title: Using the docker CLI in a container on macOS
 date: 2023-12-22
+description: Explaining how to use the Docker client CLI from within a container on macOS.
 tags:
   - docker
   - tools

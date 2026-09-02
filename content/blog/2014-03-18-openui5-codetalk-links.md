@@ -1,6 +1,7 @@
 ---
 date: 2014-03-18
 title: OpenUI5 CodeTalk Links
+description: Sharing links from my SAP CodeTalk session on OpenUI5 with Ian Thain.
 tags:
   - openui5
   - fiori

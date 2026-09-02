@@ -1,6 +1,7 @@
 ---
 date: 2011-07-20
 title: Stand steady on the shoulders of giants
+description: Making the case for attending my Omniversity course on Web Programming with SAP's Internet Communication Framework.
 tags:
   - sap
   - http

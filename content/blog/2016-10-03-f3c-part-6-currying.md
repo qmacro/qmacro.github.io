@@ -1,6 +1,7 @@
 ---
 date: 2016-10-03
 title: F3C Part 6 - Currying
+description: Exploring currying as part of my FunFunFunction Companion series.
 tags:
   - functional-programming
   - javascript

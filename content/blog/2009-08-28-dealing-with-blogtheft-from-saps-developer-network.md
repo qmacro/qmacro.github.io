@@ -1,6 +1,7 @@
 ---
 date: 2009-08-28
 title: Dealing with "#blogtheft" from SAP's Developer Network
+description: Addressing the blogtheft problem where content was being lifted wholesale from SAP's Developer Network.
 tags:
   - sap
   - community

@@ -1,6 +1,7 @@
 ---
 title: "SAP Tech Bytes: Approuter User API Service"
 date: 2021-02-20
+description: Kicking the tyres of the new User API Service available in the SAP approuter NPM package.
 tags:
   - btp
   - sap

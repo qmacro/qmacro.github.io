@@ -1,6 +1,7 @@
 ---
 date: 2016-04-05
 title: '"fiux2" Week 6 - Extend SAP Fiori Apps'
+description: Covering week 6 of the openSAP Fiori course on extending SAP Fiori apps.
 tags:
   - fiori
   - sap

@@ -1,6 +1,7 @@
 ---
 date: 2019-10-23
 title: Shell power and simplicity
+description: Reflecting on the often overlooked power and simplicity of shell programming concepts.
 tags:
   - shell
   - tools

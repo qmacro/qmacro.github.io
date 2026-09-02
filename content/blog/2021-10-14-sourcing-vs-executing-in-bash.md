@@ -1,6 +1,7 @@
 ---
 date: 2021-10-14
 title: Sourcing vs executing in Bash
+description: Checking the value of $0 to determine whether to source rather than execute a script.
 tags:
   - shell
   - learning

@@ -1,6 +1,7 @@
 ---
 title: Mobile Dev Course W3U3 Rewrite - Intro
 date: 2013-10-16
+description: Introducing my rewrite of the open.sap.com mobile course sample SAPUI5 app to fix some fundamental issues.
 tags:
   - openui5
   - fiori

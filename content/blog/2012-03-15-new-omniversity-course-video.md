@@ -1,6 +1,7 @@
 ---
 date: 2012-03-15
 title: New Omniversity Course Video!
+description: Releasing a new video for my Web Programming with SAP's Internet Communication Framework course.
 tags:
   - sap
   - http

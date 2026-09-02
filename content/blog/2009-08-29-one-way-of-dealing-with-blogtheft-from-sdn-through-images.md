@@ -1,6 +1,7 @@
 ---
 title: One way of dealing with blogtheft from SDN - through images
 date: 2009-08-29
+description: Using image-based techniques to deal with content being stolen from SDN.
 tags:
   - sap
   - community

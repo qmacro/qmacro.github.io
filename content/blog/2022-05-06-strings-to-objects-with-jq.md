@@ -1,6 +1,7 @@
 ---
 date: 2022-05-06
 title: Converting strings to objects with jq
+description: Converting a list of fully qualified GitHub repository names into structured JSON objects with jq.
 tags:
   - jq
   - json

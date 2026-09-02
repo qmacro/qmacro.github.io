@@ -1,6 +1,7 @@
 ---
 date: 2014-09-14
 title: Scratching an itch - UI5 Icon Finder
+description: Building a UI5 Icon Finder app to search the vast library of icons available in UI5.
 tags:
   - openui5
   - tools

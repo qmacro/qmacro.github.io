@@ -1,6 +1,7 @@
 ---
 date: 2011-05-31
 title: Danger! Graduate Conveyor-belt!
+description: Responding to John Appleby's piece on university degrees and the IT industry with thoughts on education and learning.
 tags:
   - education
   - opinion

@@ -1,6 +1,7 @@
 ---
 date: 2016-10-04
 title: F3C Part 7 - Recursion
+description: Exploring recursion as part of my FunFunFunction Companion series.
 tags:
   - functional-programming
   - javascript

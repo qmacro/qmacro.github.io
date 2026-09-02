@@ -1,6 +1,7 @@
 ---
 date: 2015-02-14
 title: Fiori & UI5 Related Videos
+description: Collecting together an annotated list of my Fiori and UI5 related public videos.
 tags:
   - fiori
   - openui5

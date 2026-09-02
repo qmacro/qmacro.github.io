@@ -1,6 +1,7 @@
 ---
 date: 2014-10-07
 title: This Week in Fiori (2014-40)
+description: Covering week 40 of Fiori news including the Fiori App Reference Library.
 tags:
   - fiori
   - this-week-in-fiori

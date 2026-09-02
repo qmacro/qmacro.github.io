@@ -1,6 +1,7 @@
 ---
 date: 2015-04-22
 title: openSAP Experiences
+description: Sharing my experiences with the openSAP learning platform and some suggestions for improvement.
 tags:
   - sap
   - learning

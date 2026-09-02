@@ -1,6 +1,7 @@
 ---
 date: 2005-04-07
 title: Muscle cars
+description: Admiring some monster-engined muscle cars at the Oxford services on the M40.
 tags:
   - personal
 ---

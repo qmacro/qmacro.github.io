@@ -1,6 +1,7 @@
 ---
 title: "Gateway metadata cache check - always abap_true?"
 date: 2012-05-08
+description: Debugging the Gateway metadata caching mechanism and finding a potential issue.
 tags:
   - sap
   - odata

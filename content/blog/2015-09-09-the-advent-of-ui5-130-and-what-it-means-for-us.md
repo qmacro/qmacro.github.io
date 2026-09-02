@@ -1,6 +1,7 @@
 ---
 title: The advent of UI5 1.30 and what it means for us
 date: 2015-09-09
+description: Reflecting on the milestone UI5 1.30 release and what it signifies for the toolkit's maturity.
 tags:
   - openui5
   - fiori

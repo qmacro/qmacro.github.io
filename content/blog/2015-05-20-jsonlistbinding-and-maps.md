@@ -1,6 +1,7 @@
 ---
 date: 2015-05-20
 title: JSON List Binding and maps
+description: Exploring JSON List Binding and the JavaScript Map object in the context of a UI5 app.
 tags:
   - openui5
   - json

@@ -1,6 +1,7 @@
 ---
 title: Understanding the SAP Fiori Cloud Edition
 date: 2016-07-14
+description: Providing an overview of the SAP Fiori Cloud Edition, how it works and what benefits it brings.
 tags:
   - fiori
   - sap

@@ -1,6 +1,7 @@
 ---
 title: Review of Norwegian Wood from Haandbryggeriet
 date: 2012-08-30
+description: Reviewing Norwegian Wood, a smoked beer from Norway's Haandbryggeriet, at Port Street Beer House.
 tags:
   - beer
   - review

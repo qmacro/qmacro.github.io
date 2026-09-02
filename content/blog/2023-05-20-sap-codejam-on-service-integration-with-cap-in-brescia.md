@@ -1,6 +1,7 @@
 ---
 title: SAP CodeJam on Service Integration with CAP in Brescia
 date: 2023-05-20
+description: Reporting on running an SAP CodeJam on service integration with CAP in Brescia, Italy.
 tags:
   - codejam
   - cap

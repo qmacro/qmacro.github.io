@@ -1,6 +1,7 @@
 ---
 title: "SAP NPM packages now on npmjs.org"
 date: 2020-07-02
+description: Explaining the migration of SAP Node.js packages from the SAP NPM registry to npmjs.org.
 tags:
   - npm
   - sap

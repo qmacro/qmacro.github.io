@@ -1,6 +1,7 @@
 ---
 date: 2009-04-24
 title: 'An HTTP connector for Tarpipe: ''tarbridge'''
+description: Building tarbridge, an HTTP connector for Tarpipe that enables POST requests to arbitrary URLs.
 tags:
   - http
   - rest

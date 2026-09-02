@@ -1,6 +1,7 @@
 ---
 date: 2011-06-03
 title: 'Beer review: Dark Star''s Saison'
+description: Reviewing Dark Star's Saison cask beer at Port Street Beer House.
 tags:
   - beer
   - review

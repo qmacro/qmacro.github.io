@@ -1,6 +1,7 @@
 ---
 title: "Food for thought: LDBs and ABAP Objects"
 date: 2003-11-13
+description: Musing on the relationship between Logical Databases and ABAP Objects while debugging output determination.
 tags:
   - sap
   - abap

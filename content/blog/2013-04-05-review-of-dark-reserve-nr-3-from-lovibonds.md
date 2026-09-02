@@ -1,6 +1,7 @@
 ---
 title: Review of Dark Reserve Nr 3 from Lovibonds
 date: 2013-04-05
+description: Reviewing Dark Reserve Nr 3 from the Lovibonds brewery.
 tags:
   - beer
   - review

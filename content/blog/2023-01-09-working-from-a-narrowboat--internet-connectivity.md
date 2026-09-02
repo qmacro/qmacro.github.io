@@ -1,6 +1,7 @@
 ---
 title: Working from a narrowboat - Internet connectivity
 date: 2023-01-09
+description: Exploring the internet connectivity options for working from a narrowboat.
 tags:
   - narrowboat
   - tools

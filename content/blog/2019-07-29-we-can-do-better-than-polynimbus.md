@@ -1,6 +1,7 @@
 ---
 date: 2019-07-29
 title: We can do better than 'polynimbus'
+description: Questioning the use of the word polynimbus and advocating for clearer language in tech.
 tags:
   - opinion
   - cloud

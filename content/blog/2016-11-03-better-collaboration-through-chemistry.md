@@ -1,6 +1,7 @@
 ---
 title: Better collaboration through chemistry
 date: 2016-11-03
+description: Reflecting on better collaboration through understanding and chemistry while working alongside a client on Fiori.
 tags:
   - community
   - opinion

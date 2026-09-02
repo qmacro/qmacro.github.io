@@ -1,6 +1,7 @@
 ---
 title: Blog It Forward - DJ Adams
 date: 2012-08-31
+description: Taking part in the Blog It Forward community challenge on SCN.
 tags:
   - sap
   - community

@@ -1,6 +1,7 @@
 ---
 date: 2015-03-17
 title: Making Information More Useful
+description: Explaining my approach to making information more accessible and useful through links and references.
 tags:
   - opinion
   - tools

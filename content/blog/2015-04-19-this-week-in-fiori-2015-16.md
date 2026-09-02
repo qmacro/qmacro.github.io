@@ -1,6 +1,7 @@
 ---
 date: 2015-04-19
 title: This Week in Fiori (2015-16)
+description: Covering week 16 of Fiori news including the Ariba Total User Experience.
 tags:
   - fiori
   - this-week-in-fiori

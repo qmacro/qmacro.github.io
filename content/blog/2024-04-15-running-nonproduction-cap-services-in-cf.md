@@ -1,6 +1,7 @@
 ---
 title: Running non-production CAP services in CF
 date: 2024-04-15
+description: Running non-production CAP services in Cloud Foundry without the overhead of production infrastructure.
 tags:
   - cap
   - cloud-foundry

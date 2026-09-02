@@ -1,6 +1,7 @@
 ---
 title: Small steps - OpenUI5 toolkit now in jsbin.com
 date: 2014-03-04
+description: Celebrating the addition of the OpenUI5 toolkit to jsbin.com for easy code demos and snippets.
 tags:
   - openui5
   - open-source

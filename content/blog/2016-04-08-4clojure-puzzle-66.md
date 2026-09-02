@@ -1,6 +1,7 @@
 ---
 date: 2016-04-08
 title: 4Clojure Puzzle 66
+description: Solving 4Clojure puzzle 66 on my journey to learning more Clojure through online puzzles.
 tags:
   - functional-programming
   - clojure

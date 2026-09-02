@@ -1,6 +1,7 @@
 ---
 date: 2012-01-25
 title: 'SAP ICF course marketing: video!'
+description: Creating a marketing video for my SAP ICF course at the Omniversity.
 tags:
   - sap
   - http

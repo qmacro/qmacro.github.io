@@ -1,6 +1,7 @@
 ---
 date: 2011-10-15
 title: Reading List Mark 2 - Part 4
+description: Continuing the reading list app series, covering synchronisation between the spreadsheet and content sources.
 tags:
   - google-apps-script
   - google

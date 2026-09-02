@@ -1,6 +1,7 @@
 ---
 title: Developing CAP in containers - three ways
 date: 2024-01-15
+description: Exploring three different ways of developing CAP applications in containers.
 tags:
   - cap
   - docker

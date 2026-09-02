@@ -1,6 +1,7 @@
 ---
 title: "SAP Tech Bytes: btp CLI - autocompletion"
 date: 2021-09-21
+description: Setting up command autocompletion for the btp CLI.
 tags:
   - btp
   - cli

@@ -1,6 +1,7 @@
 ---
 date: 2011-10-08
 title: Reading List Mark 2 - Part 1
+description: Introducing a reading list app built with Google Apps Script to demonstrate various API integrations.
 tags:
   - google-apps-script
   - google

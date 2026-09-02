@@ -1,6 +1,7 @@
 ---
 date: 2014-08-23
 title: This Week in Fiori (2014-34)
+description: Covering week 34 of Fiori news including documentation, extensibility, prototyping tools and workflow.
 tags:
   - fiori
   - openui5

@@ -1,6 +1,7 @@
 ---
 date: 2012-04-01
 title: 'The Developer Connection: Connect Like Never Before'
+description: Rediscovering SAP's Developer Connection at DKOM and the renewed focus on developers.
 tags:
   - sap
   - community

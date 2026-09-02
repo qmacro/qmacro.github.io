@@ -1,6 +1,7 @@
 ---
 title: The future of app building on the SAP HANA Cloud Platform
 date: 2016-01-26
+description: Exploring one particular facet of the multi-faceted SAP HANA Cloud Platform and the future of app building.
 tags:
   - sap
   - btp

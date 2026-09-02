@@ -1,6 +1,7 @@
 ---
 title: Obtaining auth code grant type OAuth 2.0 tokens for Google APIs with a script
 date: 2024-05-08
+description: Writing a script to obtain OAuth 2.0 bearer tokens for Google API calls using the auth code grant type.
 tags:
   - shell
   - api

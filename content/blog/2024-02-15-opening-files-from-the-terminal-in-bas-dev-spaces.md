@@ -1,6 +1,7 @@
 ---
 title: Opening files from the terminal in BAS dev spaces
 date: 2024-02-15
+description: Opening files from the terminal in SAP Business Application Studio dev spaces using the code command.
 tags:
   - sap
   - tools

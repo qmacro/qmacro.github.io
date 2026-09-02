@@ -1,6 +1,7 @@
 ---
 title: "SAP Tech Bytes: btp CLI - new home for configuration"
 date: 2022-02-17
+description: Noting the updates to where the btp CLI configuration is stored by default.
 tags:
   - btp
   - cli

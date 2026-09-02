@@ -1,6 +1,7 @@
 ---
 title: Avoid design time CAP server restarts when maintaining local data files
 date: 2024-04-10
+description: Avoiding unnecessary CAP server restarts when maintaining local CSV data files during design time.
 tags:
   - cap
   - developer-experience

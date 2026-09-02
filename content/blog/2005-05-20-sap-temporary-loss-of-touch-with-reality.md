@@ -1,6 +1,7 @@
 ---
 date: 2005-05-20
 title: 'SAP: temporary loss of touch with reality?'
+description: Responding to Shai Agassi's questionable views on open source software at Sapphire in Boston.
 tags:
   - sap
   - open-source
