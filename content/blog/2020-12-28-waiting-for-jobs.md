@@ -29,7 +29,7 @@ I noticed the use of `wait` in those two places and was intrigued; although I co
 
 **The `wait` builtin in action**
 
-First, what is `wait`? Well, it's (usually a) builtin, i.e. a command that is built in to the shell executable itself, rather than existing as a separate program. The headline description is that `wait` "waits for job completion and returns the exit status". The [Wikipedia entry](https://en.wikipedia.org/wiki/Wait_(command)) for it notes that it's a builtin because it "_needs to be aware of the job table of the current shell execution environment_", which makes sense, given its purpose.
+First, what is `wait`? Well, it's (usually) a builtin, i.e. a command that is built in to the shell executable itself, rather than existing as a separate program. The headline description is that `wait` "waits for job completion and returns the exit status". The [Wikipedia entry](https://en.wikipedia.org/wiki/Wait_(command)) for it notes that it's a builtin because it "_needs to be aware of the job table of the current shell execution environment_", which makes sense, given its purpose.
 
 While the above snippet of code gives a couple of examples, I thought I'd spend a coffee writing a little exploratory script called `jobwait` to feel how `wait` can work. Here it is:
 
