@@ -130,6 +130,8 @@ also as a transitive verb? That use has been [waning since the early
 C20](https://books.google.com/ngrams/graph?year_start=1800&year_end=2008&corpus=15&smoothing=7&case_insensitive=on&content=disillusion&direct_url=t4%3B%2Cdisillusion%3B%2Cc0%3B%2Cs0%3B%3Bdisillusion%3B%2Cc0%3B%3BDisillusion%3B%2Cc0),
 but still wonderful.)
 
+### Ephemerality
+
 Resources, such as those that are spun up on cloud platforms such as
 SAP's and Google's, that are ultimately ephemeral need to be born and
 then die, and in that intervening period, have an identifier that is as
