@@ -1,6 +1,7 @@
 ---
 title: The Fiori revolution - disruption at its best
 date: 2016-09-28
+description: Three disruptive aspects of SAP Fiori and why they are important for enterprises in the digital era.
 tags:
   - fiori
   - sap

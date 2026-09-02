@@ -1,6 +1,7 @@
 ---
 title: CodeTalk - SAPUI5 and SAP Fiori
 date: 2013-11-22
+description: A two-part CodeTalk video interview covering SAPUI5 and SAP Fiori, from general concepts and architecture through to hands-on code and demos.
 tags:
   - openui5
   - fiori

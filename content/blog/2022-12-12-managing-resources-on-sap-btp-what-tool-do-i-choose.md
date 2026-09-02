@@ -1,6 +1,7 @@
 ---
 title: "Managing resources on SAP BTP - what tool do I choose?"
 date: 2022-12-12
+description: A way to think about the different tools available for managing resources on the SAP Business Technology Platform and when to use each one.
 tags:
   - btp
   - sap

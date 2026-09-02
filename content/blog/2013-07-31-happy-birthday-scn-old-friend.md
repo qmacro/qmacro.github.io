@@ -1,6 +1,7 @@
 ---
 title: Happy Birthday SCN, Old Friend
 date: 2013-07-31
+description: Reflecting on ten years of the SAP Community Network and my involvement from the very beginning.
 tags:
   - sap
   - community

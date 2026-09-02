@@ -1,6 +1,7 @@
 ---
 date: 2016-12-27
 title: Excluding with vim's wildignore
+description: Getting the wildignore setting to work properly in vim for excluding directories like node_modules from file searches.
 tags:
   - neovim
   - tools

@@ -8,7 +8,7 @@ tags:
   - learning
   - til
 ---
-_In [reading through](/blog/posts/2020/10/03/using-exec-to-jump.html) [Mr Rob](https://rwx.gg/)'s [`ix`](https://gitlab.com/rwxrob/dotfiles/-/blob/master/scripts/ix) script, I discovered something about `curl` that I hadn't known about._
+In [reading through](/blog/posts/2020/10/03/using-exec-to-jump.html) [Mr Rob](https://rwx.gg/)'s [`ix`](https://gitlab.com/rwxrob/dotfiles/-/blob/master/scripts/ix) script, I discovered something about `curl` that I hadn't known about.
 
 The script's key line is this:
 
