@@ -1096,8 +1096,6 @@ would work nicely too (noting here that [we redefined the value for `Authors` ea
 
 10. It was the end of the day and I struggled a little with this, until I took a nap. And I woke up with the answer, realising what problem had been!
 
----
-
 [1]: https://www.youtube.com/watch?v=Tz7TTM1pOIk
 [2]: /blog/posts/2024/12/06/the-art-and-science-of-cap/
 [3]: /blog/posts/2025/02/14/tasc-notes-part-8/

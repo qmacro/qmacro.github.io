@@ -754,44 +754,35 @@ Until next time - and I hope these notes are useful - let me know in the comment
 <a name="footnotes"></a>
 ## Footnotes
 
-<a name="footnote-1"></a>
 1. I know this seems obvious, but sometimes it's helpful to stare at the obvious for a while, in a "kata" style of memory reinforcement.
 
-<a name="footnote-2"></a>
 2. Which is Suppliers, Products and Categories, with relationships between them (if you want to peruse such a service, there's one available [here][46]).
 
-<a name="footnote-3"></a>
 3. You can paste multiple lines into the REPL, or edit multiple lines yourself, using the `.editor` REPL command (see the [Commands and special keys][16] section of the Node.js REPL documentation). You can also use [template literals][17] (`` `...` ``) for multiline strings.
 
-<a name="footnote-4"></a>
 4. See the [Improved $expand][20] section of my talk on [OData V4 and SAP Cloud Application Programming Model][21] for more on the complex `$expand` value.
 
-<a name="footnote-5"></a>
 5. I know that `car` is just a subsequent value derived from `bar`, but I like to think that it's a respectful reference to a core building block of the language that provided so much fundamental thinking for functional programming, which in turn has informed CAP. I'm talking of course about the [primitive operation `car` in Lisp][23].
 
-<a name="footnote-6"></a>
 6. That this is a `cds watch` based affordance is further underlined when Daniel starts up the `bookstore` service in the cds REPL with `cds r --run cap/samples/bookstore/` at around [28:31][105] and receives the error _No credentials configured for "ReviewsService"_, because the "check `~/.cds-services.json` and mock if nothing found" design time feature is only invoked with `cds watch`.
 
-<a name="footnote-7"></a>
 7. At this point in the live stream I remark on Daniel's choice of three characters for his parameter names reflecting some lovely historical Unix trivia, in that the system usernames of Unix and C gods such as Thompson, Richie, Kernaghan, Weinberger et al. were always three characters, as we can see in the first column in [this historical `/etc/passwd` file][38]:
 
-```log
-dmr:gfVwhuAMF0Trw:42:10:Dennis Ritchie:/usr/staff/dmr:
-ken:ZghOT0eRm4U9s:52:10:& Thompson:/usr/staff/ken:
-sif:IIVxQSvq1V9R2:53:10:Stuart Feldman:/usr/staff/sif:
-scj:IL2bmGECQJgbk:60:10:Steve Johnson:/usr/staff/scj:
-pjw:N33.MCNcTh5Qw:61:10:Peter J. Weinberger,2015827214:/usr/staff/pjw:/bin/csh
-bwk:ymVglQZjbWYDE:62:10:Brian W. Kernighan,2015826021:/usr/staff/bwk:
-uucp:P0CHBwE/mB51k:66:10:UNIX-to-UNIX Copy:/usr/spool/uucp:/usr/lib/uucp/uucico
-srb:c8UdIntIZCUIA:68:10:Steve Bourne,2015825829:/usr/staff/srb:
-```
+    ```log
+    dmr:gfVwhuAMF0Trw:42:10:Dennis Ritchie:/usr/staff/dmr:
+    ken:ZghOT0eRm4U9s:52:10:& Thompson:/usr/staff/ken:
+    sif:IIVxQSvq1V9R2:53:10:Stuart Feldman:/usr/staff/sif:
+    scj:IL2bmGECQJgbk:60:10:Steve Johnson:/usr/staff/scj:
+    pjw:N33.MCNcTh5Qw:61:10:Peter J. Weinberger,2015827214:/usr/staff/pjw:/bin/csh
+    bwk:ymVglQZjbWYDE:62:10:Brian W. Kernighan,2015826021:/usr/staff/bwk:
+    uucp:P0CHBwE/mB51k:66:10:UNIX-to-UNIX Copy:/usr/spool/uucp:/usr/lib/uucp/uucico
+    srb:c8UdIntIZCUIA:68:10:Steve Bourne,2015825829:/usr/staff/srb:
+    ```
 
-(and yes, my favourite shell `bash` is named after a successor to the shell that Steve Bourne created which was called the Bourne shell (`sh`), in that "bash" stands for the play on words "Bourne (born) again shell".)
+    (and yes, my favourite shell `bash` is named after a successor to the shell that Steve Bourne created which was called the Bourne shell (`sh`), in that "bash" stands for the play on words "Bourne (born) again shell".)
 
-<a name="footnote-8"></a>
 8. It still slightly disturbs me (in a fun way) that the event identifier here (`some event`) contains whitespace :-)
 
-<a name="footnote-9"></a>
 9. Yes, the choice of the property name `mac` here was deliberate; three characters, but a reference to a band that wrote a song which I've referenced in the explanation for this example and forms a core part of what we've learned here. Can you guess what the band is and why? :-)
 
 <a name="appendix"></a>

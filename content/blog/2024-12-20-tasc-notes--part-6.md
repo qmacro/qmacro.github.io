@@ -876,22 +876,18 @@ That just about wraps it up for this episode; the series is now paused while we 
 <a name="footnotes"></a>
 ## Footnotes
 
-<a name="footnote-1"></a>
 1. This reminds me of [my musings into functors][9], wherein a functor is something that has a `map` method.
 
-<a name="footnote-2"></a>
 2. In reproducing the examples, I'm using the latest publicly available CAP Node.js version which is 8.6.1, and when I first made this connection invocation I got an error:
 
-`Uncaught Error: Cannot find module '@sap-cloud-sdk/resilience'`
+    `Uncaught Error: Cannot find module '@sap-cloud-sdk/resilience'`
 
-which is related to the requirement for the SAP Cloud SDK which CAP uses to handle the detail and complexity of remote connections, especially in the context of destination definitions (think of the [Destination Service][16] on SAP BTP).
+    which is related to the requirement for the SAP Cloud SDK which CAP uses to handle the detail and complexity of remote connections, especially in the context of destination definitions (think of the [Destination Service][16] on SAP BTP).
 
-I cover this in great detail in the [Service Integration with SAP Cloud Application Programming Model][14] CodeJam, specifically in [Exercise 08 - Introduce the SAP Cloud SDK][15], so will just say here that to overcome this error, I just installed the NPM package `@sap-cloud-sdk/http-client`.
+    I cover this in great detail in the [Service Integration with SAP Cloud Application Programming Model][14] CodeJam, specifically in [Exercise 08 - Introduce the SAP Cloud SDK][15], so will just say here that to overcome this error, I just installed the NPM package `@sap-cloud-sdk/http-client`.
 
-<a name="footnote-3"></a>
 3. Did you notice _what_ locations? They're the project-local location plus the locations ... of the automatically-loaded plugins! This relationship is explained further in [CAP Node.js plugins - part 1 - how things work][20].
 
-<a name="footnote-4"></a>
 4. If you're curious about ``cats.get`Books` `` vs ``cats.get(`Books`)``, you might find the MDN documentation on [Tagged templates][33] useful.
 
 
