@@ -7,9 +7,8 @@ tags:
   - fzf
   - tools
   - learning
+description: One of the ways I learn is by reading and sometimes rewriting other people's scripts. Here I learn more about jq by rewriting a friend's password CLI script.
 ---
-
-_One of the ways I learn is by reading and sometimes rewriting other people's scripts. Here I learn more about `jq` by rewriting a friend's password CLI script._
 
 My friend [Christian Drumm](https://twitter.com/ceedee666) published a nice post this week on [Adapting the Bitwarden CLI with Shell Scripting](https://www.drumm.sh/blog/bw-cli), where he shared a script he wrote to conveniently grab passwords into his paste buffer at the command line.
 
