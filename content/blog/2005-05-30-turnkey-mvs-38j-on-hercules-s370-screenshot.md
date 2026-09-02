@@ -1,7 +1,6 @@
 ---
 date: 2005-05-30
 title: Turnkey MVS 3.8J on Hercules S/370 Screenshot
-- '370'
 description: Big iron and retrocomputing.
 tags:
   - computing-history

@@ -1,7 +1,6 @@
 ---
 date: 2015-01-03
 title: 'Running: 2014 in review, and some Clojure'
-- '2014'
 tags:
   - clojure
   - running
