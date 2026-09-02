@@ -17,8 +17,8 @@ So I looked across to the app itself, expecting the List to be empty. But it was
 
 After some digging, I found out. Introduced on 10 Dec 2014, within the 1.28.0 release, was a modest feature:
 
-<address>**[[FEATURE] sap.ui.model.json.JSONListBinding: iterate over maps](https://github.com/SAP/openui5/commit/38ab764601c061d5fbf256f8bb4703cd4ec89022)**  
- Enhance JSONListBinding to iterate over maps (by key), not just over  
+[[FEATURE] sap.ui.model.json.JSONListBinding: iterate over maps](https://github.com/SAP/openui5/commit/38ab764601c061d5fbf256f8bb4703cd4ec89022)
+ Enhance JSONListBinding to iterate over maps (by key), not just over
  arrays (by index).</address>Interesting! A small modification to the JSON List Binding to treat the indices of a map as if they were of an array. After all, in JavaScript, arrays and maps are perhaps more closely related than one might think.
 
 I set about confirming what I’d found with a small test on Plunkr, “[Aggregation Binding Test](http://plnkr.co/edit/QQU4bPNb5Kg65vZ8vnad?p=preview)“:
