@@ -7,7 +7,6 @@ tags:
   - cds
   - javascript
   - npm
-  - tutorial
 ---
 
 For information on the series and links to all resources, see the [CAP Node.js

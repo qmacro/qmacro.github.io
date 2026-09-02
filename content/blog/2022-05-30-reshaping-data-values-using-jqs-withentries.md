@@ -4,7 +4,6 @@ title: Reshaping data values using jq's with_entries
 tags:
   - jq
   - json
-  - tutorial
 ---
 Receipt of a JSON file containing valid tags for tutorial metadata gave me the perfect opportunity to explore it and learn a bit more jq in the process.
 

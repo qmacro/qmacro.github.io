@@ -6,7 +6,6 @@ tags:
   - jq
   - json
   - odata
-  - tutorial
 ---
 
 In our current [Back to basics: OData

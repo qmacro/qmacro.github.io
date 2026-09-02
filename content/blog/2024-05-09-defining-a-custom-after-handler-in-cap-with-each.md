@@ -4,7 +4,6 @@ date: 2024-05-09
 tags:
   - cap
   - javascript
-  - tutorial
 ---
 TL;DR: There's special behaviour if you use the `each` parameter name when defining an `after` handler, but the way this works and the way you should invoke it has changed.
 

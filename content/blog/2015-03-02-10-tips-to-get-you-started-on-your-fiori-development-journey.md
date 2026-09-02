@@ -4,7 +4,6 @@ date: 2015-03-02
 tags:
   - fiori
   - openui5
-  - tutorial
   - opinion
   - community
 ---

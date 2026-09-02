@@ -5,7 +5,6 @@ tags:
   - cap
   - cds
   - javascript
-  - tutorial
   - community
 ---
 *In this post, I show one way of using computed properties in CAP, using

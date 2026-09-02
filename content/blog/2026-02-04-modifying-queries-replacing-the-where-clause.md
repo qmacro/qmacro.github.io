@@ -6,7 +6,6 @@ tags:
   - cap
   - cds
   - javascript
-  - tutorial
 ---
 
 The result of modifying existing queries can be a little unexpected at first. For example, you might have a query object where you want to replace the WHERE clause before you execute it. Here's how not to do it, and then how to do it.

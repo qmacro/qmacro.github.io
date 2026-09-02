@@ -4,7 +4,6 @@ date: 2014-01-13
 tags:
   - openui5
   - sap
-  - tutorial
   - community
 ---
 I've been diving into UI5 XML views and sharing the love recently - see [Mobile Dev Course W3U3 Rewrite - XML Views - An Intro](/blog/posts/2013/11/19/mobile-dev-course-w3u3-rewrite-xml-views-an-intro/) (as part of [Mobile Dev Course W3U3 Rewrite - Intro](/blog/posts/2013/10/16/mobile-dev-course-w3u3-rewrite-intro/)), and the XML view based templates and snippets in my [SublimeUI5](https://github.com/qmacro/SublimeUI5) Package for the "developer's choice" Sublime Text editor.

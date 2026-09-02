@@ -6,7 +6,6 @@ tags:
   - cap
   - cds
   - domain-modelling
-  - tutorial
 ---
 The [November 2025 release](https://cap.cloud.sap/docs/releases/nov25) of CAP heralded [a beta version of Status-Transition Flows](https://cap.cloud.sap/docs/releases/2025/nov25#status-transition-flows), moving us up yet another gear in the journey towards declarative nirvana.
 

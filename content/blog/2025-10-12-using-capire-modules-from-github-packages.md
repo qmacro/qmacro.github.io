@@ -7,7 +7,6 @@ tags:
   - cds
   - npm
   - github
-  - tutorial
 ---
 ## Background
 

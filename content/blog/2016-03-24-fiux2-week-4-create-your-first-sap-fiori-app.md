@@ -5,7 +5,6 @@ tags:
   - fiori
   - sap
   - learning
-  - tutorial
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2016/03/04/fiux2-the-opensap-fiori-course-2016-edition/).)
 

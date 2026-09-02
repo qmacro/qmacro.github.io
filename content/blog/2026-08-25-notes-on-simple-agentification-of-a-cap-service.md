@@ -7,7 +7,6 @@ tags:
   - ai
   - cds
   - javascript
-  - tutorial
 ---
 
 ## Baseline

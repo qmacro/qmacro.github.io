@@ -5,7 +5,6 @@ tags:
   - google-apps-script
   - google
   - tools
-  - tutorial
 ---
 
 

@@ -7,7 +7,6 @@ tags:
   - cds
   - npm
   - domain-modelling
-  - tutorial
 ---
 
 (Get to all the parts in this series via the [series

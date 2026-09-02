@@ -4,7 +4,6 @@ date: 2013-01-31
 tags:
   - openui5
   - sap
-  - tutorial
   - community
 ---
 

@@ -5,7 +5,6 @@ tags:
   - odata
   - http
   - shell
-  - tutorial
 ---
 _You can use curl to send OData query operations with system query options that contain whitespace, and have it URL encode that whitespace for you._
 

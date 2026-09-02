@@ -4,7 +4,6 @@ date: 2026-02-02
 description: I'm refreshing the content of the OData Deep Dive series of tutorials, in the open.
 tags:
   - odata
-  - tutorial
   - open-source
 ---
 

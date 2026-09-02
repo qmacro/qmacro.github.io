@@ -5,7 +5,6 @@ tags:
   - btp
   - sap
   - community
-  - tutorial
 ---
 *Use a simple example to kick the tyres of the new User API Service
 available in the `@sap/approuter` NPM package.*

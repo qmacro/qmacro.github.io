@@ -5,7 +5,6 @@ tags:
   - google-apps-script
   - google
   - tools
-  - tutorial
 ---
 This is Part 2 in a series about an example app that I put together to demonstrate and describe the use of various Google Apps Script features. See [Part 1](/blog/posts/2011/10/08/reading-list-mark-2-part-1/) for an introduction.
 

@@ -5,7 +5,6 @@ description: In this post I provider a taster of what's possible regarding mock 
 tags:
   - cap
   - developer-experience
-  - tutorial
 ---
 
 This post is one of [a series on local-first development with CAP

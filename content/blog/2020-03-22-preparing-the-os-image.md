@@ -6,7 +6,6 @@ tags:
   - raspberry-pi
   - linux
   - brambleweeny
-  - tutorial
 ---
 
 _This post describes how I prepared the base OS image for each of the Raspberry Pis in my "Brambleweeny" cluster._

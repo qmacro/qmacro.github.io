@@ -5,7 +5,6 @@ tags:
   - functional-programming
   - javascript
   - fofp
-  - tutorial
 ---
 Part of the [Fundamentals of Functional Programming](/blog/posts/2016/05/03/fofp-fundamentals-of-functional-programming/) document.
 

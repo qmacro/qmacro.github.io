@@ -6,7 +6,6 @@ tags:
   - raspberry-pi
   - shell
   - brambleweeny
-  - tutorial
 ---
 
 _In the previous post we identified the freshly booted Pis on the network; now it's time to perform some initial configuration, using Ansible._

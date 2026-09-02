@@ -6,7 +6,6 @@ tags:
   - jq
   - odata
   - json
-  - tutorial
 ---
 
 In doing some research for an [upcoming live

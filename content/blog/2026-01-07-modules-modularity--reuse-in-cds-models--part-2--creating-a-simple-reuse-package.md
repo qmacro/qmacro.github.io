@@ -7,7 +7,6 @@ tags:
   - cds
   - npm
   - domain-modelling
-  - tutorial
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models/).)
 

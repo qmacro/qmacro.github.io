@@ -5,7 +5,6 @@ tags:
   - sap
   - http
   - rest
-  - tutorial
   - talk
 ---
 

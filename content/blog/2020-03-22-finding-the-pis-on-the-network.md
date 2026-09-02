@@ -6,7 +6,6 @@ tags:
   - raspberry-pi
   - shell
   - brambleweeny
-  - tutorial
 ---
 
 _Now that we have our Pis booted and up and running on the network, we need to find them to configure them further._

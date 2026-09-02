@@ -5,7 +5,6 @@ tags:
   - openui5
   - fiori
   - sap
-  - tutorial
   - conference
   - community
 ---

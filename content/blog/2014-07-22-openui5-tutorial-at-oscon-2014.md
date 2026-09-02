@@ -5,7 +5,6 @@ tags:
   - openui5
   - conference
   - open-source
-  - tutorial
   - talk
   - oscon
 ---

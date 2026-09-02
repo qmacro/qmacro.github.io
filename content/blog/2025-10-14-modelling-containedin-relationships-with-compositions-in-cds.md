@@ -6,7 +6,6 @@ tags:
   - cap
   - cds
   - domain-modelling
-  - tutorial
 ---
 ## Background
 

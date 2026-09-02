@@ -4,7 +4,6 @@ title: Understanding jq's SQL style operators JOIN and INDEX
 tags:
   - jq
   - json
-  - tutorial
 ---
 In this post I explore a couple of new (to me) operators in jq's arsenal: `JOIN` and `INDEX`, based on an answer to a question that I came across on Stack Overflow.
 

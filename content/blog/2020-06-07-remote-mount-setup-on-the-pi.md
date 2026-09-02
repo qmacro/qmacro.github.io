@@ -6,7 +6,6 @@ tags:
   - raspberry-pi
   - linux
   - shell
-  - tutorial
 ---
 
 _This post documents what I did to set up mount points for, and connect to, an Apple Airport Time Capsule here on my homelab network and also my Google Drive._

@@ -6,7 +6,6 @@ tags:
   - cap
   - service-integration
   - developer-experience
-  - tutorial
 ---
 
 This post is one of [a series on local-first development with CAP

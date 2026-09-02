@@ -6,7 +6,6 @@ tags:
   - cds
   - odata
   - javascript
-  - tutorial
 ---
 If, while serving a call to your provided CAP service, you want to construct some CQL to perform on your database in a similar way to how `$expand` works in OData, this post may help.
 

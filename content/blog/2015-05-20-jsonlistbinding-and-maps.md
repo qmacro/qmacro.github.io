@@ -5,7 +5,6 @@ tags:
   - openui5
   - json
   - javascript
-  - tutorial
 ---
 
 

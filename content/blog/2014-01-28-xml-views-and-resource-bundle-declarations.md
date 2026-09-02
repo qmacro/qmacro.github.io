@@ -4,7 +4,6 @@ date: 2014-01-28
 tags:
   - openui5
   - sap
-  - tutorial
   - community
 ---
 Just a quick post on the train on the way down to London this morning.

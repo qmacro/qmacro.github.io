@@ -6,7 +6,6 @@ tags:
   - cap
   - cds
   - odata
-  - tutorial
 ---
 
 In [Part 2](https://www.youtube.com/watch?v=s4IZR1LBRrA) of our current

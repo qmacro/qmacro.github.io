@@ -5,7 +5,6 @@ description: In this short post I explain how the "failsafe" production auth mec
 tags:
   - cap
   - developer-experience
-  - tutorial
 ---
 
 Recently I wrote about [mocking

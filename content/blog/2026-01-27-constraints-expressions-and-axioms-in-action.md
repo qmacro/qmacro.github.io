@@ -5,7 +5,6 @@ description: In this blog post I meditate on how declarative constraints are rea
 tags:
   - cap
   - cds
-  - tutorial
   - domain-modelling
 ---
 

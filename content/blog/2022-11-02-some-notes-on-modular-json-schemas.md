@@ -4,7 +4,6 @@ title: Some notes on modular JSON Schema definitions
 tags:
   - json
   - tools
-  - tutorial
 ---
 Here are a few rambling notes-to-self on understanding how a modular JSON Schema definition might be constructed. I've recently become acquainted with JSON Schema through the [BTP Setup Automator](https://github.com/SAP-samples/btp-setup-automator) project. 
 
