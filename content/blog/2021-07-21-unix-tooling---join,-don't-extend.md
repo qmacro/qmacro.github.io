@@ -7,6 +7,7 @@ tags:
   - tools
   - opinion
   - architecture
+  - unix
 ---
 
 Rob Pike and Brian Kernighan authored a paper in 1984 titled "[Program design in the UNIX environment](https://nymity.ch/sybilhunting/pdf/Pike1983a.pdf)". In it, they explore the difference between adding features to existing programs, and achieving the same effect through connecting programs together.

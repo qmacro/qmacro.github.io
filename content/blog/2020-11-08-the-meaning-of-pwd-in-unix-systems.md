@@ -6,6 +6,7 @@ tags:
   - shell
   - linux
   - computing-history
+  - unix
 ---
 At the end of Oct 2020 I ran a [brief poll on Twitter](/tweets/qmacro/status/1322567992551624705/), on which 82 people voted. Here's that poll, and the results. They're quite mixed, which at first might seem surprising. But there are reasons for that, as we'll find out.
 

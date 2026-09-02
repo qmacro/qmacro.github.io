@@ -6,6 +6,7 @@ tags:
   - shell
   - learning
   - opinion
+  - unix
 ---
 I was browsing the source code of the main script in the [bash-http-monitoring](https://github.com/RaymiiOrg/bash-http-monitoring) project that had been shared on a social news site recently. The general idea was that it fired off a number of background web requests to run in parallel and eventually produce a report on the availability of various websites. Nice, neat and simple.
 
