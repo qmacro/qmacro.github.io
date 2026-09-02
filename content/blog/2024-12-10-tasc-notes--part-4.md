@@ -112,7 +112,7 @@ Here's a [basic example][25] of that lazy loading, based on a simple object defi
 const thing = {
     name: "Life",
     get number() { console.log("in getter"); return 42; }
-} 
+}
 ```
 
 In the illustration below, look at the results of each of the REPL's eager evaluations (the values that the REPL shows even before you press Enter):
@@ -254,7 +254,7 @@ cds.db .before ('*', req => {
 })
 ```
 
-and the actual call to `console.log` was inside the body of a lambda[<sup>1</sup>](#footnote-1), an anonymous function definition, defined here using the ES6 fat arrow syntax[<sup>3</sup>](#footnote-3): 
+and the actual call to `console.log` was inside the body of a lambda[<sup>1</sup>](#footnote-1), an anonymous function definition, defined here using the ES6 fat arrow syntax[<sup>3</sup>](#footnote-3):
 
 ```javascript
 req => { console.log (req.event, req.target.name) }
@@ -267,7 +267,7 @@ As a brief aside, note that the first example here was `cds.db.before()`, typed 
 <a name="the-core-of-the-cap-framework"></a>
 ## The core of the CAP framework
 
-At around [38:38][107] Daniel use `.inspect` to look at the handlers - the _event_ handlers - for the `db` service: 
+At around [38:38][107] Daniel use `.inspect` to look at the handlers - the _event_ handlers - for the `db` service:
 
 ![db event handlers][33]
 

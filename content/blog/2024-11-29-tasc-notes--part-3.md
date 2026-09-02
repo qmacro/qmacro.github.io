@@ -75,7 +75,7 @@ Daniel started to address Marian's question on nested projections (like a sub-se
 <a name="footnotes"></a>
 ## Footnotes
 
-* In the sample code for the [New Plugin for RFC][22] section, did we miss an opportunity to combine history with the beloved [Schnapszahlen][28] - we could have used SAP system ID C11 instead of SYS, as C11 was the classic system ID example in early R/3 documentation.
+1. In the sample code for the [New Plugin for RFC][22] section, did we miss an opportunity to combine history with the beloved [Schnapszahlen][28] - we could have used SAP system ID C11 instead of SYS, as C11 was the classic system ID example in early R/3 documentation.
 
 [1]: https://www.youtube.com/watch?v=oujZD2xEUBM&list=PL6RpkC85SLQAe45xlhIfhTYB9G0mdRVjI&index=3
 [2]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_assignment
