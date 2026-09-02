@@ -2,7 +2,9 @@
 title: SAP Developer Advisory Board - Your Input!
 date: 2014-04-20
 tags:
-  - sapcommunity
+  - sap
+  - community
+  - opinion
 ---
 Gregor Wolf and I are attending the [SAP Developer Advisory Board](https://web.archive.org/web/20150716134515/http://board.sapdevcenter.com/) meeting on Tue 22 Apr 2014.
 

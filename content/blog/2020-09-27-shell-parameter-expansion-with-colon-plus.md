@@ -2,8 +2,9 @@
 date: 2020-09-27
 title: Shell parameter expansion with :+ is useful
 tags:
-  - autodidactics
   - shell
+  - learning
+  - til
 ---
 
 _Use the shell parameter expansion form `:+` for expanding optional values_

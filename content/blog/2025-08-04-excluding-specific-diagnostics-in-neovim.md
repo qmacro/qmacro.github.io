@@ -4,8 +4,8 @@ description: Here's what I did to be able to filter out certain diagnostic messa
 date: 2025-08-04
 tags:
   - neovim
-  - lsp
   - lua
+  - tools
 ---
 
 Note: I'm still learning (a) Lua, (b) the API surface of Neovim and (c) how the different core components interact and work together, so this may not be the best solution, but it works for me and I've learned a lot digging in and putting it together.

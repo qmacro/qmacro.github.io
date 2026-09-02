@@ -3,7 +3,9 @@ title: Recognising patterns and embracing the stream
 date: 2023-04-09
 tags:
   - jq
-  - patterns
+  - json
+  - functional-programming
+  - learning
 ---
 I've been listening to discussions on [Conor Hoekstra](https://bird.makeup/@code_report)'s [Array Cast](https://www.arraycast.com/episodes) podcast and [ADSP: The Podcast](https://t.co/uijuAszeFw) and watching some of the content on [his YouTube channel](https://www.youtube.com/@code_report), all of which I can highly recommend. While I don't understand everything that's being discussed, I do still enjoy and benefit from the content. One of the many recurring themes seems to be recognising patterns, being aware of what is being expressed, and thinking about whether there's an alternative way to do so, for simplicity, clarity, performance or other reasons.
 

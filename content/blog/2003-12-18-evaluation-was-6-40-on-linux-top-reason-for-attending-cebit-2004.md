@@ -1,11 +1,12 @@
 ---
 title: "Evaluation WAS 6.40 on Linux - top reason for attending CeBIT 2004"
 date: 2003-12-18
-tags:
-  - sapcommunity
-  - cebit
-  - linux
 description: The prospect of SAP on Linux at CeBIT.
+tags:
+  - sap
+  - linux
+  - conference
+  - community
 ---
 
 ![A photo of (L to R) Piers, me and Peter](/images/2003/12/small_cebit_r3linux_38813.jpg)

@@ -1,14 +1,13 @@
 ---
 title: "Discovering SCP Workflow - Workflow Definition"
 date: 2018-01-18
-tags:
-  - scp
-  - api
-  - untappd
-  - googlecloudplatform
-  - workflow
-  - sapcommunity
 description: Now that we've covered how to kickstart a workflow instance, It's time to look at the overall picture of what we're building.
+tags:
+  - btp
+  - workflow
+  - api
+  - discovering-scp-workflow
+  - community
 ---
 
 Previous post in this series: [Discovering SCP Workflow - Service

@@ -1,11 +1,16 @@
 ---
 date: 2009-05-21
 title: Tarpipe REST connector in 5 minutes
-tags:
 - http
 - json
 - rest
 - tarpipe
+tags:
+  - rest
+  - http
+  - json
+  - api
+  - tools
 ---
 
 

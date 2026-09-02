@@ -2,6 +2,11 @@
 date: 2002-06-03
 title: Small Blagg mod to enable custom formatting of 'blaggregated' items
 description: An unofficial modification to Blagg.
+tags:
+  - blogging
+  - rss
+  - perl
+  - tools
 ---
 
 

@@ -1,13 +1,18 @@
 ---
 date: 2015-04-05
 title: This Week in Fiori (2015-14)
-tags:
 - abap
 - cobol
 - fiori
 - odata
 - ui5
 - twif
+tags:
+  - fiori
+  - openui5
+  - odata
+  - abap
+  - this-week-in-fiori
 ---
 
 

@@ -1,11 +1,11 @@
 ---
 date: 2022-10-31
 title: Stop asking for slides in advance
+description: I'm giving a talk next month and was asked by the organiser to send my slides to them no later than two weeks before the event. Hmm.
 tags:
   - talk
-  - courtesy
-  - bestpractices
-description: I'm giving a talk next month and was asked by the organiser to send my slides to them no later than two weeks before the event. Hmm.
+  - opinion
+  - community
 ---
 
 Further to my [tweet on the subject](/tweets/qmacro/status/1587102735794638854/), I decided to write a quick post to explain why this is such an anti-pattern.

@@ -1,14 +1,13 @@
 ---
 title: REST orientation - Controlling access to resources
 date: 2009-09-30
-tags:
-  - sapcommunity
-  - rest
-  - icf
-  - abap
-  - dispatcher
-  - coffeeshop
 description: Auth with respect to the alternative dispatcher layer in ABAP.
+tags:
+  - rest
+  - sap
+  - abap
+  - http
+  - api
 ---
 
 ## Background

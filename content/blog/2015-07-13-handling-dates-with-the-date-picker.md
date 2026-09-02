@@ -1,10 +1,11 @@
 ---
 date: 2015-07-13
 title: Handling Dates with the Date Picker
-tags:
-  - datepicker
-  - openui5
 description: 30 Days of UI5 - day 10 by James Hale.
+tags:
+  - openui5
+  - thirty-days-of-ui5
+  - tutorial
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 

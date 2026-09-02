@@ -1,7 +1,6 @@
 ---
 date: 2012-04-15
 title: Firebase and SAPUI5
-tags:
 - events
 - firebase
 - html5
@@ -10,6 +9,12 @@ tags:
 - rest
 - sapui5
 - websockets
+tags:
+  - openui5
+  - json
+  - rest
+  - web
+  - javascript
 ---
 
 

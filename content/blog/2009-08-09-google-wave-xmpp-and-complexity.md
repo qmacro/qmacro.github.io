@@ -1,12 +1,16 @@
 ---
 date: 2009-08-09
 title: Google Wave, XMPP and complexity
-tags:
 - http
 - jabber
 - sendmail
 - wave
 - xmpp
+tags:
+  - jabber
+  - http
+  - web
+  - opinion
 ---
 
 

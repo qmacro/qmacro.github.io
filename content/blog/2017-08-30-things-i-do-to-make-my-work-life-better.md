@@ -1,11 +1,12 @@
 ---
 date: 2017-08-30
 title: Things I do to make my work life better
-tags:
-  - work
-  - email
-  - learning
 description: Notes on how I try to approach practical aspects of my working life.
+tags:
+  - career
+  - opinion
+  - learning
+  - email
 ---
 
 IT and consulting. Two words that can conjur up thoughts of magic, awe and

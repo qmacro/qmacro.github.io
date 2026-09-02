@@ -1,10 +1,12 @@
 ---
 title: "Monday morning thoughts: cloud native"
 date: 2018-03-26
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: What does it mean to be "cloud native"?
+tags:
+  - monday-morning-thoughts
+  - cloud
+  - opinion
+  - community
 ---
 
 This weekend I discovered that one of my favourite online REPLs\* -

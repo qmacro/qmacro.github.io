@@ -1,8 +1,9 @@
 ---
 date: 2005-11-17
 title: MoonOverFailsworth
-tags:
 - picture
+tags:
+  - personal
 ---
 [![](http://static.flickr.com/32/63833935_b287b1a5cd_m.jpg)](http://www.flickr.com/photos/qmacro/63833935/ "photo sharing")  
   

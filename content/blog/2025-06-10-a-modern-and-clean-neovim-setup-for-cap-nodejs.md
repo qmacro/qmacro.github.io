@@ -4,11 +4,11 @@ description: In this post I describe my re-worked basic setup for working with C
 date: 2025-06-10
 tags:
   - cap
-  - nodejs
   - neovim
-  - lsp
-  - treesitter
   - lua
+  - javascript
+  - developer-experience
+  - tools
 ---
 
 ## Introduction

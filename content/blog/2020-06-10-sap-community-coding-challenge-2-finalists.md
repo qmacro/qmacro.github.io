@@ -2,8 +2,8 @@
 title: "SAP Community Coding Challenge 2 - Finalists"
 date: 2020-06-10
 tags:
-  - sapcommunity
-  - codingchallenge
+  - community
+  - learning
 ---
 
 This is the voting thread for the SAP Community Coding Challenge 2. For

@@ -2,10 +2,11 @@
 title: "Mission 'Use CAP and SAP Cloud SDK to Extend S/4HANA' - an overview"
 date: 2019-11-08
 tags:
-  - sapcommunity
   - cap
-  - sapcloudsdk
-  - teched
+  - sap
+  - btp
+  - conference
+  - community
 ---
 *This post serves to outline what you can build in the "Use CAP and SAP
 Cloud SDK to Extend S/4HANA" mission created for SAP TechEd 2019.*

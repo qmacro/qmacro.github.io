@@ -3,8 +3,9 @@ date: 2002-05-15
 title: Amphetadesk Links
 description: More on feeds, subscriptions and aggregations.
 tags:
- - blogging
- - aggregation
+  - blogging
+  - rss
+  - tools
 ---
 
 I was just chatting to [Morbus](http://www.disobey.com/) in the [Emerging Tech.

@@ -1,7 +1,6 @@
 ---
 date: 2014-08-23
 title: This Week in Fiori (2014-34)
-tags:
 - documentation
 - enhancements
 - extensibility
@@ -12,6 +11,11 @@ tags:
 - workflow
 - twif
 - rde
+tags:
+  - fiori
+  - openui5
+  - tools
+  - this-week-in-fiori
 ---
 
 

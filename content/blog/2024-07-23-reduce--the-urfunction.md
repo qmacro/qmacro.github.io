@@ -4,6 +4,7 @@ date: 2024-07-23
 tags:
   - javascript
   - jq
+  - functional-programming
 ---
 I often think of `reduce` as the "[ur-](https://en.wiktionary.org/wiki/ur-)function", as it's so primitive (in building block terms, not in power or utility terms) and ubiquitous (I'm often disappointed when a new language I come across doesn't have it or an equivalent). I've [written quite a lot about reduce over the years](https://www.google.com/search?q=site%3Aqmacro.org+reduce) too.
 

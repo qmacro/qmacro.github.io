@@ -1,9 +1,11 @@
 ---
 date: 2005-04-20
 title: Flickr Pro from Robert
-tags:
 - flickr
 description: I’m going to have to think of ways to make use of the extra bandwidth and picture storage capabilities, aren’t I?
+tags:
+  - personal
+  - web
 ---
 
 Wow, [Robert](http://se71.org/blog) just gave me a Flickr Pro account, thanks Robert!

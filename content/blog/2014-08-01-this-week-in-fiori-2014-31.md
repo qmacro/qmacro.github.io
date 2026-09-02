@@ -1,7 +1,6 @@
 ---
 date: 2014-08-01
 title: This Week in Fiori (2014-31)
-tags:
 - fiori
 - launchpad
 - odata
@@ -10,6 +9,12 @@ tags:
 - twif
 - ui5
 - uxexplorer
+tags:
+  - fiori
+  - odata
+  - sap
+  - this-week-in-fiori
+  - openui5
 ---
 
 

@@ -1,11 +1,15 @@
 ---
 date: 2015-05-20
 title: JSON List Binding and maps
-tags:
 - aggregation
 - binding
 - json
 - ui5
+tags:
+  - openui5
+  - json
+  - javascript
+  - tutorial
 ---
 
 

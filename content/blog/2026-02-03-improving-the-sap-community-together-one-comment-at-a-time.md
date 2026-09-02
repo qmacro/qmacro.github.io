@@ -1,9 +1,11 @@
 ---
 title: Improving the SAP Community together, one comment at a time
 date: 2026-02-17
-tags:
-  - sapcommunity
 description: A suggestion on how we can work together to make the SAP Community better.
+tags:
+  - sap
+  - community
+  - opinion
 ---
 
 As a Developer Advocate, I have the privilege of working with some amazing

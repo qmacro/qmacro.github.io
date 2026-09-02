@@ -2,6 +2,11 @@
 date: 2002-05-20
 title: '"Web^H^H^HInternet Services"? Some Ramblings.'
 description: I’ve been pondering the term “Web Services”. While I completely understand and agree with all the reasonings behind the term (the ‘original’ services were accessible via web clients, HTTP is the underlying and ubiquitous transport, blah blah blah), I’m wondering whether “Web Services” is the best term to use.
+tags:
+  - http
+  - web
+  - opinion
+  - architecture
 ---
 
 While the current rush of implementations use HTTP as the transport (witness HTTP as the most common transport for [SOAP RPC](http://www.w3.org/TR/SOAP/#_Toc478383532), or HTTP as the designated transport in the [XML-RPC specification](https://en.wikipedia.org/wiki/XML-RPC)), there are apparent pitfalls.

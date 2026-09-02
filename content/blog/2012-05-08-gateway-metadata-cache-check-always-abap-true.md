@@ -2,9 +2,10 @@
 title: "Gateway metadata cache check - always abap_true?"
 date: 2012-05-08
 tags:
-  - sapcommunity
+  - sap
+  - odata
   - abap
-  - gateway
+  - community
 ---
 
 Hi all

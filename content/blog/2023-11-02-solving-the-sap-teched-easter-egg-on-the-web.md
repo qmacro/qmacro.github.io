@@ -2,8 +2,10 @@
 title: Solving the SAP TechEd Easter Egg on the Web
 date: 2023-11-02
 tags:
-  - sapteched
-  - nodejs
+  - sap
+  - conference
+  - javascript
+  - community
 ---
 If you're at [SAP TechEd 2023 in Bengaluru, India](https://www.sap.com/india/events/teched.html) you may have seen a little Easter Egg in the form of some Node.js code.
 

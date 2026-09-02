@@ -2,8 +2,11 @@
 date: 2020-07-20
 title: git diff can emit different exit codes
 tags:
-  - autodidactics
+  - github-actions
+  - git
   - tools
+  - learning
+  - til
 ---
 
 _You can combine git diff exit codes and the POSIX `!` operator to control GitHub Actions job step execution based on git changes._

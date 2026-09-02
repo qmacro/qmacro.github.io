@@ -2,6 +2,11 @@
 date: 2020-03-22
 category: homelab
 title: Preparing the OS image
+tags:
+  - raspberry-pi
+  - linux
+  - brambleweeny
+  - tutorial
 ---
 
 _This post describes how I prepared the base OS image for each of the Raspberry Pis in my "Brambleweeny" cluster._

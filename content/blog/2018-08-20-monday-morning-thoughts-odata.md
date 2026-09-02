@@ -1,14 +1,13 @@
 ---
 title: "Monday morning thoughts: OData"
 date: 2018-08-20
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
-  - odata
-  - atom
-  - atompublishingprotocol
-  - rss
 description: I think about OData, in particular where it came from and why it looks and acts like it does. I also consider why I think it was a good protocol for an organisation like SAP to embrace.
+tags:
+  - monday-morning-thoughts
+  - odata
+  - rss
+  - opinion
+  - community
 ---
 
 🔊 This post is also [available in audio

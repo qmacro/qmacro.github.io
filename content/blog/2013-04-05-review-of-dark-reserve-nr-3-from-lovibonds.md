@@ -2,9 +2,8 @@
 title: Review of Dark Reserve Nr 3 from Lovibonds
 date: 2013-04-05
 tags:
-  - portstreetbeerhouse
-  - review
   - beer
+  - review
 ---
 ![Dark Reserve Nr 3](/images/2013/04/dark-reserve-nr-3.jpg)
 

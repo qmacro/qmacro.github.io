@@ -1,13 +1,13 @@
 ---
 title: "Discovering SCP Workflow - Service Proxy"
 date: 2018-01-17
-tags:
-  - adl
-  - googlecloudfunctions
-  - scp
-  - workflow
-  - sapcommunity
 description: In this post I present a small proxy service I wrote to handle the minutiae of initiating a new workflow instance.
+tags:
+  - btp
+  - workflow
+  - cloud
+  - discovering-scp-workflow
+  - community
 ---
 
 Previous post in this series: [Discovering SCP Workflow - Using

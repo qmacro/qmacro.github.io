@@ -1,13 +1,18 @@
 ---
 date: 2011-07-20
 title: Stand steady on the shoulders of giants
-tags:
 - course
 - http
 - icf
 - madlab
 - omniversity
 - sap
+tags:
+  - sap
+  - http
+  - rest
+  - talk
+  - tutorial
 ---
 
 

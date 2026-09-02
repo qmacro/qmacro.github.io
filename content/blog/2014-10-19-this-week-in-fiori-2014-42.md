@@ -1,7 +1,6 @@
 ---
 date: 2014-10-19
 title: This Week in Fiori (2014-42)
-tags:
 - fiori
 - launchpad
 - ui2
@@ -9,6 +8,10 @@ tags:
 - video
 - webinar
 - twif
+tags:
+  - fiori
+  - openui5
+  - this-week-in-fiori
 ---
 
 

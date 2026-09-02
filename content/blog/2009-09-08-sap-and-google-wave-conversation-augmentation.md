@@ -1,7 +1,6 @@
 ---
 date: 2009-09-08
 title: SAP and Google Wave - Conversation Augmentation
-tags:
 - sapcommunity
 - appengine
 - dashboard-tag
@@ -10,6 +9,12 @@ tags:
 - rest
 - sap
 - wave
+tags:
+  - sap
+  - http
+  - rest
+  - python
+  - web
 ---
 It's been pretty much six years to the day since [I last wrote here about Dashboard](/tags/dashboard/), Nat Friedman's project and implementation of a realtime contextual information system. So I thought it fitting to make a short demo showing integration between Google Wave and SAP, inspired by the cluepacket-driven style shown so nicely with Dashboard.
 

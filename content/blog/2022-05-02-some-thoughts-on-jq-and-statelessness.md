@@ -3,7 +3,8 @@ date: 2022-05-02
 title: Some thoughts on jq and statelessness
 tags:
   - jq
-  - lobsters
+  - functional-programming
+  - opinion
 ---
 I came across a great article [via lobsters](https://lobste.rs/s/uhkwhn/introducing_zq_easier_faster) recently: [Introducing zq: an Easier (and Faster) Alternative to jq](https://www.brimdata.io/blog/introducing-zq/). I [posted](https://lobste.rs/s/uhkwhn/introducing_zq_easier_faster#c_ue6azr) some brief thoughts on it over on the lobsters thread, and in the spirit of "owning your own words", I thought I'd write them up here too.
 

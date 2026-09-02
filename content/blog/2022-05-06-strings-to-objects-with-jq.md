@@ -3,7 +3,9 @@ date: 2022-05-06
 title: Converting strings to objects with jq
 tags:
   - jq
+  - json
   - github
+  - tutorial
 ---
 In preparing some data for another upcoming blog post (now published: [Exploring GitHub repo name distribution with jq](/blog/posts/2022/05/07/exploring-github-repo-name-distribution-with-jq/)), I needed to convert a list of fully qualified GitHub repository names into a JSON array of single-property objects (to reflect the style of JSON output from GitHub's `gh` CLI). I achieved this with a short jq filter. Here's how, recorded here, with my working thoughts, mostly for my outboard memory.
 

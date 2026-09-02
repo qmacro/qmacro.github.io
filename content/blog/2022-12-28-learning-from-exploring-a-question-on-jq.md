@@ -3,8 +3,8 @@ title: Learning from exploring a question on jq
 date: 2022-12-28
 tags:
   - jq
-  - timtowdi
-  - stackoverflow
+  - json
+  - learning
 ---
 In this post I explore different ways of achieving a simple goal in reformulating some JSON, with jq, and explain my thinking as I go.
 

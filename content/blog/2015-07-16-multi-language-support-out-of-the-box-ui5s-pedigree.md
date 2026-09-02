@@ -1,15 +1,11 @@
 ---
 date: 2015-07-16
 title: Multi language support out of the box - UI5's pedigree
-tags:
-  - language
-  - locale
-  - messagepage
-  - multilingual
-  - openui5
-  - pedigree
-  - rtl
 description: 30 Days of UI5 - day 13 by DJ Adams.
+tags:
+  - openui5
+  - thirty-days-of-ui5
+  - tutorial
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 

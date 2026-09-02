@@ -2,6 +2,10 @@
 date: 2003-01-29
 title: Tinkering with RSS and NNTP
 description: The beauty of open standards is that they can be adopted, remixed and combined.
+tags:
+  - rss
+  - web
+  - tools
 ---
 
 

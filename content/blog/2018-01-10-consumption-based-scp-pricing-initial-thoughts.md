@@ -1,10 +1,11 @@
 ---
 date: 2018-01-10
 title: Consumption-based SCP Pricing - Initial Thoughts
-tags:
-  - scp
-  - cloud
 description: Looking at the the new pricing approach for SAP Cloud Platform.
+tags:
+  - btp
+  - cloud
+  - opinion
 ---
 
 Back in August 2017 I [made some observations on SAP Cloud Platform Pricing](/blog/posts/2017/08/08/sap-cloud-platform-pricing/). I had been somewhat underwhelmed by the clarity and flexibility, particularly for smaller projects and businesses.

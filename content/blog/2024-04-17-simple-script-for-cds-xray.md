@@ -4,8 +4,8 @@ date: 2024-04-17
 tags:
   - cap
   - cds
-  - csn
-  - bash
+  - shell
+  - tools
 ---
 The [March 2024 release of CAP](https://cap.cloud.sap/docs/releases/mar24#cds-previews-from-editor-title-bars) brought many great new features including one for VS Code users - [CDS Previews From Editor Title Bars](https://cap.cloud.sap/docs/releases/mar24#cds-previews-from-editor-title-bars). It allows you to look, in realtime, at how your CDS model translates into various other representations, including YAML and JSON formats of Core Schema Notation (CSN)[<sup>1</sup>](#footnotes), EDMX (for the OData protocol) and various flavours of Data Definition Language (DDL). Here's a screenshot of it in action, courtesy of [Capire](https://cap.cloud.sap/docs/):
 

@@ -1,12 +1,13 @@
 ---
 title: Hands-on domain modelling with CAP's CDS at UKISUG Connect
 date: 2025-11-11
+description: A quick overview of the hands-on workshop I'll be running at UKISUG Connect this year.
 tags:
-  - talk
   - cap
   - cds
-  - ukisug
-description: A quick overview of the hands-on workshop I'll be running at UKISUG Connect this year.
+  - talk
+  - domain-modelling
+  - conference
 ---
 As I mentioned in my [Upcoming talks in autumn 2025](/blog/posts/2025/09/10/upcoming-talks-in-autumn-2025/) post recently, I'll be attending and speaking at [UKISUG Connect](https://www.ukisugconnect.co.uk/). I have a couple of sessions, a hands-on workshop on the [Sunday](https://virtual.oxfordabstracts.com/event/75555/program?date=%222025-11-30%22) and a technical track talk on the [Monday](https://virtual.oxfordabstracts.com/event/75555/program?date=%222025-12-1%22).
 

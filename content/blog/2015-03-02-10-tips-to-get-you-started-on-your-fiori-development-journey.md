@@ -2,7 +2,11 @@
 title: 10 tips to get you started on your Fiori development journey 
 date: 2015-03-02
 tags:
-  - bluefinsolutions
+  - fiori
+  - openui5
+  - tutorial
+  - opinion
+  - community
 ---
 
 A developer's journey to a new set of technologies is a very personal one, but there are definitely a few pointers that I can give you based upon my own experience.

@@ -1,9 +1,12 @@
 ---
 date: 2005-12-16
 title: Java and Gosling's FUD - madness or desperation?
-tags:
 - jamesgosling
 - java
+tags:
+  - java
+  - open-source
+  - opinion
 ---
 
 

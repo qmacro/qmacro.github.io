@@ -2,6 +2,9 @@
 title: 'Other side of the coin: 5335 now resurrected'
 description: RSS, Radio Userland, and redirectors.
 date: 2002-04-27
+tags:
+  - blogging
+  - web
 ---
 To complement the [script](/~dj/rss.pl) that allows me to share my feed list with others, including [Radio Userland](http://radio.userland.com/) users (with the coffee mug link), I’ve now written a simple pair of scripts which do the equivalent of the [5335](../../../testwiki/5335) script mentioned earlier.
 

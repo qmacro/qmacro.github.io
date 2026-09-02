@@ -3,8 +3,9 @@ title: Avoid design time CAP server restarts when maintaining local data files
 date: 2024-04-10
 tags:
   - cap
-  - node-watch
-  - good-to-know
+  - developer-experience
+  - tools
+  - til
 ---
 Starting the CAP server with `cds watch` is great for tight development loops at design time, especially with the built-in in-memory SQLite persistence layer, seeded by data in CSV files. When the server notices files have changed, it automatically restarts, which is great.
 

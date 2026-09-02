@@ -2,10 +2,11 @@
 title: "Getting BTP resource GUIDs with the btp CLI - part 1"
 date: 2021-11-24
 tags:
-  - sapcommunity
   - btp
   - cli
   - shell
+  - tools
+  - community
 ---
 *Learn how to use the btp CLI to determine resource GUIDs in your global
 account. This post is part 1, covering the `bgu` mechanism.*

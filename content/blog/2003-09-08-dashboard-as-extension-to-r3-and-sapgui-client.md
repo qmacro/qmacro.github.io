@@ -1,10 +1,12 @@
 ---
 title: Dashboard as extension to R/3 and SAPGUI client
 date: 2003-09-08
-tags:
-  - sapcommunity
-  - dashboard
 description: How do your users work with SAP data? Exclusively through SAPGUI or with other desktop apps too? If it’s the latter, read on.
+tags:
+  - sap
+  - abap
+  - tools
+  - community
 ---
 Dashboard is an intriguing project headed up by [Nat Friedman](https://nat.org/). The concept is of a sidebar style window pane that is automatically populated on an ongoing basis with information related to whatever you’re doing, giving you extra context information that you can glance at while at work. Neat.
 

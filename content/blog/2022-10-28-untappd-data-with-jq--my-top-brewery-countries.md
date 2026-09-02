@@ -3,8 +3,9 @@ date: 2022-10-28
 title: Untappd data with jq - my top brewery countries
 tags:
   - jq
-  - untappd
   - beer
+  - json
+  - tools
 ---
 In this short post I explore my Untappd checkin data with `jq`, because it's a nice data set to practise my limited filtering fu upon, and also to get my blogging flowing again. 
 

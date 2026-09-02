@@ -2,7 +2,11 @@
 title: Mobile Dev Course W3U3 Rewrite - ProductList, ProductDetail and SupplierDetail
 date: 2013-10-18
 tags:
-  - sapcommunity
+  - openui5
+  - fiori
+  - sap
+  - tutorial
+  - community
 ---
 I [rewrote the mobile dev course sample app from W3U3](/blog/posts/2013/10/16/mobile-dev-course-w3u3-rewrite-intro/). This post explains what I changed in the ProductList, ProductDetail and SupplierDetail views / controllers. See the links at the bottom of the [opening post](/blog/posts/2013/10/16/mobile-dev-course-w3u3-rewrite-intro/) to get to explanations for the other areas.
 

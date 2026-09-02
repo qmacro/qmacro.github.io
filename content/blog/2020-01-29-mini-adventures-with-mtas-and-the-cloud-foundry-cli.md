@@ -2,14 +2,11 @@
 title: "Mini adventures with MTAs and the Cloud Foundry CLI"
 date: 2020-01-29
 tags:
-  - sapcommunity
-  - cloudfoundry
+  - cloud-foundry
+  - shell
+  - btp
   - cli
-  - businessrules
-  - cf
-  - mtar
-  - awk
-  - onlyfoolsandhorses
+  - community
 ---
 *A few more small adventures using the cf command line client, as well
 as some shell pipeline goodness and that nifty tip from Marius Obert

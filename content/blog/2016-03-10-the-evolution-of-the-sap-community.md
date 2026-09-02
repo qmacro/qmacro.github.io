@@ -2,7 +2,9 @@
 title: The evolution of the SAP community
 date: 2016-03-10
 tags:
-  - bluefinsolutions
+  - sap
+  - community
+  - opinion
 ---
 
 This week, the new SAP Mentors Advisory Board has been formed, and I am very honoured to have been elected as a member. In this post, I take my own brief look at how the SAP community as a whole has evolved over the years.

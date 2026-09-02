@@ -2,7 +2,10 @@
 title: "UTFRW - Unofficial TechEd Fun Run / Walk"
 date: 2020-12-01
 tags:
-  - sapcommunity
+  - sap
+  - community
+  - running
+  - conference
 ---
 *Let's get together virtually over the course of the SAP TechEd 2020
 virtual event and share our 5K walking or running experiences.*

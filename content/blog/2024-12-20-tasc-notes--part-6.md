@@ -5,26 +5,10 @@ tags:
   - tasc
   - cap
   - cds
-  - hcql
-  - handsonsapdev
+  - hands-on-sap-dev
   - episode-notes
-  - cql
-  - cqn
-  - node-js
-  - cds-repl
-  - thenables
-  - query-building
-  - remote-services
-  - service-integration
-  - hexagonal-architecture
-  - agnostic-by-design
-  - services-as-interfaces
-  - best-practices
-  - extensibility
-  - debugging
-  - developer-experience
-  - capire
   - odata
+  - service-integration
 ---
 
 These are the notes summarising what was covered in [The Art and Science of CAP part 6][2], one episode in a mini series with Daniel Hutzel to explore the philosophy, the background, the technology history and layers that support and inform the SAP Cloud Application Programming Model.

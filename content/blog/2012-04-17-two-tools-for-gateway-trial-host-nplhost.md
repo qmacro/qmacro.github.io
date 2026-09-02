@@ -1,12 +1,16 @@
 ---
 date: 2012-04-17
 title: Two tools for Gateway trial host nplhost
-tags:
 - gateway
 - multitail
 - netweaver
 - sap
 - screen
+tags:
+  - sap
+  - odata
+  - tools
+  - community
 ---
 
 

@@ -1,13 +1,17 @@
 ---
 date: 2015-03-09
 title: Why I'm Staying Close to UI5
-tags:
 - angularjs
 - fiori
 - frontend
 - jqtouch
 - jqueryui
 - ui5
+tags:
+  - openui5
+  - fiori
+  - javascript
+  - opinion
 ---
 
 

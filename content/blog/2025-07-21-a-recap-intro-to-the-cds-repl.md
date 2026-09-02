@@ -3,12 +3,11 @@ title: A reCAP intro to the cds REPL
 description: Here's a summary of my talk on the cds REPL at this year's reCAP event.
 date: 2025-07-21
 tags:
-  - talk
   - cap
   - cds
-  - repl
-  - recap
-  - codeconnect
+  - talk
+  - tools
+  - conference
 ---
 At [reCAP], part of [Code Connect 2025], I gave a talk on the cds REPL: "Gain a superpower by learning how to harness the cds REPL". You can watch the recording on the [replay site]; this post is a sort of summary and accompaniment, and an extension to [my previous post on the topic]. Read this post while watching the replay.
 

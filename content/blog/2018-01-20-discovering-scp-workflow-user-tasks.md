@@ -1,14 +1,13 @@
 ---
 title: "Discovering SCP Workflow - User Tasks"
 date: 2018-01-20
-tags:
-  - untappd
-  - api
-  - ui5
-  - scp
-  - workflow
-  - sapcommunity
 description: Looking at the user task - present recommendations.
+tags:
+  - btp
+  - workflow
+  - openui5
+  - discovering-scp-workflow
+  - community
 ---
 
 Previous post in this series: [Discovering SCP Workflow - Workflow

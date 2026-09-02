@@ -3,8 +3,9 @@ title: Controlling automatic HTTP requests in CAP Node.js design time loops
 date: 2024-05-03
 tags:
   - cap
-  - good-to-know
-  - entr
+  - developer-experience
+  - tools
+  - til
 ---
 CAP affords developers a great design time experience, with minimal setup and fast turnaround times when building out your model and code. Often what I like to do is run an OData query operation to check both the data returned and any custom logic that I'm implementing. And I want that to happen automatically when I modify something. The invocation of `cds watch` already provides most of the monitor-and-restart magic that I need, but I also want a separate process to (re-)send an HTTP request to the CAP server when it's restarted.
 

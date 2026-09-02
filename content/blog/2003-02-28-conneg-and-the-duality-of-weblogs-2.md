@@ -1,13 +1,17 @@
 ---
 date: 2003-02-28
 title: "'Conneg' and the duality of weblogs"
-tags:
 - blosxom
 - conneg
 - http
 - rss-tag
 - weblogs
 description: Philosophy triggered by the lowly but essential connection negotiation aspect of HTTP.
+tags:
+  - http
+  - blogging
+  - rest
+  - web
 ---
 
 

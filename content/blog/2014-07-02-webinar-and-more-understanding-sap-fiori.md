@@ -2,7 +2,10 @@
 title: Webinar and more - Understanding SAP Fiori
 date: 2014-07-02
 tags:
-  - bluefinsolutions
+  - fiori
+  - sap
+  - talk
+  - community
 ---
 
 On Thursday 19 June, [Brenton O'Callaghan](https://web.archive.org/web/20171006213802/http://www.bluefinsolutions.com/Blogs/Brenton-O-Callaghan/) and I hosted a free, hour-long webinar entitled "Understanding SAP Fiori". We followed it up with a "Director's Cut" deep dive video into some of the topics that we didn't have time for. This blog post summarises what we covered.

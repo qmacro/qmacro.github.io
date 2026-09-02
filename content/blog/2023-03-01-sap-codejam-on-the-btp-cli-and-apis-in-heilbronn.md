@@ -4,7 +4,8 @@ date: 2023-03-01
 tags:
   - codejam
   - btp
-  - heilbronn
+  - cli
+  - community
 ---
 
 The Developer Advocates are ramping up CodeJams this year. Following on from [my visit to Utrecht](/blog/posts/2023/02/11/sap-codejam-on-service-integration-with-cap-in-utrecht/) to deliver a CodeJam on service integration with CAP, I was in Heilbronn last week to deliver [another CodeJam](https://groups.community.sap.com/t5/sap-codejam/sap-codejam-btp-hands-on-with-the-btp-cli-and-apis-heilbronn-de/ev-p/130512), this time on the topic of the btp CLI and APIs. 

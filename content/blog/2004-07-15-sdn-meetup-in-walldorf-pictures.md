@@ -2,7 +2,9 @@
 title: "SDN Meetup in Walldorf - pictures"
 date: 2004-07-15
 tags:
-  - sapcommunity
+  - sap
+  - community
+  - conference
 ---
 
 I arrived in Walldorf this morning and was met and looked after very

@@ -1,13 +1,13 @@
 ---
 date: 2015-07-20
 title: UI5 and Fiori - The Story of Open and Free
-tags:
-  - fiori
-  - free
-  - freeori
-  - opensource
-  - openui5
 description: 30 Days of UI5 - day 17 by John Appleby.
+tags:
+  - openui5
+  - fiori
+  - open-source
+  - thirty-days-of-ui5
+  - opinion
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 

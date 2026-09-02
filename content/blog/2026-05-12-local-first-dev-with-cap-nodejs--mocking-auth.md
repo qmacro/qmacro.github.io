@@ -1,12 +1,11 @@
 ---
 title: Local-first dev with CAP Node.js - mocking auth
 date: 2026-05-12
+description: In this post I provider a taster of what's possible regarding mock auth in CAP Node.js local-first development.
 tags:
   - cap
-  - auth
-  - mocking
-  - local
-description: In this post I provider a taster of what's possible regarding mock auth in CAP Node.js local-first development.
+  - developer-experience
+  - tutorial
 ---
 
 This post is one of [a series on local-first development with CAP

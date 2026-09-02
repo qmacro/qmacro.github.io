@@ -1,11 +1,14 @@
 ---
 date: 2009-04-15
 title: Old feed URLs fixed with a bit of mod_rewrite voodoo
-tags:
 - apache
 - feeds
 - modrewrite
 - web
+tags:
+  - web
+  - tools
+  - blogging
 ---
 As [feeds are the new blogs](http://identi.ca/notice/2941485) (quoting myself, oh dear!) I thought it important to make sure that the feed bots that have been continuously polling my weblog’s feed and getting 404s (since 2005, I guess) are sent to the right place. My Apache access.log file was showing that 404s were being returned for `/index.rdf` and `/index.xml`, and `/qmacro/xml` for that matter … all old locations for the weblog feed.
 

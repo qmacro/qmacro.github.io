@@ -3,6 +3,7 @@ date: 2021-05-13
 title: Notes on Markdown linting - part 1
 tags:
   - markdown
+  - tools
   - linting
 ---
 

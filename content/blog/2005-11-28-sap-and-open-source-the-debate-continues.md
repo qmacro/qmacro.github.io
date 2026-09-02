@@ -1,9 +1,12 @@
 ---
 date: 2005-11-28
 title: 'SAP and Open Source: the debate continues'
-tags:
 - opensource
 - sap
+tags:
+  - sap
+  - open-source
+  - opinion
 ---
 I wrote a blog entry on [SDN](http://www.sdn.sap.com) almost two weeks ago entitled [SAP and Open Source: an analysis and letter to SAP and Shai](/blog/posts/2005/11/17/sap-and-open-source-an-analysis-and-letter-to-sap-and-shai/). It followed the [flurry](http://blogs.adobe.com/matthiaszeller/2005/11/sap_slams_open_1.html) [of](http://sapventures.typepad.com/main/2005/11/sap_slams_open_.html) [comment](http://linux.slashdot.org/article.pl?sid=05/11/11/0613255) that was made after Shai made some alarming statements regarding SAP and Open Source [at the Churchill Club](http://www.churchillclub.org/eventDetail.jsp?EVT_ID=682). My angle was that Shai was complaining that people were twisting his words and taking what he said out of context, so I transcribed the [MP3 recording](http://i.i.com.com/cnwk.1d/i/z/e/200511/110905_CHC_EVENT.mp3) of what he said, and it was worrying reading, even when you ignored his statements on “IP socialism” and innovation (I concentrated on the source code context).
 

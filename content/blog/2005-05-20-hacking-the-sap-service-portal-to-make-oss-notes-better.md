@@ -1,11 +1,12 @@
 ---
 title: "Hacking the SAP service portal to make OSS notes better"
 date: 2005-05-20
-tags:
-  - sapcommunity
-  - greasemonkey
-  - oss
 description: Deploying Greasemonkey to fix a long standing issue with OSS Notes at SAP.
+tags:
+  - sap
+  - community
+  - tools
+  - javascript
 ---
 
 Ahh, [OSS notes](http://service.sap.com/notes) - a topic close to my heart:

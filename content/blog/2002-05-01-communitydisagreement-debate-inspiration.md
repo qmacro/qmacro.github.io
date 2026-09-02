@@ -2,6 +2,10 @@
 date: 2002-05-01
 title: community(disagreement + debate) = inspiration
 description: The debate between SOAP and REST.
+tags:
+  - community
+  - opinion
+  - web
 ---
 Not a period goes by in the extended computing community without a juicy debate or two. This time it’s SOAP and RPC vs REST, on afterburn with a Google API in(ter)jection. I can’t remember when a single subject seemed to generate as much traffic on the [O’Reilly Network Weblogs](http://www.oreillynet.com/weblogs/) as this. There have been wonderfully interesting arguments from many people. Personally, I’m ambivalent. I think the most important thing is that it inspires people to greater things, and gets people thinking.
 

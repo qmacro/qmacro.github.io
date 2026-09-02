@@ -1,7 +1,6 @@
 ---
 date: 2011-10-16
 title: Reading List Mark 2 - Part 5
-tags:
 - appsscript
 - google
 - gtug
@@ -10,6 +9,11 @@ tags:
 - tasks
 - ui
 - urlfetch
+tags:
+  - google-apps-script
+  - google
+  - tools
+  - tutorial
 ---
 
 

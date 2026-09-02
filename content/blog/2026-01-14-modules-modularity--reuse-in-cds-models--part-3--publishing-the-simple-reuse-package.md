@@ -1,14 +1,13 @@
 ---
 title: Modules, modularity & reuse in CDS models - part 3 - publishing the simple reuse package
 date: 2026-01-14
-tags:
-  - modularity
-  - cds
-  - cap
-  - npm
-  - reuse
-  - gh
 description: Taking the simple passive reuse package created in part 2, I now publish it to the NPM registry which is part of GitHub Packages.
+tags:
+  - cap
+  - cds
+  - npm
+  - domain-modelling
+  - tutorial
 ---
 (Get to all the parts in this series via the [series
 post](/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models/).)

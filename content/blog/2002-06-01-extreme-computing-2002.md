@@ -2,6 +2,9 @@
 date: 2002-06-01
 title: Extreme Computing 2002
 description: Going to the Festival of Inappropriate Technology.
+tags:
+  - conference
+  - computing-history
 ---
 
 

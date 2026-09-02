@@ -3,9 +3,9 @@ title: Adjusting the preview width in Telescope's horizontal picker
 description: Here's how I adjusted the width of the preview window in Telescope's horizontal picker.
 date: 2025-05-04
 tags:
-  - telescope
   - neovim
   - lua
+  - tools
 ---
 
 The [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) plugin is pretty spectacular and has many features that I haven't had chance to explore yet. There are a set of building blocks from which the features are constructed, falling into various categories such as Pickers, Previewers, Sorters, Layouts and Themes.

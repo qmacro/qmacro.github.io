@@ -2,12 +2,12 @@
 title: "Getting BTP resource GUIDs with the btp CLI – part 2 - JSON and jq"
 date: 2021-12-01
 tags:
-  - sapcommunity
   - btp
   - cli
-  - json
   - jq
+  - json
   - shell
+  - community
 ---
 *In this second part of a 2-part blog post series on getting BTP
 resource GUIDs with the btp CLI, we look at how the CLI supports JSON

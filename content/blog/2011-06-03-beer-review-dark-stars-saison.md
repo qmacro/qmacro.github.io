@@ -1,11 +1,13 @@
 ---
 date: 2011-06-03
 title: 'Beer review: Dark Star''s Saison'
-tags:
 - beer
 - beerrating
 - portstbeer
 - untappd
+tags:
+  - beer
+  - review
 ---
 
 

@@ -2,8 +2,9 @@
 date: 2020-08-04
 title: String.prototype.replace() can take a function
 tags:
-  - autodidactics
   - javascript
+  - learning
+  - til
 ---
 
 _You can use a function to dynamically provide the replacement value in a `replace` operation_

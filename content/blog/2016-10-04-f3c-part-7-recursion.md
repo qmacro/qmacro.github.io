@@ -2,8 +2,8 @@
 date: 2016-10-04
 title: F3C Part 7 - Recursion
 tags:
-  - fp
-  - language-ramblings
+  - functional-programming
+  - javascript
   - f3c
 ---
 FunFunFunction Video: [Recursion - Part 7 of Functional Programming in JavaScript](https://www.youtube.com/watch?v=k7-N8R0-KY4&list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84&index=7)

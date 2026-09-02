@@ -2,7 +2,9 @@
 date: 2021-02-01
 title: Do less and do it better
 tags:
-  - thoughts
+  - opinion
+  - career
+  - personal
 ---
 
 _In 2021 I want to consolidate and improve upon some skills I already have, rather than add more. Here's what I mean, and how I got inspired._

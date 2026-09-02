@@ -3,6 +3,7 @@ date: 2021-05-20
 title: Equality in tech
 tags:
   - community
+  - opinion
 ---
 
 _I support equality in tech, and so should you._

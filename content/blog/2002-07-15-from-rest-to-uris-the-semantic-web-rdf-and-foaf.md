@@ -1,12 +1,17 @@
 ---
 date: 2002-07-15
 title: From REST to URIs, the Semantic Web, RDF, and FOAF
-tags:
 - foaf
 - rdf
 - rest
 - sap
 description: Protocols and formats making up the semantic web.
+tags:
+  - rest
+  - rdf
+  - semantic-web
+  - http
+  - sap
 ---
 
 

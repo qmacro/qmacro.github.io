@@ -1,11 +1,10 @@
 ---
 title: Digital devolution in local authorities - putting people first
 date: 2015-11-25
-tags:
-  - ux
-  - event
-  - bluefinsolutions
 description: In a couple of weeks' time, Bluefin Solutions is running a one day event on delivering digital devolution in local authorities. If you look closely there's a clear user-centric pattern that is emerging.
+tags:
+  - opinion
+  - community
 ---
 
 Looking at the event location, and the subjects that our guest speakers are

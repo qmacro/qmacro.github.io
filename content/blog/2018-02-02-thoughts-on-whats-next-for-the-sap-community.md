@@ -1,10 +1,11 @@
 ---
 date: 2018-02-02
 title: Thoughts on what's next for the SAP Community
-tags:
-  - sapcommunity
-  - devrel
 description: My thoughts on the SAP community (small 'c') and the SAP Community platform.
+tags:
+  - sap
+  - community
+  - opinion
 ---
 
 This evening I watched a short video, [What's Next for SAP

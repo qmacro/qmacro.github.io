@@ -3,12 +3,10 @@ title: Auto formatting extensionless Bash scripts in Neovim
 description: Here's what I did to make the combination of the Bash language server and shfmt work with Editorconfig settings for Bash script files that don't have extensions.
 date: 2025-09-01
 tags:
-  - bash
-  - editorconfig
   - neovim
-  - lsp
-  - shfmt
-  - shellcheck
+  - shell
+  - tools
+  - linting
 ---
 ## TL;DR
 

@@ -1,14 +1,13 @@
 ---
 title: Modules, modularity & reuse in CDS models - part 5 - digging into @capire/common
 date: 2026-01-28
-tags:
-  - cds
-  - cap
-  - reuse
-  - npm
-  - plugins
-  - modularity
 description: In this post I look at various mechanisms that @capire/common has that makes it "active" as a reuse package.
+tags:
+  - cap
+  - cds
+  - npm
+  - domain-modelling
+  - tutorial
 ---
 
 (Get to all the parts in this series via the [series

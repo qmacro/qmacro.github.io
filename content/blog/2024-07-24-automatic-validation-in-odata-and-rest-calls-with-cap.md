@@ -4,8 +4,9 @@ date: 2024-07-24
 tags:
   - cap
   - cds
-  - rest
   - odata
+  - rest
+  - tutorial
 ---
 There is automatic validation of data coming into CAP-based service endpoints. Up until recently, there was a difference on how this happened between "REST" and OData channels, but with the latest CAP major release the handling has been aligned. This blog post digs into the details, focusing on the Node.js flavour of CAP.
 

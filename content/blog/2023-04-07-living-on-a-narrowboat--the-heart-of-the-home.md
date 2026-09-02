@@ -2,9 +2,8 @@
 title: Living on a narrowboat - the stove as the heart of the home
 date: 2023-04-07
 tags:
-  - life
   - narrowboat
-  - fullyrestful
+  - personal
 ---
 Previous post in this series: [Living on a narrowboat - embracing constraints](/blog/posts/2023/01/16/living-on-a-narrowboat-embracing-constraints/).
 

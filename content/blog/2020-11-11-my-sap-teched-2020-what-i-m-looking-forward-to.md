@@ -2,8 +2,9 @@
 title: "My SAP TechEd 2020 - what I'm looking forward to"
 date: 2020-11-11
 tags:
-  - sapcommunity
-  - teched
+  - sap
+  - conference
+  - community
 ---
 *SAP TechEd 2020 is fast approaching, and in many ways it will be a
 different experience for all of us. Then again, there's one thing that

@@ -1,7 +1,6 @@
 ---
 date: 2015-01-03
 title: 'Running: 2014 in review, and some Clojure'
-tags:
 - '2014'
 - analysis
 - clojure
@@ -11,6 +10,11 @@ tags:
 - stats
 - tomtom
 - vim
+tags:
+  - clojure
+  - running
+  - personal
+  - tools
 ---
 
 I enjoyed running in 2014 and logged each one via [Endomondo](https://www.endomondo.com/profile/1074038). This post is a random collection of thoughts about the running, the data and some simple analysis, in Clojure.

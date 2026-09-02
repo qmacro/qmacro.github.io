@@ -2,9 +2,10 @@
 date: 2021-02-02
 title: fzf - the basics part 1 - layout
 tags:
-  - autodidactics
-  - fzf
   - tools
+  - shell
+  - fzf
+  - learning
 ---
 
 _Here's what I learned from reading the first part of the fzf README and paying attention. Now I have a better setup and understanding of the basics, and in particular how to control the appearance._

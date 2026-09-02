@@ -2,9 +2,10 @@
 title: "SAP Tech Bytes: btp CLI – logging in"
 date: 2021-09-07
 tags:
-  - sapcommunity
   - btp
   - cli
+  - tools
+  - community
 ---
 *Start exploring with the btp CLI by logging in, then finding and
 selecting a subaccount for subsequent activities.*

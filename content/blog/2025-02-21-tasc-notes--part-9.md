@@ -6,24 +6,9 @@ tags:
   - tasc
   - cap
   - cds
-  - forward-declared-joins
-  - handsonsapdev
+  - hands-on-sap-dev
   - episode-notes
-  - cql
-  - node-js
-  - cds-repl
-  - relational-model
-  - set-theory
-  - path-expressions
-  - infix-filters
-  - nested-projections
-  - query-building
-  - closures
-  - lazy-evaluation
   - functional-programming
-  - agnostic-by-design
-  - sqlite
-  - capire
 ---
 For all resources related to this series, see the post [The Art and Science of CAP][2].
 

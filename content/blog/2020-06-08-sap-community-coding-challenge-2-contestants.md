@@ -2,8 +2,8 @@
 title: "SAP Community Coding Challenge 2 - Contestants"
 date: 2020-06-08
 tags:
-  - sapcommunity
-  - codingchallenge
+  - community
+  - learning
 ---
 *Here's a list of the SAP Community Coding Challenge 2 contestants who
 were successful in their submissions. Congratulations to them all!*

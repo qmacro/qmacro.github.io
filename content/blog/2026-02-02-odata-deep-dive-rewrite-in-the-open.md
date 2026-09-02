@@ -1,11 +1,11 @@
 ---
 title: OData Deep Dive rewrite in the open
 date: 2026-02-02
-tags:
-  - tutorials
-  - odata
-  - open
 description: I'm refreshing the content of the OData Deep Dive series of tutorials, in the open.
+tags:
+  - odata
+  - tutorial
+  - open-source
 ---
 
 You can jump directly to the [Progress](#progress) section below, which has

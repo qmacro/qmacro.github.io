@@ -2,7 +2,9 @@
 title: "Bind Paginator to model?"
 date: 2012-12-13
 tags:
-  - sapcommunity
+  - openui5
+  - sap
+  - community
 ---
 
 I was wondering if anyone had tried binding a

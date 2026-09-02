@@ -1,12 +1,12 @@
 ---
 title: Local-first dev with CAP Node.js - mocking remote services
 date: 2026-05-13
+description: In this post I provider a taster of what's possible regarding mock remote services in CAP Node.js local-first development.
 tags:
   - cap
-  - remoteservices
-  - mocking
-  - local
-description: In this post I provider a taster of what's possible regarding mock remote services in CAP Node.js local-first development.
+  - service-integration
+  - developer-experience
+  - tutorial
 ---
 
 This post is one of [a series on local-first development with CAP

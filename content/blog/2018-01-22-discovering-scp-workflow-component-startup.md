@@ -1,15 +1,13 @@
 ---
 title: "Discovering SCP Workflow - Component Startup"
 date: 2018-01-22
-tags:
-  - ui5
-  - webide
-  - api
-  - untappd
-  - scp
-  - workflow
-  - sapcommunity
 description: In this post we'll look into how a task UI starts up, where it gets the right data to display, and how it interacts with the My Inbox "host" app.
+tags:
+  - btp
+  - workflow
+  - openui5
+  - discovering-scp-workflow
+  - community
 ---
 
 Previous post in this series: [Discovering SCP Workflow -- User

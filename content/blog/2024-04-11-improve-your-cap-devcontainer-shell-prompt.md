@@ -3,9 +3,9 @@ title: Improve your CAP dev container shell prompt
 date: 2024-04-11
 tags:
   - cap
-  - good-to-know
-  - terminal
-  - bash
+  - shell
+  - developer-experience
+  - tools
 ---
 In the current [back to basics series on CAP Node.js](https://www.youtube.com/playlist?list=PL6RpkC85SLQBHPdfHQ0Ry2TMdsT-muECx) we're using VS Code with a dev container, based on the [definition](https://github.com/qmacro/capb2b/tree/main/.devcontainer) in the [repo for the series](https://github.com/qmacro/capb2b). The container image is based on this one:
 

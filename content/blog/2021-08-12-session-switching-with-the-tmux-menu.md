@@ -1,11 +1,11 @@
 ---
 date: 2021-08-12
 title: Session switching with the tmux menu
-tags:
-  - autodidactics
-  - tmux
-  - awk
 description: Here's a way to get a simple session switcher in tmux using a popup menu.
+tags:
+  - tmux
+  - tools
+  - learning
 ---
 
 I was looking at Waylon Walker's [tmux fzf session

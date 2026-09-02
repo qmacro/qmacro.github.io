@@ -2,6 +2,11 @@
 date: 2020-03-22
 category: homelab
 title: Starting out with Raspberry Pi experiments
+tags:
+  - raspberry-pi
+  - docker
+  - brambleweeny
+  - learning
 ---
 
 _This post provides some background to why I've started to experiment with Raspberry Pis, and to list the hardware components that I bought and set up with my son Joseph over the Christmas holidays._

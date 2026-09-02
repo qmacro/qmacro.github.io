@@ -2,10 +2,9 @@
 title: Allowing my intangible core to catch up with the rest of me...
 date: 2022-02-02
 tags:
-  - life
   - narrowboat
-  - queenie
-  - philosophy
+  - personal
+  - opinion
 ---
 I've been lucky enough to have enjoyed a couple of trips on [Queenie](#queenie) in the past few years, ambling up and down the Bridgewater Canal in the spring. The days and nights spent just, well, being, have stayed with me ever since.
 

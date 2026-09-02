@@ -1,10 +1,12 @@
 ---
 title: "FOSDEM, and small OSS Notes Browser Hack"
 date: 2004-02-20
-tags:
-  - sapcommunity
-  - oss
 description: Tomorrow morning I'm off to Brussels for FOSDEM - the Free and Open Source Software Developers' Meeting.
+tags:
+  - sap
+  - conference
+  - tools
+  - community
 ---
 Some people might wonder what this has to do with
 SAP, but don't forget that lots of people (including yours truly)

@@ -1,6 +1,9 @@
 ---
 date: 2015-03-17
 title: Making Information More Useful
+tags:
+  - opinion
+  - tools
 ---
 
 

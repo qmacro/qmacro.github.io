@@ -1,11 +1,14 @@
 ---
 date: 2010-11-09
 title: Hacking the Delicious extension for Chrome
-tags:
 - chrome
 - delicious
 - extension
 - javascript
+tags:
+  - javascript
+  - tools
+  - web
 ---
 
 

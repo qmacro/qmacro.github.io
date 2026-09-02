@@ -1,12 +1,12 @@
 ---
 title: Knowledge and netiquette in today's AI era
 date: 2026-07-29
+description: What I took from a couple of great podcast episodes I listened to this morning.
 tags:
   - ai
+  - community
+  - opinion
   - email
-  - netiquette
-  - knowledge
-description: What I took from a couple of great podcast episodes I listened to this morning.
 ---
 
 I'm walking in the cool mornings at the moment, as the problem with my right

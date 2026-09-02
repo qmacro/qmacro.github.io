@@ -1,6 +1,9 @@
 ---
 date: 2012-11-25
 title: The Silent Club and Recharging Alone
+tags:
+  - personal
+  - opinion
 ---
 
 

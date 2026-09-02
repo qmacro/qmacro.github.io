@@ -2,7 +2,9 @@
 title: "Double SAP CodeJam Athens - a report"
 date: 2019-06-27
 tags:
-  - sapcommunity
+  - codejam
+  - sap
+  - community
 ---
 *Last week I travelled to Athens to give not one but two SAP CodeJams.
 It was exhausting but very rewarding. Read on to find out how it went.*

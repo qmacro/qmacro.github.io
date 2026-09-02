@@ -1,10 +1,12 @@
 ---
 title: Tech skills chat with JonERP - a follow-on story
 date: 2009-11-05
-tags:
-  - sapcommunity
-  - learning
 description: How I was inspired to read and learn more.
+tags:
+  - sap
+  - community
+  - learning
+  - career
 ---
 
 Sitting in a traffic jam on the A34 this week, twice, I got the

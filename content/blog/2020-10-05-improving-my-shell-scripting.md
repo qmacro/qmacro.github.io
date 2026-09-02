@@ -1,9 +1,11 @@
 ---
 date: 2020-10-05
 title: Improving my shell scripting
-tags:
-  - shellcheck
 description: I'm using a style guide along with the shellcheck and shfmt tools to help me improve the quality and consistency of my shell scripts.
+tags:
+  - shell
+  - tools
+  - learning
 ---
 
 I'm doubling down on shell scripting, in particular Bash shell scripting. This is for many reasons, not least because I think that in the age of cloud and containers, shell environments are more important than ever. And what better shell than the Unix style shell; the design dates back decades but is still in my eyes one of the most wondrous things in tech even today, with its beautiful simplicity and its [simple beauty](https://en.wikipedia.org/wiki/Unix_philosophy#:~:text=The%20Unix%20philosophy%20is%20documented,%2C%20as%20yet%20unknown%2C%20program.).

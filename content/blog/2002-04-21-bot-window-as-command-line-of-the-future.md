@@ -2,6 +2,11 @@
 title: Bot window as command line of the future
 description: Musing on doing more from within the chatbot prompt.
 date: 2002-04-21
+tags:
+  - jabber
+  - instant-messaging
+  - bots
+  - opinion
 ---
 I visited [Matt’s blog](http://interconnected.org/home/) today after finding his Google script that I’ve adopted, and followed an interesting link to an article, [“Search the web via IM”](http://www.instantmessagingplanet.com/public/article/0,,10817_1012411,00.html), in which Matt is interviewed regarding [Googlematic](http://interconnected.org/googlematic/). It’s interesting that the ideas expressed at the start of the article:
 

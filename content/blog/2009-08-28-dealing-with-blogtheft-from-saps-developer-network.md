@@ -1,12 +1,15 @@
 ---
 date: 2009-08-28
 title: Dealing with "#blogtheft" from SAP's Developer Network
-tags:
 - apache
 - blogtheft
 - modrewrite
 - sap
 - sdn
+tags:
+  - sap
+  - community
+  - web
 ---
 
 

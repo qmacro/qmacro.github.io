@@ -3,7 +3,7 @@ title: Resources for navigating the canal network
 date: 2023-07-20
 tags:
   - narrowboat
-  - fullyrestful
+  - tools
 ---
 My good friend Sascha [asked how folks navigate the canal network](https://hachyderm.io/@sufw@mastodon.social/110744077753623324), given that Google Maps lacks directional detail. I thought this would be a great topic for a short post. Thanks Sascha!
 

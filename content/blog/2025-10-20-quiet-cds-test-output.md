@@ -1,12 +1,12 @@
 ---
 title: Quiet cds test output - two ways
 date: 2025-10-20
-tags:
-  - cds
-  - test
-  - cap
-  - node
 description: Reducing CAP server log output during tests, in two different ways, via a profile encapsulated set of log level configurations, or via the new cds test command.
+tags:
+  - cap
+  - cds
+  - tools
+  - developer-experience
 ---
 
 ## Background

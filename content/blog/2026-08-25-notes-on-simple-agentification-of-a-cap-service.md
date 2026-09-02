@@ -1,11 +1,13 @@
 ---
 title: Notes on simple agentification of a CAP service
 date: 2026-08-25
+description: A short note-to-self on what I did when trying out the new agents plugin for CAP.
 tags:
   - cap
   - ai
-  - agents
-description: A short note-to-self on what I did when trying out the new agents plugin for CAP.
+  - cds
+  - javascript
+  - tutorial
 ---
 
 ## Baseline

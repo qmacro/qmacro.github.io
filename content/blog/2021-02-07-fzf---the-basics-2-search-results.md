@@ -2,9 +2,10 @@
 date: 2021-02-07
 title: fzf - the basics part 2 - search results
 tags:
-  - autodidactics
-  - fzf
   - tools
+  - shell
+  - fzf
+  - learning
 ---
 
 _Here’s more of what I learned from reading the first part of the fzf README and paying attention. Now I have a better setup and understanding of the basics and how to control the appearance, it's time to turn my attention to setting some defaults to control what I get in my search results._

@@ -2,7 +2,10 @@
 title: "Managing resources on SAP BTP - what tool do I choose?"
 date: 2022-12-12
 tags:
-  - sapcommunity
+  - btp
+  - sap
+  - tools
+  - community
 ---
 
 *There are myriad resources on the SAP Business Technology Platform, and

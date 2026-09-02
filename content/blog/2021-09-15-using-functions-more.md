@@ -2,8 +2,9 @@
 date: 2021-09-15
 title: Using functions more
 tags:
-  - autodidactics
   - shell
+  - functional-programming
+  - learning
 ---
 Using functions more in my shell seems to bring benefits. Here's an example.
 <!--excerpt-->

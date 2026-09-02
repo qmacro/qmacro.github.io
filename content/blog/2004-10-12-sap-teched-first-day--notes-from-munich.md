@@ -1,10 +1,11 @@
 ---
 title: SAP TechEd first day - notes from Munich
 date: 2004-10-12
-tags:
-  - sapcommunity
-  - sapteched
 description: Well, after a nightmare getting here (V-Bird, the airline I was booked with, went bust) I’m now in Munich at a decidedly disconnected TechEd 04 (more on the disconnected misery later).
+tags:
+  - sap
+  - conference
+  - community
 ---
 
 After registration, we went along to Shai Agassi’s keynote presentation. It was fairly interesting, but overall, there was a single key point that stayed with me: “unification” is the new “integration”.

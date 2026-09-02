@@ -1,16 +1,12 @@
 ---
 date: 2015-10-19
 title: My journey to Clojure
-tags:
-  - fp
-  - language-ramblings
-  - headtail
-  - firstrest
-  - geb
-  - clojure
-  - lisp
-  - alanperlis
 description: I'm learning Clojure. Slowly, but hopefully surely.
+tags:
+  - functional-programming
+  - clojure
+  - learning
+  - opinion
 ---
 Clojure is a Lisp, which I like saying, because it makes me sound as though I
 know what I'm talking about and that my language experience is as old as the

@@ -1,10 +1,13 @@
 ---
 date: 2014-02-05
 title: 'Alt-K: Reading Notes'
-tags:
 - altk
 - kindle
 - reading
+tags:
+  - books
+  - personal
+  - learning
 ---
 
 

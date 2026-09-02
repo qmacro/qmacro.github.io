@@ -1,10 +1,12 @@
 ---
 title: "Monday morning thoughts: considering GraphQL"
 date: 2018-09-03
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: On GraphQL, and its relationship with existing ideas for managing data and structured exposure to that data over a wire protocol.
+tags:
+  - monday-morning-thoughts
+  - api
+  - opinion
+  - community
 ---
 
 **Update: This post is now available in audio format too - see [the

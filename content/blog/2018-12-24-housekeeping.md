@@ -1,6 +1,9 @@
 ---
 date: 2018-12-24
 title: Housekeeping
+tags:
+  - blogging
+  - tools
 ---
 
 Over the years since I've been blogging, I've used various systems (Blosxom, Moveable Type, WordPress, and latterly Ghost) which have all had their great features. In addition, I've been using a domain 'pipetree.com' that I've had since [Piers](//twitter.com/piers) and I came up with the name during a Perl conference in London (it was YAPC - Yet Another Perl Conference) in 2000.

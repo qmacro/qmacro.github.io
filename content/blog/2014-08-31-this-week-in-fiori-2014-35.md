@@ -1,13 +1,17 @@
 ---
 date: 2014-08-31
 title: This Week in Fiori (2014-35)
-tags:
 - catalog
 - dcode
 - fiori
 - teched
 - tool
 - twif
+tags:
+  - fiori
+  - sap
+  - conference
+  - this-week-in-fiori
 ---
 
 

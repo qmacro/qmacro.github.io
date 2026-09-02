@@ -2,10 +2,10 @@
 date: 2021-03-30
 title: Two-phase video uploads with YouTube API and curl
 tags:
-  - autodidactics
-  - curl
-  - youtube
   - shell
+  - api
+  - tools
+  - learning
 ---
 
 _TIL how to use the YouTube API to upload a video, with `curl`, using a two-phase approach._

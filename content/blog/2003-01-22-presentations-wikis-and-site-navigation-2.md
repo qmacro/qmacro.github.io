@@ -2,6 +2,10 @@
 date: 2003-01-22
 title: Presentations, Wikis, and Site Navigation
 description: Why build something when there's already a standard to embrace?
+tags:
+  - tools
+  - web
+  - blogging
 ---
 
 

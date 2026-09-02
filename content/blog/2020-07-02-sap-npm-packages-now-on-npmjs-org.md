@@ -2,8 +2,9 @@
 title: "SAP NPM packages now on npmjs.org"
 date: 2020-07-02
 tags:
-  - sapcommunity
   - npm
+  - sap
+  - community
 ---
 *This post tells you what you need to know - and do - about the recent
 migration of SAP Node.js packages to the default registry at

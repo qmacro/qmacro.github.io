@@ -2,7 +2,9 @@
 title: Happy Birthday SCN, Old Friend
 date: 2013-07-31
 tags:
-  - sapcommunity
+  - sap
+  - community
+  - opinion
 ---
 Happy Birthday, SAP Community Network, or, to give it it's original name (which gives you a clue to its origins) the SAP Developer Network - SDN.
 

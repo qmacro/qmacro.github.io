@@ -2,6 +2,10 @@
 title: '"Blog Locally, Publish Globally"'
 description: On the enduring pattern of local control but global reach.
 date: 2002-04-30
+tags:
+  - blogging
+  - tools
+  - web
 ---
 I’d been thinking of using [cvs](http://www.cvshome.org/) to help manage offline file-based blogging with Blosxom, but I recently read a couple of posts by [Marc Nozell](http://www.nozell.com/cgi/blosxom/2002/Mar/5#syncing-blog) and [Rael](http://saladwithsteve.com/osx/2002_02_01_archive.html#9710921) (to whom the title of this post is attributed) describing how they use rsync. It’s a nicer idea than using cvs, so I’ve gone for it. I made an alias, ‘blogsync’, which does this:
 

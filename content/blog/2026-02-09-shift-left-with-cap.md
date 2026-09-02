@@ -1,16 +1,14 @@
 ---
 title: Shift left with CAP
 date: 2026-02-09
+description: In this post I posit that shifting left in our CAP based solutions is something that we should be striving to do.
 tags:
-  - llms
-  - fp
   - cap
   - cds
-  - cql
   - odata
-  - clojure
-  - bestpractices
-description: In this post I posit that shifting left in our CAP based solutions is something that we should be striving to do.
+  - functional-programming
+  - opinion
+  - architecture
 ---
 
 The traditional "shift left" strategy in software is about how we move testing,

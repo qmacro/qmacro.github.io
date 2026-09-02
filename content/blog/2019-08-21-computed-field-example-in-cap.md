@@ -2,7 +2,11 @@
 title: "Computed field example in CAP"
 date: 2019-08-21
 tags:
-  - sapcommunity
+  - cap
+  - cds
+  - javascript
+  - tutorial
+  - community
 ---
 *In this post, I show one way of using computed properties in CAP, using
 CDS and service events in Node.js.*

@@ -2,7 +2,9 @@
 title: Reaching out to the new new kingmakers
 date: 2017-02-13
 tags:
-  - bluefinsolutions
+  - community
+  - opinion
+  - learning
 ---
 
 Here's an insider's view from last week’s SAP Developer Advisory Board two day face-to-face meeting in Miami, USA. Here, the message was loud and clear: SAP's commitment to connect with developers inside and outside the ecosphere is as strong as ever. 

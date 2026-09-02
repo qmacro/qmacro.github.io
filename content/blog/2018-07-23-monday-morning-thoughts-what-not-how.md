@@ -1,10 +1,12 @@
 ---
 title: "Monday morning thoughts: what not how"
 date: 2018-07-23
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: In this post, I think about how we program, about the way we describe what it is that we want the computer to do for us, and look at what has become for me the canonical example of the difference between 'what' and 'how'.
+tags:
+  - monday-morning-thoughts
+  - cap
+  - opinion
+  - community
 ---
 
 Over the past week, three worlds have collided, in a most pleasing way.

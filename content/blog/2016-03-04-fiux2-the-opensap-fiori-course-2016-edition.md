@@ -1,12 +1,12 @@
 ---
 date: 2016-03-04
 title: '"fiux2" - The openSAP Fiori Course - 2016 Edition'
+description: An overview of the blog posts in the series about the 2016 openSAP course on Fiori.
 tags:
   - fiori
-  - seriespost
-  - opensap
-  - fiux2
-description: An overview of the blog posts in the series about the 2016 openSAP course on Fiori.
+  - sap
+  - learning
+  - series-index
 ---
 I’ve written about the [openSAP](http://open.sap.com) Massive Open Online Courses (MOOC) system in the past. I’m a big fan, particularly for the way the folks run the ship. They are “open” in the best possible ways.
 

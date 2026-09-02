@@ -1,8 +1,10 @@
 ---
 date: 2014-10-27
 title: This Week in Fiori (2014-43)
-tags:
 - twif
+tags:
+  - fiori
+  - this-week-in-fiori
 ---
 
 Hello everybody, Brenton here in for DJ this week. For those of you who don’t know me, I work in the Fiori and User experience space with DJ and I am a fellow SAPUI5/OpenUI5 advocate for a long time now. I focus more on the mobility side of things more than anything else but for me it’s all about bringing amazing solutions to end users and having a bit of fun while doing it :-)

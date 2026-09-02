@@ -2,10 +2,10 @@
 date: 2021-04-28
 title: Unpacking Bash shell tips from a GitHub Actions workflow
 tags:
-  - autodidactics
   - shell
   - github-actions
-  - awk
+  - tools
+  - learning
 ---
 
 _Someone shared a GitHub Actions workflow step which was written to find out some pull request info, but I thought even the first couple of shell lines, using IFS and awk, were worth staring at for a second or two._

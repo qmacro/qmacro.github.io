@@ -2,6 +2,10 @@
 date: 2002-06-04
 title: Standing on the shoulders ... Exploring Weblog Neighbourhoods with Blogdex
 description: Inspired by Mark and Dave, I’ve been doing a bit of neighbourhood exploration hacking of my own.
+tags:
+  - blogging
+  - web
+  - community
 ---
 
 Last week, I was alerted to [Blogdex](http://blogdex.media.mit.edu/) by [Ben](http://www.benhammersley.com/) (through the funny little [Metalinker](http://www.thinkblank.com/metalinker/) Javascript-induced ‘[b]‘ links on his [RSS weblog](http://rss.benhammersley.com/) pages). It’s an interesting project that trawls weblogs and compiles link information (I don’t know how wide it trawls, so your URL might not be in there. YMMV).

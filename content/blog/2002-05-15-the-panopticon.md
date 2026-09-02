@@ -2,6 +2,10 @@
 date: 2002-05-15
 title: The Panopticon
 description: Extending the Panopticon experiment with XML messaging via Jabber.
+tags:
+  - jabber
+  - web
+  - tools
 ---
 Everything that goes around, comes around. What thing links my old University ([UCL](http://www.ucl.ac.uk/GrandLat/)), [Jeremy Bentham](http://www.ucl.ac.uk/Bentham-Project/), (whose [preserved figure](http://www.ucl.ac.uk/Bentham-Project/images/auto_il.gif) sits in UCL’s South Cloisters), and this year’s [Emerging Technology Conference](http://conferences.oreillynet.com/etcon2002/)?
 

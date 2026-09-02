@@ -5,27 +5,10 @@ tags:
   - tasc
   - cap
   - cds
-  - handsonsapdev
+  - hands-on-sap-dev
   - episode-notes
-  - node-js
-  - cds-repl
   - functional-programming
-  - closures
-  - lazy-evaluation
-  - services-as-interfaces
-  - event-driven-architecture
-  - hexagonal-architecture
-  - service-mocking
-  - service-integration
-  - developer-experience
-  - grow-as-you-go
-  - best-practices
-  - docker
-  - computing-history
-  - smalltalk
-  - lisp
-  - metaprogramming
-  - abap
+  - architecture
 ---
 These are somewhat more detailed notes than normal that summarise [The Art and Science of CAP part 4][98], one episode in a mini series with Daniel Hutzel to explore the philosophy, the background, the technology history and layers that support and inform the SAP Cloud Application Programming Model.
 

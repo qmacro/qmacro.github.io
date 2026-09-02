@@ -2,8 +2,9 @@
 date: 2021-07-26
 title: Reopening pull requests and GITHUB_ACTOR
 tags:
-  - autodidactics
   - github-actions
+  - learning
+  - til
 ---
 
 _Today I learned that the `GITHUB_ACTOR` on a re-opened pull request reflects the person re-opening it, not the original creator._

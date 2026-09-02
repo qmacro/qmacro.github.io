@@ -2,8 +2,9 @@
 date: 2020-10-06
 title:  "Desnowballification with set -o errexit"
 tags:
-  - autodidactics
   - shell
+  - learning
+  - til
 ---
 _I've started to use `set -o errexit` at the start of my scripts to make them more robust._
 

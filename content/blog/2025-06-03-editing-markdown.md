@@ -3,14 +3,10 @@ title: Editing Markdown in a Neovim environment
 description: Here are some notes I made when digging into my tools for editing Markdown source.
 date: 2025-06-03
 tags:
-  - markdown
-  - marksman
-  - markdownlint
-  - treesitter
-  - lsp
-  - linting
-  - editorconfig
   - neovim
+  - markdown
+  - tools
+  - linting
 ---
 
 🚧 DRAFT POST 🚧

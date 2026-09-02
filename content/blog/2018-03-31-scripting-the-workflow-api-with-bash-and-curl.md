@@ -1,14 +1,13 @@
 ---
 title: "Scripting the Workflow API with bash and curl"
 date: 2018-03-31
-tags:
-  - sapcommunity
-  - googlecloudshell
-  - api
-  - scp
-  - workflow
-  - shell
 description: There's an API for the SAP Cloud Platform Workflow service. Let's explore!
+tags:
+  - shell
+  - workflow
+  - btp
+  - api
+  - community
 ---
 
 I've written about the SAP Cloud Platform (SCP) Workflow service

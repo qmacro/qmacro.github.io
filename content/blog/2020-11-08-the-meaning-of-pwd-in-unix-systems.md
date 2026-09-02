@@ -1,6 +1,10 @@
 ---
 date: 2020-11-08
 title: The myriad meanings of pwd in Unix systems
+tags:
+  - shell
+  - linux
+  - computing-history
 ---
 
 _Last week I ran a poll on Twitter to see what people considered with respect to the meaning of 'pwd' in Unix and Linux systems. The results were varied, for perhaps good reason._

@@ -1,14 +1,13 @@
 ---
 title: "Monday morning thoughts: growth is upwards"
 date: 2018-09-24
+description: In this post, I think about how we grow, how we improve ourselves by adding to our knowledge and experience, and consider that our growth is sometimes uphill but almost always rewarding.
 tags:
-  - sapcommunity
-  - mondaymorningthoughts
+  - monday-morning-thoughts
   - cap
   - javascript
-  - literature
-  - running
-description: In this post, I think about how we grow, how we improve ourselves by adding to our knowledge and experience, and consider that our growth is sometimes uphill but almost always rewarding.
+  - opinion
+  - community
 ---
 
 I live to the east of the centre Manchester, in beautiful countryside

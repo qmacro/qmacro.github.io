@@ -1,15 +1,12 @@
 ---
 title: Constraints, expressions and axioms in action
 date: 2026-01-27
-tags:
-  - cds
-  - cap
-  - sql
-  - database
-  - repl
-  - assert
-  - constraints
 description: In this blog post I meditate on how declarative constraints are realised in CAP, using the power of the underlying database.
+tags:
+  - cap
+  - cds
+  - tutorial
+  - domain-modelling
 ---
 
 In [part 2](https://www.youtube.com/watch?v=s4IZR1LBRrA) of the current

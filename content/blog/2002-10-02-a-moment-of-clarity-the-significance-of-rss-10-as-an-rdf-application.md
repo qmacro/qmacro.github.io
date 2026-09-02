@@ -1,11 +1,16 @@
 ---
 date: 2002-10-02
 title: 'A moment of clarity: The significance of RSS 1.0 as an RDF application'
-tags:
 - rdf
 - rss-tag
 - xml
 description: It's to do with the emphasis on RDF rather than XML, in RSS.
+tags:
+  - rss
+  - rdf
+  - xml
+  - semantic-web
+  - opinion
 ---
 
 

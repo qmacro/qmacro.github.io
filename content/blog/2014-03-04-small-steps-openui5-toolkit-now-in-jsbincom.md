@@ -2,7 +2,10 @@
 title: Small steps - OpenUI5 toolkit now in jsbin.com
 date: 2014-03-04
 tags:
-  - sapcommunity
+  - openui5
+  - open-source
+  - tools
+  - community
 ---
 In our continued efforts to spread the word of SAPUI5 in general and OpenUI5 in particular, we try to make small steps forward.
 

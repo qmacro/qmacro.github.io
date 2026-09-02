@@ -1,12 +1,16 @@
 ---
 date: 2014-07-26
 title: Keyed vs Non-Keyed Root JSON Elements & UI5 Binding
-tags:
 - databinding
 - multicombobox
 - openui5
 - sapui5
 - ui5
+tags:
+  - openui5
+  - json
+  - javascript
+  - tutorial
 ---
 
 

@@ -2,8 +2,9 @@
 date: 2021-03-15
 title: Aborting a script with parameter expansion
 tags:
-  - autodidactics
   - shell
+  - learning
+  - til
 ---
 
 _Use the :? form of shell parameter expansion to abort a script if a required parameter value is not set._

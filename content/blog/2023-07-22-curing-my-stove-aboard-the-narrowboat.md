@@ -2,9 +2,8 @@
 title: Curing my stove aboard the narrowboat
 date: 2023-07-22
 tags:
-  - narrowboatdiary
   - narrowboat
-  - fullyrestful
+  - personal
 ---
 It's been a few weeks since I took possession of my narrowboat and it's been pretty hot and humid the whole time. Today was the first day where it felt noticeably cooler, so I took the opportunity to complete a task I'd been itching to do since I launched. 
 

@@ -1,14 +1,11 @@
 ---
 title: Breathing through the reduction meditation
 date: 2015-10-20
-tags:
-  - language-ramblings
-  - clojure
-  - firstrest
-  - headtail
-  - looprecur
-  - reduce
 description: In this post I look even more closely at a simple Clojure implementation of a reduce function.
+tags:
+  - functional-programming
+  - clojure
+  - javascript
 ---
 The subject of the earlier post [A meditation on
 reduction](/blog/posts/2015/10/19/a-meditation-on-reduction/) was the simple

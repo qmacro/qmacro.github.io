@@ -3,12 +3,10 @@ title: FP, function chains and CAP model loading
 description: Understanding functional programming approaches, no matter how trivial, can help in other areas. Here I explain how being comfortable with function chains helped in working out why a required (but unused) service was being loaded into the overall CDS model in a CAP project.
 date: 2025-05-01
 tags:
-  - fp
+  - functional-programming
   - cap
-  - filter
-  - map
-  - debugging
-  - abstraction
+  - javascript
+  - learning
 ---
 
 ## Introduction

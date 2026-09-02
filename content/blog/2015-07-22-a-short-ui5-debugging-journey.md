@@ -1,12 +1,11 @@
 ---
 date: 2015-07-22
 title: A Short UI5 Debugging Journey
-tags:
-  - debugging
-  - openui5
-  - supporttool
-  - ui5
 description: 30 Days of UI5 - day 19 by DJ Adams.
+tags:
+  - openui5
+  - thirty-days-of-ui5
+  - debugging
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 

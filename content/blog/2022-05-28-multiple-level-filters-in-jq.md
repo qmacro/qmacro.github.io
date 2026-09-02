@@ -4,6 +4,8 @@ title: Multiple level filters in jq
 tags:
   - jq
   - odata
+  - json
+  - tutorial
 ---
 Here's another note-to-self on using jq to shape JSON representations of OData to match what's returned using system query options. Thsi time it's all filtering at two levels.
 

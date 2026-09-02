@@ -2,9 +2,9 @@
 title: Using the docker CLI in a container on macOS
 date: 2023-12-22
 tags:
-  - macos
   - docker
-  - containers
+  - tools
+  - shell
 ---
 In this post I explain what I've done to be able to use the Docker client CLI from within a container on my macOS device.
 

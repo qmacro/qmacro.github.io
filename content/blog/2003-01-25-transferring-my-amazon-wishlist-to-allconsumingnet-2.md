@@ -2,6 +2,10 @@
 date: 2003-01-25
 title: Transferring my Amazon wishlist to AllConsuming.net
 description: Scripting to the rescue, as always.
+tags:
+  - web
+  - api
+  - tools
 ---
 
 

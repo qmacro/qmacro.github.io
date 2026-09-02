@@ -2,7 +2,10 @@
 title: UI5 features for building responsive apps
 date: 2015-02-23
 tags:
-  - bluefinsolutions
+  - openui5
+  - fiori
+  - opinion
+  - community
 ---
 
 To build a Fiori app, there are a number of considerations to take into account. One of these considerations is the responsive nature of the app; it should work on different devices (desktops, tablets and smartphones) and act - "respond" - appropriately on each. The UI5 toolkit, with which SAP builds its Fiori apps, has a number of features that help you in this regard. Read on to learn more about what they are.

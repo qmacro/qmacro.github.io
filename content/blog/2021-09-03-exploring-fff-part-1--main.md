@@ -2,10 +2,10 @@
 date: 2021-09-03
 title: Exploring fff part 1 - main
 tags:
-  - autodidactics
-  - fff
   - shell
-  - shellcheck
+  - tools
+  - learning
+  - open-source
 ---
 _Here's what I learned from starting to read the source code to fff - in particular, the main function._
 

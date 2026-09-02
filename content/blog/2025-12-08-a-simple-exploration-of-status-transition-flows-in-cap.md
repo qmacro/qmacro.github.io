@@ -1,12 +1,12 @@
 ---
 title: A simple exploration of status transition flows in CAP
 date: 2025-12-08
+description: In this post I explore the new Status-Transition Flows in CAP with a simple example.
 tags:
   - cap
   - cds
-  - status
-  - annotations
-description: In this post I explore the new Status-Transition Flows in CAP with a simple example.
+  - domain-modelling
+  - tutorial
 ---
 The [November 2025 release](https://cap.cloud.sap/docs/releases/nov25) of CAP heralded [a beta version of Status-Transition Flows](https://cap.cloud.sap/docs/releases/2025/nov25#status-transition-flows), moving us up yet another gear in the journey towards declarative nirvana.
 

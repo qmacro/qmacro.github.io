@@ -4,7 +4,9 @@ date: 2019-11-06
 tags:
   - cap
   - sap
-  - sapcommunity
+  - architecture
+  - opinion
+  - community
 ---
 In this post, I consider what CAP really is, what it gives us, and why we should consider it a fundamental piece of the puzzle in the cloud context and beyond.
 

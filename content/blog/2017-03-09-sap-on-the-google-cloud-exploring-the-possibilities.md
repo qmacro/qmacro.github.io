@@ -1,10 +1,12 @@
 ---
 title: "SAP on the Google Cloud - exploring the possibilities"
 date: 2017-03-09
-tags:
-  - sapcommunity
-  - cloud
 description: The era of the software defined datacentre is truly upon us.
+tags:
+  - sap
+  - cloud
+  - google
+  - community
 ---
 
 The *[*announcement from Google

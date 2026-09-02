@@ -2,14 +2,10 @@
 title: "Tech Aloud podcast - an introduction"
 date: 2019-09-18
 tags:
-  - sapcommunity
-  - cap
-  - dsls
-  - martinfowler
-  - wardcunningham
-  - repl
   - podcast
-  - techaloud
+  - cap
+  - community
+  - learning
 ---
 *I started a new podcast called Tech Aloud, where I read aloud blog
 posts and articles so you can consume them on the go. There's no

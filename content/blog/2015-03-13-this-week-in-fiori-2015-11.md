@@ -1,10 +1,13 @@
 ---
 date: 2015-03-13
 title: This Week In Fiori (2015-11)
-tags:
 - fiori
 - ui5
 - twif
+tags:
+  - fiori
+  - openui5
+  - this-week-in-fiori
 ---
 
 

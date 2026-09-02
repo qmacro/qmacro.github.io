@@ -2,6 +2,10 @@
 date: 2020-03-24
 title: Let's learn to "Code at Home"
 permalink: /blog/posts/2020/03/24/code-at-home/
+tags:
+  - community
+  - learning
+  - sap
 ---
 
 _This post provides information on the simple Code at Home initiative - what it is and what you need to join in._

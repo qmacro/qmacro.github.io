@@ -2,8 +2,8 @@
 date: 2016-10-02
 title: F3C Part 1 - Higher-order functions
 tags:
-  - fp
-  - language-ramblings
+  - functional-programming
+  - javascript
   - f3c
 ---
 FunFunFunction Video: [Higher Order Functions - Part 1 of Functional Programming in JavaScript](https://www.youtube.com/watch?v=BMUiFMZr7vk&list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84&index=1)

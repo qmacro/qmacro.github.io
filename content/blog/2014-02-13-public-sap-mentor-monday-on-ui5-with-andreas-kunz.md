@@ -2,7 +2,10 @@
 title: Public SAP Mentor Monday 24 Mar 2014 - UI5 with Andreas Kunz
 date: 2014-02-13
 tags:
-  - sapcommunity
+  - openui5
+  - sap
+  - community
+  - talk
 ---
 On Monday 24 March 2014 we will have a public SAP Mentor Monday session on the subject of UI5.
 

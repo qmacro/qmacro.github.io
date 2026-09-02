@@ -1,10 +1,12 @@
 ---
 title: "Monday morning thoughts: rethinking like the web"
 date: 2018-11-19
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: I revisit some principles that help us "think like the web" and think about them in the context of today's SAP technology landscape and community.
+tags:
+  - monday-morning-thoughts
+  - web
+  - opinion
+  - community
 ---
 
 Last week I watched someone I was with [apply for a job on

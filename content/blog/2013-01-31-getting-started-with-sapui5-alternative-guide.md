@@ -2,7 +2,10 @@
 title: "Getting Started with SAPUI5: Alternative Guide"
 date: 2013-01-31
 tags:
-  - sapcommunity
+  - openui5
+  - sap
+  - tutorial
+  - community
 ---
 
 With reference to [my recent post about the 'sapui5bin'

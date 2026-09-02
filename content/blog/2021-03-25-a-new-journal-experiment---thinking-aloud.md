@@ -1,11 +1,11 @@
 ---
 date: 2021-03-25
 title: A new journal experiment - Thinking Aloud
+description: I'm trying out a new way of sharing thoughts in a GitHub issues based journal style blog called "Thinking Aloud".
 tags:
   - tools
-  - meta
-  - thoughts
-description: I'm trying out a new way of sharing thoughts in a GitHub issues based journal style blog called "Thinking Aloud".
+  - opinion
+  - blogging
 ---
 
 TL;DR - My [Thinking Aloud repo](https://github.com/qmacro/thinking-aloud) is where I am experimenting with journalling via GitHub issues. Check out the [issues themselves](https://github.com/qmacro/thinking-aloud/issues?q=is%3Aissue+is%3Aopen+label%3Aentry), the [rendered versions of recent entries](https://github.com/qmacro/thinking-aloud/blob/main/recent.md), the [Atom feed](https://raw.githubusercontent.com/qmacro/thinking-aloud/main/feed.xml) or the [GitHub Actions workflows](https://github.com/qmacro/thinking-aloud/tree/main/.github/workflows) with which I automate some of the process.

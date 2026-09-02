@@ -1,9 +1,13 @@
 ---
 date: 2011-09-19
 title: Ad-hoc Data Workflows with Google Apps Script
-tags:
 - appsscript
 - google
+tags:
+  - google-apps-script
+  - google
+  - talk
+  - tools
 ---
 
 

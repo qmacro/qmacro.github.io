@@ -1,8 +1,10 @@
 ---
 date: 2013-02-02
 title: '30 Day Challenge: No Beer!'
-tags:
 - 30days
+tags:
+  - personal
+  - beer
 ---
 
 

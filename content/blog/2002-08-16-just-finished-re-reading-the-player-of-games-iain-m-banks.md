@@ -2,6 +2,10 @@
 date: 2002-08-16
 title: 'Just finished re-reading: The Player Of Games (Iain M Banks)'
 description: Some thoughts on The Culture.
+tags:
+  - books
+  - review
+  - personal
 ---
 
 

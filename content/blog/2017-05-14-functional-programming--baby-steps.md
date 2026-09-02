@@ -2,8 +2,9 @@
 title: Functional programming - baby steps
 date: 2017-05-14
 tags:
-  - fp
-  - functionalprogramming
+  - functional-programming
+  - javascript
+  - learning
 ---
 _There's a lot of talk about functional programming these days. Some of the language seems impenetrable at first - immutability, first class functions, functions as values, and so on. If you're a programmer versed in more mainstream approaches, how do you start on the functional programming journey? Here's how I started, perhaps it will work for you too._
 

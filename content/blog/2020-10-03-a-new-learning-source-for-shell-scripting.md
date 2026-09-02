@@ -1,6 +1,10 @@
 ---
 date: 2020-10-03
 title: A new learning source for shell scripting
+tags:
+  - shell
+  - learning
+  - tools
 ---
 Recently I discovered [Mr Rob](https://rwx.gg) (and yes, I'll admit, it took me a day or so to realise the significance of 'rwx' in his website, and names on [Twitch](https://twitch.tv/rwxrob) and [YouTube](https://youtube.com/rwxrob)). He has lots of experience and teaches directly and also indirectly, which appeals to me.
 

@@ -1,10 +1,11 @@
 ---
 title: "Monday morning thoughts: developers and advocacy"
 date: 2018-07-02
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: I think about what it means to me to be a part of the Developer Relations team, and talk a bit about evangelism, outreach and advocacy.
+tags:
+  - monday-morning-thoughts
+  - community
+  - opinion
 ---
 
 It's been just over four months since I joined SAP's Developer

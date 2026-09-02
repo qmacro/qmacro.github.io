@@ -2,9 +2,11 @@
 title: "Terminal Tip: truncating CF output"
 date: 2020-04-07
 tags:
-  - sapcommunity
-  - terminal
-  - terminaltip
+  - shell
+  - cloud-foundry
+  - tools
+  - til
+  - community
 ---
 I am a big fan of the terminal, and it's my preferred work environment
 for many reasons.

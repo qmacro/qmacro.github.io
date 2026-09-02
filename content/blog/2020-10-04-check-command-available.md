@@ -2,8 +2,9 @@
 date: 2020-10-04
 title:  "Checking a command is available before use"
 tags:
-  - autodidactics
   - shell
+  - learning
+  - til
 ---
 _There's one final nugget in [Mr Rob](https://rwx.gg/)'s [`ix`](https://gitlab.com/rwxrob/dotfiles/-/blob/master/scripts/ix) script that I wanted to pick out. It's not earth shattering but still useful to have seen._
 

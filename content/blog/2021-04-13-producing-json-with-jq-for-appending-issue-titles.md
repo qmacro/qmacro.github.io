@@ -2,10 +2,11 @@
 date: 2021-04-13
 title: Producing JSON with jq for appending issue titles
 tags:
-  - autodidactics
   - jq
-  - tools
+  - json
   - shell
+  - tools
+  - learning
 ---
 
 _I learned how to use `jq` to **produce** JSON, while writing a script to enhance my Thinking Aloud journal entry titles._

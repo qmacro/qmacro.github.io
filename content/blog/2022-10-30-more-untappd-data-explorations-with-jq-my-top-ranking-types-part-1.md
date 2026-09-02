@@ -2,10 +2,10 @@
 date: 2022-10-30
 title: More Untappd data explorations with jq - my top ranking beer types (part 1)
 tags:
-  - jq-series-top-beer-types
-  - untappd
   - jq
   - beer
+  - json
+  - tools
 ---
 I've been exploring my Untappd data a bit more since [analysing my top brewery countries](/blog/posts/2022/10/28/untappd-data-with-jq-my-top-brewery-countries/), this time to see if my average ratings indicated anything about my preferred beer types. Here's what I've done so far, in part 1 of this little series.
 

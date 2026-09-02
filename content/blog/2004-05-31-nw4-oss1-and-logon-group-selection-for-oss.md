@@ -1,10 +1,11 @@
 ---
 title: NW4, OSS1 and logon group selection for OSS
 date: 2004-05-31
-tags:
-  - sapcommunity
-  - oss
 description: Digging into logon group selection.
+tags:
+  - sap
+  - community
+  - tools
 ---
 While waiting for the DD ACTIVATION phase of an add-on installation to finish, my mind wandered off to something I’d noticed with my new [WAS 6.40 testdrive for Linux is here!](/blog/posts/2004/03/19/was-6.40-testdrive-for-linux-is-here!/) system, with the SID “NW4” (NetWeaver ’04). Normally, when you start transaction OSS1, and hit the button to connect to OSS, you’re presented with a popup giving you a choice of groups, like the one in the screenshot here.
 

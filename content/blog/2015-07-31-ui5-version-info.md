@@ -1,11 +1,10 @@
 ---
 date: 2015-07-31
 title: UI5 Version Info
+description: 30 Days of UI5 - day 28 by DJ Adams.
 tags:
   - openui5
-  - sapui5
-  - versioninfo
-description: 30 Days of UI5 - day 28 by DJ Adams.
+  - thirty-days-of-ui5
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 

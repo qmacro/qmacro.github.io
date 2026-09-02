@@ -2,9 +2,10 @@
 title: "SAP Tech Bytes: btp CLI - managing configuration"
 date: 2021-09-14
 tags:
-  - sapcommunity
   - btp
   - cli
+  - tools
+  - community
 ---
 *Understand and manage the btp CLI client configuration.*
 

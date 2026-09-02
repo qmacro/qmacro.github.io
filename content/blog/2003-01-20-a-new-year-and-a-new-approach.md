@@ -2,6 +2,9 @@
 date: 2003-01-20
 title: A new year and a new approach
 description: Taking a fresh, less cluttered approach to the website and blog.
+tags:
+  - blogging
+  - personal
 ---
 
 

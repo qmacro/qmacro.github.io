@@ -1,11 +1,14 @@
 ---
 title: Forget SOAP - build real web services with the ICF
 date: 2004-06-24
-tags:
-  - sapcommunity
-  - soap
-  - rest
 description: I don’t like getting into a lather when it comes to data and function integration. Rather than using SOAP, I prefer real web services, built with HTTP.
+tags:
+  - rest
+  - sap
+  - http
+  - api
+  - opinion
+  - architecture
 ---
 
 As an example of taking the [REST](https://web.archive.org/web/20040907010810/http://rest.blueoxen.net/cgi-bin/wiki.pl)ian approach to exposing your SAP data and functionality through services you can build with the excellent Internet Communication Framework (ICF) layer, I thought I’d show you how straightforward and natural data integration can be by using a spreadsheet as an example.

@@ -2,6 +2,9 @@
 date: 2002-12-19
 title: Startups and software patents
 description: Dave W points to Strangeberry, a startup that are doing a Java rendition of Rendevous.
+tags:
+  - opinion
+  - open-source
 ---
 
 

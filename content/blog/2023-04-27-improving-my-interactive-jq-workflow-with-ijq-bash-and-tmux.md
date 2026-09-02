@@ -3,11 +3,9 @@ title: Improving my interactive jq workflow with ijq, bash and tmux
 date: 2023-04-27
 tags:
   - jq
-  - ijq
-  - bash
-  - tmux
   - shell
-  - shellcheck
+  - tmux
+  - tools
 ---
 I'm a big fan of ijq and how it allows me to explore JSON data interactively with jq expressions. With a small script I have improved my workflow by being able to capture the jq expression from ijq and use it easily on the command line.
 

@@ -1,12 +1,15 @@
 ---
 date: 2003-02-22
 title: Tiki parser for MoinMoin
-tags:
 - blosxom
 - moinmoin
 - tiki
 - wiki
 description: Embedding the Tiki language into the MoinMoin wiki.
+tags:
+  - tools
+  - web
+  - open-source
 ---
 
 

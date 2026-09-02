@@ -2,8 +2,9 @@
 date: 2020-12-03
 title:  "Implicit values in Bash for loop construct"
 tags:
-  - autodidactics
   - shell
+  - learning
+  - til
 ---
 _Bash's 'for loop' construct can use implicit values - who knew? Not me ..._
 

@@ -1,10 +1,12 @@
 ---
 title: "Monday morning thoughts: Workflow Forms and the definition of a developer"
 date: 2018-09-17
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: I think briefly about the definition of a developer, and in that context look at the advent of Workflow Forms, a major new addition to the functionality of the Workflow service on SAP Cloud Platform.
+tags:
+  - monday-morning-thoughts
+  - workflow
+  - opinion
+  - community
 ---
 
 ## How do you define a developer?

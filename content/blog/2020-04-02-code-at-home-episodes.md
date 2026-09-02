@@ -1,6 +1,10 @@
 ---
 date: 2020-04-02
 title: Code at Home episodes
+tags:
+  - community
+  - learning
+  - sap
 ---
 
 _This post summarises the episodes streamed live (and available as recordings) on YouTube. Find out more about the Code at Home initiative in the main blog post: [Let's learn to "Code at Home"](/blog/posts/2020/03/24/code-at-home/)._

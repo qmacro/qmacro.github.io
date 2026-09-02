@@ -4,17 +4,11 @@ description: In this post I outline how I migrated my collection of reading list
 date: 2025-03-10
 tags:
   - github
-  - wallabag
-  - self-hosting
-  - curl
   - jq
-  - oauth
-  - apis
-  - docker
-  - tailscale
-  - tsdproxy
-  - gh
   - shell
+  - docker
+  - tools
+  - homelab
 ---
 
 ## Background

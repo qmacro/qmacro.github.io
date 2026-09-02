@@ -3,10 +3,9 @@ date: 2022-02-28
 title: Exercism and jq
 tags:
   - jq
-  - learning
-  - bats
   - shell
-  - exercism
+  - learning
+  - tools
 ---
 I wanted to see how a jq track might work in Exercism. Here's what I tried out this morning.
 <!--excerpt-->

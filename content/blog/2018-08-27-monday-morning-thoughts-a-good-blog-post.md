@@ -1,10 +1,12 @@
 ---
 title: "Monday morning thoughts: a good blog post"
 date: 2018-08-27
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: What makes a good blog post, and also what writing such a post does for the author, too.
+tags:
+  - monday-morning-thoughts
+  - blogging
+  - opinion
+  - community
 ---
 
 It's a bank holiday Monday today in England, and so of course it's

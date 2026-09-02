@@ -3,7 +3,7 @@ date: 2021-03-31
 title: Deeper connections to everyday tools
 tags:
   - tools
-  - thoughts
+  - opinion
   - coffee
 ---
 

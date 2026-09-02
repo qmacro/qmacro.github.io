@@ -3,8 +3,8 @@ date: 2022-04-15
 title: A classic example of yak shaving, and some stream editing
 tags:
   - shell
-  - yak-shaving
-  - sed
+  - tools
+  - opinion
 ---
 It's not often that I'm relaxed enough to be aware of how my mind is (or isn't) working, and what it's doing. So it was a surprise when I realised that what I've been doing for the past 15 minutes is descending through multiple levels into some classic yak shaving territory.
 <!--excerpt-->

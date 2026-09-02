@@ -1,10 +1,11 @@
 ---
 title: "Monday morning thoughts: indirect influence"
 date: 2018-12-03
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: On how our work can directly and even indirectly influence those that come after us, and about what this means for how we should act.
+tags:
+  - monday-morning-thoughts
+  - opinion
+  - community
 ---
 
 Last week's I attended SAP TechEd 2018 in Bangalore. Most of the time I

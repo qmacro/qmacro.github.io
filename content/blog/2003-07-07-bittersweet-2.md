@@ -1,11 +1,14 @@
 ---
 date: 2003-07-07
 title: Bittersweet
-tags:
 - oscon
 - travel
 - usa
 description: On each occasion I’ve travelled to the USA, either on business or for pleasure, I’ve entered the country with a rather bitter taste in my mouth.
+tags:
+  - conference
+  - personal
+  - open-source
 ---
 
 

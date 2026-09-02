@@ -1,11 +1,12 @@
 ---
 date: 2015-07-04
 title: Welcome to 30 Days of UI5!
-tags:
-  - seriespost
-  - opensource
-  - openui5
 description: 30 Days of UI5 - overview and day 1 by DJ Adams.
+tags:
+  - openui5
+  - open-source
+  - thirty-days-of-ui5
+  - series-index
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 

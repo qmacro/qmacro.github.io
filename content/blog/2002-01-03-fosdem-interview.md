@@ -4,8 +4,9 @@ description: This post is a transcript of an interview by Raphaël Bauduin for F
 date: 2002-01-03
 tags:
   - jabber
-  - fosdem
-  - archive
+  - conference
+  - open-source
+  - interview
 ---
 
 Read how DJ Adams talks about Jabber ...

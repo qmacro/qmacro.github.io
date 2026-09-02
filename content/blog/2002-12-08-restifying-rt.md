@@ -2,6 +2,11 @@
 date: 2002-12-08
 title: RESTifying RT
 description: Some notes on providing a RESTful API for Request Tracker.
+tags:
+  - rest
+  - http
+  - api
+  - tools
 ---
 
 

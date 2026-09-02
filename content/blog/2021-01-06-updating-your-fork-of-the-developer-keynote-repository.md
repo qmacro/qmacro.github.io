@@ -2,8 +2,10 @@
 title: "Updating your fork of the Developer Keynote repository"
 date: 2021-01-06
 tags:
-  - sapcommunity
-  - teched
+  - git
+  - github
+  - community
+  - sap
 ---
 *If you've forked the SAP TechEd Developer Keynote repository on GitHub
 recently, there have been some additions and improvements. This post

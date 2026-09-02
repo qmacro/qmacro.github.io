@@ -2,6 +2,10 @@
 date: 2002-12-15
 title: '"Assaults on the Internet''s end-to-end-architecture"'
 description: What can and should we do about spam?
+tags:
+  - web
+  - architecture
+  - opinion
 ---
 
 

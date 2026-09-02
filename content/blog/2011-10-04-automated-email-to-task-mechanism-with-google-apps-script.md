@@ -1,13 +1,17 @@
 ---
 date: 2011-10-04
 title: Automated email-to-task mechanism with Google Apps Script
-tags:
 - apis
 - appsscript
 - google
 - gtug
 - mangtug
 - tasks
+tags:
+  - google-apps-script
+  - google
+  - tools
+  - api
 ---
 
 

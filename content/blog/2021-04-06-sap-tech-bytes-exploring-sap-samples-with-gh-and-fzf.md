@@ -2,11 +2,11 @@
 title: "SAP Tech Bytes: Exploring SAP-samples with gh and fzf"
 date: 2021-04-06
 tags:
-  - sapcommunity
-  - gh
-  - fzf
   - github
-  - sap-tech-bytes
+  - fzf
+  - tools
+  - community
+  - sap
 ---
 *Discover repositories that might be useful for you by exploring them
 from the command line with a couple of powerful tools.*

@@ -1,10 +1,12 @@
 ---
 title: "Monday morning thoughts: curiosity and understanding"
 date: 2018-07-09
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: I think about how curiosity can lead to a better understanding of things, and give a specific example concerning CDS and the new Application Programming Model for SAP Cloud Platform.
+tags:
+  - monday-morning-thoughts
+  - learning
+  - opinion
+  - community
 ---
 
 On Friday I

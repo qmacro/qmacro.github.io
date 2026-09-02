@@ -1,14 +1,13 @@
 ---
 title: Modules, modularity & reuse in CDS models
 date: 2026-01-01
+description: An overview of the blog posts in the series "Modules, modularity & reuse in CDS models".
 tags:
-  - modularity
-  - seriespost
   - cap
   - cds
   - npm
-  - reuse
-description: An overview of the blog posts in the series "Modules, modularity & reuse in CDS models".
+  - domain-modelling
+  - series-index
 ---
 
 - 01 Jan 2026 Part 1 [An introduction](/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models-part-1-an-introduction/)

@@ -1,7 +1,6 @@
 ---
 date: 2015-03-28
 title: This Week in Fiori (2015-13)
-tags:
 - fiori
 - json
 - odata
@@ -11,6 +10,12 @@ tags:
 - twif
 - pedantry
 - twif
+tags:
+  - fiori
+  - odata
+  - this-week-in-fiori
+  - json
+  - rest
 ---
 
 Well, another week has gone by, which means it must be time for This Week in Fiori! The Fiori juggernaut continues to rumble on, and this week was no exception. Let’s get to it!

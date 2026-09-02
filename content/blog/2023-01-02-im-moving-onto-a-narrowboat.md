@@ -2,9 +2,9 @@
 title: I'm moving onto a narrowboat
 date: 2023-01-02
 tags:
-  - life
   - narrowboat
-  - fullyrestful
+  - personal
+  - opinion
 ---
 I'm having a narrowboat built and am going to live on it and work from it. This post has been a long time coming, and the arrival of the new year has prompted me to start writing about it.
 

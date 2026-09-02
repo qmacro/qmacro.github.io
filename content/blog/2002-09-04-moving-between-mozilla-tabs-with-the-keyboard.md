@@ -2,6 +2,10 @@
 date: 2002-09-04
 title: Moving between Mozilla tabs with the keyboard
 description: An answer to my question on keyboard controllable Mozilal features.
+tags:
+  - tools
+  - web
+  - til
 ---
 
 

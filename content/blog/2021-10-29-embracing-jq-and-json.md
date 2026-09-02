@@ -2,9 +2,10 @@
 date: 2021-10-29
 title: Embracing jq and JSON
 tags:
-  - autodidactics
   - jq
+  - json
   - btp
+  - learning
 ---
 Finding objects in a complex JSON structure isn't as scary as I thought with jq.
 <!--excerpt-->

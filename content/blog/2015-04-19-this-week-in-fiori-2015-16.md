@@ -1,12 +1,14 @@
 ---
 date: 2015-04-19
 title: This Week in Fiori (2015-16)
-tags:
 - ariba
 - fiori
 - kendo
 - telerik
 - twif
+tags:
+  - fiori
+  - this-week-in-fiori
 ---
 
 

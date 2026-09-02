@@ -1,13 +1,12 @@
 ---
 title: Modelling contained-in relationships with compositions in CDS
 date: 2025-10-14
+description: A short study of the features of CDS for modelling classic contained-in relationships, with a focus on the details, and a lean towards anonymous aspects.
 tags:
-  - bestpractices
   - cap
   - cds
-  - composition
-  - aspects
-description: A short study of the features of CDS for modelling classic contained-in relationships, with a focus on the details, and a lean towards anonymous aspects.
+  - domain-modelling
+  - tutorial
 ---
 ## Background
 

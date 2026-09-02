@@ -1,14 +1,12 @@
 ---
 title: Computing memories
 date: 2026-07-08
-tags:
-  - history
-  - r2
-  - dasd
-  - ibm
-  - ai
-  - computationalthinking
 description: Some brief thoughts on history and how we used to have to make things work, sometimes in painstaking detail.
+tags:
+  - computing-history
+  - ai
+  - personal
+  - opinion
 ---
 
 My good friend and colleague [Antonio](https://ajmaradiaga.com/) shared

@@ -1,12 +1,15 @@
 ---
 date: 2015-03-15
 title: The maker's schedule, restraint and flow
-tags:
 - flow
 - maker
 - pomodoro
 - work
 description: My thoughts on schedules and saying 'no'.
+tags:
+  - career
+  - opinion
+  - personal
 ---
 
 A few years ago Paul Graham published a short essay “[Maker’s Schedule, Manager’s Schedule](http://www.paulgraham.com/makersschedule.html)“. It described succinctly how, and perhaps more importantly why calendar entry driven task scheduling, and in particular meetings, cause issues for makers. And I include myself and many of my colleagues within that “makers” general collective term.

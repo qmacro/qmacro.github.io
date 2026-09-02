@@ -1,11 +1,16 @@
 ---
 date: 2014-10-19
 title: Speaking at the SAP Architect & Developer Summit
-tags:
 - fiori
 - sap
 - speaking
 - ui5
+tags:
+  - fiori
+  - openui5
+  - sap
+  - talk
+  - conference
 ---
 
 

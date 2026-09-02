@@ -2,7 +2,9 @@
 title: Blog It Forward - DJ Adams
 date: 2012-08-31
 tags:
-  - sapcommunity
+  - sap
+  - community
+  - personal
 ---
 Well hello there. I guess if you're reading this you know already about the great [Blog It Forward](https://blogs.sap.com/2012/08/20/blog-it-forward-community-challenge/) initiative here on SCN. I've been nominated by the great (Austrian!) [Matthias Steiner](https://people.sap.com/steinermatt) on his [BIF post](https://blogs.sap.com/?p=70927), alongside industrious and illustrious colleagues such as Jon Reed, Dick Hirsch, Matt Harding, Alisdair Templeton and Oliver Kohl. Goodness, what excellent people with whom to be associated!
 

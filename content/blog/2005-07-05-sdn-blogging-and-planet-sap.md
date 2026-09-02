@@ -1,11 +1,14 @@
 ---
 date: 2005-07-05
 title: SDN, Blogging, and Planet SAP
-tags:
 - blogging
 - planetsap
 - sap
 description: In May I was approached by a chap at SAP in Walldorf who wanted to ask me some questions on blogging (I have a blog over on the SAP Developer Network) for an article he was writing for an SAP-internal magazine.
+tags:
+  - sap
+  - blogging
+  - community
 ---
 
 One of the questions was “**Why do you write on two blogs?**“. I wrote a longish reply, and thought it was worth putting up here (mostly because he didn’t use any of it ;-)

@@ -2,7 +2,9 @@
 title: A return to the SDN community, and a touch of Javascript
 date: 2009-05-27
 tags:
-  - sapcommunity
+  - sap
+  - community
+  - javascript
 ---
 A few days ago, Mark Yolton pointed out to me that this Friday, 30th May will mark 6 years since my first SDN blog post “[The SAP/MySQL Partnership](/blog/posts/2003/05/30/the-sapmysql-partnership/)“, in SDN’s first month.
 

@@ -1,18 +1,12 @@
 ---
 date: 2015-07-21
 title: MVC - Model View Controller, Minimum Viable Code
-tags:
-  - atom
-  - controller
-  - fragment
-  - mvc
-  - snippets
-  - startup
-  - sublime
-  - ultisnip
-  - view
-  - vim
 description: 30 Days of UI5 - day 18 by DJ Adams.
+tags:
+  - openui5
+  - thirty-days-of-ui5
+  - javascript
+  - tutorial
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 

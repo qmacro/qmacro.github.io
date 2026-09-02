@@ -1,9 +1,12 @@
 ---
 date: 2004-09-06
 title: The Curious Incident Of The Dog In The Night-Time
-tags:
 - books
 description: I bought three books at Manchester airport yesterday.
+tags:
+  - books
+  - review
+  - personal
 ---
 
 One of them was [The Curious Incident Of The Dog In The Night-Time](http://www.amazon.co.uk/exec/obidos/ASIN/0099450259/) by Mark Haddon. I started reading it this afternoon, and have just stopped to slow down. It’s about a young boy with an “emotionally dissociated mind” (a phrase that Ian McEwan used, which I like), who is investigating the death of a dog. The book is written as if by the young boy. The writing is exquisite. I think that is the word that consistently comes to mind when I try to think of a way to describe it. So that’s the word I’ve used here.

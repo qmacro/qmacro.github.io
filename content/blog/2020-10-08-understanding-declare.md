@@ -2,8 +2,9 @@
 date: 2020-10-08
 title:  "Understanding declare"
 tags:
-  - autodidactics
   - shell
+  - learning
+  - til
 ---
 _I've been looking into declare, and also how it compares to typeset and local. It turns out that there's a lot to know._
 

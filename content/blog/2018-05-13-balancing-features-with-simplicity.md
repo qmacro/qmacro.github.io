@@ -1,6 +1,10 @@
 ---
 date: 2018-05-13
 title: Balancing features with simplicity
+tags:
+  - opinion
+  - tools
+  - architecture
 ---
 
 I was browsing forum-based conversations on ChromeOS this evening and came across yet another thread that started along these lines:

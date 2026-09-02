@@ -2,8 +2,9 @@
 date: 2020-07-20
 title: In an mta.yaml file you can use the service-name parameter to point to an existing resource
 tags:
-  - autodidactics
-  - cloudfoundry
+  - cloud-foundry
+  - learning
+  - til
 ---
 
 _In `mta.yaml` files you can use the `service-name` parameter to point to an existing service instance with a different name than the resource._

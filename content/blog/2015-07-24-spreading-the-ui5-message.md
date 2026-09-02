@@ -1,19 +1,13 @@
 ---
 date: 2015-07-24
 title: Spreading the UI5 Message
-tags:
-  - bacon
-  - codejam
-  - conferences
-  - devoxxuk
-  - fluent
-  - fosdem
-  - insidetrack
-  - jsnext
-  - masteringsap
-  - openui5
-  - oscon
 description: 30 Days of UI5 - day 21 by DJ Adams.
+tags:
+  - openui5
+  - thirty-days-of-ui5
+  - conference
+  - talk
+  - community
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 

@@ -3,9 +3,9 @@ title: CAP, CORS and custom headers
 date: 2024-03-30
 tags:
   - cap
-  - cors
   - javascript
-  - nodejs
+  - http
+  - tutorial
 ---
 A colleague asked me if I could add CORS support to a service I was running, built with the SAP Cloud Application Programming Model (CAP). CAP already has some basic support for CORS, so I dug in. Here's what I learned, about CORS headers, preflight requests, CAP custom servers and more.
 

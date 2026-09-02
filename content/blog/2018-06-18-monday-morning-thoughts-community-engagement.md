@@ -1,10 +1,11 @@
 ---
 title: "Monday morning thoughts: community engagement"
 date: 2018-06-18
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: I think about some of the basic ingredients of a good online community, and describe what I'm going to try to do to engage more with the SAP Community.
+tags:
+  - monday-morning-thoughts
+  - community
+  - opinion
 ---
 
 I was re-listening to a great episode of the [Coffee Corner Radio

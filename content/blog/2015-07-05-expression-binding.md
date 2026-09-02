@@ -1,14 +1,12 @@
 ---
 date: 2015-07-05
 title: Expression Binding
-tags:
-  - binding
-  - embeddedbinding
-  - expressionbinding
-  - formatter
-  - openui5
-  - ui5
 description: 30 Days of UI5 - day 2 by DJ Adams.
+tags:
+  - openui5
+  - javascript
+  - thirty-days-of-ui5
+  - tutorial
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 

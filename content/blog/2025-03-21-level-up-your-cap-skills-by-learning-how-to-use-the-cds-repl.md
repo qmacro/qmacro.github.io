@@ -3,10 +3,10 @@ title: Level up your CAP skills by learning how to use the cds REPL
 description: These are notes I wrote for my talk at SAP Inside Track Madrid on 20 March 2025. I wrote them partly to think about what I wanted to say, and partly to share the info in written form too. Note that the idea is to introduce the concepts and show some basic examples for cds REPL "initiates". Nothing too exotic.
 date: 2025-03-21
 tags:
-  - talk
   - cap
   - cds
-  - repl
+  - talk
+  - tools
 ---
 
 _Update July 2025: I've made a few updates to this post to reflect some changes in the cds REPL that were brought in to tighten up query resolution and execution._

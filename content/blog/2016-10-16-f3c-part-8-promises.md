@@ -2,8 +2,8 @@
 date: 2016-10-16
 title: F3C Part 8 - Promises
 tags:
-  - fp
-  - language-ramblings
+  - functional-programming
+  - javascript
   - f3c
 ---
 FunFunFunction Video: [Promises - Part 8 of Functional Programming in JavaScript](https://www.youtube.com/watch?v=2d7s3spWAzo&index=8&list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84)

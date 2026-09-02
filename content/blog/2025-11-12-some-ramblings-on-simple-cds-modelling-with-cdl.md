@@ -1,13 +1,12 @@
 ---
 title: Some ramblings on simple CDS modelling with CDL
 date: 2025-11-12
+description: A brief note-to-self after digging in to some simple constructs in CDS modelling.
 tags:
   - cds
-  - cdl
   - cap
-  - mixins
-  - aspects
-description: A brief note-to-self after digging in to some simple constructs in CDS modelling.
+  - domain-modelling
+  - opinion
 ---
 I'm taking some time to peruse the [Conceptual Definition Language (CDL)](https://cap.cloud.sap/docs/cds/cdl) topic of the CAP documentation, and stopped at the first example in the [Keywords & Identifiers](https://cap.cloud.sap/docs/cds/cdl#keywords-identifiers) section, which piqued my interest. Let's put this in a file called `db/keywords-and-identifiers.cds`:
 

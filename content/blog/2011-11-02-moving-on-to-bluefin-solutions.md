@@ -1,10 +1,13 @@
 ---
 date: 2011-11-02
 title: Moving on ... to Bluefin Solutions
-tags:
 - az
 - bluefin
 - work
+tags:
+  - career
+  - sap
+  - personal
 ---
 
 

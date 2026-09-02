@@ -1,10 +1,11 @@
 ---
 title: CAP service authentication at design time and in production
 date: 2026-06-19
+description: In this short post I explain how the "failsafe" production auth mechanism is designed for resources served in a CAP context.
 tags:
   - cap
-  - auth
-description: In this short post I explain how the "failsafe" production auth mechanism is designed for resources served in a CAP context.
+  - developer-experience
+  - tutorial
 ---
 
 Recently I wrote about [mocking

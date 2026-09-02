@@ -1,10 +1,11 @@
 ---
 title: WAS 6.40 testdrive for Linux is here!
 date: 2004-03-19
-tags:
-  - sapcommunity
-  - cebit
 description: Phew. What a day yesterday at the world’s biggest IT fair.
+tags:
+  - sap
+  - linux
+  - community
 ---
 I arrived by train and joined the masses along the CeBIT skywalk to enter Aladdin's cave.
 

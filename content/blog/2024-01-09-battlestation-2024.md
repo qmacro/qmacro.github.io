@@ -3,6 +3,8 @@ title: Battlestation 2024
 date: 2024-01-09
 tags:
   - narrowboat
+  - tools
+  - personal
 ---
 On [Lobsters](https://lobste.rs) there's a new [2024 thread on battlestations](https://lobste.rs/s/jrh1od/lobsters_battlestations_screenshots) where folks share pics of their desk setups. So I thought I'd share a pic of mine.
 

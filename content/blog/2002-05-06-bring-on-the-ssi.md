@@ -2,6 +2,10 @@
 date: 2002-05-06
 title: Bring on the SSI
 description: Server Side Includes and Blosxom.
+tags:
+  - blogging
+  - web
+  - tools
 ---
 As a kid, I used to regularly re-arrange my bedroom at home, not because I was unhappy with the layout, but simply because I could. I think this trait has remained with me, as I’ve just completed a bit of a shake-up of this weblog, or rather, the mechanism(s) that make up this weblog.
 

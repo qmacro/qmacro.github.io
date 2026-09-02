@@ -1,13 +1,12 @@
 ---
 title: Book Overflow and two architectural patterns in CAP
 date: 2026-06-04
-tags:
-  - bookoverflow
-  - domaindrivendesign
-  - outbox
-  - hexagonalarchitecture
-  - cap
 description: In this short post I note a couple of software architecture patterns that were mentioned in a recent Book Overflow episode, patterns that are clear and present in CAP.
+tags:
+  - cap
+  - architecture
+  - domain-modelling
+  - opinion
 ---
 
 [Book Overflow](https://bookoverflow.io/) is "a long-form discussion podcast

@@ -4,7 +4,8 @@ title: Exploring GitHub repo name distribution with jq
 tags:
   - jq
   - github
-  - gh
+  - json
+  - tools
 ---
 I wanted a brief rundown of the name prefixes for repositories in the [SAP-samples][sap-samples] organisation on GitHub. With the `gh` CLI it was easy to grab the names, and gave me the opportunity to practise a bit of `jq`. Here's what I did.
 

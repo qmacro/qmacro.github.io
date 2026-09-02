@@ -1,6 +1,10 @@
 ---
 date: 2015-01-02
 title: DNA is still in our DNA
+tags:
+  - sap
+  - opinion
+  - computing-history
 ---
 
 

@@ -1,7 +1,6 @@
 ---
 date: 2009-08-21
 title: Command lines of the future, and simplicity of integration
-tags:
 - chatbot
 - http
 - irc
@@ -15,6 +14,12 @@ tags:
 - wave
 - webhooks
 - xmpp
+tags:
+  - http
+  - rest
+  - jabber
+  - architecture
+  - opinion
 ---
 
 

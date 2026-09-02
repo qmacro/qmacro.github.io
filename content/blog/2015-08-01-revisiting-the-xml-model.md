@@ -1,10 +1,11 @@
 ---
 date: 2015-08-01
 title: Revisiting the XML Model
+description: 30 Days of UI5 - day 29 by DJ Adams.
 tags:
   - openui5
-  - xmlmodel
-description: 30 Days of UI5 - day 29 by DJ Adams.
+  - thirty-days-of-ui5
+  - tutorial
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 

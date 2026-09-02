@@ -1,13 +1,12 @@
 ---
 date: 2019-04-08
 title: ES6, reduce and pipe
-tags:
-  - fp
-  - pipe
-  - language-ramblings
-  - insidetrack
-  - talk
 description: In learning about functional programming, one thing that's worked for me is to take my time, and not rush over fundamental concepts. In fact, like a good beer or whisky, a fundamental concept is something to savour, to enjoy at a leisurely pace.
+tags:
+  - functional-programming
+  - javascript
+  - talk
+  - opinion
 ---
 
 This weekend I turned to a post that was highlighted originally by [Fred

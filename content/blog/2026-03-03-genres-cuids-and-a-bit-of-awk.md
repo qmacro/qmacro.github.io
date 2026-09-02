@@ -1,11 +1,12 @@
 ---
 title: Genres, cuids and a bit of AWK
 date: 2026-03-03
+description: Using AWK to process the Genres data from the CAP bookshop sample.
 tags:
-  - awk
   - cap
   - cds
-description: Using AWK to process the Genres data from the CAP bookshop sample.
+  - shell
+  - tools
 ---
 
 One of my goals this year is to learn more about the

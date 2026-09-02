@@ -1,10 +1,11 @@
 ---
 title: "Monday morning thoughts: exploring reuse"
 date: 2018-10-29
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: I think about reuse and extension, in the context of the Application Programming Model for SAP Cloud Platform, and mindful of Björn Goerke's SAP TechEd 2018 keynote message in Barcelona - "keep the core clean".
+tags:
+  - monday-morning-thoughts
+  - opinion
+  - community
 ---
 
 Last week saw the Barcelona edition of SAP TechEd 2018, where SAP CTO

@@ -4,7 +4,8 @@ date: 2024-11-07
 tags:
   - cap
   - talk
-  - aspects
+  - opinion
+  - architecture
 ---
 
 _This is now available in audio format on the [Tech Aloud podcast][34]: [Five reasons to use CAP - DJ Adams - 07 Nov 2024][35]._

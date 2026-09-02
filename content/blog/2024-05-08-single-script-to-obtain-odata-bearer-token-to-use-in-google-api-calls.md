@@ -2,11 +2,11 @@
 title: Obtaining auth code grant type OAuth 2.0 tokens for Google APIs with a script
 date: 2024-05-08
 tags:
+  - shell
   - api
   - google
-  - oauth
-  - bash
-  - shell
+  - http
+  - tools
 ---
 I wanted to programmatically append rows to a Google Spreadsheet recently. For this I needed to use the [spreadsheets.values.append](https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets.values/append) method in the Sheets API v4. The API resources are protected, and according to the main page one can use an API Key or OAuth 2.0.
 

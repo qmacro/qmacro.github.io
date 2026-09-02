@@ -1,13 +1,13 @@
 ---
 title: Modules, modularity & reuse in CDS models - part 2 - creating a simple reuse package
 date: 2026-01-07
-tags:
-  - modularity
-  - cds
-  - cap
-  - npm
-  - reuse
 description: Following on from part 1 in this series, I take a step back and look at the fundamentals of creating and working with a module, locally in this part, using the NPM workspace concept.
+tags:
+  - cap
+  - cds
+  - npm
+  - domain-modelling
+  - tutorial
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models/).)
 

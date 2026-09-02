@@ -2,6 +2,11 @@
 date: 2002-05-21
 title: More thoughts on HTTP, Email, and Jabber
 description: On HTTP headers and queueing architectures.
+tags:
+  - http
+  - jabber
+  - email
+  - opinion
 ---
 
 

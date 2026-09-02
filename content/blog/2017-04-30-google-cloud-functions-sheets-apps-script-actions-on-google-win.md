@@ -1,7 +1,6 @@
 ---
 date: 2017-04-30
 title: Google Cloud Functions + Sheets + Apps Script + Actions On Google = WIN
-tags:
 - appsscript
 - conferences
 - google
@@ -9,6 +8,13 @@ tags:
 - googleassistant
 - apiai
 - cloudnext
+tags:
+  - google-apps-script
+  - google
+  - cloud
+  - javascript
+  - talk
+  - conference
 ---
 
 Sometimes, a perfect storm of technology comes along. I'd recently been teaching myself about [Google Cloud Functions](https://cloud.google.com/functions/), and had created a function to service our [Untappd](https://untappd.com/user/qmacro) beer searches in the #craftbeer channel for our organisation's Slack community. It replaced an ageing PHP script that I'd sellotaped together and had been hosting on my website. I now don't have to worry about hosting it, and it's a lot faster too. 

@@ -2,9 +2,11 @@
 title: "Terminal Tip: remotely monitor a CF deployment"
 date: 2020-04-24
 tags:
-  - sapcommunity
-  - terminal
-  - terminaltip
+  - shell
+  - cloud-foundry
+  - tools
+  - til
+  - community
 ---
 In today's [HandsOnSAPDev](https://bit.ly/handsonsapdev) live stream,
 [Ep.65](http://bit.ly/handsonsapdev#ep65), we built the SAP Cloud

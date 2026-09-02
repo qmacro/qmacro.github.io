@@ -1,13 +1,18 @@
 ---
 date: 2012-03-15
 title: New Omniversity Course Video!
-tags:
 - course
 - icf
 - madlab
 - omniversity
 - sap
 - video
+tags:
+  - sap
+  - http
+  - rest
+  - tutorial
+  - talk
 ---
 
 

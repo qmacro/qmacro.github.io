@@ -1,13 +1,13 @@
 ---
 title: "Discovering SCP Workflow - Instance Initiation"
 date: 2018-01-14
-tags:
-  - api
-  - xsrf
-  - scp
-  - workflow
-  - sapcommunity
 description: In this post we explore the part of the SCP Workflow API that deals with workflow instances, and look at how we initiate a new workflow instance, paying particular attention to how we request, and then use, a cross site request forgery (XSRF) token.
+tags:
+  - btp
+  - workflow
+  - api
+  - discovering-scp-workflow
+  - community
 ---
 
 Previous post in this series: [Discovering SCP Workflow - The

@@ -2,9 +2,8 @@
 title: Review of Red Rice Ale from Hitachino Nest
 date: 2012-02-28
 tags:
-  - portstreetbeerhouse
-  - review
   - beer
+  - review
 ---
 
 ![Red Rice Ale](/images/2012/02/red-rice-ale.jpg)

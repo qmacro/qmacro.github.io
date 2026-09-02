@@ -1,7 +1,6 @@
 ---
 date: 2010-10-11
 title: Not your father's SAP
-tags:
 - abap
 - appengine
 - bpm
@@ -10,6 +9,11 @@ tags:
 - webhooks
 - river
 description: Some thoughts following the Innovation Weekend 2010 at SAP.
+tags:
+  - sap
+  - javascript
+  - abap
+  - opinion
 ---
 
 I had the good fortune to be invited to SAP’s [Innovation Weekend

@@ -2,9 +2,11 @@
 title: "Terminal Tip: switching CF targets"
 date: 2020-04-23
 tags:
-  - sapcommunity
-  - terminal
-  - terminaltip
+  - shell
+  - cloud-foundry
+  - tools
+  - til
+  - community
 ---
 Working with Cloud Foundry (CF) from the command line, I use the `cf`
 CLI a lot. As you perhaps may know already, due to the use of Multi

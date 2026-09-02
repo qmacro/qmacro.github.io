@@ -2,8 +2,9 @@
 title: "SAP Community Coding Challenge Nr.2"
 date: 2020-04-27
 tags:
-  - sapcommunity
-  - codingchallenge
+  - community
+  - learning
+  - javascript
 ---
 Welcome to the second challenge in the **SAP Community Coding Challenge
 Series**. Just like the [first

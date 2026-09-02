@@ -5,7 +5,7 @@ tags:
   - cds
   - cap
   - tasc
-  - gems
+  - domain-modelling
 ---
 When embracing domain modelling with CAP, keep things simple. One of the greatest benefits of domain modelling done properly is having a domain expert on the team. Don't forget that domain expert, that key user, when building out the domain model.
 

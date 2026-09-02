@@ -2,7 +2,10 @@
 title: Custom Sorting and Grouping
 date: 2013-11-29
 tags:
-  - sapcommunity
+  - openui5
+  - sap
+  - tutorial
+  - community
 ---
 *Learn how to control the order of groups in a sorted list. You don't do it directly with the grouper function, you do it with the sorter function.*
 

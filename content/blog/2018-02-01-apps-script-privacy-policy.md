@@ -1,10 +1,10 @@
 ---
 date: 2018-02-01
 title: Apps Script - Privacy Policy
-tags:
-  - appsscript
-  - privacy
 description: This is the Privacy Policy for the Apps Scripts made available for use.
+tags:
+  - google-apps-script
+  - web
 ---
 
 One such script is SheetAsJSON, described in this blog post: [SheetAsJSON -

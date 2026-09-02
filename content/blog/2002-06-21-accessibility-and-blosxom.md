@@ -2,6 +2,11 @@
 date: 2002-06-21
 title: Accessibility and Blosxom
 description: Extending my blogging engine for accessibility.
+tags:
+  - blogging
+  - blosxom
+  - web
+  - accessibility
 ---
 
 

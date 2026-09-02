@@ -2,8 +2,9 @@
 date: 2020-10-03
 title:  "Using exec to jump"
 tags:
-  - autodidactics
   - shell
+  - learning
+  - til
 ---
 _In [Mr Rob](https://rwx.gg)'s [dotfiles repo](https://gitlab.com/rwxrob/dotfiles/) (see [A new learning source for shell scripting](/blog/posts/2020/10/03/a-new-learning-source-for-shell-scripting/)) there's a treasure trove of content that is very pleasant to peruse._
 

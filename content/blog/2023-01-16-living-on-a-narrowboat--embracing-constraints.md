@@ -2,11 +2,9 @@
 title: Living on a narrowboat - embracing constraints
 date: 2023-01-16
 tags:
-  - life
   - narrowboat
-  - fullyrestful
-  - philosophy
-  - lapavoni
+  - personal
+  - opinion
 ---
 Previous post in this series: [Working from a narrowboat - Internet connectivity](/blog/posts/2023/01/09/working-from-a-narrowboat-internet-connectivity/).
 

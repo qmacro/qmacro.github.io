@@ -2,7 +2,12 @@
 title: Building SAP Fiori-like UIs with SAPUI5
 date: 2013-10-06
 tags:
-  - sapcommunity
+  - openui5
+  - fiori
+  - sap
+  - tutorial
+  - conference
+  - community
 ---
 SAP TechEd 2013 is fast approaching, and the excitement is building. Interested in SAPUI5 (you're reading this blog post in the [SAPUI5 Developer Center space on SCN](https://web.archive.org/web/20120514033249/http://scn.sap.com/community/developer-center/front-end) already!), you're looking to see what sessions to attend. And you're looking to build and improve your skills, and perhaps find out more about SAP Fiori.
 

@@ -1,12 +1,11 @@
 ---
 title: Local-first dev with CAP Node.js - mocking data
 date: 2026-05-11
+description: In this post I provider a taster of what's possible regarding mock data in CAP Node.js local-first development.
 tags:
   - cap
-  - data
-  - mocking
-  - local
-description: In this post I provider a taster of what's possible regarding mock data in CAP Node.js local-first development.
+  - developer-experience
+  - tutorial
 ---
 
 This post is one of [a series on local-first development with CAP

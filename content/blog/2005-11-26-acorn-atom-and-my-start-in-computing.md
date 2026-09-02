@@ -1,8 +1,11 @@
 ---
 date: 2005-11-26
 title: Acorn Atom and my start in computing
-tags:
 - acornatom
+tags:
+  - computing-history
+  - personal
+  - learning
 ---
 
 ![Acorn Atom screen](/images/2005/11/atom.png)

@@ -1,7 +1,6 @@
 ---
 date: 2014-09-21
 title: This Week in Fiori (2014-38)
-tags:
 - codejam
 - development
 - insidetrack
@@ -9,6 +8,12 @@ tags:
 - sheffield
 - ui5
 - twif
+tags:
+  - fiori
+  - openui5
+  - codejam
+  - this-week-in-fiori
+  - community
 ---
 
 

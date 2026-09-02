@@ -2,8 +2,9 @@
 title: "SAP TechEd Developer Keynote DK100 - The Story"
 date: 2020-11-19
 tags:
-  - sapcommunity
-  - teched
+  - sap
+  - conference
+  - community
 ---
 *We got together to build a Developer Keynote for TechEd for you; this
 post gives you some context on what you'll see, and, following the

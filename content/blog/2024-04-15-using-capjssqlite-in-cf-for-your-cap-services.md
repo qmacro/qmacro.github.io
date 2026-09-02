@@ -2,10 +2,10 @@
 title: Using @cap-js/sqlite in CF for your CAP services
 date: 2024-04-15
 tags:
-  - good-to-know
-  - sqlite
   - cap
-  - cf
+  - cloud-foundry
+  - developer-experience
+  - til
 ---
 I published a couple of short posts recently:
 

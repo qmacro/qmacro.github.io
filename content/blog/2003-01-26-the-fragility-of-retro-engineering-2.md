@@ -2,6 +2,10 @@
 date: 2003-01-26
 title: The fragility of retro-engineering
 description: Having to modify my allconsuming scripts because of differences between amazon.co.uk and amazon.com data.
+tags:
+  - opinion
+  - web
+  - tools
 ---
 
 

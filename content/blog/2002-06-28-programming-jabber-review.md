@@ -2,6 +2,11 @@
 date: 2002-06-28
 title: Programming Jabber review
 description: A positive review of my O'Reilly book.
+tags:
+  - jabber
+  - review
+  - books
+  - perl
 ---
 
 

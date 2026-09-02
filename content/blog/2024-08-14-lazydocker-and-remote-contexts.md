@@ -4,6 +4,7 @@ date: 2024-08-24
 tags:
   - docker
   - shell
+  - tools
 ---
 A quick hack to work around the current issue with `lazydocker` and SSH-based remote Docker context definitions.
 

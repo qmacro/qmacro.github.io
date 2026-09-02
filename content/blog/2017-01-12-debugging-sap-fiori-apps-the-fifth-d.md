@@ -1,11 +1,13 @@
 ---
 title: Debugging SAP Fiori apps - the fifth "D"
 date: 2017-01-12
-tags:
-  - bluefinsolutions
-  - books
-  - debugging
 description: It's all very well designing and building a delightful Fiori app. But what about the long tail - supporting that app through its lifetime, with fixes and changes that come along? There's a fifth "D" to the SAP Fiori development mantra, and that "D" is for "Debugging".
+tags:
+  - fiori
+  - debugging
+  - openui5
+  - books
+  - community
 ---
 
 In the SAP Fiori world, there's a mantra which generally goes like this:

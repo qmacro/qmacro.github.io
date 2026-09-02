@@ -1,10 +1,12 @@
 ---
 title: "Monday morning thoughts: the cloud is the computer"
 date: 2018-08-13
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: I think about what the future of programming in an enterprise environment might look like, and realise that it makes sense to consider that the cloud itself is the new computer.
+tags:
+  - monday-morning-thoughts
+  - cloud
+  - opinion
+  - community
 ---
 
 Sun Microsystems, an incredibly venerable hardware and software company

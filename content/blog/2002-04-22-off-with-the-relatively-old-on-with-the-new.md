@@ -2,6 +2,9 @@
 title: Off with the (relatively) old, on with the new
 description: More on Blosxom, and a fix to our colocated server.
 date: 2002-04-22
+tags:
+  - blogging
+  - tools
 ---
 The move from Peerkat to Blosxom coincided with open disk surgery on our colo box that hosts this website. I’ve got this weblog up and running but need to install Python so I can boot my Peerkat-based experiments previously at `http://www.pipetree.com:8080`.
 

@@ -1,13 +1,13 @@
 ---
 title: Modules, modularity & reuse in CDS models - part 1 - an introduction
 date: 2026-01-01
+description: In this first post of a new series I look at the using directive in CDS modelling, and how NPM modules can be fundamental building blocks in modularity and reuse.
 tags:
-  - modularity
   - cap
   - cds
   - npm
-  - reuse
-description: In this first post of a new series I look at the using directive in CDS modelling, and how NPM modules can be fundamental building blocks in modularity and reuse.
+  - domain-modelling
+  - tutorial
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2026/01/01/modules-modularity-and-reuse-in-cds-models/).)
 

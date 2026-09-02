@@ -1,10 +1,12 @@
 ---
 title: "Monday morning thoughts: functions - what functions?"
 date: 2018-05-14
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: Musings on the concept of functions-as-a-service, what it means, and what it's good for.
+tags:
+  - monday-morning-thoughts
+  - functional-programming
+  - opinion
+  - community
 ---
 
 Serverless, cloud functions, functions-as-a-service. Three terms that

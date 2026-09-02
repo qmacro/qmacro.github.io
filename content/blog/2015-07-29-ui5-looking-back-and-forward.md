@@ -1,14 +1,14 @@
 ---
 date: 2015-07-29
 title: UI5 - looking back and forward
+description: 30 Days of UI5 - day 26 by DJ Adams.
 tags:
+  - openui5
   - http
   - odata
-  - open
-  - openui5
   - rest
-  - soap
-description: 30 Days of UI5 - day 26 by DJ Adams.
+  - thirty-days-of-ui5
+  - opinion
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 

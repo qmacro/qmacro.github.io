@@ -1,12 +1,12 @@
 ---
 title: A meditation on reduction
 date: 2015-10-19
-tags:
-  - language-ramblings
-  - clojure
-  - reduce
-  - firstrest
 description: 'Looking at a version of the reduce function written in Clojure, from Do Things: a Clojure Crash Course.'
+tags:
+  - functional-programming
+  - clojure
+  - javascript
+  - opinion
 ---
 One of the people you should follow if you’re learning Clojure, and enjoy prose
 with a twist, is [Daniel Higginbotham](https://twitter.com/nonrecursive). He’s

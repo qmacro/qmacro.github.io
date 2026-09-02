@@ -1,12 +1,14 @@
 ---
 title: Real Web Services with REST and ICF
 date: 2004-06-22
+description: This piece has become somewhat famous (or infamous) in SAP tech circles, for the approach it took and the claims it made. I'm happy to say that REST won out and that those that tried to denounce me ... failed :-)
 tags:
   - rest
-  - sapcommunity
+  - sap
   - abap
-  - icf
-description: This piece has become somewhat famous (or infamous) in SAP tech circles, for the approach it took and the claims it made. I'm happy to say that REST won out and that those that tried to denounce me ... failed :-)
+  - http
+  - api
+  - architecture
 ---
 
 This was a piece I wrote in 2004 as part of a set of articles I contributed to the early SAP Developer Network. Back then the content was published behind a login wall; plus, unfortunately, during an SAP Developer Network platform migration, content was lost, including this article. Luckily I managed to piece it together over the last few months. Here it is. Some OCR based artifacts and errors may remain, if you spot any, please let me know. Thanks. DJ (Apr 2025).

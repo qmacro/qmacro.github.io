@@ -5,25 +5,10 @@ tags:
   - tasc
   - cap
   - cds
-  - aspects
-  - handsonsapdev
+  - hands-on-sap-dev
   - episode-notes
-  - cdl
-  - cds-repl
-  - docker
-  - aspect-oriented-programming
+  - architecture
   - functional-programming
-  - hexagonal-architecture
-  - domain-driven-design
-  - bad-practices
-  - best-practices
-  - capire
-  - code-generation
-  - extensibility
-  - prototype-inheritance
-  - language-history
-  - software-philosophy
-  - calesi
 ---
 
 These are the raw, unedited notes I took to summarise [The Art and Science of CAP part 3][1], one episode in a mini series with Daniel Hutzel to explore the philosophy, the background, the technology history and layers that support and inform the SAP Cloud Application Programming Model.

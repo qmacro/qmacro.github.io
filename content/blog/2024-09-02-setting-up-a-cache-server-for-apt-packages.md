@@ -2,15 +2,10 @@
 title: Setting up a cache server for apt packages
 date: 2024-09-03
 tags:
-  - debian
-  - cacheing
-  - homeops
-  - proxmox
-  - chromebox
-  - asus
+  - homelab
+  - linux
   - narrowboat
-  - apt-cacher-ng
-  - tailscale
+  - tools
 ---
 Some notes on setting up an `apt-cacher-ng` based cache server for Debian apt packages in my home operations ("homeops") context, including a section on using SSL/TLS origin servers.
 

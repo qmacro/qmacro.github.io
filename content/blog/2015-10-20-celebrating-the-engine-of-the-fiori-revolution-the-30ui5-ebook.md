@@ -2,7 +2,9 @@
 title: Celebrating the engine of the Fiori revolution - the 30UI5 ebook
 date: 2015-10-20
 tags:
-  - bluefinsolutions
+  - openui5
+  - fiori
+  - community
 ---
 
 Last month saw the milestone release of 1.30 of SAP's UI5 toolkit, the engine

@@ -1,6 +1,10 @@
 ---
 date: 2020-11-01
 title: The subtle art of quoting newline characters
+tags:
+  - shell
+  - learning
+  - tools
 ---
 
 _Putting a backslash at the end of a line in the shell (or in a shell script) means "continued on the next line!", right? Well yes, but it's more subtle, more simple and more beautifully shell-like than I thought._

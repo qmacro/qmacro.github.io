@@ -3,9 +3,10 @@ title: Coffee Mugs and weblog interop
 description: Experimenting with Peerkat, feeds and Blosxom.
 date: 2002-04-26
 tags:
- - blogging
- - peerkat
- - bloxsom
+  - blogging
+  - blosxom
+  - web
+  - interoperability
 ---
 
 

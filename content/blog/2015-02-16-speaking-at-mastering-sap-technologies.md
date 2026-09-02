@@ -1,13 +1,12 @@
 ---
 date: 2015-02-16
 title: Speaking at Mastering SAP Technologies
+description: I'm travelling to South Africa to give a keynote, a technical session and a hands-on workshop, on Fiori and UI5 topics.
 tags:
   - fiori
-  - johannesburg
-  - masteringsap
-  - ui5
-  - speaking
-description: I'm travelling to South Africa to give a keynote, a technical session and a hands-on workshop, on Fiori and UI5 topics.
+  - openui5
+  - talk
+  - conference
 ---
 Next week I’m travelling to Johannesburg, to attend and speak at the [Mastering SAP Technologies conference](http://www.masteringsap.co.za/tech). It’s a great honour to have been invited, and I’m excited at the prospect of the topics covered in the [agenda](http://www.masteringsap.co.za/tech/agenda).
 

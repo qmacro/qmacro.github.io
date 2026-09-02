@@ -3,6 +3,8 @@ date: 2021-07-20
 title: Early thoughts on Warp
 tags:
   - shell
+  - tools
+  - opinion
 ---
 
 _Here are some very early thoughts on Warp, the "pro terminal designed for everyday use"._

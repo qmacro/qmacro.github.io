@@ -2,7 +2,10 @@
 title: Engaging the Next Generation
 date: 2013-08-17
 tags:
-  - sapcommunity
+  - education
+  - sap
+  - community
+  - opinion
 ---
 As many of you might know (from my [#YRS2013](https://twitter.com/search?q=%23yrs2013) tweets this month), I was involved again in [Young Rewired State](https://www.youngrewiredstate.org/), an initiative that gathers kids all around the country, gives them a week-long opportunity to learn or improve in coding skills, embrace open data and understand the value of it, and work together to build hacks and apps using open source and that open data. I was centre lead for one of three Manchester-based centres this year, at MadLab, and the whole event, which culminated in the hundreds of kids and mentors from centres all round the country coming together for a weekend of show and tell (and prizes) in Birmingham, was a terrific success yet again.
 

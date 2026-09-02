@@ -1,7 +1,6 @@
 ---
 date: 2011-10-08
 title: Reading List Mark 2 - Part 1
-tags:
 - appsscript
 - google
 - gtug
@@ -10,6 +9,11 @@ tags:
 - tasks
 - ui
 - urlfetch
+tags:
+  - google-apps-script
+  - google
+  - tools
+  - tutorial
 ---
 Over on the Google Apps Scripts articles section of the Google Code site there’s a great article “[Integrating with Google APIs – Creating a simple reading list](http://code.google.com/googleapps/appsscript/articles/google_apis_reading_list.html)” which takes the reader through a nice example of using a couple of APIs that have recently been made available to Google Apps Script via the [Google APIs Services](http://code.google.com/googleapps/appsscript/googleapisservices.html) – the UrlShortener API and the Tasks API. Inspired by the article, I decided to take the idea a little bit further and build something I could demo and then explain at our [Manchester GTUG meetup](http://madlab.org.uk/content/manchester-google-technology-user-group-13/).
 

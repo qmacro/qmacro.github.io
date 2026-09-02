@@ -1,10 +1,12 @@
 ---
 title: "Monday morning thoughts: abstraction"
 date: 2018-07-16
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: I think about abstraction, the power and facility it affords, and consider CDS as one example of a modern abstraction language.
+tags:
+  - monday-morning-thoughts
+  - architecture
+  - opinion
+  - community
 ---
 
 Last week I was chatting to some old friends. One of them had just

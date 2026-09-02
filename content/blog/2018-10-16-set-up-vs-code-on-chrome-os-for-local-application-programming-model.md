@@ -1,12 +1,12 @@
 ---
 title: "Set up VS Code on Chrome OS for local Application Programming Model development"
 date: 2018-10-16
-tags:
-  - sapcommunity
-  - cap
-  - chromeos
-  - vscode
 description: In this post I walk through the process I used to set up a development environment for CAP on my Chromebook.
+tags:
+  - cap
+  - tools
+  - developer-experience
+  - community
 ---
 
 (See the [Updates](#updates) section end of this post for a couple of

@@ -2,8 +2,10 @@
 date: 2016-05-04
 title: FOFP 2.1 A look at filter
 tags:
-  - fp
-  - language-ramblings
+  - functional-programming
+  - javascript
+  - fofp
+  - tutorial
 ---
 Part of the [Fundamentals of Functional Programming](/blog/posts/2016/05/03/fofp-fundamentals-of-functional-programming/) document.
 

@@ -1,12 +1,16 @@
 ---
 date: 2003-07-06
 title: Some ramblings on URIs and identity
-tags:
 - foaf
 - identity
 - rdf
 - uri
 description: Coming back from a short break from the tech world recently, I started to reacquaint myself with FOAF and RDF, amongst other things.
+tags:
+  - rdf
+  - rest
+  - semantic-web
+  - http
 ---
 Looking at the FOAF data for various people, I was reminded of the model of indirection that is used to identify a person.
 

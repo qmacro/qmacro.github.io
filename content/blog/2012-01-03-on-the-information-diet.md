@@ -1,6 +1,10 @@
 ---
 date: 2012-01-03
 title: On the Information Diet
+tags:
+  - opinion
+  - learning
+  - personal
 ---
 
 

@@ -2,7 +2,10 @@
 title: "From Classics to Developer Advocate"
 date: 2021-01-07
 tags:
-  - sapcommunity
+  - career
+  - sap
+  - community
+  - personal
 ---
 *Here's my story of how I went from reading Classics at university to
 becoming a Developer Advocate at SAP.*

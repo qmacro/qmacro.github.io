@@ -1,14 +1,13 @@
 ---
 title: Using @capire modules from GitHub Packages
 date: 2025-10-12
+description: Here's how to access and use the @capire namespaced modules that reside in the NPM registry which is part of GitHub Packages.
 tags:
-  - github
-  - npm
   - cap
   - cds
-  - packages
-  - modules
-description: Here's how to access and use the @capire namespaced modules that reside in the NPM registry which is part of GitHub Packages.
+  - npm
+  - github
+  - tutorial
 ---
 ## Background
 

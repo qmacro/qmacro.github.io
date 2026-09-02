@@ -1,13 +1,13 @@
 ---
 title: "A new REST handler / dispatcher for the ICF"
 date: 2009-09-21
+description: One of the best underlying mechanisms to be introduced into the Basis / NetWeaver stack in the past few years is the Internet Communication Framework (ICF), which is a collection of configuration, interfaces, classes and a core set of processes that allow us to build HTTP applications directly inside SAP.
 tags:
   - rest
-  - adl
-  - icf
-  - sapcommunity
-description: One of the best underlying mechanisms to be introduced into the Basis / NetWeaver stack in the past few years is the Internet Communication Framework (ICF), which is a collection of configuration, interfaces, classes and a core set of processes that allow us to build HTTP applications directly inside SAP.
-
+  - sap
+  - abap
+  - http
+  - api
 ---
 
 If you're not directly familiar with the ICF, allow me to paraphrase a part of

@@ -1,20 +1,12 @@
 ---
 date: 2016-01-31
 title: Building blocks of language, structure and thought
-tags:
-  - fp
-  - language-ramblings
-  - car
-  - cdr
-  - clojure
-  - lisp
-  - firstrest
-  - cons
-  - fibonacci
-  - javascript
-  - linkedlists
-  - scheme
 description: As I travel on my path to perhaps what I deem as some sort of enlightenment, back in time via Clojure to one of the great ancestors of language, structure and computational thought (Lisp), I continue to come across a simple theme.
+tags:
+  - functional-programming
+  - clojure
+  - javascript
+  - learning
 ---
 
 That theme is the concept of basic building blocks with which vast cathedrals can be constructed. Those building blocks are, in Lisp terms at least, `car`, `cdr` and `cons`.

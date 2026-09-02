@@ -1,6 +1,8 @@
 ---
 date: 2019-07-11
 title: David Edward Adams
+tags:
+  - personal
 ---
 
 ![A picture of dad with Louise, Katie and me]( {{ "/images/2019/07/dad.jpg" | url }})

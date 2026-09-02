@@ -3,7 +3,8 @@ date: 2019-09-17
 title: New podcast - Tech Aloud
 tags:
   - podcast
-  - techaloud
+  - community
+  - learning
 ---
 *I've created a new podcast called "Tech Aloud", where I read out loud tech articles and blog posts, so you can consume them while on the go.*
 

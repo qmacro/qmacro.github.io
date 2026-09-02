@@ -2,8 +2,10 @@
 date: 2020-08-21
 title: The open square bracket [ is an executable
 tags:
-  - autodidactics
-  - unix
+  - shell
+  - linux
+  - learning
+  - til
 ---
 
 _In a shell script, the `[` symbol is not syntax, it's an executable_

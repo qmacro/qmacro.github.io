@@ -1,17 +1,13 @@
 ---
 title: CDS expressions in CAP - notes on Part 5
 date: 2026-04-07
+description: Notes to accompany Part 5 of the mini-series on the core expression language in CDS.
 tags:
   - cds
   - cap
-  - cql
-  - cxl
-  - exists
-  - pathexpressions
-  - nestedexpands
-  - handsonsapdev
-  - jsonfunctions
-description: Notes to accompany Part 5 of the mini-series on the core expression language in CDS.
+  - hands-on-sap-dev
+  - episode-notes
+  - odata
 ---
 
 See the [series

@@ -2,6 +2,10 @@
 date: 2002-05-31
 title: HTML LINK to RSS source
 description: Continuing the build-out of weblog based mechanisms.
+tags:
+  - rss
+  - web
+  - html
 ---
 
 

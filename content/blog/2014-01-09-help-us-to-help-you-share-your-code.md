@@ -2,10 +2,10 @@
 title: Help us to help you - share your code
 date: 2014-01-09
 tags:
-  - sapcommunity
-  - gists
-  - ui5
+  - openui5
   - github
+  - community
+  - opinion
 ---
 Yesterday I [tweeted](/tweets/qmacro/status/420840232008028161/): "We should encourage folk to post full Gists with their #UI5 issues, for easier debugging and analysis ([http://scn.sap.com/message/14665116](https://web.archive.org/web/20151116084802/http://scn.sap.com/message/14665116#14665116)). Agree?".
 

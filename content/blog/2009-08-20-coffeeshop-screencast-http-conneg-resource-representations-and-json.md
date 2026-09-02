@@ -1,7 +1,6 @@
 ---
 date: 2009-08-20
 title: 'Coffeeshop screencast: HTTP conneg, resource representations and JSON'
-tags:
 - appengine
 - coffeeshop
 - conneg
@@ -11,6 +10,11 @@ tags:
 - pipeline
 - pubsub
 - rest
+tags:
+  - rest
+  - http
+  - json
+  - pubsub
 ---
 
 

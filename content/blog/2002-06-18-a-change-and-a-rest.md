@@ -2,6 +2,10 @@
 date: 2002-06-18
 title: A change and a rest
 description: Back recharged from holiday.
+tags:
+  - personal
+  - rest
+  - opinion
 ---
 
 

@@ -1,11 +1,12 @@
 ---
 date: 2022-06-16
 title: Summing and grouping values with jq
+description: Here's yet another note-to-self on using jq, this time to transform a flat list of order totals and dates into a summary of total order values by year.
 tags:
   - jq
-  - pipe
   - odata
-description: Here's yet another note-to-self on using jq, this time to transform a flat list of order totals and dates into a summary of total order values by year.
+  - json
+  - tutorial
 ---
 
 In doing some research for an [upcoming live

@@ -1,10 +1,12 @@
 ---
 title: CDS source formatting and readability
 date: 2025-09-16
+description: Embracing a modern approach to source code formatting for human-centric modelling in CAP
 tags:
   - cds
   - cap
-description: Embracing a modern approach to source code formatting for human-centric modelling in CAP
+  - tools
+  - opinion
 ---
 
 ## Background

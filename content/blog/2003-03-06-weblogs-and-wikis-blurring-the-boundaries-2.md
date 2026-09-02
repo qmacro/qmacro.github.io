@@ -1,10 +1,13 @@
 ---
 date: 2003-03-06
 title: Weblogs and Wikis - Blurring the Boundaries
-tags:
 - weblogs
 - wiki
 description: More on the crossover between blogging and wikis.
+tags:
+  - blogging
+  - web
+  - opinion
 ---
 Early this morning [Rael](http://www.oreillynet.com/%7Erael/)‘s [Blosxom](http://www.raelity.org/apps/blosxom) plugin ‘[wikiwordish](http://www.raelity.org/apps/blosxom/plugins/text/wikiwordish.html)‘ found its way to the [plugin registry](http://www.raelity.org/apps/blosxom/plugins). And a very nice plugin it is too. It allows you to use ‘wikiwordish’ notation like `[[this]]` to point to other weblog entries; the plugin intercepts them and creates a suitable hyperlink to the right place. For example, I can refer to an older entry about the Tiki parser for MoinMoin by just typing the name of the entry (‘tikiparser’) inside double square brackets; in other words, `[[tikiparser]]` in my weblog item source gets turned into this: `[[tikiparser]]`.
 

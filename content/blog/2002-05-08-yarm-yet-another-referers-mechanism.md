@@ -3,8 +3,9 @@ date: 2002-05-08
 title: 'YARM: Yet Another Referers Mechanism'
 description: Referers, backlinks, and the Unix command line.
 tags:
- - blogging
- - backlinks
+  - blogging
+  - web
+  - tools
 ---
 
 I’ve been reading what some people have been thinking and doing about referers

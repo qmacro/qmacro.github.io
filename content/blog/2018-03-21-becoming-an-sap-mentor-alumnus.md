@@ -1,6 +1,11 @@
 ---
 date: 2018-03-21
 title: Becoming an SAP Mentor Alumnus
+tags:
+  - sap
+  - community
+  - career
+  - personal
 ---
 
 It was in 2009 that I was honoured to be recognised as an SAP Mentor for my contributions to the SAP community at large, co-creating the original SAP Developer Network back in 2003 (which, via the SAP Community Network, is now the [SAP Community](https://www.sap.com/community.html)). Since then I've tried to act as an SAP Mentor should act; there aren't any written rules of course, it's just something that one should know. 

@@ -2,8 +2,9 @@
 title: Test drive Joule's generative AI features in SAP Build Code now!
 date: 2024-03-27
 tags:
-  - sapcommunity
-  - business-application-studio
+  - sap
+  - ai
+  - community
 ---
 TL;DR - SAP Build Code is GA, and for a limited time (1 month, starting now) you can test drive the generative AI features of Joule in SAP Build Code.
 

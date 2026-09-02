@@ -2,12 +2,11 @@
 date: 2021-03-26
 title: Mass deletion of GitHub Actions workflow runs
 tags:
-  - autodidactics
   - github-actions
   - shell
-  - gh
   - jq
   - fzf
+  - tools
 ---
 
 _Implementing a simple cleanup script for workflow runs, using `gh`, `jq`, `fzf` and the GitHub API_

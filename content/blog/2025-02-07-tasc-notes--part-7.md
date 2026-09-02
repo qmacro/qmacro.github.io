@@ -6,27 +6,10 @@ tags:
   - tasc
   - cap
   - cds
-  - aspects
-  - handsonsapdev
+  - hands-on-sap-dev
   - episode-notes
-  - cdl
-  - node-js
-  - cds-repl
-  - aspect-oriented-programming
-  - prototype-inheritance
+  - domain-modelling
   - functional-programming
-  - relational-model
-  - domain-driven-design
-  - extensibility
-  - bad-practices
-  - best-practices
-  - calesi
-  - code-generation
-  - computing-history
-  - smalltalk
-  - lisp
-  - language-history
-  - software-philosophy
 ---
 For all resources related to this series, see the post [The Art and Science of CAP][2].
 

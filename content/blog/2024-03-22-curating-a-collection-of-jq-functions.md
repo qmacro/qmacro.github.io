@@ -3,6 +3,8 @@ title: Curating a collection of jq functions
 date: 2024-03-22
 tags:
   - jq
+  - functional-programming
+  - tools
 ---
 I read a very interesting article [DuckDB as the New jq](https://www.pgrs.net/2024/03/21/duckdb-as-the-new-jq/) today, plus an equally engaging conversation in [the Lobsters thread about it](https://lobste.rs/s/x5immj/duckdb_as_new_jq). 
 

@@ -2,9 +2,8 @@
 title: Review of Norwegian Wood from Haandbryggeriet
 date: 2012-08-30
 tags:
-  - portstreetbeerhouse
-  - review
   - beer
+  - review
 ---
 ![Norwegian Wood](/images/2012/08/norwegian-wood.jpg)
 

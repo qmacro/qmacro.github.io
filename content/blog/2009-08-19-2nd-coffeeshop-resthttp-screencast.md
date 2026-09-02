@@ -1,7 +1,6 @@
 ---
 date: 2009-08-19
 title: 2nd coffeeshop REST/HTTP screencast
-tags:
 - appengine
 - coffeeshop
 - http
@@ -9,6 +8,12 @@ tags:
 - postbin
 - pubsub
 - rest
+tags:
+  - rest
+  - http
+  - pubsub
+  - perl
+  - open-source
 ---
 
 

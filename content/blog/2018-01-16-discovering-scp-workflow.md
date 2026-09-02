@@ -1,12 +1,13 @@
 ---
 date: 2018-01-16
 title: Discovering SCP Workflow
-tags:
-  - scp
-  - workflow
-  - sapcommunity
-  - seriespost
 description: A ten part in-depth series exploring the SAP Cloud Platform Workflow service.
+tags:
+  - btp
+  - workflow
+  - discovering-scp-workflow
+  - series-index
+  - community
 ---
 
 The SAP Cloud Platform Workflow service is a key component in the next

@@ -1,6 +1,10 @@
 ---
 date: 2019-08-28
 title: Hitch Hiker's style in Sea of Sorrows
+tags:
+  - personal
+  - books
+  - opinion
 ---
 
 _Is there a link between a scene in "Alien: Sea of Sorrows" and a scene in part 2 of The Hitch Hiker's Guide To The Galaxy? I think so, or perhaps I hope so._

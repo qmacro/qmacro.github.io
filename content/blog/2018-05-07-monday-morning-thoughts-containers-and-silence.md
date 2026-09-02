@@ -1,13 +1,13 @@
 ---
 title: "Monday morning thoughts: containers and silence"
 date: 2018-05-07
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
-  - acornatom
-  - cloudnative
-  - containers
 description: On the silence of workstations and what that represents to me, and the new ability to look at maintaining software and services in a completely different way - via containers.
+tags:
+  - monday-morning-thoughts
+  - docker
+  - computing-history
+  - opinion
+  - community
 ---
 
 Another Monday morning is upon us, and it's a public holiday here in

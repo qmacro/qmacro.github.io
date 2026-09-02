@@ -3,9 +3,9 @@ title: How I run executables in containers
 description: Here's a quick post explaining how I might typically containerise an executable. This is in the context of my aim to not "pollute" my base OS (at the bare metal level) with any installs, as far as I can, as well as to remain platform independent and abstract.
 date: 2025-03-23
 tags:
-  - containers
-  - sitmad
   - docker
+  - tools
+  - shell
 ---
 
 ## Background

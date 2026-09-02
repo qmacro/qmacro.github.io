@@ -1,10 +1,12 @@
 ---
 title: "Monday morning thoughts: a cloud native smell"
 date: 2018-04-09
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: On the importance and design of URLs, and the opacity of cattle vs the individuality of pets.
+tags:
+  - monday-morning-thoughts
+  - cloud
+  - opinion
+  - community
 ---
 
 Continuing on from my earlier [random

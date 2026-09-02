@@ -1,11 +1,12 @@
 ---
 title: "Introduction to SAP Cloud Platform Workflow - Summary"
 date: 2018-04-05
-tags:
-  - sapcommunity
-  - scp
-  - codetalk
 description: Yesterday I gave a webcast for ASUG entitled "Introduction to SAP Cloud Platform Workflow". This is a short post that pulls together all the resources related to that webcast.
+tags:
+  - btp
+  - workflow
+  - community
+  - talk
 ---
 
 The SAP Cloud Platform Workflow service is a relatively new service (it

@@ -3,7 +3,8 @@ title: Learning from community solutions on Exercism - part 3
 date: 2023-04-09
 tags:
   - jq
-  - exercism
+  - learning
+  - functional-programming
 ---
 In this post I continue to dwell on small details in the jq solutions to Exercism exercises. It follows on roughly from parts [1](/blog/posts/2023/03/29/learning-from-community-solutions-on-exercism-part-1/) and [2](/blog/posts/2023/04/02/learning-from-community-solutions-on-exercism-part-2/). 
 

@@ -1,10 +1,11 @@
 ---
 title: "Monday morning thoughts: big school and community"
 date: 2018-10-15
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: On my experience going from primary school to secondary school - "big school", how that parallels our collective move from on-prem to the cloud, and how the community is more important than ever in this transition.
+tags:
+  - monday-morning-thoughts
+  - community
+  - opinion
 ---
 
 My first school, Norman House in New Moston, Manchester, was a small

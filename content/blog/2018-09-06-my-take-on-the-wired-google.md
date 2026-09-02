@@ -1,6 +1,9 @@
 ---
 date: 2018-09-06
 title: My take on Wired's Google & URLs article
+tags:
+  - web
+  - opinion
 ---
 
 Something is surfacing that makes me rather uncomfortable.

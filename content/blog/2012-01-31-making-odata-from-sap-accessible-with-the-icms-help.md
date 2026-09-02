@@ -2,7 +2,10 @@
 title: Making OData from SAP accessible with the ICM's help
 date: 2012-01-31
 tags:
-  - sapcommunity
+  - sap
+  - odata
+  - http
+  - community
 ---
 I'm totally enamoured by the power and potential of SAP's [NetWeaver Gateway](https://blogs.sap.com/2012/11/13/gateway-and-duet-enterprise-day-one-in-madrid/), and all it has to offer with its REST-informed data-centric consumption model. One of the tools I've been looking at in exploring the services is the Sesame Data Browser, a Silverlight-based application that runs inside the browser or on the desktop, and lets you explore OData resources.
 

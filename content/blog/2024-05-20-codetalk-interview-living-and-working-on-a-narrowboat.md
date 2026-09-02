@@ -3,9 +3,9 @@ title: CodeTalk interview - living and working on a narrowboat
 date: 2024-05-20
 tags:
   - narrowboat
-  - fullyrestful
-  - codetalk
   - interview
+  - career
+  - community
 ---
 I was honoured to be a guest again on CodeTalk, this time on the topic of living & working on my narrowboat. The primary format for CodeTalk is audio (podcast), and there's also a [video](https://www.youtube.com/watch?v=sirIH29x06s&list=PL6RpkC85SLQB4SrWDL_VpeZnDJ1pcLRpA&index=5) from the actual interview recording. But I'd also made some notes so here's a text version too.
 

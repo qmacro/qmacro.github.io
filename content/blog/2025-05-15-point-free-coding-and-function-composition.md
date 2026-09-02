@@ -1,17 +1,14 @@
 ---
 title: Point free coding and function composition
 date: 2025-05-15
+description: In this post I explore and show examples of the concepts of point free coding, of chains of functions through which data flows, and of function composition.
 tags:
-  - fp
+  - functional-programming
   - jq
   - cap
-  - pipe
-  - odata
   - shell
-  - ramda
   - javascript
-  - handsonsapdev
-description: In this post I explore and show examples of the concepts of point free coding, of chains of functions through which data flows, and of function composition.
+  - hands-on-sap-dev
 ---
 
 While preparing for tomorrow's [fifth and final

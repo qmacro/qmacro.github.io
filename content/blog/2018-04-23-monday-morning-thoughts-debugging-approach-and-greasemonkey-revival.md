@@ -2,7 +2,10 @@
 title: "Monday morning thoughts: debugging approach and Greasemonkey revival"
 date: 2018-04-23
 tags:
-  - sapcommunity
+  - monday-morning-thoughts
+  - debugging
+  - opinion
+  - community
 ---
 
 In the [inaugural

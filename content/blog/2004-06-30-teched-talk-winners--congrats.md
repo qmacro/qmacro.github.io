@@ -1,10 +1,11 @@
 ---
 title: TechEd talk winners - congrats
 date: 2004-06-30
-tags:
-  - sapcommunity
-  - sapteched
 description: Congratulations to the three TechEd talk winners Luke, Jayakumar and Andreas.
+tags:
+  - sap
+  - conference
+  - community
 ---
 
 The winning talks look really good – I’m looking forward to hearing them. It’s interesting that two of the three are BW related. Seems like a hot topic.

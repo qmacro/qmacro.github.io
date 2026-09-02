@@ -2,13 +2,9 @@
 title: New source for LXD images on Crostini
 date: 2024-08-24
 tags:
-  - crostini
-  - chromeos
-  - lxc
-  - lxd
-  - termina
-  - canonical
-  - homeops
+  - linux
+  - tools
+  - homelab
   - shell
 ---
 I recently wanted to create a second Debian-based container in the Linux context of one of my ChromeOS devices. But I found I couldn't, as the image wasn't available any more. This post is a short note-to-self to remind myself what happened and what I did.

@@ -1,9 +1,11 @@
 ---
 title: "Successful installation of EP plugin into testdrive WAS 6.10 system"
 date: 2004-03-15
-tags:
-  - sapcommunity
 description: I spent most of yesterday in the kitchen, my favourite place.
+tags:
+  - sap
+  - abap
+  - community
 ---
 
 Everything

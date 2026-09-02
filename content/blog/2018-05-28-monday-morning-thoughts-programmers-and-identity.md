@@ -1,10 +1,12 @@
 ---
 title: "Monday morning thoughts: programmers and identity"
 date: 2018-05-28
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: On how some programmers identify strongly with a particular language, consider the meanings of 'programmer', 'coder' and 'developer', and what it means for us as the SAP enterprise programming landscape changes.
+tags:
+  - monday-morning-thoughts
+  - career
+  - opinion
+  - community
 ---
 
 I watched [a couple of talks by Kevlin

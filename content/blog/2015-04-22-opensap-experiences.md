@@ -1,8 +1,12 @@
 ---
 date: 2015-04-22
 title: openSAP Experiences
-tags:
 - opensap
+tags:
+  - sap
+  - learning
+  - fiori
+  - community
 ---
 
 

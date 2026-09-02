@@ -1,13 +1,12 @@
 ---
 date: 2015-07-18
 title: The UI5 Support Tool - Help Yourself!
-tags:
-  - fragment
-  - mvc
-  - openui5
-  - supporttool
-  - xml
 description: 30 Days of UI5 - day 15 by DJ Adams.
+tags:
+  - openui5
+  - thirty-days-of-ui5
+  - tools
+  - debugging
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 

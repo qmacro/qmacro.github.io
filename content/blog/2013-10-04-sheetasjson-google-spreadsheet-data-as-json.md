@@ -1,7 +1,6 @@
 ---
 date: 2013-10-04
 title: SheetAsJSON - Google Spreadsheet Data as JSON
-tags:
 - appsscript
 - contentservice
 - google
@@ -9,6 +8,12 @@ tags:
 - jsonp
 - spreadsheet
 - spreadsheetservice
+tags:
+  - google-apps-script
+  - google
+  - json
+  - api
+  - tools
 ---
 
 

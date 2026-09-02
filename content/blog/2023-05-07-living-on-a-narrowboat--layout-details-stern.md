@@ -2,9 +2,8 @@
 title: Living on a narrowboat - layout details of the stern
 date: 2023-05-07
 tags:
-  - life
   - narrowboat
-  - fullyrestful
+  - personal
 ---
 Previous post in this series: [Living on a narrowboat - the stove as the heart of the home](/blog/posts/2023/04/07/living-on-a-narrowboat-the-stove-as-the-heart-of-the-home/).
 

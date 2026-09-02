@@ -1,9 +1,11 @@
 ---
 title: The meaning of LIFETIME_RC
 date: 2004-10-12
-tags:
-  - sapcommunity
 description: Last week, during some preparation for my talk at TechEd on Thursday this week, I’d been wondering about something in the ICF that hadn’t seemed quite right.
+tags:
+  - sap
+  - abap
+  - community
 ---
 
 Interface `IF_HTTP_EXTENSION`, which is what every ICF handler must implement (in the form of a single method `HANDLE_REQUEST`) has a couple of attributes, `FLOW_RC` and `LIFETIME_RC`. `FLOW_RC` is for controlling the flow of handler dispatching for a request. `LIFETIME_RC` is for controlling the lifetime of handlers for a sequence of requests. To quote the [documentation at help.sap.com](https://help.sap.com/docs/SAP_NETWEAVER_AS_ABAP_751_IP/753088fc00704d0a80e7fbd6803c8adb/48d60603553b3e49e10000000a421937.html?locale=en-US&version=7.51.6) on the latter:

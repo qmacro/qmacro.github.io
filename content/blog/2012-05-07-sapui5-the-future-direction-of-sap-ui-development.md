@@ -2,7 +2,10 @@
 title: SAPUI5 - the future direction of SAP UI development?
 date: 2012-05-07
 tags:
-  - bluefinsolutions
+  - openui5
+  - sap
+  - opinion
+  - community
 ---
 
 _Update Jan 2014: Things in the SAPUI5 world have certainly moved on since I wrote this introductory article over 18 months ago, and all for the better. SAPUI5 is here to stay. It powers the SAP Fiori application sets, has been a tremendous success for such a new UI framework (and paradigm at SAP). What’s more - this month SAPUI5 has been open sourced, after much pressure and desire from developers internal and external alike._

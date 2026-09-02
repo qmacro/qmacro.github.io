@@ -2,6 +2,10 @@
 date: 2002-07-15
 title: The mist is clearing ...
 description: On my continuing quest to grok REST.
+tags:
+  - rest
+  - web
+  - opinion
 ---
 
 

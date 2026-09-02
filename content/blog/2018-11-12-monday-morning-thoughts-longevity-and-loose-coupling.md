@@ -1,10 +1,12 @@
 ---
 title: "Monday morning thoughts: longevity and loose coupling"
 date: 2018-11-12
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: I think about the importance of core technologies, and how the arrival of functions-as-a-service might be merely the next incarnation of an idea that's existed for a while.
+tags:
+  - monday-morning-thoughts
+  - architecture
+  - opinion
+  - community
 ---
 
 This weekend I picked up on a conversation about RSS (alternatively

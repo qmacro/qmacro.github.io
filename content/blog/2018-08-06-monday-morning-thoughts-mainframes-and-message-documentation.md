@@ -1,11 +1,12 @@
 ---
 title: "Monday morning thoughts: mainframes and message documentation"
 date: 2018-08-06
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
-  - mainframes
 description: I think about mainframes and a message documentation aspect from the mainframe world that, while originally proprietary, is a big plus for operators and developers alike and something I'd love to see return.
+tags:
+  - monday-morning-thoughts
+  - computing-history
+  - opinion
+  - community
 ---
 
 On my route into Manchester for Saturday's run with the [Mikkeller

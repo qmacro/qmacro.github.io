@@ -2,9 +2,10 @@
 title: "SAP Tech Bytes: btp CLI - autocompletion"
 date: 2021-09-21
 tags:
-  - sapcommunity
   - btp
   - cli
+  - tools
+  - community
 ---
 *Get the btp CLI to help you with command autocompletion.*
 

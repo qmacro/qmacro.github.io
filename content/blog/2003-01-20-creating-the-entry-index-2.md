@@ -2,6 +2,10 @@
 date: 2003-01-20
 title: Creating the "Entry index"
 description: More on building out how my blog looks.
+tags:
+  - blogging
+  - blosxom
+  - tools
 ---
 
 

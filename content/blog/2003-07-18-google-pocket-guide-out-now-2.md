@@ -1,13 +1,16 @@
 ---
 date: 2003-07-18
 title: Google Pocket Guide out now
-tags:
 - books
 - docbook
 - googlepocketguide
 - oreilly
 - vim
 description: My new book for O'Reilly is out.
+tags:
+  - books
+  - tools
+  - writing
 ---
 
 

@@ -1,13 +1,12 @@
 ---
 title: Balancing context size and callable tool metadata with CAP's MCP adapter
 date: 2026-08-23
+description: Some notes on both sides of the per_action_tool setting of CAP's MCP adapter plugin.
 tags:
   - cap
-  - mcp
+  - ai
   - jq
-  - inspector
-  - bookshop
-description: Some notes on both sides of the per_action_tool setting of CAP's MCP adapter plugin.
+  - tools
 ---
 
 CAP [supports the Model Context

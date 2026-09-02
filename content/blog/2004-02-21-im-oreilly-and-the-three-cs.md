@@ -1,11 +1,14 @@
 ---
 date: 2004-02-21
 title: Tim O'Reilly and the three 'C's
-tags:
 - fosdem
 - keynote
 - timoreilly
 description: Well, I made it to FOSDEM this morning with time to spare.
+tags:
+  - conference
+  - open-source
+  - opinion
 ---
 
 Bumped into [Sarah and Josette](/images/2004/02/SarahAndJosette.jpg) setting up the O’Reilly book stand. [Dave Cross](http://use.perl.org/%7Edavorg/journal "Dave Cross") is here, as are [Leon Brocard](http://use.perl.org/%7Eacme/journal "Leon Brocard") and Richard Kilmer, whom I [snapped](/images/2004/02/LeonAndRichard.jpg) during Tim O’Reilly’s keynote “The Open Source Paradigm Shift”.

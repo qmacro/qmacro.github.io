@@ -2,8 +2,9 @@
 title: "My learning list for 2020"
 date: 2020-01-12
 tags:
-  - sapcommunity
   - learning
+  - community
+  - personal
 ---
 *Turning the page into a new year is often useful to reflect on the
 previous period and look forward to the next one. I usually don't set

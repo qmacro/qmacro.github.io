@@ -1,10 +1,13 @@
 ---
 title: "Monday morning thoughts: Core Data Services"
 date: 2018-06-11
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: What Core Data Services (CDS) is, what it does, and why we should make it a priority to learn more about.
+tags:
+  - monday-morning-thoughts
+  - cds
+  - cap
+  - opinion
+  - community
 ---
 
 Earlier this morning, while following a tutorial, I came across this

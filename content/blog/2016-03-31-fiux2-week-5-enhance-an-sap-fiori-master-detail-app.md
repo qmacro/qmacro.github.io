@@ -3,8 +3,8 @@ date: 2016-03-31
 title: '"fiux2" Week 5 - Enhance an SAP Fiori Master Detail App'
 tags:
   - fiori
-  - opensap
-  - fiux2
+  - sap
+  - learning
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2016/03/04/fiux2-the-opensap-fiori-course-2016-edition/).)
 

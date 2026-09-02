@@ -1,10 +1,13 @@
 ---
 date: 2002-10-05
 title: 'Notes to self: What should the rdf:about point to?'
-tags:
 - rdf
 - rss-tag
 description: If nothing else, RSS 1.0 is a great source of contemplation and wondering. This morning, I’ve been considering the thoughts surrounding the rdf:about attribute in the channel element.
+tags:
+  - rdf
+  - rss
+  - semantic-web
 ---
 
 This is what the channel element looks like:

@@ -2,8 +2,8 @@
 date: 2016-10-03
 title: F3C Part 6 - Currying
 tags:
-  - fp
-  - language-ramblings
+  - functional-programming
+  - javascript
   - f3c
 ---
 FunFunFunction Video: [Currying - Part 6 of Functional Programming in JavaScript](https://www.youtube.com/watch?v=iZLP4qOwY8I&index=6&list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84)

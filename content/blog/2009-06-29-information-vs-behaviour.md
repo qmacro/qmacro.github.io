@@ -1,12 +1,16 @@
 ---
 date: 2009-06-29
 title: Information vs Behaviour
-tags:
 - architecture
 - rest
 - roa
 - soa
 description: Architectures, axioms and ROA vs SOA.
+tags:
+  - rest
+  - architecture
+  - opinion
+  - api
 ---
 
 I read a couple of chapters of two different books recently:

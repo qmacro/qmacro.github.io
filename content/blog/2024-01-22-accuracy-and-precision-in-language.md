@@ -2,11 +2,9 @@
 title: Accuracy and precision in language
 date: 2024-01-22
 tags:
-  - words
-  - language
-  - atom
+  - opinion
   - odata
-  - pedantry
+  - language
 ---
 If I suggest that an alternative title for this could be "Blog post, not blog!" you'll get a good idea of what this is about. Plus there's a bonus bit on how blogs, blog posts and feeds relate to OData.
 

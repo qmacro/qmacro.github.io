@@ -1,11 +1,13 @@
 ---
 title: "Monday morning thoughts: local http servers and containerisation"
 date: 2018-07-30
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
-  - containers
 description: I look back on an idea surfaced by a hero of mine, and think about how that idea laid the path for today's containerisation initiatives.
+tags:
+  - monday-morning-thoughts
+  - docker
+  - http
+  - opinion
+  - community
 ---
 
 One of the periodicals I eagerly anticipated and regularly devoured

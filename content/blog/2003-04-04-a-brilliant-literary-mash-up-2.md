@@ -1,9 +1,12 @@
 ---
 date: 2003-04-04
 title: '"A brilliant literary mash-up"...'
-tags:
 - books
 description: The fusion of Hogwarts and Molesworth.
+tags:
+  - books
+  - review
+  - personal
 ---
 
 "A brilliant literary mashup" is a great way to describe, as [Kevin Marks did](http://epeus.blogspot.com/2003_04_01_epeus_archive.html#200088180), the fusion of Hogwarts and Molesworth by [Alice Dryden](http://www.alice.dryden.co.uk/), who describes it thus:

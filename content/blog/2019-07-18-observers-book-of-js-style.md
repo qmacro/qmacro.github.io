@@ -2,7 +2,9 @@
 date: 2019-07-18
 title: The Observer's Book of JS Style
 tags:
-  - language-ramblings
+  - javascript
+  - opinion
+  - learning
 ---
 
 ![Observer's Book of Commercial Vehicles - cover]({{ "/images/2019/07/observersbook.png" | url}})

@@ -2,10 +2,10 @@
 date: 2021-11-07
 title: Exploring fff part 2 - get_ls_colors
 tags:
-  - autodidactics
-  - fff
   - shell
-  - shellcheck
+  - tools
+  - learning
+  - open-source
 ---
 Continuing to read and learn from the source code to fff - this time, the getls_colors function.
 <!--excerpt-->

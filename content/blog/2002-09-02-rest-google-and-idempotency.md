@@ -1,6 +1,11 @@
 ---
 date: 2002-09-02
 title: REST, Google, and idempotency
+tags:
+  - rest
+  - http
+  - api
+  - opinion
 ---
 
 

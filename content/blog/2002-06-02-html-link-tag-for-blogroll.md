@@ -2,6 +2,11 @@
 date: 2002-06-02
 title: HTML link tag for Blogroll
 description: Social network scripting and blog rolls.
+tags:
+  - blogging
+  - web
+  - html
+  - rss
 ---
 [Mark](http://diveintomark.org/) is doing some very interesting [social network scripting](http://diveintomark.org/archives/2002/06/02.html#social_networks) with a script that recursively follows and compiles bloggers’ blogrolls. It occurred to me, in the context of the RSS autodiscovery flurry earlier this week, to give such scripts a leg-up. Why not use a(nother) HTML `<link/>` tag to point to a blogroll?
 

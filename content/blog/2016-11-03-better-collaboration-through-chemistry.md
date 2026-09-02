@@ -2,7 +2,8 @@
 title: Better collaboration through chemistry
 date: 2016-11-03
 tags:
-  - bluefinsolutions
+  - community
+  - opinion
 ---
 
 Well actually it's not chemistry but I couldn't resist an oblique reference to a floppy disk album cover from 1996 (I'll leave you to work out to what I'm referring). I'm working alongside a client, helping them with their Fiori transformation. Stepping back for a second, I realise that how we're collaborating is rather effortless and delivers much more value because of the tools we're using and the approaches we're taking. Read on to find out what these are.

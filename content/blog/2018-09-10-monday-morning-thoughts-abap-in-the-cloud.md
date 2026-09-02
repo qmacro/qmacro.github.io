@@ -1,10 +1,13 @@
 ---
 title: "Monday morning thoughts: ABAP in the cloud"
 date: 2018-09-10
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: I think about the new SAP Cloud Platform ABAP Environment, what it is, what it isn't, and why I think it's a great move.
+tags:
+  - monday-morning-thoughts
+  - abap
+  - cloud
+  - opinion
+  - community
 ---
 
 A day or two ago [this

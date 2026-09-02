@@ -1,16 +1,11 @@
 ---
 title: Local-first dev with CAP Node.js
 date: 2026-05-11
+description: Here's an overview of a set of related posts on mocking, in the context of local-first development with CAP Node.js.
 tags:
   - cap
-  - mocking
-  - local
-  - auth
-  - remoteservices
-  - messaging
-  - data
-  - seriespost
-description: Here's an overview of a set of related posts on mocking, in the context of local-first development with CAP Node.js.
+  - developer-experience
+  - series-index
 ---
 
 <a name="talk"></a>

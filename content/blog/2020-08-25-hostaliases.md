@@ -2,8 +2,10 @@
 date: 2020-08-25
 title: You can mask sensitive hostnames with wildcards and host aliases
 tags:
-  - autodidactics
-  - ssh
+  - shell
+  - tools
+  - learning
+  - til
 ---
 
 _The HOSTALIASES feature works well when combined with wildcard host definitions in SSH config_

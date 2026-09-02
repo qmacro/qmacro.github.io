@@ -2,7 +2,10 @@
 title: The Fiori revolution - disruption at its best
 date: 2016-09-28
 tags:
-  - bluefinsolutions
+  - fiori
+  - sap
+  - opinion
+  - community
 ---
 
 SAP Fiori has heralded and enabled a revolution in the User Experience (UX) for enterprises the world over. There's plenty of disruption here that you can harness, disruption that will give you a better chance in this ever increasingly digital era. This post examines three disruptive aspects of Fiori, and why they're important.

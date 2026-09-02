@@ -1,12 +1,11 @@
 ---
 title: Blogging in en-GB
 date: 2026-07-04
-tags:
-  - meta
-  - language
-  - slop
-  - offence
 description: I've changed the language declaration on my website to en-GB. Here's why.
+tags:
+  - blogging
+  - opinion
+  - web
 ---
 
 Terence Eden recently published a post titled [This blog is written in

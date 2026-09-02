@@ -1,11 +1,13 @@
 ---
 title: CAP Node.js plugins - part 1 - how things work
 date: 2024-10-05
+description: In this first of a three part series of blog posts accompanying a corresponding video series, we explore the CDS plugin mechanism in CAP. This post is about understanding how the plugin mechanism works.
 tags:
   - cap
   - cds
-  - plugins
-description: In this first of a three part series of blog posts accompanying a corresponding video series, we explore the CDS plugin mechanism in CAP. This post is about understanding how the plugin mechanism works.
+  - javascript
+  - npm
+  - tutorial
 ---
 
 For information on the series and links to all resources, see the [CAP Node.js

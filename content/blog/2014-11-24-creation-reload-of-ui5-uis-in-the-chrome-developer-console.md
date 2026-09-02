@@ -1,10 +1,14 @@
 ---
 date: 2014-11-24
 title: Creation & Reload of UI5 UIs in the Chrome Developer Console
-tags:
 - chromedevelopertools
 - supporttool
 - xmlviews
+tags:
+  - openui5
+  - tools
+  - debugging
+  - javascript
 ---
 
 

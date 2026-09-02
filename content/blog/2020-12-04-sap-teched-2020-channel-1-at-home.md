@@ -2,8 +2,9 @@
 title: "SAP TechEd 2020 Channel 1 at home"
 date: 2020-12-04
 tags:
-  - sapcommunity
-  - teched
+  - sap
+  - conference
+  - community
 ---
 *I'll be watching all the Channel 1 content as it happens from the
 comfort of my TV - as well as interacting with individual sessions on my

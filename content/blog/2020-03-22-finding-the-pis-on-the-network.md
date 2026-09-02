@@ -2,6 +2,11 @@
 date: 2020-03-22
 category: homelab
 title: Finding the Pis on the network
+tags:
+  - raspberry-pi
+  - shell
+  - brambleweeny
+  - tutorial
 ---
 
 _Now that we have our Pis booted and up and running on the network, we need to find them to configure them further._

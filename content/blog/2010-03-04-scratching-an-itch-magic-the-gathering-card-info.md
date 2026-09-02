@@ -1,7 +1,6 @@
 ---
 date: 2010-03-04
 title: Scratching an itch - Magic The Gathering card info
-tags:
 - appengine
 - bookmarklet
 - http
@@ -9,6 +8,11 @@ tags:
 - mtg
 - python
 - reading
+tags:
+  - python
+  - http
+  - tools
+  - javascript
 ---
 
 

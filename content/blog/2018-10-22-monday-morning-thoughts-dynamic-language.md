@@ -1,10 +1,11 @@
 ---
 title: "Monday morning thoughts: dynamic language"
 date: 2018-10-22
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: Musings on a particular function definition in JavaScript, and how it represents beauty and practicality in equal measure.
+tags:
+  - monday-morning-thoughts
+  - opinion
+  - community
 ---
 
 On Friday evening, I

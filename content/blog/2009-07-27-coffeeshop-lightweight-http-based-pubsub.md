@@ -1,7 +1,6 @@
 ---
 date: 2009-07-27
 title: "'Coffeeshop' - lightweight HTTP-based pubsub"
-tags:
 - appengine
 - coffeeshop
 - http
@@ -10,6 +9,12 @@ tags:
 - rest
 - sap
 description: About a lightweight, REST-orientated HTTP-based publish/subscribe implementation that I’ve been working on for the last few days.
+tags:
+  - rest
+  - http
+  - pubsub
+  - open-source
+  - sap
 ---
 
 [Coffeeshop](https://github.com/qmacro/coffeeshop) is a culmination of:

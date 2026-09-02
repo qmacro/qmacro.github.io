@@ -1,8 +1,9 @@
 ---
 date: 2005-04-07
 title: Muscle cars
-tags:
 - picture
+tags:
+  - personal
 ---
 ![Muscle cars](/images/2005/04/musclecars.png)
 

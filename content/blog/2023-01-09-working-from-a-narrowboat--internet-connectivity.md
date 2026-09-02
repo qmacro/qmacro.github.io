@@ -2,11 +2,10 @@
 title: Working from a narrowboat - Internet connectivity
 date: 2023-01-09
 tags:
-  - life
   - narrowboat
-  - fullyrestful
-  - connectivity
-  - raspberrypi
+  - tools
+  - personal
+  - raspberry-pi
 ---
 
 Previous post in this series: [I'm moving onto a narrowboat](/blog/posts/2023/01/02/i'm-moving-onto-a-narrowboat/).

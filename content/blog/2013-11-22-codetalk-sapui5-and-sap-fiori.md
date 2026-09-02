@@ -2,7 +2,11 @@
 title: CodeTalk - SAPUI5 and SAP Fiori
 date: 2013-11-22
 tags:
-  - sapcommunity
+  - openui5
+  - fiori
+  - sap
+  - talk
+  - community
 ---
 Yesterday I was honoured to be a guest on [Ian Thain](http://scn.sap.com/people/ian.thain)'s CodeTalk series of video interviews. The subject was SAPUI5 and SAP Fiori, and the published interview is split over two videos on YouTube. Here's what we covered, based on the questions asked.
 

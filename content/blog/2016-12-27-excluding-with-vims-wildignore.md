@@ -2,7 +2,9 @@
 date: 2016-12-27
 title: Excluding with vim's wildignore
 tags:
-  - language-ramblings
+  - neovim
+  - tools
+  - til
 ---
 I found it more difficult than usual to get the `wildignore` setting working properly in vim, so I thought I'd document it here.
 

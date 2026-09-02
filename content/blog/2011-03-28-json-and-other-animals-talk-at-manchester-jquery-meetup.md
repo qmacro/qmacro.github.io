@@ -1,7 +1,6 @@
 ---
 date: 2011-03-28
 title: JSON and Other Animals - talk at Manchester jQuery Meetup
-tags:
 - ajax
 - jquery
 - json
@@ -9,6 +8,11 @@ tags:
 - madlab
 - manchester
 - talk
+tags:
+  - json
+  - javascript
+  - talk
+  - web
 ---
 
 

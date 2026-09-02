@@ -2,7 +2,9 @@
 title: Jump to Shell Workset Item from URL
 date: 2013-01-11
 tags:
-  - sapcommunity
+  - sap
+  - tools
+  - community
 ---
 During SAP TechEd 2012 I attended CD163 "SAP HANA - Application Services Basics" which really helped firm up my knowledge of XS, thanks to the great presentation and exercises. What was interesting was that not only was SAPUI5 used for the UI components of the demos and exercises, but even the code snippets that the attendees would have to type in were made available to copy-n-paste, via a simple SAPUI5 Shell interface.
 

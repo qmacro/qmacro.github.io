@@ -1,11 +1,12 @@
 ---
 title: "SAP and Open Source BOF at OSCON"
 date: 2003-07-07
-tags:
-  - sapcommunity
-  - opensource
-  - oscon
 description: A note on the Birds Of A Feather session at OSCON on the topic of SAP and Open Source, at OSCON 2003.
+tags:
+  - sap
+  - open-source
+  - conference
+  - community
 ---
 
 If you're at OSCON or around the Portland area this Wednesday (9th July), come

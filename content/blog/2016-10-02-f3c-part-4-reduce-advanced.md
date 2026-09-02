@@ -2,8 +2,8 @@
 date: 2016-10-02
 title: F3C Part 4 - Reduce advanced
 tags:
-  - fp
-  - language-ramblings
+  - functional-programming
+  - javascript
   - f3c
 ---
 FunFunFunction Video: [Reduce advanced - Part 4 of Functional Programming in JavaScript](https://www.youtube.com/watch?v=1DMolJ2FrNY&index=4&list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84)

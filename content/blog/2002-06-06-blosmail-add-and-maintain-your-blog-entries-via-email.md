@@ -2,6 +2,11 @@
 date: 2002-06-06
 title: "'Blosmail' - add and maintain your blog entries via email"
 description: Experimenting with Blosxom editing via a different medium.
+tags:
+  - blogging
+  - blosxom
+  - email
+  - perl
 ---
 
 

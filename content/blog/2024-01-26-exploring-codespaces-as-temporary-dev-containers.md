@@ -2,12 +2,10 @@
 title: Exploring codespaces as temporary dev containers
 date: 2024-01-26
 tags:
-  - devcontainer
-  - codespaces
-  - containers
-  - gh
+  - docker
   - github
-  - cli
+  - tools
+  - developer-experience
 ---
 Codespaces seem to be at the intersection of a number of things I'm interested in, including containers in general, dev containers in particular, ephemeral environments, the command line, thin clients and remote servers, SSH, the GitHub CLI, and more.
 

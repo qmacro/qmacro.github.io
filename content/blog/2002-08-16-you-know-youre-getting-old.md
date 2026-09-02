@@ -2,6 +2,9 @@
 date: 2002-08-16
 title: You know you're getting old ...
 description: Looking back on this year's OSCON.
+tags:
+  - personal
+  - opinion
 ---
 
 

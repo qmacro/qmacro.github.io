@@ -2,6 +2,10 @@
 title: Interview on jabber.org
 description: A transcript of my interview on jabber.org.
 date: 2002-04-21
+tags:
+  - jabber
+  - interview
+  - open-source
 ---
 My interview on [jabber.org](http://www.jabber.org/) has been [posted](https://web.archive.org/web/20020804053617/http://www.jabber.org/people/interviews/dj.html). Yikes!
 

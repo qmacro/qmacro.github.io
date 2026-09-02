@@ -1,13 +1,18 @@
 ---
 date: 2011-11-05
 title: 'Web Programming with SAP''s ICF: new course dates'
-tags:
 - course
 - http
 - icf
 - madlab
 - omniversity
 - sap
+tags:
+  - sap
+  - http
+  - rest
+  - tutorial
+  - talk
 ---
 
 

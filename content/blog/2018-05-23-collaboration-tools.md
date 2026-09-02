@@ -1,6 +1,10 @@
 ---
 date: 2018-05-23
 title: Collaboration tools
+tags:
+  - tools
+  - career
+  - opinion
 ---
 
 If you're wanting to collaborate with me, on a document or other content, please understand I'll only be able to participate if appropriate tools are used. 

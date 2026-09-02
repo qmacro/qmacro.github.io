@@ -2,6 +2,10 @@
 date: 2002-05-15
 title: "(Jabber-)Browsing the Panopticon data"
 description: More on extending the Panopticon experiment.
+tags:
+  - jabber
+  - instant-messaging
+  - web
 ---
 Ok, further to my initial [Panopticon/Jabber](/blog/posts/2002/05/15/the-panopticon/) experiments, I’ve extended the [panpush.pl](https://web.archive.org/web/20051218034524/http://www.pipetree.com/~dj/panpush.pl) script to respond to `jabber:iq:browse` requests. As the script starts, and receives the initial gush of data from the Panopticon port, and as it receives further pushes, it stores the data on the avatar icons, and makes this data available as results to the `jabber:iq:browse` requests.
 

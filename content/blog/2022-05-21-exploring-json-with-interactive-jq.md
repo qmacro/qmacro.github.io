@@ -3,8 +3,8 @@ date: 2022-05-21
 title: Exploring JSON with interactive jq
 tags:
   - jq
-  - ijq
   - json
+  - tools
 ---
 I often use ijq, or "interactive jq", to explore JSON, and also to improve my jq fu, because it gives me immediate visual feedback. Here's an example.
 

@@ -4,7 +4,7 @@ date: 2022-11-08
 tags:
   - jq
   - json
-  - regexp
+  - tools
 ---
 I had a JSON array of objects from a list of GitHub repo issues. Each object contained a blog post URL and a title. The URL had the post date embedded in the path, and I wanted to sort them all based on the post date. Here's how I did it. 
 

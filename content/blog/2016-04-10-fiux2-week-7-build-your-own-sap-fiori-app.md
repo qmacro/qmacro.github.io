@@ -3,8 +3,8 @@ date: 2016-04-10
 title: '"fiux2" Week 7 - Build Your Own SAP Fiori App'
 tags:
   - fiori
-  - opensap
-  - fiux2
+  - sap
+  - learning
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2016/03/04/fiux2-the-opensap-fiori-course-2016-edition/).)
 

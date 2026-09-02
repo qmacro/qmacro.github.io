@@ -1,11 +1,12 @@
 ---
 title: SAP stuff at OSCON
 date: 2003-07-02
-tags:
-  - sapcommunity
-  - oscon
-  - opensource
 description: My partner-in-(code)-crime Piers Harding and I are speaking at this year’s OSCON (Open Source Convention).
+tags:
+  - sap
+  - open-source
+  - conference
+  - talk
 ---
 What can the desperate open source hacker do in and around R/3? Plenty! If you’re going to OSCON, come along to our talk:
 

@@ -1,10 +1,14 @@
 ---
 date: 2005-04-22
 title: Europe, SAP, and two-way conferences
-tags:
 - conferences
 - sap
 description: It’s the end of the week that saw the SDN Meets Labs down in Walldorf.
+tags:
+  - sap
+  - conference
+  - community
+  - opinion
 ---
 
 

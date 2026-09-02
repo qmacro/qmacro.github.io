@@ -2,9 +2,10 @@
 date: 2020-10-11
 title:  "MID$ and shell parameter expansion"
 tags:
-  - autodidactics
   - shell
-  - exercism
+  - learning
+  - til
+  - computing-history
 ---
 _While perhaps misunderstood and potentially confusing due to the different options, the ability to access and manipulate values in variables in Bash is rich and varied._
 

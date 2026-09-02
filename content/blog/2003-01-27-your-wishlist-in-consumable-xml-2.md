@@ -2,6 +2,10 @@
 date: 2003-01-27
 title: Your wishlist in 'consumable' XML
 description: Introducing a new experimental Perl module.
+tags:
+  - xml
+  - api
+  - web
 ---
 
 

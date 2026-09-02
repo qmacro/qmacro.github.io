@@ -3,7 +3,8 @@ title: Highest value in JS - different ways
 date: 2024-07-23
 tags:
   - javascript
-  - developerchallenge
+  - functional-programming
+  - learning
 ---
 This month I'm running the Developer Challenge, which is on [Reverse APIs](https://community.sap.com/t5/application-development-blog-posts/july-developer-challenge-quot-reverse-apis-quot/ba-p/13749653). One of the 12 tasks is [Task 6 - API endpoint with payload required](https://community.sap.com/t5/application-development-discussions/task-6-api-endpoint-with-payload-required-july-developer-challenge-quot/m-p/13765529) where the participants must create a "REST" style API endpoint.
 

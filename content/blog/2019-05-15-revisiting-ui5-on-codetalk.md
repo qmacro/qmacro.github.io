@@ -2,7 +2,10 @@
 title: "Revisiting UI5 on CodeTalk"
 date: 2019-05-15
 tags:
-  - sapcommunity
+  - openui5
+  - sap
+  - talk
+  - community
 ---
 *A few days ago Marius Obert and I took part in an SAP CodeTalk session
 with host Ian Thain, where we revisited the subject of UI5 - [SAP

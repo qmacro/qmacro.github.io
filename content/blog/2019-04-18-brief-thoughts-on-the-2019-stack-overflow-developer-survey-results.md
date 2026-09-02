@@ -1,6 +1,9 @@
 ---
 date: 2019-04-18
 title: First thoughts on the 2019 Stack Overflow Developer Survey results
+tags:
+  - community
+  - opinion
 ---
 
 I've just finished perusing [this year's Stack Overflow Developer Survey results](https://insights.stackoverflow.com/survey/2019) and have some initial observations. Nothing earth shattering, and of course you will likely have other observations. Moreover, with anything like this, my thoughts are probably not neutral, as I'm looking for patterns to back up how I see the world.

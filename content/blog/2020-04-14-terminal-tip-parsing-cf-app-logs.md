@@ -2,9 +2,11 @@
 title: "Terminal Tip: parsing CF app logs"
 date: 2020-04-14
 tags:
-  - sapcommunity
-  - terminal
-  - terminaltip
+  - shell
+  - cloud-foundry
+  - tools
+  - til
+  - community
 ---
 Further to my last [Terminal Tip on truncating CF
 output](/blog/posts/2020/04/07/terminal-tip:-truncating-cf-output/)

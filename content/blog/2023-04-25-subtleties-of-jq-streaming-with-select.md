@@ -3,6 +3,8 @@ title: More on the comma as generator, and streaming with select in jq
 date: 2023-04-25
 tags:
   - jq
+  - json
+  - functional-programming
 ---
 In the context of writing a short jq script to turn a JSON representation of an OData entity set into a set of CSV records, I came across something in jq that reminded me of something I'd discovered recently, and made me think a bit more about it.
 

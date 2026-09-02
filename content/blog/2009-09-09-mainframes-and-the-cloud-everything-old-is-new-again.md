@@ -1,7 +1,6 @@
 ---
 date: 2009-09-09
 title: Mainframes and the cloud - everything old is new again
-tags:
 - appengine
 - azure
 - cloudcomputing
@@ -11,6 +10,12 @@ tags:
 - mainframe
 - mvs
 - sap
+tags:
+  - computing-history
+  - mainframe
+  - cloud
+  - sap
+  - opinion
 ---
 
 

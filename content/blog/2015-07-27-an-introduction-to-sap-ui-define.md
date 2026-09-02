@@ -1,13 +1,12 @@
 ---
 date: 2015-07-27
 title: An introduction to sap.ui.define
-tags:
-  - controller
-  - define
-  - modules
-  - openui5
-  - sap-ui-define
 description: 30 Days of UI5 - day 24 by DJ Adams.
+tags:
+  - openui5
+  - thirty-days-of-ui5
+  - javascript
+  - tutorial
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 

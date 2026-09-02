@@ -1,6 +1,10 @@
 ---
 date: 2018-07-30
 title: SAP CodeTalk sessions
+tags:
+  - sap
+  - community
+  - talk
 ---
 
 My friend and colleague [Ian Thain](https://people.sap.com/ian.thain) organises and hosts the excellent [SAP CodeTalk](https://www.sap.com/uk/developer/resources.html) series, that's been going for over five years now, with more than 240 episodes. Nice work, Ian!

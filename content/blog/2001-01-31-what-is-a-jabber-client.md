@@ -5,7 +5,9 @@ description: |
 date: 2001-01-31
 tags:
   - jabber
-  - archive
+  - instant-messaging
+  - open-source
+  - opinion
 ---
 
 To answer this question, we first have to decide what a Jabber client is. To many, it is a program with which to chat with friends, and join in group discussions. On one level, of course it is. The current cluster of available Jabber clients are focused pretty much on the initial competency (there's a reason why I'm not using the phrase 'core competency') of Jabber: Instant Messaging (IM).

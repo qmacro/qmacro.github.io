@@ -2,10 +2,10 @@
 title: "Food for thought: LDBs and ABAP Objects"
 date: 2003-11-13
 tags:
-  - sapcommunity
+  - sap
   - abap
-  - ldb
-  - events
+  - community
+  - opinion
 ---
 
 During part of this week I've been fighting with an old adversary,[output

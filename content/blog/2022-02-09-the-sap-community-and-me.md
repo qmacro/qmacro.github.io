@@ -2,7 +2,10 @@
 date: 2022-02-09
 title: How I got involved in the SAP community
 tags:
-  - sap-community
+  - sap
+  - community
+  - career
+  - personal
 ---
 Here's a quick summary of how I got involved in the SAP community, from a discussion thread over there.
 <!--excerpt-->

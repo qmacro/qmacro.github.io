@@ -3,6 +3,7 @@ title: Tmux plugin development with a local repo
 date: 2023-11-13
 tags:
   - tmux
+  - tools
   - git
 ---
 This weekend I wrote a simple Tmux plugin, [tmux-focus-status](https://github.com/qmacro/tmux-focus-status), mostly to learn how to do it, but also to modularise my Tmux configuration (perhaps organising chunks of configuration into plugins is a little extreme, ah well).

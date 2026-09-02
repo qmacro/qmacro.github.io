@@ -2,6 +2,11 @@
 date: 2002-05-24
 title: ETag-enabled wget
 description: Adding ETag awareness to the venerable wget utility.
+tags:
+  - http
+  - tools
+  - web
+  - til
 ---
 
 

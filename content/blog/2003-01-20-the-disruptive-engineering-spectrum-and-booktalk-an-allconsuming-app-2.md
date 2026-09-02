@@ -1,12 +1,16 @@
 ---
 date: 2003-01-20
 title: The disruptive engineering spectrum, and "booktalk", an AllConsuming app
-tags:
 - allconsuming
 - rss-tag
 - soap
 - xml
 description: Creating an experimental service based on existing mechanisms.
+tags:
+  - rss
+  - xml
+  - web
+  - api
 ---
 
 

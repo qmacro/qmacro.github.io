@@ -1,14 +1,12 @@
 ---
 date: 2022-05-19
 title: JSON object values into CSV with jq
+description: I wanted to grab a CSV version of a JSON representation of an entityset in the Northwind OData service. Here's how I converted the JSON structure into CSV with jq, and along the way, I talk about arrays, objects, iterators, object indices, variables, identity, array construction and format strings.
 tags:
   - jq
   - json
-  - pipe
   - odata
-  - northwind
-  - csv
-description: I wanted to grab a CSV version of a JSON representation of an entityset in the Northwind OData service. Here's how I converted the JSON structure into CSV with jq, and along the way, I talk about arrays, objects, iterators, object indices, variables, identity, array construction and format strings.
+  - tutorial
 ---
 
 In our current [Back to basics: OData

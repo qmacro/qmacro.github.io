@@ -1,10 +1,12 @@
 ---
 date: 2005-02-25
 title: Weblog happy in new home - note new URLs!
-tags:
 - feed-tag
 - weblogs
 description: Cool URIs don't change ... much.
+tags:
+  - blogging
+  - web
 ---
 If you subscribed to my weblog via RSS and read it solely in RSS readers, you might have wondered what
 had happened recently when the RSS feeds disappeared. Well, it’s moved. I’m having [a fresh

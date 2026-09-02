@@ -2,8 +2,9 @@
 date: 2021-01-26
 title: Columnar layout with AWK
 tags:
+  - shell
   - tools
-  - awk
+  - til
 ---
 
 _Here's a breakdown of a simple AWK script I wrote to format values into neatly aligned columns_

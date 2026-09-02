@@ -1,13 +1,12 @@
 ---
 date: 2016-04-12
 title: Enlightenment in action
-tags:
-  - fp
-  - language-ramblings
-  - clojure
-  - firstrest
-  - alanperlis
 description: On my journey to learn Clojure by solving 4Clojure challenges.
+tags:
+  - functional-programming
+  - clojure
+  - learning
+  - opinion
 ---
 One of the ideas that Clojure embraces is this
 [Perlism](http://www.cs.yale.edu/homes/perlis-alan/quotes.html):

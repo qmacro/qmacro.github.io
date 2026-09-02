@@ -3,7 +3,7 @@ date: 2021-03-27
 title: La Pavoni maintenance successful
 tags:
   - coffee
-  - lapavoni
+  - personal
 ---
 
 _I've successfully carried out maintenance on my La Pavoni espresso machine, and you can too. Here are some notes that may help._

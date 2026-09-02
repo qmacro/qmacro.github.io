@@ -3,8 +3,9 @@ title: Easily add an explicit cds.requires.db to your CAP project's package.json
 date: 2024-04-14
 tags:
   - cap
-  - good-to-know
   - jq
+  - tools
+  - til
 ---
 In an experimental CAP project serving data in an in-memory SQLite persistence mechanism, seeded from CSV files (as per the classic starting point in CAP's [Grow As You Go](https://cap.cloud.sap/docs/get-started/grow-as-you-go) approach), I wanted to have the persistence layer requirements stated explicitly in the project's `package.json` file, rather than just be implicit.
 

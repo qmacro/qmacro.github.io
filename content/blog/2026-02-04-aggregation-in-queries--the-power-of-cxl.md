@@ -1,16 +1,12 @@
 ---
 title: Path expressions, nested projections, aggregations and expressions in queries with CQL and CXL in CAP
 date: 2026-02-04
+description: A brief exploration of some of the features of CAP's powerful query and expression languages, inspired by our journey into CXL in the current Hands-on SAP Dev series.
 tags:
   - cap
   - cds
-  - cxl
-  - cql
-  - aggregation
-  - composition
-  - pathexpressions
-  - nestedprojections
-description: A brief exploration of some of the features of CAP's powerful query and expression languages, inspired by our journey into CXL in the current Hands-on SAP Dev series.
+  - odata
+  - tutorial
 ---
 
 In [Part 2](https://www.youtube.com/watch?v=s4IZR1LBRrA) of our current

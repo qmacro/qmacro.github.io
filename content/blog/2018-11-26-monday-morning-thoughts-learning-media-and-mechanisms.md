@@ -1,10 +1,12 @@
 ---
 title: "Monday morning thoughts: learning media and mechanisms"
 date: 2018-11-26
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: I think about the different ways I learn, and wonder how that translates to how we learn in the SAP developer ecosphere.
+tags:
+  - monday-morning-thoughts
+  - learning
+  - opinion
+  - community
 ---
 
 This will be a shorter post than usual\*, as I've just arrived at the

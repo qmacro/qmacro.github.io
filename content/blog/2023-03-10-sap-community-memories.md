@@ -2,7 +2,9 @@
 title: SAP community memories
 date: 2023-03-10
 tags:
-  - sapcommunity
+  - sap
+  - community
+  - personal
 ---
 
 This year, SAP is celebrating 20 years of the web-based SAP Community platform. Happy anniversary! I thought I'd contribute to these celebrations with some memories of my own.

@@ -1,6 +1,11 @@
 ---
 date: 2018-12-24
 title: Vim, Markdown and writing
+tags:
+  - neovim
+  - markdown
+  - tools
+  - blogging
 ---
 
 Having got my personal space on the Web in order with some [housekeeping](/blog/posts/2018/12/24/housekeeping) this weekend, I can now turn my attention to my workflow and tools, where I intend to rebuild some skills in core technologies. To that end, I'm writing more in Markdown, and have re-embraced Vim as my editor of choice for many things.

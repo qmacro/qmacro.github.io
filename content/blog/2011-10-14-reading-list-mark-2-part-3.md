@@ -1,7 +1,6 @@
 ---
 date: 2011-10-14
 title: Reading List Mark 2 - Part 3
-tags:
 - appsscript
 - google
 - gtug
@@ -10,6 +9,11 @@ tags:
 - tasks
 - ui
 - urlfetch
+tags:
+  - google-apps-script
+  - google
+  - tools
+  - tutorial
 ---
 This is Part 3 in a series about an example app that I put together to demonstrate and describe the use of various Google Apps Script features. See [Part 1](/blog/posts/2011/10/08/reading-list-mark-2-part-1/) for an introduction.
 

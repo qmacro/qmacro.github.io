@@ -3,7 +3,8 @@ title: Array push with autovivification in jq
 date: 2022-12-13
 tags:
   - jq
-  - perl
+  - json
+  - functional-programming
 ---
 I wanted to make a note to self about this. I'm using Advent of Code for an opportunity to practise and learn more about `jq`, and in [Day 7: No Space Left On Device](https://adventofcode.com/2022/day/7) I think I need a way of appending values to arrays, which are themselves values of properties that I create on the fly. This may not turn out to be useful in the end, but I wanted to explore it (I was thinking I could store the list of files in a given directory like this).
 

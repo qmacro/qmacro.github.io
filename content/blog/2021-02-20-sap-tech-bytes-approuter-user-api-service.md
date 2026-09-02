@@ -2,8 +2,10 @@
 title: "SAP Tech Bytes: Approuter User API Service"
 date: 2021-02-20
 tags:
-  - sapcommunity
-  - saptechbytes
+  - btp
+  - sap
+  - community
+  - tutorial
 ---
 *Use a simple example to kick the tyres of the new User API Service
 available in the `@sap/approuter` NPM package.*

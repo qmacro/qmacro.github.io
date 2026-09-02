@@ -2,8 +2,9 @@
 date: 2021-08-22
 title: Today's TIL trio
 tags:
-  - autodidactics
   - tools
+  - learning
+  - til
 ---
 
 _Here are three mini TILs from today, on minimum JSON, using `tee`, and `netstat` options._

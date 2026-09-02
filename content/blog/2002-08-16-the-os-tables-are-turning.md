@@ -2,6 +2,10 @@
 date: 2002-08-16
 title: The OS tables are turning...
 description: The origins of one of my favourite phrases "Does not work on Windows".
+tags:
+  - linux
+  - opinion
+  - tools
 ---
 
 

@@ -3,6 +3,7 @@ title: Ghost cratch fitted
 date: 2024-01-31
 tags:
   - narrowboat
+  - personal
 ---
 My [narrowboat](/tags/narrowboat) has outside space at both ends.
 

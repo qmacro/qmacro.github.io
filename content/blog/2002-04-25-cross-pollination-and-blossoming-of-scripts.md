@@ -2,6 +2,11 @@
 title: Cross pollination and blossoming of scripts
 description: On the growing Blosxom ecosphere.
 date: 2002-04-25
+tags:
+  - blogging
+  - blosxom
+  - perl
+  - scripting
 ---
 There seems to be a wonderful, um, blossoming of scripts, tools, and ideas arould [Rael](http://www.oreillynet.com/%7Erael/)‘s [Blosxom](http://www.oreillynet.com/%7Erael/lang/perl/blosxom) and the new [Blagg](http://www.oreillynet.com/%7Erael/lang/perl/blagg) mechanisms. How about [a Blogger API interface for Blosxom](http://kavery.ecs.fullerton.edu/cgi-bin/blosxom.cgi/blosxmlrpc), or [a plug-in architecture for Blagg](http://www.oreillynet.com/%7Erael/lang/perl/blagg/#blaggplugs), to name but two, in addition to the tiny hacks such as the Google search list and the bookmark ‘to read’ list, both on the right…
 

@@ -1,13 +1,16 @@
 ---
 date: 2015-02-14
 title: Fiori & UI5 Related Videos
-tags:
 - fiori
 - openui5
 - sapui5
 - screencasts
 - ui5
 - videos
+tags:
+  - fiori
+  - openui5
+  - learning
 ---
 
 

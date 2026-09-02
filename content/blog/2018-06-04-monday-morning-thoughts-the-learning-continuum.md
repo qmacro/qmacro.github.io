@@ -1,10 +1,12 @@
 ---
 title: "Monday morning thoughts: the learning continuum"
 date: 2018-06-04
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: I contemplate the idea of the learning continuum, and think about the fact that we're all learning together, which is a good thing.
+tags:
+  - monday-morning-thoughts
+  - learning
+  - opinion
+  - community
 ---
 
 On a run last week I listened to an episode of Scott Hanselman's

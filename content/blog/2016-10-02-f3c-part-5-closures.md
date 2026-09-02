@@ -2,8 +2,8 @@
 date: 2016-10-02
 title: F3C Part 5 - Closures
 tags:
-  - fp
-  - language-ramblings
+  - functional-programming
+  - javascript
   - f3c
 ---
 FunFunFunction Video: [Closures - Part 5 of Functional Programming in JavaScript](https://www.youtube.com/watch?v=CQqwU2Ixu-U&list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84&index=5)

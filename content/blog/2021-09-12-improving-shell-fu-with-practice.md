@@ -2,9 +2,9 @@
 date: 2021-09-12
 title: Improving shell fu with practice
 tags:
-  - autodidactics
-  - kitty
   - shell
+  - learning
+  - tools
 ---
 Practising in the shell helps me improve and exposes me to new knowledge. Here's an example.
 <!--excerpt-->

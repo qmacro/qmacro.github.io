@@ -2,10 +2,11 @@
 title: "Terminal Tip: a CF remote monitor script"
 date: 2020-05-01
 tags:
-  - sapcommunity
-  - terminal
-  - terminaltip
-  - awk
+  - shell
+  - cloud-foundry
+  - tools
+  - til
+  - community
 ---
 In the previous terminal tip ([remotely monitor a CF
 deployment](/blog/posts/2020/04/24/terminal-tip:-remotely-monitor-a-cf-deployment/))

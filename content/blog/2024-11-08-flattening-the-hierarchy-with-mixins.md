@@ -5,8 +5,7 @@ tags:
   - cds
   - cap
   - tasc
-  - gems
-  - mixins
+  - domain-modelling
 ---
 Another [gem][1] in the [TASC][2] ("The Art & Science of CAP") [inaugural episode][3] is from around 49 mins in, in Daniel H's example about two application teams ("invoices" and "orders"), a foundation team ("core") and a team sitting in between the foundation and application teams ("middle"):
 

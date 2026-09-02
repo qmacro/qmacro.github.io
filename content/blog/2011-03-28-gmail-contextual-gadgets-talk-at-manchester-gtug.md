@@ -1,7 +1,6 @@
 ---
 date: 2011-03-28
 title: Gmail Contextual Gadgets - talk at Manchester GTUG
-tags:
 - gadgets
 - google
 - gtug
@@ -9,6 +8,10 @@ tags:
 - manchester
 - mangtug
 - talk
+tags:
+  - google
+  - talk
+  - tools
 ---
 
 

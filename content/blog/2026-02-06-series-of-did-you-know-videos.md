@@ -1,10 +1,12 @@
 ---
 title: Series of "Did You Know" videos
 date: 2026-02-06
-tags:
-  - dyk
-  - seriespost
 description: Here's a collection of pointers to short "Did You Know" videos from the Developer Advocates, highlighting small but interesting and useful aspects of various SAP tech tools, frameworks and products.
+tags:
+  - sap
+  - community
+  - series-index
+  - hands-on-sap-dev
 ---
 
 In the run up to SAP TechEd 2025, the Developer Advocates put together a series

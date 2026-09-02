@@ -1,14 +1,11 @@
 ---
 date: 2015-07-12
 title: Bootstrapping UI5 Locally and in the Cloud
-tags:
-  - bootstrap
-  - hcp
-  - openui5
-  - saphcp
-  - sapwebide
-  - webide
 description: 30 Days of UI5 - day 9 by DJ Adams.
+tags:
+  - openui5
+  - thirty-days-of-ui5
+  - tutorial
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 

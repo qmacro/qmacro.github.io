@@ -2,6 +2,10 @@
 date: 2002-06-03
 title: Changed link tags
 description: More work on RSS, metadata and discovery.
+tags:
+  - blogging
+  - web
+  - html
 ---
 
 

@@ -1,10 +1,12 @@
 ---
 title: Why I use services.cds in simple CDS model examples
 date: 2026-01-02
+description: The services.cds filename is special, which is why I make use of it.
 tags:
   - cds
   - cap
-description: The services.cds filename is special, which is why I make use of it.
+  - opinion
+  - domain-modelling
 ---
 I'm writing this short post so I can refer to it when I want to explain my use
 of `services.cds` when creating sample CDS models. I've found myself explaining

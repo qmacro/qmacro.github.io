@@ -2,7 +2,10 @@
 title: XML Views and Resource Bundle Declarations
 date: 2014-01-28
 tags:
-  - sapcommunity
+  - openui5
+  - sap
+  - tutorial
+  - community
 ---
 Just a quick post on the train on the way down to London this morning.
 

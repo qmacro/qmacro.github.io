@@ -1,12 +1,15 @@
 ---
 date: 2014-01-02
 title: 'Quick hack: Calendar Inviter'
-tags:
 - appsscript
 - calendar
 - gmail
 - google
 - outlook
+tags:
+  - google-apps-script
+  - google
+  - tools
 ---
 
 

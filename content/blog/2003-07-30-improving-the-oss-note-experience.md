@@ -1,9 +1,11 @@
 ---
 title: "Improving the OSS note experience"
 date: 2003-07-30
-tags:
-  - sapcommunity
 description: How can we make this key service less unpleasant to use?
+tags:
+  - sap
+  - community
+  - tools
 ---
 I remember the time when OSS was a fledgling service, and it ran on an
 R/2 system in Walldorf. You accessed it via the R/2 SAPGUI just as any

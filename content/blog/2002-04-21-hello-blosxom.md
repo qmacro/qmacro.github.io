@@ -4,6 +4,9 @@ title: Hello Blosxom
 description: A move to the Blosxom blogging software.
 tags:
   - blogging
+  - blosxom
+  - perl
+  - tools
 ---
 
 Well, after having a

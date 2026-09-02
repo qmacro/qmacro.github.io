@@ -1,13 +1,16 @@
 ---
 date: 2005-05-30
 title: Turnkey MVS 3.8J on Hercules S/370 Screenshot
-tags:
 - '370'
 - jcl
 - mainframe
 - mvs
 - turnkey
 description: Big iron and retrocomputing.
+tags:
+  - computing-history
+  - mainframe
+  - tools
 ---
 ![Screenshot of Turnkey](/images/2005/05/16264534_127c972adf_n.jpg)
 

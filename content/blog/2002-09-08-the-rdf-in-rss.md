@@ -1,10 +1,14 @@
 ---
 date: 2002-09-08
 title: The RDF in RSS
-tags:
 - rdf
 - rss-tag
 description: Digging into the real truth about the RDF in RSS.
+tags:
+  - rdf
+  - rss
+  - semantic-web
+  - xml
 ---
 Ironically, it’s only been the recent and ongoing hubbub about the direction of RSS that’s got me wondering what the real truth is about the RDF in RSS. In a still handwavy sort of way, I understand that RDF is important for the (semantic\|data) web that is to form as a layer above the current writhing disconnected mass of URIs. But I realised I hadn’t really thought much about what the RDF bits of RSS (1.0) were, and much less what they were for. I get the feeling that for most mortals, including me, including RDF in their RSS feeds seemed like building a racing car to do the shopping, and never even taking it out on a track after the shopping was finished. Actually, perhaps some people didn’t even see the racing car as a whole. So I did a little reading and thinking.
 

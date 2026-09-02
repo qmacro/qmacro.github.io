@@ -1,6 +1,10 @@
 ---
 date: 2017-08-26
 title: SCP Business Rules Roadmap - 5 Observations
+tags:
+  - btp
+  - sap
+  - opinion
 ---
 
 I discovered the relatively new [Business Rules service](https://cloudplatform.sap.com/capabilities/integration/business-rules.html) on the SAP Cloud Platform (SCP) through recent SAP Community posts from Christian Loos, and from Murali Shanmugham. If you haven't read Murali's series "[Implementing a user self-registration scenario using Workflow and Business rules in SAP Cloud Platform](https://blogs.sap.com/2017/07/31/implementing-a-user-self-registration-scenario-using-workflow-and-business-rules-in-sap-cloud-platform-part-1/)", introducing and combining the Workflow and Business Rules services, you should do. 

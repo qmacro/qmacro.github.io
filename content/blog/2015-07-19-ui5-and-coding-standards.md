@@ -1,14 +1,11 @@
 ---
 date: 2015-07-19
 title: UI5 and Coding Standards
-tags:
-  - coding
-  - contribution
-  - guidelines
-  - openui5
-  - standards
-  - xmlviews
 description: 30 Days of UI5 - day 16 by DJ Adams.
+tags:
+  - openui5
+  - thirty-days-of-ui5
+  - opinion
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 

@@ -3,8 +3,8 @@ title: Creating the new Tech Aloud intro and outro music
 date: 2024-11-16
 tags:
   - podcast
-  - techaloud
   - javascript
+  - personal
 ---
 Today I revived my [Tech Aloud][1] podcast[<sup>1</sup>](#footnotes). Since the last time I published an episode, the infrastructure has changed, in that the Anchor FM platform I was using has been subsumed into Spotify. While in the longer term I want to move to my own podcast platform (perhaps [Castopod][3]), I wanted to get a new episode out, specifically a recording of my recent long-form blog post [Five reasons to use CAP][9].
 

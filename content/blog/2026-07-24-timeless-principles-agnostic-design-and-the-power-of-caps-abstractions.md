@@ -1,14 +1,12 @@
 ---
 title: Timeless principles, agnostic design and the power of CAP's abstractions
 date: 2026-07-24
+description: The timeless principle of agnostic design, aka minimal assumptions, is strongly present in CAP. In this post I explain what this principle represents, based on the corresponding section of Daniel Hutzel's keynote at reCAP 2026.
 tags:
   - cap
-  - principles
-  - axioms
-  - agnosticdesign
-  - hexagonalarchitecture
-  - repl
-description: The timeless principle of agnostic design, aka minimal assumptions, is strongly present in CAP. In this post I explain what this principle represents, based on the corresponding section of Daniel Hutzel's keynote at reCAP 2026.
+  - architecture
+  - opinion
+  - domain-modelling
 ---
 
 I wrote recently about Hexagonal Architecture, alternatively known as Ports &

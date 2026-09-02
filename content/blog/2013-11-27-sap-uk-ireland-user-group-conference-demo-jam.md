@@ -1,7 +1,6 @@
 ---
 date: 2013-11-27
 title: SAP UK & Ireland User Group Conference - Demo Jam!
-tags:
 - conference
 - demo
 - demojam
@@ -9,6 +8,12 @@ tags:
 - sap
 - sapui5
 - ukisug13
+tags:
+  - fiori
+  - sap
+  - openui5
+  - conference
+  - talk
 ---
 
 

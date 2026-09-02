@@ -2,8 +2,10 @@
 title: 'SAP and Open Source: an analysis and letter to SAP and Shai'
 date: 2005-11-17
 tags:
-  - sapcommunity
-  - opensource
+  - sap
+  - open-source
+  - community
+  - opinion
   - abap
 ---
 

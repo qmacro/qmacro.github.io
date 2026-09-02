@@ -3,6 +3,8 @@ title: Quick conversion of multiple values using with_entries in jq
 date: 2024-02-28
 tags:
   - jq
+  - json
+  - tutorial
 ---
 This blog post demonstrates how powerful the combination of jq's `to_entries` and `from_entries` can be, and show how `with_entries` is a great extension of that.
 

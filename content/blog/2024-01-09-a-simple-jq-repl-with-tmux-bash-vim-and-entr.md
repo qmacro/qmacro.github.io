@@ -4,12 +4,9 @@ date: 2024-01-09
 tags:
   - jq
   - shell
-  - cli
-  - terminal
-  - bash
   - tmux
-  - entr
-  - vim
+  - neovim
+  - tools
 ---
 In this quick post I show a simple JSON dataset explorer that gives me a multi-line filter editor.
 

@@ -2,11 +2,10 @@
 title: "Scripting Cloud Foundry activities in trial"
 date: 2020-01-28
 tags:
-  - sapcommunity
   - shell
-  - cloudfoundry
-  - businessrules
-  - mainframes
+  - cloud-foundry
+  - btp
+  - community
 ---
 *In this post I share a simple script that I use to recreate my Business
 Rules environment in the Cloud Foundry environment of my SAP Cloud

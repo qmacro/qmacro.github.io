@@ -1,12 +1,12 @@
 ---
 date: 2021-08-06
 title: tmux output formatting
-tags:
-  - autodidactics
-  - tmux
-  - fzf
-  - sed
 description: Here's what I learned today about FORMATS in tmux output.
+tags:
+  - tmux
+  - tools
+  - fzf
+  - learning
 ---
 
 This week I came across [Waylon Walker](https://twitter.com/_WaylonWalker) who

@@ -2,8 +2,8 @@
 date: 2016-10-19
 title: F3C Parts 9 and 10 - Functors
 tags:
-  - fp
-  - language-ramblings
+  - functional-programming
+  - javascript
   - f3c
 ---
 FunFunFunction Videos: [Functors - FunFunFunction #10](https://www.youtube.com/watch?v=YLIH8TKbAh4&index=9&list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84) and [Functors: I was WRONG! - FunFunFunction #11](https://www.youtube.com/watch?v=DisD9ftUyCk&list=PL0zVEGEvSaeEd9hlmCXrk5yUyqUag-n84&index=10) (yes, the sequence numbers are a bit mixed up, don't worry though)

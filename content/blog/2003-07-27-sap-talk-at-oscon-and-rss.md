@@ -1,13 +1,13 @@
 ---
 title: "SAP talk at OSCON, and RSS"
 date: 2003-07-27
-tags:
-  - sapcommunity
-  - opensource
-  - oscon
-  - rss
-  - syndication
 description: On SAP, open source, and multiple uses for RSS.
+tags:
+  - sap
+  - open-source
+  - conference
+  - rss
+  - talk
 ---
 
 We got a pretty good attendance at our [talk on SAP R/3 at

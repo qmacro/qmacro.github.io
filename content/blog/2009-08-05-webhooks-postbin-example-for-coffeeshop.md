@@ -1,7 +1,6 @@
 ---
 date: 2009-08-05
 title: Webhooks postbin example for Coffeeshop
-tags:
 - coffeeshop
 - http
 - postbin
@@ -9,6 +8,11 @@ tags:
 - rest
 - watercoolr
 - webhooks
+tags:
+  - rest
+  - http
+  - pubsub
+  - webhooks
 ---
 
 

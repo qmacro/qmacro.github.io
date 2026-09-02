@@ -1,16 +1,13 @@
 ---
 title: "Interview with Rui Nogueira on the new Application Programming Model for SAP Cloud Platform"
 date: 2018-06-25
-tags:
-  - sapcommunity
-  - interview
-  - scp
-  - cap
-  - ruinogueira
-  - danielhutzel
-  - coffeecornerradio
-  - rde
 description: In this post you'll find a transcript of an interview between me and Rui Nogueira on the new Application Programming Model for SAP Cloud Platform. There's also a link to the audio version, available via Coffee Corner Radio.
+tags:
+  - cap
+  - sap
+  - btp
+  - community
+  - interview
 ---
 
 Last week I was in Walldorf, and I managed to catch up with an old

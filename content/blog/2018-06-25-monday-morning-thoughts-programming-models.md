@@ -1,10 +1,12 @@
 ---
 title: "Monday morning thoughts: programming models"
 date: 2018-06-25
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: I think about the idea of the programming model and consider the occurrence of such over the recent years in the SAP development ecosphere.
+tags:
+  - monday-morning-thoughts
+  - cap
+  - opinion
+  - community
 ---
 
 **Update (same day)**: I interviewed Rui Nogueira on the new Application

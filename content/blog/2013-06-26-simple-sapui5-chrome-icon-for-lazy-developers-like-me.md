@@ -2,7 +2,9 @@
 title: Simple SAPUI5 Chrome icon for lazy developers like me
 date: 2013-06-26
 tags:
-  - sapcommunity
+  - openui5
+  - tools
+  - community
 ---
 I created a Chrome “hosted app” manifest to get a large start page icon with which I could navigate directly to this excellent content resource. Now I can get to my favourite area on SCN in even less time! 🙂
 

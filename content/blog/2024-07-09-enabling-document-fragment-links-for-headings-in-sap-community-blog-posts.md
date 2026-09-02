@@ -2,10 +2,10 @@
 title: Enabling document fragment links for headings in SAP Community blog posts
 date: 2024-07-09
 tags:
-  - sapcommunity
   - javascript
-  - document-object-model
-  - bookmarklet
+  - community
+  - tools
+  - web
 ---
 I came up with a bookmarklet to allow me to get hyperlinks for pointing to specific sections of blog posts on the SAP Community platform.
 

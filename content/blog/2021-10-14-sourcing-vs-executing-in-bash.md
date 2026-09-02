@@ -2,8 +2,9 @@
 date: 2021-10-14
 title: Sourcing vs executing in Bash
 tags:
-  - autodidactics
   - shell
+  - learning
+  - til
 ---
 Checking the value of $0 allows me to source rather than execute an entire script.
 <!--excerpt-->

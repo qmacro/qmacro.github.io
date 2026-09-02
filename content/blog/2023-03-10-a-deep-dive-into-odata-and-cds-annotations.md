@@ -3,9 +3,9 @@ title: A deep dive into OData and CDS annotations
 date: 2023-03-10
 tags:
   - odata
-  - annotations
-  - cap
   - cds
+  - cap
+  - tutorial
 ---
 
 In 2022 on our SAP Developers YouTube channel, I ran a series of live streams on the Hands-on SAP Dev show, where we went back to basics on OData. You can watch all of the episodes via this playlist: [Back to basics: OData](https://www.youtube.com/playlist?list=PL6RpkC85SLQDYLiN1BobWXvvnhaGErkwj)

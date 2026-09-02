@@ -1,16 +1,12 @@
 ---
 title: reCAP 2026 talk resources
 date: 2026-07-15
+description: Resources related to our talk at reCAP 2026.
 tags:
   - cap
-  - recap
   - talk
-  - cxl
-  - mocking
-  - auth
-  - messaging
-  - pathexpressions
-description: Resources related to our talk at reCAP 2026.
+  - conference
+  - community
 ---
 
 At [reCAP](https://recap-conf.dev/) this year, I was honoured to share a talk

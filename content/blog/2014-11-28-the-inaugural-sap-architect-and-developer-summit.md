@@ -2,7 +2,10 @@
 title: The inaugural SAP architect and developer summit
 date: 2014-11-28
 tags:
-  - bluefinsolutions
+  - sap
+  - conference
+  - community
+  - opinion
 ---
 
 I was honoured to have been [invited to speak at](/blog/posts/2014/10/19/speaking-at-the-sap-architect-and-developer-summit/) the inaugural [SAP Architect & Developer Summit](https://web.archive.org/web/20180227044002/http://events.sap.com/au/sap-architect-and-developer-summit/en/home?bc=1%1%0) which happened last week (20-21 Nov 2014) in Sydney. It was a fantastic event, mainly due to the people and the content, but also because it hit a sweet spot between different types of SAP developer events.

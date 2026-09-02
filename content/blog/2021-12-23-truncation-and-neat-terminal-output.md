@@ -2,9 +2,9 @@
 date: 2021-12-23
 title: Truncation and neat terminal output
 tags:
-  - autodidactics
   - shell
   - tools
+  - learning
 ---
 I learned about the `psFormat` Docker configuration option recently, and it got me thinking about how I strive for neat terminal output.
 <!--excerpt-->

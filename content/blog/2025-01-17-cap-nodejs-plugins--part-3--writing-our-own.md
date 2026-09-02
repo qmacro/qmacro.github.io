@@ -1,12 +1,13 @@
 ---
 title: CAP Node.js plugins - part 3 - writing our own
 date: 2025-01-17
+description: This blog post accompanies part 3 of a three part series where we explore the CDS Plugin mechanism in CAP Node.js. This post is about using the knowledge we've gained to write our own plugin.
 tags:
   - cap
   - cds
-  - plugins
+  - npm
   - javascript
-description: This blog post accompanies part 3 of a three part series where we explore the CDS Plugin mechanism in CAP Node.js. This post is about using the knowledge we've gained to write our own plugin.
+  - tutorial
 ---
 
 For information on the series and links to all resources, see the [CAP Node.js

@@ -2,7 +2,11 @@
 title: SAPUI5 says "Hello OData" to NetWeaver Gateway
 date: 2012-02-13
 tags:
-  - sapcommunity
+  - openui5
+  - odata
+  - sap
+  - tutorial
+  - community
 ---
 So following a very interesting podcast from Rui Nogueira with SAP's Michael Falk and Tim Back on the HTML5-based UI Toolkit for SAP NetWeaver Gateway (aka "SAPUI5") earlier this month, a beta version of SAPUI5 was released to the world on SDN, specifically in the "Developer Center for UI Development Toolkit for HTML5" (linked content lost in SAP community migration) section. I downloaded it and unpacked the contents into a directory to have a look at the docu and guidelines, and have an initial poke around.
 

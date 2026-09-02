@@ -2,9 +2,8 @@
 title: Review of Saison from Dark Star
 date: 2011-05-31
 tags:
-  - portstreetbeerhouse
-  - review
   - beer
+  - review
 ---
 
 ![Saison](/images/2011/05/saison.jpg)

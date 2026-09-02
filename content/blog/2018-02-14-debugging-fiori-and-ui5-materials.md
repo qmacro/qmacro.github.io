@@ -1,12 +1,13 @@
 ---
 title: "Debugging Fiori and UI5 - Materials"
 date: 2018-02-14
-tags:
-  - sapcommunity
-  - opensap
-  - fiori
-  - debugging
 description: A collection of pointers to material related to debugging UI5.
+tags:
+  - fiori
+  - openui5
+  - debugging
+  - learning
+  - community
 ---
 
 There's a new openSAP course starting today: [Understanding SAP Fiori

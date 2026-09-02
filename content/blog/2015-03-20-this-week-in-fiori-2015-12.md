@@ -1,7 +1,6 @@
 ---
 date: 2015-03-20
 title: This Week in Fiori (2015-12)
-tags:
 - fiori
 - fix
 - frontend
@@ -10,6 +9,10 @@ tags:
 - saplabs
 - ui5
 - twif
+tags:
+  - fiori
+  - openui5
+  - this-week-in-fiori
 ---
 
 

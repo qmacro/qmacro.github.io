@@ -1,10 +1,10 @@
 ---
 date: 2009-04-15
 title: Back from Real Life
-tags:
-  - life
-  - web
 description: I’m back online, after an eXtended Away in Real Life.
+tags:
+  - personal
+  - blogging
 ---
 
 I don’t think my online

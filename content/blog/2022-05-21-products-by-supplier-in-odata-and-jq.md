@@ -4,6 +4,8 @@ title: Products by supplier in OData and jq
 tags:
   - jq
   - odata
+  - json
+  - tutorial
 ---
 This is more of a note-to-self. I'm enjoying comparing resource requests in OData with the equivalent shaping with `jq`. Here's a simple example.
 

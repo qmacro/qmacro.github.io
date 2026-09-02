@@ -1,6 +1,9 @@
 ---
 date: 2017-04-29
 title: YABP - Yet Another Blogging Platform
+tags:
+  - blogging
+  - tools
 ---
 
 I've been blogging [since the end of 2000](http://qmacro.blogspot.co.uk/2000_12_24_archive.html#1780991#1780991). In that time, I've moved platform a few times. I've gone from Blogger/Pyra back in the beginning, through Moveable Type, the wonderful [Blosxom](/blog/posts/2002/04/21/hello-blosxom/), and more, ending up most recently with WordPress.

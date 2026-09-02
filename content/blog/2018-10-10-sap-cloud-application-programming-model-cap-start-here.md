@@ -1,10 +1,13 @@
 ---
 title: "SAP Cloud Application Programming Model (CAP) - start here"
 date: 2018-10-10
-tags:
-  - sapcommunity
-  - cap
 description: An overview of the key resources for folks wanting to get started with CAP.
+tags:
+  - cap
+  - sap
+  - btp
+  - community
+  - learning
 ---
 
 *Note: While this blog post was originally published in 2018, it's been

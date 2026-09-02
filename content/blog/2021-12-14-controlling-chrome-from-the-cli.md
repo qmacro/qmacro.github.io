@@ -2,10 +2,10 @@
 date: 2021-12-14
 title: Controlling Chrome from the CLI
 tags:
-  - autodidactics
-  - chrome
   - shell
-  - awk
+  - tools
+  - learning
+  - til
 ---
 Here's how I used the chrome-cli tool to help me open up URLs in different tabs in a new Chrome window. From the command line.
 <!--excerpt-->

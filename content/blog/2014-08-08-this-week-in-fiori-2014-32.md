@@ -1,7 +1,6 @@
 ---
 date: 2014-08-08
 title: This Week in Fiori (2014-32)
-tags:
 - explored
 - fiori
 - icontabbar
@@ -9,6 +8,11 @@ tags:
 - sap
 - sapui5
 - twif
+tags:
+  - fiori
+  - openui5
+  - sap
+  - this-week-in-fiori
 ---
 
 

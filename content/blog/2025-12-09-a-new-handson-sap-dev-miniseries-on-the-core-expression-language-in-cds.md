@@ -1,13 +1,12 @@
 ---
 title: A new Hands-on SAP Dev mini-series on the core expression language in CDS
 date: 2025-12-09
+description: Hands-on SAP Dev is back soon, kicking off in January with a new mini-series on CAP, specifically on CXL, the core expression language in the CDS family.
 tags:
   - cds
   - cap
-  - cxl
-  - seriespost
-  - handsonsapdev
-description: Hands-on SAP Dev is back soon, kicking off in January with a new mini-series on CAP, specifically on CXL, the core expression language in the CDS family.
+  - hands-on-sap-dev
+  - series-index
 ---
 After Devtoberfest comes TechEd and the long tail of conferences that lead into
 the holiday season. Then comes the new year, and a restart of our [long

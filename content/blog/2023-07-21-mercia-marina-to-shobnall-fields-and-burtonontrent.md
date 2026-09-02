@@ -3,8 +3,7 @@ title: Mercia Marina to Shobnall Fields and Burton-on-Trent
 date: 2023-07-21
 tags:
   - narrowboat
-  - fullyrestful
-  - narrowboatdiary
+  - personal
 ---
 After three days [in Mercia Marina on a visitor mooring](/blog/posts/2023/07/18/oil-change-and-a-visit-to-mercia-marina/), it was time to leave. I must say that I was impressed with the marina - the facilities, the layout, and the staff. I'll be visiting again in late August, to leave my boat while I travel for a couple of CAP-related CodeJams, [in Budapest](/talks/#codejam-cap-hana-cloud-full-stack-apps-budapest) and [in Dortmund](/talks/#service-integration-with-cap-dortmund-de), and I'm looking forward to it. I think that by then, I'm sort of planning to have put on another 25 hours on the engine, bringing me nicely to the 50 hour service, which I'll arrange with Streethay, to be done in the marina.
 

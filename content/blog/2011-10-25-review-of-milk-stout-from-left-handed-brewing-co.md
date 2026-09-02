@@ -2,9 +2,8 @@
 title: Review of Milk Stout from Left Handed Brewing Co
 date: 2011-10-25
 tags:
-  - portstreetbeerhouse
-  - review
   - beer
+  - review
 ---
 ![Milk Stout](/images/2011/10/milk-stout.png)
 

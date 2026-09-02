@@ -1,11 +1,15 @@
 ---
 date: 2002-09-20
 title: XML Scripting, data manipulation, and RDF
-tags:
 - rdf
 - rest
 - xml
 description: Can there be native support for XML as a data type?
+tags:
+  - xml
+  - rdf
+  - rest
+  - tools
 ---
 
 

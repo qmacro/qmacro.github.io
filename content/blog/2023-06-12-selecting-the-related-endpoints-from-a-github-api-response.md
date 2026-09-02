@@ -2,10 +2,10 @@
 title: Selecting the related endpoints from a GitHub API response using jq's with_entries
 date: 2023-06-12
 tags:
+  - jq
   - github
   - api
-  - snippet
-  - jq
+  - json
 ---
 I often find myself searching for the related API endpoints for any given chunk of data returned from a call to the [GitHub REST API](https://docs.github.com/en/rest). Let's take an issue as an example, one related to SAP's [Open Documentation Initiative](https://blogs.sap.com/2021/05/20/introducing-the-open-documentation-initiative/): 
 

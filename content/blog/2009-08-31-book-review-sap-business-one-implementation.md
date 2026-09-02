@@ -1,11 +1,14 @@
 ---
 date: 2009-08-31
 title: Book review  - SAP Business ONE Implementation
-tags:
 - sapcommunity
 - businessone
 - review
 - sap
+tags:
+  - sap
+  - books
+  - review
 ---
 
 

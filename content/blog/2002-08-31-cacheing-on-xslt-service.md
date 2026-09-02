@@ -2,6 +2,10 @@
 date: 2002-08-31
 title: Cacheing on XSLT service
 description: More on the Mozilla sidebar experiments.
+tags:
+  - xml
+  - web
+  - tools
 ---
 
 

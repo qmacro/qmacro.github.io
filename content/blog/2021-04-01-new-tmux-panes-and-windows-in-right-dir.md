@@ -2,8 +2,10 @@
 date: 2021-04-01
 title: New tmux panes and windows in the right directory
 tags:
-  - autodidactics
   - tmux
+  - tools
+  - learning
+  - til
 ---
 
 _I finally got round to looking into how to be in the "right" directory when I create a new window or pane in `tmux`. Here's what I did._

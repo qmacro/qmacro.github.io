@@ -1,12 +1,16 @@
 ---
 date: 2010-06-21
 title: Getting started with Gmail Contextual Gadgets
-tags:
 - appengine
 - contextual
 - dashboard-tag
 - gadgets
 - gmail
+tags:
+  - google-apps-script
+  - google
+  - tools
+  - tutorial
 ---
 
 

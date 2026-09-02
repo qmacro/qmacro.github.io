@@ -1,11 +1,12 @@
 ---
 date: 2015-07-25
 title: Merging lists with UI5
-tags:
-  - customdata
-  - jquery
-  - openui5
 description: 30 Days of UI5 - day 22 by Chris Choy.
+tags:
+  - openui5
+  - thirty-days-of-ui5
+  - javascript
+  - tutorial
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 

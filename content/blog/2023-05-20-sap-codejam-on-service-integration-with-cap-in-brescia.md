@@ -4,7 +4,8 @@ date: 2023-05-20
 tags:
   - codejam
   - cap
-  - brescia
+  - service-integration
+  - community
 ---
 The [SAP CodeJam programme](https://groups.community.sap.com/t5/sap-codejam/eb-p/codejam-events) continues apace. Yesterday I ran a CodeJam in Brescia, Italy, on the topic of service integration with CAP, the SAP Cloud Application Programming Model. Here's a quick overview, with plenty of pictures.
 

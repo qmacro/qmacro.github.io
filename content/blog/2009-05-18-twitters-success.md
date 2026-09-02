@@ -1,7 +1,6 @@
 ---
 date: 2009-05-18
 title: Twitter's success
-tags:
 - bots
 - enterprise
 - http
@@ -20,6 +19,14 @@ tags:
 - web
 - xmpp
 description: Thoughts on messaging, microblogging, and Twitter's success.
+tags:
+  - http
+  - rest
+  - jabber
+  - messaging
+  - opinion
+  - api
+  - architecture
 ---
 
 Yes yes, I know I’m late to the game, and everyone and his dog has given their

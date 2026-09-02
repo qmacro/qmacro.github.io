@@ -1,9 +1,11 @@
 ---
 date: 2017-05-10
 title: Meeting Request Details
-tags:
-  - work
 description: More on courtesy and respect at work.
+tags:
+  - career
+  - email
+  - opinion
 ---
 
 Meetings are a fact of business life. Some are necessary, some less so. But in

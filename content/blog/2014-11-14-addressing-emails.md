@@ -1,11 +1,11 @@
 ---
 date: 2014-11-14
 title: Addressing emails
-tags:
-  - work
-  - email
-  - courtesy
 description: Showing respect and courtesy by appropriate use of TO and CC.
+tags:
+  - career
+  - email
+  - opinion
 ---
 
 I use filters to manage my emails and auto-filter all incoming emails that have

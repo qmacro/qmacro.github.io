@@ -1,15 +1,12 @@
 ---
 title: CDS expressions in CAP - notes on Part 4
 date: 2026-03-27
+description: Notes to accompany Part 4 of the mini-series on the core expression language in CDS.
 tags:
   - cds
   - cap
-  - cql
-  - forward-declared-joins
-  - cxl
-  - handsonsapdev
-  - exists
-description: Notes to accompany Part 4 of the mini-series on the core expression language in CDS.
+  - hands-on-sap-dev
+  - episode-notes
 ---
 
 See the [series

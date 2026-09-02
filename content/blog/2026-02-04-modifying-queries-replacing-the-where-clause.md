@@ -1,11 +1,12 @@
 ---
 title: Modifying queries, replacing the WHERE clause
 date: 2026-02-04
+description: Here's a quick post to explain how to modify existing query objects in CAP, specifically using the CAP Node.js cds.ql API.
 tags:
   - cap
-  - cql
-  - cqn
-description: Here's a quick post to explain how to modify existing query objects in CAP, specifically using the CAP Node.js cds.ql API.
+  - cds
+  - javascript
+  - tutorial
 ---
 
 The result of modifying existing queries can be a little unexpected at first. For example, you might have a query object where you want to replace the WHERE clause before you execute it. Here's how not to do it, and then how to do it.

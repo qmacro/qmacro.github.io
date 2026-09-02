@@ -5,7 +5,7 @@ tags:
   - cds
   - cap
   - tasc
-  - gems
+  - domain-modelling
 ---
 Watching [the inaugural episode of The Art & Science of CAP][1], in particular around 39 mins in, Daniel was showing an example of a projection where some of the details of the entity -- upon which the projection was being made -- were deliberately restricted.
 

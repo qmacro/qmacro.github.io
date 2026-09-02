@@ -2,8 +2,9 @@
 date: 2020-07-21
 title: continue-on-error can prevent a job step failure causing an action failure
 tags:
-  - autodidactics
   - github-actions
+  - learning
+  - til
 ---
 
 _Use `continue-on-error: true` in a GitHub Actions job spec to prevent failures from being flagged when a job step fails._

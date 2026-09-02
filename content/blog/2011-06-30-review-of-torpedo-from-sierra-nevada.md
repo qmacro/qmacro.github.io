@@ -2,9 +2,8 @@
 title: Review of Torpedo from Sierra Nevada
 date: 2011-06-30
 tags:
-  - portstreetbeerhouse
-  - review
   - beer
+  - review
 ---
 
 ![Torpedo](/images/2011/06/torpedo.png)

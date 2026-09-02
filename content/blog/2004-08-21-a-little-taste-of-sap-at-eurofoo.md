@@ -2,8 +2,10 @@
 title: A little taste of SAP at EuroFoo
 date: 2004-08-21
 tags:
-  - sapcommunity
-  - eurofoo
+  - sap
+  - conference
+  - open-source
+  - community
 ---
 I’m in Enschede (Netherlands) this weekend for EuroFoo – a mini-conference get-together for hackers and geeks of different persuasions. 
 

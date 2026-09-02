@@ -1,15 +1,13 @@
 ---
 title: CAP Node.js Plugins
 date: 2024-12-30
+description: Here's a summary of the resources relating to the CAP Node.js Plugins series.
 tags:
   - cap
   - cds
-  - plugins
-  - teched
-  - dev100b
-  - deconstructed
-  - seriespost
-description: Here's a summary of the resources relating to the CAP Node.js Plugins series.
+  - npm
+  - javascript
+  - series-index
 ---
 
 There are three episodes, broadcast live on the [Hands-on SAP Dev

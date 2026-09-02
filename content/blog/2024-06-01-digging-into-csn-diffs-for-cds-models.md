@@ -4,10 +4,9 @@ date: 2024-06-01
 tags:
   - cap
   - cds
-  - csn
-  - cql
-  - jd
   - json
+  - tools
+  - domain-modelling
 ---
 I wanted to increase my understanding of CSN a little by noting changes in it as I built up my CDS model, and ended up with a script `csndiff` to help me with that.
 

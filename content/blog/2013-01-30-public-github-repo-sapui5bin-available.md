@@ -2,7 +2,11 @@
 title: Public Github repo sapui5bin available
 date: 2013-01-30
 tags:
-  - sapcommunity
+  - openui5
+  - sap
+  - open-source
+  - github
+  - community
 ---
 Recently I've found myself making references to a small but growing collection of runnable SAPUI5 snippets that I've been collecting together, called "sapui5bin". It started from early discussions in this space on SCN, and I thought I'd try and capture the "executable output" of those discussions, blog posts and so on.
 

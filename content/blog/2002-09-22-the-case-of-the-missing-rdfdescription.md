@@ -1,8 +1,11 @@
 ---
 date: 2002-09-22
 title: The case of the missing rdf:Description
-tags:
 - rdf
+tags:
+  - rdf
+  - xml
+  - semantic-web
 ---
 
 

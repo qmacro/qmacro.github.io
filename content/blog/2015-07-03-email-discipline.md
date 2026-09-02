@@ -1,10 +1,11 @@
 ---
 date: 2015-07-03
 title: Email discipline
-tags:
-  - work
-  - email
 description: Email is asynchronous, and that's a good thing.
+tags:
+  - career
+  - email
+  - opinion
 ---
 
 If you’re wondering why I don’t reply to your email straight away, it’s because

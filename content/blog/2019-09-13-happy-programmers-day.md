@@ -2,7 +2,8 @@
 title: "Happy Programmers Day!"
 date: 2019-09-13
 tags:
-  - sapcommunity
+  - community
+  - personal
 ---
 *Today is Programmers Day, and I take a moment to reflect on a couple of
 folks who have inspired me in my growth as a programmer.*

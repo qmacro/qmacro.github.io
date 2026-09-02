@@ -3,8 +3,9 @@ title: Opening files from the terminal in BAS dev spaces
 date: 2024-02-15
 tags:
   - sap
-  - business-application-studio
-  - vscode
+  - tools
+  - developer-experience
+  - shell
 ---
 In the comments to [episode 4 of our back to basics series of live stream episodes on CAP, on the Hands-on SAP Dev show](https://www.youtube.com/watch?v=1ywiOaGVA5w), there was a question on my use of `code` in VS Code, which, when invoked in the terminal (e.g. `code services.cds`) opens the file directly in a VS Code editor window, like this:
 

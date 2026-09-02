@@ -1,15 +1,14 @@
 ---
 title: Upcoming talks in autumn 2025
 date: 2025-09-10
+description: I'm writing this mostly to organise myself and get my preparations in order!
 tags:
   - talk
   - cap
   - fiori
-  - hana
   - ai
-  - codejam
-  - teched
-description: I'm writing this mostly to organise myself and get my preparations in order!
+  - conference
+  - community
 ---
 I'm delivering and / or involved in various in-person talks and workshops over the next few months, here's a quick breakdown.
 

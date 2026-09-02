@@ -1,10 +1,11 @@
 ---
 date: 2003-05-30
 title: The SAP/MySQL Partnership
-tags:
-  - sapcommunity
-  - mysql
 description: I keep hearing reports that the recent announcement of cooperation between SAP AG and MySQL AB has been making the community unhappy.
+tags:
+  - sap
+  - open-source
+  - community
 ---
 What’s the deal? I don’t understand what’s not to like here. SAP aren’t giving up development of DBMS technology, they’re just giving up the marketing of it. And what a great injection for MySQL, makers of my favourite open source DB.
 

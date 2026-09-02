@@ -1,10 +1,12 @@
 ---
 title: "Monday morning thoughts: on starting blogging"
 date: 2018-11-05
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: On what made me start blogging, and on the reasons to start blogging that might resonate with you, if you've not yet made that step.
+tags:
+  - monday-morning-thoughts
+  - blogging
+  - opinion
+  - community
 ---
 
 Deep down I'm a shy person. I'm not great at casual conversation, and,

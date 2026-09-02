@@ -1,11 +1,11 @@
 ---
 date: 2015-07-11
 title: User Notifications with the Message Popover
-tags:
-  - messages
-  - openui5
-  - popover
 description: 30 Days of UI5 - day 8 by Sean Campbell.
+tags:
+  - openui5
+  - thirty-days-of-ui5
+  - tutorial
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 

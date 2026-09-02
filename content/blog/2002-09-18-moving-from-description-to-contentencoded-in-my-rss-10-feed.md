@@ -2,6 +2,10 @@
 date: 2002-09-18
 title: Moving from description to content:encoded in my RSS 1.0 feed
 description: Using the mod_content module of RSS 1.0.
+tags:
+  - rss
+  - xml
+  - blogging
 ---
 
 

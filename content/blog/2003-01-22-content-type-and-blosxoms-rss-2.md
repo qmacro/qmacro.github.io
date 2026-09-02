@@ -2,6 +2,11 @@
 date: 2003-01-22
 title: Content-Type and Blosxom's RSS
 description: The perils of unescaped content in feeds.
+tags:
+  - blosxom
+  - rss
+  - http
+  - web
 ---
 
 

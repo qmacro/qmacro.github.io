@@ -1,11 +1,12 @@
 ---
 title: "BSP: Mangled URL Decoder"
 date: 2003-10-17
-tags:
-  - sapcommunity
-  - bsp
-  - abap
 description: A quick dive into the details of BSP URLs.
+tags:
+  - sap
+  - abap
+  - web
+  - community
 ---
 
 The BSP mangles URLs. Deep down. In a [BSP In-Depth: URL

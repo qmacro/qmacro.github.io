@@ -3,8 +3,9 @@ date: 2002-05-07
 title: One small step ... one giant leap ...
 description: Calling remote functions over Jabber.
 tags:
- - jabber
- - rpc
+  - jabber
+  - rpc
+  - instant-messaging
 ---
 Yeow!
 

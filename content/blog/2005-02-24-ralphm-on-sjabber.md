@@ -1,12 +1,15 @@
 ---
 date: 2005-02-24
 title: Ralphm on sjabber
-tags:
 - fosdem
 - jabber
 - sjabber
 - xmpp
 description: Digging into sjabber's source.
+tags:
+  - jabber
+  - conference
+  - open-source
 ---
 
 

@@ -1,11 +1,15 @@
 ---
 date: 2005-05-20
 title: 'SAP: temporary loss of touch with reality?'
-tags:
 - java
 - opensource
 - sap
 - shaiagassi
+tags:
+  - sap
+  - open-source
+  - opinion
+  - java
 ---
 
 

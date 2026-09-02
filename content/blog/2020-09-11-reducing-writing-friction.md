@@ -1,6 +1,10 @@
 ---
 date: 2020-09-11
 title: Reducing writing friction
+tags:
+  - blogging
+  - tools
+  - opinion
 ---
 _I've created a simple script for myself to reduce writing friction._
 

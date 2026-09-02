@@ -2,7 +2,10 @@
 title: Community and Collaboration at SAP Inside Track Manchester
 date: 2016-09-27
 tags:
-  - bluefinsolutions
+  - sap
+  - community
+  - conference
+  - opinion
 ---
 
 Earlier this month, around 40 folks gathered for a two day event in Manchester's Northern Quarter for SAP Inside Track Manchester 2016. Read on to find out more about this event and others like it, and how the days played out.

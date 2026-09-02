@@ -1,12 +1,13 @@
 ---
 title: OData Everywhere
 date: 2012-11-13
-tags:
-  - sapcommunity
-  - sapteched
-  - sapui5
-  - gateway
 description: Musings on the Open Data Protocol, SAP NetWeaver Gateway, and the importance of both.
+tags:
+  - odata
+  - sap
+  - openui5
+  - conference
+  - community
 ---
 We're well into Day 1 at SAP TechEd 2012 in Madrid, and while SAP NetWeaver Gateway has already been mentioned in this morning's keynote (even though the keynote was more Sapphire-focused than TechEd-focused), and is noted as an enabler in various conversations public and private, there's a particular part of Gateway that is shining through as today's story for me: OData.
 

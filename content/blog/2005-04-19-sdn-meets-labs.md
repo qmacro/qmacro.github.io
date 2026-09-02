@@ -1,11 +1,14 @@
 ---
 date: 2005-04-19
 title: SDN Meets Labs
-tags:
 - sap
 - sdn
 - walldorf
 description: Rain. Lots of it. And I drove through it all this morning, all the way down the A61, to get to SAP University in Rot, near Walldorf.
+tags:
+  - sap
+  - community
+  - conference
 ---
 
 

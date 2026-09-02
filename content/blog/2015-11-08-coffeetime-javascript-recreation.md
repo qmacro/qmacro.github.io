@@ -1,16 +1,11 @@
 ---
 title: Coffee-time JavaScript recreation
 date: 2015-11-08
-tags:
-  - language-ramblings
-  - javascript
-  - filter
-  - immutability
-  - join
-  - map
-  - sapteched
-  - sort
 description: In preparing for co-presenting a hands-on session at SAP TechEd EMEA this coming week in Barcelona, I came across a chunk of JavaScript. In this post I try to improve it with robustness and immutability in mind.
+tags:
+  - javascript
+  - functional-programming
+  - learning
 ---
 The chunk of code was in the context of a simple extension to a standard SAP Fiori app. Clearly the focus was on the extension process itself, including all the features that the extension concept affords, and how it is realised within the SAP HANA Cloud Platform – the JavaScript code itself was merely a means to an end.
 

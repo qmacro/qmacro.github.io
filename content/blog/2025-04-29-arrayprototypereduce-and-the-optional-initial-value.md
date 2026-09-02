@@ -4,8 +4,8 @@ date: 2025-04-29
 description: Today I learned about the subtlety of the optional initialValue parameter for the Array prototype's reduce method in JavaScript.
 tags:
   - javascript
-  - fp
-  - reduce
+  - functional-programming
+  - learning
   - til
 ---
 

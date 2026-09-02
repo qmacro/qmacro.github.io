@@ -2,9 +2,10 @@
 title: Running non-production CAP services in CF
 date: 2024-04-15
 tags:
-  - good-to-know
   - cap
-  - cf
+  - cloud-foundry
+  - developer-experience
+  - til
 ---
 Sometimes I want to run test CAP services not only locally, but in the cloud. I don't want the trappings of production (which are of course important ... in production settings) such as a production grade persistence mechanism or authorisation strategy & appropriate security layer. Additionally, I like to take "[the simplest thing that could possibly work](https://podcasters.spotify.com/pod/show/tech-aloud/episodes/The-Simplest-Thing-that-Could-Possibly-Work--A-conversation-with-Ward-Cunningham--Part-V---Bill-Venners-e5dpts)" approach.
 

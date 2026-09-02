@@ -1,10 +1,14 @@
 ---
 date: 2003-03-05
 title: New Blosxom plugin 'submission'
-tags:
 - blosxom
 - plugin
 description: A generic blogging mechanism for accepting content POSTed to it.
+tags:
+  - blosxom
+  - perl
+  - open-source
+  - tools
 ---
 
 

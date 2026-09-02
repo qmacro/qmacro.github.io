@@ -5,8 +5,9 @@ date: 2025-08-06
 tags:
   - neovim
   - cds
-  - lua
   - cap
+  - lua
+  - tools
 ---
 
 ## CDS modelling across files and modules

@@ -2,8 +2,9 @@
 date: 2022-03-14
 title: Setting up my own Cloud Foundry
 tags:
-  - cloudfoundry
-  - kubernetes
+  - cloud-foundry
+  - docker
+  - tools
 ---
 It was more difficult that I expected to get a local Cloud Foundry (CF) up and running, but I got there in the end. Here's a brief description of my journey.
 <!--excerpt-->

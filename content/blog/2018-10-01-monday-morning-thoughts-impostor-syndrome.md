@@ -1,10 +1,12 @@
 ---
 title: "Monday morning thoughts: impostor syndrome"
 date: 2018-10-01
-tags:
-  - sapcommunity
-  - mondaymorningthoughts
 description: On the impostor syndrome, how it relates to me, and one of the possible causes.
+tags:
+  - monday-morning-thoughts
+  - career
+  - opinion
+  - community
 ---
 
 I'm in Las Vegas for the first SAP TechEd event of 2018 which starts in

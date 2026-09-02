@@ -1,13 +1,12 @@
 ---
 title: CDS expressions in CAP - notes on Part 1
 date: 2026-03-05
+description: Notes to accompany Part 1 of the mini-series on the core expression language in CDS.
 tags:
   - cds
   - cap
-  - cql
-  - cxl
-  - handsonsapdev
-description: Notes to accompany Part 1 of the mini-series on the core expression language in CDS.
+  - hands-on-sap-dev
+  - episode-notes
 ---
 
 See the [series

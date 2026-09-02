@@ -1,7 +1,6 @@
 ---
 date: 2018-01-17
 title: Coming Home
-tags:
 - ibm
 - ims
 - mainframe
@@ -11,6 +10,11 @@ tags:
 - r2
 - career
 description: On joining SAP as a Developer Advocate.
+tags:
+  - sap
+  - computing-history
+  - career
+  - opinion
 ---
 
 I first encountered SAP in 1987, where, fresh out of university and following

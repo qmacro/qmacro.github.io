@@ -3,11 +3,10 @@ date: 2002-05-09
 title: 'Blaggplug: jabberconf'
 description: Aggregation and publish/subscribe.
 tags:
- - blogging
- - blagg
- - bloxsom
- - pubsub
- - meerkat
+  - blogging
+  - jabber
+  - blosxom
+  - rss
 ---
 
 Q: What do you get when you cross [really simple

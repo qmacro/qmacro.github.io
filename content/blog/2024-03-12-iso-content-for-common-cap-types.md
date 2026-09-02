@@ -3,7 +3,9 @@ title: ISO content for common CAP types
 date: 2024-03-12
 tags:
   - cap
-  - iso
+  - cds
+  - odata
+  - tutorial
 ---
 There's an NPM package that provides default content based on the ISO specifications for CAP common types for countries, languages, currencies and timezones. In this post I explore what that package is and how it works. The post is quite long, mostly because I fell down a rabbit hole and was stuck there for quite a while. Hopefully though it's something you might enjoy. Happy exploring!
 

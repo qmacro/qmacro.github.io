@@ -2,10 +2,10 @@
 date: 2022-11-01
 title: More Untappd data explorations with jq - my top ranking beer types (part 3)
 tags:
-  - jq-series-top-beer-types
-  - untappd
   - jq
   - beer
+  - json
+  - tools
 ---
 This is a continuation of [part 2](/blog/posts/2022/10/31/more-untappd-data-explorations-with-jq-my-top-ranking-beer-types-(part-2)/) which you should read first. 
 
