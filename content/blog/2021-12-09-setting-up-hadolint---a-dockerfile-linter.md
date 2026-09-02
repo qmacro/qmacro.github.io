@@ -6,6 +6,7 @@ tags:
   - docker
   - tools
   - linting
+  - containers
 ---
 Having something to help me write better Dockerfiles is useful. Here's what I did to set up a Dockerfile linter in my development environment.
 <!--excerpt-->

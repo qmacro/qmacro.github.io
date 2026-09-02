@@ -6,6 +6,7 @@ tags:
   - docker
   - tools
   - til
+  - containers
 ---
 Today I learned about the subtleties of [build arguments](https://docs.docker.com/build/guide/build-args/) in Dockerfile definitions, specifically how the `ARG` instruction relates to - and is affected by - the `FROM` instruction. It's not entirely like a constant or a variable, in the way that I had thought.
 

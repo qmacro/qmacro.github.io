@@ -8,6 +8,7 @@ tags:
   - computing-history
   - opinion
   - community
+  - containers
 ---
 
 Another Monday morning is upon us, and it's a public holiday here in

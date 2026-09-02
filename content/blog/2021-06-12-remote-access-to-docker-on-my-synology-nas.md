@@ -6,6 +6,7 @@ tags:
   - docker
   - homelab
   - tools
+  - containers
 ---
 
 This post describes the steps I took to set up remote access to Docker running on my NAS, in the simplest and "smallest footprint" possible way I could find. There are other approaches, but this is what I did. It was a little less obvious than one might have expected, because of the way the Docker service is hosted on the NAS's operating system, and I ended up having to read around (see the reading list at the end).

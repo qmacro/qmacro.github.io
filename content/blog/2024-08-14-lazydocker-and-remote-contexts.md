@@ -6,6 +6,7 @@ tags:
   - docker
   - shell
   - tools
+  - containers
 ---
 A quick hack to work around the current issue with `lazydocker` and SSH-based remote Docker context definitions.
 

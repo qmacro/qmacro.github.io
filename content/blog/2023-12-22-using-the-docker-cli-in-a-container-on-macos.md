@@ -6,6 +6,7 @@ tags:
   - docker
   - tools
   - shell
+  - containers
 ---
 In this post I explain what I've done to be able to use the Docker client CLI from within a container on my macOS device.
 

@@ -8,6 +8,7 @@ tags:
   - developer-experience
   - github
   - tools
+  - containers
 ---
 On Friday last week we had the first [Hands-on SAP Dev](https://blogs.sap.com/2020/11/09/an-overview-of-sap-developers-video-content/#shows) live stream of 2024, and it was the first episode in a new "back to basics" series on the SAP Cloud Application Programming Model (or CAP, to us humans), specifically with Node.js.
 

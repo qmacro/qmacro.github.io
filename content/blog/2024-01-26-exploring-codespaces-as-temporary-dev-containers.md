@@ -7,6 +7,7 @@ tags:
   - github
   - tools
   - developer-experience
+  - containers
 ---
 Codespaces seem to be at the intersection of a number of things I'm interested in, including containers in general, dev containers in particular, ephemeral environments, the command line, thin clients and remote servers, SSH, the GitHub CLI, and more.
 
