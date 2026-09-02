@@ -7,7 +7,7 @@ tags:
   - sap
   - http
   - api
-  - community
+  - sap-community
 ---
 REST (which stands for REpresentational State Transfer) is an architectural style that is informed to a large extent by, but theoretically not limited to, the HTTP application protocol (yes, _application_ protocol, not transport protocol!). As an approach to application integration, REST has often been compared to its 'rival' Service Orientated Architecture (SOA), although a RESTful approach to integration architecture known as Resource Orientated Architecture (ROA) might be a better comparison fit.
 

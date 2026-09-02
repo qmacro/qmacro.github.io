@@ -3,9 +3,9 @@ title: Reaching Out
 date: 2014-03-02
 description: Examining SAP's journey of reaching out to the wider developer community over four decades.
 tags:
-  - community
   - sap
   - opinion
+  - sap-community
 ---
 As a technology company SAP is over 4 decades old. Over that time it's innovated at a tremendous pace, and along the way it has abstracted, invented and reinvented technologies like no other company I know. In parallel with this, there's been an incredible growth in community, business and technical. In this post I want to focus on the technical.
 

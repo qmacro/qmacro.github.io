@@ -6,7 +6,6 @@ tags:
   - openui5
   - fiori
   - opinion
-  - community
 ---
 
 SAP's UI5 toolkit, the main technical foundation for SAP's User Experience (UX) revolution, has reached a milestone release. While 1.30 is just another step up from the previous public release of 1.28, for me it represents a transition towards a maturity that is built upon a solid foundation. In this post, I pick out five innovations that show why.

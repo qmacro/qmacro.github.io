@@ -4,7 +4,6 @@ title: Becoming an SAP Mentor Alumnus
 description: Reflecting on becoming an SAP Mentor Alumnus after years of community involvement.
 tags:
   - sap
-  - community
   - career
   - personal
 ---

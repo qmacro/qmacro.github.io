@@ -5,8 +5,8 @@ description: Telling the story of how I went from reading Classics at university
 tags:
   - career
   - sap
-  - community
   - personal
+  - sap-community
 ---
 *Here's my story of how I went from reading Classics at university to
 becoming a Developer Advocate at SAP.*

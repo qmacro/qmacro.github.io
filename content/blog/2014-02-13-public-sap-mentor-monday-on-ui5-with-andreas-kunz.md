@@ -5,8 +5,8 @@ description: Announcing a public SAP Mentor Monday session on UI5 with Andreas K
 tags:
   - openui5
   - sap
-  - community
   - talk
+  - sap-community
 ---
 On Monday 24 March 2014 we will have a public SAP Mentor Monday session on the subject of UI5.
 

@@ -4,7 +4,6 @@ title: SDN Meets Labs
 description: Rain. Lots of it. And I drove through it all this morning, all the way down the A61, to get to SAP University in Rot, near Walldorf.
 tags:
   - sap
-  - community
   - conference
 ---
 

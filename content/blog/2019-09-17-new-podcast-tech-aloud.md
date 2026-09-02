@@ -4,7 +4,6 @@ title: New podcast - Tech Aloud
 description: Introducing my new Tech Aloud podcast where I read tech articles and blog posts aloud.
 tags:
   - podcast
-  - community
   - learning
 ---
 *I've created a new podcast called "Tech Aloud", where I read out loud tech articles and blog posts, so you can consume them while on the go.*

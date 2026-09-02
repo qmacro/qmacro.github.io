@@ -6,7 +6,7 @@ tags:
   - fiori
   - sap
   - talk
-  - community
+  - sap-community
 ---
 Yesterday Brenton O'Callaghan and I hosted a public webinar "Understanding SAP Fiori", which was well attended and also a lot of fun to do. There was never going to be enough time to cover all the stuff we wanted to, so today we sat down together and followed up on what we covered in the webinar.
 

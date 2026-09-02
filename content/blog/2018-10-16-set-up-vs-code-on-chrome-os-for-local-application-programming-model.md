@@ -6,7 +6,7 @@ tags:
   - cap
   - tools
   - developer-experience
-  - community
+  - sap-community
 ---
 
 (See the [Updates](#updates) section end of this post for a couple of

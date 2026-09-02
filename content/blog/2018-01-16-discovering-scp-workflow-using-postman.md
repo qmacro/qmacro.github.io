@@ -8,7 +8,7 @@ tags:
   - api
   - discovering-scp-workflow
   - tools
-  - community
+  - sap-community
 ---
 
 Previous post in this series: [Discovering SCP Workflow - Instance

@@ -7,7 +7,6 @@ tags:
   - debugging
   - openui5
   - books
-  - community
 ---
 
 In the SAP Fiori world, there's a mantra which generally goes like this:

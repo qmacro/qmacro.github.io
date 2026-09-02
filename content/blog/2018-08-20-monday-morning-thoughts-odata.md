@@ -7,7 +7,7 @@ tags:
   - odata
   - rss
   - opinion
-  - community
+  - sap-community
 ---
 
 🔊 This post is also [available in audio

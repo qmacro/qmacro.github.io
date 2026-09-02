@@ -4,7 +4,6 @@ title: CodeClub Thoughts
 description: Sharing thoughts and experiences from leading a CodeClub at my local primary school.
 tags:
   - education
-  - community
   - opinion
 ---
 

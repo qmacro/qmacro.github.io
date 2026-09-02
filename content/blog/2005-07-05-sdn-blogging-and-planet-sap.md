@@ -5,7 +5,6 @@ description: In May I was approached by a chap at SAP in Walldorf who wanted to 
 tags:
   - sap
   - blogging
-  - community
 ---
 
 One of the questions was “**Why do you write on two blogs?**“. I wrote a longish reply, and thought it was worth putting up here (mostly because he didn’t use any of it ;-)

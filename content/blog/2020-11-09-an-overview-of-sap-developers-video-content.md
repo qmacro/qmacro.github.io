@@ -4,8 +4,8 @@ date: 2020-11-09
 description: Providing an overview of the wealth of video content for SAP developers on the YouTube channel.
 tags:
   - sap
-  - community
   - hands-on-sap-dev
+  - sap-community
 ---
 *There's a wealth of video content for SAP developers on the SAP
 Developers YouTube channel. Find out what it is, and how to navigate

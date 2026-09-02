@@ -6,7 +6,7 @@ tags:
   - btp
   - cli
   - tools
-  - community
+  - sap-community
 ---
 *Start exploring with the btp CLI by logging in, then finding and
 selecting a subaccount for subsequent activities.*

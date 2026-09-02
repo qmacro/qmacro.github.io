@@ -6,7 +6,6 @@ tags:
   - sap
   - learning
   - fiori
-  - community
 ---
 
 

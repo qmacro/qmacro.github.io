@@ -6,7 +6,7 @@ tags:
   - openui5
   - fiori
   - sap
-  - community
+  - sap-community
 ---
 I [rewrote the mobile dev course sample app from W3U3](/blog/posts/2013/10/16/mobile-dev-course-w3u3-rewrite-intro/). Then I created [a new branch 'xmlviews' in the repo on Github](https://github.com/qmacro/w3u3_redonebasic/tree/xmlviews) and rebuilt the views in XML (they were originally in JavaScript). This post talks about XML views, and touches on some points that might be useful for you if you're looking to build SAPUI5 apps with XML views yourself. See the links at the bottom of the [opening post](https://blogs.sap.com/?p=94915) of this series to get to explanations for the other areas.
 

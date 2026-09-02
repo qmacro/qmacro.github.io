@@ -6,7 +6,6 @@ tags:
   - fiori
   - sap
   - opinion
-  - community
 ---
 
 As SAP Fiori matures as a concept, as a series of apps and as SAP's approach to UX across all its products, so grow the number of misconceptions about what it is, and what it isn't. In this post, I address the top ten misconceptions and misunderstandings about what has been called [a state of mind](/blog/posts/2015/03/02/can-i-build-a-fiori-app-yes-you-can!/).

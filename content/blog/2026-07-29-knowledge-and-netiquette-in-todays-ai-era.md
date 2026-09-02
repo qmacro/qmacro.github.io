@@ -4,7 +4,6 @@ date: 2026-07-29
 description: What I took from a couple of great podcast episodes I listened to this morning.
 tags:
   - ai
-  - community
   - opinion
   - email
 ---

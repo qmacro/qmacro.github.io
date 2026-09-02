@@ -9,6 +9,7 @@ tags:
   - rss
   - talk
   - oscon
+  - sap-community
 ---
 
 We got a pretty good attendance at our [talk on SAP R/3 at

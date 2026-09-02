@@ -3,7 +3,6 @@ date: 2002-05-01
 title: community(disagreement + debate) = inspiration
 description: The debate between SOAP and REST.
 tags:
-  - community
   - opinion
   - web
 ---

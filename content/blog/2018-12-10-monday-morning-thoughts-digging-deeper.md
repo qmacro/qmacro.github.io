@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - learning
   - opinion
-  - community
+  - sap-community
 ---
 
 Last week I found myself installing a Vim plugin in order to use a key

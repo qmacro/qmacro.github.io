@@ -8,7 +8,6 @@ tags:
   - fiori
   - ai
   - conference
-  - community
 ---
 I'm delivering and / or involved in various in-person talks and workshops over the next few months, here's a quick breakdown.
 

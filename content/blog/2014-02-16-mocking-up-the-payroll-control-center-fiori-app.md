@@ -6,7 +6,7 @@ tags:
   - fiori
   - openui5
   - sap
-  - community
+  - sap-community
 ---
 Following on from a great debate about Fiori and Freeori that stemmed from a [post by John Appleby](https://web.archive.org/web/20240118020008/http://diginomica.com/2014/02/05/sap-fiori-freeori/) there were some comments about HCM app renewals. Latterly John Moy [pointed out](https://web.archive.org/web/20240118020008/http://diginomica.com/2014/02/05/sap-fiori-freeori/?hubRefSrc=permalink#lf_comment=138216341) a post [Improve payroll data validation with SAP Payroll control center add-on](https://web.archive.org/web/20240118020008/https://blogs.sap.com/?p=101981) where some very Fiori-like UIs were being shown.
 

@@ -6,7 +6,6 @@ tags:
   - sap
   - conference
   - javascript
-  - community
   - teched
 ---
 If you're at [SAP TechEd 2023 in Bengaluru, India](https://www.sap.com/india/events/teched.html) you may have seen a little Easter Egg in the form of some Node.js code.

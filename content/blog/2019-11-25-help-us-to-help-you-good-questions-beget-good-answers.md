@@ -3,8 +3,8 @@ title: "Help us to help you - good questions beget good answers"
 date: 2019-11-25
 description: Suggesting key aspects of composing good questions to help community members provide better answers.
 tags:
-  - community
   - opinion
+  - sap-community
 ---
 *Composing good questions is important and will help your fellow
 community members answer them more easily. This post suggests some key

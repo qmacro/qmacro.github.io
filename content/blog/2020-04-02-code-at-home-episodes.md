@@ -3,7 +3,6 @@ date: 2020-04-02
 title: Code at Home episodes
 description: A summary of the Code at Home episodes streamed live and available as recordings on YouTube.
 tags:
-  - community
   - learning
   - sap
 ---

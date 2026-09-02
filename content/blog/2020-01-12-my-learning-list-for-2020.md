@@ -4,8 +4,8 @@ date: 2020-01-12
 description: Sharing my learning aspirations for 2020 and reflecting on the previous year.
 tags:
   - learning
-  - community
   - personal
+  - sap-community
 ---
 *Turning the page into a new year is often useful to reflect on the
 previous period and look forward to the next one. I usually don't set

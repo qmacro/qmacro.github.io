@@ -6,7 +6,7 @@ tags:
   - openui5
   - fiori
   - sap
-  - community
+  - sap-community
 ---
 I [rewrote the mobile dev course sample app from W3U3](/blog/posts/2013/10/16/mobile-dev-course-w3u3-rewrite-intro/). Then I created a [new branch 'xmlviews' in the repo on Github](https://github.com/qmacro/w3u3_redonebasic/tree/xmlviews) and rebuilt the views in XML. I then took a first look at XML views in general. Now this post looks at the specific XML views that I built in the W3U3 rewrite. See the links at the bottom of the [opening post](/blog/posts/2013/11/19/mobile-dev-course-w3u3-rewrite-xml-views-an-intro/) of this series to get to explanations for the other areas.
 

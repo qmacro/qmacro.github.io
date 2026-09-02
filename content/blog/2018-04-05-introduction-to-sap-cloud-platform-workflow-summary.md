@@ -5,8 +5,8 @@ description: Yesterday I gave a webcast for ASUG entitled "Introduction to SAP C
 tags:
   - btp
   - workflow
-  - community
   - talk
+  - sap-community
 ---
 
 The SAP Cloud Platform Workflow service is a relatively new service (it

@@ -6,7 +6,7 @@ tags:
   - openui5
   - fiori
   - sap
-  - community
+  - sap-community
 ---
 I [rewrote the mobile dev course sample app from W3U3](/blog/posts/2013/10/16/mobile-dev-course-w3u3-rewrite-intro/). This post explains what I changed in the index.html file, and why. It also takes a look at the general app structure of directories and files.
 

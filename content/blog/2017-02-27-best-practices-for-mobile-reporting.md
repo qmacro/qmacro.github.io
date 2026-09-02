@@ -4,7 +4,6 @@ date: 2017-02-27
 description: To put together a mobile reporting solution, there's a lot to consider. In this post, we show you how to start off and remain on the right track to deliver a solution that really works for your users.
 tags:
   - sap
-  - community
   - fiori
 ---
 

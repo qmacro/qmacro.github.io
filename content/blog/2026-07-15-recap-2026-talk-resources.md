@@ -6,7 +6,6 @@ tags:
   - cap
   - talk
   - conference
-  - community
   - recap
 ---
 

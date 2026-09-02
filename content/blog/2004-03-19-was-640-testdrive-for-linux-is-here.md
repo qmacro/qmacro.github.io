@@ -5,7 +5,7 @@ description: Phew. What a day yesterday at the world’s biggest IT fair.
 tags:
   - sap
   - linux
-  - community
+  - sap-community
 ---
 I arrived by train and joined the masses along the CeBIT skywalk to enter Aladdin's cave.
 

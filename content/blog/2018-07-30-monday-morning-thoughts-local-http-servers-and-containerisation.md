@@ -7,8 +7,8 @@ tags:
   - docker
   - http
   - opinion
-  - community
   - containers
+  - sap-community
 ---
 
 One of the periodicals I eagerly anticipated and regularly devoured

@@ -4,8 +4,8 @@ date: 2009-08-29
 description: Using image-based techniques to deal with content being stolen from SDN.
 tags:
   - sap
-  - community
   - web
+  - sap-community
 ---
 I’m sure you’re all aware of the recent #blogtheft issue – where some rogue has been lifting content lock stock and barrel from here and reproducing it – sans author name – on their website www.sap-abap4.com. [Stop Thief – It’s #blogtheft!](https://blogs.sap.com/2009/08/25/stop-thief-its-blogtheft/) and [Stolen Content](https://blogs.sap.com/2009/08/28/stolen-content/) have blogged about it here already.
 

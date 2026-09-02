@@ -4,7 +4,6 @@ title: Let's learn to "Code at Home"
 permalink: /blog/posts/2020/03/24/code-at-home/
 description: Information on the Code at Home initiative, what it is and what you need to join in.
 tags:
-  - community
   - learning
   - sap
 ---

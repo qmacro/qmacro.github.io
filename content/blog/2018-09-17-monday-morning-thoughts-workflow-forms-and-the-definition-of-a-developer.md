@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - workflow
   - opinion
-  - community
+  - sap-community
 ---
 
 ## How do you define a developer?

@@ -6,7 +6,6 @@ tags:
   - openui5
   - fiori
   - sap
-  - community
   - talk
 ---
 

@@ -4,7 +4,6 @@ date: 2016-09-27
 description: Reporting on the community and collaboration at SAP Inside Track Manchester 2016.
 tags:
   - sap
-  - community
   - conference
   - opinion
   - inside-track

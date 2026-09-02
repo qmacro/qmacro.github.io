@@ -7,7 +7,6 @@ tags:
   - openui5
   - codejam
   - this-week-in-fiori
-  - community
 ---
 
 

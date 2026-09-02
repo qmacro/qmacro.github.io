@@ -4,8 +4,8 @@ date: 2004-07-16
 description: Well, 24 hours (almost to the minute) have passed since I got off the train at Wiesloch-Walldorf station yesterday.
 tags:
   - sap
-  - community
   - conference
+  - sap-community
 ---
 I’ve just got on the train again to go home. Yesterday was quite a day. There was a really good turnout for the SDN meeting; some people from SAP came and went as their work and meeting schedules allowed, but at the peak there must have been around 20 people. The ‘outsiders’ (non-SAP people) there included Lutz Morrien, Klaus Meffert, Matthias Zeller and me.
 

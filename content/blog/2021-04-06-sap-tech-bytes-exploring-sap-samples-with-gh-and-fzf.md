@@ -6,8 +6,8 @@ tags:
   - github
   - fzf
   - tools
-  - community
   - sap
+  - sap-community
 ---
 *Discover repositories that might be useful for you by exploring them
 from the command line with a couple of powerful tools.*

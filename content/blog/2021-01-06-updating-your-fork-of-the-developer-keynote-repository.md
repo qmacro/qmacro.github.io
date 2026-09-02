@@ -5,8 +5,8 @@ description: Showing how to update your fork of the SAP TechEd Developer Keynote
 tags:
   - git
   - github
-  - community
   - sap
+  - sap-community
 ---
 *If you've forked the SAP TechEd Developer Keynote repository on GitHub
 recently, there have been some additions and improvements. This post

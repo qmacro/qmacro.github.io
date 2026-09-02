@@ -5,7 +5,7 @@ description: On how our work can directly and even indirectly influence those th
 tags:
   - monday-morning-thoughts
   - opinion
-  - community
+  - sap-community
 ---
 
 Last week's I attended SAP TechEd 2018 in Bangalore. Most of the time I

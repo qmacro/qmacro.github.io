@@ -6,7 +6,6 @@ tags:
   - sap
   - odata
   - tools
-  - community
 ---
 
 

@@ -7,7 +7,6 @@ tags:
   - fiori
   - web
   - opinion
-  - community
 ---
 
 With the cloud, not only are apps and systems going virtual, but also developer workflows. It might seem obvious in hindsight, but a Web-only developer workflow is possible right now, and it works. Read on to find out what this means for you.

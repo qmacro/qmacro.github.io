@@ -4,8 +4,8 @@ date: 2004-07-15
 description: Sharing pictures from the SDN Meetup in Walldorf.
 tags:
   - sap
-  - community
   - conference
+  - sap-community
 ---
 
 I arrived in Walldorf this morning and was met and looked after very

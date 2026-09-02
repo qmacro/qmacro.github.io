@@ -5,8 +5,8 @@ description: Providing an introduction to my Tech Aloud podcast and the themes e
 tags:
   - podcast
   - cap
-  - community
   - learning
+  - sap-community
 ---
 *I started a new podcast called Tech Aloud, where I read aloud blog
 posts and articles so you can consume them on the go. There's no

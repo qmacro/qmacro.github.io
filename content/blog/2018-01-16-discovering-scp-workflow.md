@@ -7,7 +7,6 @@ tags:
   - workflow
   - discovering-scp-workflow
   - seriespost
-  - community
 ---
 
 The SAP Cloud Platform Workflow service is a key component in the next

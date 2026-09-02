@@ -7,8 +7,8 @@ tags:
   - docker
   - computing-history
   - opinion
-  - community
   - containers
+  - sap-community
 ---
 
 Another Monday morning is upon us, and it's a public holiday here in

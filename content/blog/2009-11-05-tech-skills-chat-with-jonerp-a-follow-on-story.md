@@ -4,9 +4,9 @@ date: 2009-11-05
 description: How I was inspired to read and learn more.
 tags:
   - sap
-  - community
   - learning
   - career
+  - sap-community
 ---
 
 Sitting in a traffic jam on the A34 this week, twice, I got the

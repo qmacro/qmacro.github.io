@@ -5,7 +5,7 @@ description: Announcing the GA of SAP Build Code and the limited-time opportunit
 tags:
   - sap
   - ai
-  - community
+  - sap-community
 ---
 TL;DR - SAP Build Code is GA, and for a limited time (1 month, starting now) you can test drive the generative AI features of Joule in SAP Build Code.
 

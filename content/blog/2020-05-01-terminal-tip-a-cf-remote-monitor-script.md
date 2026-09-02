@@ -7,7 +7,7 @@ tags:
   - cloud-foundry
   - tools
   - til
-  - community
+  - sap-community
 ---
 In the previous terminal tip ([remotely monitor a CF
 deployment](/blog/posts/2020/04/24/terminal-tip:-remotely-monitor-a-cf-deployment/))

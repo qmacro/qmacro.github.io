@@ -4,8 +4,8 @@ date: 2003-07-29
 description: SAP are running an Infotag on the Web Application Server in early September.
 tags:
   - sap
-  - community
   - abap
+  - sap-community
 ---
 It’s in Ratingen (Duesseldorf), just around the corner – literally, in fact – from where I used to hack on R/2 at Mitsubishi.
 

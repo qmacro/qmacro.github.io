@@ -5,7 +5,6 @@ description: Interviewing SAP's Aiaz Kazi on the developer renaissance at SAP Te
 tags:
   - sap
   - conference
-  - community
   - opinion
 ---
 

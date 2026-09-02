@@ -4,10 +4,10 @@ date: 2021-11-15
 description: Inviting people to walk, run or roll 5K during SAP TechEd week and share pictures.
 tags:
   - sap
-  - community
   - running
   - conference
   - teched
+  - sap-community
 ---
 Roll, walk or run a 5K distance during this SAP TechEd week (Nov 15-19)
 and share a picture with us here! Read more in this blog

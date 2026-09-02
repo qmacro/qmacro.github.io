@@ -6,7 +6,6 @@ tags:
   - codejam
   - cap
   - service-integration
-  - community
 ---
 
 I'm on the train back to Duesseldorf on an early Saturday morning, after another successful outing of our SAP CodeJam content that takes participants through the ins and outs of [service integration with CAP](https://github.com/SAP-samples/cap-service-integration-codejam/) (the SAP Cloud Application Programming Model). 

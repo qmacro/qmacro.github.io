@@ -7,7 +7,7 @@ tags:
   - workflow
   - btp
   - api
-  - community
+  - sap-community
 ---
 
 I've written about the SAP Cloud Platform (SCP) Workflow service

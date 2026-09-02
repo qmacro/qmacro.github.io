@@ -5,7 +5,7 @@ description: Explaining the migration of SAP Node.js packages from the SAP NPM r
 tags:
   - npm
   - sap
-  - community
+  - sap-community
 ---
 *This post tells you what you need to know - and do - about the recent
 migration of SAP Node.js packages to the default registry at

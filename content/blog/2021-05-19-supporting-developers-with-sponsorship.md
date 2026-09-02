@@ -3,7 +3,6 @@ date: 2021-05-19
 title: Supporting developers with sponsorship
 description: Using the sponsors facility on GitHub to support developers whose work I value.
 tags:
-  - community
   - open-source
   - opinion
 ---

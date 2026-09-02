@@ -8,7 +8,7 @@ tags:
   - jq
   - json
   - shell
-  - community
+  - sap-community
 ---
 *In this second part of a 2-part blog post series on getting BTP
 resource GUIDs with the btp CLI, we look at how the CLI supports JSON

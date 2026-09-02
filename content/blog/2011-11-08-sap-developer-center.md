@@ -5,7 +5,6 @@ description: Exploring the SAP Developer Center booth at SAP TechEd Madrid 2011.
 tags:
   - sap
   - odata
-  - community
   - conference
 ---
 

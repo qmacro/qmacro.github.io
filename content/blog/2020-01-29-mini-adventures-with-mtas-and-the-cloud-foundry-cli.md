@@ -7,7 +7,7 @@ tags:
   - shell
   - btp
   - cli
-  - community
+  - sap-community
 ---
 *A few more small adventures using the cf command line client, as well
 as some shell pipeline goodness and that nifty tip from Marius Obert

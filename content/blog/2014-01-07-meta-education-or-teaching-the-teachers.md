@@ -5,7 +5,6 @@ description: Exploring meta education and the importance of teaching teachers co
 tags:
   - education
   - opinion
-  - community
 ---
 
 I'm currently involved in a number of initiatives relating to [our computational future](/blog/posts/2013/02/14/our-computational-future/), and am passionate about teaching coding and data skills to children (see below for some links).

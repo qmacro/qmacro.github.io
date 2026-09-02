@@ -5,8 +5,8 @@ description: Gathering all the information about the SAP TechEd 2020 Developer K
 tags:
   - sap
   - conference
-  - community
   - teched
+  - sap-community
 ---
 *All the information about the SAP TechEd 2020 Developer Keynote and
 related resources, in a single place for you.*

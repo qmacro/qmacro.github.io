@@ -5,7 +5,6 @@ description: Building a SAPUI5-powered forum finder to help locate the old SDN f
 tags:
   - openui5
   - sap
-  - community
   - tools
 ---
 

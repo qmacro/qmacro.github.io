@@ -4,7 +4,6 @@ title: Wisdom, diplomacy, or serendipity?
 description: On the architectural style(s) of allcosuming.net's API.
 tags:
   - opinion
-  - community
   - web
 ---
 

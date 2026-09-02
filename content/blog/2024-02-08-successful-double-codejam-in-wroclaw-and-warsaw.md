@@ -5,7 +5,6 @@ description: Reporting on two successful SAP CodeJams in Wroclaw and Warsaw, Pol
 tags:
   - codejam
   - cap
-  - community
 ---
 I'm at Warsaw airport on my journey home after a great few days in Poland. My first flight is already delayed so I have a bit of time at the gate to write up some notes.
 

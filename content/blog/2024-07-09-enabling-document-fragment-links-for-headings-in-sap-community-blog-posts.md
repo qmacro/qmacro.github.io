@@ -4,7 +4,6 @@ date: 2024-07-09
 description: Creating a bookmarklet to enable document fragment links for headings in SAP Community blog posts.
 tags:
   - javascript
-  - community
   - tools
   - web
 ---

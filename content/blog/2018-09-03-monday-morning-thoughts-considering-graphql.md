@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - api
   - opinion
-  - community
+  - sap-community
 ---
 
 **Update: This post is now available in audio format too - see [the

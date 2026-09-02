@@ -6,7 +6,7 @@ tags:
   - btp
   - cli
   - tools
-  - community
+  - sap-community
 ---
 *Understand and manage the btp CLI client configuration.*
 

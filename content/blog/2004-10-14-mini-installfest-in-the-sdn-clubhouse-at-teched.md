@@ -5,9 +5,9 @@ description: Running a mini installfest with the latest WAS 6.40 demo system on 
 tags:
   - sap
   - conference
-  - community
   - open-source
   - teched
+  - sap-community
 ---
 Piers and I got hold of the latest WAS 6.40 demo system (NW4) from the [LinuxLab](http://www.sap.com/linux) guys’ stand here at SAP TechEd. It contains ABAP service pack 3 and Java/J2EE service pack 7.
 

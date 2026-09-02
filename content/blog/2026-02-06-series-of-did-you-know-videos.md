@@ -4,7 +4,6 @@ date: 2026-02-06
 description: Here's a collection of pointers to short "Did You Know" videos from the Developer Advocates, highlighting small but interesting and useful aspects of various SAP tech tools, frameworks and products.
 tags:
   - sap
-  - community
   - seriespost
   - hands-on-sap-dev
 ---

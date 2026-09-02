@@ -4,10 +4,10 @@ date: 2020-12-01
 description: Organising a virtual 5K fun run and walk during SAP TechEd 2020.
 tags:
   - sap
-  - community
   - running
   - conference
   - teched
+  - sap-community
 ---
 *Let's get together virtually over the course of the SAP TechEd 2020
 virtual event and share our 5K walking or running experiences.*

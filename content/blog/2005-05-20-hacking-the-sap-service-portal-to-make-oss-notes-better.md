@@ -4,9 +4,9 @@ date: 2005-05-20
 description: Deploying Greasemonkey to fix a long standing issue with OSS Notes at SAP.
 tags:
   - sap
-  - community
   - tools
   - javascript
+  - sap-community
 ---
 
 Ahh, [OSS notes](http://service.sap.com/notes) - a topic close to my heart:

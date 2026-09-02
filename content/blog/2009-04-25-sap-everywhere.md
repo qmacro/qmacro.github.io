@@ -4,7 +4,6 @@ title: SAP everywhere!
 description: Noticing how SAP has become ubiquitous in bookstores and beyond since the early days.
 tags:
   - sap
-  - community
 ---
 
 

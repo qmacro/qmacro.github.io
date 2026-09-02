@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - cloud
   - opinion
-  - community
+  - sap-community
 ---
 
 Continuing on from my earlier [random

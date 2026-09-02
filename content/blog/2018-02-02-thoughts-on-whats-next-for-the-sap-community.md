@@ -4,7 +4,6 @@ title: Thoughts on what's next for the SAP Community
 description: My thoughts on the SAP community (small 'c') and the SAP Community platform.
 tags:
   - sap
-  - community
   - opinion
 ---
 

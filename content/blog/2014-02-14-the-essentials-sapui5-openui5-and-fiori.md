@@ -7,7 +7,6 @@ tags:
   - fiori
   - sap
   - opinion
-  - community
 ---
 
 The SAP User Interface (UI) and User Experience (UX) revolution is truly underway. There are some tactical solutions out there, but the chief strategic solution that SAP is basing its UI/UX future on is UI5.

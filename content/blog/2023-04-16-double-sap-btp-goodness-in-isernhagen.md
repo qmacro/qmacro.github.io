@@ -5,7 +5,6 @@ description: Reporting on a great double BTP event at Inwerken AG in Isernhagen 
 tags:
   - codejam
   - btp
-  - community
 ---
 I'm on my way home from a great double event that took place this week at [Inwerken AG](https://www.inwerken.de/) in Isernhagen, just outside of Hannover. The overarching theme was the SAP Business Technology Platform.
 

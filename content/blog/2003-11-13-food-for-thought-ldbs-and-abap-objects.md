@@ -5,8 +5,8 @@ description: Musing on the relationship between Logical Databases and ABAP Objec
 tags:
   - sap
   - abap
-  - community
   - opinion
+  - sap-community
 ---
 
 During part of this week I've been fighting with an old adversary,[output

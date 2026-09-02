@@ -7,7 +7,7 @@ tags:
   - cloud-foundry
   - tools
   - til
-  - community
+  - sap-community
 ---
 In today's [HandsOnSAPDev](https://bit.ly/handsonsapdev) live stream,
 [Ep.65](http://bit.ly/handsonsapdev#ep65), we built the SAP Cloud

@@ -6,7 +6,7 @@ tags:
   - btp
   - workflow
   - discovering-scp-workflow
-  - community
+  - sap-community
 ---
 
 Previous post in this series: [Discovering SCP Workflow --

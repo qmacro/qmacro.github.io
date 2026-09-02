@@ -5,7 +5,6 @@ description: It’s the end of the week that saw the SDN Meets Labs down in Wall
 tags:
   - sap
   - conference
-  - community
   - opinion
 ---
 

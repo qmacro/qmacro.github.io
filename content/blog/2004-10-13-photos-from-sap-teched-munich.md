@@ -5,8 +5,8 @@ description: The third weblog in two days … what’s going on? Well, Mark is a
 tags:
   - sap
   - conference
-  - community
   - teched
+  - sap-community
 ---
 
 There’s a [group photo pool on Flickr for SAP TechEd](http://www.flickr.com/groups/sapteched/) this year; I’ve just uploaded a load of photos (of questionable quality – sorry, I only have my cameraphone). I’m sure you’ll see how hard we’re all working here. Ahem.

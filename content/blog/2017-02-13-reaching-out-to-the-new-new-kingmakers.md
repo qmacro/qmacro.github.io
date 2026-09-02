@@ -3,7 +3,6 @@ title: Reaching out to the new new kingmakers
 date: 2017-02-13
 description: Sharing insights from the SAP Developer Advisory Board meeting on SAP's commitment to connecting with developers.
 tags:
-  - community
   - opinion
   - learning
 ---

@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - blogging
   - opinion
-  - community
+  - sap-community
 ---
 
 It's a bank holiday Monday today in England, and so of course it's

@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - cap
   - opinion
-  - community
+  - sap-community
 ---
 
 Over the past week, three worlds have collided, in a most pleasing way.

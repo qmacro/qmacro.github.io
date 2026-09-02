@@ -6,7 +6,6 @@ tags:
   - codejam
   - cap
   - service-integration
-  - community
 ---
 Yesterday I ran an SAP CodeJam in Utrecht, in The Netherlands, on "Service Integration with the SAP Cloud Application Programming Model" (CAP), and I think it's fair to say it was a great success.
 

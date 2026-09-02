@@ -4,7 +4,6 @@ title: How I got involved in the SAP community
 description: Summarising how I got involved in the SAP community from the earliest days.
 tags:
   - sap
-  - community
   - career
   - personal
 ---

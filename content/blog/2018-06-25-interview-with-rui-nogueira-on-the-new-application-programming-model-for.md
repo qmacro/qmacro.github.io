@@ -6,8 +6,8 @@ tags:
   - cap
   - sap
   - btp
-  - community
   - interview
+  - sap-community
 ---
 
 Last week I was in Walldorf, and I managed to catch up with an old

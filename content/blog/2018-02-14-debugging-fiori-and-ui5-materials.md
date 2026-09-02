@@ -7,7 +7,7 @@ tags:
   - openui5
   - debugging
   - learning
-  - community
+  - sap-community
 ---
 
 There's a new openSAP course starting today: [Understanding SAP Fiori

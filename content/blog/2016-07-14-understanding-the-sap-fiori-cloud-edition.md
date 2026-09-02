@@ -7,7 +7,6 @@ tags:
   - sap
   - btp
   - opinion
-  - community
 ---
 
 The SAP Fiori Cloud Edition is upon us. What is it? How does it work, and what benefits does it bring? Find out answers to these questions, and more, in this overview of SAP's offering of Fiori in the cloud.

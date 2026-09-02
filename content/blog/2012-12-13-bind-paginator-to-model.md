@@ -5,7 +5,7 @@ description: Experimenting with binding a SAPUI5 Paginator control to a model fo
 tags:
   - openui5
   - sap
-  - community
+  - sap-community
 ---
 
 I was wondering if anyone had tried binding a

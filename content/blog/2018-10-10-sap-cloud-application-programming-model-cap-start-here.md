@@ -6,8 +6,8 @@ tags:
   - cap
   - sap
   - btp
-  - community
   - learning
+  - sap-community
 ---
 
 *Note: While this blog post was originally published in 2018, it's been

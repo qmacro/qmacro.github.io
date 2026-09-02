@@ -3,7 +3,6 @@ date: 2021-05-20
 title: Equality in tech
 description: A short statement on supporting equality in tech.
 tags:
-  - community
   - opinion
 ---
 This should go without saying, but alas, we're not in an ideal world. Equality in tech should be the backbone, the basis, upon which we run our industry. But it's not.

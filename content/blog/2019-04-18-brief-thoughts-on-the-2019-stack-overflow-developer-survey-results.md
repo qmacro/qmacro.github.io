@@ -3,7 +3,6 @@ date: 2019-04-18
 title: First thoughts on the 2019 Stack Overflow Developer Survey results
 description: Sharing initial observations on the 2019 Stack Overflow Developer Survey results.
 tags:
-  - community
   - opinion
 ---
 

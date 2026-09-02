@@ -5,7 +5,6 @@ description: Releasing a downloadable ebook version of my 30 Days of UI5 blog po
 tags:
   - openui5
   - fiori
-  - community
 ---
 
 Last month saw the milestone release of 1.30 of SAP's UI5 toolkit, the engine

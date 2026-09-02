@@ -4,9 +4,9 @@ date: 2006-02-07
 description: Updating my OssNoteFix Greasemonkey script to work with newer versions of Greasemonkey and Firefox.
 tags:
   - sap
-  - community
   - javascript
   - tools
+  - sap-community
 ---
 Last year, I got so frustrated at the pain of using the SAP Service Marketplace, and particularly OSS notes, that I got up and did something about it – I wrote ‘OssNoteFix’, a Greasemonkey script that:
 

@@ -7,7 +7,7 @@ tags:
   - cli
   - shell
   - tools
-  - community
+  - sap-community
 ---
 *Learn how to use the btp CLI to determine resource GUIDs in your global
 account. This post is part 1, covering the `bgu` mechanism.*

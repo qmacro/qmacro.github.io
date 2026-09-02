@@ -5,7 +5,6 @@ description: Explaining why Devtoberfest is a great way for developers to prepar
 tags:
   - sap
   - conference
-  - community
   - learning
   - devtoberfest
   - teched

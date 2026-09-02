@@ -5,9 +5,9 @@ description: Analysing SAP's position on open source and writing an open letter 
 tags:
   - sap
   - open-source
-  - community
   - opinion
   - abap
+  - sap-community
 ---
 
 Well this has certainly been an interesting few days in the intersecting

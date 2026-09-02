@@ -5,7 +5,6 @@ description: Reflecting on my experience speaking at the inaugural SAP Architect
 tags:
   - sap
   - conference
-  - community
   - opinion
 ---
 

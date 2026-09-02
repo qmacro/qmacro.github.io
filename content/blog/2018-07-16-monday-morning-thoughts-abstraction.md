@@ -6,7 +6,7 @@ tags:
   - monday-morning-thoughts
   - architecture
   - opinion
-  - community
+  - sap-community
 ---
 
 Last week I was chatting to some old friends. One of them had just

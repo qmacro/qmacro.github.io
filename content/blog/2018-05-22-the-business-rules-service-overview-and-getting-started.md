@@ -5,7 +5,7 @@ description: Some resources to help you get started with this service on SCP.
 tags:
   - btp
   - sap
-  - community
+  - sap-community
 ---
 The Business Rules service is available on the SAP Cloud Platform (SCP) and is
 categorised within the "Integration" section, along with other services such as

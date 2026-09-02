@@ -4,7 +4,6 @@ title: SAP CodeTalk sessions
 description: Listing my SAP CodeTalk sessions with Ian Thain over the years.
 tags:
   - sap
-  - community
   - talk
 ---
 

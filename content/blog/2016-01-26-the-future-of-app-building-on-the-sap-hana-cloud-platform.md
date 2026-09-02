@@ -7,7 +7,6 @@ tags:
   - btp
   - fiori
   - opinion
-  - community
 ---
 
 The SAP HANA Cloud Platform, or HCP for short, is multi-faceted, and you need to realise that now. Here's my take on one particular facet. Read on to find out what that is, and for a link to an episode of The HANA Effect podcast where I discuss this and more.

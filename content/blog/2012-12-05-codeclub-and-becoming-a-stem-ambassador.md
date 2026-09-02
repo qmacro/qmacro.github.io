@@ -5,7 +5,6 @@ description: Volunteering with CodeClub and becoming a STEM Ambassador to help k
 tags:
   - education
   - raspberry-pi
-  - community
 ---
 
 

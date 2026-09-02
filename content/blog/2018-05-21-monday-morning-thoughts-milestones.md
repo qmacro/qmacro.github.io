@@ -5,7 +5,7 @@ description: I look back at changes and developments that I consider milestones 
 tags:
   - monday-morning-thoughts
   - opinion
-  - community
+  - sap-community
 ---
 
 ![Image result for manchester

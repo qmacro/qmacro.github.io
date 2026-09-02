@@ -6,7 +6,6 @@ tags:
   - fiori
   - sap
   - running
-  - community
 ---
 
 I'm a hobby runner, and love stats. I've been experimenting with using the SAP Fiori Launchpad to surface some key performance indicators - literally! Read on to find out how I went about it, and how the SAP Fiori Launchpad could do something similar for you.

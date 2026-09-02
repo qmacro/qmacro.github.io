@@ -4,7 +4,6 @@ date: 2023-12-20
 description: Moving off Twitter at the end of 2023 and explaining the reasons for the switch to Mastodon.
 tags:
   - web
-  - community
   - opinion
 ---
 I'm moving off X (Twitter) at the end of this year. I've been thinking about doing it for some time, and while it's fairly arbitrary, I decided that the end of 2023 would be the end of my activities on that platform. 

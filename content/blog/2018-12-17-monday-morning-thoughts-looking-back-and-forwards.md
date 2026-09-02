@@ -5,8 +5,8 @@ description: I look back on the posts in this series, reflect upon the journey w
 tags:
   - monday-morning-thoughts
   - opinion
-  - community
   - personal
+  - sap-community
 ---
 
 The holiday season is pretty much upon us, and for many it's a time for bringing things to a close, with a view to getting some rest and making mental room for what's to come next year. So it is with me and this series.

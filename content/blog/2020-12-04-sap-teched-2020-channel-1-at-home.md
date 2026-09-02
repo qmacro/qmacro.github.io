@@ -5,8 +5,8 @@ description: Watching all the SAP TechEd 2020 Channel 1 content from the comfort
 tags:
   - sap
   - conference
-  - community
   - teched
+  - sap-community
 ---
 *I'll be watching all the Channel 1 content as it happens from the
 comfort of my TV - as well as interacting with individual sessions on my

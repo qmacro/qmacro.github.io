@@ -6,7 +6,7 @@ tags:
   - btp
   - cli
   - tools
-  - community
+  - sap-community
 ---
 *Get the btp CLI to help you with command autocompletion.*
 

@@ -6,7 +6,7 @@ tags:
   - openui5
   - fiori
   - sap
-  - community
+  - sap-community
 ---
 [tl;dr](http://en.wikipedia.org/wiki/Wikipedia:Too_long;_didn't_read) - the Github repo "[w3u3_redonebasic](https://github.com/qmacro/w3u3_redonebasic)" is a simple re-write of one of the open.sap.com mobile course sample SAPUI5 apps to fix some fundamental issues.
 
