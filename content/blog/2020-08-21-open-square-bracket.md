@@ -1,14 +1,13 @@
 ---
 date: 2020-08-21
 title: The open square bracket [ is an executable
+description: In a shell script, the open square bracket symbol is not syntax but an executable.
 tags:
   - shell
   - linux
   - learning
   - til
 ---
-
-_In a shell script, the `[` symbol is not syntax, it's an executable_
 
 In my [live stream episode](https://www.youtube.com/watch?v=Ct-uiu3RRZs) this morning I added to a function so that it looked like this:
 

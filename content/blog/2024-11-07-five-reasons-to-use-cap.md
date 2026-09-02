@@ -1,14 +1,14 @@
 ---
 title: Five reasons to use CAP
 date: 2024-11-07
+description: Five compelling reasons to embrace SAP's Cloud Application Programming Model, from its framework-first philosophy to its agnostic design principles.
 tags:
   - cap
   - talk
   - opinion
   - architecture
 ---
-
-_This is now available in audio format on the [Tech Aloud podcast][34]: [Five reasons to use CAP - DJ Adams - 07 Nov 2024][35]._
+(This is now also available in audio format on the [Tech Aloud podcast](/blog/posts/2019/09/17/new-podcast-tech-aloud/): [Five reasons to use CAP - DJ Adams - 07 Nov 2024](https://creators.spotify.com/pod/show/tech-aloud/episodes/Five-reasons-to-use-CAP---DJ-Adams---07-Nov-2024-e2r2lth).)
 
 The SAP Cloud Application Programming Model (CAP) is an incredible feat of design and engineering. Not only that, but with respect to the core philosophy for SAP's ERP systems -- how they are to remain maintainable and upgradeable ("keep the core clean"), and how customers, partners and individual developers can add value by extending the business application functionality delivered as standard -- CAP is the goto, key strategic framework, along with its sibling the RESTful Application Programming Model (RAP), that has emerged triumphant, celebrated and dare I say "blessed" by SAP as what we should be using to work with and enhance what is delivered with SAP S/4HANA and more.
 
@@ -253,5 +253,3 @@ But I've run out of time and space, so I'll stop here. I hope this has resonated
 [31]: https://community.sap.com/t5/technology-blogs-by-sap/what-s-new-in-sap-cloud-application-programming-model-sap-teched-2023/ba-p/13576447
 [32]: https://www.sap.com/events/teched/virtual/flow/sap/te24/catalog/page/catalog/session/1723584532995001g7Xm
 [33]: https://cap.cloud.sap/docs/get-started/hello-world
-[34]: https://qmacro.org/blog/posts/2019/09/17/new-podcast-tech-aloud/
-[35]: https://creators.spotify.com/pod/show/tech-aloud/episodes/Five-reasons-to-use-CAP---DJ-Adams---07-Nov-2024-e2r2lth

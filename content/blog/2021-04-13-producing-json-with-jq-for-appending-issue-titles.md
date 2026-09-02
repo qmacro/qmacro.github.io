@@ -1,6 +1,7 @@
 ---
 date: 2021-04-13
 title: Producing JSON with jq for appending issue titles
+description: Learning how to use jq to produce JSON while writing a script to enhance Thinking Aloud journal entry titles.
 tags:
   - jq
   - json
@@ -8,8 +9,6 @@ tags:
   - tools
   - learning
 ---
-
-_I learned how to use `jq` to **produce** JSON, while writing a script to enhance my Thinking Aloud journal entry titles._
 
 In my [Thinking Aloud](https://github.com/qmacro/thinking-aloud) journal, the entries are issues in a GitHub repository. To [reduce friction](https://github.com/qmacro/thinking-aloud/issues/1) I decided to just use the current date and time for the journal entry title.
 

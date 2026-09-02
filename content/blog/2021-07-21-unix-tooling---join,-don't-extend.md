@@ -1,14 +1,13 @@
 ---
 date: 2021-07-21
 title: Unix tooling - join, don't extend
+description: Reading a 1984 paper by Pike and Kernighan helped crystallise an important axiom in Unix tool design about joining programs rather than extending them.
 tags:
   - shell
   - tools
   - opinion
   - architecture
 ---
-
-_Reading a paper from 1984 has helped crystallise an important axiom in Unix tool design, so much so that I found myself referring to it today when scripting._
 
 Rob Pike and Brian Kernighan authored a paper in 1984 titled "[Program design in the UNIX environment](https://nymity.ch/sybilhunting/pdf/Pike1983a.pdf)". In it, they explore the difference between adding features to existing programs, and achieving the same effect through connecting programs together.
 
