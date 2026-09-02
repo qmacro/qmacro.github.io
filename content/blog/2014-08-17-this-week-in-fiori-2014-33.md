@@ -1,6 +1,7 @@
 ---
 date: 2014-08-17
 title: This Week in Fiori (2014-33)
+description: Covering the SAP Fiori Launchpad architecture for developers, best practices for infrastructure, and the growing momentum behind Fiori adoption.
 tags:
   - fiori
   - openui5

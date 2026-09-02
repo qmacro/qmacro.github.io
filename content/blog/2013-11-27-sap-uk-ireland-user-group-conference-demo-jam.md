@@ -1,6 +1,7 @@
 ---
 date: 2013-11-27
 title: SAP UK & Ireland User Group Conference - Demo Jam!
+description: Recounting how I stepped in at the last minute to compete in the Demo Jam at the SAP UK and Ireland User Group Conference, building a Fiori app live on stage.
 tags:
   - fiori
   - sap

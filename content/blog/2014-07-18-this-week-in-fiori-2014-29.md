@@ -1,6 +1,7 @@
 ---
 date: 2014-07-18
 title: This Week in Fiori (2014-29)
+description: Sharing Fiori links and commentary while heading to OSCON in Portland, including pointers to the open source foundations upon which UI5 is built.
 tags:
   - fiori
   - openui5

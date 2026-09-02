@@ -1,6 +1,7 @@
 ---
 title: Celebrating the engine of the Fiori revolution - the 30UI5 ebook
 date: 2015-10-20
+description: Releasing a downloadable ebook version of my 30 Days of UI5 blog post series to celebrate the UI5 1.30 milestone and SAP TechEd 2015.
 tags:
   - openui5
   - fiori

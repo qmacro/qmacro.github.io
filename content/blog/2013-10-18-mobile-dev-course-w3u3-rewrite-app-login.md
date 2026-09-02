@@ -1,6 +1,7 @@
 ---
 title: Mobile Dev Course W3U3 Rewrite - App and Login
 date: 2013-10-18
+description: Explaining what I changed in the App and Login views and controllers in my rewrite of the open.sap.com mobile dev course sample SAPUI5 app.
 tags:
   - openui5
   - fiori
