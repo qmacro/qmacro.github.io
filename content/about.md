@@ -118,7 +118,7 @@ Interface](/images/books/debugging.png)](https://www.sap-press.com/sap-fiori-and
 ## Bio
 
 Here's a short bio (which is also [available on the Developer
-Advocates(https://developers.sap.com/developer-advocates/dj-adams/) page]):
+Advocates](https://developers.sap.com/developer-advocates/dj-adams/) page]):
 
 > Developer Advocate at SAP. O'Reilly and SAP Press author. SAP community
 > pioneer and original SAP Community co-creator. SAP Mentor Alumnus. Learner.
