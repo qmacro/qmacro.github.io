@@ -7,6 +7,8 @@ tags:
   - ai
   - cds
   - javascript
+  - a2a
+  - agents
 ---
 
 ## Baseline

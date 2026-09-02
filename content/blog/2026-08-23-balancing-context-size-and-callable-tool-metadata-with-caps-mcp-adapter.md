@@ -7,6 +7,7 @@ tags:
   - ai
   - jq
   - tools
+  - mcp
 ---
 
 CAP [supports the Model Context
