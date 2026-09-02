@@ -7,6 +7,7 @@ tags:
   - cap
   - tasc
   - learning
+  - sicp
 ---
 In [my notes on part 4 of The Art and Science of CAP][1] I make a number of references to functions as first class citizens, and show the parallel with queries also in CAP having that same first class citizenship. Both can be assigned to variables, passed around, and provided as input, and even received as output, to function calls.
 
