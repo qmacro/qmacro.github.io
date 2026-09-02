@@ -20,8 +20,6 @@ These are the raw, unedited notes I took to summarise [The Art and Science of CA
 
 For all resources related to this series, see the post [The Art and Science of CAP][99].
 
----
-
 <a name="schnapszahl"></a>
 Capire docu overhaul, with a reworked "Getting Started" section, with times for completion in the classic capire [Schnapszahl][3] style (1-11 mins, 4-44 mins, etc).
 

@@ -9,11 +9,9 @@ tags:
   - episode-notes
   - domain-driven-design
 ---
-These are notes relating to [part one of The Art and Science of CAP][1], which aired live as part of [Devtoberfest][6] this year. This inaugural episode kicked off a mini series with Daniel Hutzel to explore the philosophy, the background, the technology history and layers that support and inform the SAP Cloud Application Programming Model. 
+These are notes relating to [part one of The Art and Science of CAP][1], which aired live as part of [Devtoberfest][6] this year. This inaugural episode kicked off a mini series with Daniel Hutzel to explore the philosophy, the background, the technology history and layers that support and inform the SAP Cloud Application Programming Model.
 
 For all resources related to this series, see the post [The Art and Science of CAP][99].
-
----
 
 Daniel covered a lot of ground in this first episode, and I wrote about them in a series of short posts:
 

@@ -1045,11 +1045,7 @@ Bingo!
 
 The CDS model, and CQL as its language, is really based on decades of theory and practice, and we all benefit.
 
----
-
 That's the end of the notes for this episode. If you made it all the way here, please put a comment below to tell me, and thank you for reading!
-
----
 
 ## Appendix - Fully qualified names and reflected variables
 

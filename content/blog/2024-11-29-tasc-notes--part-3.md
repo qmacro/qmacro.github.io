@@ -30,8 +30,6 @@ These are the raw, unedited notes I took to summarise [The Art and Science of CA
 
 For all resources related to this series, see the post [The Art and Science of CAP][99].
 
----
-
 Talked about the [Nullish Coalescing Assignment][2] (`??=`) in JavaScript which was used in Daniel's most recent addition to the REPL code, and moved on to mentioning what the cache technique has been called in the past, from the (wonderful) Perl community: the "[Orcish Manoevre][3]" (Orcish ~= Or-Cache), coined by one of the authors of Effective Perl Programming, [Joseph Hall][27] (the other author was [Randal L. Schwartz][21]).
 
 Looked at how AOP are also used in the core code too, with the specific example from `cds/lib/req/validate.js` and the core type system definitions (`class struct extends $any` ... `class Composition extends entity` ...) - base classes didn't have the behaviour, it's just added via aspects.
@@ -71,6 +69,8 @@ Data is important (which is why DAOs are bad), especially for extensibility, and
 Daniel started to address Marian's question on nested projections (like a sub-select in the select clause - not in the where clause), but we were running out of time, so thought we might dig in a little more in the next part, using the REPL of course, which Daniel used right at the end to illustrate some of CAP's DSLs, but also to underline the fact that CAP borrows from the functional programming philosophy, where functions are first class citizens (yes, and this is true in JavaScript by the way!), and here in CAP, _queries_ are first class citizens, in that they can be assigned to variables, passed around, etc.
 
 (For an intro to FP and its beauty, you might want to check out [Function Programming Introduction: What, Why, How?][23], also [[SOT118] Functional programming - from LISP to JavaScript via Haskell][24], and, especially if you're a UI5 developer, [Functional Programming for your UI5 Apps][25]).
+
+---
 
 <a name="footnotes"></a>
 ## Footnotes
