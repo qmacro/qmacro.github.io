@@ -7,6 +7,7 @@ tags:
   - career
   - opinion
   - sap-community-post
+  - cap
 ---
 
 I watched [a couple of talks by Kevlin
@@ -19,7 +20,7 @@ that there are some programmers that strongly identify with the ABAP
 language. One could even go so far as to say that this strong
 identification is an exclusive one. "I'm an ABAP programmer" is a
 phrase that I've heard many times before and has carried the
-implication "\... and I wouldn't consider taking on any other
+implication "... and I wouldn't consider taking on any other
 language, just give me ABAP programming tasks to complete, please".
 
 ## Single-language programmers
@@ -37,7 +38,7 @@ subject is very valuable. But this expertise shouldn't come at any
 cost, and the cost here is a restriction on what can be achieved.
 
 This isn't even about the idea that one should be passionate about
-one's subject area \-- in this case, ABAP \-- nor is it about whether
+one's subject area -- in this case, ABAP -- nor is it about whether
 someone should "take their work home with them" and spend some of
 their valuable free time reading up and around the subject of the ABAP
 language. (Finding something you're interested in beyond the day job
@@ -47,20 +48,18 @@ up another time).
 ## Coder, programmer, developer
 
 Where does this concept of a single-language programmer come from? I
-think that it has a lot to do with architectures and software practices
+think that it has a lot to do with architectures and software practices
 from earlier times.
 
 First, earlier architectures and computing infrastructure was simpler,
 and entire solutions were built on a specific OS using a single
 language. So having a look back at our own world, this has predominantly
-been ABAP, with the transaction-oriented, dynpro-based facilities where
+been ABAP, with the transaction-oriented, dynpro-based facilities where
 everything from integration mechanisms, backend business logic and
 frontend flow was written in ABAP and developed & executed on a
 monolith.
 
-![](/images/2018/05/Screenshot-2018-05-28-at-07.47.35.png)
-
-*SAP R/2 dynpro, image from SAP Design Guild*
+![SAP R/2 dynpro, image from SAP Design Guild](/images/2018/05/Screenshot-2018-05-28-at-07.47.35.png)
 
 We see something similar in the Java world, and going back even further
 we come to COBOL. The story is the same each time. And while we're back
@@ -185,8 +184,6 @@ days, in the increasingly open world of SAP enterprise software
 development, it's more likely that you'll be able to directly use what
 you learned in your day job as a developer.
 
----
-
 This post was brought to you by [Pact Coffee's Umurage
 Mbazi](https://www.pactcoffee.com/coffees/umurage-mbazi) (I still have
 some beans left from last Monday), the gentle warmth and brightness of a
@@ -194,11 +191,7 @@ promising Bank Holiday Monday here in England and a pleasant browse
 through my battered copy of The Thames and Hudson [Dictionary of Art and
 Artists](https://books.google.co.uk/books/about/The_Thames_and_Hudson_Dictionary_of_Art.html?id=xHxUAAAAMAAJ).
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-programmers-and-identity/ba-p/13380743)

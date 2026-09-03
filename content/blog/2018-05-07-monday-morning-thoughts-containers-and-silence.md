@@ -20,7 +20,7 @@ going to read them (thanks Julie Plummer).
 
 In a previous post ([Monday morning thoughts: upload/download in a cloud
 native
-world](/blog/posts/2018/04/16/monday-morning-thoughts:-upload-download-in-a-cloud-native-world/))
+world](/blog/posts/2018/04/16/monday-morning-thoughts-upload-download-in-a-cloud-native-world/))
 I described the sort of devices upon which I started my mainframe-based
 career in computing. A common factor was that those devices I used to
 interact with were dumb. But there's another common factor, that
@@ -42,14 +42,14 @@ were no fans.
 
 And so I was reminded again of these times as I spun up a new virtual
 machine (VM) running a [Container-Optimised
-OS](https://cloud.google.com/container-optimized-os/docs/) on the Google
+OS](https://cloud.google.com/container-optimized-os/docs/) on the Google
 Cloud Platform (GCP). My work-based workstation runs macOS, but really
 all I run is Chrome and a number of terminal emulation windows. So
 there's really no real stress on the MacBook at all, and no reason for
 a fan to kick in.
 
 Yes I do run Outlook and its brethren, but only under duress and shut
-them down again as soon as I can. The real work (i.e. [not
+them down again as soon as I can. The real work (i.e. [not
 email](/blog/posts/2017/08/30/things-i-do-to-make-my-work-life-better/))
 happens elsewhere - in this case while connected, via Secure Shell (SSH)
 to that new VM. Just characters on an emulated terminal screen, and the
@@ -74,7 +74,7 @@ containers.
 
 My presence on the web is where it has been, at least virtually, for as
 long as I can remember - at pipetree.com. My old friend and
-colleague Piers Harding and I pooled our resources way back when and
+colleague Piers Harding and I pooled our resources way back when and
 built & brought a server of our own round nearly 20 years ago to a
 colocation facility in Fulham, London.
 
@@ -85,6 +85,7 @@ amongst the hundreds of others in the facility). I guess the concept of
 colocation is now outmoded, but I like to think of it in the
 "as-a-service" stack like this:
 
+```text
           Software-as-a-Service
                    |
           Platform-as-a-Service
@@ -94,6 +95,7 @@ colocation is now outmoded, but I like to think of it in the
     Infrastructure-as-a-Service
                    |
         Colocation-as-a-Service   <---
+```
 
 Since then we've moved out of the facility, I took over pipetree.com as
 a domain (Piers now has his own presence) and the server is now virtual,
@@ -150,7 +152,7 @@ single-purpose VMs on my general purpose VM.
 But the best thing? It's the cheap and fast nature of everything
 that's going on here. While setting up, I can instantiate a Docker
 container from an image that has to be fetched\* from the
-[hub](https://hub.docker.com/) in a matter of seconds. On realising that
+[hub](https://hub.docker.com/) in a matter of seconds. On realising that
 I have set the container up incorrectly, or messed up the contents that
 would normally take a significant effort to fix, I can simply stop and
 destroy that container and do it again, in the safe and happy knowledge
@@ -161,7 +163,7 @@ suggesting a sort of horizontal action, rather than a vertical one, it
 makes much more sense in the cloud native world.
 
 The [ephemeral
-aspect](/blog/posts/2018/04/09/monday-morning-thoughts:-a-cloud-native-smell/#the-cloud-native-smell) of
+aspect](/blog/posts/2018/04/09/monday-morning-thoughts-a-cloud-native-smell/#ephemerality) of
 cloud native artifacts, such as containers, means that it is natural to
 create and destroy resources with almost reckless abandon. Well, perhaps
 not quite reckless. But it lets us see software and services, that
@@ -177,11 +179,7 @@ let the invisible, distant machines do the heavy lifting.
 
 And that, to me, is a good thing. What do you think?
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-containers-and-silence/ba-p/13359185)

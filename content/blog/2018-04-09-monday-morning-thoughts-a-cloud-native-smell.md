@@ -10,7 +10,7 @@ tags:
 ---
 
 Continuing on from my earlier [random
-thoughts](/blog/posts/2018/03/26/monday-morning-thoughts:-cloud-native/)
+thoughts](/blog/posts/2018/03/26/monday-morning-thoughts-cloud-native/)
 about what cloud native means to me, I was musing this morning on the
 nature of the web, and specifically URIs - or rather their
 specialisation that we see most commonly - URLs.
@@ -66,11 +66,15 @@ entirely, and look at a typical G Suite URL to help me get to my next
 point. Here's an example, for a spreadsheet (I've changed the URL
 slightly for security reasons). First, the base:
 
-`https://docs.google.com/spreadsheets/d/`
+```url
+https://docs.google.com/spreadsheets/d/
+```
 
 Then, an opaque identifier:
 
-`1nT4GB85goF34MaxiEZAMJp-aCk0QguyZ6WmlWjMUA42`
+```url
+1nT4GB85goF34MaxiEZAMJp-aCk0QguyZ6WmlWjMUA42
+```
 
 The structure of the URL is quite simple, and most of it is the unique
 code (`1nT4...42`) that identifies the individual online spreadsheet
@@ -137,7 +141,6 @@ SAP's and Google's, that are ultimately ephemeral need to be born and
 then die, and in that intervening period, have an identifier that is as
 equally anonymous as it is unique.
 
-<a name="the-cloud-native-smell"></a>
 ## The cloud native smell
 
 And it's the very presence of these superficially ugly but essentially

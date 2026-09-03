@@ -28,12 +28,12 @@ dabbled already with the Google Cloud Functions flavour of serverless,
 in experiments to create conversational actions for the Google Assistant
 framework (see "[Google Cloud Functions + Sheets + Apps Script +
 Actions On Google =
-WIN](/blog/posts/2017/04/30/google-cloud-functions-+-sheets-+-apps-script-+-actions-on-google-win/)")
+WIN](/blog/posts/2017/04/30/google-cloud-functions-sheets-apps-script-actions-on-google-win/)")
 and more recently in my
 [discovery](/blog/posts/2018/01/16/discovering-scp-workflow/)
 of the SAP Cloud Platform (SCP) Workflow service (see "[Discovering SCP
 Workflow - Service
-Proxy](https://blogs.sap.com/2018/01/17/discovering-scp-workflow-service-proxy/)").
+Proxy](/blog/posts/2018/01/17/discovering-scp-workflow-service-proxy/)").
 
 Anyway, I digress. Mostly. But what triggered these thoughts was the
 availability of a UI for Kubeless, which looks like this:
@@ -63,7 +63,7 @@ thing and do it well. But that's a story for another time, perhaps.
 Editing short sections of code like this reminds me of the script task
 concept within the SCP Workflow service (see "[Discovering SCP
 Workflow - Script
-Tasks](https://blogs.sap.com/2018/01/26/discovering-scp-workflow-script-tasks/)").
+Tasks](/blog/posts/2018/01/26/discovering-scp-workflow-script-tasks/)").
 There too we have a (usually) short piece of code, which is almost
 secondary to the bigger picture of the overall workflow definition
 itself. Yes, the editing experience is provided by the SAP Web IDE,
@@ -101,7 +101,7 @@ And of course there's the ABAP editing environments SE24 (sorry, I mean
 SE80) as well as the Eclipse-based ABAP Developer Tools in the form of
 ABAP in Eclipse. Add to that the countless online REPLs (see "[Monday
 morning thoughts: cloud
-native](/blog/posts/2018/03/26/monday-morning-thoughts:-cloud-native/)").
+native](/blog/posts/2018/03/26/monday-morning-thoughts-cloud-native/)").
 
 Further, think of the wonderful Jupyter Notebook cloud literate
 programming environment, which is also being used, coincidentally, in
@@ -211,28 +211,20 @@ wherever it is.
 
 How about you?
 
----
-
 This post was brought to you by [La Secreta
 coffee](https://www.pactcoffee.com/coffees/la-secreta) and the quiet of
 an early Monday morning.
 
----
-
 Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 ## Update 02 May 2018:
 
 The [final results of the
 poll](/tweets/qmacro/status/990640820574441472/) came in:
 
--   Total number of votes: 137
--   Those caring about whitespace: 87%
--   Those not caring about whitespace: 13%
-
----
+- Total number of votes: 137
+- Those caring about whitespace: 87%
+- Those not caring about whitespace: 13%
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-editors-and-editing/ba-p/13353774)

@@ -12,9 +12,9 @@ tags:
 **Update (same day)**: I interviewed Rui Nogueira on the new Application
 Programming Model for the SAP Cloud Platform. You can get the interview
 transcript and a link to the audio recording on this blog post:
-"[Interview with Rui Nogueira on the new Application Programming Model
+[Interview with Rui Nogueira on the new Application Programming Model
 for SAP Cloud
-Platform](/blog/posts/2018/06/25/interview-with-rui-nogueira-on-the-new-application-programming-model-for-sap-cloud-platform/)".
+Platform](/blog/posts/2018/06/25/interview-with-rui-nogueira-on-the-new-application-programming-model-for-sap-cloud-platform/).
 
 I was lucky enough to be able to attend and speak at
 [UI5con@SAP](https://openui5.org/ui5con/) this year - the event took
@@ -56,7 +56,7 @@ I first started noticing the phrase back in 2016, in this form: "The
 ABAP Programming Model in S/4HANA". This particular instance was the
 title of a session
 ([DEV109](https://www.sap.com/documents/2017/03/867e02d4-ac7c-0010-82c7-eda71af511fa.html))
-at SAP TechEd 2016. Earlier that year, carine.tchoutouodjomo published
+at SAP TechEd 2016. Earlier that year, Carine Tchoutouodjomo published
 an excellent blog post whose title also included the phrase, albeit in a
 slightly different guise: "[Getting Started with ABAP Programming Model
 for SAP Fiori Apps in SAP
@@ -89,7 +89,7 @@ thoughts](/tags/monday-morning-thoughts/) posts
 ("[the learning
 continuum](/blog/posts/2018/06/04/monday-morning-thoughts:-the-learning-continuum/)"
 and "[Core Data
-Services](/blog/posts/2018/06/11/monday-morning-thoughts:-core-data-services/)").
+Services](/blog/posts/2018/06/11/monday-morning-thoughts-core-data-services/)").
 
 ## Twisty little passages
 
@@ -97,7 +97,7 @@ I'm suddenly mindful of the famous phrase "a maze of twisty little
 passages, all alike" from the 1970's text adventure game "Colossal
 Cave Adventure":
 
-![Photo of Colossal Cave being played on a VT100 terminal](/images/2018/06/Colossal_Cave_Adventure_on_VT100_terminal.jpg)
+![Photo of Colossal Cave being played on a VT100 terminal, courtesy of Wikimedia Commons](/images/2018/06/Colossal_Cave_Adventure_on_VT100_terminal.jpg)
 
 *Playing the Colossal Cave Adventure on a VT100 terminal, courtesy of
 [Wikimedia
@@ -184,7 +184,7 @@ variations, but it's the qualities of abstraction that are key.
 
 Let's have a look at another diagram, this time from an [update for SAP
 developers](https://www.slideshare.net/thomasgr/whats-new-for-sap-developers)
-from thomas.grassl following SAP TechEd last year:
+from Thomas Grassl following SAP TechEd last year:
 
 ![](/images/2018/06/Screen-Shot-2018-06-25-at-08.25.51.png)
 
@@ -205,7 +205,7 @@ frameworks that we have seen.
 is [Bernard
 Marx](https://en.wikipedia.org/wiki/Brave_New_World#Characters) who is a
 sleep-learning specialist; I've often wondered
-whether [hypnopædia](https://en.wikipedia.org/wiki/Sleep-learning) would
+whether [hypnopædia](https://en.wikipedia.org/wiki/Sleep-learning) would
 help a lot with my [learning
 continuum](/blog/posts/2018/06/04/monday-morning-thoughts:-the-learning-continuum/).)
 
@@ -223,19 +223,13 @@ programming models, and perhaps, if you've made it through my
 meanderings thus far, you will see the overarching patterns too. In any
 case, let me know your thoughts below.
 
----
-
 This post was brought to you by the clear sky of dawn over Manchester,
 and a friendly [house
 sparrow](https://www.rspb.org.uk/birds-and-wildlife/wildlife-guides/bird-a-z/house-sparrow)
 that sat nearby as I tried to gather my thoughts into some sort of
 order.
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-programming-models/ba-p/13372944)

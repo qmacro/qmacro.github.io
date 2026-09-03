@@ -7,6 +7,8 @@ tags:
   - cloud
   - opinion
   - sap-community-post
+  - mainframe
+  - terminals
 ---
 
 This weekend I was exploring some Cloud Foundry features on the SAP

@@ -41,7 +41,7 @@ definitions and JavaScript controller scripts inside a single HTML file,
 using custom `<script>` tags. That extended to the use of JSBin, which
 has supported OpenUI5 for a while now (see "[Small steps: OpenUI5
 toolkit now in
-jsbin.com](/blog/posts/2014/03/04/small-steps-openui5-toolkit-now-in-jsbin.com/)"),
+jsbin.com](/blog/posts/2014/03/04/small-steps-openui5-toolkit-now-in-jsbin-com/)"),
 like in this layout
 example: <http://jsbin.com/gatan/edit?html,js,output>.
 
@@ -130,11 +130,7 @@ What does cloud native mean to you? What defines it for development, for
 architecture, for our present and future enterprise solutions? I'd love
 to hear your thoughts via the comments section below.
 
----
-
 Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-cloud-native/ba-p/13355894)

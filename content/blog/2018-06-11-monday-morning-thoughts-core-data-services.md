@@ -103,12 +103,12 @@ that has meaning and significance to all of them.
 In last week's [Monday morning
 thoughts](/tags/monday-morning-thoughts/), on the
 [learning
-continuum](/blog/posts/2018/06/04/monday-morning-thoughts:-the-learning-continuum/),
+continuum](/blog/posts/2018/06/04/monday-morning-thoughts-the-learning-continuum/),
 I mentioned the new [Application Programming Model for the SAP Cloud
 Platform](https://blogs.sap.com/2018/06/05/introducing-the-new-application-programming-model-for-sap-cloud-platform/),
 which appeared to me in the form of a wonderful early ["Getting
 Started"
-tutorial](https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/5ec8c983a0bf43b4a13186fcf59015fc.html) that
+tutorial](https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/5ec8c983a0bf43b4a13186fcf59015fc.html) that
 hints of a tantalising richness and depth that only multiple repeated
 journeys will start to extract.
 
@@ -144,15 +144,15 @@ based on CDS.
 
 ## Next steps
 
-CDS has become a powerful set of languages: Data Definition Language
+CDS has become a powerful set of languages: Data Definition Language
 (DDL), Query Language (QL) and Data Control Language (DCL). The
 [annotations are many and
 complex](https://help.sap.com/viewer/cc0c305d2fab47bd808adcad3ca7ee9d/7.5.9/en-US/630ce9b386b84e80bfade96779fbaeec.html)
 (my CDS journey has introduced me to some, but there are others that
-I've yet to come across and understand). But in my view it's a
+I've yet to come across and understand). But in my view it's a
 technology, a layer, that we'd be foolish to ignore. Last month I even
 went so far as to suggest that CDS is one of [today's
-milestones](/blog/posts/2018/05/21/monday-morning-thoughts:-milestones/#todays-milestones).
+milestones](/blog/posts/2018/05/21/monday-morning-thoughts-milestones/#todays-milestones).
 
 If you do only one thing this week to advance along your learning
 continuum, may I suggest it's to look into CDS. Start by looking into
@@ -170,18 +170,14 @@ extensions.
 
 You won't regret it.
 
----
-
 This post was brought to you from a damp but warm early morning in
-Manchester, [Pact Coffee's Nyarusiza
+Manchester, [Pact Coffee's Nyarusiza
 Peaberry](https://www.pactcoffee.com/coffees/nyarusiza-peaberry) coffee
 and the lingering tiredness of transatlantic jet-lag.
 
----
+See also my [Interview with Rui Nogueira on the new Application Programming Model for SAP Cloud Platform](/blog/posts/2018/06/25/interview-with-rui-nogueira-on-the-new-application-programming-model-for-sap-cloud-platform/), and [Monday morning thoughts: programming models](/blog/posts/2018/06/25/monday-morning-thoughts-programming-models/).
 
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-core-data-services/ba-p/13358970)

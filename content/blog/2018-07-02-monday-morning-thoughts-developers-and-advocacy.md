@@ -100,11 +100,11 @@ Programming Model, the interview of which can be found here in
 transcription and audio format, courtesy of the excellent Coffee Corner
 Radio podcast: [Interview with Rui Nogueira on the new Application
 Programming Model for SAP Cloud
-Platform](https://blogs.sap.com/2018/06/25/interview-with-rui-nogueira-on-the-new-application-programming-model-for-sap-cloud-platform/)).
+Platform](/blog/posts/2018/06/25/interview-with-rui-nogueira-on-the-new-application-programming-model-for-sap-cloud-platform/)).
 
 I also got a chance to go and meet the teams behind two of my favourite
 SAP Cloud Platform services: Workflow (see my [Discovering SCP
-Workflow](http://pipetree.com/qmacro/blog/2018/01/16/discovering-scp-workflow/)
+Workflow](/blog/posts/2018/01/16/discovering-scp-workflow/)
 series) and Business Rules ([one of my
 sessions](https://openui5.org/ui5con/agenda.html?view=speakers#letter_A)
 at UI5con@SAP this year was on using the Business Rules service in UI5).
@@ -112,11 +112,11 @@ I got a chance to chat with them for pretty much an entire hour, and we
 discussed all sorts of topics related to what they were building,
 features, priorities, hopes, fears, and more besides.
 
-![](https://pbs.twimg.com/media/DgNR7prWAAA6obe.jpg)
+![](/tweets/qmacro/tweets_media/1009740837243277312-DgNR7prWAAA6obe.jpg)
 
 *Meeting some of the Workflow and Business Rules team at the mothership
 ([11:12 AM - 21 Jun
-2018](https://twitter.com/qmacro/status/1009740837243277312))*
+2018](/tweets/qmacro/status/1009740837243277312))*
 
 Reading back that last sentence, it strikes me that the image it conveys
 is that of normal people. And that's the point I guess I'm trying to
@@ -133,7 +133,7 @@ I strive to represent the external developer, advocating for them,
 helping to start or improve in their understanding of various technical
 areas and technologies. But alongside that, I try not to forget the
 internal developers, for whom advocacy is also needed. Perhaps not in as
-strong or direct a way \... but they're not machines, they're not
+strong or direct a way ... but they're not machines, they're not
 robots that build software, either.
 
 ## Keep on keeping on
@@ -156,19 +156,13 @@ developers inside and outside of SAP alike. I'd love to know what your
 thoughts are on this. As always, comments and thoughts are more than
 welcome.
 
----
-
 This post was brought to you this morning by Pact Coffee's
 [Planalto](https://www.pactcoffee.com/coffees/planalto) coffee, a breezy
 but warm early Monday morning, and the quieter sound of my new [Logitech
 K380
 keyboard](https://www.logitech.com/en-gb/product/multi-device-keyboard-k380).
 
----
-
 Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/welcome-corner-blog-posts/monday-morning-thoughts-developers-and-advocacy/ba-p/13380206)

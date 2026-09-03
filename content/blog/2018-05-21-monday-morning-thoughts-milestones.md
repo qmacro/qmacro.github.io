@@ -17,20 +17,18 @@ commons](https://commons.wikimedia.org/wiki/File:Milestone_rixton_greater_manche
 I've been fortunate enough to have lived and worked through more than
 three decades of SAP technology.
 
-<a name="seismic-changes"></a>
 ## Seismic changes
 
 In that time, I've seen seismic changes. Here are three of those that
 immediately come to mind:
 
--   the move from the use of hierarchical databases to relational
-    databases - I remember the move from the database management
-    component of IBM's Information Management System (IMS DB) to an
-    early version of DB/2
--   the transition from mainframe to Unix based systems - specifically
-    with the move from R/2 to R/3, from monolith to client-server
--   the introduction of the in-memory columnar store called HANA
-
+- the move from the use of hierarchical databases to relational
+  databases - I remember the move from the database management
+  component of IBM's Information Management System (IMS DB) to an
+  early version of DB/2
+- the transition from mainframe to Unix based systems - specifically
+  with the move from R/2 to R/3, from monolith to client-server
+- the introduction of the in-memory columnar store called HANA
 
 All three of these events are well-known SAP history and already deserve
 to be remembered as major changes in the timeline.
@@ -43,7 +41,7 @@ could not have progressed as hierarchical systems were fixed firmly in
 the proprietary world of IBM.
 
 The transition from mainframe to Unix based system and the move to R/3
-and the new architecture (which I still call "disp+work") brought
+and the new architecture (which I still call "disp+work") brought
 about an an agility previously unknown. This architecture still
 underpins the vast majority of SAP application servers even today. The
 move to Unix, and initially the proprietary flavours from hardware
@@ -59,20 +57,18 @@ monolith, in a way - the database as application server.
 Beyond these particular seismic changes, there are smaller but still
 hugely significant events that I consider major milestones.
 
-<a name="major-milestones"></a>
 ## Major milestones
 
 Various additions to the general SAP technology set have had huge
 impacts and effects that are seriously long-term. What makes it perhaps
 more interesting is that in some cases the significance wasn't
 immediately clear, or at least the implications weren't equally
-distributed. Over time, however, people came to understand.
+distributed. Over time, however, people came to understand.
 
 There are clearly more major milestones than I could fit into a
 reasonably sized blog post, so I've picked out a handful that are
 meaningful to me.
 
-<a name="introduction-of-the-abap-language"></a>
 ### Introduction of the ABAP language
 
 I started working on SAP R/2 version 4.1D. There was no concept of
@@ -94,7 +90,6 @@ native thinking powered by a whitelisted set of constructs that allow us
 to use the power of standard data and metadata definitions and integrate
 the classic with the new.
 
-<a name="r3-on-linux"></a>
 ### R/3 on Linux
 
 One could see Linux as just another Unix flavour, alongside the
@@ -117,7 +112,6 @@ The ubiquity of Linux in general is well known, and the fact that one
 can see Linux as the standard delivery platform for SAP software
 (including HANA) is just wonderful.
 
-<a name="the-internet-communication-manager"></a>
 ### The Internet Communication Manager
 
 This one is my personal favourite. Early R/3 systems communicated
@@ -130,7 +124,7 @@ level, the invocation of which was managed with the same transaction
 
 Then there was the Internet Transaction Server, groundbreaking
 technology from a team that included Björn Goerke
-and Thomas Grassl that was as useful as it was
+and Thomas Grassl that was as useful as it was
 inventive - a combination of Common Gateway Interface (CGI) backends for
 the web servers du jour with a mechanism that connected to the R/3
 backend and fused with the DIAG protocol stream (yes, this was the
@@ -163,7 +157,6 @@ Manchester's MadLab](https://vimeo.com/36828893) a few years back.
 
 \*via plugins, the ICM also spoke other protocols such as SMTP
 
-<a name="neo-and-cloud-platform"></a>
 ### Neo and Cloud Platform
 
 This milestone is almost still too new to think about in terms of being
@@ -190,7 +183,6 @@ Without Neo and the advent of the SAP Cloud Platform, we wouldn't be
 looking towards the brave new world of cloud native, nor would we have
 S/4HANA Cloud.
 
-<a name="ui5"></a>
 ### UI5
 
 Of course, this list wouldn't be complete without including one of the
@@ -205,8 +197,8 @@ only six years ago, UI5 was, and is, the right technology, the right
 architecture, and the right UI at the right time. I remember discovering
 UI5 and writing about it back in 2012 (the article's date is incorrect,
 and reflects when I updated it rather than when I first wrote
-it): [SAPUI5 - The Future direction of SAP UI
-Development?](/blog/posts/2012/05/07/sapui5-the-future-direction-of-sap-ui-development/) and
+it): [SAPUI5 - The Future direction of SAP UI
+Development?](/blog/posts/2012/05/07/sapui5-the-future-direction-of-sap-ui-development/) and
 the significance is still valid and fresh today.
 
 ![](/images/2018/05/Screen-Shot-2018-05-21-at-08.24.20.png)
@@ -219,7 +211,6 @@ enabler for this move, and the combination is still the killer choice,
 not because it's the only choice, but for most cases it's the right
 choice.
 
-<a name="todays-milestones"></a>
 ## Today's milestones?
 
 What technologies and advancements today might we come to consider as
@@ -268,22 +259,16 @@ Mbazi](https://www.pactcoffee.com/coffees/umurage-mbazi), the quiet of a
 peaceful early morning, and the lovely prospect of spending a day off
 today with my son Joseph.
 
----
+## Update 23 May 2018
 
-**Update 23 May 2018**
-
-This blog post is also available via audio thanks to the awesome initiative from Former Member and uxkjaer in the
+This blog post is also available via audio thanks to the awesome initiative from Former Member and uxkjaer in the
 form of Coffee Corner Radio "[Pod Bite
 1](https://anchor.fm/sap-community-podcast/episodes/Pod-Bite-1---Monday-morning-thoughts-milestones-by-DJ-Adams-e1gt26)" -
 see "[With every coffee you need a biscuit
 ?](https://blogs.sap.com/2018/05/23/with-every-coffee-you-need-a-biscuit-%F0%9F%8D%AA/)"
 for more details.
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-milestones/ba-p/13371725)

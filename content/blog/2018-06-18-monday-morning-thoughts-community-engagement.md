@@ -9,13 +9,13 @@ tags:
 ---
 
 I was re-listening to a great episode of the [Coffee Corner Radio
-podcast](https://anchor.fm/sap-community-podcast/) on my trip over to
+podcast](https://anchor.fm/sap-community-podcast/) on my trip over to
 the mothership yesterday (I'm over in Walldorf this week helping out at
 a partner workshop and then of course attending and speaking at
 [UI5con](https://openui5.org/ui5con/), hurray!) The episode
 was Jakob Kjaer and Simon Kemp's
 [interview](https://anchor.fm/sap-community-podcast/episodes/Episode-3-Interview-with-Craig-Cmehil-e1ievh)
-with Craig Cmehil on the SAP Community.
+with Craig Cmehil on the SAP Community.
 
 Craig has his head screwed on right, and what was said in the interview
 resonated very well with me, in particular the conversation about
@@ -49,7 +49,7 @@ administering and nurturing the conversations. In the context of
 today's challenges, those memories can be distilled into simple aspects
 that make for a good and healthy community.
 
-![](/images/2018/06/Screen-Shot-2018-06-18-at-07.59.43.png)
+![The Sanyo MBC-17NB. Pic courtesy of vintage-laptops.com](/images/2018/06/Screen-Shot-2018-06-18-at-07.59.43.png)
 
 *The Sanyo MBC-17NB. Pic courtesy of vintage-laptops.com*
 
@@ -90,7 +90,7 @@ actions available to us all, whether we're in a particular conversation
 or not.
 
 The current incarnation of the online SAP Community affords us different
-ways to engage. At the macro level, there are activities such as sharing
+ways to engage. At the macro level, there are activities such as sharing
 thoughts and knowledge in [blog posts](https://blogs.sap.com/). Asking
 questions and providing answers in
 [Q&A](https://answers.sap.com/index.html).
@@ -118,17 +118,11 @@ I've resolved to try my best to do my part. To acknowledge, to engage,
 to be polite, and show manners. All that is in my gift. That's what
 keeps communities going - acting by example. I hope you'll join me.
 
----
-
 This post was brought to you by the sunrise over the SAP mothership in
 Walldorf, and some OK tasting coffee from the breakfast area in the
 hotel. Definitely OK enough for me to want another cup.
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/welcome-corner-blog-posts/monday-morning-thoughts-community-engagement/ba-p/13365553)

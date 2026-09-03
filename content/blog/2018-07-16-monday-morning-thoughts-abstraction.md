@@ -7,6 +7,8 @@ tags:
   - architecture
   - opinion
   - sap-community-post
+  - cap
+  - cds
 ---
 
 Last week I was chatting to some old friends. One of them had just
@@ -49,9 +51,9 @@ that the "GET" wasn't imperative; rather, it was the event-based hook
 to declare some activity if and when MARA segments were made available,
 by the underlying database read program. (If you want to read a little
 more about how these GET statements were reactive rather than proactive,
-have a look at this blog post from 2003: "[Food for thought: LDBs and
+have a look at this blog post from 2003: [Food for thought: LDBs and
 ABAP
-Objects](/blog/posts/2003/11/13/food-for-thought-ldbs-and-abap-objects/)".)
+Objects](/blog/posts/2003/11/13/food-for-thought-ldbs-and-abap-objects/).)
 Here too I experienced a level of abstraction, not having to worry about
 how or where the data segments came from.
 
@@ -76,7 +78,7 @@ computing, but in life generally. I'm half tempted to talk about the
 reasons why Unix became so popular, because of the portability afforded
 to it by the C language, but I'll leave that for another time, perhaps.
 Instead, I'll mention something that occurred to me on [my run this
-morning](/tweets/qmacro/status/1018729969470582785/) instead.
+morning](/tweets/qmacro/status/1018729969470582785/) instead.
 The spoken word is also an abstraction. That seems obvious when you say
 it out loud, as it were. But the concept of a common "high level"
 language like English closely parallels programming languages. The
@@ -89,7 +91,7 @@ each other.
 
 \*I'm wondering if this language abstraction layer will change when we
 eventually get direct access to each others brains, in a similar way to
-how the soldiers in the [Old Man's
+how the soldiers in the [Old Man's
 War](https://en.wikipedia.org/wiki/Old_Man%27s_War) science fiction
 novel series communicate via their Brain Pals.
 
@@ -112,7 +114,7 @@ expressiveness.
 I'd already started to get acquainted with the various target
 compilation flavours from early experimentation, such as compiling CDS
 entity definitions from the [canonical Books, Authors and Orders entity
-definitions](https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/8e6468092318414391ac3f53e62a5c68.html) into
+definitions](https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/8e6468092318414391ac3f53e62a5c68.html) into
 SQL statements to create a persistence layer in a traditional RDBMS
 system:
 
@@ -146,7 +148,7 @@ i347491@C02W52RKHV2Q:~/local/projects/bookshop
 ```
 
 or even compiling the [corresponding service
-definition](https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/8e6468092318414391ac3f53e62a5c68.html) to
+definition](https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/8e6468092318414391ac3f53e62a5c68.html) to
 the Swagger OpenAPI format (I found a reference to "swgr" being an
 output target by looking through the CDS compiler's source code):
 
@@ -195,7 +197,7 @@ have EDMX as well as Swagger.
 
 But there's more. Like the English language with its various dialects,
 CDS offers a rich and powerful expressiveness, with its
-[annotations](https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/4fab1e2be122466d83fd7b84676945de.html) and
+[annotations](https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/4fab1e2be122466d83fd7b84676945de.html) and
 [aspects](https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/40582e7bbeca4311b0b165c8b9745094.html)
 as two examples I would like to dig into and understand better.
 
@@ -207,7 +209,7 @@ components across the layers is very much something of value. And CDS
 has all the makings of that abstraction.
 
 It's been working well for us thus far (in the ABAP stack and beyond,
-as se38 and many others have been saying for a while) and it can
+as se38 and many others have been saying for a while) and it can
 continue to help us as we grow from our roots below ground, with stems
 and blossoms reaching up to the clouds.
 
@@ -215,11 +217,7 @@ This post was brought to you today by a peaceful run through an east
 Manchester dawn, and [Pact Coffee's Villa Rubiela
 Espresso](https://www.pactcoffee.com/coffees/villa-rubiela-espresso).
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-abstraction/ba-p/13356245)

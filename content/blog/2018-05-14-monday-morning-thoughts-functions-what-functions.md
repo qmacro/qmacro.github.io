@@ -6,6 +6,8 @@ tags:
   - monday-morning-thoughts
   - functional-programming
   - opinion
+  - cloud
+  - faas
   - sap-community-post
 ---
 
@@ -55,7 +57,7 @@ possibly could you be paying for?
 
 Therein lies the beauty of FaaS. At least to me, it's the ultimate in
 compute agility. I write a relatively short function [in a simple
-editor](/blog/posts/2018/03/26/monday-morning-thoughts:-cloud-native/),
+editor](/blog/posts/2018/03/26/monday-morning-thoughts-cloud-native/),
 test and deploy it, wire it into the event fabric, and then sit back. My
 account won't be charged until the function is actually invoked. I
 don't have to have anything running to form sockets for incoming
@@ -89,7 +91,7 @@ from whom I've learned a lot.
 Maple Mill, Oldham
 
 \*Yes, I'm mindful of the fact that this weaving metaphor is in my DNA,
-growing up surrounded by a legacy of [cotton
+growing up surrounded by a legacy of [cotton
 mills](https://en.wikipedia.org/wiki/Cotton_mill) in the heart of the
 industrial revolution here in the north west of England, a revolution
 that bootstrapped world industry.
@@ -121,21 +123,20 @@ So we have a runtime that we only pay for when in use, a set of
 functions that - for all practical purposes - don't exist except when
 they need to be invoked - and well-known standards that describe the
 contract against which we must design our computing logic. That's a
-pretty nice state of affairs. But what's it good for?
+pretty nice state of affairs. But what's it good for?
 
 Well, consider the nature of our business computing today. We're
 operating in a hybrid world, with systems on-premise and in the cloud.
 Business processes exist across system boundaries, and across those
 different granular layers we considered earlier:
 
--   at the IaaS level, we have traditional ABAP stack runtime VMs (lower
-    than that if they're on premise on actual physical hosts, of
-    course)
--   at the PaaS level, we have services on the SAP Cloud Platform
-    (Workflow, Predictive, Business Rules, etc)
--   at the SaaS level we have Concur, SuccessFactors, Ariba and many
-    other cloud software offerings
-
+- at the IaaS level, we have traditional ABAP stack runtime VMs (lower
+  than that if they're on premise on actual physical hosts, of
+  course)
+- at the PaaS level, we have services on the SAP Cloud Platform
+  (Workflow, Predictive, Business Rules, etc)
+- at the SaaS level we have Concur, SuccessFactors, Ariba and many
+  other cloud software offerings
 
 To be able to define discrete pieces of execution, that then lie dormant
 until they're required, is a facility that we'll find increasingly
@@ -165,12 +166,12 @@ web server somewhere, I just write the code that does what I need it to
 do and inject it into the cloud. I don't have to own a VM, have access
 to a web server, and - best of all - don't have to worry about having
 to add configuration to that existing web server [without breaking
-anything](/blog/posts/2018/05/07/monday-morning-thoughts:-containers-and-silence/),
+anything](/blog/posts/2018/05/07/monday-morning-thoughts-containers-and-silence/),
 just to get a callback to be, well, callable. Moreover, I used FaaS in
 the form of Google Cloud Functions in my [Discovering SCP
 Workflow](/blog/posts/2018/01/16/discovering-scp-workflow/)
 series, writing a [service
-proxy](https://blogs.sap.com/2018/01/17/discovering-scp-workflow-service-proxy/)
+proxy](/blog/posts/2018/01/17/discovering-scp-workflow-service-proxy/)
 as a cloud function.
 
 With the natural environment for computing in our SAP ecosystem becoming
@@ -187,16 +188,10 @@ help us improve how we write and deliver stable and reliable software.
 
 One function at a time.
 
----
-
 This post was brought to you by [Pact Coffee's La
 Secreta](https://www.pactcoffee.com/coffees/la-secreta), and the
 birdsong of an early and peaceful Monday morning.
 
----
-
-Read more posts in this series here: [Monday morning thoughts](/tags/monday-morning-thoughts/).
-
----
+Read more posts in this series here: [Monday morning thoughts](/tags/monday-morning-thoughts/).
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-functions-what-functions/ba-p/13365087)

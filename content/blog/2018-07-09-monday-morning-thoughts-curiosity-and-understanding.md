@@ -7,6 +7,7 @@ tags:
   - learning
   - opinion
   - sap-community-post
+  - cap
 ---
 
 On Friday I
@@ -53,12 +54,12 @@ time to look into something that had been nagging me for a few weeks.
 I've written about these subjects in this [Monday morning thoughts
 series](/tags/monday-morning-thoughts/) before. In
 fact, I have two posts, one on [programming
-models](/blog/posts/2018/06/25/monday-morning-thoughts:-programming-models/)
+models](/blog/posts/2018/06/25/monday-morning-thoughts-programming-models/)
 and one on
-[CDS](/blog/posts/2018/06/11/monday-morning-thoughts:-core-data-services/).
+[CDS](/blog/posts/2018/06/11/monday-morning-thoughts-core-data-services/).
 I'm fascinated by the fact that now I'm wearing my CDS tinted
 spectacles I can see it everywhere. And I was intrigued by the
-Application Programming Model's [Getting Started
+Application Programming Model's [Getting Started
 tutorial](https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/5ec8c983a0bf43b4a13186fcf59015fc.html),
 in particular what was going on behind the scenes - what was the SAP Web
 IDE doing for us as we progressed, what was being generated, and perhaps
@@ -92,7 +93,7 @@ perhaps moreso the outermost package.json file, which contained this:
 
 There's an SAP NPM (Node Package Manager) registry at
 <https://npm.sap.com> - I remember reading about it in a post
-from sven.kohlhaas last year: "[SAP NPM Registry launched: Making the
+from Sven Kohlhaas last year: "[SAP NPM Registry launched: Making the
 lives of Node.js developers
 easier](https://blogs.sap.com/2017/05/16/sap-npm-registry-launched-making-the-lives-of-node.js-developers-easier/)".
 
@@ -133,7 +134,7 @@ CDS return code: 0
 
 Indeed, that first message "(CDS) Using language server \..." had
 kicked off my thoughts in the [Monday morning thoughts post on Core Data
-Services](/blog/posts/2018/06/11/monday-morning-thoughts:-core-data-services/).
+Services](/blog/posts/2018/06/11/monday-morning-thoughts-core-data-services/).
 
 Staring long enough at that output, it appears that the "Build CDS"
 command in the SAP Web IDE triggered some sort of npm based process.
@@ -141,7 +142,7 @@ command in the SAP Web IDE triggered some sort of npm based process.
 ## Challenge accepted
 
 Could it be that I could find
-the `@sap/cds`
+the `@sap/cds`
 package in the NPM registry, install it manually in a terminal session,
 and get to where I was here in the SAP Web IDE, but independent of it?
 
@@ -161,7 +162,7 @@ aka sudo-ing to root.
 
 Anyway, I added the SAP NPM registry to my config, crossed my fingers,
 and asked for a global install of
-the `@sap/cds`
+the `@sap/cds`
 package:
 
 ```shell
@@ -286,7 +287,7 @@ What this tells me is that our hunch about CDS was not crazy:
 
 > CDS -- a layer that has hitherto been largely understated -- has an identity, a version, all of its own. Even the CDS compiler has its own version. Rather than thinking about CDS as an amorphous blob of language that sits implicitly somewhere between the database and UI5 (especially Fiori Elements, with the annotations that CDS offers), CDS is very much something that we should sit up and pay attention to as an explicit part of SAP's development technology stack."
 
-*-- from the Monday Morning Thoughts post on [Core Data Services](/blog/posts/2018/06/11/monday-morning-thoughts:-core-data-services/)*
+*-- from the Monday Morning Thoughts post on [Core Data Services](/blog/posts/2018/06/11/monday-morning-thoughts-core-data-services/)*
 
 <a name="another-win-for-curiosity"></a>
 ## Another win for curiosity
@@ -319,17 +320,11 @@ I suspect there are many of you with a similar approach to things. What
 are your experiences, how do you learn and increase your understanding?
 Let me know in the comments. And in the meantime \... stay curious.
 
----
-
 This post was brought to you by a refreshingly cool run in the early
 Manchester sunrise, and [Pact Coffee's
 Planalto](https://www.pactcoffee.com/coffees/planalto).
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-curiosity-and-understanding/ba-p/13386230)

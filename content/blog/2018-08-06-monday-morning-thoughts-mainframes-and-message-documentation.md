@@ -7,11 +7,12 @@ tags:
   - computing-history
   - opinion
   - sap-community-post
+  - mainframes
 ---
 
 On my route into Manchester for Saturday's run with the [Mikkeller
 Running Club Manchester
-chapter](https://web.archive.org/web/20160309010719/http://mikkellerrunningclub.dk/chapters/manchester/) I listened
+chapter](https://web.archive.org/web/20160309010719/http://mikkellerrunningclub.dk/chapters/manchester/) I listened
 to an InfoQ interview: [Adrian Cockcroft on Microservices, Terraservices
 \[sic\] and Serverless
 Computing](https://www.infoq.com/podcasts/adrian-cockcroft). From 2016,
@@ -56,7 +57,7 @@ workloads is what mainframes are all about.
 
 \*Of course, I've written about the mainframe era before, when thinking
 about web terminals and the cloud in general in an earlier post in
-this [Monday morning
+this [Monday morning
 thoughts](/tags/monday-morning-thoughts/) series:
 "[upload / download in a cloud native
 world](/blog/posts/2018/04/16/monday-morning-thoughts:-upload-download-in-a-cloud-native-world/)",
@@ -156,7 +157,7 @@ IEF237I 00E  ALLOCATED TO PRINTER1
 Both message identifiers show that the messages belong to the IEF
 family, which is for events relating to IPL, Job Entry Subsystem (JES)
 and scheduler services, and more (see the [z/OS Message
-Directory](https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.1.0/com.ibm.zos.v2r1.ieam100/msgpre.htm) for
+Directory](https://www.ibm.com/support/knowledgecenter/en/SSLTBW_2.1.0/com.ibm.zos.v2r1.ieam100/msgpre.htm) for
 more information). We're pointed to the system messages volume 8
 (IEF-IGD), the older equivalent of which would have been hanging in that
 documentation room all those decades ago.
@@ -219,18 +220,12 @@ read, and were documented to within an inch of their life. It's one
 aspect of the first mainframe era that I'd love to see revived in the
 second mainframe era. What's not to like?
 
----
-
 This post was brought to you by today's quiet run in the dawn light
 that rose on a new week, and by the happy nostalgia that looking through
 old IBM documentation ([available at
 bitsavers](http://bitsavers.org/pdf/ibm/)) brings.
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-mainframes-and-message-documentation/ba-p/13375699)

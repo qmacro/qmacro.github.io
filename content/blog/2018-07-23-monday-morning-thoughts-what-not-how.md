@@ -5,17 +5,19 @@ description: In this post, I think about how we program, about the way we descri
 tags:
   - monday-morning-thoughts
   - cap
+  - cds
   - opinion
   - sap-community-post
+  - functional-programming
 ---
 
 Over the past week, three worlds have collided, in a most pleasing way.
 First, I've been digging a little bit more into the powerful [data
 model definition abstraction of Core Data
-Services](https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/c94d921f740e4c66a15924fb53933eef.html) (CDS),
+Services](https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/c94d921f740e4c66a15924fb53933eef.html) (CDS),
 following on from last week's post in this [Monday morning thoughts
 series](/tags/monday-morning-thoughts/), on
-[abstraction](/blog/posts/2018/07/16/monday-morning-thoughts:-abstraction/).
+[abstraction](/blog/posts/2018/07/16/monday-morning-thoughts-abstraction/).
 
 Then, in browsing the content of my bookshelves, I came across a copy of a
 wonderful course on SAP assembler macro programming for R/2, called IT-400
@@ -24,7 +26,7 @@ and written by Peter Skov.
 ![a photo of the front cover of a reproduced copy of
 IT-400](/images/2018/07/it-400.png)
 
-(I'd lost my original copy; this new copy was courtesy of Chris Whealy,
+(I'd lost my original copy; this new copy was courtesy of Chris Whealy,
 a good friend and fellow curious companion - he was one half of our
 old shared blog "Language Ramblings").
 
@@ -52,11 +54,11 @@ diverge in meaning or intent, like comments and code can do - this was a
 point made in the recent SAP Coffee Corner Radio podcast episode 4:
 "[ABAP - The Special
 Snowflake](https://anchor.fm/sap-community-podcast/episodes/Episode-4-ABAP---The-Special-Snowflake-with-Nigel--Graham-e1qds0/a-a1ptlh)
-with nigel.james and graham.robinson". But I'll leave that for another
+with Nigel James and Graham Robinson". But I'll leave that for another
 time.
 
 With CDS, the purity of abstraction is very evident with how data models
-are described. With the three-entity bookshop example in the [Getting
+are described. With the three-entity bookshop example in the [Getting
 Started
 tutorial](https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/5ec8c983a0bf43b4a13186fcf59015fc.html),
 even non-CDS initiates can understand the intent, even the detail, of
@@ -64,7 +66,7 @@ what's written. Moreover, how the definitions and relationships are
 implemented - in a database-specific way - are not important at this
 level. The beauty of this is that it allows the extension of definitions
 to other models in a high-level and natural way. (If you're interested
-in learning more about this, see Oliver Welzel's post "[ITelO -- A
+in learning more about this, see Oliver Welzel's post "[ITelO -- A
 Sample Business Application for the new Application Programming Model
 for SAP Cloud
 Platform](https://blogs.sap.com/2018/06/27/itelo-a-sample-business-application-for-the-new-application-programming-model-for-sap-cloud-platform)".)
@@ -76,7 +78,7 @@ languages](http://www.acornatom.nl/atom_handleidingen/atap/atap02.html)
 in a single program, for the Acorn Atom, which was one of the many
 features that made the Atom both quirky and much loved. With 6502
 assembler or the mainframe [370 assembly
-language](https://en.wikipedia.org/wiki/IBM_Basic_assembly_language_and_successors) upon
+language](https://en.wikipedia.org/wiki/IBM_Basic_assembly_language_and_successors) upon
 which the R/2 systems that I worked with was based (and the subject of
 the IT-400 course), while you felt close to the machine, you were very
 far away from your fellow programmers and an abstract layer of intent.
@@ -115,10 +117,9 @@ programming, or at least a favourable by-product. Let's dive into the
 example that I use.
 
 We have a complex data structure of entities and samples for those
-entities (relating to the [UI5 Explored
+entities (relating to the [ H5 Explored
 app](https://sapui5.hana.ondemand.com/explored.html), in case you're
-curious) and want to count the number of samples for the entities in a
-particular namespace. Here's the traditional way of doing it:
+curious) and want to count the number of samples for the entities in a particular namespace. Here's the traditional way of doing it:
 
 ```javascript
 var total = 0;
@@ -208,21 +209,17 @@ Rubiela](https://www.pactcoffee.com/coffees/villa-rubiela-espresso) and
 the peace and quiet of a very early (and damp) Monday morning in
 Manchester.
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
 
----
+## Update 03 Aug
 
-**Update 03 Aug**: There's now a [recording of my remote
+There's now a [recording of my remote
 session](https://www.youtube.com/watch?v=R8Z25evYw0o&list=PLHUs_FUbq4dWi0NJg0o6-ztQ2lFgbfS5z&t=0s&index=6)
-"Functional programming for you UI5 apps" available, a cut-down
+"Functional programming for your UI5 apps" available, a cut-down
 version of the worksheet in the form of a [presentation](https://docs.google.com/presentation/d/1tSQkrIUneHENJqqAogFkcyw2Hztxk-SL497w1RH6emg/). The recording is
 one in a whole series of recordings from the UI5con Bangalore event.
 
 ![An image of the UI5con@SAP Bangalore 2018 flyer](/images/2018/07/ui5conflyer.png)
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-what-not-how/ba-p/13361296)

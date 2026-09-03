@@ -28,7 +28,7 @@ this week as we prepare ourselves for one of the two major learning
 events of the year in the SAP calendar - SAPPHIRENOW (the other of
 course being SAP TechEd).
 
-![](/images/2018/06/Screen-Shot-2018-06-04-at-09.48.20.png)
+![My "Learning Continuum" Trello board](/images/2018/06/Screen-Shot-2018-06-04-at-09.48.20.png)
 
 *I have a "Learning Continuum" Trello board where I keep track of what
 to read next*
@@ -106,8 +106,9 @@ the fact that the subject of the post, and the tutorial, helps a great
 deal to crystallise the part of the continuum that lies just in front of
 us.
 
-![Image result for
-cornerstone](https://upload.wikimedia.org/wikipedia/commons/8/83/Hartington_auditorium_cornerstone_3.JPG)
+![Cornerstone at southwest corner of city auditorium in Hartington, Nebraska
+(from Wikimedia
+Commons)](https://upload.wikimedia.org/wikipedia/commons/8/83/Hartington_auditorium_cornerstone_3.JPG)
 
 *Cornerstone at southwest corner of city auditorium in Hartington,
 Nebraska (from [Wikimedia
@@ -149,17 +150,11 @@ stage of my self-education, and am looking forward to it very much.
 What areas of the learning continuum are you contemplating tackling, and
 what are you hoping to level up on?
 
----
-
 This post was brought to you while cooling down from a very hot and
 humid dawn run around the streets of Vineland in Orlando, Florida, and
 some pretty average tasting coffee from the hotel breakfast area.
 
----
-
 Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-the-learning-continuum/ba-p/13353212)

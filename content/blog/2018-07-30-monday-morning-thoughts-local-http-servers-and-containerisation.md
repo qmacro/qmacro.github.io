@@ -21,7 +21,7 @@ out of the pages.
 
 ![](/images/2018/07/Screen-Shot-2018-07-30-at-05.46.58.png)
 
-One of my all time tech heroes [Jon Udell](http://jonudell.net/) wrote
+One of my all time tech heroes [Jon Udell](http://jonudell.net/) wrote
 regularly for Byte, and I had the honour of meeting him at O'Reilly's
 Open Source Convention (OSCON) back in the early 2000's.
 
@@ -100,7 +100,7 @@ bundle itself was portable. Love or loathe the Java language itself,
 it's hard to deny the early portability of code provided by the real
 triumph of Java - the Java Virtual Machine (JVM). Download a Java
 archive, run it, and connect to the service you've just instantiated by
-specifying "localhost" and some port number\* in your browser.
+specifying "localhost" and some port number\* in your browser.
 
 \*the port number was usually above 1024, as getting a service to listen
 on port numbers lower than that [requires root
@@ -146,26 +146,20 @@ journey that started back in the days of Byte is far from over.
 
 I for one am genuinely intrigued and excited by the prospect and reality
 of cloud native computing, and what we are doing in the SAP world in
-that area - take a look at Bjoern Goerke's post "[SAP Cloud Platform:
+that area - take a look at Björn Goerke's post [SAP Cloud Platform:
 An open enterprise platform with a cloud-native
-core](https://blogs.sap.com/2018/07/24/sap-cloud-platform-an-open-enterprise-platform-with-a-cloud-native-core/)"
+core](https://blogs.sap.com/2018/07/24/sap-cloud-platform-an-open-enterprise-platform-with-a-cloud-native-core/)
 for examples of what open source and partnership initiatives are taking
 place in this area right now. I have a feeling that there's a
 pioneering spirit still very fresh in this age, and am looking forward
 to seeing where it takes us.
-
----
 
 This post was brought to you by [Pact Coffee's Ubumwe
 Kigoma](https://www.pactcoffee.com/coffees/ubumwe-kigoma) and the odd
 feeling of not going out on a Monday dawn due to an enforced rest from
 running to give my tired legs a chance to recover.
 
----
-
 Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-local-http-servers-and-containerisation/ba-p/13368372)
