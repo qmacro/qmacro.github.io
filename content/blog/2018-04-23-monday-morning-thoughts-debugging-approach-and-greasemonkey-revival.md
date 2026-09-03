@@ -50,24 +50,21 @@ better](/blog/posts/2005/05/20/hacking-the-sap-service-portal-to-make-oss-notes-
 
 So I wanted to leave you with two thoughts for this week:
 
--   seeing others' development and debugging workflow can be of great
-    benefit - getting inside the programming heads of your friends and
-    colleagues and seeing their preferences and approaches can be not
-    only educational but also fun
--   the introspective and manipulative power that's baked into UI5
-    gives us all sorts of possibilities; the Greasemonkey style approach
-    is by definition (and design) ephemeral, but I think that is one of
-    its charms - nobody is claiming that the "solutions" will work
-    long term, but there are plenty of situations where a quick
-    temporary fix, or a scratched itch, is exactly what's needed to get
-    the job done.
-
+ seeing others' development and debugging workflow can be of great
+ benefit - getting inside the programming heads of your friends and
+ colleagues and seeing their preferences and approaches can be not
+ only educational but also fun
+ the introspective and manipulative power that's baked into UI5
+ gives us all sorts of possibilities; the Greasemonkey style approach
+ is by definition (and design) ephemeral, but I think that is one of
+ its charms - nobody is claiming that the "solutions" will work
+ long term, but there are plenty of situations where a quick
+ temporary fix, or a scratched itch, is exactly what's needed to get
+ the job done.
 
 Do you have some programming or debugging workflow to share? What tools
 do you use? What does your desktop and working environment look like?
 Let us know in the comments below.
-
- 
 
 p.s. For those that are interested, here's the final version of the
 JavaScript I put in my bookmarklet:
@@ -80,11 +77,7 @@ javascript: (function() {
 })();
 ```
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/mondaymorningthoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-debugging-approach-and-greasemonkey-revival/ba-p/13384813)

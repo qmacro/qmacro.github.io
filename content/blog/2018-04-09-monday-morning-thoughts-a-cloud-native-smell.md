@@ -11,7 +11,7 @@ tags:
 
 Continuing on from my earlier [random
 thoughts](/blog/posts/2018/03/26/monday-morning-thoughts:-cloud-native/)
-about what cloud native means to me, I was musing this morning on the
+about what cloud native means to me, I was musing this morning on the
 nature of the web, and specifically URIs - or rather their
 specialisation that we see most commonly - URLs.
 
@@ -87,7 +87,7 @@ noticed that a lot of the URLs had similar opaque identifiers in them.
 For example, if I created a temporary trial account, or a temporary
 member within a trial account. If I added a subaccount or was given
 access to a new global account, whether in the Neo or (now the) Cloud
-Foundry context \... each time, I saw unique, opaque identifiers.
+Foundry context ... each time, I saw unique, opaque identifiers.
 
 Here's another couple of (modified) examples:
 
@@ -111,22 +111,22 @@ that article is the section on "[The Opacity
 Axiom](https://www.w3.org/DesignIssues/Axioms.html#opaque)", which
 states:
 
-*"The only thing you can use an identifier for is to refer to an
+> "The only thing you can use an identifier for is to refer to an
 object. When you are not dereferencing, you should not look at the
-contents of the URI string to gain other information."*
+contents of the URI string to gain other information."
 
 This axiom somewhat goes against the grain of what I like to think, but
 is actually crucial. First from the point of view of the side-effect of
 trying to infer structure from a URL, but more importantly from the
 perspective of where we are today, in the cloud native context of
-resources being spun up, created, instantiated, conjured up \... and
+resources being spun up, created, instantiated, conjured up ... and
 then after their utility has been spent, being deleted, destroyed,
-disappeared\*.
+disappeared.
 
-(\*yes I know I'm using this verb transitively, but there you go.
+(Yes I know I'm using the verb "disappeared" transitively, but there you go.
 Talking of unusual words and unusual usages, did you notice TBL using
 the word "disillusion" in the "Cool URIs Don't Change" article -
-also as a transitive verb? That use has been [waning since the early
+also as a transitive verb? That use has been [waning since the early
 C20](https://books.google.com/ngrams/graph?year_start=1800&year_end=2008&corpus=15&smoothing=7&case_insensitive=on&content=disillusion&direct_url=t4%3B%2Cdisillusion%3B%2Cc0%3B%2Cs0%3B%3Bdisillusion%3B%2Cc0%3B%3BDisillusion%3B%2Cc0),
 but still wonderful.)
 
@@ -142,7 +142,7 @@ equally anonymous as it is unique.
 
 And it's the very presence of these superficially ugly but essentially
 throwaway identifiers in URLs (after all,
-[URLs](https://en.wikipedia.org/wiki/URL) \*are\*
+[URLs](https://en.wikipedia.org/wiki/URL) *are*
 [URIs](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier),
 aren't they) that to me form a subtle hint, a signpost, a smell, that
 what we're dealing with is something that is cloud native. Resources,
@@ -150,10 +150,10 @@ services, VMs, clusters, subaccounts - they're created and destroyed
 all the time, not just in a web environment but in on-premise contexts
 and sometimes within proprietary architectures.
 
-The fact that resources \-- and I'm using the word "resource" while
+The fact that resources -- and I'm using the word "resource" while
 thinking about how that word is used in [Representational State
 Transfer](https://en.wikipedia.org/wiki/Representational_state_transfer)
-(REST) \-- need identifiers in the context of the web (and yes,
+(REST) -- need identifiers in the context of the web (and yes,
 "cloud" doesn't mean "just web (HTTP)"), but our interface to the
 cloud is predominantly via that protocol) means that the increasing
 occurrence of URLs with long strings of opaque characters often triggers
@@ -162,17 +162,11 @@ native.
 
 What are your thoughts?
 
----
-
 This post was brought to you by [Finca Buenos
 Aires](https://www.pactcoffee.com/coffees/finca-buenos-aires) coffee and
 some happy memories from the early days of the web.
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/mondaymorningthoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-a-cloud-native-smell/ba-p/13372514)

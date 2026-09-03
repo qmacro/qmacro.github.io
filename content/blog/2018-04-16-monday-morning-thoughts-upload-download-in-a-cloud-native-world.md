@@ -127,7 +127,7 @@ Perhaps that's the answer longer term too - provide two alternatives
 for deployment sources - a file upload facility as we saw in the first
 screenshot at the top of this post, but also a source code control
 endpoint - perhaps a special "one time use" endpoint with an opaque
-GUID. This is not something that exists today of course - we have to
+GUID. This is not something that exists today of course - we have to
 have the itch to scratch, to see it built.
 
 ## Further thoughts
@@ -140,16 +140,10 @@ feel right to me long term.
 I know folks like their local computing power, and who am I to deny them
 that? What are your thoughts? I'd love to hear them.
 
----
+This post was brought to you by birdsong in the early dawn, and a nice cup of
+tea.
 
-This post was brought to you by birdsong in the early dawn, and a nice
-cup of tea.
-
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/mondaymorningthoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-upload-download-in-a-cloud-native-world/ba-p/13378369)
