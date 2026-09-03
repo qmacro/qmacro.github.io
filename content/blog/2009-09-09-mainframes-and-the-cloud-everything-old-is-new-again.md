@@ -4,7 +4,7 @@ title: Mainframes and the cloud - everything old is new again
 description: Drawing parallels between mainframe computing and the cloud, noting how everything old is new again.
 tags:
   - computing-history
-  - mainframe
+  - mainframes
   - cloud
   - sap
   - opinion

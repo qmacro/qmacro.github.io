@@ -7,7 +7,7 @@ tags:
   - cloud
   - opinion
   - sap-community-post
-  - mainframe
+  - mainframes
   - terminals
 ---
 
