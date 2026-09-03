@@ -29,7 +29,7 @@ style.
 ![NB FULLY RESTFUL](/images/2024/12/narrowboat-fully-restful.jpg)
 
 I dedicated one of the posts in my weekly [Monday morning
-thoughts](/tags/mondaymorningthoughts/) series to [the topic of
+thoughts](/tags/monday-morning-thoughts/) series to [the topic of
 OData](http://localhost:5005/blog/posts/2018/08/20/monday-morning-thoughts-odata/).
 
 ## Opportunity

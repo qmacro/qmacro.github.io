@@ -160,7 +160,7 @@ simple OData services that can be consumed elsewhere.
 
 I'm not just talking about OData, of course. As I mentioned in a
 previous [Monday morning
-thoughts](/tags/mondaymorningthoughts/) post on
+thoughts](/tags/monday-morning-thoughts/) post on
 [milestones](/blog/posts/2018/05/21/monday-morning-thoughts:-milestones/),
 the Internet Communication Manager, and its user-space layer in the form
 of the Internet Communication Framework (ICF), is a thing of beauty, and
@@ -202,7 +202,7 @@ yesterday.
 ---
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 ---
 

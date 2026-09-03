@@ -144,6 +144,6 @@ This post was brought to you by birdsong in the early dawn, and a nice cup of
 tea.
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-upload-download-in-a-cloud-native-world/ba-p/13378369)

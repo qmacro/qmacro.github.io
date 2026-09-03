@@ -101,7 +101,7 @@ that has meaning and significance to all of them.
 ## The new canonical example
 
 In last week's [Monday morning
-thoughts](/tags/mondaymorningthoughts/), on the
+thoughts](/tags/monday-morning-thoughts/), on the
 [learning
 continuum](/blog/posts/2018/06/04/monday-morning-thoughts:-the-learning-continuum/),
 I mentioned the new [Application Programming Model for the SAP Cloud
@@ -180,7 +180,7 @@ and the lingering tiredness of transatlantic jet-lag.
 ---
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 ---
 

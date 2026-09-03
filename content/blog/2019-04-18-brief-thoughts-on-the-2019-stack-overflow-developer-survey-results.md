@@ -34,7 +34,7 @@ I know I'm in the minority with my degree, but didn't expect the minority to be 
 
 **[Other Types of Education](https://insights.stackoverflow.com/survey/2019#developer-profile-_-other-types-of-education)**
 
-The text that accompanies the results in this section starts with "Developers are lifelong learners". That resonates very much with me; when people ask what I do, I often say "I learn". See the section [Trying to keep up](https://blogs.sap.com/2018/10/01/monday-morning-thoughts-impostor-syndrome/#tryingtokeepup) in my [Monday Morning Thoughts](https://blogs.sap.com/tag/mondaymorningthoughts/) post on [impostor syndrome](https://blogs.sap.com/2018/10/01/monday-morning-thoughts-impostor-syndrome/) for more background on this.
+The text that accompanies the results in this section starts with "Developers are lifelong learners". That resonates very much with me; when people ask what I do, I often say "I learn". See the section [Trying to keep up](https://blogs.sap.com/2018/10/01/monday-morning-thoughts-impostor-syndrome/#tryingtokeepup) in my [Monday Morning Thoughts](https://blogs.sap.com/tag/monday-morning-thoughts/) post on [impostor syndrome](https://blogs.sap.com/2018/10/01/monday-morning-thoughts-impostor-syndrome/) for more background on this.
 
 If I were feeling bold, perhaps I'd go so far as to say that if you're not learning, you're not a developer.
 

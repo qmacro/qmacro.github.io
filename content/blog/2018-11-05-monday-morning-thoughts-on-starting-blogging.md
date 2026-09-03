@@ -92,7 +92,7 @@ Més Petita) - a quiet place to recharge.*
 
 If you've not taken the plunge yet, you might want to consider doing
 so. Previously in this [Monday morning thoughts
-series](/tags/mondaymorningthoughts/) I wrote about
+series](/tags/monday-morning-thoughts/) I wrote about
 what makes a good blog post, and also what writing such a post does for
 the author - see "[Monday morning thoughts: a good blog
 post](/blog/posts/2018/08/27/monday-morning-thoughts:-a-good-blog-post/)".
@@ -167,7 +167,7 @@ morning](/tweets/qmacro/status/1059329572985036801/).
 
 ---
 
-Read more posts in this series here: [Monday morning thoughts](/tags/mondaymorningthoughts/).
+Read more posts in this series here: [Monday morning thoughts](/tags/monday-morning-thoughts/).
 
 ---
 

@@ -245,7 +245,7 @@ needed.
 Cloud native: this is a concept representing many ideas and
 technologies, too many to consider individually in this post (although
 I've dwelled on some of them in previous posts in this [Monday morning
-thoughts series](/tags/mondaymorningthoughts/)).
+thoughts series](/tags/monday-morning-thoughts/)).
 From the new layers in the as-a-service stack, through messaging,
 event-driven programming, [12-factor app](https://12factor.net/) design
 and container based deployments and service management, this is as far
@@ -282,7 +282,7 @@ for more details.
 ---
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 ---
 

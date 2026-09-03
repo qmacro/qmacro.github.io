@@ -167,6 +167,6 @@ Aires](https://www.pactcoffee.com/coffees/finca-buenos-aires) coffee and
 some happy memories from the early days of the web.
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-a-cloud-native-smell/ba-p/13372514)

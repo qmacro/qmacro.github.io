@@ -114,7 +114,7 @@ Nebraska (from [Wikimedia
 Commons](https://commons.wikimedia.org/wiki/File:Hartington_auditorium_cornerstone_3.JPG))*
 
 In a previous post in this [Monday morning
-thoughts](/tags/mondaymorningthoughts/) series (on
+thoughts](/tags/monday-morning-thoughts/) series (on
 [milestones](/blog/posts/2018/05/21/monday-morning-thoughts:-milestones/))
 I suggested that Core Data Services (CDS) was worthy of being considered
 a major milestone. Mixing stone metaphors slightly, I would suggest that
@@ -158,7 +158,7 @@ some pretty average tasting coffee from the hotel breakfast area.
 ---
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 ---
 

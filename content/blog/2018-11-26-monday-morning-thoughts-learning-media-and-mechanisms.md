@@ -21,7 +21,7 @@ earlier this month.
 
 I've written about some of my experiences already at DevRelCon in a
 previous [Monday morning
-thoughts](/tags/mondaymorningthoughts/) post on
+thoughts](/tags/monday-morning-thoughts/) post on
 [longevity and loose
 coupling](/blog/posts/2018/11/12/monday-morning-thoughts:-longevity-and-loose-coupling/),
 where I thought about some of GitHub's features in relation to webhooks
@@ -118,7 +118,7 @@ going to be experiencing for the next 16 hours or so.
 ---
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 ---
 

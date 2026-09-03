@@ -167,7 +167,7 @@ keyboard](https://www.logitech.com/en-gb/product/multi-device-keyboard-k380).
 ---
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 ---
 

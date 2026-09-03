@@ -163,7 +163,7 @@ with the GraphQL protocol.
 Talking of GraphQL queries, it would also seem that there's a URL
 encoding of the query which to my eyes is rather unappealing. Yes, URLs
 should be opaque, we've touched on that in a previous [Monday morning
-thoughts](/tags/mondaymorningthoughts/) post, but I
+thoughts](/tags/monday-morning-thoughts/) post, but I
 still maintain that there's a pragmatic aspect that means, at least for
 me, human readable URLs are super useful at the practical level.
 
@@ -212,7 +212,7 @@ a canal boat with M on my birthday today.
 ---
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 ---
 

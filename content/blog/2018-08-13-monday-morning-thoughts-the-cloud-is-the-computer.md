@@ -93,7 +93,7 @@ functions that contain only a single expression\*.
 
 By the way, for more thoughts on serverless, functions-as-a-service and
 the event fabric, see another post in this [Monday morning thoughts
-series](https://blogs.sap.com/tag/mondaymorningthoughts/) -
+series](https://blogs.sap.com/tag/monday-morning-thoughts/) -
 "[Functions, what
 functions?](/blog/posts/2018/05/14/monday-morning-thoughts:-functions-what-functions/)".
 
@@ -191,7 +191,7 @@ Art](https://twitter.com/70sscifiart).
 ---
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 ---
 

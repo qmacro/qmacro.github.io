@@ -78,6 +78,6 @@ javascript: (function() {
 ```
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-debugging-approach-and-greasemonkey-revival/ba-p/13384813)

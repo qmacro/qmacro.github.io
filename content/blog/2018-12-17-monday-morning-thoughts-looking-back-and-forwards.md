@@ -11,7 +11,7 @@ tags:
 
 The holiday season is pretty much upon us, and for many it's a time for bringing things to a close, with a view to getting some rest and making mental room for what's to come next year. So it is with me and this series.
 
-I started this series back in March, not really paying too much attention to the regularity that the title of the post suggested. I made things worse, as it were, by writing a second [Monday morning thoughts post](/tags/mondaymorningthoughts) on the following Monday. Thereafter I had some folks reach out to me saying that they were looking forward to the next instalment. Whoops! What had I done? I hadn't really set out with the intention of writing each and every Monday. I'd thought I'd write on the occasional Monday here and there.
+I started this series back in March, not really paying too much attention to the regularity that the title of the post suggested. I made things worse, as it were, by writing a second [Monday morning thoughts post](/tags/monday-morning-thoughts) on the following Monday. Thereafter I had some folks reach out to me saying that they were looking forward to the next instalment. Whoops! What had I done? I hadn't really set out with the intention of writing each and every Monday. I'd thought I'd write on the occasional Monday here and there.
 
 I guess it all turned out OK in the end, and perhaps even became a nice challenge for me, to write something weekly, something that was hopefully interesting, relating to aspects and ideas in our SAP ecosphere and beyond. Perhaps it even became a micro obsession of mine, as I found myself publishing a post on my birthday ([Considering GraphQL](/blog/posts/2018/09/03/monday-morning-thoughts:-considering-graphql/)) and another from the balcony of our hotel room in Gran Canaria ([on longevity and loose coupling](/blog/posts/2018/11/12/monday-morning-thoughts:-longevity-and-loose-coupling/)). That's not to say that I'm encouraging you to write on your days off - but perhaps I am suggesting that you should follow your passions and do what you feel is right.
 
@@ -19,7 +19,7 @@ I guess it all turned out OK in the end, and perhaps even became a nice challeng
 
 I've had the privilege of publishing audio recordings of a few of the posts on the excellent podcast show Coffee Corner Radio and have been surprised and delighted to find folks coming to say hello at the SAP TechEd locations this year saying they've been reading and enjoying the posts.
 
-In total, including this one, there are 38 posts in the series and they're all available via the tag [mondaymorningthoughts](/tags/mondaymorningthoughts) (hurray for folksonomy systems). If you're curious, yes I did write them all on each Monday morning; while I might have mused on topics over the weekends, it would have been only semi-consciously; I got to grips with the subjects at hand there and then at the very start of each week (often helped by a run before dawn - my favourite time).
+In total, including this one, there are 38 posts in the series and they're all available via the tag [monday-morning-thoughts](/tags/monday-morning-thoughts) (hurray for folksonomy systems). If you're curious, yes I did write them all on each Monday morning; while I might have mused on topics over the weekends, it would have been only semi-consciously; I got to grips with the subjects at hand there and then at the very start of each week (often helped by a run before dawn - my favourite time).
 
 Talking of curiosity, I was wondering this morning what the dominant subjects might turn out to be. So this morning I grabbed all of the user tags from each of the posts, cleaned them up, and fed them into a tag cloud generator.
 
@@ -35,7 +35,7 @@ We're moving ever closer to open tools, standards & processes, with Cloud Foundr
 
 So 2019 has lots of exciting things in store for us. What I know for sure is that we'll continue to learn, with new topics to embrace and existing topics to master (see "digging deeper"), and we'll continue to grow as an ecosphere and as a community.
 
-This then marks the end of the [Monday morning thoughts series](/tags/mondaymorningthoughts), at least in its current form. I've really enjoyed writing them, and that's mostly because of you folks - your comments, engagement, and conversations that have started because of what you've read. Thank you, enjoy the holiday season, and I look forward to seeing you in the new year!
+This then marks the end of the [Monday morning thoughts series](/tags/monday-morning-thoughts), at least in its current form. I've really enjoyed writing them, and that's mostly because of you folks - your comments, engagement, and conversations that have started because of what you've read. Thank you, enjoy the holiday season, and I look forward to seeing you in the new year!
 
 ---
 

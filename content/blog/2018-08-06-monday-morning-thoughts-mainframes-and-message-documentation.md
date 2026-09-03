@@ -57,7 +57,7 @@ workloads is what mainframes are all about.
 \*Of course, I've written about the mainframe era before, when thinking
 about web terminals and the cloud in general in an earlier post in
 this [Monday morning
-thoughts](/tags/mondaymorningthoughts/) series:
+thoughts](/tags/monday-morning-thoughts/) series:
 "[upload / download in a cloud native
 world](/blog/posts/2018/04/16/monday-morning-thoughts:-upload-download-in-a-cloud-native-world/)",
 and way back beyond then too: "[Mainframes and the cloud - everything
@@ -229,7 +229,7 @@ bitsavers](http://bitsavers.org/pdf/ibm/)) brings.
 ---
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 ---
 

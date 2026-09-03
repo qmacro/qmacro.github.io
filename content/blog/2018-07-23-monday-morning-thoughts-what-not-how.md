@@ -14,7 +14,7 @@ First, I've been digging a little bit more into the powerful [data
 model definition abstraction of Core Data
 Services](https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-US/c94d921f740e4c66a15924fb53933eef.html) (CDS),
 following on from last week's post in this [Monday morning thoughts
-series](/tags/mondaymorningthoughts/), on
+series](/tags/monday-morning-thoughts/), on
 [abstraction](/blog/posts/2018/07/16/monday-morning-thoughts:-abstraction/).
 
 Then, in browsing the content of my bookshelves, I came across a copy of a
@@ -211,7 +211,7 @@ Manchester.
 ---
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 ---
 

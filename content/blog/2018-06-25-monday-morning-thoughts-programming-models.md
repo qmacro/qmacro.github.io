@@ -85,7 +85,7 @@ Daniel Hutzel introduced in a blog post "[Introducing the new
 Application Programming Model for SAP Cloud
 Platform](https://blogs.sap.com/2018/06/05/introducing-the-new-application-programming-model-for-sap-cloud-platform/)"
 and which I touched on in a couple of previous [Monday morning
-thoughts](/tags/mondaymorningthoughts/) posts
+thoughts](/tags/monday-morning-thoughts/) posts
 ("[the learning
 continuum](/blog/posts/2018/06/04/monday-morning-thoughts:-the-learning-continuum/)"
 and "[Core Data
@@ -234,7 +234,7 @@ order.
 ---
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 ---
 

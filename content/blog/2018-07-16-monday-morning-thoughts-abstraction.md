@@ -218,7 +218,7 @@ Espresso](https://www.pactcoffee.com/coffees/villa-rubiela-espresso).
 ---
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 ---
 

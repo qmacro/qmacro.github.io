@@ -110,7 +110,7 @@ produce the solution, doesn't compute.
 ## Today's development canvas
 
 In previous posts in this [Monday morning thoughts
-series](/tags/mondaymorningthoughts/), I've mused
+series](/tags/monday-morning-thoughts/), I've mused
 on the landscape of today: cloud first, and composed of many moving
 parts. The developer must grow and thrive to continue to be able to
 provide creative and effective solutions to business problems in
@@ -197,7 +197,7 @@ Artists](https://books.google.co.uk/books/about/The_Thames_and_Hudson_Dictionary
 ---
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 ---
 

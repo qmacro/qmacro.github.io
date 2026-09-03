@@ -180,7 +180,7 @@ And that, to me, is a good thing. What do you think?
 ---
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 ---
 

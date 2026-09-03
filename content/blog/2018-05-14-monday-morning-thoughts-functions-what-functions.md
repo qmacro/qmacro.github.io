@@ -195,7 +195,7 @@ birdsong of an early and peaceful Monday morning.
 
 ---
 
-Read more posts in this series here: [Monday morning thoughts](/tags/mondaymorningthoughts/).
+Read more posts in this series here: [Monday morning thoughts](/tags/monday-morning-thoughts/).
 
 ---
 

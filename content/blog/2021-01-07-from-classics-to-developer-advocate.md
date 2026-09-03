@@ -154,7 +154,7 @@ me.
 ## Further related reading
 
 These other posts from my [Monday morning
-thoughts](/tags/mondaymorningthoughts/) series may
+thoughts](/tags/monday-morning-thoughts/) series may
 be of interest to you:
 
 -   [Learning media and

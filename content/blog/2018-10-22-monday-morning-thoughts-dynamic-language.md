@@ -24,7 +24,7 @@ and I thought it was quite beautiful. I had a few responses to the
 tweet. In one of them, someone asked for an explanation, and
 then Julie Plummer [suggested](https://twitter.com/JuliePlummer20/status/1053526571745755137) I
 do it in the form of a post in this [Monday morning thoughts
-series](/tags/mondaymorningthoughts/). This was a
+series](/tags/monday-morning-thoughts/). This was a
 great idea, as I was already on my way to the woodstore.
 
 ![](/images/2018/10/woodstore.jpg)
@@ -386,7 +386,7 @@ this or anything else!
 ---
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 ---
 

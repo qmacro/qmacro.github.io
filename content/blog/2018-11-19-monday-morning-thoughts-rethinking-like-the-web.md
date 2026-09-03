@@ -57,7 +57,7 @@ mechanism, and as they rotated in their sockets they caught sight of a
 memory of a set of principles enumerated by [Jon
 Udell](http://jonudell.net/) - principles to help us "think like the
 web". Readers of some of my previous [Monday morning
-thoughts](/tags/mondaymorningthoughts/) posts may
+thoughts](/tags/monday-morning-thoughts/) posts may
 remember that I'm a long-time fan of Jon and his thoughts. LinkedIn's
 upload-a-copy-of-your-CV-in-the-form-of-a-file process jarred so much in
 my brain that it caused me to remember the first two principles, which
@@ -156,7 +156,7 @@ A great example of where this principle is very effective is in the user
 tag space within the SAP Community. Two examples come immediately to
 mind - I decided to tag each of the Monday morning thoughts posts with
 the user tag
-"[mondaymorningthoughts](/tags/mondaymorningthoughts/)"
+"[monday-morning-thoughts](/tags/monday-morning-thoughts/)"
 and immediately I have a quick and efficient way to refer to the entire
 collection of posts.
 
@@ -269,7 +269,7 @@ mug.
 ---
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 ---
 

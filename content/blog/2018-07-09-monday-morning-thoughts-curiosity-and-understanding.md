@@ -51,7 +51,7 @@ time to look into something that had been nagging me for a few weeks.
 ## The Application Programming Model and CDS
 
 I've written about these subjects in this [Monday morning thoughts
-series](/tags/mondaymorningthoughts/) before. In
+series](/tags/monday-morning-thoughts/) before. In
 fact, I have two posts, one on [programming
 models](/blog/posts/2018/06/25/monday-morning-thoughts:-programming-models/)
 and one on
@@ -328,7 +328,7 @@ Planalto](https://www.pactcoffee.com/coffees/planalto).
 ---
 
 Read more posts in this series here: [Monday morning
-thoughts](/tags/mondaymorningthoughts/).
+thoughts](/tags/monday-morning-thoughts/).
 
 ---
 
