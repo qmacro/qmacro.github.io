@@ -29,8 +29,8 @@ on the workflow monitor app that is part of the SAP Cloud Platform Workflow
 service.
 
 Part 2: [Instance
-Initiation](/blog/posts/2018/01/14/discovering-scp-workflow-instance-initiation/)
-- an exploration of the part of the SCP Workflow API that deals with workflow
+Initiation](/blog/posts/2018/01/14/discovering-scp-workflow-instance-initiation/) -
+an exploration of the part of the SCP Workflow API that deals with workflow
 instances, looking at how we initiate a new workflow instance, and paying
 particular attention to how we request, and then use, a cross site request
 forgery (XSRF) token.
@@ -46,8 +46,8 @@ presentation of a small proxy service I wrote to handle the minutiae of
 initiating a new workflow instance.
 
 Part 5: [Workflow
-Definition](/blog/posts/2018/01/18/discovering-scp-workflow-workflow-definition/)
-- a look at the simple (beer recommendation) scenario I came up with to trial a
+Definition](/blog/posts/2018/01/18/discovering-scp-workflow-workflow-definition/) -
+a look at the simple (beer recommendation) scenario I came up with to trial a
 workflow definition, and that workflow definition itself.
 
 Part 6: [User
