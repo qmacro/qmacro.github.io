@@ -4,6 +4,11 @@ date: 2022-01-28
 tags:
   - sap-community-post
   - containers
+  - docker
+  - cap
+  - shell
+  - developer-experience
+  - tutorial
 ---
 
 In this three-part series I outline and demonstrate an approach to help

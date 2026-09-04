@@ -3,6 +3,12 @@ title: "Boosting tutorial UX with dev containers part 3 - containers into action
 date: 2022-02-01
 tags:
   - sap-community-post
+  - containers
+  - docker
+  - cap
+  - cds
+  - developer-experience
+  - tutorial
 ---
 
 In this three-part series I outline and demonstrate an approach to help
