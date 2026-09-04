@@ -10,16 +10,16 @@ tags:
   - sap-community-post
 ---
 
-Last month, Harald Kuck published a post "[SAP Cloud Platform ABAP
-Environment](https://blogs.sap.com/2018/09/04/sap-cloud-platform-abap-environment/)"
+Last month, Harald Kuck published a post [SAP Cloud Platform ABAP
+Environment](https://blogs.sap.com/2018/09/04/sap-cloud-platform-abap-environment/)
 which many of us had been eagerly anticipating. The post has already had
 around 24K views and over 60 likes, which says something for the
 popularity of the subject matter. I followed up with a Monday morning
-thoughts post "[ABAP in the
-cloud](/blog/posts/2018/09/10/monday-morning-thoughts:-abap-in-the-cloud/)"
+thoughts post [ABAP in the
+cloud](/blog/posts/2018/09/10/monday-morning-thoughts-abap-in-the-cloud/)
 a few days later.
 
-Last week at SAP TechEd, Bernd Leukert included references to this new
+Last week at SAP TechEd, Bernd Leukert included references to this new
 ABAP environment in his keynote, which was wonderful to hear. (There
 were a lot of other great things in the keynote, such as SAP Cloud
 Platform Functions, but that's a subject for another time). And so the
@@ -41,10 +41,10 @@ later this month!
 This year there are four
 [missions](https://developers.sap.com/app-space.html):
 
--   SAP Cloud Platform (Application Programming Model)
--   SAP Cloud Platform ABAP Environment
--   S/4HANA
--   SAP Cloud Platform Portal
+- SAP Cloud Platform (Application Programming Model)
+- SAP Cloud Platform ABAP Environment
+- S/4HANA
+- SAP Cloud Platform Portal
 
 Throughout most of the week, not surprisingly, the SAP Cloud Platform
 ABAP Environment mission was leading the pack, in terms of number of
@@ -56,10 +56,10 @@ bit of technology rivalry, however, at one stage the SAP Cloud Platform
 ![](/tweets/qmacro/tweets_media/1047882500528209921-DorTk2xVsAAFotg.jpg)
 
 But in the end, the sheer weight of enthusiasm and desire to get a first
-hands-on experience meant that the SAP Cloud Platform ABAP Environment
+hands-on experience meant that the SAP Cloud Platform ABAP Environment
 mission ended up on top, as you can see from this
 [tweet](https://twitter.com/anfisc/status/1048009973320404992)
-from Andre Fischer (the total number of tutorials completed finished a
+from Andre Fischer (the total number of tutorials completed finished a
 little bit over 2000 by the time SAP TechEd finished last week):
 
 ![](/images/2018/10/Screen-Shot-2018-10-08-at-11.01.25.png)
@@ -74,7 +74,7 @@ Cloud Platform ABAP Environment was a worthy winner in this case.
 I'm going to refer to the SAP Cloud Platform ABAP Environment in the
 rest of this post unofficially as "ABAP PaaS", as that's what others
 are calling it too. In fact, that's already sparked some interesting
-conversation, as some folks are not convinced that the moniker is
+conversation, as some folks are not convinced that the moniker is
 appropriate.
 
 I remember the first release of Google's [App
@@ -112,9 +112,9 @@ and today enjoying rather [modern
 features](https://blogs.sap.com/2016/11/04/abap-news-for-release-7.51/),
 not only as part of the language itself but also within the layers of
 the greater ABAP environment as a whole - I'm thinking of Core Data
-Services (CDS), for example. The article "[ABAP and the
-Cloud](https://sapinsider.wispubs.com/Assets/Articles/2017/November/SPI-ABAP-and-the-Cloud)"
-by Karl Kessler gives a good overview of what today's ABAP looks like.
+Services (CDS), for example. The article [ABAP and the
+Cloud](https://sapinsider.wispubs.com/Assets/Articles/2017/November/SPI-ABAP-and-the-Cloud)
+by Karl Kessler gives a good overview of what today's ABAP looks like.
 
 And this is something that I think about a lot, in the context of the
 modernisation of ABAP as we move to the cloud. Some language features
@@ -138,7 +138,7 @@ itself is written in ABAP.
 So I find it more useful to think about the "ABAP environment" rather
 than the "ABAP language". It's greater than the sum of its parts. And
 with the advent of excellent initiatives from the community
-([abapGit](https://github.com/larshp/abapGit) from Lars Hvam immediately
+([abapGit](https://github.com/larshp/abapGit) from Lars Hvam immediately
 comes to mind) it's becoming even greater.
 
 When we think of the ABAP language itself, there is sometimes the
@@ -209,8 +209,8 @@ has been designed, with the focus on CDS based and API focused service
 solutions, it starts to make a lot of sense to me.
 
 ![](/images/2018/09/sap-cloud-platform-abap-environment.png)
-*From "[SAP Cloud Platform ABAP
-Environment](https://blogs.sap.com/2018/09/04/sap-cloud-platform-abap-environment/)"
+*From [SAP Cloud Platform ABAP
+Environment](https://blogs.sap.com/2018/09/04/sap-cloud-platform-abap-environment/)
 by Harald Kuck*
 
 There's no concept of UI as we understand it from the traditional
@@ -242,19 +242,19 @@ already long enough. I think it's a rather exciting time for SAP's
 cloud-first initiatives in general, and for the ABAP community in
 particular. Many of us have already been learning about the programming
 model that is key to building solutions on ABAP PaaS, and that is
-the ABAP RESTful Programming Model. If you haven't yet had chance to
+the ABAP RESTful Programming Model. If you haven't yet had chance to
 dig in, I'd recommend this SAP TechEd session, which is available
-online already: "[CNA215 - See the Big Picture of the ABAP RESTful
+online already: [CNA215 - See the Big Picture of the ABAP RESTful
 Programming Model, 2018 Las
-Vegas](https://events.sap.com/teched/en/session/41240)" by Marcel
+Vegas](https://events.sap.com/teched/en/session/41240) by Marcel
 Hermanns. If you're coming to SAP TechEd in Barcelona later this month,
 drop in to the Developer Garage to work through the SAP Cloud Platform
 ABAP Environment tutorials (access to an ABAP PaaS system will be
 provided).
 
-It's early days for ABAP PaaS. The team is taking a "[release early,
+It's early days for ABAP PaaS. The team is taking a [release early,
 release
-often](https://en.wikipedia.org/wiki/Release_early,_release_often)"
+often](https://en.wikipedia.org/wiki/Release_early,_release_often)
 approach to delivery, so I'm seeing today's ABAP PaaS offering as a
 minimum viable product. Over time I expect to see the environment grow -
 in terms of whitelisting, in terms of comprehension and of course in
@@ -265,10 +265,8 @@ prospect of building extensions and net new apps using this modern
 environment. I'd love to hear from you too. Let me know what you think
 in the comments section below.
 
----
-
 This post was brought to you by [Pact Coffee's El
-Silencio](https://www.pactcoffee.com/coffees/el-silencio-espresso) which
+Silencio](https://www.pactcoffee.com/coffees/el-silencio-espresso) which
 is helping me battle the jet lag after returning home from Las Vegas, by
 the hashtag [#ABAPsNotDead](https://twitter.com/hashtag/abapsnotdead),
 and by the clackety-clack of the Cherry MX Blue switches in the
@@ -276,11 +274,7 @@ mechanical keyboard I'm trying out, as I embark upon a new
 ~~[obsession](https://www.reddit.com/r/MechanicalKeyboards)~~
 hobby.
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-more-on-abap-in-the-cloud/ba-p/13365539)

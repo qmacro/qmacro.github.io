@@ -16,10 +16,10 @@ appeared in my timeline, and it made me smile:
 
 ![](/images/2018/09/Screen-Shot-2018-09-10-at-07.45.15.png)
 
-Last week, Harald Kuck [announced the availability of the SAP Cloud
+Last week, Harald Kuck [announced the availability of the SAP Cloud
 Platform ABAP
 Environment](https://blogs.sap.com/2018/09/04/sap-cloud-platform-abap-environment/),
-and it was followed up a day later by a second post from Karl Kessler:
+and it was followed up a day later by a second post from Karl Kessler:
 "[SAP Cloud Platform ABAP Environment is
 live](https://blogs.sap.com/2018/09/05/sap-cloud-platform-abap-environment-is-live/)".
 While it was rather a big event, it wasn't that it came as a surprise -
@@ -29,7 +29,7 @@ wonder about, which is a good thing.
 
 I'd encourage you to read both Harald's and Karl's posts as they
 provide lots of information about the environment in general, and if
-you're on Twitter, [Jens Weiler](https://twitter.com/ABAP4H) is posting
+you're on Twitter, [Jens Weiler](https://twitter.com/ABAP4H) is posting
 a series of tweets with the hashtag
 [#ABAPPaaS](https://twitter.com/hashtag/abapPaaS), which are definitely
 worth keeping an eye on.
@@ -55,8 +55,7 @@ mechanisms - SAPGUI of course, but also, latterly, the browser, with Web
 Dynpro ABAP constructions (although even here the main "mass" of UI
 execution remained within the ABAP stack itself).
 
-![Image result for yin
-yang](/images/2018/09/yinyang.png)
+![Image result for yin/yang](/images/2018/09/yinyang.png)
 
 ## The yin and yang of backend and frontend
 
@@ -83,7 +82,7 @@ The pragmatic approach to building Fiori apps is to use the UI5 toolkit
 to build the frontend components, which in turn consume backend
 components written on the ABAP stack (or natively in HANA) and exposed
 through a wire protocol, where the wire is HTTP shaped and the protocol
-is often (though not always) OData flavoured.
+is often (though not always) OData flavoured.
 
 So for the past few years, there's been a lovely yin/yang balance
 between backend and frontend, both equally important and each
@@ -109,7 +108,7 @@ runtime and persistence layer. Somewhere to write our application logic,
 or our custom OData service, some place to run code that connects into
 the SaaS solutions via the [connectivity
 fabric](https://cloudplatform.sap.com/capabilities/product-info.SAP-Cloud-Platform-Connectivity.43bdae3a-bec5-4c47-83ed-44197926b024.html)
-of SAP Cloud Platform using [well-defined APIs](https://api.sap.com/). A
+of SAP Cloud Platform using [well-defined APIs](https://api.sap.com/). A
 place to call home, in other words.
 
 Of course, in the SAP Cloud Platform context, we already have places to
@@ -161,7 +160,7 @@ simple OData services that can be consumed elsewhere.
 I'm not just talking about OData, of course. As I mentioned in a
 previous [Monday morning
 thoughts](/tags/monday-morning-thoughts/) post on
-[milestones](/blog/posts/2018/05/21/monday-morning-thoughts:-milestones/),
+[milestones](/blog/posts/2018/05/21/monday-morning-thoughts-milestones/),
 the Internet Communication Manager, and its user-space layer in the form
 of the Internet Communication Framework (ICF), is a thing of beauty, and
 allows us, as masters of the ABAP stack (on-prem as well as in this new
@@ -180,7 +179,7 @@ cloud-based ABAP systems with SAPGUI. You won't even be connecting
 yourself with SAPGUI - you'll be using the ADT with Eclipse, and, gosh,
 eschewing the venerable SE11 for declarative, code-based data
 definitions! Moreover, you'll be using modern tools (think
-[abapGit](https://github.com/larshp/abapGit) and more) for your all your
+[abapGit](https://github.com/larshp/abapGit) and more) for your all your
 software logistics needs. Think backend services, think extending cloud
 solutions, think future.
 
@@ -192,18 +191,12 @@ Cloud Platform ABAP environment, and the journey ahead is one that we
 should travel together. There are still areas that need ironing out, for
 sure, but I for one am looking forward to taking my first steps.
 
----
-
 This post was brought to you by [Pact Coffee's
 Planalto](https://www.pactcoffee.com/coffees/planalto), and the
 stiffness of joints that are a result of a classic fall on my run
 yesterday.
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-abap-in-the-cloud/ba-p/13372577)

@@ -18,7 +18,7 @@ slightly worse off from a workflow perspective, with extra mental and
 software logistics baggage (I now had another plugin to think about and
 keep up to date) on top. This only added to the feeling that [I've no
 idea what I'm
-doing](/blog/posts/2018/07/09/monday-morning-thoughts:-curiosity-and-understanding/#another-win-for-curiosity).
+doing](/blog/posts/2018/07/09/monday-morning-thoughts-curiosity-and-understanding/#another-win-for-curiosity).
 
 I [tweeted](/tweets/qmacro/status/1070232169996414977/) my
 thoughts at the time, and they seemed to resonate with folks:
@@ -40,9 +40,9 @@ simply because I'm fickle and attracted to shiny things.
 This latter reason is why I also use Visual Studio Code, which has
 turned out to be a very accomplished and pleasant environment indeed,
 and of course for which there is an excellent extension for SAP's Cloud
-Application Programming Model. See "[Set up VS Code on Chrome OS for
+Application Programming Model. See [Set up VS Code on Chrome OS for
 local Application Programming Model
-development](/blog/posts/2018/10/16/set-up-vs-code-on-chrome-os-for-local-application-programming-model-development/)"
+development](/blog/posts/2018/10/16/set-up-vs-code-on-chrome-os-for-local-application-programming-model-development/)
 for more details on this.
 
 \* I didn't make that statistic up, but I suspect that the person who
@@ -62,9 +62,9 @@ my go-to tools for making HTTP calls.
 
 Of course since then I've discovered the perhaps now equally venerable
 [cURL](https://curl.haxx.se/), but I also use GNU's
-[wget](https://www.gnu.org/software/wget/) (which I extended in script
-space at one stage - see this post "[ETag-enabled
-wget](/blog/posts/2002/05/24/etag-enabled-wget/)"
+[wget](https://www.gnu.org/software/wget/) (which I extended in script
+space at one stage - see this post [ETag-enabled
+wget](/blog/posts/2002/05/24/etag-enabled-wget/)
 from 2002). So in the same way that I flit between editors, I switch
 also between HTTP client tools, and invariably have to look up even
 basic parameters and switches because they differ from tool to tool.
@@ -75,7 +75,7 @@ does. I've been doing this mostly through the SAP Cloud Platform
 Cockpit (the performance of which has improved nicely recently) which is
 very comfortable, but a month or two back I dusted off the command line
 tool 'cf' which I'd
-[downloaded](https://github.com/cloudfoundry/cli) and tried out briefly
+[downloaded](https://github.com/cloudfoundry/cli) and tried out briefly
 earlier this year.
 
 I knew in theory that everything I was doing in the Cockpit I could do
@@ -95,7 +95,7 @@ much better understanding.
 
 And what about actual programming? Well, there are languages and
 frameworks that immediately come to mind. Yesterday I was helping out at
-[Manchester CoderDojo](https://mcrcoderdojo.org.uk/) [teaching some
+[Manchester CoderDojo](https://mcrcoderdojo.org.uk/) [teaching some
 JavaScript](/tweets/qmacro/status/1071886022353584128/) to
 some youngsters (and enjoying the delight on their faces when they
 solved some simple cryptography puzzles programmatically). We managed to
@@ -167,14 +167,10 @@ consciously influencing a return to depth.
 
 Wish me luck!
 
----
-
 This post was brought to you by the happy feeling of a good run this
 morning, by a nice cup of [Pact Coffee's La
-Concepcion](https://www.pactcoffee.com/coffees/la-concepcion) and the
+Concepcion](https://www.pactcoffee.com/coffees/la-concepcion) and the
 calming purple tones of my [Dracula themed
 desktop](/tweets/qmacro/status/1071079866265669635/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-digging-deeper/ba-p/13394293)

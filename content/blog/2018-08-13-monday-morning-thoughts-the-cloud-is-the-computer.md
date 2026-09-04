@@ -11,7 +11,7 @@ tags:
 
 Sun Microsystems, an incredibly venerable hardware and software company
 from back in the day, is the creator, directly or indirectly, of some of
-the technologies & ideas we still use today. These technologies include
+the technologies & ideas we still use today. These technologies include
 the Network File System (NFS), Java, XML and even the ultimate editor,
 vi, originally written by one of Sun's co-founders Bill Joy. Sun's
 Solaris was one of the many Unix flavours upon which R/3 was made
@@ -25,24 +25,24 @@ the computer" is becoming more appropriate today.
 ## The future of programming
 
 This weekend I watched a very interesting talk by Chris Granger called
-"[What does programming look like in 10
-years?](https://www.youtube.com/watch?v=zQo4jUVWI_I)". Chris is someone
+[What does programming look like in 10
+years?](https://www.youtube.com/watch?v=zQo4jUVWI_I). Chris is someone
 who has written some very interesting experimental software, notably
 (for me) [Light Table](http://lighttable.com/), a "next generation"
 code editor with many features including inline evaluation of code, as
 you type. This idea is more common today than it was back then - I use
 it in often in the form of the excellent
-[Quokka](https://quokkajs.com/) editor plugin, it's also a core feature
-of the [Ramda REPL](https://ramdajs.com/repl/) where you can explore
+[Quokka](https://quokkajs.com/) editor plugin, it's also a core feature
+of the [Ramda REPL](https://ramdajs.com/repl/) where you can explore
 seriously good functional programming in JavaScript, and in fact the
 latest version of Chrome, version 68, has [eager
 evaluation](https://developers.google.com/web/updates/2018/05/devtools#eagerevaluation)
 built into the console.
 
-![Image result for lighttable](/images/2018/08/watches.png)
+![A screenshot of Light Table 0.5.0 showing the results of inline evaluation, the feature also known as "instarepl"](/images/2018/08/watches.png)
 
 *A screenshot of [Light Table
-0.5.0](http://www.chris-granger.com/2013/08/22/light-table-050/) showing
+0.5.0](http://www.chris-granger.com/2013/08/22/light-table-050/) showing
 the results of inline evaluation, the feature also known as "instarepl"*
 
 Light Table was one of many programming environments that Chris has
@@ -69,7 +69,9 @@ think this was perhaps as much to do with portability as well as the
 mechanics of complex table definitions inherited from the R/2 era -
 think clusters and pools).
 
-![](/images/2018/08/Screen-Shot-2018-08-13-at-08.15.17.png)
+![A still image from the film 2001 A Space Odyssey, showing the "Dawn Of Man"
+scene with the apes around the
+monolith](/images/2018/08/Screen-Shot-2018-08-13-at-08.15.17.png)
 
 *Programming R/2, courtesy of 2001 A Space Odyssey*
 
@@ -91,17 +93,17 @@ until it's needed again. It allows us to dream that little bit closer
 to one academic ideal of the Lambda Calculus, which relates to defining
 functions that contain only a single expression\*.
 
-By the way, for more thoughts on serverless, functions-as-a-service and
+By the way, for more thoughts on serverless, functions-as-a-service and
 the event fabric, see another post in this [Monday morning thoughts
-series](https://blogs.sap.com/tag/monday-morning-thoughts/) -
-"[Functions, what
-functions?](/blog/posts/2018/05/14/monday-morning-thoughts:-functions-what-functions/)".
+series](/tags/monday-morning-thoughts/) -
+[Functions, what
+functions?](/blog/posts/2018/05/14/monday-morning-thoughts:-functions-what-functions/).
 
 \*I had a very interesting conversation yesterday with my fellow
-Language Rambling writer Chris Whealy yesterday
+Language Rambling writer Chris Whealy yesterday
 about this academic ideal, in relation to his activities around [writing
 succinct and functional
-JavaScript](https://twitter.com/LogaRhythm/status/1027867611902689280) in
+JavaScript](https://twitter.com/LogaRhythm/status/1027867611902689280) in
 preparation for SAP TechEd.
 
 ## A rich diversity
@@ -119,7 +121,7 @@ Moreover, it also means writing exits and custom code at well-known
 extension points, in an "in-app" style, with development work where
 it's hard to say whether what you're doing is programming or
 configuring. This reminds me of something that came up briefly in my
-conversation with Jakob Kjaer and Simon Kemp in the [inaugural SAP Coffee
+conversation with Jakob Kjaer and Simon Kemp in the [inaugural SAP Coffee
 Corner
 episode](https://anchor.fm/sap-community-podcast/episodes/Episode-1---Interview-with-DJ-Adams-e1ac40)
 earlier this year.
@@ -167,7 +169,7 @@ configuration that can be tweaked and customised, exits that can be
 activated and code supplied thereto, routines in the data layer that can
 be triggered.
 
-![File:Stormclouds.jpg](/images/2018/08/800px-Stormclouds.jpg)
+![A photo of storm clouds](/images/2018/08/800px-Stormclouds.jpg)
 
 *Stormclouds, courtesy of [Wikimedia
 Commons](https://commons.wikimedia.org/wiki/File:Stormclouds.jpg)*
@@ -180,19 +182,13 @@ And so I must conclude that when I think about the future of
 programming, I am compelled to conclude that in a virtual sense, and
 perhaps a real sense, the cloud is the computer.
 
----
-
 This post was brought to you on an early rainy Monday morning in
 Manchester by [Pact Coffee's Ubumwe
 Kigoma](https://www.pactcoffee.com/coffees/ubumwe-kigoma) and new
 desktop background pictures courtesy of [70s Sci-Fi
 Art](https://twitter.com/70sscifiart).
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-the-cloud-is-the-computer/ba-p/13383893)

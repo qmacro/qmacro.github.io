@@ -18,9 +18,9 @@ and enjoyable today as they were then.
 
 ## The Total Perspective Vortex
 
-The episode I listened to was Fit the Eighth where Zaphod Beeblebrox was
-fed into the [Total Perspective Vortex](https://hitchhikers.fandom.com/wiki/Total_Perspective_Vortex), allegedly
-the most horrible torture device to which a sentient being can be
+The episode I listened to was Fit the Eighth where Zaphod Beeblebrox was
+fed into the [Total Perspective Vortex](https://hitchhikers.fandom.com/wiki/Total_Perspective_Vortex), allegedly
+the most horrible torture device to which a sentient being can be
 subjected, in that:
 
 > "When you are put into the Vortex you are given just one momentary
@@ -138,10 +138,6 @@ Happy learning!
 This post was brought to you by a warm pre SAP TechEd morning in Las
 Vegas and some coffee from the hotel that was only just "OK".
 
----
-
-Read more posts in this series here: [Monday morning thoughts](/tags/monday-morning-thoughts/)
-
----
+Read more posts in this series here: [Monday morning thoughts](/tags/monday-morning-thoughts/)
 
 [Originally published on SAP Community](https://community.sap.com/t5/sap-teched-blog-posts/monday-morning-thoughts-impostor-syndrome/ba-p/13357879)

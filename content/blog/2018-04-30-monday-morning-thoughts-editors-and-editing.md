@@ -7,11 +7,13 @@ tags:
   - tools
   - opinion
   - sap-community-post
+  - serverless
+  - kubernetes
 ---
 
 This weekend I continued to look into [Kubeless](https://kubeless.io/),
 a serverless framework that is native to Kubernetes. Kubernetes allows
-you to automate deployment, scaling, and management of containerized
+you to automate deployment, scaling, and management of containerized
 applications - in other words, to orchestrate units of computing across
 places where containers run, on your workstation as well as in the
 cloud.
@@ -74,7 +76,7 @@ to the scripts themselves which are more a means to an end.
 
 Moreover, the fact that at the time of writing, only ES5 JavaScript is
 supported, preventing me from indulging in [fat arrow
-syntax](http://exploringjs.com/es6/ch_arrow-functions.html) and other
+syntax](http://exploringjs.com/es6/ch_arrow-functions.html) and other
 ES6 goodies like
 [generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function%2A).
 This in turn holds me back slightly from "over committing", in the
@@ -164,8 +166,8 @@ whitespace & indentation or not?":
 The overwhelming response so far is that people care. I have already had
 some great responses, from the [strong
 words](https://twitter.com/JelenaAtLarge/status/990795362104422402)
-from Jelena Perfiljeva to versions of an editor-feature solution
-from se38 , Yuval Morad and others
+from Jelena Perfiljeva to versions of an editor-feature solution
+from se38 , Yuval Morad and others
 (format-on-save or a format hotkey).
 
 Yes, the editor-feature solutions are great, but only when we're
@@ -187,14 +189,14 @@ clean up the indentation.
 
 ## The future normal?
 
-A community member mentioned (on Slack) the other day something along the
+A community member mentioned (on Slack) the other day something along the
 lines of "I've got my editor just how I want it now", which implied
 to me a lot of care, attention and obsessive tweaking that I admire, but
 am thinking is - in some scenarios - less worthwhile these days. In my
 mental move to become a cloud native (see what I did there?) I'm moving
 away from becoming attached one specific editor and preparing myself for
 a future normal, which might be described nicely in a [Colossal Cave
-style](https://en.wikiquote.org/wiki/Colossal_Cave_Adventure) thus:
+style](https://en.wikiquote.org/wiki/Colossal_Cave_Adventure) thus:
 
 YOU ARE IN A MAZE OF TWISTY LITTLE EDITORS, ALL DIFFERENT
 
@@ -212,10 +214,10 @@ wherever it is.
 How about you?
 
 This post was brought to you by [La Secreta
-coffee](https://www.pactcoffee.com/coffees/la-secreta) and the quiet of
+coffee](https://www.pactcoffee.com/coffees/la-secreta) and the quiet of
 an early Monday morning.
 
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
 
 ## Update 02 May 2018:

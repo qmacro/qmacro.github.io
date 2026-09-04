@@ -22,11 +22,11 @@ that's the problem.
 
 The problem is this part:
 
-*Browse files to upload \-- Microsoft Word or PDF only (5MB)*
+*Browse files to upload -- Microsoft Word or PDF only (5MB)*
 
 Don't worry, this isn't some point about productivity suite tools.
 It's about the process assumed and implied. It's the assumption that
-one will \*upload\* a document to LinkedIn's servers. The implication
+one will *upload* a document to LinkedIn's servers. The implication
 is that one is being asked to party like it's 1999 (with apologies to
 the artist formerly known as Prince), almost the equivalent of giving
 someone a floppy disk with some out of date files on it.
@@ -57,15 +57,15 @@ mechanism, and as they rotated in their sockets they caught sight of a
 memory of a set of principles enumerated by [Jon
 Udell](http://jonudell.net/) - principles to help us "think like the
 web". Readers of some of my previous [Monday morning
-thoughts](/tags/monday-morning-thoughts/) posts may
+thoughts](/tags/monday-morning-thoughts/) posts may
 remember that I'm a long-time fan of Jon and his thoughts. LinkedIn's
 upload-a-copy-of-your-CV-in-the-form-of-a-file process jarred so much in
 my brain that it caused me to remember the first two principles, which
 the process broke.
 
 So I thought it worth pointing to these principles, which Jon outlines
-in his blog post "[Seven ways to think like the
-web](https://blog.jonudell.net/2011/01/24/seven-ways-to-think-like-the-web/)", and
+in his blog post [Seven ways to think like the
+web](https://blog.jonudell.net/2011/01/24/seven-ways-to-think-like-the-web/), and
 consider them in a context that resonates with us - in our community. I
 also thought it would be an interesting exercise to see how they might
 also apply as we build solutions on the web with SAP Cloud Platform.
@@ -86,13 +86,13 @@ conversational platform.
 In the context of solutions that we build on SAP Cloud Platform there
 are multiple aspects to consider. One that immediately comes to mind is
 the concept of multitenant application provision & subscription
-(see Hariprasauth R's post "[Developing Multitenant Applications on
+(see Hariprasauth R's post [Developing Multitenant Applications on
 SAP Cloud Platform, Cloud Foundry
-environment](https://blogs.sap.com/2018/09/17/developing-multitenant-applications-on-sap-cloud-platform-cloud-foundry-environment/)"
+environment](https://blogs.sap.com/2018/09/17/developing-multitenant-applications-on-sap-cloud-platform-cloud-foundry-environment/)
 for an overview of this). When we subscribe to and use such an app on
 SAP Cloud Platform we're reminded of the authority and identity of the
 app's functionality by the very fact that the URL pattern includes the
-app name as well as our own (subscriber) identity \... I'm thinking in
+app name as well as our own (subscriber) identity ... I'm thinking in
 particular of the tenant host pattern.
 
 By the way, this is the first of the two principles broken by the Easy
@@ -140,10 +140,10 @@ The representation requested and delivered is negotiated in the HTTP
 request and response via "Accept" and "Content-Type" headers and is
 called "content negotiation" or "conneg" for short. There are some
 links in these following two posts that you may find useful for further
-reading: "[Conneg and the duality of
-weblogs](/blog/posts/2003/02/28/'conneg'-and-the-duality-of-weblogs/)"
-and "[Coffeeshop screencast: HTTP conneg, resource representations and
-JSON](/blog/posts/2009/08/20/coffeeshop-screencast:-http-conneg-resource-representations-and-json/)".
+reading: [Conneg and the duality of
+weblogs](/blog/posts/2003/02/28/conneg-and-the-duality-of-weblogs/)
+and [Coffeeshop screencast: HTTP conneg, resource representations and
+JSON](/blog/posts/2009/08/20/coffeeshop-screencast-http-conneg-resource-representations-and-json/).
 
 The concept of resources, representations and content negotiation
 applies equally well beyond blogging; a flexible HTTP-based, API-driven
@@ -156,13 +156,13 @@ A great example of where this principle is very effective is in the user
 tag space within the SAP Community. Two examples come immediately to
 mind - I decided to tag each of the Monday morning thoughts posts with
 the user tag
-"[monday-morning-thoughts](/tags/monday-morning-thoughts/)"
+[monday-morning-thoughts](/tags/monday-morning-thoughts/)
 and immediately I have a quick and efficient way to refer to the entire
 collection of posts.
 
 Likewise, I took it upon myself to tag my posts about the Application
 Programming Model with the user tag
-"[applicationprogrammingmodel](https://blogs.sap.com/tag/applicationprogrammingmodel/)",
+[applicationprogrammingmodel](https://blogs.sap.com/tag/applicationprogrammingmodel/),
 with a similar effect. I managed to encourage other authors to do the
 same, so we now have a collective and minimum-effort mechanism for
 organising and sharing information about the topic.
@@ -170,9 +170,9 @@ organising and sharing information about the topic.
 When it comes to SAP Cloud Platform, perhaps the principle is harder to
 apply. While there are ideas at work in the app URL space that we
 referred to earlier, I think how we scale apps and services generally
-means that there's less relevance. Have a read of "[Monday morning
+means that there's less relevance. Have a read of [Monday morning
 thoughts: a cloud native
-smell](/blog/posts/2018/04/09/monday-morning-thoughts:-a-cloud-native-smell/)"
+smell](/blog/posts/2018/04/09/monday-morning-thoughts-a-cloud-native-smell/)
 for some thoughts on URLs for the cloud native era to see what I mean.
 
 ### 5. Push your data to the widest appropriate scope
@@ -192,8 +192,8 @@ and participating in the SAP Community is great.
 
 ### 6. Participate in pub/sub networks as both a publisher and a subscriber
 
-In a previous post "[Monday morning thoughts: the cloud is the
-computer](/blog/posts/2018/08/13/monday-morning-thoughts:-the-cloud-is-the-computer/)" I
+In a previous post [Monday morning thoughts: the cloud is the
+computer](/blog/posts/2018/08/13/monday-morning-thoughts-the-cloud-is-the-computer/) I
 talked a little bit about publish / subscribe (pub/sub for short). There's an
 obvious connection for us in the SAP Community, where we publish blog
 posts and Q&A content using tags, and subscribe to those we're
@@ -202,14 +202,14 @@ interested in.
 But I think there's a much more interesting connection with solutions
 that are possible today on SAP Cloud Platform, particularly in the area
 of decoupled extensions to S/4HANA software. I've just started
-following the new openSAP course "[Create and Deliver Cloud-Native SAP
-S/4HANA Extensions](https://open.sap.com/courses/s4h13/)" and there's
+following the new openSAP course [Create and Deliver Cloud-Native SAP
+S/4HANA Extensions](https://open.sap.com/courses/s4h13/) and there's
 this slide in Week 1 Unit 2 (SAP S/4HANA and Extensibility):
 
 ![](/images/2018/11/Screenshot-2018-11-19-at-08.57.16.png)
 
-Bjoern Goerke's exhortation "[keep the core
-clean](https://blogs.sap.com/2018/11/08/keep-the-core-clean-clarifying-points-from-bjorn-goerkes-keynote/)"
+Bjoern Goerke's exhortation [keep the core
+clean](https://blogs.sap.com/2018/11/08/keep-the-core-clean-clarifying-points-from-bjorn-goerkes-keynote/)
 means, amongst other things, extending rather than modifying, and
 building side-by-side extensions on SAP Cloud Platform allows us to do
 that.
@@ -220,7 +220,7 @@ TechEd in Las Vegas and Barcelona - loose coupling in the form of
 events, which are published and subscribed to by relevant software
 parties. You can read more about this in last Monday's post on
 [longevity and loose
-coupling](/blog/posts/2018/11/12/monday-morning-thoughts:-longevity-and-loose-coupling/).
+coupling](/blog/posts/2018/11/12/monday-morning-thoughts-longevity-and-loose-coupling/).
 
 ### 7. Reuse components and services
 
@@ -231,8 +231,8 @@ joined" architecture that in part echoes a major principle of the Unix
 design and philosophy\*.
 
 \*As an aside, this reminds me of a wonderful post by [Sinclair
-Target](https://sinclairtarget.com/) on his Two Bit History blog: "[The
-Source History of Cat](https://twobithistory.org/2018/11/12/cat.html)".
+Target](https://sinclairtarget.com/) on his Two Bit History blog: [The
+Source History of Cat](https://twobithistory.org/2018/11/12/cat.html).
 If you haven't read his posts, you really have something to look
 forward to and enjoy.
 
@@ -258,19 +258,13 @@ aspirations to flow beyond the original ideas of us humans participating
 on the web, to how we think about and design solutions in the new cloud
 native world.
 
----
-
 This post was brought to you by a wintry morning back home after a few
 days in Gran Canaria and by [Pact Coffee's La
 Concepcion](https://www.pactcoffee.com/coffees/la-concepcion) in my SAP
 [Coffee Corner Radio](https://anchor.fm/sap-community-podcast) podcast
 mug.
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-rethinking-like-the-web/ba-p/13371656)

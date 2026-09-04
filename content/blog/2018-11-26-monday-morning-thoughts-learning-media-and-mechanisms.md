@@ -14,7 +14,7 @@ This will be a shorter post than usual\*, as I've just arrived at the
 instance of this year's SAP TechEd event, in Bangalore. As I sit here
 with some coffee, I've been thinking about my experiences at the recent
 [Developer Relations
-Conference](https://london-2018.devrel.net) (DevRelCon) in London
+Conference](https://london-2018.devrel.net) (DevRelCon) in London
 earlier this month.
 
 \* some of you may be breathing a sigh of relief!
@@ -23,7 +23,7 @@ I've written about some of my experiences already at DevRelCon in a
 previous [Monday morning
 thoughts](/tags/monday-morning-thoughts/) post on
 [longevity and loose
-coupling](/blog/posts/2018/11/12/monday-morning-thoughts:-longevity-and-loose-coupling/),
+coupling](/blog/posts/2018/11/12/monday-morning-thoughts-longevity-and-loose-coupling/),
 where I thought about some of GitHub's features in relation to webhooks
 and serverless computing in general. But this time I'd like to dwell a
 short while on some other stuff that I learned during the conference.
@@ -45,7 +45,7 @@ it includes a clear indication of learning goals, and definitions of
 "what good looks like" with respect to mastery of a subject.
 
 I'm mindful of our [tutorial
-system](https://developers.sap.com/tutorial-navigator.html) within our
+system](https://developers.sap.com/tutorial-navigator.html) within our
 developer home space at <https://developers.sap.com>, and with the
 recent revamp for the start of the SAP TechEd season, I do think we're
 on the right path, especially having heard from others at the
@@ -62,7 +62,7 @@ wider SAP ecosphere world. There's the [SAP Help
 Portal](https://help.sap.com/viewer/), various YouTube channels, such as
 the [SAP HANA Academy](https://www.youtube.com/user/saphanaacademy), and
 who could omit the wonderful Massive Open Online Course (MOOC)
-[openSAP](https://open.sap.com) with some excellent courses that run
+[openSAP](https://open.sap.com) with some excellent courses that run
 over weeks.
 
 ![](/images/2018/11/Screen-Shot-2018-11-26-at-06.16.34.png)
@@ -86,7 +86,7 @@ TV](https://www.twitch.tv/) recently (based on some other conversations
 at DevRelCon). It has certainly been eye opening - who knew there were
 so many games out there and so many folks not only playing but
 spectating? I found the [Science & Technology
-channel](https://www.twitch.tv/directory/game/Science%20%26%20Technology) in
+channel](https://www.twitch.tv/directory/game/Science%20%26%20Technology) in
 which various folks teach, indirectly, I guess, by streaming their live
 coding experiences. Fascinating, and I learned stuff almost by accident
 while transfixed by the experience.
@@ -108,18 +108,12 @@ Bangalore](https://events.sap.com/teched-2018-india/en/home), come and
 say hi at the Developer Garage, and tell me directly how you learn
 best!
 
----
-
 This post was brought to you by the hustle and bustle of an early Monday
 morning in Manchester airport, by Pret-A-Manger's filter coffee (not
 too bad actually), and by the prospect of the "travel-daze" that I'm
 going to be experiencing for the next 16 hours or so.
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/welcome-corner-blog-posts/monday-morning-thoughts-learning-media-and-mechanisms/ba-p/13378616)

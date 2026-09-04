@@ -19,7 +19,7 @@ Reader](https://en.wikipedia.org/wiki/Google_Reader), RSS is alive and well and
 powering syndication & sharing on the web even today. (If you want to
 know more about RSS, its history and its relation to OData, you might
 want to read "[Monday morning thoughts:
-OData](/blog/posts/2018/08/20/monday-morning-thoughts:-odata/)".)
+OData](/blog/posts/2018/08/20/monday-morning-thoughts-odata/)".)
 
 That got me thinking of the protocol upon which RSS relies - the
 venerable HyperText Transfer Protocol (HTTP). HTTP has been around for a
@@ -39,14 +39,16 @@ what an email looks like. There are headers, and a body - the email
 message, effectively. Headers are name:value pairs, and the headers are
 separated from the body by an empty line. Here's a simplified example:
 
-    Message-ID: <23944892.154212220.SomeMail.root@2ea9232e1>
-    From: Sender <sender@example.com>
-    To: recipient@example.com
-    Subject: The email subject line
-    Date: Sat, 10 Nov 2018 14:25:13 +0000 (UTC)
-    Content-Type: text/plain; charset=UTF-8
+```text
+Message-ID: <23944892.154212220.SomeMail.root@2ea9232e1>
+From: Sender <sender@example.com>
+To: recipient@example.com
+Subject: The email subject line
+Date: Sat, 10 Nov 2018 14:25:13 +0000 (UTC)
+Content-Type: text/plain; charset=UTF-8
 
-    Greetings, earthling!
+Greetings, earthling!
+```
 
 In HTTP, described in RFC [2616](https://www.ietf.org/rfc/rfc2616.txt),
 messages are either requests or responses, and in both cases, the
@@ -57,25 +59,29 @@ and the corresponding HTTP response:
 
 Request:
 
-    GET /qmacro/blog/ HTTP/1.1
-    User-Agent: Mozilla/5.0 (X11; CrOS x86_64 11151.17.0)
-    Host: pipetree.com
-    Accept-Language: en-gb
-    Accept-Encoding: gzip, deflate
-    Connection: Keep-Alive
+```text
+GET /qmacro/blog/ HTTP/1.1
+User-Agent: Mozilla/5.0 (X11; CrOS x86_64 11151.17.0)
+Host: pipetree.com
+Accept-Language: en-gb
+Accept-Encoding: gzip, deflate
+Connection: Keep-Alive
+```
 
 Response:
 
-    HTTP/1.1 200 OK
-    Date: Mon, 12 Nov 2018 06:43:07 GMT
-    Server: Apache/2.4.18 (Ubuntu)
-    Content-Type: text/html; charset=utf-8
-    Content-Length: 10557
+```text
+HTTP/1.1 200 OK
+Date: Mon, 12 Nov 2018 06:43:07 GMT
+Server: Apache/2.4.18 (Ubuntu)
+Content-Type: text/html; charset=utf-8
+Content-Length: 10557
 
-    <!DOCTYPE HTML>
-    <html>
-    <head>
-    <title>DJ's Weblog</title>
+&lt;!DOCTYPE HTML>
+&lt;html>
+&lt;head>
+&lt;title>DJ's Weblog&lt;/title>
+```
 
 There's a beauty in the simplicity and similarity across all these
 different examples - they follow the same pattern, even sharing some
@@ -101,7 +107,7 @@ I have exhorted the attendees to learn core technologies regardless of
 the path they take. One of these core technologies that I think everyone
 should learn is HTTP.
 
-## Probot and Webhooks 
+## Probot and Webhooks
 
 Something else I looked into this weekend was a result of my attendance
 last week at [DevRelCon 2018 London](https://web.archive.org/web/20190112064724/https://london-2018.devrel.net/),
@@ -136,7 +142,7 @@ implement, but it's rather wasteful and inefficient.
 
 \*Interestingly, Jeff likens webhooks to *pingbacks*, which I wrote
 about in last week's post: "[Monday morning thoughts: on starting
-blogging](/blog/posts/2018/11/05/monday-morning-thoughts:-on-starting-blogging/)".
+blogging](/blog/posts/2018/11/05/monday-morning-thoughts-on-starting-blogging/)".
 
 Back in 2007 when Jeff described this architectural pattern, we
 immediately saw the possibilities of a web of event-driven services,
@@ -145,7 +151,7 @@ inter-application communication.
 
 Today, it still is. Look at the other half of what Probot is built
 upon - GitHub's event API. Want to have some checks automatically
-carried out when source code is updated? Want to trigger a process in
+carried out when source code is updated? Want to trigger a process in
 your organisation when a pull request is made to a specific repository?
 Register a callback, to be executed when these events happen. The form
 of that execution is simply some code, somewhere, that responds to an
@@ -158,35 +164,35 @@ frameworks function, is an essential skill, in my opinion\*.
 \*one of the ideas that drove me originally to create the Alternative
 Dispatcher Layer (ADL) for the ABAP stack was the lovely similarity
 between HTTP server frameworks large and small, across different
-languages and environments. See "[A new REST handler / dispatcher for
+languages and environments. See [A new REST handler / dispatcher for
 the
-ICF](/blog/posts/2009/09/21/a-new-rest-handler-dispatcher-for-the-icf/)"
-and Nigel James's presentation "[Alternative Dispatcher Layer
-Overview](https://www.slideshare.net/squarecloud/alternative-dispatcher-layer-overview-12170192)"
+ICF](/blog/posts/2009/09/21/a-new-rest-handler-dispatcher-for-the-icf/)
+and Nigel James's presentation [Alternative Dispatcher Layer
+Overview](https://www.slideshare.net/squarecloud/alternative-dispatcher-layer-overview-12170192)
 for a little bit of background reading.
 
 ## Functions-as-a-Service (FaaS)
 
 Today's serverless paradigm is a utility computing model where cloud
 vendors (such as SAP) provide compute resources, dynamically managing
-the allocation according to load, and charging based directly (and only)
+the allocation according to load, and charging based directly (and only)
 on resources consumed, rather than on pre-allocated units. This is a
 perfect example of cloud native computing, and amongst other things, it
 allows, even encourages us to think in terms of small computational
 executions, and to construct solutions out of loosely coupled building
 blocks.
 
-I've written about FaaS in a previous post: "[Monday morning thoughts:
+I've written about FaaS in a previous post: [Monday morning thoughts:
 functions - what
-functions?](/blog/posts/2018/05/14/monday-morning-thoughts:-functions-what-functions/)"
+functions?](/blog/posts/2018/05/14/monday-morning-thoughts-functions-what-functions/)
 but I thought it was worth continuing the "loosely coupled" idea in
 this direction. The appeal of SAP's FaaS offering is especially
 interesting to us as folks who build enterprise business solutions
 because the serverless fabric extends into the business processes
 themselves, as we saw for example in the SAP TechEd 2018 Las Vegas
-keynote demo from Jana Richter and Ian Kimbell (see "[Speed with
+keynote demo from Jana Richter and Ian Kimbell (see [Speed with
 Serverless Apps: SAP Cloud Platform Functions at SAP TechEd
-2018](https://www.youtube.com/watch?v=JDVDY1jMsuQ)").
+2018](https://www.youtube.com/watch?v=JDVDY1jMsuQ)).
 
 Essentially we can see that there are commonalities between various FaaS
 solutions, not only with SAP but with the hyperscale providers too, on
@@ -195,13 +201,13 @@ how code is invoked:
 -   Triggers: you can invoke a function directly with an HTTP call
 -   Events: functions can be invoked as and when appropriate, based on
     the occurrence of various events, whether those events are [business
-    related](https://help.sap.com/viewer/788fa4c7585e415187e347e904010cee/1808.500/en-US/82e97d5329044732af1efd996bfdc2ab.html) or
+    related](https://help.sap.com/viewer/788fa4c7585e415187e347e904010cee/1808.500/en-US/82e97d5329044732af1efd996bfdc2ab.html) or
     service related (for example - [Google Cloud Functions offer
     events](https://cloud.google.com/functions/docs/concepts/events-triggers)
     based upon Cloud Storage and Cloud Pub/Sub)
 -   Timers: in a wonderful acknowledgement of the enduring nature of
     various Unix designs, you can use the language
-    of [cron](https://en.wikipedia.org/wiki/Cron) to [schedule
+    of [cron](https://en.wikipedia.org/wiki/Cron) to [schedule
     time-based
     invocations](https://help.sap.com/viewer/94fafb5bcf8f4c5cbdd0cdd8e358183c/Cloud/en-US/e5d2c92959b94b7e98612ca577cbba2e.html)
     of functions on SAP Cloud Platform
@@ -232,10 +238,10 @@ here too, but perhaps I'll leave that for another time.
 I'd like to end this post by encouraging you to think about the nature
 of this idea of loose coupling of functions, and event-based invocation.
 There's a huge amount of potential, and of flexibility, especially in
-the context of trying to keep the core clean (see "[Keep the Core
+the context of trying to keep the core clean (see [Keep the Core
 Clean: Clarifying Points from Björn Goerke's
-Keynote](https://blogs.sap.com/2018/11/08/keep-the-core-clean-clarifying-points-from-bjorn-goerkes-keynote/)"
-by Jerry Janda) by extending computation for business services in the
+Keynote](https://blogs.sap.com/2018/11/08/keep-the-core-clean-clarifying-points-from-bjorn-goerkes-keynote/)
+by Jerry Janda) by extending computation for business services in the
 cloud.
 
 One challenge is the management of the events and the functions written
@@ -249,9 +255,9 @@ when? Our tools should help us there to some extent. How do we manage
 the intersection of business process requirements and the triggering of
 actions and reactions? Perhaps that's more of a human-led activity that
 is only assisted by tools. I don't know yet. It's something
-that dahowlett and I touched upon at SAP TechEd 2018 Barcelona (see the
-audio content "[Towards a more open
-SAP?](https://www.youtube.com/watch?v=cFN5OQ2D9R8)" that Den and I
+that dahowlett and I touched upon at SAP TechEd 2018 Barcelona (see the
+audio content [Towards a more open
+SAP?](https://www.youtube.com/watch?v=cFN5OQ2D9R8) that Den and I
 recorded at the event), and a topic that we should explore more
 together.
 
@@ -261,26 +267,19 @@ framework relating to your favourite language. As well as being a
 meditation on a now-venerable protocol, it will help you step into this
 new era of cloud computing.
 
----
-
 This post was brought to you by the prospect of a relaxing week off, by
 the distraction of the falling leaves outside, and by [Pact Coffee's
 Asomuprisma](https://www.pactcoffee.com/coffees/asomuprisma).
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
 
----
+## Update 20 Nov 2018
 
-*Update 20 Nov 2018: See James Governor's post "[GitHub Universe 2018:
-Low Key
-Revolutionary](https://redmonk.com/jgovernor/2018/11/07/github-universe-2018-low-key-revolutionary/)"
+See James Governor's post [GitHub Universe 2018: Low Key
+Revolutionary](https://redmonk.com/jgovernor/2018/11/07/github-universe-2018-low-key-revolutionary/)
 on the recent GitHub conference and more on serverless in relation to
 the recently released [GitHub
-Actions](https://github.com/features/actions).*
-
----
+Actions](https://github.com/features/actions).
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-longevity-and-loose-coupling/ba-p/13365146)

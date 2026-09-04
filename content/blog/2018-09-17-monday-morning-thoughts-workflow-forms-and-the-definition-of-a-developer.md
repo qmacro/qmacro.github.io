@@ -28,7 +28,7 @@ thing. Most languages today bear little resemblance to the microcode
 that is only one step away from the hardware that actually processes
 what was written and translated.
 
-*![](/images/2018/09/Screen-Shot-2018-09-17-at-07.35.58.png)*
+![](/images/2018/09/Screen-Shot-2018-09-17-at-07.35.58.png)
 
 *In Byte magazine in the 1980s I remember adverts for 4GLs \-- "fourth
 generation languages" \-- that were designed to appeal to and be used
@@ -73,25 +73,24 @@ I've written and talked about about the Workflow service before, so if
 you're not familiar with the service, you might want to take a look at
 some of these resources:
 
--   A 10-part series on various aspects of the Workflow service:
-    [Discovering SCP
-    Workflow](/blog/posts/2018/01/16/discovering-scp-workflow/)
--   A replay and link summary from my ASUG webinar session:
-    [Introduction to SAP Cloud Platform Workflow -
-    Summary](/blog/posts/2018/04/05/introduction-to-sap-cloud-platform-workflow-summary/)
--   A brief CodeTalk episode: [SAP CodeTalk - SAP Cloud Platform
-    Workflow Service](https://www.youtube.com/watch?v=t5V0WRle1xc) (this video has unfortunately been made private, I'm trying to rescue it)
--   An interview on [Episode
-    1](https://anchor.fm/sap-community-podcast/episodes/Episode-1---Interview-with-DJ-Adams-e1ac40)
-    of the Coffee Corner Radio podcast series
--   An interview on [Episode
-    015](http://integrationpodcast.com/2018/05/09/015-workflow-in-sap-cloud-platform-with-dj-adams/)
-    of The Integration Podcast
-
+- A 10-part series on various aspects of the Workflow service: [Discovering SCP
+  Workflow](/blog/posts/2018/01/16/discovering-scp-workflow/)
+- A replay and link summary from my ASUG webinar session: [Introduction to SAP
+  Cloud Platform Workflow -
+  Summary](/blog/posts/2018/04/05/introduction-to-sap-cloud-platform-workflow-summary/)
+- A brief CodeTalk episode: [SAP CodeTalk - SAP Cloud Platform Workflow
+  Service](https://www.youtube.com/watch?v=t5V0WRle1xc) (this video has
+  unfortunately been made private, I'm trying to rescue it)
+- An interview on [Episode
+  1](https://anchor.fm/sap-community-podcast/episodes/Episode-1---Interview-with-DJ-Adams-e1ac40)
+  of the Coffee Corner Radio podcast series
+- An interview on [Episode
+  015](http://integrationpodcast.com/2018/05/09/015-workflow-in-sap-cloud-platform-with-dj-adams/)
+  of The Integration Podcast
 
 And of course there are plenty of very readable docs at the main
 Workflow landing page
-here: <https://help.sap.com/viewer/product/WORKFLOW_SERVICE/Cloud/en-US>.
+here: <https://help.sap.com/viewer/product/WORKFLOW_SERVICE/Cloud/en-US>.
 
 ## The challenge
 
@@ -104,16 +103,16 @@ editor where you connect boxes together and define properties for them,
 and the overall diagram that you create represents the flow definition.
 
 However, for [User
-Task](https://blogs.sap.com/2018/01/20/discovering-scp-workflow-user-tasks/)
+Task](/blog/posts/2018/01/20/discovering-scp-workflow-user-tasks/)
 steps, you need a User Interface (UI) with which a workflow task
 recipient can interact, view and add data to the workflow instance
 context, and make decisions. There's a well-defined API for the
 standard My Inbox Fiori app and you build the UI as a component that is
 instantiated on a task by task basis inside the My Inbox app. That
 component is a UI5 component (see the [Component
-Startup](https://blogs.sap.com/2018/01/22/discovering-scp-workflow-component-startup/)
+Startup](/blog/posts/2018/01/22/discovering-scp-workflow-component-startup/)
 and [Recommendation
-UI](https://blogs.sap.com/2018/01/24/discovering-scp-workflow-recommendation-ui/)
+UI](/blog/posts/2018/01/24/discovering-scp-workflow-recommendation-ui/)
 posts in the [Discovering SCP
 Workflow](/blog/posts/2018/01/16/discovering-scp-workflow/)
 series for more details).
@@ -124,7 +123,7 @@ tantalising truth is that - with the exception of these User Tasks, you
 actually don't need to write any code to design and implement Workflow
 definitions.
 
-But programming skills in [UI5](https://ui5.sap.com) have been needed to
+But programming skills in [UI5](https://ui5.sap.com) have been needed to
 complete that "last mile" of definition.
 
 Until now.
@@ -138,18 +137,18 @@ fashion, using the form editor in the SAP Web IDE.
 ![](/images/2018/09/FormEditor-5.png)
 
 *The form editor in the SAP Web IDE,
-via <https://blogs.sap.com/2018/09/14/new-feature-in-sap-cloud-platform-workflow-forms/>*
+via <https://blogs.sap.com/2018/09/14/new-feature-in-sap-cloud-platform-workflow-forms/>*
 
 The way it works is that you define the layout of the UI, and link up
 data in the workflow context with the fields in the UI definition. You
-also define actions. At runtime, there's a forms "player" that
+also define actions. At runtime, there's a forms "player" that
 interprets your form definition to produce the appropriate user task
 interface. It's UI5 underneath, of course, but as a workflow definition
 creator, you don't have to know any UI5 any more.
 
-The Workflow Forms feature was announced last week by joachim.meyer in
-this post: "[New feature in SAP Cloud Platform Workflow --
-Forms](https://blogs.sap.com/2018/09/14/new-feature-in-sap-cloud-platform-workflow-forms/)",
+The Workflow Forms feature was announced last week by Joachim Meyer in
+this post: [New feature in SAP Cloud Platform Workflow --
+Forms](https://blogs.sap.com/2018/09/14/new-feature-in-sap-cloud-platform-workflow-forms/),
 and I for one am very pleased to see this announcement. I was lucky to
 get a sneak preview of the feature a while back, and it works very
 nicely indeed.
@@ -194,16 +193,10 @@ tutorial, to help you get a head start.
 
 Here's to programming, developing, and building solutions!
 
----
-
 This post was brought to you on a rainy Monday morning and [Pact
 Coffee's El Silencio](https://www.pactcoffee.com/coffees/el-silencio).
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-workflow-forms-and-the-definition-of-a-developer/ba-p/13379225)

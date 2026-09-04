@@ -19,7 +19,7 @@ blog posts over the years and that it had helped them in their growth.
 
 ## Accidental influence
 
-One particular person was Srikanth Peri whom I ended up interviewing on SAP
+One particular person was Srikanth Peri whom I ended up interviewing on SAP
 TechEd Live during the show ([Learning with the SAP Community and
 Beyond](https://events.sap.com/teched/en/session/42606)), and he pointed
 out that I had worked with him around a decade ago, remotely, when we
@@ -38,29 +38,29 @@ going forwards.
 
 Beyond being a pleasant trip down memory lane, this really made me
 realise that what we do day to day can have an impact on how others see
-things. One person can indirectly steer another towards \-- or at least
-reveal to them \-- technology paths that might be alternative or even
+things. One person can indirectly steer another towards -- or at least
+reveal to them -- technology paths that might be alternative or even
 hitherto unknown.
 
 ## Starting young
 
 I've been involved in teaching kids to code for a while. I am a [STEM
 Ambassador](/blog/posts/2012/12/05/codeclub-and-becoming-a-stem-ambassador/),
-and [ran a Code Club at our local primary
+and [ran a Code Club at our local primary
 school](/blog/posts/2013/04/18/codeclub-thoughts/) a
 few years ago. I volunteer at [Manchester
 CoderDojo](https://mcrcoderdojo.org.uk/) where we have monthly sessions
 that see up to 150 kids come by to learn and build with all sorts of
-software and hardware tech. I even gave a TEDx talk on "[Our
-Computational Future](https://www.youtube.com/watch?v=-gvOCaExeK0)" at
+software and hardware tech. I even gave a TEDx talk on [Our
+Computational Future](https://www.youtube.com/watch?v=-gvOCaExeK0) at
 one stage.
 
 I ran a Manchester Digital Laboratory ([MadLab](https://madlab.org.uk/))
 centre for Young Rewired State (YRS) where we had a whole host of kids
 design and build apps for a nationwide competition (see [Young Re-Wired
 State - The
-Film](https://madlab.org.uk/2013/10/young-re-wired-state-2013-the-film/)
-for more info) that was sponsored by SAP - thanks again Thomas Grassl &
+Film](https://web.archive.org/web/20150926143841/http://madlab.org.uk/2013/10/young-re-wired-state-2013-the-film/)
+for more info) that was sponsored by SAP - thanks again Thomas Grassl &
 co.
 
 In all these circumstances I and my fellow volunteers get to introduce
@@ -75,7 +75,7 @@ peer-to-peer, which was wonderful to see).
 Some of the volunteers are or have become well-known influencers in
 their own right; a couple of examples that immediately come to mind are
 the BBC's [Jacob
-Clark](http://www.bbc.co.uk/blogs/internet/entries/2e3004e0-ab13-4ccf-b921-ca2bd2ff0cae) and
+Clark](http://www.bbc.co.uk/blogs/internet/entries/2e3004e0-ab13-4ccf-b921-ca2bd2ff0cae) and
 the co-creator of Wordpress [Mike
 Little](https://en.wikipedia.org/wiki/Mike_Little)\*.
 
@@ -91,7 +91,7 @@ volunteers share their passions and interests.
 ## Show your workings
 
 Srikanth wrote a blog post on the back of his experience at SAP TechEd
-last week - [Learning with the SAP Community and Beyond, 2018
+last week - [Learning with the SAP Community and Beyond, 2018
 Bangalore](https://blogs.sap.com/2018/12/02/learning-with-the-sap-community-and-beyond-2018-bangalore/).
 In it, he exhorts us to "start sharing", in the hashtagged mantra
 "#LearnShareRepeat". I'd like to echo this. Not only does sharing
@@ -113,17 +113,11 @@ questions, thoughtful questions themselves, talks at events, videos,
 even shared code on social sites such as GitHub. You never know when
 what you say or write will have an effect on someone.
 
----
-
 This post was brought to you by a rainy Manchester morning, and the
 feeling of not nearly enough coffee as I recover from the SAP TechEd
 Bangalore trip and the corresponding jet lag from my return home.
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/welcome-corner-blog-posts/monday-morning-thoughts-indirect-influence/ba-p/13383686)

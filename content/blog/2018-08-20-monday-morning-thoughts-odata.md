@@ -244,17 +244,11 @@ also a direct Atom construct.
 Today's business API interoperability and open standards are built upon a long
 history of collaboration and invention.
 
----
-
 This post was brought to you by [Pact Coffee's
 Planalto](https://www.pactcoffee.com/coffees/planalto) and the delivery of the
 milk by the milkman even earlier than usual.
 
----
-
 Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-odata/ba-p/13351220)

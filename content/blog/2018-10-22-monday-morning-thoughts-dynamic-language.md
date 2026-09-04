@@ -4,6 +4,9 @@ date: 2018-10-22
 description: Musings on a particular function definition in JavaScript, and how it represents beauty and practicality in equal measure.
 tags:
   - monday-morning-thoughts
+  - javascript
+  - functional-programming
+  - cap
   - opinion
   - sap-community-post
 ---
@@ -21,8 +24,8 @@ On Friday evening, I
 
 It was something I'd come across while idly perusing some source code,
 and I thought it was quite beautiful. I had a few responses to the
-tweet. In one of them, someone asked for an explanation, and
-then Julie Plummer [suggested](https://twitter.com/JuliePlummer20/status/1053526571745755137) I
+tweet. In one of them, someone asked for an explanation, and
+then Julie Plummer [suggested](https://twitter.com/JuliePlummer20/status/1053526571745755137) I
 do it in the form of a post in this [Monday morning thoughts
 series](/tags/monday-morning-thoughts/). This was a
 great idea, as I was already on my way to the woodstore.
@@ -39,10 +42,10 @@ part of the base repository
 [SAP/cloud-sample-spaceflight](https://github.com/SAP/cloud-sample-spaceflight)
 which contains the base Core Data & Services data model for the
 Application Programming Model sessions at SAP TechEd this year (see
-"[Application Programming Model for SAP Cloud Platform - start
-here](/blog/posts/2018/10/10/sap-cloud-application-programming-model-(cap)-start-here/)")
-and written by Christian Georgi & my Language
-Ramblings partner in crime Chris Whealy.
+[Application Programming Model for SAP Cloud Platform - start
+here](/blog/posts/2018/10/10/sap-cloud-application-programming-model-(cap)-start-here/))
+and written by Christian Georgi & my Language
+Ramblings partner in crime Chris Whealy.
 
 Why was I reading this? Well, out of curiosity, and a desire to learn
 more, of course. I have heard that programmers spend only around 10% of
@@ -55,8 +58,8 @@ people write.
 ![Programming
 Jabber](/images/books/programmingjabber_large.jpg)
 
-I remember researching for my first book "[Programming
-Jabber](http://shop.oreilly.com/product/9780596002022.do)" in the early
+I remember researching for my first book [Programming
+Jabber](http://shop.oreilly.com/product/9780596002022.do) in the early
 2000's. I spent many hours in the local coffee shop reading through the
 source code of the reference implementation of the Jabber (now
 [XMPP](https://xmpp.org/)) protocol - the jabberd source code, written
@@ -91,7 +94,6 @@ undefined
 'red and green and blue'
 ```
 
-
 (Code samples here are from Chrome console sessions, using
 [ES6](https://bytearcher.com/articles/es6-vs-es2015-name/)).
 
@@ -100,7 +102,7 @@ of four functions I mentally think about together as a family, as they
 do very similar things:
 
 ```text
-  shift() &lt;---+           +---> pop()
+  shift() <---+           +---> pop()
               |           |
               |           |
              [1, 2, 3, 4, 5]
@@ -199,7 +201,7 @@ the function definition being passed to reduce:
 (a, x) => a * x
 ```
 
-*implicitly returns* the result of the expression `a * x`, to be fed into
+*implicitly returns* the result of the expression `a * x`, to be fed into
 the next element iteration until the list of elements is exhausted.
 
 In other words, if you want to use Array's `push()` function as the
@@ -214,7 +216,7 @@ the array, which is generally a Bad Thing(tm) - but I'm ignoring it
 deliberately, as that's a whole other subject for another time.
 
 If you read further on in the
-[reuseTableData.js](https://github.com/SAP/cloud-sample-spaceflight/blob/master/db/reuseTableData.js) program,
+[reuseTableData.js](https://github.com/SAP/cloud-sample-spaceflight/blob/master/db/reuseTableData.js) program,
 you'll see that there's a `reduce()` in [line
 73](https://github.com/SAP/cloud-sample-spaceflight/blob/c3c152e192b1d3dcfea23242681f3521d32b22f2/db/reuseTableData.js#L73)
 function being employed to gather table names together:
@@ -365,7 +367,7 @@ braces) is the value that is returned. In this case, that is simply
 \* I note that Martin used `xs` to represent a list of `x` elements,
 which is a rather nice meme, or at least an idea, that I picked up from
 various functional programming treatises and used, for example, by [Erik
-Meijer](https://en.wikipedia.org/wiki/Erik_Meijer_(computer_scientist)) in
+Meijer](https://en.wikipedia.org/wiki/Erik_Meijer_(computer_scientist)) in
 his wonderful series on Haskell and F#. Perhaps more on that another
 time.
 
@@ -383,11 +385,7 @@ off to the airport for Barcelona and the European instance of SAP
 TechEd. If you're there, stop by the Developer Garage for a chat about
 this or anything else!
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-dynamic-language/ba-p/13383046)

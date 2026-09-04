@@ -13,15 +13,15 @@ It's a bank holiday Monday today in England, and so of course it's
 raining\*. I spent a bit of time earlier this morning perusing the news,
 marking blog posts that looked interesting additions to content for my
 [learning
-continuum](/blog/posts/2018/06/04/monday-morning-thoughts:-the-learning-continuum/),
+continuum](/blog/posts/2018/06/04/monday-morning-thoughts-the-learning-continuum/),
 and also looking at some draft blog posts here in the SAP Community.
 
-I've become involved in helping out with some moderation for blog posts
-(not "blogs"!) and have thereby have the chance to see what folks are
-writing in the early stages, and also what other, more experienced
-moderators are saying about those early stage drafts. It got me thinking
-about what makes a good blog post, and I thought I'd share those
-thoughts here.
+I've become involved in helping out with some moderation for blog posts ([not
+"blogs"!](/blog/posts/2024/01/22/accuracy-and-precision-in-language/)) and have
+thereby have the chance to see what folks are writing in the early stages, and
+also what other, more experienced moderators are saying about those early stage
+drafts. It got me thinking about what makes a good blog post, and I thought I'd
+share those thoughts here.
 
 \*but that's OK, [I do like the
 rain](/tweets/qmacro/status/1033748664009797632).
@@ -59,7 +59,7 @@ post, my mind is looking out for another post on that same subject, but
 with perhaps a small proportion of different insight or context.
 
 The way I learn is in layers - I build up some core knowledge, often
-reading a post about a new subject, where often I don't fully
+reading a post about a new subject, where often I don't fully
 understand the entire post's content. Then I read more posts on the
 same subject and, now comfortable with the backbone of what's being
 written about, can concentrate on the "delta" with each new post,
@@ -101,7 +101,7 @@ that not every reader will have the requisite amount of context to gain
 much from what you write. That doesn't disqualify them from reading
 your post - far from it. Help them by setting the scene. I find thinking
 about the right combination of [hed, dek and
-lede](https://underthecurve.github.io/jekyll/update/2016/12/29/hed-dek-led-graf.html) very
+lede](https://underthecurve.github.io/jekyll/update/2016/12/29/hed-dek-led-graf.html) very
 useful (I was first introduced to the concepts of heds, deks and ledes
 by [Jon
 Udell](http://radar.oreilly.com/2010/11/heds-deks-and-ledes.html)). Not
@@ -128,7 +128,7 @@ for your post. A full understanding subsequently helps you write in a
 clear and concise way, too.
 
 Here's an example from a few years ago: [Custom Sorting and
-Grouping](/blog/posts/2013/11/29/custom-sorting-and-grouping/) -
+Grouping](/blog/posts/2013/11/29/custom-sorting-and-grouping/) -
 researching the content for that post really cemented my understanding
 of the nuances of the subject I was writing about (relating to complex
 data binding features in UI5). I sort of had a general idea of the
@@ -162,17 +162,11 @@ For more info on blogging on the SAP Community, it's worth having a
 read through the [Rules Of
 Engagement](https://www.sap.com/community/about/rules-of-engagement.html).
 
----
-
 This post was brought to you by a holiday Monday breakfast of black
 pudding and avocado, and the usual excellent [Pact Coffee
 Planalto](https://www.pactcoffee.com/coffees/planalto).
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/welcome-corner-blog-posts/monday-morning-thoughts-a-good-blog-post/ba-p/13356547)

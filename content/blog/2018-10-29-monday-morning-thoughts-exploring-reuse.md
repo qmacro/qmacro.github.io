@@ -5,24 +5,24 @@ description: I think about reuse and extension, in the context of the Applicatio
 tags:
   - monday-morning-thoughts
   - opinion
+  - cap
+  - cds
   - sap-community-post
 ---
 
-Last week saw the Barcelona edition of SAP TechEd 2018, where SAP CTO
+Last week saw the Barcelona edition of SAP TechEd 2018, where SAP CTO
 Björn Goerke and a great team of role models on stage gave us a keynote
 with something for everyone - technical and business alike. During the
 keynote, I
 [tweeted](/tweets/qmacro/status/1054640660400295936):
 
-> *My three keywords from the #SAPTechEd keynote so far:*
+> My three keywords from the #SAPTechEd keynote so far:
 >
-> *Open (standards, protocols, APIs)*
+> *Open* (standards, protocols, APIs)
 >
-> *Reuse (important superpower of @sapcp application programming
-> model) *
+> *Reuse* (important superpower of @sapcp application programming model)
 >
-> *Clean (keep the core clean by extending outside of it)*
-
+> *Clean* (keep the core clean by extending outside of it)
 
 I want to think about the "reuse" and "clean" keywords, because in
 many ways they're complementary, in that reuse (and by association,
@@ -39,7 +39,7 @@ for us to meditate upon and learn from.
 
 ## cloud-samples-itelo
 
-Earlier this year Oliver Welzel wrote "[ITelO -- A Sample Business
+Earlier this year Oliver Welzel wrote "[ITelO -- A Sample Business
 Application for the new Application Programming Model for SAP Cloud
 Platform](https://blogs.sap.com/2018/06/27/itelo-a-sample-business-application-for-the-new-application-programming-model-for-sap-cloud-platform/)"
 in which he described an application with ra product catalog, and
@@ -231,8 +231,9 @@ time of the underlying "foundation" layer. Just above in the same
 file, we can see that this layer is referenced in a "using" statement,
 this time with a local alias "fnd" defined:
 
-    using clouds.foundation as fnd from '@sap/cloud-samples-foundation';
-
+```cds
+using clouds.foundation as fnd from '@sap/cloud-samples-foundation';
+```
 
 So now let's briefly descend into the fractal. The reference to
 "fnd.BusinessObject" is to an entity defined in the "foundation"
@@ -248,7 +249,7 @@ with app, srv and db folders.)
 
 In this repository (again, branch "rel-1.0") we can find the
 definition of the BusinessObject entity [in the common.cds
-file](https://github.com/SAP/cloud-samples-foundation/blob/rel-1.0/common.cds#L3-L8) looking
+file](https://github.com/SAP/cloud-samples-foundation/blob/rel-1.0/common.cds#L3-L8) looking
 like this:
 
 ```cds
@@ -333,20 +334,14 @@ indeed an important superpower of the application programming model, and
 demonstrably so. And keeping the core clean - well, the more extension
 and reuse we can achieve, the closer we can get to a cleaner core.
 
----
-
 This post was brought to you by a chilly Monday morning, by [Pact
 Coffee's Asomuprisma](https://www.pactcoffee.com/coffees/asomuprisma)
-in my [SAP Coffee Corner Radio](https://anchor.fm/sap-community-podcast)
+in my [SAP Coffee Corner Radio](https://anchor.fm/sap-community-podcast)
 mug, and by a [Spotify
 mix](https://open.spotify.com/station/user/qmacro/cluster/3JqLjzwr3h5mESenCGHsbr)
 designed for concentration.
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-exploring-reuse/ba-p/13350771)

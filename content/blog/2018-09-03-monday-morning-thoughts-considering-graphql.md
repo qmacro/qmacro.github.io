@@ -12,7 +12,7 @@ tags:
 **Update: This post is now available in audio format too - see [the
 episode on Tech Aloud](https://anchor.fm/tech-aloud/episodes/Monday-morning-thoughts-considering-GraphQL---DJ-Adams---3-Sep-2018-e5h54s).**
 
-Last week, Chris Paine shared with us on Twitter some comments about
+Last week, Chris Paine shared with us on Twitter some comments about
 GraphQL and how it compared with OData. It was an intriguing thought and
 led to all sorts of discussions. I didn't know much about GraphQL so I
 took a bit of time to look into it. Not too much time so far, so please
@@ -23,8 +23,8 @@ to GraphQL itself.
 
 GraphQL is an open sourced specification that originated from one of
 Facebook's engineering teams. One of the pieces I consumed was a talk
-by one of GraphQL's creators, Lee Byron: "[Lessons from 4 years of
-GraphQL](https://www.youtube.com/watch?v=zVNrqo9XGOs)", and one of the
+by one of GraphQL's creators, Lee Byron: [Lessons from 4 years of
+GraphQL](https://www.youtube.com/watch?v=zVNrqo9XGOs), and one of the
 takeaways for me was the clear passion that has provided GraphQL with
 the early success it has been seeing. Beyond the specification, there's
 a reference implementation in JavaScript, and over time, more than a
@@ -35,7 +35,7 @@ dozen implementations have emerged, in different languages.
 *The sample on GraphQL's homepage is a nice overview of what it looks
 and feels like*
 
-GraphQL is a query language for APIs and a runtime for fulfilling those
+GraphQL is a query language for APIs and a runtime for fulfilling those
 queries with your existing data. Like many combinations of specification
 and implementation, it's also a community, with developers creating
 implementations of server-side components as well as client-side
@@ -77,14 +77,13 @@ in conjunction with RDF ([OWL](https://www.w3.org/OWL/) - the "Web
 Ontology Language" is one of the more well known of those, along with
 [Dublin Core](http://dublincore.org/)).
 
-![Image result for RDF example nodes
-arcs](https://www.w3.org/2001/sw/RDFCore/Schema/200203/intro-example.jpg)
+![Image result for RDF example nodes arcs](https://www.w3.org/2001/sw/RDFCore/Schema/200203/intro-example.jpg)
+
 *RDF nodes and arcs*
 
-I have been fascinated by RDF for a long time, and dabbled in various
-aspects in the early 2000's - see [the RDF related posts on my
-blog](https://www.google.com/search?q=site%3Aqmacro.org+rdf) for some
-ramblings on that subject. Of course, RDF can be seen as one of the
+I have been fascinated by RDF for a long time, and dabbled in various aspects
+in the early 2000's - see [the RDF related posts on my blog](/tags/rdf/) for
+some ramblings on that subject. Of course, RDF can be seen as one of the
 ancestors\* of OData, which in a way is rather ironic.
 
 \*RSS was originally an RDF-based language (RSS stood for RDF Site
@@ -96,12 +95,14 @@ a story for another time.
 
 RDF information is expressed in so-called "triples" in the form:
 
+```text
     [subject] ---[predicate]---> [object]
+```
 
 where "subject" and "object" entities are nodes and "predicates"
 are arcs - the lines between them. Triples are stored in
-"triplestores", and a more generalised form of a triplestore is \...
-wait for it \... a graph database.
+"triplestores", and a more generalised form of a triplestore is ...
+wait for it ... a graph database.
 
 To me, there is a fundamental beauty in the tension between the simple
 structure of triples, and the unstructured, or perhaps unrestricted
@@ -147,7 +148,7 @@ that's a story for another time).
 
 ## Comparing and contrasting
 
-The OData protocol treats data (entities) as first class citizens,  in
+The OData protocol treats data (entities) as first class citizens,  in
 that it gives each resource a URL, a URL that can then be semantically
 described, a URL that is part of a near infinite set of resources
 (nouns), with a very finite and predictable set of methods (verbs).
@@ -169,9 +170,9 @@ me, human readable URLs are super useful at the practical level.
 
 And talking of pragmatism and practicality, there's been a question
 about GraphQL implementation in SAP systems. The SAP systems with which
-I'm most acquainted \-- the successors to the R/2 and R/3 line of
-products \-- are based on a hierarchical database design, not a graph
-design. That's not to say that things can't change \... indeed, we
+I'm most acquainted -- the successors to the R/2 and R/3 line of
+products -- are based on a hierarchical database design, not a graph
+design. That's not to say that things can't change ... indeed, we
 moved from hierarchical to relational in the late 1980's when SAP
 introduced the support for IBM's (then) new relational data store DB/2,
 which eventually superseded IMS DB's hierarchical data store DL/1.
@@ -202,26 +203,24 @@ are.
 *Our canal boat, moored this morning between Altrincham and Dunham
 Massey*
 
----
-
 This post was brought to you from the peace and quiet of a Monday
 morning here on the [Bridgewater
 Canal](http://www.bridgewatercanal.co.uk/), where I'm spending time on
 a canal boat with M on my birthday today.
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
 
----
+## Update 07 Sep 2018
 
-**Update 07 Sep 2018**: This is the tweet from Chris Paine that started
+This is the tweet from Chris Paine that started
 it off: <https://twitter.com/wombling/status/1034949320519245824>,
 referring to a tweet by [Jeff
 Handley](https://twitter.com/jeffhandley).
 
-**Update 14 Sep 2018**: Jeff published a very interesting blog post
+## Update 14 Sep 2018
+
+Jeff published a very interesting blog post
 yesterday: [GraphQL is not
 OData](https://jeffhandley.com/2018-09-13/graphql-is-not-odata). It's a
 super read, with lots of history and balanced thoughts, and I enjoyed it
@@ -234,7 +233,5 @@ The key takeaway for me so far from Jeff's post (apart from the title)
 is that GraphQL and OData can actually live side by side, as GraphQL's
 fit seems to be as an intermediary. I need to think about that some
 more, but for now, let the conversation and education continue!
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/additional-blogs-by-sap/monday-morning-thoughts-considering-graphql/ba-p/13366720)

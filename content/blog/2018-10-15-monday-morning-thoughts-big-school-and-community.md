@@ -63,8 +63,8 @@ many buildings and areas serving different purposes\*. It was easy to
 get lost, or find yourself in a place where you ought not to be.
 
 \* there was even a computer room with terminals available (and this was
-in the 1970's) - see this O'Reilly Radar interview: [Burn In 7: DJ
-Adams](https://web.archive.org/web/20091118000142/http://radar.oreilly.com/2005/11/burn-in-7-dj-adams.html) for
+in the 1970's) - see this O'Reilly Radar interview: [Burn In 7: DJ
+Adams](https://web.archive.org/web/20091118000142/http://radar.oreilly.com/2005/11/burn-in-7-dj-adams.html) for
 more info on that.
 
 ![](/images/2018/10/Screenshot-2018-10-15-at-07.42.24.png)
@@ -107,7 +107,7 @@ they run, and how they're monitored.
 
 ![](/images/2018/10/Screenshot-2018-10-15-at-07.34.32.png)
 
-*From <https://cloudplatform.sap.com/index.html>*
+*From <https://cloudplatform.sap.com/index.html>*
 
 But we also know that there's a world outside that's just waiting for
 us to explore, a world described by older siblings as they recount tales
@@ -142,22 +142,22 @@ using.
 ## The importance of the SAP Community
 
 There's more to learn, more to share, and more possibilities than ever
-before. I'm reminded of what Graham Robinson and [Jon
-Reed](http://www.jonerp.com/) talked about in the recent SAP and
+before. I'm reminded of what Graham Robinson and [Jon
+Reed](http://www.jonerp.com/) talked about in the recent SAP and
 Enterprise Trends podcast episode "[SAP TechEd Vegas in Review - ABAP
 on SCP, serverless ERP, community and more with
-\@grahamrobbo](https://jonerp.libsyn.com/sap-teched-vegas-in-review-abap-on-scp-serverless-erp-community-and-more-with-grahamrobbo)".
+@grahamrobbo](https://jonerp.libsyn.com/sap-teched-vegas-in-review-abap-on-scp-serverless-erp-community-and-more-with-grahamrobbo)".
 Early on in this episode they think about the SAP Community, how it has
 undergone changes over the years, and how this year in particular, at
-the Las Vegas edition of SAP TechEd 2018 it had a  prominent presence
+the Las Vegas edition of SAP TechEd 2018 it had a  prominent presence
 with the App Space and the Developer Garage, where folks could come by
 to chat and learn. More than that, though - Jon says:
 
-*"A healthy community is the core of what a modern software company
-needs to succeed \[\...\] it's not a nice-to-have at all."*
+> "A healthy community is the core of what a modern software company
+needs to succeed [...] it's not a nice-to-have at all."
 
 This resonates very well with me. Not only because I'm proudly part
-of Thomas Grassl's team that is behind the Developer Garage and the
+of Thomas Grassl's team that is behind the Developer Garage and the
 tutorial missions in the App Space, but also because I believe that the
 community is the place that will keep us sane, keep us on the right
 tracks and help us support and learn from each other. That community,
@@ -173,7 +173,7 @@ the SAP Developer Network (what has become the SAP Community today) in
 the early 2000's, I had a feeling that the communities that would form
 would likely be key to a greater understanding and sharing of knowledge.
 With the SAP Community today we have a rebooted environment with the
-great Craig Cmehil at the helm, and a wide array of offerings, including
+great Craig Cmehil at the helm, and a wide array of offerings, including
 my favourite which is the [Developer Centre](https://developers.sap.com)
 with a whole heap of tutorials, groups and missions (with progress
 tracking and a great new look and feel), alongside developer resources
@@ -187,8 +187,6 @@ with similar thoughts and wonder, and we're converging as we walk up
 the path in the morning, through the rugby and lacrosse pitches to the
 school buildings to learn & master new subjects, and to grow together.
 
----
-
 This post was brought to you by the clackety clack of [my new Vortex
 Race
 3](https://www.reddit.com/r/MechanicalKeyboards/comments/9n9olz/delurking_with_a_race_3/)
@@ -198,11 +196,7 @@ Espresso](https://www.pactcoffee.com/coffees/el-silencio-espresso), in
 my [SAP Coffee Corner Radio](https://anchor.fm/sap-community-podcast)
 mug. Have a good week!
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-big-school-and-community/ba-p/13374396)

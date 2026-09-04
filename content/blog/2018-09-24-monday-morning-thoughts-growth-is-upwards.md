@@ -27,7 +27,7 @@ get there, I know I've benefitted from the effort, and the view is
 pretty good too.
 
 ![](/images/2018/09/Screen-Shot-2018-09-24-at-08.18.22.png)
-*The view from [Hartshead Pike](https://goo.gl/maps/SCzNCHkNdoF2),
+*The view from [Hartshead Pike](https://goo.gl/maps/SCzNCHkNdoF2),
 looking south west*
 
 ## Reading unfamiliar dialects
@@ -83,9 +83,11 @@ Platform](https://help.sap.com/viewer/65de2977205c403bbc107264b8eccf4b/Cloud/en-
 and I came across some code that looked initially a little strange but
 closer inspection turned out to make sense.
 
+### If you stare at it long enough
+
 Considering this closer inspection reminds me of a phrase that the
 inimitable [Erik
-Meijer](https://en.wikipedia.org/wiki/Erik_Meijer_(computer_scientist)) seems
+Meijer](https://en.wikipedia.org/wiki/Erik_Meijer_(computer_scientist)) seems
 to use\* a lot: *"If you stare at it long enough \..."*, which he uses
 in reference to new programming language constructs he's introducing.
 If you've not seen his C9 Lecture series "[Programming in
@@ -142,21 +144,21 @@ invoked on certain request operations.
 OK, so what we see at a high level, say, inside 10 seconds of staring,
 is that we have:
 
--   no semicolons
--   some strange statements like `let` and `for ... of`
--   some odd looking punctuation reminiscent of what would be called
-    "[line noise](https://perl.plover.com/obfuscated/)" in Perl
--   a significant amount of indentation
+- no semicolons
+- some strange statements like `let` and `for ... of`
+- some odd looking punctuation reminiscent of what would be called
+  "[line noise](https://perl.plover.com/obfuscated/)" in Perl
+- a significant amount of indentation
 
 
 In fact, looking at the indentation, there's only a single outermost
 statement in the whole file - and that's the
-`module.exports` assignment in the first line.
+`module.exports` assignment in the first line.
 
 But actually there's not much to worry about at all here. Semicolons in
-JavaScript are optional, and many, including Mattias Petter Johansson,
-who has a [YouTube channel called
-FunFunFunction](https://www.youtube.com/channel/UCO1cgjhGzsSYb1rsB4bFe4Q) full
+JavaScript are optional, and many, including Mattias Petter Johansson,
+who has a [YouTube channel called
+FunFunFunction](https://www.youtube.com/channel/UCO1cgjhGzsSYb1rsB4bFe4Q) full
 of new JavaScript ideas and more, prefer to omit them. I think it's a
 "modern" choice.
 
@@ -167,11 +169,11 @@ punctuation. But let's continue from where we started.
 module.exports
 ```
 
-The reference to `module.exports` gives us confidence that what we're
+The reference to `module.exports` gives us confidence that what we're
 indeed looking at is something that is a
 [module](https://nodejs.org/api/modules.html) in a Node.js context. So
 far so good, we can use that as an anchor for the rest of our
-interpretation. What's assigned to `module.exports` is an anonymous
+interpretation. What's assigned to `module.exports` is an anonymous
 function, but that should be a fairly familiar idea to us, already.
 
 ```javascript
@@ -185,7 +187,7 @@ new feature of ECMAScript\* 6 (EC6) which other languages such as
 Clojure already have -
 [destructuring](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment).
 Here, the function expects a map (or "object") as input, and the value
-of the specific property `flight_trip_Bookings` in that map is what the
+of the specific property `flight_trip_Bookings` in that map is what the
 function needs.
 
 *\*ECMAScript is the actual language, JavaScript is a dialect of that
@@ -196,8 +198,8 @@ this.before
 ```
 
 What about the body of this anonymous function? Well, we see a function
-`before` being called, with an operation ("CREATE"), the value of the
-`flight_trip_Bookings` that we received in the call (remember, we're
+`before` being called, with an operation ("CREATE"), the value of the
+`flight_trip_Bookings` that we received in the call (remember, we're
 now inside the anonymous function), and another anonymous function, this
 time defined in the new ES6 style using [fat
 arrows](https://www.sitepoint.com/es6-arrow-functions-new-fat-concise-syntax-javascript/).
@@ -208,10 +210,10 @@ functions - functions can be passed in, and received from, other
 functions.
 
 The effect of this call is that this inner anonymous function expecting
-the `cds` parameter will be registered as a callback to any CREATE
+the `cds` parameter will be registered as a callback to any CREATE
 operations on the "Bookings" table within the "flight_trip"
 namespace. What does this callback function do? Well, it uses the
-`cds` value passed in, which will represent the CDS runtime object (CDS
+`cds` value passed in, which will represent the CDS runtime object (CDS
 is a core part of the Application Programming Model runtime, as well as
 being the language with which we declare data models and service
 definitions).
@@ -257,22 +259,22 @@ to typing as well as embracing functional aspects.
 
 Knowing that with ES6 style function definitions, the results of the
 body's evaluation are automatically returned (i.e. there's no need for
-an explicit `return` statement), we can surmise that any results of the
+an explicit `return` statement), we can surmise that any results of the
 SELECT, from the "Bookings" table, will be returned from A.
 
 ```javascript
 }).then(( [bookings] ) => {
 ```
 
-With `then` we have effectively a promise style continuation, where the
+With `then` we have effectively a promise style continuation, where the
 anonymous function B receives the array of possible results, including
 any "Bookings" entries in the first position of that array. Inside B
 we have more mundane JavaScript, made slightly more interesting by its
-use of more ES6 constructs - specifically the `let` and
-`for ... of` statements.
+use of more ES6 constructs - specifically the `let` and
+`for ... of` statements.
 
-The `let` statement is just used to declare a block scope local variable
-(a "proper" `var`, if you will) and the `for ... of` allows the
+The `let` statement is just used to declare a block scope local variable
+(a "proper" `var`, if you will) and the `for ... of` allows the
 processing of each of the items in the bookings that were passed in (so
 we can presume also that `bookings`, the first value in the array passed
 in, is itself an array).
@@ -326,17 +328,11 @@ passengers. It's in a "how to do it" procedural style, rather than a
 "what I want" functional style. Can you come up with an alternative in
 the latter style? I'd love to hear from you in the comments below.
 
----
-
 This post was brought to you by a frosty morning, warmed up first by
 Pact Coffee's Planalto and the later the welcome appearance of some
 sunshine.
 
----
-
-Read more posts in this series here: [Monday morning
+Read more posts in this series here: [Monday morning
 thoughts](/tags/monday-morning-thoughts/).
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/monday-morning-thoughts-growth-is-upwards/ba-p/13385530)
