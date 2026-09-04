@@ -1,0 +1,1065 @@
+<!doctype html>
+<html lang="en-GB">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Boosting tutorial UX with dev containers part 2 - embedding prerequisite details</title>
+		<meta name="description" content="Working through each tutorial prerequisite step and encoding the tools and configuration into a Dockerfile and devcontainer.json file.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="Boosting tutorial UX with dev containers part 2 - embedding prerequisite details">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="Working through each tutorial prerequisite step and encoding the tools and configuration into a Dockerfile and devcontainer.json file.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2022/01/28/boosting-tutorial-ux-with-dev-containers-part-2-embedding-prerequisite-details/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 60%, 70%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/tags/">Tags</a></li>
+					<li class="nav-item"><a href="/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="boosting-tutorial-ux-with-dev-containers-part-2-embedding-prerequisite-details">Boosting tutorial UX with dev containers part 2 - embedding prerequisite details</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2022-01-28">28 January 2022</time></li>
+  <li><a href="/tags/sap-community-post/">sap-community-post</a>, </li>
+  <li><a href="/tags/containers/">containers</a>, </li>
+  <li><a href="/tags/docker/">docker</a>, </li>
+  <li><a href="/tags/cap/">cap</a>, </li>
+  <li><a href="/tags/shell/">shell</a>, </li>
+  <li><a href="/tags/developer-experience/">developer-experience</a>, </li>
+  <li><a href="/tags/tutorial/">tutorial</a></li>
+</ul>
+
+<p class="post-description-main">Working through each tutorial prerequisite step and encoding the tools and configuration into a Dockerfile and devcontainer.json file.</p>
+
+<p>In this three-part series I outline and demonstrate an approach to help
+newcomers get started more quickly with our tutorials, by describing and
+providing an environment with all the prerequisite tools installed ready
+to go. This is part two, where I add the tutorial prerequisite detail to
+the Dockerfile I created in part one, and also introduce the
+devcontainer.json file.</p>
+<p>You may want the previous or next post in this three-part series:</p>
+<ul>
+<li><a href="/blog/posts/2022/01/27/boosting-tutorial-ux-with-dev-containers-part-1-challenge-and-base-solution/">Boosting tutorial UX with dev containers part 1 - challenge and
+base
+solution</a></li>
+<li><a href="/blog/posts/2022/02/01/boosting-tutorial-ux-with-dev-containers-part-3-containers-into-action/">Boosting tutorial UX with dev containers part 3 - containers into
+action</a></li>
+</ul>
+<p>At the end of part 1 we had a base solution consisting of a simple
+Dockerfile definition for an image based on Node.js v16 and Debian
+buster. This image would be what we'll create containers from, for our
+development environment, and with <a href="https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers">VS Code's support for development in
+remote
+containers</a>,
+we'd connect to such a container to work within.</p>
+<p>We left off at the end of part 1 having instantiated a container based
+on the image in our Dockerfile definition, and got ourselves a shell
+environment, like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token comment"># /tmp</span>
+<span class="token punctuation">;</span> <span class="token function">docker</span> run <span class="token parameter variable">--rm</span> <span class="token parameter variable">-it</span> mcr.microsoft.com/vscode/devcontainers/javascript-node:16-buster <span class="token function">bash</span>
+root ➜ / $</code></pre>
+<p>Now it's time to work through the steps in the prerequisite tutorial
+<a href="https://developers.sap.com/tutorials/btp-app-set-up-local-development.html">Set Up Local Development Using VS
+Code</a>
+that we looked at briefly in part 1. We'll take the steps one at a
+time, and decide what we need to do to fulfil what the step describes,
+but in the context of our image and future containers.</p>
+<h2 id="step-1-editors">Step 1: Editors</h2>
+<p>There's not much we need to do here as we're going for VS Code
+implicitly. We will want to create a <a href="https://code.visualstudio.com/docs/remote/devcontainerjson-reference">devcontainer configuration
+file</a>
+that effectively tells VS Code about the dev container and how to use
+it, but we'll do that towards the end.</p>
+<h2 id="step-2-command-line-interpreters">Step 2: Command line interpreters</h2>
+<p>This step tells us that we'll be needing to enter commands on a command
+line, as part of the tutorial, and therefore a command line interpreter
+(environment) is required. Here's what the step says:</p>
+<blockquote>
+<p>&quot;This tutorial contains a number of command line snippets that need to
+be pasted into a command line window. All snippets listed for macOS/Linux or
+without platform information can be executed in the bash or zsh, which are the
+default shells for these platforms. The Windows snippets are for the Windows
+Command Line and not for the PowerShell. Windows users are suggested to use the
+Git BASH instead, which is part of the Git for Windows installation and
+contains the basic UNIX command line tools. In the Git BASH, use the
+macOS/Linux snippets of the tutorial. VS Code supports the use of the Git BASH
+for the integrated command line window (called Terminal in VS Code) as well.&quot;</p>
+</blockquote>
+<p>Interestingly, even though all three main OS platforms are mentioned, it
+didn't escape my notice that Bash was the most prominent shell
+mentioned - as illustrated by this gratuitous pipeline that analyses the
+text of that paragraph:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> <span class="token function">cat</span> paragraph-text
+<span class="token operator">|</span> <span class="token function">tr</span> <span class="token string">'[:upper:]'</span> <span class="token string">'[:lower:]'</span>
+<span class="token operator">|</span> <span class="token function">sed</span> <span class="token parameter variable">-E</span> <span class="token string">'s/[^a-z]/ /g; s/ +/\n/g'</span>
+<span class="token operator">|</span> <span class="token function">sort</span>
+<span class="token operator">|</span> <span class="token function">uniq</span> <span class="token parameter variable">-c</span>
+<span class="token operator">|</span> <span class="token function">sort</span> <span class="token parameter variable">-nr</span>
+<span class="token operator">|</span> <span class="token function">head</span>
+<span class="token number">14</span> the
+<span class="token number">6</span> <span class="token keyword">for</span>
+<span class="token number">5</span> line
+<span class="token number">5</span> <span class="token builtin class-name">command</span>
+<span class="token number">4</span> windows
+<span class="token number">4</span> snippets
+<span class="token number">4</span> of
+<span class="token number">4</span> <span class="token function">git</span>
+<span class="token number">4</span> <span class="token function">bash</span>
+<span class="token number">3</span> use
+<span class="token comment"># /tmp</span>
+<span class="token punctuation">;</span></code></pre>
+<p>There's <strong>bash</strong> in the top ten list, no sign of anything else (now
+where's that troll emoji when I need it?)</p>
+<p>Anyway, there's nothing for us to do in this step either, as our base
+image has a shell environment as standard.</p>
+<h2 id="step-3-install-git">Step 3: Install Git</h2>
+<p>Nothing to do here either, as git is already available to us in the base
+image, which we can check in our Bash shell inside the running container
+like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">root ➜ / $ <span class="token function">git</span> <span class="token parameter variable">--version</span>
+<span class="token function">git</span> version <span class="token number">2.30</span>.2</code></pre>
+<p>Nice!</p>
+<h2 id="step-4-install-node-js">Step 4: Install Node.js</h2>
+<p>As you can guess, nothing to do here either - the whole point of
+choosing the base image that we did was to have a Node.js environment.
+So we don't need to install Node.js explicitly at this point. Note that
+the step advises us to run the latest LTS version, which we are doing in
+this image.</p>
+<h2 id="step-5-install-the-sapui5-command-line-interface">Step 5: Install the SAPUI5 command line interface</h2>
+<p>Here's where we get something to do. The ui5 CLI is not going to be in
+the base Docker image, but it's easily installed as a global Node.js
+module, via the Node Package Manager (NPM). The instructions in this
+tutorial step show us how to do that.</p>
+<p>We can try it now in our currently running container:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">root ➜ / $ <span class="token function">npm</span> <span class="token function">install</span> <span class="token parameter variable">--global</span> @ui5/cli
+
+added <span class="token number">520</span> packages, and audited <span class="token number">521</span> packages <span class="token keyword">in</span> 16s
+
+found <span class="token number">0</span> vulnerabilities
+root ➜</code></pre>
+<p>We can then invoke it directly, like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">root ➜ / $ ui5 <span class="token parameter variable">--version</span>
+<span class="token number">2.14</span>.4 <span class="token punctuation">(</span>from /usr/local/share/npm-global/lib/node_modules/@ui5/cli/bin/ui5.js<span class="token punctuation">)</span>
+root ➜ / $</code></pre>
+<p>Great. Of course, this only gets us the ui5 CLI in the current
+container, the currently running instance of the Docker image. So we
+need to add this to our Docker image definition.</p>
+<p>There's a <a href="https://github.com/microsoft/vscode-dev-containers/blob/e7ee99058efcecb977145640a7f0f09097836403/containers/javascript-node/.devcontainer/Dockerfile">base image
+reference</a>
+that shows us how we should do this, so following that example we end up
+with this in our Dockerfile:</p>
+<pre class="language-dockerfile" tabindex="0"><code class="language-dockerfile"><span class="token instruction"><span class="token keyword">ARG</span> VARIANT=<span class="token string">"16-buster"</span></span>
+<span class="token instruction"><span class="token keyword">FROM</span> mcr.microsoft.com/vscode/devcontainers/javascript-node:<span class="token variable">${VARIANT}</span></span>
+
+<span class="token instruction"><span class="token keyword">RUN</span> su node -c <span class="token string">"npm install -g @ui5/cli"</span></span></code></pre>
+<h2 id="step-6-install-the-cloud-foundry-command-line-interface">Step 6: Install the Cloud Foundry command line interface</h2>
+<p>If we look closely at this step, there are different instructions
+depending on what host operating system you're running. The
+container-based approach alleviates this by providing a common and
+consistent environment. So we only need to consider instructions for
+installing the cf CLI once.</p>
+<p>The image's base is Debian, a Linux distribution, so of course we need
+to follow the Linux based installation instructions, and <a href="https://docs.cloudfoundry.org/cf-cli/install-go-cli.html#pkg-linux">we're
+directed to the Cloud Foundry
+website</a>
+to follow them. Let's follow them in our test container that we have
+running, and for future container instantiation, we'll then add further
+content to our Dockerfile so that images built from that will have the
+cf CLI.</p>
+<p>There are two different ways to install the cf CLI on Linux - using the
+distribution's package manager, or just downloading and unpacking the
+binary file. While they're both good approaches, we'll just make a
+decision and go for the former. Talking of decisions, there are
+different major versions of the cf CLI available ... to discuss the
+differences between them is a topic for another time, we'll just go for
+v7 here as it seems to be gaining usage over v6 and is still not as
+&quot;bleeding edge&quot; as v8.</p>
+<p>So the first thing we need to do in the
+<a href="https://docs.cloudfoundry.org/cf-cli/install-go-cli.html#pkg-linux">instructions</a>
+is to add the Cloud Foundry Foundation public key and package repository
+details so we can use the Debian package manager to install it:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">root ➜ / $ <span class="token function">wget</span> <span class="token parameter variable">-q</span> <span class="token parameter variable">-O</span> - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key <span class="token operator">|</span> apt-key <span class="token function">add</span> -
+Warning: apt-key is deprecated. Manage keyring files <span class="token keyword">in</span> trusted.gpg.d instead <span class="token punctuation">(</span>see apt-key<span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">))</span>.
+OK
+root ➜ / $</code></pre>
+<p>If you're curious like me, you'll want to know what's happening here.
+Using wget, the key is downloaded (avoiding normal output, with the -q
+&quot;quiet&quot; option) and written to standard output STDOUT with the -O -
+option and value. This key is piped into the standard input STDIN of
+apt-key to add it to the package manager's key store.</p>
+<p>Then a new file in the package manager's list of sources is created,
+pointing to a Cloud Foundry resource for Debian packages:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">root ➜ / $ <span class="token builtin class-name">echo</span> <span class="token string">"deb https://packages.cloudfoundry.org/debian stable main"</span> <span class="token operator">|</span> <span class="token function">tee</span> /etc/apt/sources.list.d/cloudfoundry-cli.list
+root ➜ / $</code></pre>
+<p>Note that in neither of these two activities do we need to use the
+&quot;sudo&quot; command which was shown in the instructions. This is because in
+this container, we're the administrative &quot;root&quot; user already.</p>
+<p>Next we can get the package lists updated like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">root ➜ / $ <span class="token function">apt-get</span> update
+Hit:1 http://security.debian.org/debian-security buster-security InRelease
+Hit:2 http://deb.debian.org/debian buster InRelease
+Get:3 http://deb.debian.org/debian buster-updates InRelease <span class="token punctuation">[</span><span class="token number">39.4</span> kB<span class="token punctuation">]</span>
+Hit:5 https://dl.yarnpkg.com/debian stable InRelease
+Hit:4 https://cf-cli-debian-repo.s3.amazonaws.com stable InRelease
+Fetched <span class="token number">39.4</span> kB <span class="token keyword">in</span> 1s <span class="token punctuation">(</span><span class="token number">33.9</span> kB/s<span class="token punctuation">)</span>
+Reading package lists<span class="token punctuation">..</span>. Done
+root ➜ / $</code></pre>
+<p>And now we can request the install:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">root ➜ / $ <span class="token function">apt-get</span> <span class="token function">install</span> cf7-cli
+Reading package lists<span class="token punctuation">..</span>. Done
+Building dependency tree<span class="token punctuation">..</span>. Done
+Reading state information<span class="token punctuation">..</span>. Done
+The following NEW packages will be installed:
+cf7-cli
+<span class="token number">0</span> upgraded, <span class="token number">1</span> newly installed, <span class="token number">0</span> to remove and <span class="token number">0</span> not upgraded.
+Need to get <span class="token number">5853</span> kB of archives.
+After this operation, <span class="token number">22.6</span> MB of additional disk space will be used.
+Get:1 https://packages.cloudfoundry.org/debian stable/main amd64 cf7-cli amd64 <span class="token number">7.4</span>.0 <span class="token punctuation">[</span><span class="token number">5853</span> kB<span class="token punctuation">]</span>
+Fetched <span class="token number">5853</span> kB <span class="token keyword">in</span> 3s <span class="token punctuation">(</span><span class="token number">2022</span> kB/s<span class="token punctuation">)</span>
+Selecting previously unselected package cf7-cli.
+<span class="token punctuation">(</span>Reading database <span class="token punctuation">..</span>. <span class="token number">26901</span> files and directories currently installed.<span class="token punctuation">)</span>
+Preparing to unpack <span class="token punctuation">..</span>./cf7-cli_7.4.0_amd64.deb <span class="token punctuation">..</span>.
+Unpacking cf7-cli <span class="token punctuation">(</span><span class="token number">7.4</span>.0<span class="token punctuation">)</span> <span class="token punctuation">..</span>.
+Setting up cf7-cli <span class="token punctuation">(</span><span class="token number">7.4</span>.0<span class="token punctuation">)</span> <span class="token punctuation">..</span>.
+root ➜ / $</code></pre>
+<p>This is all we need to get the cf CLI installed, which it now is, as we
+can see:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">root ➜ / $ cf <span class="token parameter variable">--version</span>
+cf version <span class="token number">7.4</span>.0+e55633fed.2021-11-15
+root ➜ / $</code></pre>
+<p>Happy with success, we can now make this a standard activity when
+building the image, with new content in the Dockerfile, so it now looks
+like this:</p>
+<pre class="language-dockerfile" tabindex="0"><code class="language-dockerfile"><span class="token instruction"><span class="token keyword">ARG</span> VARIANT=<span class="token string">"16-buster"</span></span>
+<span class="token instruction"><span class="token keyword">FROM</span> mcr.microsoft.com/vscode/devcontainers/javascript-node:<span class="token variable">${VARIANT}</span></span>
+
+<span class="token instruction"><span class="token keyword">RUN</span> wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | apt-key add - ;</span>
+  echo "deb https://packages.cloudfoundry.org/debian stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list
+
+<span class="token instruction"><span class="token keyword">RUN</span> apt-get update</span>
+  &amp;&amp; apt-get -y install --no-install-recommends cf7-cli
+
+<span class="token instruction"><span class="token keyword">RUN</span> su node -c <span class="token string">"npm install -g @ui5/cli"</span></span></code></pre>
+<p>This pretty much reflects what we've just done in the container, with
+the addition of the following options for apt-get:</p>
+<ul>
+<li>the -y option sets an automatic &quot;yes&quot; to any prompts that may come
+up, which is good for unattended execution such as image builds</li>
+<li>the --no-install-recommends option prevents apt-get installing
+anything other than the actual package requested and with its
+dependencies</li>
+</ul>
+<h2 id="step-7-add-cap-tooling">Step 7: Add CAP tooling</h2>
+<p>We've installed the ui5 CLI, and now it's time to install the SAP
+Cloud Application Programming (CAP) model software development kit. This
+is also in the form of a Node.js module, and we should install that also
+globally in a similar way to how we installed the ui5 CLI. Let's do it
+now directly in our running container first:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">root ➜ / $ <span class="token function">npm</span> <span class="token function">install</span> <span class="token parameter variable">--global</span> @sap/cds-dk
+<span class="token punctuation">[</span><span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+
+added <span class="token number">415</span> packages, and audited <span class="token number">416</span> packages <span class="token keyword">in</span> 21s
+root ➜ / $</code></pre>
+<p>Let's check to see if we have the main CLI executable at our fingertips
+now (in our PATH):</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">root ➜ / $ cds <span class="token parameter variable">--version</span>
+@sap/cds: <span class="token number">5.7</span>.3
+@sap/cds-compiler: <span class="token number">2.11</span>.2
+@sap/cds-dk: <span class="token number">4.7</span>.3
+@sap/cds-foss: <span class="token number">3.0</span>.0
+@sap/eslint-plugin-cds: <span class="token number">2.3</span>.0
+Node.js: v16.13.2
+home: /usr/local/share/npm-global/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds
+root ➜ / $</code></pre>
+<p>Yep, lovely!</p>
+<p>The simplest thing we can do to encode this installation step into our
+Dockerfile is to just add it to the existing npm install command already
+in there. So now our Dockerfile looks like this:</p>
+<pre class="language-dockerfile" tabindex="0"><code class="language-dockerfile"><span class="token instruction"><span class="token keyword">ARG</span> VARIANT=<span class="token string">"16-buster"</span></span>
+<span class="token instruction"><span class="token keyword">FROM</span> mcr.microsoft.com/vscode/devcontainers/javascript-node:<span class="token variable">${VARIANT}</span></span>
+
+<span class="token instruction"><span class="token keyword">RUN</span> wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | apt-key add - ;</span>
+  echo "deb https://packages.cloudfoundry.org/debian stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list
+
+<span class="token instruction"><span class="token keyword">RUN</span> apt-get update</span>
+  &amp;&amp; apt-get -y install --no-install-recommends cf7-cli
+
+<span class="token instruction"><span class="token keyword">RUN</span> su node -c <span class="token string">"npm install -g @ui5/cli @sap/cds-dk"</span></span></code></pre>
+<h2 id="step-8-install-vs-code">Step 8: Install VS Code</h2>
+<p>So here's a step that we don't encode in the image of course - the two
+core tools you'll need on your local machine are Docker Desktop or
+equivalent, as already stated, and VS Code, because the whole idea is
+that you use VS Code and connect to a container for everything else.</p>
+<p>That said, once we have everything set up, there's a context where
+neither Docker Desktop nor VS Code is required, but you still have all
+the tools in a container and you can still run through the entire
+tutorial mission. Can you guess what that context is? Answer below in
+the comments.</p>
+<h2 id="step-9-install-vs-code-extensions">Step 9: Install VS Code extensions</h2>
+<p>This step, along with the subsequent step, describes a couple of VS Code
+extensions that are required for the tutorial; they make development in
+this space a lot easier and more pleasant. This first extension is the
+<a href="https://marketplace.visualstudio.com/items?itemName=SAPSE.vscode-cds">SAP CDS Language Support
+extension</a>.</p>
+<p>This is a wonderful extension that introduced me to the Language Server
+Protocol (LSP) which I've covered in some detail in a couple of past
+episodes of the Hands-on SAP Dev
+<a href="https://blogs.sap.com/2020/11/09/an-overview-of-sap-developers-video-content/#shows">show</a>:</p>
+<p><a href="https://www.youtube.com/watch?v=WLkFAtgEWs8">Ep.7 -- Digging into the language server protocol, cds-lsp and
+Vim</a></p>
+<p><a href="https://www.youtube.com/watch?v=S7PaeN4r7vQ">Ep.26 -- Vim CDS plugin with new @sap/cds-lsp
+package</a></p>
+<p><img src="/images/2022/01/screenshot-2022-01-27-at-08.02.02.png" alt=""></p>
+<p>Now, one might think that this extension is to be installed into your
+local VS Code installation. But with VS Code's support for development
+containers, there's an alternative approach, described in the <a href="https://code.visualstudio.com/docs/remote/containers#_managing-extensions">Managing
+Extensions</a>
+section of the <a href="https://code.visualstudio.com/docs/remote/containers">Developing inside a
+Container</a>
+article.</p>
+<p>This alternative approach makes sense, in that it distinguishes between
+extensions that affect VS Code's direct user interface (UI) such as
+colour and theme extensions, and extensions that provide additional
+functionality. It also recognises that extensions are often project
+specific, and it's a good idea to limit the extensions installed to the
+ones needed for the particular task at hand.</p>
+<p>So with the support for developing inside a container, non-UI extensions
+can be installed when a container is created in the context of VS Code
+connecting to and using it for remote development. The <a href="https://code.visualstudio.com/docs/remote/containers">Developing
+inside a
+Container</a> article
+describes a configuration file called <strong>devcontainer.json</strong> which holds
+all the configuration for using containers like this.</p>
+<p>So with what we have at this point, and according to the configuration
+file specifications, here's the simplest version that we'd need so
+far:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Tutorial dev container"</span><span class="token punctuation">,</span>
+  <span class="token property">"build"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"dockerfile"</span><span class="token operator">:</span> <span class="token string">"Dockerfile"</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre>
+<p>This is the simplest configuration that could possibly work, and
+there's more we'll add later but for now, let's just stare at this
+for a second. What it does is simply point to the Dockerfile, the
+definition file for the image from which containers are to be created.</p>
+<p>So where is that Dockerfile located, and where do we put this
+devcontainer.json file? By default, VS Code will look for a directory
+named <strong>.devcontainer/</strong> and this is where we'll put both files:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">.devcontainer/
+├── Dockerfile
+└── devcontainer.json</code></pre>
+<p>This directory can live in the root of your project.</p>
+<p>So now we have our devcontainer.json configuration file, we can turn our
+attention back to the task at hand, which is to think about what this
+prerequisite step is asking us to do, which is to install the SAP CDS
+Language Support extension. This is not an extension that is designed to
+directly affect VS Code's UI, and it's quite project-specific (i.e.
+you'll need it for CAP projects, but not for non-CAP projects). So
+it's a perfect candidate for associating with the container.</p>
+<p>And it's within our new devcontainer.json file that we can specify that
+this extension should be installed. This is what our devcontainer.json
+file looks like with this in place:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Tutorial dev container"</span><span class="token punctuation">,</span>
+  <span class="token property">"build"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"dockerfile"</span><span class="token operator">:</span> <span class="token string">"Dockerfile"</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"extensions"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token string">"sapse.vscode-cds"</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<p>In case you're wondering where we get the technical name for the
+extension from (&quot;sapse.vscode-cds&quot;), it's in the URL of the extension
+on the Visual Studio Marketplace:
+<a href="https://marketplace.visualstudio.com/items?itemName=sapse.vscode-cds">https://marketplace.visualstudio.com/items?itemName=sapse.vscode-cds</a>.</p>
+<h2 id="step-10-install-sap-fiori-tools-extension-pack">Step 10: Install SAP Fiori tools Extension Pack</h2>
+<p>Here's another extension to install. In fact, it's an extension pack,
+which is a collection of multiple extensions: <a href="https://marketplace.visualstudio.com/items?itemName=sapse.sap-ux-fiori-tools-extension-pack">SAP Fiori Tools -
+Extension
+Pack</a>.
+I'll leave you to peruse the extensions that are included; our task at
+hand is to ensure that this extension pack also gets installed when VS
+Code attaches to a container.</p>
+<p>To do that, we just add the extension pack identifier (again, taking it
+from the
+<a href="https://marketplace.visualstudio.com/items?itemName=SAPSE.sap-ux-fiori-tools-extension-pack">URL</a>)
+to the array in our devcontainer.json configuration. Here's what it
+looks like now:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"name"</span><span class="token operator">:</span> <span class="token string">"Tutorial dev container"</span><span class="token punctuation">,</span>
+  <span class="token property">"build"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"dockerfile"</span><span class="token operator">:</span> <span class="token string">"Dockerfile"</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token property">"extensions"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+    <span class="token string">"sapse.vscode-cds"</span><span class="token punctuation">,</span>
+    <span class="token string">"sapse.sap-ux-fiori-tools-extension-pack"</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">}</span></code></pre>
+<h2 id="step-11-install-yeoman">Step 11: Install Yeoman</h2>
+<p>The final step in this prerequisites tutorial is to install Yeoman, a
+tool for scaffolding web apps. This is a Node.js based tool and can be
+installed like the other tools we've already installed - the ui5 CLI
+and the CAP tools, i.e. via npm install.</p>
+<p>For completeness, let's manually install it inside our current
+container, just to get a feel for it, and then add the package name
+&quot;yo&quot; to the list in the RUN line in our Dockerfile.</p>
+<p>First, here's installing it in our running test container:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">root ➜ / $ <span class="token function">npm</span> <span class="token function">install</span> <span class="token parameter variable">--global</span> yo
+<span class="token punctuation">[</span><span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+
+added <span class="token number">728</span> packages, and audited <span class="token number">729</span> packages <span class="token keyword">in</span> 55s
+
+root ➜ / $</code></pre>
+<p>And adding the package to the list in our Dockerfile means that it now
+looks like this:</p>
+<pre class="language-dockerfile" tabindex="0"><code class="language-dockerfile"><span class="token instruction"><span class="token keyword">ARG</span> VARIANT=<span class="token string">"16-buster"</span></span>
+<span class="token instruction"><span class="token keyword">FROM</span> mcr.microsoft.com/vscode/devcontainers/javascript-node:<span class="token variable">${VARIANT}</span></span>
+
+<span class="token instruction"><span class="token keyword">RUN</span> wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | apt-key add - ;</span>
+  echo "deb https://packages.cloudfoundry.org/debian stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list
+
+<span class="token instruction"><span class="token keyword">RUN</span> apt-get update</span>
+  &amp;&amp; apt-get -y install --no-install-recommends cf7-cli
+
+<span class="token instruction"><span class="token keyword">RUN</span> su node -c <span class="token string">"npm install -g @ui5/cli @sap/cds-dk yo"</span></span></code></pre>
+<h2 id="considering-the-meta-prerequisites">Considering the meta prerequisites</h2>
+<p>In a delicious turn of events, this prerequisite tutorial has its own
+set of prerequisites, which are detailed right at the start:</p>
+<p><img src="/images/2022/01/screenshot-2022-01-27-at-09.24.55.png" alt=""></p>
+<p>The image upon which our containers are going to be created are Linux
+based, so we don't need to pay attention to any of the macOS specific
+prerequisites in this list.</p>
+<p>Neither should we need to pay attention to the Windows specific
+prerequisite (installing sqlite) as on macOS and any normal (i.e. full
+sized) distribution of Linux, sqlite is installed by default.</p>
+<p>But we're running on a cut-down distribution, so we'll need to install
+sqlite with the Debian package manager. That's easy - all we need to do
+is add the sqlite package to the apt-get install command in the
+Dockerfile.</p>
+<p>Now our Dockerfile finally looks like this:</p>
+<pre class="language-dockerfile" tabindex="0"><code class="language-dockerfile"><span class="token instruction"><span class="token keyword">ARG</span> VARIANT=<span class="token string">"16-buster"</span></span>
+<span class="token instruction"><span class="token keyword">FROM</span> mcr.microsoft.com/vscode/devcontainers/javascript-node:<span class="token variable">${VARIANT}</span></span>
+
+<span class="token instruction"><span class="token keyword">RUN</span> wget -q -O - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key | apt-key add - ;</span>
+echo "deb https://packages.cloudfoundry.org/debian stable main" | tee /etc/apt/sources.list.d/cloudfoundry-cli.list
+
+<span class="token instruction"><span class="token keyword">RUN</span> apt-get update</span>
+&amp;&amp; apt-get -y install --no-install-recommends cf7-cli sqlite
+
+<span class="token instruction"><span class="token keyword">RUN</span> su node -c <span class="token string">"npm install -g @ui5/cli @sap/cds-dk yo"</span></span></code></pre>
+<h2 id="giving-the-image-a-spin">Giving the image a spin</h2>
+<p>We got to the end of the tutorial prerequisite steps and have accounted
+for all of them that need attention either in the Dockerfile, in the
+devcontainer.json file. Rather than end this part 2 here, let's have a
+bit of fun and put our fledgling Dockerfile to the test, manually here,
+to make sure it holds together.</p>
+<p>We'll build an image from it, and start a container based on that
+image, jumping into a shell environment like we did before. Before we do
+that, let's exit the existing container (either by entering &quot;exit&quot; or
+using Ctrl-D at the command line) and it should be automatically removed
+because of the --rm option we specified when creating it.</p>
+<p>Now, back on our host, let's build the image, and give it the
+imaginative name &quot;tut-image-test&quot;:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> <span class="token function">docker</span> build <span class="token parameter variable">-t</span> tut-image-test <span class="token builtin class-name">.</span>
+<span class="token punctuation">[</span>+<span class="token punctuation">]</span> Building <span class="token number">0</span>.1s <span class="token punctuation">(</span><span class="token number">8</span>/8<span class="token punctuation">)</span> FINISHED
+<span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">[</span>internal<span class="token punctuation">]</span> load build definition from Dockerfile <span class="token number">0</span>.0s
+<span class="token operator">=</span><span class="token operator">></span> <span class="token operator">=</span><span class="token operator">></span> transferring dockerfile: 37B <span class="token number">0</span>.0s
+<span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">[</span>internal<span class="token punctuation">]</span> load .dockerignore <span class="token number">0</span>.0s
+<span class="token operator">=</span><span class="token operator">></span> <span class="token operator">=</span><span class="token operator">></span> transferring context: 2B <span class="token number">0</span>.0s
+<span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">[</span>internal<span class="token punctuation">]</span> load metadata <span class="token keyword">for</span> mcr.microsoft.com/vscode/devcontainers/javascript-node:16-buster <span class="token number">0</span>.0s
+<span class="token operator">=</span><span class="token operator">></span> <span class="token punctuation">[</span><span class="token number">1</span>/4<span class="token punctuation">]</span> FROM mcr.microsoft.com/vscode/devcontainers/javascript-node:16-buster <span class="token number">0</span>.0s
+<span class="token operator">=</span><span class="token operator">></span> CACHED <span class="token punctuation">[</span><span class="token number">2</span>/4<span class="token punctuation">]</span> RUN <span class="token function">wget</span> <span class="token parameter variable">-q</span> <span class="token parameter variable">-O</span> - https://packages.cloudfoundry.org/debian/cli.cloudfoundry.org.key <span class="token number">0</span>.0s
+<span class="token operator">=</span><span class="token operator">></span> CACHED <span class="token punctuation">[</span><span class="token number">3</span>/4<span class="token punctuation">]</span> RUN <span class="token function">apt-get</span> update <span class="token operator">&amp;&amp;</span> <span class="token function">apt-get</span> <span class="token parameter variable">-y</span> <span class="token function">install</span> --no-install-recommends cf7-cli sqlite <span class="token number">0</span>.0s
+<span class="token operator">=</span><span class="token operator">></span> CACHED <span class="token punctuation">[</span><span class="token number">4</span>/4<span class="token punctuation">]</span> RUN <span class="token function">su</span> <span class="token function">node</span> <span class="token parameter variable">-c</span> <span class="token string">"npm install -g @ui5/cli @sap/cds-dk yo"</span> <span class="token number">0</span>.0s
+<span class="token operator">=</span><span class="token operator">></span> exporting to image <span class="token number">0</span>.0s
+<span class="token operator">=</span><span class="token operator">></span> <span class="token operator">=</span><span class="token operator">></span> exporting layers <span class="token number">0</span>.0s
+<span class="token operator">=</span><span class="token operator">></span> <span class="token operator">=</span><span class="token operator">></span> writing image sha256:57c19dcfd263997e737b723febbf4481bf8f06d7eec3044000b9830716478ac1 <span class="token number">0</span>.0s
+<span class="token operator">=</span><span class="token operator">></span> <span class="token operator">=</span><span class="token operator">></span> naming to docker.io/library/tut-image-test <span class="token number">0</span>.0s</code></pre>
+<p>Now let's take it for a spin. Creating a container from it (again, with
+the --rm option), asking for the Bash shell, shows us this, where we
+move from the command line prompt on the host (mine here is a simple
+&quot;;&quot;) to the command line prompt inside the container (&quot;root ➜ /
+$&quot;):</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token punctuation">;</span> <span class="token function">docker</span> run <span class="token parameter variable">--rm</span> <span class="token parameter variable">-it</span> tut-image-test <span class="token function">bash</span>
+root ➜ / $</code></pre>
+<p>The moment of truth arrives - does it have everything we need inside it?
+Let's see:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">root ➜ / $ cf <span class="token parameter variable">--version</span>
+cf version <span class="token number">7.4</span>.0+e55633fed.2021-11-15
+root ➜ / $ sqlite <span class="token parameter variable">-version</span>
+<span class="token number">2.8</span>.17
+root ➜ / $ ui5 <span class="token parameter variable">--version</span>
+<span class="token number">2.14</span>.4 <span class="token punctuation">(</span>from /usr/local/share/npm-global/lib/node_modules/@ui5/cli/bin/ui5.js<span class="token punctuation">)</span>
+root ➜ / $ cds <span class="token parameter variable">--version</span>
+@sap/cds: <span class="token number">5.7</span>.3
+@sap/cds-compiler: <span class="token number">2.11</span>.2
+@sap/cds-dk: <span class="token number">4.7</span>.3
+@sap/cds-foss: <span class="token number">3.0</span>.0
+@sap/eslint-plugin-cds: <span class="token number">2.3</span>.0
+Node.js: v16.13.2
+home: /usr/local/share/npm-global/lib/node_modules/@sap/cds-dk/node_modules/@sap/cds
+root ➜ / $ yo <span class="token parameter variable">--version</span>
+<span class="token number">4.3</span>.0
+root ➜ / $</code></pre>
+<p>🎉 Excellent!</p>
+<p>We have a Docker image that we can create containers from, and the image
+has all the tools we need according to the prerequisites. We also have a
+devcontainer.json file that tells VS Code about the container it is to
+create and connect to, and the extensions to install in that context.</p>
+<p>In the third and final part of this series, we'll connect everything
+together in the context of VS Code, and see where that brings us:</p>
+<p><a href="/blog/posts/2022/02/01/boosting-tutorial-ux-with-dev-containers-part-3-containers-into-action/">Boosting tutorial UX with dev containers part 3 - containers into
+action</a></p>
+<p>See you there!</p>
+<p><a href="https://community.sap.com/t5/technology-blogs-by-sap/boosting-tutorial-ux-with-dev-containers-part-2-embedding-prerequisite/ba-p/13540611">Originally published on SAP Community</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2022/01/27/boosting-tutorial-ux-with-dev-containers-part-1-challenge-and-base-solution/">Boosting tutorial UX with dev containers part 1 - challenge and base solution</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2022/02/01/boosting-tutorial-ux-with-dev-containers-part-3-containers-into-action/">Boosting tutorial UX with dev containers part 3 - containers into action</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2022/01/28/boosting-tutorial-ux-with-dev-containers-part-2-embedding-prerequisite-details/` was built on 2026-09-04T14:26:03.297Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
