@@ -1,6 +1,7 @@
 ---
 title: "Boosting tutorial UX with dev containers part 2 - embedding prerequisite details"
 date: 2022-01-28
+description: Working through each tutorial prerequisite step and encoding the tools and configuration into a Dockerfile and devcontainer.json file.
 tags:
   - sap-community-post
   - containers

@@ -1,6 +1,7 @@
 ---
 title: "Boosting tutorial UX with dev containers part 3 - containers into action"
 date: 2022-02-01
+description: Putting everything together by connecting VS Code to the dev container and running through the first steps of the CAP tutorial.
 tags:
   - sap-community-post
   - containers

@@ -1,6 +1,7 @@
 ---
 title: "Boosting tutorial UX with dev containers part 1 - challenge and base solution"
 date: 2022-01-27
+description: Describing the challenge of tutorial prerequisites and choosing a base Docker image as the foundation for a dev container solution.
 tags:
   - sap-community-post
   - containers
