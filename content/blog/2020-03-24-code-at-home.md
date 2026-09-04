@@ -6,6 +6,7 @@ description: Information on the Code at Home initiative, what it is and what you
 tags:
   - learning
   - sap
+  - programming-puzzles
 ---
 - Episodes on Mondays and Fridays at 15:30 UK time.
 - Last episode in this first series will be Ep.20 on Mon 18 May.

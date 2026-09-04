@@ -6,6 +6,7 @@ tags:
   - javascript
   - learning
   - til
+  - programming-puzzles
 ---
 I was pondering different approaches to solving the Codewars kata [Simple string reversal](https://www.codewars.com/kata/5a71939d373c2e634200008e), and having submitted my own, I started to browse other solutions. One that caught my eye was this, from users [Bubbler](https://www.codewars.com/users/Bubbler) and [Tellurian](https://www.codewars.com/users/Telllurian):
 

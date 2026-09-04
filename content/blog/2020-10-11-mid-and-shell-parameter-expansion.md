@@ -7,6 +7,7 @@ tags:
   - learning
   - til
   - computing-history
+  - programming-puzzles
 ---
 I've just set up [Exercism](https://exercism.io) on this machine so I could download challenges in the [Bash track](https://exercism.io/tracks/bash) and try to improve my Bash scripting fu. I spent a pleasant hour getting to know [bats](https://github.com/sstephenson/bats) - the Bash Automated Testing System, which Exercism uses for the Bash track, and looking at one of the easy challenges on Hamming in relation to DNA sequences. My solution, in case you're interested, is [here](https://exercism.io/my/solutions/50ef4a487c3641eda1b1af823ca7d9b2).
 

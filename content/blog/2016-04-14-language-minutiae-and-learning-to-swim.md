@@ -6,6 +6,7 @@ tags:
   - functional-programming
   - learning
   - opinion
+  - programming-puzzles
 ---
 Further to [Enlightenment in action](/blog/posts/2016/04/12/enlightenment-in-action/), here's a tiny bit more light that I discovered on my journey up to Newcastle this morning.
 

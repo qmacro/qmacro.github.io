@@ -5,6 +5,7 @@ description: Presenting the voting thread for the finalists of the second SAP Co
 tags:
   - learning
   - sap-community-post
+  - programming-puzzles
 ---
 
 This is the voting thread for the SAP Community Coding Challenge 2. For

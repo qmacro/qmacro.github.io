@@ -5,6 +5,7 @@ description: A summary of the Code at Home episodes streamed live and available 
 tags:
   - learning
   - sap
+  - programming-puzzles
 ---
 All the episodes are live streamed [on my YouTube channel](https://youtube.com/djadams-qmacro) and are then available on that same channel after the streams finish, as recordings. In this post are links to those recordings with a short description of each. You can easily spot the upcoming live streams and recordings as they always have the "Code at Home" background in the thumbnail, like this:
 

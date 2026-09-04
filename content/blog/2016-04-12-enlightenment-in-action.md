@@ -7,6 +7,7 @@ tags:
   - clojure
   - learning
   - opinion
+  - programming-puzzles
 ---
 One of the ideas that Clojure embraces is this
 [Perlism](http://www.cs.yale.edu/homes/perlis-alan/quotes.html):

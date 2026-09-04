@@ -6,6 +6,7 @@ tags:
   - shell
   - learning
   - til
+  - programming-puzzles
 ---
 Spending a pleasant coffee on my day off today I looked at tackling another challenge in [Exercism's bash track](https://exercism.io/tracks/bash) - [Acronym](https://exercism.io/tracks/bash/exercises/acronym/solutions/e70a7282d2fb4856bbeb1c2ae745d3c4). The requirement included ensuring that any generated acronym (I guess these might actually be initialisms, but that's a discussion for another time) was completely in uppercase, regardless of the source.
 

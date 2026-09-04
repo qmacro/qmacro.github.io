@@ -6,6 +6,7 @@ tags:
   - functional-programming
   - clojure
   - learning
+  - programming-puzzles
 ---
 I came across a simple puzzle this evening, on [Wonderland Clojure Katas](https://github.com/gigasquid/wonderland-clojure-katas). My brain is half dead from starting work extra early and slogging through the day, but I wanted to include a tiny bit of Clojure recreation this evening, before the day was out.
 

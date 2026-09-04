@@ -6,6 +6,7 @@ tags:
   - learning
   - javascript
   - sap-community-post
+  - programming-puzzles
 ---
 Welcome to the second challenge in the **SAP Community Coding Challenge
 Series**. Just like the [first

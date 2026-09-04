@@ -6,6 +6,7 @@ tags:
   - learning
   - javascript
   - sap-community-post
+  - programming-puzzles
 ---
 *Here's a quick summary of where things are with the current SAP
 Community Coding Challenge, and what's to come.*

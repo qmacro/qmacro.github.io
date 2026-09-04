@@ -6,6 +6,7 @@ tags:
   - jq
   - learning
   - functional-programming
+  - programming-puzzles
 ---
 In response to the [first part of this series](/blog/posts/2023/03/29/learning-from-community-solutions-on-exercism-part-1/), in relation to the [rabbit hole in the Vehicle Purchase exercise](/blog/posts/2023/03/29/learning-from-community-solutions-on-exercism-part-1/#vehicle-purchase-exercise), Mattias Wadman [kindly shared some variants using generators](https://fosstodon.org/@wader/110117608773689719), which I'll reproduce here:
 

@@ -6,6 +6,7 @@ tags:
   - jq
   - learning
   - functional-programming
+  - programming-puzzles
 ---
 There's a relatively new [jq track on Exercism](https://exercism.org/tracks/jq), and I've been working through some of the exercises. There are at least a couple of features that appeal to me; one is the ability to easily write and submit solutions from the command line (see [Working Locally](https://exercism.org/docs/using/solving-exercises/working-locally)) and the other is the [community](https://exercism.org/community) solutions that are available to you after you submit your own first solution.
 

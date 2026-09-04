@@ -5,6 +5,7 @@ description: Listing the successful contestants in the second SAP Community Codi
 tags:
   - learning
   - sap-community-post
+  - programming-puzzles
 ---
 *Here's a list of the SAP Community Coding Challenge 2 contestants who
 were successful in their submissions. Congratulations to them all!*

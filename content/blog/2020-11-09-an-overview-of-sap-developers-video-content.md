@@ -1,16 +1,13 @@
 ---
 title: "An overview of SAP Developers video content"
 date: 2020-11-09
-description: Providing an overview of the wealth of video content for SAP developers on the YouTube channel.
+description: An overview of the wealth of video content for SAP developers on the YouTube channel.
 tags:
   - sap
   - hands-on-sap-dev
   - sap-community-post
----
-*There's a wealth of video content for SAP developers on the SAP
-Developers YouTube channel. Find out what it is, and how to navigate
-it.*
 
+---
 Back in January 2019, [our live streaming journey
 started](https://blogs.sap.com/2019/01/16/hands-on-sap-dev-with-qmacro-new-live-stream-series/)
 over on Twitch as somewhat of an experiment, before moving over to
@@ -43,7 +40,6 @@ icon to get notified of upcoming content.
 ![](/images/2020/11/Screen-Shot-2020-11-09-at-11.26.31.png)
 _The SAP Developers YouTube channel home page_
 
-<a name="shows"></a>
 ## Shows
 
 Next, we have different shows for you.
@@ -72,7 +68,7 @@ News](https://www.youtube.com/playlist?list=PL6RpkC85SLQAVBSQXN9522_1jNvPavBgg).
 
 **SAP Tech Bytes**: This is an initiative to bring you bite-sized
 information on all manner of topics, in
-[video](https://www.youtube.com/playlist?list=PL6RpkC85SLQC3HBShmlMaPu_nL--4f20z) and [written](https://blogs.sap.com/tag/sap-tech-bytes/)
+[video](https://www.youtube.com/playlist?list=PL6RpkC85SLQC3HBShmlMaPu_nL--4f20z) and [written](https://blogs.sap.com/tag/sap-tech-bytes/)
 format. Everything you need from this initiative is accessible from the
 accompanying
 [sap-tech-bytes](https://github.com/SAP-samples/sap-tech-bytes/blob/main/README.md)
@@ -173,7 +169,5 @@ Content](https://www.youtube.com/playlist?list=PL6RpkC85SLQAutZYqIv9cuRdymlOmqM4
 There's more content, but I'll leave it here for now. Don't forget to
 subscribe, and have fun perusing and consuming the content. Let me know
 if I've missed anything! Also, what else would you like to see?
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/welcome-corner-blog-posts/an-overview-of-sap-developers-video-content/ba-p/13482485)
