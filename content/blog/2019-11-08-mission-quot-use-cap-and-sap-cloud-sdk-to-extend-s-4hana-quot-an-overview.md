@@ -1,20 +1,15 @@
 ---
 title: "Mission 'Use CAP and SAP Cloud SDK to Extend S/4HANA' - an overview"
 date: 2019-11-08
-description: Outlining the Use CAP and SAP Cloud SDK to Extend S/4HANA mission created for SAP TechEd 2019.
 tags:
-  - cap
-  - sap
-  - btp
-  - conference
   - sap-community-post
+  - teched
+  - cap
+description: This post outlines what you can build in the "Use CAP and SAP Cloud SDK to Extend S/4HANA" mission created for SAP TechEd 2019.
 ---
-*This post serves to outline what you can build in the "Use CAP and SAP
-Cloud SDK to Extend S/4HANA" mission created for SAP TechEd 2019.*
-
-**Update Feb 2021: This mission has now been retired as the details
+**Update Feb 2021** This mission has now been retired as the details
 relating to the products and topics at hand have moved on; features have
-changed and improved over the last year and a half.**
+changed and improved over the last year and a half.
 
 There are [four missions](https://developers.sap.com/app-space.html)
 that have been put together specifically for SAP TechEd 2019, covering
@@ -44,19 +39,12 @@ S/4HANA](https://developers.sap.com/mission.cap-s4hana-cloud-extension.html)
 To give you a bit of a heads-up, here are the titles of those
 tutorials:
 
-1.  [Set Up a Basic Mock S/4HANA
-    Service](https://developers.sap.com/tutorials/cap-cloudsdk-1-mock-service.html)
-2.  [Install an OData V2
-    Adapter](https://developers.sap.com/tutorials/cap-cloudsdk-2-v2-adapter.html)
-3.  [Create a Basic CAP-Based
-    Service](https://developers.sap.com/tutorials/cap-cloudsdk-3-basic-service.html)
-4.  [Enhance CAP-Based Service to Refer to Remote
-    Addresses](https://developers.sap.com/tutorials/cap-cloudsdk-4-enhance-consume.html)
-5.  [Add Service Logic to Consume Remote Address
-    Data](https://developers.sap.com/tutorials/cap-cloudsdk-5-srv-logic.html)
-6.  [Create a Frontend with SAP Fiori Elements and
-    Annotations](https://developers.sap.com/tutorials/cap-cloudsdk-6-fiori-frontend.html)
-
+1. [Set Up a Basic Mock S/4HANA Service](https://developers.sap.com/tutorials/cap-cloudsdk-1-mock-service.html)
+2. [Install an OData V2 Adapter](https://developers.sap.com/tutorials/cap-cloudsdk-2-v2-adapter.html)
+3. [Create a Basic CAP-Based Service](https://developers.sap.com/tutorials/cap-cloudsdk-3-basic-service.html)
+4. [Enhance CAP-Based Service to Refer to Remote Addresses](https://developers.sap.com/tutorials/cap-cloudsdk-4-enhance-consume.html)
+5. [Add Service Logic to Consume Remote Address Data](https://developers.sap.com/tutorials/cap-cloudsdk-5-srv-logic.html)
+6. [Create a Frontend with SAP Fiori Elements and Annotations](https://developers.sap.com/tutorials/cap-cloudsdk-6-fiori-frontend.html)
 
 In essence, you use CAP to mock an S/4HANA API, which produces a nice
 OData v4 service, stick an OData v2 adapter proxy in front of it, try it
@@ -87,7 +75,5 @@ complete this mission at home too!
 
 Good luck, and don't forget to pack a flask of decent coffee before you
 set off on your journey!
-
----
 
 [Originally published on SAP Community](https://community.sap.com/t5/technology-blogs-by-sap/mission-quot-use-cap-and-sap-cloud-sdk-to-extend-s-4hana-quot-an-overview/ba-p/13435998)
