@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="en-GB">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Exploring service brokers and service consumption on SAP Business Technology Platform</title>
+		<meta name="description" content="In this post we look briefly at the Open Service Broker API, and how service brokers are used to facilitate access to services on runtimes on the SAP Business Technology Platform.">
+		<link rel="alternate" href="/feed/feed.xml" type="application/atom+xml" title="DJ Adams">
+		<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+
+      <meta property="og:title" content="Exploring service brokers and service consumption on SAP Business Technology Platform">
+        <meta property="og:site_name" content="DJ Adams">
+          <meta property="og:image" content="/images/site-image.png">
+        <meta property="og:description" content="In this post we look briefly at the Open Service Broker API, and how service brokers are used to facilitate access to services on runtimes on the SAP Business Technology Platform.">
+        <meta property="og:url" content="https://qmacro.org/blog/posts/2022/03/08/exploring-service-brokers-and-service-consumption-on-sap-business-technology-platform/">
+		
+		
+		
+		<style>/* This is an arbitrary CSS string added to the bundle */
+/* Defaults */
+:root {
+	--font-family: -apple-system, system-ui, sans-serif;
+	--font-family-monospace: Consolas, Menlo, Monaco, Andale Mono WT, Andale Mono, Lucida Console, Lucida Sans Typewriter, DejaVu Sans Mono, Bitstream Vera Sans Mono, Liberation Mono, Nimbus Mono L, Courier New, Courier, monospace;
+}
+
+/* Theme colors */
+:root {
+	--color-gray-20: #e0e0e0;
+	--color-gray-50: #C0C0C0;
+	--color-gray-90: #333;
+
+	--background-color: #fff;
+
+	--text-color: var(--color-gray-90);
+	--text-color-link: #2884d2;
+	--text-color-link-active: #15b0ed;
+	--text-color-link-visited: #9f4199;
+
+	--syntax-tab-size: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--color-gray-20: #e0e0e0;
+		--color-gray-50: #C0C0C0;
+		--color-gray-90: #dad8d8;
+
+		/* --text-color is assigned to --color-gray-_ above */
+		--text-color-link: #1493fb;
+		--text-color-link-active: #6969f7;
+		--text-color-link-visited: #a6a6f8;
+
+		--background-color: #15202b;
+	}
+}
+
+
+/* Global stylesheet */
+* {
+	box-sizing: border-box;
+}
+
+@view-transition {
+	navigation: auto;
+}
+
+html,
+body {
+	padding: 0;
+	margin: 0 auto;
+	font-family: var(--font-family);
+	color: var(--text-color);
+	background-color: var(--background-color);
+}
+html {
+	overflow-y: scroll;
+}
+body {
+	max-width: 40em;
+}
+
+/* https://www.a11yproject.com/posts/how-to-hide-content/ */
+.visually-hidden:not(:focus):not(:active) {
+	clip: rect(0 0 0 0);
+	clip-path: inset(50%);
+	height: 1px;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 1px;
+}
+
+/* Fluid images via https://www.zachleat.com/web/fluid-images/ */
+img{
+  max-width: 100%;
+}
+img[width][height] {
+  height: auto;
+}
+img[src$=".svg"] {
+  width: 100%;
+  height: auto;
+  max-width: none;
+}
+video,
+iframe {
+	width: 100%;
+	height: auto;
+}
+iframe {
+	aspect-ratio: 16/9;
+}
+
+p:last-child {
+	margin-bottom: 0;
+}
+p {
+	line-height: 1.5;
+}
+
+li {
+	line-height: 1.5;
+}
+
+a[href] {
+	color: var(--text-color-link);
+}
+a[href]:visited {
+	color: var(--text-color-link-visited);
+}
+a[href]:hover,
+a[href]:active {
+	color: var(--text-color-link-active);
+}
+
+main,
+footer {
+	padding: 1rem;
+}
+/* main :first-child { */
+/* 	margin-top: 0; */
+/* } */
+
+header {
+	border-bottom: 1px dashed var(--color-gray-20);
+}
+
+#skip-link {
+	text-decoration: none;
+	background: var(--background-color);
+	color: var(--text-color);
+	padding: 0.5rem 1rem;
+	border: 1px solid var(--color-gray-90);
+	border-radius: 2px;
+}
+
+/* Prevent visually-hidden skip link fom pushing content around when focused */
+#skip-link.visually-hidden:focus {
+	position: absolute;
+	top: 1rem;
+	left: 1rem;
+	/* Ensure it is positioned on top of everything else when it is shown */
+	z-index: 999;
+}
+
+.links-nextprev {
+	display: flex;
+	justify-content: space-between;
+	gap: .5em 1em;
+	list-style: "";
+	border-top: 1px dashed var(--color-gray-20);
+	padding: 1em 0;
+}
+.links-nextprev > * {
+	flex-grow: 1;
+}
+.links-nextprev-next {
+	text-align: right;
+}
+
+table {
+	margin: 1em 0;
+}
+table td,
+table th {
+	padding-right: 1em;
+}
+
+pre,
+code {
+	font-family: var(--font-family-monospace);
+	color: seagreen;
+}
+
+pre,code[class*="language-"] {
+	line-height: 1.2em !important;
+	font-size: 0.93em !important;
+}
+
+pre:not([class*="language-"]) {
+	margin: .5em 0;
+	line-height: 1.375; /* 22px /16 */
+	-moz-tab-size: var(--syntax-tab-size);
+	-o-tab-size: var(--syntax-tab-size);
+	tab-size: var(--syntax-tab-size);
+	-webkit-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+	direction: ltr;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	overflow-x: auto;
+}
+code {
+	word-break: break-word;
+}
+
+/* Header */
+header {
+	display: flex;
+	gap: 1em;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+}
+.home-link {
+	flex-grow: 1;
+	font-size: 1em; /* 16px /16 */
+	font-weight: 700;
+}
+.home-link:link:not(:hover) {
+	text-decoration: none;
+}
+
+/* Nav */
+.nav {
+	display: flex;
+	gap: .5em 1em;
+	padding: 0;
+	margin: 0;
+	list-style: none;
+}
+.nav-item {
+	display: inline-block;
+}
+.nav-item a[href]:not(:hover) {
+	text-decoration: none;
+}
+.nav a[href][aria-current="page"] {
+	text-decoration: underline;
+}
+
+/* Posts list */
+.postlist {
+	counter-reset: start-from var(--postlist-index);
+	list-style: none;
+	padding: 0;
+}
+.postlist-item {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	counter-increment: start-from -1;
+	margin-bottom: 1em;
+}
+.postlist-item:before {
+	display: inline-block;
+	pointer-events: none;
+	line-height: 100%;
+	text-align: right;
+	margin-left: -1.5rem;
+}
+.postlist-date,
+.postlist-item:before {
+	font-size: 0.8125em; /* 13px /16 */
+	color: var(--color-gray-90);
+}
+.postlist-date {
+	word-spacing: -0.5px;
+}
+.postlist-link {
+	font-size: 1.1875em; /* 19px /16 */
+	font-weight: 700;
+	flex-basis: calc(100% - 1.5rem);
+	text-underline-position: from-font;
+	text-underline-offset: 0;
+	text-decoration-thickness: 1px;
+}
+.postlist-item-active .postlist-link {
+	font-weight: bold;
+}
+
+/* Tags */
+.post-tag {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-style: italic;
+}
+
+/* may want to make the description text smaller at some stage */
+.post-description-list {
+	font-size: 1.0em;
+}
+
+.post-description-main {
+	font-style: italic;
+}
+
+.postlist-item > .post-tag {
+	align-self: center;
+}
+
+/* Tags list */
+.post-metadata {
+	display: inline-flex;
+	flex-wrap: wrap;
+	gap: .5em;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+.post-metadata time {
+	margin-right: 1em;
+}
+
+blockquote {
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-bottom: 15px;
+	padding-left: 15px;
+	border-left: 5px solid lightgray;
+}
+/**
+ * prism.js default theme for JavaScript, CSS and HTML
+ * Based on dabblet (http://dabblet.com)
+ * @author Lea Verou
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+	color: black;
+	background: none;
+	text-shadow: 0 1px white;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 1em;
+	text-align: left;
+	white-space: pre;
+	word-spacing: normal;
+	word-break: normal;
+	word-wrap: normal;
+	line-height: 1.5;
+
+	-moz-tab-size: 4;
+	-o-tab-size: 4;
+	tab-size: 4;
+
+	-webkit-hyphens: none;
+	-moz-hyphens: none;
+	-ms-hyphens: none;
+	hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+	text-shadow: none;
+	background: #b3d4fc;
+}
+
+@media print {
+	code[class*="language-"],
+	pre[class*="language-"] {
+		text-shadow: none;
+	}
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+	padding: 1em;
+	margin: .5em 0;
+	overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+	background: #f5f2f0;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+	padding: .1em;
+	border-radius: .3em;
+	white-space: normal;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+	color: slategray;
+}
+
+.token.punctuation {
+	color: #999;
+}
+
+.token.namespace {
+	opacity: .7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+	color: #905;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+	color: #690;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+	color: #9a6e3a;
+	/* This background color was intended by the author of this theme. */
+	background: hsla(0, 0%, 100%, .5);
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+	color: #07a;
+}
+
+.token.function,
+.token.class-name {
+	color: #DD4A68;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+	color: #e90;
+}
+
+.token.important,
+.token.bold {
+	font-weight: bold;
+}
+.token.italic {
+	font-style: italic;
+}
+
+.token.entity {
+	cursor: help;
+}
+/*
+ * New diff- syntax
+ */
+
+pre[class*="language-diff-"] {
+	--eleventy-code-padding: 1.25em;
+	padding-left: var(--eleventy-code-padding);
+	padding-right: var(--eleventy-code-padding);
+}
+.token.deleted {
+	background-color: hsl(0, 51%, 37%);
+	color: inherit;
+}
+.token.inserted {
+	background-color: hsl(126, 60%, 70%);
+	color: inherit;
+}
+
+/* Make the + and - characters unselectable for copy/paste */
+.token.prefix.unchanged,
+.token.prefix.inserted,
+.token.prefix.deleted {
+	-webkit-user-select: none;
+	user-select: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.token.prefix.inserted,
+.token.prefix.deleted {
+	width: var(--eleventy-code-padding);
+	background-color: rgba(0,0,0,.2);
+}
+
+/* Optional: full-width background color */
+.token.inserted:not(.prefix),
+.token.deleted:not(.prefix) {
+	display: block;
+	margin-left: calc(-1 * var(--eleventy-code-padding));
+	margin-right: calc(-1 * var(--eleventy-code-padding));
+	text-decoration: none; /* override del, ins, mark defaults */
+	color: inherit; /* override del, ins, mark defaults */
+}
+.utterances {
+  margin-left: inherit !important;
+}</style>
+		
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-4WQKBG0L4Y"></script>
+    
+
+	</head>
+	<body>
+		<a href="#main" id="skip-link" class="visually-hidden">Skip to main content</a>
+
+		<header>
+			<a href="/" class="home-link">DJ Adams</a>
+			<nav>
+				<h2 class="visually-hidden" id="top-level-navigation-menu">Top level navigation menu</h2>
+				<ul class="nav">
+					<li class="nav-item"><a href="/">Home</a></li>
+					<li class="nav-item"><a href="/about/">About</a></li>
+					<li class="nav-item"><a href="/blog/">Blog</a></li>
+					<li class="nav-item"><a href="/tags/">Tags</a></li>
+					<li class="nav-item"><a href="/feed.xml">Feed</a></li>
+				</ul>
+			</nav>
+		</header>
+
+		<main id="main">
+			<heading-anchors>
+				
+
+
+<h1 id="exploring-service-brokers-and-service-consumption-on-sap-business-technology-platform">Exploring service brokers and service consumption on SAP Business Technology Platform</h1>
+
+<ul class="post-metadata">
+	<li><time datetime="2022-03-08">08 March 2022</time></li>
+  <li><a href="/tags/sap-community-post/">sap-community-post</a>, </li>
+  <li><a href="/tags/cloud-foundry/">cloud-foundry</a>, </li>
+  <li><a href="/tags/service-brokers/">service-brokers</a>, </li>
+  <li><a href="/tags/containers/">containers</a></li>
+</ul>
+
+<p class="post-description-main">In this post we look briefly at the Open Service Broker API, and how service brokers are used to facilitate access to services on runtimes on the SAP Business Technology Platform.</p>
+
+<p>The advent of the SAP Service Manager (SM) brought about the ability to
+connect multiple platforms and multiple service brokers together on the
+SAP Business Technology Platform (SAP BTP). Services exposed by brokers
+on different platforms can be instantiated wherever you need them.</p>
+<p>To explore this a little bit, I thought I'd share an experiment, which
+doesn't use SM directly, but at least helps us think about service
+brokers, services, the Open Service Broker API (OSBAPI) and related
+topics. That way we are more prepared to understand SM and what it
+brings.</p>
+<h2 id="the-experiment">The experiment</h2>
+<p>The experiment is to make a service available in a Cloud Foundry (CF)
+space on my SAP BTP trial account. That service is a PostgreSQL
+database, facilitated by the <a href="https://www.elephantsql.com/">ElephantSQL</a>
+PostgreSQL-as-a-Service offering, which has a free plan. The reason for
+choosing this service was because there's a lovely repository on
+GitHub,
+<a href="https://github.com/JamesClonk/elephantsql-broker">elephantsql-broker</a>,
+from <a href="https://jamesclonk.io/">James Clonk</a>, which makes this service
+available via the OSBAPI, which is the standard API for service brokers
+and SM.</p>
+<p>The
+<a href="https://github.com/JamesClonk/elephantsql-broker">elephantsql-broker</a>
+repository takes you through the steps of deploying the service broker
+to a CF space, and then registering it to that space. What I want to
+show you in this post is running the service broker in a container
+locally on your machine, making the API available to the outside world,
+and then registering it to a CF space.</p>
+<p>Briefly, here's what we're going to do:</p>
+<ol>
+<li>clone the repository locally</li>
+<li>get an API key for the service</li>
+<li>build the Docker image with the service broker</li>
+<li>test an instance of the image (a container)</li>
+<li>start a new instance of the image, supplying the API key and other
+info</li>
+<li>expose the port, that the service broker is listening on, to the
+outside world</li>
+<li>register that service broker in a CF space</li>
+<li>view the service offering available, with the plans available</li>
+<li>create a service with a specific plan</li>
+<li>create a service key for that service instance</li>
+<li>clean up afterwards</li>
+</ol>
+<p>Of course, all the time, we'll be making observations as to what's
+going on.</p>
+<h2 id="a-note-on-postgresql-availability">A note on PostgreSQL availability</h2>
+<p>SAP BTP offers a hyperscaler option based PostgreSQL service, which you
+should definitely consider for non-experimental requirements. It
+provides a way to directly consume the PostgreSQL service provided by
+infrastructure providers.</p>
+<p><img src="/images/2022/03/screenshot-2022-03-08-at-12.47.03.png" alt=""></p>
+<p>The whole point of this particular exploration, however, is to
+understand how services can be used across platforms and environments,
+and how you can make your own services available to your apps on SAP
+BTP, via the OSBAPI. And as a side effect of this, you gain a better
+understanding of the context in which SM operates.</p>
+<h2 id="the-repository">The repository</h2>
+<p>All the detailed instructions you need are in this fork of the original
+elephantsql-broker repository, in a new branch called &quot;docker&quot;:</p>
+<p><a href="https://github.com/qmacro/elephantsql-broker/tree/docker">https://github.com/qmacro/elephantsql-broker/tree/docker</a></p>
+<h2 id="the-assumptions-and-prerequisites">The assumptions and prerequisites</h2>
+<p>This is all done on my local machine, which runs macOS natively, but on
+which I've also installed <a href="https://docs.docker.com/desktop/">Docker
+Desktop</a>. You are of course free to
+use an alternative container engine (such as
+<a href="https://podman.io/">Podman</a>) if that works better for you. You are on
+your own in terms of using Podman though - I have no experience there!</p>
+<p>You'll also need access to a subaccount on SAP BTP - you may find this
+tutorial helpful: <a href="https://developers.sap.com/tutorials/btp-cockpit-setup.html">Get an SAP BTP Account for
+Tutorials</a>.
+I'll be using my trial subaccount.</p>
+<p>You'll need the <a href="https://docs.cloudfoundry.org/cf-cli/install-go-cli.html">cf command line
+client</a>. I
+have recently moved from version 6 to version 7 recently; I only mention
+this because my sample output in this post will be mostly from cf
+version 7, where the options for 'cf marketplace' are different.</p>
+<p>You'll also need <a href="https://ngrok.com/">ngrok</a> to make a service
+available to the outside world (this is an amazingly useful piece of
+software for experimentation, learning and development in general).</p>
+<p>Finally, you'll probably want to have <a href="https://curl.se/">curl</a>
+installed too. But who doesn't already have that? 🙂</p>
+<p>Even if you don't want to follow along yourself, you may enjoy reading
+through the steps anyway, to get a better understanding. I'll try to
+explain what's going on along the way.</p>
+<h2 id="the-steps">The steps</h2>
+<p>OK, it's time to get down to it. A lot of the detailed instructions are
+in the repository, so where appropriate, I'll point you to the right
+places there. I'm going to use my <code>/tmp/</code> directory as the working
+directory into which I'll clone the repository.</p>
+<h3 id="clone-the-repository">Clone the repository</h3>
+<p>With the following command, clone the repository:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">git</span> clone https://github.com/qmacro/elephantsql-broker.git</code></pre>
+<p>The output should look something like this</p>
+<pre class="language-log" tabindex="0"><code class="language-log">Cloning into <span class="token string">'elephantsql-broker'</span><span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+<span class="token property">remote:</span> <span class="token property">Enumerating objects:</span> <span class="token number">564</span><span class="token punctuation">,</span> done<span class="token punctuation">.</span>
+<span class="token property">remote:</span> <span class="token property">Counting objects:</span> <span class="token number">100</span><span class="token operator">%</span> <span class="token operator">(</span><span class="token number">7</span><span class="token operator">/</span><span class="token number">7</span><span class="token operator">)</span><span class="token punctuation">,</span> done<span class="token punctuation">.</span>
+<span class="token property">remote:</span> <span class="token property">Compressing objects:</span> <span class="token number">100</span><span class="token operator">%</span> <span class="token operator">(</span><span class="token number">7</span><span class="token operator">/</span><span class="token number">7</span><span class="token operator">)</span><span class="token punctuation">,</span> done<span class="token punctuation">.</span>
+<span class="token property">remote:</span> Total <span class="token number">564</span> <span class="token operator">(</span>delta <span class="token number">0</span><span class="token operator">)</span><span class="token punctuation">,</span> reused <span class="token number">3</span> <span class="token operator">(</span>delta <span class="token number">0</span><span class="token operator">)</span><span class="token punctuation">,</span> pack<span class="token operator">-</span>reused <span class="token number">557</span>
+<span class="token property">Receiving objects:</span> <span class="token number">100</span><span class="token operator">%</span> <span class="token operator">(</span><span class="token number">564</span><span class="token operator">/</span><span class="token number">564</span><span class="token operator">)</span><span class="token punctuation">,</span> <span class="token number">6.31</span> MiB <span class="token operator">|</span> <span class="token number">10.50</span> MiB<span class="token operator">/</span>s<span class="token punctuation">,</span> done<span class="token punctuation">.</span>
+<span class="token property">Resolving deltas:</span> <span class="token number">100</span><span class="token operator">%</span> <span class="token operator">(</span><span class="token number">221</span><span class="token operator">/</span><span class="token number">221</span><span class="token operator">)</span><span class="token punctuation">,</span> done<span class="token punctuation">.</span></code></pre>
+<p>Once inside the cloned repository (with <code>cd elephantsql-broker/</code>), you
+should then check out what branches are available remotely:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">git</span> branch <span class="token parameter variable">-rv</span></code></pre>
+<p>This should show information similar to this:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">origin<span class="token operator">/</span>HEAD <span class="token operator">-</span><span class="token operator">></span> origin<span class="token operator">/</span>master
+origin<span class="token operator">/</span>docker c50c145 add info on how to run broker in a container
+origin<span class="token operator">/</span>master <span class="token number">9cfc107</span> refactor makefile
+origin<span class="token operator">/</span>recordings ed2e832 add animated recordings</code></pre>
+<p>It's the <code>docker</code> branch where I've added instructions for this, so
+check that branch out:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">git</span> checkout <span class="token function">docker</span></code></pre>
+<p>and you should see something like this:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">Branch <span class="token string">'docker'</span> set up to track remote branch <span class="token string">'docker'</span> from <span class="token string">'origin'</span><span class="token punctuation">.</span>
+Switched to a new branch <span class="token string">'docker'</span></code></pre>
+<p>Now you have the
+<a href="https://github.com/qmacro/elephantsql-broker/blob/docker/Dockerfile">Dockerfile</a>
+which you'll need, shortly, as well as a local copy of the
+<a href="https://github.com/qmacro/elephantsql-broker/blob/docker/docker.md">instructions</a>.</p>
+<h3 id="get-an-api-key">Get an API key</h3>
+<p>Now it's time to register for the PostgreSQL platform service and <a href="https://customer.elephantsql.com/apikeys">get
+a free API key</a>. The link is
+provided in the main README, in the <a href="https://github.com/qmacro/elephantsql-broker/blob/docker/README.md#deploy-service-broker-to-cloud-foundry">Deploy service broker to Cloud
+Foundry</a>
+section (but don't worry, you're not going to deploy the service
+broker to CF,  you're going to run it in a container).</p>
+<p><em>As a quick reminder - be a good net citizen and don't abuse the free
+tier of this service, or any service for that matter. I've just used it
+briefly to instantiate then remove a database for this experiment.</em></p>
+<p>Here's what my API key looks like (it starts <code>e15dad</code>), in the API
+Access area of my settings:</p>
+<p><img src="/images/2022/03/screenshot-2022-03-08-at-13.05.43.png" alt=""></p>
+<h3 id="build-the-docker-image">Build the Docker image</h3>
+<p>Next we can build the Docker image, which contains the service broker
+for ElephantSQL, written in Go. The
+<a href="https://github.com/qmacro/elephantsql-broker/blob/docker/Dockerfile">Dockerfile</a>
+is based on the simple example from the <a href="https://hub.docker.com/_/golang">Golang official image in Docker
+Hub</a>, and looks like this:</p>
+<pre class="language-dockerfile" tabindex="0"><code class="language-dockerfile"><span class="token instruction"><span class="token keyword">FROM</span> golang:1.17</span>
+
+<span class="token instruction"><span class="token keyword">WORKDIR</span> /usr/src/app</span>
+
+<span class="token instruction"><span class="token keyword">COPY</span> go.mod go.sum ./</span>
+<span class="token instruction"><span class="token keyword">RUN</span> go mod download &amp;&amp; go mod verify</span>
+
+<span class="token instruction"><span class="token keyword">COPY</span> . .</span>
+<span class="token instruction"><span class="token keyword">RUN</span> go build -v -o /usr/local/bin/ ./...</span>
+
+<span class="token instruction"><span class="token keyword">ENV</span> TZ=<span class="token string">"Europe/London"</span></span>
+<span class="token instruction"><span class="token keyword">ENV</span> BROKER_USERNAME=<span class="token string">"((username))"</span></span>
+<span class="token instruction"><span class="token keyword">ENV</span> BROKER_PASSWORD=<span class="token string">"((password))"</span></span>
+<span class="token instruction"><span class="token keyword">ENV</span> BROKER_API_URL=<span class="token string">"https://customer.elephantsql.com/api"</span></span>
+<span class="token instruction"><span class="token keyword">ENV</span> BROKER_API_KEY=<span class="token string">"((api_key))"</span></span>
+<span class="token instruction"><span class="token keyword">ENV</span> BROKER_API_DEFAULT_REGION=<span class="token string">"google-compute-engine::europe-west2"</span></span>
+
+<span class="token instruction"><span class="token keyword">CMD</span> [<span class="token string">"elephantsql-broker"</span>]</span></code></pre>
+<p>The detail for this step can be found in the <a href="https://github.com/qmacro/elephantsql-broker/blob/docker/docker.md#build-the-image">Build the
+image</a>
+section of the repository, but is essentially this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">docker</span> build <span class="token parameter variable">-t</span> elephantsql-broker <span class="token builtin class-name">.</span></code></pre>
+<p>The image created will, when instantiated (i.e. when a container is
+created from it), will execute the broker, which will begin listening
+for incoming OSBAPI calls on port 8080 by default.</p>
+<h3 id="start-a-test-container">Start a test container</h3>
+<p>Let's just kick the tyres at this stage. The service broker has a
+simple health check API endpoint, which we can call to see if things are
+generally OK. Let's start a container up, taking &quot;<a href="http://c2.com/xp/DoTheSimplestThingThatCouldPossiblyWork.html">the simplest thing
+that could possibly
+work</a>&quot;
+approach:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">docker</span> run <span class="token parameter variable">--rm</span> <span class="token parameter variable">--detach</span> <span class="token parameter variable">--name</span> broker elephantsql-broker</code></pre>
+<p>As output, we get a long GUID like this:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token hash constant">67f36459a6a4290ad76165a6c78154ceb4df3663260f09d8c36c9b09f0ed5bcd</span></code></pre>
+<p>and are returned to the prompt. This is because we used the <code>--detach</code>
+option to get the container to execute in the background. In case
+you're wondering, the <code>--rm</code> option tells Docker to remove the
+container once it is stopped, to keep things clean, and the <code>--name</code>
+option lets us choose a name for the container.</p>
+<p>There's nothing much to see, but we can do a couple of things. One is
+to check the logs, like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">docker</span> logs broker</code></pre>
+<p>We see something like this:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">level<span class="token operator">=</span>info msg<span class="token operator">=</span><span class="token string">"port: 8080"</span>
+level<span class="token operator">=</span>info msg<span class="token operator">=</span><span class="token string">"log level: info"</span>
+level<span class="token operator">=</span>info msg<span class="token operator">=</span><span class="token string">"broker username: ((username))"</span>
+level<span class="token operator">=</span>info msg<span class="token operator">=</span><span class="token string">"api url: https://customer.elephantsql.com/api"</span>
+level<span class="token operator">=</span>info msg<span class="token operator">=</span><span class="token string">"api default region: google-compute-engine::europe-west2"</span></code></pre>
+<p>So something is happening! Let's try to access the health check API
+endpoint. But - what hostname do we use? Is it <code>localhost</code>? Well, where
+we are right now, on my laptop's macOS operating system level, let's
+try it:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">curl</span> localhost:8080/health</code></pre>
+<p>But this returns a message like this:</p>
+<pre class="language-log" tabindex="0"><code class="language-log"><span class="token property">curl:</span> <span class="token operator">(</span><span class="token number">7</span><span class="token operator">)</span> Failed to connect to localhost port <span class="token number">8080</span><span class="token operator">:</span> Connection refused</code></pre>
+<p>That's because the broker is listening to port 8080 but only inside the
+container. Let's jump into the container and try it there. First, we
+can jump in by starting a Bash shell in the container:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">docker exec <span class="token operator">-</span>it broker bash</code></pre>
+<p>We're placed in a shell, inside the container (we can sort of tell
+we're in the container because (a) we're suddenly the <code>root</code> user and
+(b) the hostname is a generated ID):</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">root@6c53fdeb3134:/usr/src/app<span class="token comment">#</span></code></pre>
+<p>Now if we run that same <code>curl</code> invocation here (yes, <code>curl</code> is
+everywhere!), we get a result:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"status"</span><span class="token operator">:</span> <span class="token string">"ok"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>That's good. Let's exit the shell (with <code>exit</code> or Ctrl-D) and then
+stop the container (and it will be automatically cleaned up because of
+the <code>--rm</code> earlier):</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">docker</span> stop broker</code></pre>
+<h3 id="start-a-new-container-with-the-requisite-settings">Start a new container with the requisite settings</h3>
+<p>Now that we know things look reasonable, let's start up a new
+container, supplying what we need:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">docker</span> run
+  <span class="token parameter variable">--rm</span>
+  <span class="token parameter variable">--detach</span>
+  <span class="token parameter variable">--publish</span> <span class="token number">8080</span>:8080
+  <span class="token parameter variable">--env</span> <span class="token assign-left variable">BROKER_USERNAME</span><span class="token operator">=</span>brokerusername
+  <span class="token parameter variable">--env</span> <span class="token assign-left variable">BROKER_PASSWORD</span><span class="token operator">=</span>brokerpassword
+  <span class="token parameter variable">--env</span> <span class="token assign-left variable">BROKER_API_KEY</span><span class="token operator">=</span>your-api-key
+  elephantsql-broker</code></pre>
+<p>This is detailed in the <a href="https://github.com/qmacro/elephantsql-broker/blob/docker/docker.md#create-a-container-from-the-image">Create a container from the
+image</a>
+section of the repository.</p>
+<p>The publishing of port 8080 outside the container to the host OS (with
+the <code>--publish</code> option) means we can check the health from the macOS
+level now; running this in my local shell:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">curl</span> localhost:8080/health</code></pre>
+<p>now returns:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"status"</span><span class="token operator">:</span> <span class="token string">"ok"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>What's more, we've supplied the authentication details that will be
+needed to register and make OSBAPI calls to the broker from my CF space
+on SAP BTP, and also the API key for the ElephantSQL service.</p>
+<h3 id="make-the-broker-available-to-the-outside-world">Make the broker available to the outside world</h3>
+<p>We first could only access the broker when inside the container it was
+running in. Now we can access the broker from the host where the Docker
+engine is running (i.e. my laptop). But we need the broker available for
+access from my CF space on SAP BTP.</p>
+<p>Let's use the excellent <code>ngrok</code> to do this; it's covered in detail in
+the <a href="https://github.com/qmacro/elephantsql-broker/blob/docker/docker.md#make-the-service-broker-available-beyond-your-local-machine">Make the service broker available beyond your local
+machine</a>
+section of the repository, but briefly involves telling <code>ngrok</code> to
+create a secure tunnel that will carry traffic to port 8080 on the local
+host. Note that with great power comes with great responsibility; take
+care to use <code>ngrok</code> sensibly here.</p>
+<p>Invoking this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">ngrok http <span class="token number">8080</span></code></pre>
+<p>will result in that tunnel being created, giving both HTTP and HTTPS
+forwarding URLs, as shown in this example monitor display:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">ngrok by <span class="token operator">@</span>inconshreveable
+
+Session Status online
+Session Expires <span class="token number">1</span> hour<span class="token punctuation">,</span> <span class="token number">59</span> minutes
+Version <span class="token number">2.3.40</span>
+Region United States <span class="token operator">(</span>us<span class="token operator">)</span>
+Web Interface <span class="token url">http://127.0.0.1:4040</span>
+Forwarding <span class="token url">http://0c01-86-150-217-67.ngrok.io</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token url">http://localhost:8080</span>
+Forwarding <span class="token url">https://0c01-86-150-217-67.ngrok.io</span> <span class="token operator">-</span><span class="token operator">></span> <span class="token url">http://localhost:8080</span>
+
+Connections ttl opn rt1 rt5 p50 p90
+<span class="token number">0</span> <span class="token number">0</span> <span class="token number">0.00</span> <span class="token number">0.00</span> <span class="token number">0.00</span> <span class="token number">0.00</span></code></pre>
+<p>This means that the broker is now also available (protected with the
+username and password specified earlier) at
+<a href="https://0c01-86-150-217-67.ngrok.io"><code>https://0c01-86-150-217-67.ngrok.io</code></a>,
+which is also accessible from CF on SAP BTP.</p>
+<h3 id="register-the-service-broker-in-cf">Register the service broker in CF</h3>
+<p>The trial and free tier accounts on SAP BTP give us access to different
+runtimes, including Kyma / Kubernetes and Cloud Foundry. Both of these
+platforms have a concept of a service catalogue, or marketplace, where
+developers can check to see what services and plans are available for
+consumption.</p>
+<p>As guests on any given Cloud Foundry environment instance on SAP BTP, we
+don't have full administrative access to the entire environment, but we
+do have access at organisational and space level. In this context, it's
+possible for us as individuals to manage service brokers at the space
+level.</p>
+<p>If you enter <code>cf help</code> in a shell, you get a summary of the different
+commands, grouped into different areas. For example, there's the
+&quot;Space management&quot; area with the <code>create-space</code>, <code>set-space-role</code> and
+other commands, and there's the &quot;Application lifecycle&quot; area with
+<code>apps</code>, <code>push</code>, <code>logs</code>, <code>restart</code> and so on.</p>
+<p>But if you enter <code>cf help -a</code> you get a whole boatload more, including
+this group of commands:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">SERVICE ADMIN:
+service-auth-tokens List service auth tokens
+create-service-auth-token Create a service auth token
+update-service-auth-token Update a service auth token
+delete-service-auth-token Delete a service auth token
+
+service-brokers List service brokers
+create-service-broker Create a service broker
+update-service-broker Update a service broker
+delete-service-broker Delete a service broker
+rename-service-broker Rename a service broker
+
+migrate-service-instances Migrate service instances from one service plan to another
+purge-service-offering Recursively remove a service and child objects from Cloud Foundry database without making requests to a service broker
+purge-service-instance Recursively remove a service instance and child objects from Cloud Foundry database without making requests to a service broker
+
+service-access List service access settings
+enable-service-access Enable access to a service or service plan for one or all orgs
+disable-service-access Disable access to a service or service plan for one or all orgs</code></pre>
+<p>Gosh!</p>
+<p>We'll now explore just a subset of those commands, relating to service
+brokers.</p>
+<p>What do we need to do to register our new broker? Let's have a look,
+with <code>cf create-service-broker --help</code>, which shows us this:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">NAME:
+create-service-broker - Create a service broker
+
+USAGE:
+cf create-service-broker SERVICE_BROKER USERNAME PASSWORD URL [--space-scoped]
+
+ALIAS:
+csb
+
+OPTIONS:
+--space-scoped Make the broker's service plans only visible within the targeted space
+
+SEE ALSO:
+enable-service-access, service-brokers, target</code></pre>
+<p>Because we don't have administrative access to the entire CF
+environment instance, we'll need to use the <code>--space-scoped</code> option.
+But that's OK, this is just an experiment to understand the different
+pieces. Let's try:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf create-service-broker <span class="token punctuation">\</span>
+  elephantsql <span class="token punctuation">\</span>
+  brokerusername <span class="token punctuation">\</span>
+  brokerpassword <span class="token punctuation">\</span>
+  https://0c01-86-150-217-67.ngrok.io <span class="token punctuation">\</span>
+  --space-scoped</code></pre>
+<p>This results in the following message:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">Creating service broker elephantsql in org 1cbb5e7etrial <span class="token operator">/</span> space dev <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+OK</code></pre>
+<p>Moreover, we can now see the broker in the list, using
+<code>cf service-brokers</code>:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">Getting service brokers <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+name        url
+elephantsql <span class="token url">https://0c01-86-150-217-67.ngrok.io</span></code></pre>
+<p>But wait, there's more to see! In the <code>ngrok</code> monitor, each request is
+listed, and we see one (it's the first one) suddenly appear, and it
+looks like this:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">GET /v2/catalog</code></pre>
+<p>What's that? Well, if we look at the <a href="https://github.com/openservicebrokerapi/servicebroker">Open Service Broker API
+reference</a>, we
+see in the
+<a href="https://github.com/openservicebrokerapi/servicebroker/blob/master/spec.md">specification</a>,
+specifically in the <a href="https://github.com/openservicebrokerapi/servicebroker/blob/master/spec.md#catalog-management">Catalog
+Management</a>
+section, that:</p>
+<blockquote>
+<p>&quot;The first endpoint that a Platform will interact with on the Service
+Broker is the service catalog (<code>/v2/catalog</code>). This endpoint returns a list of
+all services available on the Service Broker. Platforms query this endpoint
+from all Service Brokers in order to present an aggregated user-facing
+catalog.&quot;</p>
+</blockquote>
+<p>So the process of registering the broker caused a request for the
+catalog to be made - makes sense!</p>
+<p>We can make our own call of course, to see what's returned, like this:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell"><span class="token function">curl</span> http://brokerusername:brokerpassword@localhost:8080/v2/catalog</code></pre>
+<p>It's a JSON object describing the service and plans available. If
+you're interested in where this comes from, take a look at the
+<a href="https://github.com/qmacro/elephantsql-broker/blob/docker/catalog.yml">catalog.yml</a>
+file in the repository.</p>
+<p>Let's continue with the consumption, and keep an eye on the OSBAPI
+calls made to the broker.</p>
+<h3 id="view-the-service-offerings-available">View the service offerings available</h3>
+<p>Many of us are already famililar with the <code>cf marketplace</code> command. This
+provides a list of available service offerings. Running it in my trial
+subaccount CF space returns a lot of information! There are many, many
+services available to me, each with their own plans, and surfaced
+through various brokers. Here's a list, where I've removed the
+&quot;description&quot; column to save space.</p>
+<p>Let's stare at it for a minute:</p>
+<p><img src="/images/2022/03/screenshot-2022-03-08-at-17.29.25.png" alt=""></p>
+<p>What do we see? Well, there are a myriad services each with different
+plans. For example, the &quot;hana-cloud-trial&quot; service has three plans
+available: &quot;hana&quot;, &quot;relational-data-lake&quot; and
+&quot;hana-cloud-connection&quot;.</p>
+<p>But what we also see is that each service is provided by a broker, shown
+in the rightmost column. All but one of these brokers follow a similar
+naming convention:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">sm-<broker-name>-<guid></guid></broker-name></code></pre>
+<p>For example, the &quot;hana-cloud-trial&quot; service offering is made available
+by this service broker:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">sm-hana-cloud-trial-1ce8c293-a0f4-40b1-a52e-a70f7ac4a749</code></pre>
+<p>Can you guess what the <code>sm-</code> prefix represents? These are all service
+brokers managed by, effectively proxied by, the SAP Service Manager.</p>
+<p>But take a look at the last entry in the list - it's our
+&quot;elephantsql&quot; service, with the three service plans &quot;turtle&quot;,
+&quot;spider&quot; and &quot;cat&quot; that we have in the
+<a href="https://github.com/qmacro/elephantsql-broker/blob/docker/catalog.yml">catalog.yml</a>
+file. And through what mechanism is it available to us? Via our very own
+<code>elephantsql</code> service broker that we've registered to this CF space
+just now. In fact, the detail in this output to <code>cf marketplace</code> was
+gathered in the previous step, in the HTTP GET request to
+<code>/v2/catalog</code>.</p>
+<p>Note that when we called <code>cf marketplace</code>, the <code>ngrok</code> monitor showed no
+further request. So this catalog information is cached.</p>
+<p>Before we move on, let's explore the <code>-e</code> option of <code>cf marketplace</code>,
+which lets us see the plan details for a particular service offering:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf marketplace <span class="token parameter variable">-e</span> elephantsql</code></pre>
+<p>This produces a nicely formatted table like this:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">Getting service plan information for service offering elephantsql in org 1cbb5e7etrial / space dev ...
+
+broker: elephantsql
+plan    description                          free or paid  costs              available
+turtle  Tiny Turtle - shared instance (free) free          USD 0.00/Monthly   yes
+spider  Simple Spider - shared instance      paid          USD 5.00/Monthly   yes
+cat     Crazy Cat - shared instance          paid          USD 10.00/Monthly  yes</code></pre>
+<h3 id="create-a-service-instance">Create a service instance</h3>
+<p>Let's create an instance of our &quot;elephantsql&quot; service. The &quot;turtle&quot;
+plan is free, so let's go for that. All we're going to do is create a
+PostgreSQL database instance, and then destroy it, anyway.</p>
+<p>We've surfaced our service availability to the <code>cf</code> level, so we can
+use normal <code>cf</code> commands to create a service instance here. The
+<code>create-service</code> command requires three parameters: the name of the
+service, the name of the plan, and what to call the service instance
+once created. As usual, I'll follow my basic pattern of naming the
+service instance based on a combination of the service and plan name:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf create-service elephantsql turtle elephantsql-turtle</code></pre>
+<p>And lo, an instance is created!</p>
+<pre class="language-log" tabindex="0"><code class="language-log">Creating service instance elephantsql<span class="token operator">-</span>turtle in org 1cbb5e7etrial <span class="token operator">/</span> space dev <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+OK</code></pre>
+<p>But what's happened behind the scenes?</p>
+<p>Well first of all, the <code>ngrok</code> monitor tells us that another call was
+made to the service broker:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">PUT /v2/service_instances/fac57b37-f51e-499c-8aae-cf18fa105806</code></pre>
+<p>This is another OSBAPI call, this time a
+<a href="https://github.com/openservicebrokerapi/servicebroker/blob/master/spec.md#provisioning">provisioning</a>
+call to request the creation of an instance of whatever service the
+broker is making available.</p>
+<p>Moreover, we can see the result of the instance creation request - we
+can see the instance in the ElephantSQL console:</p>
+<p><img src="/images/2022/03/screenshot-2022-03-08-at-17.49.36.png" alt=""></p>
+<h3 id="create-a-service-key">Create a service key</h3>
+<p>Let's go one stage further and create a service key. As we know, this
+is information that can be bound to an app to supply credentials that
+are required to operate or interact with the specific service instance.</p>
+<p>With the <code>cf create-service-key</code> command, we can do this, and it gives
+us what we want:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf create-service-key elephantsql-turtle elephantsql-turtle-sk</code></pre>
+<p>This gives us a service key:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">Creating service key elephantsql<span class="token operator">-</span>turtle<span class="token operator">-</span>sk for service instance elephantsql<span class="token operator">-</span>turtle <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+OK</code></pre>
+<p>And guess what? This meant another OSBAPI call made from CF to the
+service broker; this time to <a href="https://github.com/openservicebrokerapi/servicebroker/blob/master/spec.md#request-creating-a-service-binding">create a service
+binding</a>:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">PUT /v2/service_instances/fac57b37-f51e-499c-8aae-cf18fa105806/service_bindings/4b96c749-6fa2-43ae-a089-db8df149eaf9</code></pre>
+<p>We can ask for the contents of the service key with</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf service-key elephantsql-turtle elephantsql-turtle-sk</code></pre>
+<p>This gives us the content in JSON format:</p>
+<pre class="language-json" tabindex="0"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"apikey"</span><span class="token operator">:</span> <span class="token string">"ed0808bb-2cf6-4219-bfb0-9024..."</span><span class="token punctuation">,</span>
+  <span class="token property">"database"</span><span class="token operator">:</span> <span class="token string">"qezrugwo"</span><span class="token punctuation">,</span>
+  <span class="token property">"database_uri"</span><span class="token operator">:</span> <span class="token string">"postgres://qezrugwo:UTGenw...@rogue.db.elephantsql.com/qezrugwo"</span><span class="token punctuation">,</span>
+  <span class="token property">"host"</span><span class="token operator">:</span> <span class="token string">"rogue.db.elephantsql.com"</span><span class="token punctuation">,</span>
+  <span class="token property">"hostname"</span><span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">,</span>
+  <span class="token property">"password"</span><span class="token operator">:</span> <span class="token string">"UTGenw..."</span><span class="token punctuation">,</span>
+  <span class="token property">"port"</span><span class="token operator">:</span> <span class="token number">0</span><span class="token punctuation">,</span>
+  <span class="token property">"scheme"</span><span class="token operator">:</span> <span class="token string">"postgres"</span><span class="token punctuation">,</span>
+  <span class="token property">"uri"</span><span class="token operator">:</span> <span class="token string">"postgres://qezrugwo:UTGenw...@rogue.db.elephantsql.com/qezrugwo"</span><span class="token punctuation">,</span>
+  <span class="token property">"url"</span><span class="token operator">:</span> <span class="token string">"postgres://qezrugwo:UTGenw...@rogue.db.elephantsql.com/qezrugwo"</span><span class="token punctuation">,</span>
+  <span class="token property">"username"</span><span class="token operator">:</span> <span class="token string">"qezrugwo"</span>
+<span class="token punctuation">}</span></code></pre>
+<p>This information ties up with what we see in the console too.</p>
+<h3 id="delete-the-service-key-and-instance">Delete the service key and instance</h3>
+<p>We're almost at the end of our journey of exploration. Let's clean up,
+and also observe what happens when we do.</p>
+<p>First, we need to remove the service key:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf delete-service-key elephantsql-turtle elephantsql-turtle-sk</code></pre>
+<p>After prompting, this does what we ask:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">Really delete the service key elephantsql<span class="token operator">-</span>turtle<span class="token operator">-</span>sk<span class="token operator">?</span><span class="token operator">></span> y
+Deleting key elephantsql<span class="token operator">-</span>turtle<span class="token operator">-</span>sk for service instance elephantsql<span class="token operator">-</span>turtle <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+OK</code></pre>
+<p>And as we can now guess, this operation is achieved with yet another
+OSBAPI call to the service broker, as evidenced in the <code>ngrok</code> monitor:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">DELETE /v2/service_instances/fac57b37-f51e-499c-8aae-cf18fa105806/service_bindings/4b96c749-6fa2-43ae-a089-db8df149eaf9</code></pre>
+<p>Finally, let's delete the service instance itself:</p>
+<pre class="language-shell" tabindex="0"><code class="language-shell">cf delete-service elephantsql-turtle</code></pre>
+<p>Again, the prompt and then the confirmation:</p>
+<pre class="language-log" tabindex="0"><code class="language-log">Really delete the service elephantsql<span class="token operator">-</span>turtle<span class="token operator">?</span><span class="token operator">></span> y
+Deleting service elephantsql<span class="token operator">-</span>turtle in org 1cbb5e7etrial <span class="token operator">/</span> space dev <span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+OK</code></pre>
+<p>And as we can again guess, the beauty and balance of the use of the
+OSBAPI is shown again in the <code>ngrok</code> monitor:</p>
+<pre class="language-text" tabindex="0"><code class="language-text">DELETE /v2/service_instances/fac57b37-f51e-499c-8aae-cf18fa105806</code></pre>
+<p>(Observe the whole time here that the OSBAPI design respects HTTP as a
+protocol and uses the methods appropriately; GET to request, PUT to
+create, DELETE to remove, and so on).</p>
+<h2 id="wrapping-up">Wrapping up</h2>
+<p>This has been a long post, longer than I expected, but I hope it's been
+a helpful story, an exploratory journey, that's helped you understand
+some of the fascinating jigsaw puzzle pieces that is multi-cloud,
+multi-environment and the SAP Business Technology Platform in general.</p>
+<p>We've glimpsed how services are made available, got a feel for what
+service brokers are and how they fit in, and seen first hand some of the
+Open Service Broker API calls being made in response to regular <code>cf</code>
+requests to manage service instances and keys.</p>
+<p>I want to leave you with one question to ponder. With so many services
+available, and running in different places, on different platforms and
+environments, how do we make these services available to as many apps,
+on as many platforms as possible, without creating a tangled mess of
+multiple connections running between each platform and service broker?</p>
+<p>Here's a clue to the answer: it might be SAP Service Manager 🙂</p>
+<p>A quick note for my SAP colleagues: The page <a href="https://github.com/qmacro/elephantsql-broker/blob/docker/docker.md">Running the broker in a
+Docker
+container</a> and
+the corresponding
+<a href="https://github.com/qmacro/elephantsql-broker/blob/docker/Dockerfile">Dockerfile</a>
+were added to a new branch
+(<a href="https://github.com/qmacro/elephantsql-broker/tree/docker">docker</a>) of
+a fork of the original upstream <a href="https://github.com/JamesClonk/elephantsql-broker">elephantsql-broker
+repository</a>, in the
+context of a spare time open source contribution. If you're interested
+in open source, spare time contributions or third party contributions,
+and how I went about this one, drop me a line.</p>
+<p><a href="https://community.sap.com/t5/technology-blogs-by-sap/exploring-service-brokers-and-service-consumption-on-sap-business/ba-p/13524313">Originally published on SAP Community</a></p>
+
+
+
+<script src="https://utteranc.es/client.js" repo="qmacro/qmacro.github.io" issue-term="title" crossorigin="anonymous" async=""></script>
+
+<ul class="links-nextprev"><li class="links-nextprev-prev">← Previous<br> <a href="/blog/posts/2022/02/28/exercism-and-jq/">Exercism and jq</a></li><li class="links-nextprev-next">Next →<br><a href="/blog/posts/2022/03/14/setting-up-my-own-cloud-foundry/">Setting up my own Cloud Foundry</a></li>
+</ul>
+
+			</heading-anchors>
+		</main>
+
+		<!-- This page `/blog/posts/2022/03/08/exploring-service-brokers-and-service-consumption-on-sap-business-technology-platform/` was built on 2026-09-04T16:05:03.435Z -->
+		<script type="module" src="/dist/t-8sxMV3B9.js"></script>
+	</body>
+</html>
