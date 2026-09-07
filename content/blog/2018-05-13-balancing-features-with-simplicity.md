@@ -3,7 +3,6 @@ date: 2018-05-13
 title: Balancing features with simplicity
 description: Considering the balance between features and simplicity, prompted by a ChromeOS forum thread.
 tags:
-  - opinion
   - tools
   - architecture
 ---

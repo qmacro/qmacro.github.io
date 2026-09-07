@@ -5,7 +5,6 @@ description: I look at how the editor environments that we come across in our da
 tags:
   - monday-morning-thoughts
   - tools
-  - opinion
   - sap-community-post
   - serverless
   - kubernetes

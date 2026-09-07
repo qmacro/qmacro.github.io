@@ -4,7 +4,6 @@ title: The maker's schedule, restraint and flow
 description: My thoughts on schedules and saying 'no'.
 tags:
   - career
-  - opinion
   - personal
 ---
 

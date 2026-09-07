@@ -5,7 +5,6 @@ description: The services.cds filename is special, which is why I make use of it
 tags:
   - cds
   - cap
-  - opinion
   - domain-modelling
 ---
 I'm writing this short post so I can refer to it when I want to explain my use

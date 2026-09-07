@@ -6,7 +6,6 @@ tags:
   - rdf
   - rss
   - semantic-web
-  - opinion
 ---
 
 ## Open thinking about deep-linking

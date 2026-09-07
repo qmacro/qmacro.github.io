@@ -5,7 +5,6 @@ description: "Exploring a possible link between a scene in Alien: Sea of Sorrows
 tags:
   - personal
   - books
-  - opinion
 ---
 I'm listening to and rather enjoying the Audible Original "[Alien: Sea Of Sorrows](https://www.amazon.co.uk/Alien-Sorrows-Audible-Original-Drama/dp/B07B3MZHTQ)". Beyond being a good story (along with its related titles such as "Out Of The Shadows" and "River Of Pain"), the audio genre is new to me - rather than just being a narration, it's a full-on audio action experience. Definitely recommended.
 

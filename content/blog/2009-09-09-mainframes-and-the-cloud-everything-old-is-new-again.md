@@ -7,7 +7,6 @@ tags:
   - mainframes
   - cloud
   - sap
-  - opinion
 ---
 
 

@@ -5,7 +5,6 @@ description: Exploring the beautiful patterns inherent in recursion and list pro
 tags:
   - functional-programming
   - learning
-  - opinion
 ---
 There are beautiful patterns inherent in the use of recursion that I've seen in my attempts to reboot my brain with a new, more functionally focused way of thinking about programming.
 

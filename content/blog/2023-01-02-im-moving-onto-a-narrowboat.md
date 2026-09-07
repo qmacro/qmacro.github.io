@@ -5,7 +5,6 @@ description: Announcing my decision to have a narrowboat built and to live and w
 tags:
   - narrowboat
   - personal
-  - opinion
 ---
 I'm having a narrowboat built and am going to live on it and work from it. This post has been a long time coming, and the arrival of the new year has prompted me to start writing about it.
 

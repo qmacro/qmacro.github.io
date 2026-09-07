@@ -5,7 +5,6 @@ description: Reporting on the community and collaboration at SAP Inside Track Ma
 tags:
   - sap
   - conference
-  - opinion
   - inside-track
 ---
 

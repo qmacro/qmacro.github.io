@@ -6,7 +6,6 @@ tags:
   - jabber
   - http
   - web
-  - opinion
 ---
 
 

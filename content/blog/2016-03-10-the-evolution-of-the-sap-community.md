@@ -4,7 +4,6 @@ date: 2016-03-10
 description: Looking at how the SAP community has evolved over the years as I join the new Mentors Advisory Board.
 tags:
   - sap
-  - opinion
 ---
 
 This week, the new SAP Mentors Advisory Board has been formed, and I am very honoured to have been elected as a member. In this post, I take my own brief look at how the SAP community as a whole has evolved over the years.

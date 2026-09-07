@@ -4,7 +4,6 @@ title: Supporting developers with sponsorship
 description: Using the sponsors facility on GitHub to support developers whose work I value.
 tags:
   - open-source
-  - opinion
 ---
 There are many folks that I observe giving to the community. This giving takes many forms, such as providing software in an open source manner, supporting that software, sharing knowledge, and mentoring. I wanted to look into how I could provide a bit of support. I give to charity as part of my remuneration scheme, and I'm very fortunate to be able to do that. But that seems more of a "given" and not particularly specific, nor do I have any direct connection to the recipients.
 

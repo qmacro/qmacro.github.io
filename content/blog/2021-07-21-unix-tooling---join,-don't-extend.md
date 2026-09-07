@@ -5,7 +5,6 @@ description: Reading a 1984 paper by Pike and Kernighan helped crystallise an im
 tags:
   - shell
   - tools
-  - opinion
   - architecture
   - unix
 ---

@@ -5,7 +5,6 @@ description: I think about the different ways I learn, and wonder how that trans
 tags:
   - monday-morning-thoughts
   - learning
-  - opinion
   - sap-community-post
 ---
 

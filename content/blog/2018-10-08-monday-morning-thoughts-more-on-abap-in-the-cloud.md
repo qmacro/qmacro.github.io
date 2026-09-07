@@ -6,7 +6,6 @@ tags:
   - monday-morning-thoughts
   - abap
   - cloud
-  - opinion
   - sap-community-post
 ---
 

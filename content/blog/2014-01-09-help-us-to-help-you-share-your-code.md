@@ -5,7 +5,6 @@ description: Encouraging folks to share code via Gists and GitHub repos when ask
 tags:
   - openui5
   - github
-  - opinion
   - sap-community-post
 ---
 Yesterday I [tweeted](/tweets/qmacro/status/420840232008028161/): "We should encourage folk to post full Gists with their #UI5 issues, for easier debugging and analysis ([http://scn.sap.com/message/14665116](https://web.archive.org/web/20151116084802/http://scn.sap.com/message/14665116#14665116)). Agree?".

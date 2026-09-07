@@ -4,7 +4,6 @@ date: 2018-12-17
 description: I look back on the posts in this series, reflect upon the journey we've made, and think about what 2019 might hold for us.
 tags:
   - monday-morning-thoughts
-  - opinion
   - personal
   - sap-community-post
 ---

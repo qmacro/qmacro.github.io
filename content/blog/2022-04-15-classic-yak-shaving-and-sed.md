@@ -5,7 +5,6 @@ description: Descending through multiple levels of classic yak shaving and endin
 tags:
   - shell
   - tools
-  - opinion
 ---
 It's not often that I'm relaxed enough to be aware of how my mind is (or isn't) working, and what it's doing. So it was a surprise when I realised that what I've been doing for the past 15 minutes is descending through multiple levels into some classic yak shaving territory.
 <!--excerpt-->

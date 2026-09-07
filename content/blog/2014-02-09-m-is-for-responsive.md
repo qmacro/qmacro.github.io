@@ -5,7 +5,6 @@ description: Exploring what responsive design means in the context of Fiori and 
 tags:
   - openui5
   - fiori
-  - opinion
 ---
 
 Even if you count the well-meant but ultimately misguided initial attempt at pre-smartphone mobile interactivity, in the form of WAP and WML, the rise of mobile focused activity has been nothing short of inexorable.

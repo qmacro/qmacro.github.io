@@ -5,7 +5,6 @@ description: What can and should we do about spam?
 tags:
   - web
   - architecture
-  - opinion
 ---
 
 

@@ -5,7 +5,6 @@ description: On the impostor syndrome, how it relates to me, and one of the poss
 tags:
   - monday-morning-thoughts
   - career
-  - opinion
   - sap-community-post
 ---
 

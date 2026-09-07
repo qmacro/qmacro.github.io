@@ -5,7 +5,6 @@ description: Thinking about debugging approaches and reviving Greasemonkey for i
 tags:
   - monday-morning-thoughts
   - debugging
-  - opinion
   - sap-community-post
 ---
 

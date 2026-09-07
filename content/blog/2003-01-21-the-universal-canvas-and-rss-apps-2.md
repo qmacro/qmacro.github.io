@@ -5,7 +5,6 @@ description: Thoughts on the applicability and utility of the format.
 tags:
   - rss
   - web
-  - opinion
 ---
 
 

@@ -6,7 +6,6 @@ tags:
   - monday-morning-thoughts
   - docker
   - computing-history
-  - opinion
   - containers
   - sap-community-post
 ---

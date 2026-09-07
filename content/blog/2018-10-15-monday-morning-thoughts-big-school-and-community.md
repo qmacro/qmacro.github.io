@@ -4,7 +4,6 @@ date: 2018-10-15
 description: On my experience going from primary school to secondary school - "big school", how that parallels our collective move from on-prem to the cloud, and how the community is more important than ever in this transition.
 tags:
   - monday-morning-thoughts
-  - opinion
   - sap-community-post
 ---
 

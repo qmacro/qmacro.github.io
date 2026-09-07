@@ -4,7 +4,6 @@ date: 2015-08-06
 description: Arguing that understanding UI5 is key to embracing the future normal of SAP with S/4HANA and Fiori.
 tags:
   - sap
-  - opinion
 ---
 
 S/4HANA is here. It's now. It's cloud ready, HANA powered, and has an awesome user experience in the form of SAP Fiori. SAP Fiori is powered by the UI5 toolkit. To successfully understand and embrace the future normal of SAP, it's important to ensure that understanding, that embrace, is built upon firm foundations.

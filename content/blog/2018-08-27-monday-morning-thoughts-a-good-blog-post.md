@@ -5,7 +5,6 @@ description: What makes a good blog post, and also what writing such a post does
 tags:
   - monday-morning-thoughts
   - blogging
-  - opinion
   - sap-community-post
 ---
 

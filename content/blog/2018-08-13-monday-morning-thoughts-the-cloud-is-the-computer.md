@@ -5,7 +5,6 @@ description: I think about what the future of programming in an enterprise envir
 tags:
   - monday-morning-thoughts
   - cloud
-  - opinion
   - sap-community-post
 ---
 

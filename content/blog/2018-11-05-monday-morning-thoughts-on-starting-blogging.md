@@ -5,7 +5,6 @@ description: On what made me start blogging, and on the reasons to start bloggin
 tags:
   - monday-morning-thoughts
   - blogging
-  - opinion
   - sap-community-post
 ---
 

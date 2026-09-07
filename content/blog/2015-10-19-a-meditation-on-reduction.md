@@ -6,7 +6,6 @@ tags:
   - functional-programming
   - clojure
   - javascript
-  - opinion
 ---
 One of the people you should follow if you’re learning Clojure, and enjoy prose
 with a twist, is [Daniel Higginbotham](https://twitter.com/nonrecursive). He’s

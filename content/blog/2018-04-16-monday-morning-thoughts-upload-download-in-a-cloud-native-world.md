@@ -5,7 +5,6 @@ description: On how our modus operandi is often at odds with the true nature of 
 tags:
   - monday-morning-thoughts
   - cloud
-  - opinion
   - sap-community-post
   - mainframes
   - terminals

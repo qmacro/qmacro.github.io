@@ -7,7 +7,6 @@ tags:
   - cds
   - functional-programming
   - learning
-  - opinion
   - sicp
 ---
 CAP's language for expressing the domain model, the entities, their relationships, services, and more, is CDS's [Conceptual Definition Language (CDL)][1]. It's a language that I've been dwelling on a lot recently, the simplicity and power of which impresses me more every time I consider its design.

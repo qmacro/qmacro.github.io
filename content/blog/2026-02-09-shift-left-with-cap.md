@@ -7,7 +7,6 @@ tags:
   - cds
   - odata
   - functional-programming
-  - opinion
   - architecture
 ---
 

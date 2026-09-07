@@ -5,7 +5,6 @@ description: Starting a series of 30-day challenges inspired by Matt Cutts as an
 tags:
   - personal
   - learning
-  - opinion
 ---
 
 

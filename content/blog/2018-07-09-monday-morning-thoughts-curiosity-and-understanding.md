@@ -5,7 +5,6 @@ description: I think about how curiosity can lead to a better understanding of t
 tags:
   - monday-morning-thoughts
   - learning
-  - opinion
   - sap-community-post
   - cap
 ---

@@ -6,7 +6,6 @@ tags:
   - btp
   - sap
   - cloud
-  - opinion
 ---
 
 I'm looking into the [pricing for SAP Cloud Platform services](https://cloudplatform.sap.com/pricing.html) and, well to be honest, not particularly liking what I see. 

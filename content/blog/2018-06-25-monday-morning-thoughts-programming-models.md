@@ -5,7 +5,6 @@ description: I think about the idea of the programming model and consider the oc
 tags:
   - monday-morning-thoughts
   - cap
-  - opinion
   - sap-community-post
 ---
 

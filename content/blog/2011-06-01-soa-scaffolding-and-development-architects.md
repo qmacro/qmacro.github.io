@@ -5,7 +5,6 @@ description: Reflecting on where SOA stands today and the role of development ar
 tags:
   - rest
   - architecture
-  - opinion
 ---
 
 

@@ -5,7 +5,6 @@ description: On the importance and design of URLs, and the opacity of cattle vs 
 tags:
   - monday-morning-thoughts
   - cloud
-  - opinion
   - sap-community-post
 ---
 

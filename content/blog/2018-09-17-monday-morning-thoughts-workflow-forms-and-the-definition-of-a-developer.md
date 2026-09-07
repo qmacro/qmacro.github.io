@@ -5,7 +5,6 @@ description: I think briefly about the definition of a developer, and in that co
 tags:
   - monday-morning-thoughts
   - workflow
-  - opinion
   - sap-community-post
 ---
 

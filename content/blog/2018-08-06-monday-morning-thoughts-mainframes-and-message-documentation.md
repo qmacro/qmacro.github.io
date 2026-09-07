@@ -5,7 +5,6 @@ description: I think about mainframes and a message documentation aspect from th
 tags:
   - monday-morning-thoughts
   - computing-history
-  - opinion
   - sap-community-post
   - mainframes
 ---

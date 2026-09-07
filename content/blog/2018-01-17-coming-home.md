@@ -6,7 +6,6 @@ tags:
   - sap
   - computing-history
   - career
-  - opinion
 ---
 
 I first encountered SAP in 1987, where, fresh out of university and following

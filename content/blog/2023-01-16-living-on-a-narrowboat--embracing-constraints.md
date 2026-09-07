@@ -5,7 +5,6 @@ description: Embracing the constraints of living on a narrowboat as a positive f
 tags:
   - narrowboat
   - personal
-  - opinion
 ---
 Previous post in this series: [Working from a narrowboat - Internet connectivity](/blog/posts/2023/01/09/working-from-a-narrowboat-internet-connectivity/).
 

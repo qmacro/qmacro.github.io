@@ -4,7 +4,6 @@ title: My take on Wired's Google & URLs article
 description: Sharing my discomfort with Google's rethinking of URLs as reported by Wired.
 tags:
   - web
-  - opinion
 ---
 
 Something is surfacing that makes me rather uncomfortable.

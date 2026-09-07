@@ -5,7 +5,6 @@ description: I think about the importance of core technologies, and how the arri
 tags:
   - monday-morning-thoughts
   - architecture
-  - opinion
   - sap-community-post
 ---
 

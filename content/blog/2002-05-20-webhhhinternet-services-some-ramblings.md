@@ -5,7 +5,6 @@ description: I’ve been pondering the term “Web Services”. While I complete
 tags:
   - http
   - web
-  - opinion
   - architecture
 ---
 

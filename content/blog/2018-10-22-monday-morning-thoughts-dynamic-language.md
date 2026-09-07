@@ -7,7 +7,6 @@ tags:
   - javascript
   - functional-programming
   - cap
-  - opinion
   - sap-community-post
 ---
 

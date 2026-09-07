@@ -6,7 +6,6 @@ tags:
   - sap
   - javascript
   - abap
-  - opinion
 ---
 
 I had the good fortune to be invited to SAP’s [Innovation Weekend

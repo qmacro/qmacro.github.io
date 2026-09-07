@@ -5,7 +5,6 @@ description: Reflecting on narrowboat trips and allowing my intangible core to c
 tags:
   - narrowboat
   - personal
-  - opinion
 ---
 I've been lucky enough to have enjoyed a couple of trips on [Queenie](#queenie) in the past few years, ambling up and down the Bridgewater Canal in the spring. The days and nights spent just, well, being, have stayed with me ever since.
 

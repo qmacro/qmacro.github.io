@@ -7,7 +7,6 @@ tags:
   - rest
   - jabber
   - architecture
-  - opinion
 ---
 
 

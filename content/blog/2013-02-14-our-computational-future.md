@@ -4,7 +4,6 @@ date: 2013-02-14
 description: Making the case for teaching computational thinking and coding skills to the next generation in the UK.
 tags:
   - education
-  - opinion
   - computing-history
 ---
 

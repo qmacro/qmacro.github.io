@@ -6,7 +6,6 @@ tags:
   - functional-programming
   - clojure
   - learning
-  - opinion
 ---
 Clojure is a Lisp, which I like saying, because it makes me sound as though I
 know what I'm talking about and that my language experience is as old as the

@@ -7,7 +7,6 @@ tags:
   - openui5
   - sap
   - this-week-in-fiori
-  - opinion
 ---
 
 

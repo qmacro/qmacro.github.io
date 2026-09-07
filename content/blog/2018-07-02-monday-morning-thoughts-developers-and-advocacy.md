@@ -4,7 +4,6 @@ date: 2018-07-02
 description: I think about what it means to me to be a part of the Developer Relations team, and talk a bit about evangelism, outreach and advocacy.
 tags:
   - monday-morning-thoughts
-  - opinion
   - sap-community-post
 ---
 

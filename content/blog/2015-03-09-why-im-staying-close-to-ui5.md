@@ -6,7 +6,6 @@ tags:
   - openui5
   - fiori
   - javascript
-  - opinion
 ---
 
 

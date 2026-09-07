@@ -3,7 +3,6 @@ title: Accuracy and precision in language
 date: 2024-01-22
 description: Arguing for accuracy and precision in language, especially the distinction between blogs and blog posts.
 tags:
-  - opinion
   - odata
   - language
 ---

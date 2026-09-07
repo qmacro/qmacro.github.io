@@ -4,7 +4,6 @@ title: Plums and the antithesis of technology
 description: I haven’t been online much recently.
 tags:
   - personal
-  - opinion
 ---
 
 

@@ -6,7 +6,6 @@ tags:
   - monday-morning-thoughts
   - cap
   - javascript
-  - opinion
   - sap-community-post
 ---
 

@@ -6,7 +6,6 @@ tags:
   - monday-morning-thoughts
   - cds
   - cap
-  - opinion
   - sap-community-post
 ---
 

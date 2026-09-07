@@ -5,7 +5,6 @@ description: A simple script to reduce writing friction and make it easier to st
 tags:
   - blogging
   - tools
-  - opinion
 ---
 I saw [a tweet from Simon Willison](https://twitter.com/simonw/status/1304117739083059200) earlier this week pointing to Matt Webb's [15 rules for blogging, and my current streak](http://interconnected.org/home/2020/09/10/streak). I decided that I would also like to try to write more, and one of the things getting in my way was the slight friction in starting a new post. I use GitHub Pages and Jekyll behind the scenes, and my posts are in Markdown, one file per post (I like the simplicity of this, it reminds me of Rael Dornfest's [Blosxom](https://www.google.com/search?q=site%3Aqmacro.org+blosxom)).
 

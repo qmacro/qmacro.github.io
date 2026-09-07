@@ -4,7 +4,6 @@ title: Things I do to make my work life better
 description: Notes on how I try to approach practical aspects of my working life.
 tags:
   - career
-  - opinion
   - learning
   - email
 ---

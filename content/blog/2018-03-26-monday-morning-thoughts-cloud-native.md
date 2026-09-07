@@ -5,7 +5,6 @@ description: What does it mean to be "cloud native"?
 tags:
   - monday-morning-thoughts
   - cloud
-  - opinion
   - sap-community-post
 ---
 

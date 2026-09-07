@@ -5,7 +5,6 @@ description: I think about the tools we use in our day-to-day activities, the fe
 tags:
   - monday-morning-thoughts
   - learning
-  - opinion
   - sap-community-post
 ---
 

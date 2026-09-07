@@ -4,7 +4,6 @@ title: A new journal experiment - Thinking Aloud
 description: I'm trying out a new way of sharing thoughts in a GitHub issues based journal style blog called "Thinking Aloud".
 tags:
   - tools
-  - opinion
   - blogging
 ---
 

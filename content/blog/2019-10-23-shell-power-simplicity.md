@@ -5,7 +5,6 @@ description: Reflecting on the often overlooked power and simplicity of shell pr
 tags:
   - shell
   - tools
-  - opinion
   - unix
 ---
 

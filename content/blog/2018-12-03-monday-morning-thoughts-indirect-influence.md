@@ -4,7 +4,6 @@ date: 2018-12-03
 description: On how our work can directly and even indirectly influence those that come after us, and about what this means for how we should act.
 tags:
   - monday-morning-thoughts
-  - opinion
   - sap-community-post
 ---
 

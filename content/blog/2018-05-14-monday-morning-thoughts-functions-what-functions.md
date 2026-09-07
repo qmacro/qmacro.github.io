@@ -5,7 +5,6 @@ description: Musings on the concept of functions-as-a-service, what it means, an
 tags:
   - monday-morning-thoughts
   - functional-programming
-  - opinion
   - cloud
   - faas
   - sap-community-post

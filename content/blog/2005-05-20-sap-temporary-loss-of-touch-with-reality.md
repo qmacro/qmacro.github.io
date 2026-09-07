@@ -5,7 +5,6 @@ description: Responding to Shai Agassi's questionable views on open source softw
 tags:
   - sap
   - open-source
-  - opinion
   - java
 ---
 

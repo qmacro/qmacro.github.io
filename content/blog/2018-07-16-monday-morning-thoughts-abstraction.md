@@ -5,7 +5,6 @@ description: I think about abstraction, the power and facility it affords, and c
 tags:
   - monday-morning-thoughts
   - architecture
-  - opinion
   - sap-community-post
   - cap
   - cds

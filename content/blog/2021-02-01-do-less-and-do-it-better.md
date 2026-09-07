@@ -3,7 +3,6 @@ date: 2021-02-01
 title: Do less and do it better
 description: Consolidating and improving existing skills rather than adding more in 2021, and the inspiration behind that decision.
 tags:
-  - opinion
   - career
   - personal
 ---

@@ -6,7 +6,6 @@ tags:
   - computing-history
   - ai
   - personal
-  - opinion
 ---
 
 My good friend and colleague [Antonio](https://ajmaradiaga.com/) shared

@@ -4,7 +4,6 @@ title: You know you're getting old ...
 description: Looking back on this year's OSCON.
 tags:
   - personal
-  - opinion
 ---
 
 

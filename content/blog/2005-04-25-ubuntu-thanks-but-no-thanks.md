@@ -4,7 +4,6 @@ title: Ubuntu? Thanks. But no thanks.
 description: Lots of people seem to be very impressed with Ubuntu, the slick new Linux distro based on Debian, running Gnome.
 tags:
   - linux
-  - opinion
   - tools
 ---
 

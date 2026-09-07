@@ -4,7 +4,6 @@ date: 2018-06-18
 description: I think about some of the basic ingredients of a good online community, and describe what I'm going to try to do to engage more with the SAP Community.
 tags:
   - monday-morning-thoughts
-  - opinion
   - sap-community-post
 ---
 

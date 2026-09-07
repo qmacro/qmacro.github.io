@@ -6,7 +6,6 @@ tags:
   - jabber
   - tools
   - conference
-  - opinion
 ---
 
 

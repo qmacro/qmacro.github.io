@@ -6,7 +6,6 @@ tags:
   - monday-morning-thoughts
   - odata
   - rss
-  - opinion
   - sap-community-post
 ---
 

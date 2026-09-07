@@ -3,7 +3,6 @@ date: 2005-02-24
 title: Honest application requirements
 description: An unusual "user story".
 tags:
-  - opinion
   - architecture
 ---
 

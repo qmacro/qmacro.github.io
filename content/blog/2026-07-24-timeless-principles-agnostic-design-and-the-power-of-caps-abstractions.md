@@ -5,7 +5,6 @@ description: The timeless principle of agnostic design, aka minimal assumptions,
 tags:
   - cap
   - architecture
-  - opinion
   - domain-modelling
 ---
 

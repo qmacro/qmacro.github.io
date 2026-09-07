@@ -5,7 +5,6 @@ description: Questioning James Gosling's FUD about dynamic languages in the cont
 tags:
   - java
   - open-source
-  - opinion
 ---
 
 

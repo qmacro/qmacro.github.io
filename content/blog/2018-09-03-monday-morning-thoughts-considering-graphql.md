@@ -5,7 +5,6 @@ description: On GraphQL, and its relationship with existing ideas for managing d
 tags:
   - monday-morning-thoughts
   - api
-  - opinion
   - sap-community-post
 ---
 

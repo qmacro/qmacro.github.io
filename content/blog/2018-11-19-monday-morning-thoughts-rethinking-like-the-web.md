@@ -5,7 +5,6 @@ description: I revisit some principles that help us "think like the web" and thi
 tags:
   - monday-morning-thoughts
   - web
-  - opinion
   - sap-community-post
 ---
 

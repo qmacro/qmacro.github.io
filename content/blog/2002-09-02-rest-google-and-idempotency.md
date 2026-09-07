@@ -6,7 +6,6 @@ tags:
   - rest
   - http
   - api
-  - opinion
 ---
 
 

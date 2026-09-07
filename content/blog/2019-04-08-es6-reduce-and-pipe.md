@@ -6,7 +6,6 @@ tags:
   - functional-programming
   - javascript
   - talk
-  - opinion
 ---
 
 This weekend I turned to a post that was highlighted originally by [Fred

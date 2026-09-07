@@ -6,7 +6,6 @@ tags:
   - monday-morning-thoughts
   - cap
   - cds
-  - opinion
   - sap-community-post
   - functional-programming
 ---

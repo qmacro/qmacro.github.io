@@ -5,7 +5,6 @@ description: Back recharged from holiday.
 tags:
   - personal
   - rest
-  - opinion
 ---
 
 

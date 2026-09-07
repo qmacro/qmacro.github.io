@@ -4,7 +4,6 @@ date: 2026-07-04
 description: I've changed the language declaration on my website to en-GB. Here's why.
 tags:
   - blogging
-  - opinion
   - web
 ---
 

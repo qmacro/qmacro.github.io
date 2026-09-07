@@ -6,7 +6,6 @@ tags:
   - http
   - jabber
   - email
-  - opinion
 ---
 
 

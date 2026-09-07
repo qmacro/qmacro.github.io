@@ -4,7 +4,6 @@ date: 2005-07-04
 description: On the early years of the SAP community online.
 tags:
   - sap
-  - opinion
   - sap-community-post
 ---
 Yesterday [Alan](https://people.sap.com/alan.rickayzen) pointed us ([Whopping big collection of tips for developing workflows](https://blogs.sap.com/2005/07/04/whopping-big-collection-of-tips-for-developing-workflows/)) to a collection of tips on developing workflows, hosted by MIT, on a mailing list called ‘SAP-WUG’.

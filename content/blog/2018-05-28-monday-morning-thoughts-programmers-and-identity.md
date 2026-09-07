@@ -5,7 +5,6 @@ description: On how some programmers identify strongly with a particular languag
 tags:
   - monday-morning-thoughts
   - career
-  - opinion
   - sap-community-post
   - cap
 ---

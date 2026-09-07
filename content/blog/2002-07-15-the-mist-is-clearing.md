@@ -5,7 +5,6 @@ description: On my continuing quest to grok REST.
 tags:
   - rest
   - web
-  - opinion
 ---
 
 

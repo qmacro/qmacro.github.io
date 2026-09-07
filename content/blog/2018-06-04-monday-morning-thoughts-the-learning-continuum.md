@@ -5,7 +5,6 @@ description: I contemplate the idea of the learning continuum, and think about t
 tags:
   - monday-morning-thoughts
   - learning
-  - opinion
   - sap-community-post
 ---
 

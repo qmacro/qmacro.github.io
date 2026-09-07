@@ -5,7 +5,6 @@ description: Five compelling reasons to embrace SAP's Cloud Application Programm
 tags:
   - cap
   - talk
-  - opinion
   - architecture
 ---
 (This is now also available in audio format on the [Tech Aloud podcast](/blog/posts/2019/09/17/new-podcast-tech-aloud/): [Five reasons to use CAP - DJ Adams - 07 Nov 2024](https://creators.spotify.com/pod/show/tech-aloud/episodes/Five-reasons-to-use-CAP---DJ-Adams---07-Nov-2024-e2r2lth).)

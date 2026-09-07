@@ -3,7 +3,6 @@ date: 2005-02-28
 title: An overcorrection too far?
 description: Norman Walsh gives up ‘wrestling his way through the arcana of WSDL’.
 tags:
-  - opinion
   - architecture
   - web
 ---

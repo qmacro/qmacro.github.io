@@ -5,7 +5,6 @@ description: I’ve finally realised what it is that’s been bugging me about t
 tags:
   - sap
   - architecture
-  - opinion
 ---
 
 

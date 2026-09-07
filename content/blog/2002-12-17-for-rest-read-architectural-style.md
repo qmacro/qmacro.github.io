@@ -6,7 +6,6 @@ tags:
   - rest
   - http
   - architecture
-  - opinion
 ---
 
 If nothing else, it’s become useful as a framework in which I can think more clearly about web-based projects and their interfaces. Thinking in terms of a limited number of verbs (methods) with well-defined and widely understood semantics, combined with a set of ‘objects’ (represented by URIs) certainly helped me come up with a clear idea of what I should code, and how it should appear to the outside world, in a couple of recent projects.

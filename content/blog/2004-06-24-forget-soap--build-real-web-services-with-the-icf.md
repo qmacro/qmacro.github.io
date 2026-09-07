@@ -7,7 +7,6 @@ tags:
   - sap
   - http
   - api
-  - opinion
   - architecture
   - sap-community-post
 ---

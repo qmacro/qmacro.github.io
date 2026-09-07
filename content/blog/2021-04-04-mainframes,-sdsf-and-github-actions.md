@@ -5,7 +5,6 @@ description: The combination of GitHub Actions workflows, mainframes and SDSF th
 tags:
   - github-actions
   - computing-history
-  - opinion
 ---
 I started my computing adventure at the age of 11 on a minicomputer (see [Computer Unit 1979](/blog/posts/2020/11/03/computer-unit-1979/)) and then IBM mainframes featured heavily in the early and formational part of my career. Job definitions, job & step interdependencies, batch job execution and output management are in my blood.
 

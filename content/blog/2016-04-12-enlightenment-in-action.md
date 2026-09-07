@@ -6,7 +6,6 @@ tags:
   - functional-programming
   - clojure
   - learning
-  - opinion
   - programming-puzzles
 ---
 One of the ideas that Clojure embraces is this

@@ -6,7 +6,6 @@ tags:
   - odata
   - sap
   - api
-  - opinion
 ---
 
 Here I'll plot a brief history of SAP integration tools and technologies, and look forward to what Project Gateway promises: Uniform, resource orientated access to your enterprise functions and information. It's time to take back control of your data.

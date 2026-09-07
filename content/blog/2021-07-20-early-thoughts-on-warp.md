@@ -5,7 +5,6 @@ description: Some very early thoughts on Warp, the pro terminal designed for eve
 tags:
   - shell
   - tools
-  - opinion
 ---
 Today I was [pointed](https://twitter.com/Fidschenheimer/status/1417416096131518469) in Warp's direction on Twitter by [Christian Pfisterer](https://twitter.com/Fidschenheimer) and [Christian Drumm](https://twitter.com/ceedee666).
 

@@ -6,7 +6,6 @@ tags:
   - cap
   - architecture
   - domain-modelling
-  - opinion
 ---
 
 [Book Overflow](https://bookoverflow.io/) is "a long-form discussion podcast

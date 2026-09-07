@@ -4,7 +4,6 @@ date: 2026-02-17
 description: A suggestion on how we can work together to make the SAP Community better.
 tags:
   - sap
-  - opinion
 ---
 
 As a Developer Advocate, I have the privilege of working with some amazing

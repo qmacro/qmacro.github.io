@@ -5,7 +5,6 @@ description: 30 Days of UI5 - day 30 by Sam Yen.
 tags:
   - openui5
   - fiori
-  - opinion
 ---
 (Get to all the parts in this series via the [series post](/blog/posts/2015/07/04/welcome-to-30-days-of-ui5/).)
 

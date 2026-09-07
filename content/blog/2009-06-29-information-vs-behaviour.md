@@ -5,7 +5,6 @@ description: Architectures, axioms and ROA vs SOA.
 tags:
   - rest
   - architecture
-  - opinion
   - api
 ---
 

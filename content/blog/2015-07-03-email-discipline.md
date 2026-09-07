@@ -5,7 +5,6 @@ description: Email is asynchronous, and that's a good thing.
 tags:
   - career
   - email
-  - opinion
 ---
 
 If you’re wondering why I don’t reply to your email straight away, it’s because

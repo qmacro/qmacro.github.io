@@ -5,7 +5,6 @@ description: Offering ten practical tips for getting started on a Fiori developm
 tags:
   - fiori
   - openui5
-  - opinion
 ---
 
 A developer's journey to a new set of technologies is a very personal one, but there are definitely a few pointers that I can give you based upon my own experience.

@@ -7,7 +7,6 @@ tags:
   - rdf
   - xml
   - semantic-web
-  - opinion
 ---
 
 
