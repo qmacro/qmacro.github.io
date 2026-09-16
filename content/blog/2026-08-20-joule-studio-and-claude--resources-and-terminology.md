@@ -1,5 +1,6 @@
 ---
 title: 'Joule Studio and Claude - resources and terminology'
+draft: true
 date: 2026-08-20
 tags:
   - joule
