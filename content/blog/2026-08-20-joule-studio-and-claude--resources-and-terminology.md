@@ -88,7 +88,11 @@ The project local `.mcp.json` file contains:
 This defines a "Project"-scoped MCP server (i.e. one that is only for the
 context of this project, i.e. when in this `proj/` directory). The MCP server
 itself is a STDIO affair (rather than HTTP-based) and is actually part of `jl`,
-as it's invoked with `jl mcp start`.
+as it's invoked like this:
+
+```shell
+jl mcp start
+```
 
 There's a corresponding configuration file `.claude/settings.local.json` which
 enable this MCP server, and allows all tools that are offered by it:
