@@ -68,6 +68,10 @@ services](/blog/posts/2026/05/13/local-first-dev-with-cap-node-js-mocking-remote
 and
 [messaging](/blog/posts/2026/05/15/local-first-dev-with-cap-node-js-mocking-messaging/).
 
+The blog post [CAP service authentication at design time and in
+production](/blog/posts/2026/06/19/cap-service-authentication-at-design-time-and-in-production/)
+covers the `restrict_all_services` setting.
+
 In the content for the CodeJam [A hands-on tour of
 CAP](https://github.com/SAP-samples/cap-tour-hands-on) there are deep and
 detailed dive exercises on [mocking
