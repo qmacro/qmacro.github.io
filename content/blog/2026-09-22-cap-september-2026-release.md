@@ -74,6 +74,8 @@ explore lots of different concepts and protocols, such as subagency,
 delegation, A2A and MCP, as well as the more classic ideas of reuse, data APIs
 and more.
 
+![CAP/AI gif](/images/2026/09/cap-ai.gif)
+
 ### Much love for vector embeddings
 
 While some features might come to CAP Node.js first, and then to CAP Java, or
