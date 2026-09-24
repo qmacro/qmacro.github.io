@@ -1,7 +1,7 @@
 ---
 title: CAP September 2026 release
 draft: true
-date: 2026-09-22
+date: 2026-09-24
 tags:
   - cap
   - developernews
