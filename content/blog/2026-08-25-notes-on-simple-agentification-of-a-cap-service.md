@@ -35,6 +35,11 @@ using { CatalogService } from './cat-service';
 annotate CatalogService with @agent;
 ```
 
+> The `@agent` annotation [was added
+> recently](https://github.com/capire/bookshop/commit/665650969f2d1c6e5ccc82aa2b3be3afe1158b67)
+> so this step is not needed now, except to illustrate how simple it is to add,
+> and where we might consider doing that, i.e. separately.
+
 ## Startup and development mode
 
 I start up a CAP server and ask for debug level output for the agents component:
