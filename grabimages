@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# Usage example: grabimages 2026-09
+# This will pull all files in /tmp/2026-09/ which
+# will likely have been put there with script dci
+# on the container host. It will place them into
+# the corresponding images directory for website
+# content, i.e. content/images/2026/09/, and then
+# remove them.
+
+set -eo pipefail
+
+declare SOURCEBASE=/tmp
+declare TARGETBASE
+TARGETBASE="$(dirname "$0")/content/images"
+
+main() {
+
+  local name_with_dash="${1:?Specify image source dir e.g. 2026-09}"
+  local name_with_slash
+  name_with_slash="${name_with_dash//-/\/}"
+
+  local sourcedir="$SOURCEBASE/$name_with_dash"
+  local targetdir="$TARGETBASE/$name_with_slash"
+
+  # Check source and target directories exist
+  test -d "$sourcedir"
+  test -d "$targetdir"
+
+  for image in $(ls -1 "$sourcedir"); do
+    cp "$sourcedir/$image" "$targetdir/" \
+      && rm -f "$sourcedir/$image" \
+      && echo "✅ $image (to $name_with_slash)"
+  done
+
+}
+
+main "$@"
