@@ -139,9 +139,9 @@ To create a tunnel, we can use
 [SSH](https://man7.org/linux/man-pages/man1/ssh.1.html)'s remote port
 forwarding, with the `-R` option.
 
-> The `-L` option creates a tunnel going from local to remote, whereas the `-R`
-> option creates one from remote (the host OS) back to local (the container),
-> which is what we need in this case.
+> The `-L` option creates a tunnel going from local[<sup>2</sup>](#footnotes)
+> to remote, whereas the `-R` option creates one from remote (the host OS) back
+> to local (the container), which is what we need in this case.
 
 The port we need to specify on setting up the tunnel is the random port that
 was assigned in the creation of the temporary HTTP server (`43963` in this
@@ -153,7 +153,7 @@ But that port is quite hard to make out from that long URL.
 
 So we can add some magic on to the end of the `jl login <url>` command to use
 `tee` to capture the output to a file, and then use [process
-substitution](https://www.gnu.org/software/bash/manual/bashref.html#Process-Substitution)
+substitution](https://www.gnu.org/savannah-checkouts/gnu/bash/manual/bash.html#Process-Substitution)
 to process what contents would normally be written to that file, using more
 shell commands, like this:
 
@@ -196,7 +196,7 @@ If the browser does not open, copy the URL below and open it manually.
   &app_tid=...
 ```
 
-but also, thanks to the `| tee >( ... )`, also emits this:
+but also, thanks to the `| tee >( ... )`, emits this:
 
 ```text
 43963
@@ -240,3 +240,4 @@ quite straightforward.
 ## Footnotes
 
 1. I've looked :-)
+2. Here, "local" refers to the container, i.e. where `ssh` is invoked.
