@@ -1,7 +1,7 @@
 ---
 title: Running Joule Studio pro-code flow in a container, using an LLM proxy running on the host OS
 draft: true
-date: 2026-09-16
+date: 2026-09-30
 description: A note-to-self on setting up Claude Code and the Joule Studio CLI in a container, connecting and authenticating them, and configuring & using an LLM proxy which is at the host OS level.
 ---
 
