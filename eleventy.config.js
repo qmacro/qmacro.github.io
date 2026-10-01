@@ -125,6 +125,28 @@ export default async function(eleventyConfig) {
     return (new Date()).toISOString();
   });
 
+  eleventyConfig.addTransform("toc", function(content) {
+    if (!this.page?.outputPath?.endsWith(".html")) return content;
+    if (!this.page?.outputPath?.includes("/blog/posts/")) return content;
+
+    const headingRe = /<h([2-4])[^>]*\sid="([^"]+)"[^>]*>(.*?)<\/h\1>/gi;
+    const items = [];
+    let match;
+    while ((match = headingRe.exec(content)) !== null) {
+      const tag = match[0];
+      if (tag.includes('visually-hidden')) continue;
+      items.push({ level: parseInt(match[1]), id: match[2], text: match[3].replace(/<[^>]+>/g, '') });
+    }
+    if (items.length < 2) return content;
+
+    const lis = items.map(({ level, id, text }) =>
+      `<li class="toc-item toc-level-${level}"><a href="#${id}">${text}</a></li>`
+    ).join('\n');
+    const toc = `<nav class="toc" aria-label="Contents"><ol>\n${lis}\n</ol></nav>`;
+
+    return content.replace(/(<p class="post-description-main">.*?<\/p>)/s, `$1\n${toc}`);
+  });
+
   // Features to make your build faster (when you need them)
 
   // If your passthrough copy gets heavy and cumbersome, add this line
