@@ -70,7 +70,10 @@ browse them and get an overview, like this:
 
 ## A brief look at the script
 
-The shell script, [sb](https://github.com/qmacro/dotfiles/blob/main/scripts/sb), now forms part of my personal development environment ([PDE](/tags/pde/) and also uses other tools that I have in there. Here's the script in its entirety:
+The shell script,
+[sb](https://github.com/qmacro/dotfiles/blob/main/scripts/sb), now forms part
+of my personal development environment ([PDE](/tags/pde/)) and also uses other
+tools that I have in there. Here's the script in its entirety:
 
 ```bash
 #!/usr/bin/env bash
