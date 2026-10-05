@@ -117,7 +117,11 @@ main() {
       | cut -d' ' -f 2
   )"
 
-  "$FILEBROWSER" "$(dirname "$selection")"
+  if test -z "$SB_DETAIL"; then
+    glow -p "$selection"
+  else
+    "$FILEBROWSER" "$(dirname "$selection")"
+  fi
 
 }
 
@@ -177,9 +181,12 @@ Here are some notes:
     and preview UI, as shown in the video.
 
   - If a selection is made, `cut` is then used to select the second value that
-    is emitted from `fzf` (the full path to the selected skill file) and then
-    the configured file browser (I use [lf](https://github.com/gokcehan/lf)
-    here) is invoked on the directory that contains that skill file.
+    is emitted from `fzf` (the full path to the selected skill file).
+
+  - Finally, either (if the `SB_DETAIL` env var is set) the the configured file
+    browser[<sup>4</sup>](#footnotes) is invoked on the directory, or the Markdown
+    rendered `glow` is used to render the actual `SKILL.md` content in paging
+    mode for easy reading.
 
 That's pretty much it. The script may change a little over time, but it works
 for me now, and removes the friction I had which was stopping me from exploring
@@ -196,3 +203,5 @@ the detail of these important assets.
 
 1. I'm [a big fan](https://www.google.com/search?q=site%3Aqmacro.org+fzf) of
    `fzf`.
+
+1. I use [lf](https://github.com/gokcehan/lf).
