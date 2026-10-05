@@ -59,20 +59,20 @@ OpenCode MCP config initialized: /tmp/myproj
 > The specific skills retrieved here will depend on various circumstances,
 > you may see a slightly different list.
 
-## Browsing the skill details
+## Browsing the skills
 
 I wanted to explore these skills and get a better understanding of what they
 were. So I wrote a quick shell script (yes, I wrote it, not AI, to help
 maintain my cognitive fitness[<sup>2</sup>](#footnotes)), which allows me to
 browse them and get an overview.
 
-### Skill overview
+### Skills overview
 
 The default is to render the skill content like this, in a pager:
 
 ![Skill browser in action](/images/2026/10/skillbrowser-glow.gif)
 
-### Skill detail
+### Skills detail
 
 If more details are sought, then setting the env var `SB_DETAIL` will cause
 the selected skill to be opened in a file browser, to allow viewing and browsing
