@@ -4,7 +4,7 @@ date: 2026-09-22
 tags:
   - oauth
   - containers
-  - joulestudio
+  - joule-studio
 description: Three-legged OAuth 2.0 flows that involve the generation of URLs to authenticate with, and where there's a subsequent return to the local context, are not well suited to container / host environments where the OAuth flow is initiated from a process in the container but the browser used runs on the host OS. Here's one way of solving this.
 ---
 

@@ -6,6 +6,7 @@ tags:
   - tmux
   - tools
   - til
+  - pde
 ---
 I'm revisiting my working environment setup and configuration, which comprises, at its core, Bash, (Neo)vim and Tmux. This is essentially my IDE, or, to use a term I learned from [TJ DeVries](https://github.com/tjdevries), my [Personalised Development Environment](https://www.youtube.com/watch?v=QMVIJhC9Veg) (PDE).
 

@@ -3,7 +3,7 @@ title: Exploring Joule Studio skills
 date: 2026-10-05
 tags:
   - joule-studio
-  - skill
+  - skills
   - shell
 description: Exploring the Joule Studio skills with a quick shell script.
 ---

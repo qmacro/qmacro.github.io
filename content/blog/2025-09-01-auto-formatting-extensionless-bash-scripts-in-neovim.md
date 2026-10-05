@@ -7,6 +7,7 @@ tags:
   - shell
   - tools
   - linting
+  - pde
 ---
 ## TL;DR
 
