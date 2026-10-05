@@ -8,9 +8,8 @@ tags:
 description: Exploring the Joule Studio skills with a quick shell script.
 ---
 
-The new [Joule Studio CLI](https://www.npmjs.com/package/@sap/joule-studio-cli)
-([help
-content](https://help.sap.com/docs/joule-studio/joule-studio/joule-studio-for-cli-pro-code-development-in-joule-studio?locale=en-US&version=CLOUD&ai=true))
+The new [Joule Studio
+CLI](https://help.sap.com/docs/joule-studio/joule-studio/joule-studio-for-cli-pro-code-development-in-joule-studio)
 recently landed, in the form of `jl`. This is what we use on the command line
 to initialise a new Joule Studio project. What does that mean? Well, amongst
 other things, it means:
