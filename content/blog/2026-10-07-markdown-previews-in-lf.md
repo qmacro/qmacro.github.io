@@ -11,7 +11,7 @@ description: How to get nice Markdown previews working in the lf file manager.
 
 Today I'm finding I'm working Markdown even more, and the delta is mostly in
 read-mode, rather than write-mode. Reading agent and skill files, intent
-summaries, product requirement descriptions and more, especially in the context
+summaries, product requirement documents and more, especially in the context
 of [Joule Studio](/tags/joule-studio/).
 
 I use the terminal file manager [lf](https://github.com/gokcehan/lf) which is
