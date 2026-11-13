@@ -2,6 +2,12 @@
 title: Legacy and foundation - the enduring Unix tech stack
 date: 2026-11-13
 description: Musing on how the Unix technologies endure and remain the foundation for much of today's tech.
+tags:
+  - shell
+  - tools
+  - unix
+  - agents
+  - legacy
 ---
 
 The word "legacy" is wielded by various folks, and in many cases it's in a
