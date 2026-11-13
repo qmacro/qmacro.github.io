@@ -9,6 +9,8 @@ tags:
   - hands-on-sap-dev
   - episode-notes
   - functional-programming
+  - larry-wall
+  - alan-kay
 ---
 For all resources related to this series, see the post [The Art and Science of CAP][2].
 

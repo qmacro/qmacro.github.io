@@ -5,6 +5,7 @@ description: Celebrating Programmers Day and reflecting on a couple of people wh
 tags:
   - personal
   - sap-community-post
+  - jon-udell
 ---
 *Today is Programmers Day, and I take a moment to reflect on a couple of
 folks who have inspired me in my growth as a programmer.*

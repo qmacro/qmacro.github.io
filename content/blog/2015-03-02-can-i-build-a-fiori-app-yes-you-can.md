@@ -5,6 +5,7 @@ description: Making the case that building Fiori apps is achievable and explaini
 tags:
   - fiori
   - openui5
+  - douglas-adams
 ---
 
 This started out as an essay as preparation for my keynote at Mastering SAP Technologies in Johannesburg, Feb 2015. I've split it out into two parts, the second of which will give you 10 tips to get you started on your Fiori development journey

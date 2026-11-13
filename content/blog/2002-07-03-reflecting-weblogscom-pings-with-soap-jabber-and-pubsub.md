@@ -7,6 +7,7 @@ tags:
   - soap
   - pubsub
   - web
+  - douglas-adams
 ---
 
 Last month, [Simon](http://www.pocketsoap.com/weblog/index.html "Simon Fell's weblog") answered a [cry for help](http://www.pocketsoap.com/weblog/2002/06/13.html#a604) from someone in the weblog community by creating [blogToaster](http://www.pocketsoap.com/weblog/2002/06/15.html#a608), a neat little IM-based app that alerts people about updates (coordinated through [www.weblogs.com](http://www.weblogs.com/)) to weblogs that they’re interested in.

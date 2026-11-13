@@ -5,6 +5,7 @@ description: Reflecting on how SAP's DNA of innovation persists even as technolo
 tags:
   - sap
   - computing-history
+  - douglas-adams
 ---
 
 

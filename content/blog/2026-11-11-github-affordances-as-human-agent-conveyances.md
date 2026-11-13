@@ -5,6 +5,7 @@ tags:
   - github
   - ai
   - agents
+  - jon-udell
 description: Thinking about how GitHub PRs and issues are becoming the primary surface for collaboration between humans and agents.
 ---
 

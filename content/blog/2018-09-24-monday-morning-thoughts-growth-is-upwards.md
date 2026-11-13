@@ -7,6 +7,7 @@ tags:
   - cap
   - javascript
   - sap-community-post
+  - brendan-eich
 ---
 
 I live to the east of the centre Manchester, in beautiful countryside

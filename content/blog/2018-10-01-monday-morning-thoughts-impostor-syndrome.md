@@ -6,6 +6,7 @@ tags:
   - monday-morning-thoughts
   - career
   - sap-community-post
+  - douglas-adams
 ---
 
 I'm in Las Vegas for the first SAP TechEd event of 2018 which starts in

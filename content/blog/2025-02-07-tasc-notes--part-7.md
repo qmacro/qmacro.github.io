@@ -10,6 +10,7 @@ tags:
   - episode-notes
   - domain-modelling
   - functional-programming
+  - tim-berners-lee
 ---
 For all resources related to this series, see the post [The Art and Science of CAP][2].
 

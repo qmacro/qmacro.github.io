@@ -5,6 +5,7 @@ description: Making the case for teaching computational thinking and coding skil
 tags:
   - education
   - computing-history
+  - jon-udell
 ---
 
 If you're reading this blog post, chances are that you're aware of, or directly involved in the Information Technology (IT) industry in the UK. Whether that's as a means to an end (you're a business user), or an end in itself (like me, you're a technologist), the IT industry is a critical platform for building out the next few decades.

@@ -10,6 +10,7 @@ tags:
   - episode-notes
   - functional-programming
   - architecture
+  - john-mccarthy
 ---
 These are somewhat more detailed notes than normal that summarise [The Art and Science of CAP part 4][98], one episode in a mini series with Daniel Hutzel to explore the philosophy, the background, the technology history and layers that support and inform the SAP Cloud Application Programming Model.
 

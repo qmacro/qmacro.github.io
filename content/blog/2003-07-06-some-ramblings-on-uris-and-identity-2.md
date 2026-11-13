@@ -7,6 +7,7 @@ tags:
   - rest
   - semantic-web
   - http
+  - tim-berners-lee
 ---
 Looking at the FOAF data for various people, I was reminded of the model of indirection that is used to identify a person.
 

@@ -8,6 +8,8 @@ tags:
   - unix
   - agents
   - legacy
+  - jon-udell
+  - larry-wall
 ---
 
 The word "legacy" is wielded by various folks, and in many cases it's in a

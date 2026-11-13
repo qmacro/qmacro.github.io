@@ -6,6 +6,7 @@ tags:
   - shell
   - tools
   - til
+  - brian-kernighan
 ---
 
 (Jump to the end for a couple of updates, thanks gioele and oh5nxo!)

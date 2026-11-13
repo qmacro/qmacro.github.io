@@ -10,6 +10,7 @@ tags:
   - episode-notes
   - architecture
   - functional-programming
+  - rich-hickey
 ---
 
 These are the raw, unedited notes I took to summarise [The Art and Science of CAP part 3][1], one episode in a mini series with Daniel Hutzel to explore the philosophy, the background, the technology history and layers that support and inform the SAP Cloud Application Programming Model.

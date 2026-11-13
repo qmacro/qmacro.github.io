@@ -9,6 +9,7 @@ tags:
   - docker
   - tools
   - homelab
+  - brian-kernighan
 ---
 
 ## Background

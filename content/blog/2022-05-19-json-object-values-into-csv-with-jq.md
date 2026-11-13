@@ -6,6 +6,7 @@ tags:
   - jq
   - json
   - odata
+  - larry-wall
 ---
 
 In our current [Back to basics: OData
