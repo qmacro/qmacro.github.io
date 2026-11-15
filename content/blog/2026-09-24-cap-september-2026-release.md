@@ -164,7 +164,7 @@ Beyond the pretty amazing new feature that provides support for vector embedding
 > year](https://www.youtube.com/watch?v=mRs3oQPOcgM).
 >
 > ![A still image from the keynote recording, showing the giant desert
-> sandworms from Frank Herbert's Dune universe, known as Shai Hulud, which is
+> sandworm from Frank Herbert's Dune universe, known as Shai Hulud, which is
 > also the name given to a recent and notorious software supply chain malware
 > worm](/images/2026/09/shai-hulud.png)
 
