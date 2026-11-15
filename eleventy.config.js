@@ -27,7 +27,7 @@ export default async function(eleventyConfig) {
       "./public/": "/"
     })
     .addPassthroughCopy("./CNAME")
-    .addPassthroughCopy("./content/feed/pretty-atom-feed.xsl")
+
     .addPassthroughCopy("./content/images/")
     .addPassthroughCopy("./content/robots.txt", "/robots.txt")
     ;
@@ -69,7 +69,6 @@ export default async function(eleventyConfig) {
   eleventyConfig.addPlugin(feedPlugin, {
     type: "atom", // or "rss", "json"
     outputPath: "/feed.xml",
-    stylesheet: "feed/pretty-atom-feed.xsl",
     templateData: {
       eleventyNavigation: {
         key: "Feed",
