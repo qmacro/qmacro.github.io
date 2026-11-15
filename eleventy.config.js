@@ -4,6 +4,7 @@ import pluginSyntaxHighlight from "@11ty/eleventy-plugin-syntaxhighlight";
 import pluginNavigation from "@11ty/eleventy-navigation";
 // import { eleventyImageTransformPlugin } from "@11ty/eleventy-img";
 import prismCds from "./prism-cds.js";
+import markdownIt from "markdown-it";
 
 import pluginFilters from "./_config/filters.js";
 
@@ -113,6 +114,20 @@ export default async function(eleventyConfig) {
 
   // Filters
   eleventyConfig.addPlugin(pluginFilters);
+
+  // Markdown-it with figure/figcaption wrapping for images with alt text
+  const md = markdownIt({ html: true });
+  const defaultImageRenderer = md.renderer.rules.image;
+  md.renderer.rules.image = (tokens, idx, options, env, self) => {
+    const token = tokens[idx];
+    const alt = token.content;
+    const imgHtml = defaultImageRenderer
+      ? defaultImageRenderer(tokens, idx, options, env, self)
+      : self.renderToken(tokens, idx, options);
+    if (!alt) return imgHtml;
+    return `<figure>${imgHtml}<figcaption>${alt}</figcaption></figure>`;
+  };
+  eleventyConfig.setLibrary("md", md);
 
   eleventyConfig.addPlugin(IdAttributePlugin, {
     // by default we use Eleventy’s built-in `slugify` filter:
